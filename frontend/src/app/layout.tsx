@@ -1,20 +1,23 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Navigation from "@/components/Navigation";
 
 export const metadata: Metadata = {
   title: "Automation Exposure Dashboard",
   description:
-    "Compare automation exposure across occupation groups using AEI, MCP, and Microsoft datasets.",
+    "Explore how AI automation affects occupations, tasks, and wages across the economy.",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="bg-gray-50 text-gray-900 antialiased">{children}</body>
+      <body className="antialiased" style={{ backgroundColor: "var(--bg-base)", color: "var(--text-primary)" }}>
+        <Navigation />
+        {/* Content sits below the fixed nav */}
+        <div style={{ paddingTop: "var(--nav-height)" }}>
+          {children}
+        </div>
+      </body>
     </html>
   );
 }

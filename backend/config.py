@@ -1,6 +1,5 @@
 """
 config.py — Backend configuration (paths, dataset registry, metrics).
-Mirrors dashboard/config.py but stripped of Streamlit deps.
 """
 from pathlib import Path
 
@@ -8,6 +7,7 @@ ROOT     = Path(__file__).parent.parent
 DATA_DIR = ROOT / "data"
 
 ECO_BASELINE_FILE = str(DATA_DIR / "final_eco_2025.csv")
+ECO_2015_FILE     = str(DATA_DIR / "final_eco_2015.csv")
 
 CROSSWALK_PATHS = [
     str(DATA_DIR / "2010_to_2019_soc_crosswalk.csv"),
@@ -15,6 +15,7 @@ CROSSWALK_PATHS = [
     str(ROOT.parent / "automation_exposure_analysis" / "data" / "2010_to_2019_soc_crosswalk.csv"),
 ]
 
+# All datasets (includes Eco 2015 used internally for work-activity baselines)
 DATASETS = {
     "AEI v1":     {"file": str(DATA_DIR / "final_aei_v1.csv"),     "is_aei": True,  "is_mcp": False},
     "AEI v2":     {"file": str(DATA_DIR / "final_aei_v2.csv"),     "is_aei": True,  "is_mcp": False},
@@ -27,7 +28,17 @@ DATASETS = {
     "MCP v3":     {"file": str(DATA_DIR / "final_mcp_v3.csv"),     "is_aei": False, "is_mcp": True},
     "MCP v4":     {"file": str(DATA_DIR / "final_mcp_v4.csv"),     "is_aei": False, "is_mcp": True},
     "Microsoft":  {"file": str(DATA_DIR / "final_microsoft.csv"),  "is_aei": False, "is_mcp": False},
-    "Eco 2015":   {"file": str(DATA_DIR / "final_eco_2015.csv"),   "is_aei": True,  "is_mcp": False},
+}
+
+# Eco 2015 is used internally as the baseline for AEI work-activity analysis (not user-selectable)
+ECO_2015_META = {"file": ECO_2015_FILE, "is_aei": True, "is_mcp": False}
+
+# Dataset series for time-trend analysis
+DATASET_SERIES = {
+    "AEI":       ["AEI v1", "AEI v2", "AEI v3", "AEI v4"],
+    "AEI API":   ["AEI API v3", "AEI API v4"],
+    "MCP":       ["MCP v1", "MCP v2", "MCP v3", "MCP v4"],
+    "Microsoft": ["Microsoft"],
 }
 
 AGG_LEVEL_COL = {

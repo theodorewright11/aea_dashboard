@@ -32,55 +32,45 @@ const DEFAULT_B: GroupSettingsType = {
   topN: 10,
 };
 
-export default function Home() {
-  const [config, setConfig] = useState<ConfigResponse | null>(null);
+export default function HomePage() {
+  const [config, setConfig]         = useState<ConfigResponse | null>(null);
   const [configError, setConfigError] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  // Staged settings — applied on "Run" click so charts don't recompute on every
-  // slider move. Each group has "pending" (what the form shows) and "applied"
-  // (what the charts use).
   const [pendingA, setPendingA] = useState<GroupSettingsType>(DEFAULT_A);
   const [pendingB, setPendingB] = useState<GroupSettingsType>(DEFAULT_B);
   const [appliedA, setAppliedA] = useState<GroupSettingsType>(DEFAULT_A);
   const [appliedB, setAppliedB] = useState<GroupSettingsType>(DEFAULT_B);
 
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-
   useEffect(() => {
     fetchConfig()
       .then((cfg) => {
         setConfig(cfg);
-        // Filter defaults to only available datasets
         const available = cfg.datasets.filter((d) => cfg.dataset_availability[d]);
-        setPendingA((s) => ({
+        const filterAvailable = (s: GroupSettingsType) => ({
           ...s,
           selectedDatasets: s.selectedDatasets.filter((d) => available.includes(d)),
-        }));
-        setPendingB((s) => ({
-          ...s,
-          selectedDatasets: s.selectedDatasets.filter((d) => available.includes(d)),
-        }));
-        setAppliedA((s) => ({
-          ...s,
-          selectedDatasets: s.selectedDatasets.filter((d) => available.includes(d)),
-        }));
-        setAppliedB((s) => ({
-          ...s,
-          selectedDatasets: s.selectedDatasets.filter((d) => available.includes(d)),
-        }));
+        });
+        setPendingA(filterAvailable);
+        setPendingB(filterAvailable);
+        setAppliedA(filterAvailable);
+        setAppliedB(filterAvailable);
       })
       .catch((e) => setConfigError(e.message));
   }, []);
 
   if (configError) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <p className="text-red-600 font-medium mb-2">Could not connect to backend</p>
-          <p className="text-sm text-gray-500">{configError}</p>
-          <p className="text-sm text-gray-500 mt-1">
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "calc(100vh - 56px)" }}>
+        <div style={{ textAlign: "center", maxWidth: 400 }}>
+          <div style={{ fontSize: 32, marginBottom: 12 }}>⚠️</div>
+          <p style={{ fontWeight: 600, color: "#b91c1c", marginBottom: 6 }}>Could not connect to backend</p>
+          <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 4 }}>{configError}</p>
+          <p style={{ fontSize: 13, color: "var(--text-muted)" }}>
             Make sure the FastAPI server is running on{" "}
-            {process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}
+            <code style={{ background: "#f1f5f9", padding: "1px 4px", borderRadius: 4 }}>
+              {process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}
+            </code>
           </p>
         </div>
       </div>
@@ -89,103 +79,90 @@ export default function Home() {
 
   if (!config) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600" />
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "calc(100vh - 56px)" }}>
+        <div style={{ width: 36, height: 36, borderRadius: "50%", border: "3px solid var(--brand)", borderTopColor: "transparent", animation: "spin 0.7s linear infinite" }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
 
+  const SIDEBAR_W = 272;
+
   return (
-    <div className="flex h-screen overflow-hidden">
-      {/* ── Sidebar ── */}
+    <div style={{ display: "flex", height: "calc(100vh - 56px)", overflow: "hidden" }}>
+      {/* Sidebar */}
       <aside
-        className={`
-          flex-shrink-0 bg-white border-r border-gray-200 overflow-y-auto
-          transition-all duration-200
-          ${sidebarOpen ? "w-72" : "w-0 overflow-hidden"}
-        `}
+        style={{
+          flexShrink: 0,
+          width: sidebarOpen ? SIDEBAR_W : 0,
+          overflow: sidebarOpen ? "auto" : "hidden",
+          background: "var(--bg-sidebar)",
+          borderRight: "1px solid var(--border)",
+          transition: "width 0.2s ease",
+          display: "flex",
+          flexDirection: "column",
+        }}
       >
-        <div className="p-4 min-w-72">
-          <h2 className="font-bold text-gray-800 text-base mb-1">Dashboard Settings</h2>
-          <p className="text-xs text-gray-500 mb-4">
-            Configure each group independently, then click Run to update charts.
-          </p>
-
-          <GroupSettings
-            groupId="A"
-            color="#3a5f83"
-            settings={pendingA}
-            config={config}
-            onChange={setPendingA}
-          />
-
-          <hr className="my-4 border-gray-200" />
-
-          <GroupSettings
-            groupId="B"
-            color="#4a7c6f"
-            settings={pendingB}
-            config={config}
-            onChange={setPendingB}
-          />
-
-          <div className="mt-5 sticky bottom-0 bg-white pb-2 pt-1">
-            <button
-              onClick={() => {
-                setAppliedA(pendingA);
-                setAppliedB(pendingB);
-              }}
-              className="w-full bg-gray-800 hover:bg-gray-700 text-white text-sm font-semibold rounded py-2 transition-colors"
-            >
-              Run
-            </button>
+        <div style={{ minWidth: SIDEBAR_W, padding: "20px 16px 100px" }}>
+          {/* Sidebar header */}
+          <div style={{ marginBottom: 20 }}>
+            <h2 style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)", marginBottom: 4 }}>Dashboard Settings</h2>
+            <p style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.5 }}>
+              Configure each group independently, then click <strong>Run</strong>.
+            </p>
           </div>
+
+          <GroupSettings groupId="A" color="#3a5f83" settings={pendingA} config={config} onChange={setPendingA} />
+
+          <div style={{ margin: "20px 0", borderTop: "1px solid var(--border)" }} />
+
+          <GroupSettings groupId="B" color="#4a7c6f" settings={pendingB} config={config} onChange={setPendingB} />
+        </div>
+
+        {/* Sticky Run button */}
+        <div style={{ position: "sticky", bottom: 0, background: "var(--bg-sidebar)", borderTop: "1px solid var(--border)", padding: "12px 16px", minWidth: SIDEBAR_W }}>
+          <button
+            onClick={() => { setAppliedA(pendingA); setAppliedB(pendingB); }}
+            style={{ width: "100%", background: "var(--brand)", color: "white", border: "none", borderRadius: 8, padding: "10px 0", fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "background 0.15s", letterSpacing: "0.01em" }}
+            onMouseOver={(e) => (e.currentTarget.style.background = "var(--brand-hover)")}
+            onMouseOut={(e) => (e.currentTarget.style.background = "var(--brand)")}
+          >
+            Run
+          </button>
         </div>
       </aside>
 
-      {/* ── Main content ── */}
-      <main className="flex-1 overflow-y-auto">
+      {/* Main */}
+      <main style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
         {/* Top bar */}
-        <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-5 py-3 flex items-center gap-4">
+        <div style={{ position: "sticky", top: 0, zIndex: 10, background: "var(--bg-surface)", borderBottom: "1px solid var(--border)", padding: "0 24px", display: "flex", alignItems: "center", height: 52, gap: 16 }}>
           <button
             onClick={() => setSidebarOpen((o) => !o)}
-            className="text-gray-500 hover:text-gray-800 transition-colors text-lg"
+            style={{ background: "transparent", border: "none", cursor: "pointer", color: "var(--text-secondary)", fontSize: 18, padding: "4px", borderRadius: 5, display: "flex", alignItems: "center" }}
             title="Toggle sidebar"
           >
             ☰
           </button>
           <div>
-            <h1 className="font-bold text-gray-900 text-lg leading-tight">
+            <h1 style={{ fontSize: 15, fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.3, letterSpacing: "-0.01em" }}>
               Automation Exposure Analysis
             </h1>
-            <p className="text-xs text-gray-500">
+            <p style={{ fontSize: 11, color: "var(--text-muted)" }}>
               Compare automation exposure across datasets, geographies, and aggregation levels.
             </p>
           </div>
         </div>
 
-        {/* Charts — two columns */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 p-5">
-          <GroupPanel
-            groupId="A"
-            color="#3a5f83"
-            settings={appliedA}
-            config={config}
-          />
-          <GroupPanel
-            groupId="B"
-            color="#4a7c6f"
-            settings={appliedB}
-            config={config}
-          />
+        {/* Charts */}
+        <div style={{ flex: 1, padding: "24px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(480px, 1fr))", gap: 24, alignContent: "start" }}>
+          <GroupPanel groupId="A" color="#3a5f83" settings={appliedA} config={config} />
+          <GroupPanel groupId="B" color="#4a7c6f" settings={appliedB} config={config} />
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-4 border-t border-gray-200 mt-4">
-          <p className="text-xs text-gray-400">
-            Dashboard built for the Anthropic Economic Index (AEI) project. Source: 2025 O*NET task
-            data, 2024 BLS OEWS employment & wage data, AEI conversation data, MCP server
-            classification pipeline.
+        <div style={{ padding: "16px 24px", borderTop: "1px solid var(--border)", marginTop: "auto" }}>
+          <p style={{ fontSize: 11, color: "var(--text-muted)" }}>
+            Source: 2025 O*NET task data · 2024 BLS OEWS · AEI conversation data · MCP server classification pipeline
           </p>
         </div>
       </main>

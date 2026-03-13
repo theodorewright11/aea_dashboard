@@ -1,24 +1,38 @@
 """
-main.py — FastAPI backend for the Automation Exposure Dashboard website.
+main.py — FastAPI backend for the Automation Exposure Dashboard.
 
 Endpoints:
-  GET  /api/health   — liveness check
-  GET  /api/config   — dataset list, availability, controls metadata
-  POST /api/compute  — run compute pipeline for one group, return chart data
+  GET  /api/health                  — liveness check
+  GET  /api/config                  — dataset list, availability, controls metadata
+  POST /api/compute                 — occupation-level chart data (overview)
+  POST /api/work-activities         — DWA/IWA/GWA activity-level chart data
+  POST /api/trends                  — time-series data per dataset series
+  GET  /api/explorer                — occupation list for job explorer
+  GET  /api/explorer/tasks          — task details for one occupation
 """
 from __future__ import annotations
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import math
+from typing import Optional
 
-from config import DATASETS, AGG_LEVEL_OPTIONS, SORT_OPTIONS, AGG_LEVEL_COL
-from compute import get_group_data, crosswalk_available, dataset_exists
+from config import DATASETS, DATASET_SERIES, AGG_LEVEL_OPTIONS, SORT_OPTIONS, AGG_LEVEL_COL
+from compute import (
+    get_group_data,
+    compute_work_activities,
+    compute_trends,
+    get_explorer_occupations,
+    get_occupation_tasks,
+    crosswalk_available,
+    dataset_exists,
+    eco2015_available,
+    _safe_num,
+)
 
-app = FastAPI(title="AEA Dashboard API", version="1.0.0")
+app = FastAPI(title="AEA Dashboard API", version="2.0.0")
 
-# Allow the Next.js frontend to call the API (update origins for production)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -27,20 +41,60 @@ app.add_middleware(
 )
 
 
-# ── Request / Response models ──────────────────────────────────────────────────
+# ── Helpers ────────────────────────────────────────────────────────────────────
 
-class ComputeRequest(BaseModel):
+def _safe(v) -> float:
+    if v is None or (isinstance(v, float) and math.isnan(v)):
+        return 0.0
+    return float(v)
+
+
+# ── Shared settings model ──────────────────────────────────────────────────────
+
+class GroupSettingsModel(BaseModel):
     selected_datasets: list[str]
-    combine_method:    str = "Average"   # "Average" | "Max"
-    method:            str = "freq"      # "freq" | "imp"
+    combine_method:    str  = "Average"
+    method:            str  = "freq"
     use_auto_aug:      bool = False
     use_adj_mean:      bool = False
-    physical_mode:     str = "all"       # "all" | "exclude" | "only"
-    geo:               str = "nat"       # "nat" | "ut"
-    agg_level:         str = "major"     # "major" | "minor" | "broad" | "occupation"
-    sort_by:           str = "Workers Affected"
-    top_n:             int = 10
+    physical_mode:     str  = "all"
+    geo:               str  = "nat"
+    agg_level:         str  = "major"
+    sort_by:           str  = "Workers Affected"
+    top_n:             int  = 10
 
+
+# ── /api/config ────────────────────────────────────────────────────────────────
+
+class ConfigResponse(BaseModel):
+    datasets:             list[str]
+    dataset_availability: dict[str, bool]
+    dataset_series:       dict[str, list[str]]
+    agg_levels:           dict[str, str]
+    sort_options:         list[str]
+    crosswalk_available:  bool
+    eco2015_available:    bool
+
+
+@app.get("/api/health")
+def health():
+    return {"status": "ok"}
+
+
+@app.get("/api/config", response_model=ConfigResponse)
+def config():
+    return ConfigResponse(
+        datasets=list(DATASETS.keys()),
+        dataset_availability={name: dataset_exists(name) for name in DATASETS},
+        dataset_series=DATASET_SERIES,
+        agg_levels=AGG_LEVEL_OPTIONS,
+        sort_options=SORT_OPTIONS,
+        crosswalk_available=crosswalk_available(),
+        eco2015_available=eco2015_available(),
+    )
+
+
+# ── /api/compute (overview) ────────────────────────────────────────────────────
 
 class ChartRow(BaseModel):
     category:           str
@@ -54,57 +108,14 @@ class ComputeResponse(BaseModel):
     group_col: str
 
 
-class ConfigResponse(BaseModel):
-    datasets:             list[str]
-    dataset_availability: dict[str, bool]
-    agg_levels:           dict[str, str]   # display label → internal key
-    sort_options:         list[str]
-    crosswalk_available:  bool
-
-
-# ── Endpoints ──────────────────────────────────────────────────────────────────
-
-@app.get("/api/health")
-def health():
-    return {"status": "ok"}
-
-
-@app.get("/api/config", response_model=ConfigResponse)
-def config():
-    return ConfigResponse(
-        datasets=list(DATASETS.keys()),
-        dataset_availability={name: dataset_exists(name) for name in DATASETS},
-        agg_levels=AGG_LEVEL_OPTIONS,
-        sort_options=SORT_OPTIONS,
-        crosswalk_available=crosswalk_available(),
-    )
-
-
 @app.post("/api/compute", response_model=ComputeResponse)
-def compute(req: ComputeRequest):
-    settings = {
-        "selected_datasets": req.selected_datasets,
-        "combine_method":    req.combine_method,
-        "method":            req.method,
-        "use_auto_aug":      req.use_auto_aug,
-        "use_adj_mean":      req.use_adj_mean,
-        "physical_mode":     req.physical_mode,
-        "geo":               req.geo,
-        "agg_level":         req.agg_level,
-        "sort_by":           req.sort_by,
-        "top_n":             req.top_n,
-    }
-
+def compute(req: GroupSettingsModel):
+    settings = req.model_dump()
     df = get_group_data(settings)
     group_col = AGG_LEVEL_COL[req.agg_level]
 
     if df is None or df.empty:
         return ComputeResponse(rows=[], group_col=group_col)
-
-    def _safe(v) -> float:
-        if v is None or (isinstance(v, float) and math.isnan(v)):
-            return 0.0
-        return float(v)
 
     rows = [
         ChartRow(
@@ -115,5 +126,199 @@ def compute(req: ComputeRequest):
         )
         for _, row in df.iterrows()
     ]
-
     return ComputeResponse(rows=rows, group_col=group_col)
+
+
+# ── /api/work-activities ───────────────────────────────────────────────────────
+
+class ActivityRow(BaseModel):
+    category:           str
+    pct_tasks_affected: float
+    workers_affected:   float
+    wages_affected:     float
+
+
+class ActivityGroup(BaseModel):
+    datasets:     list[str]
+    gwa:          list[ActivityRow] = []
+    iwa:          list[ActivityRow] = []
+    dwa:          list[ActivityRow] = []
+
+
+class WorkActivitiesResponse(BaseModel):
+    aei_group: Optional[ActivityGroup] = None
+    mcp_group: Optional[ActivityGroup] = None
+
+
+@app.post("/api/work-activities", response_model=WorkActivitiesResponse)
+def work_activities(req: GroupSettingsModel):
+    settings = req.model_dump()
+    result = compute_work_activities(settings)
+
+    def _parse_group(g: Optional[dict]) -> Optional[ActivityGroup]:
+        if g is None:
+            return None
+        def _rows(key: str) -> list[ActivityRow]:
+            return [
+                ActivityRow(
+                    category=str(r["category"]),
+                    pct_tasks_affected=_safe(r.get("pct_tasks_affected", 0)),
+                    workers_affected=_safe(r.get("workers_affected", 0)),
+                    wages_affected=_safe(r.get("wages_affected", 0)),
+                )
+                for r in g.get(key, [])
+            ]
+        return ActivityGroup(
+            datasets=g.get("datasets", []),
+            gwa=_rows("gwa"),
+            iwa=_rows("iwa"),
+            dwa=_rows("dwa"),
+        )
+
+    return WorkActivitiesResponse(
+        aei_group=_parse_group(result.get("aei_group")),
+        mcp_group=_parse_group(result.get("mcp_group")),
+    )
+
+
+# ── /api/trends ────────────────────────────────────────────────────────────────
+
+class TrendRow(BaseModel):
+    category:           str
+    pct_tasks_affected: float
+    workers_affected:   float
+    wages_affected:     float
+
+
+class TrendDataPoint(BaseModel):
+    dataset:  str
+    date:     str
+    rows:     list[TrendRow]
+
+
+class TrendSeries(BaseModel):
+    name:            str
+    data_points:     list[TrendDataPoint]
+    top_categories:  list[str]
+    group_col:       str
+
+
+class TrendsResponse(BaseModel):
+    series: list[TrendSeries]
+
+
+class TrendsRequest(BaseModel):
+    series:        list[str] = ["AEI", "MCP"]
+    method:        str       = "freq"
+    use_auto_aug:  bool      = False
+    use_adj_mean:  bool      = False
+    physical_mode: str       = "all"
+    geo:           str       = "nat"
+    agg_level:     str       = "major"
+    top_n:         int       = 10
+    sort_by:       str       = "Workers Affected"
+
+
+@app.post("/api/trends", response_model=TrendsResponse)
+def trends(req: TrendsRequest):
+    settings = req.model_dump()
+    result = compute_trends(settings)
+
+    series_out = []
+    for s in result.get("series", []):
+        dps = []
+        for dp in s.get("data_points", []):
+            rows = [
+                TrendRow(
+                    category=str(r["category"]),
+                    pct_tasks_affected=_safe(r.get("pct_tasks_affected", 0)),
+                    workers_affected=_safe(r.get("workers_affected", 0)),
+                    wages_affected=_safe(r.get("wages_affected", 0)),
+                )
+                for r in dp.get("rows", [])
+            ]
+            dps.append(TrendDataPoint(
+                dataset=dp["dataset"],
+                date=dp["date"],
+                rows=rows,
+            ))
+        series_out.append(TrendSeries(
+            name=s["name"],
+            data_points=dps,
+            top_categories=s.get("top_categories", []),
+            group_col=s.get("group_col", "major_occ_category"),
+        ))
+
+    return TrendsResponse(series=series_out)
+
+
+# ── /api/explorer ──────────────────────────────────────────────────────────────
+
+class OccupationSummary(BaseModel):
+    title_current:     str
+    major:             Optional[str] = None
+    minor:             Optional[str] = None
+    broad:             Optional[str] = None
+    emp_nat:           Optional[float] = None
+    emp_ut:            Optional[float] = None
+    wage_nat:          Optional[float] = None
+    wage_ut:           Optional[float] = None
+    n_tasks:           int = 0
+    avg_auto_aug_aei:  Optional[float] = None
+    avg_auto_aug_mcp:  Optional[float] = None
+    avg_auto_aug_ms:   Optional[float] = None
+    avg_pct_norm_aei:  Optional[float] = None
+    avg_pct_norm_mcp:  Optional[float] = None
+    avg_pct_norm_ms:   Optional[float] = None
+
+
+class ExplorerResponse(BaseModel):
+    occupations: list[OccupationSummary]
+
+
+@app.get("/api/explorer", response_model=ExplorerResponse)
+def explorer():
+    occs = get_explorer_occupations()
+    return ExplorerResponse(occupations=[OccupationSummary(**o) for o in occs])
+
+
+# ── /api/explorer/tasks ────────────────────────────────────────────────────────
+
+class SourceStats(BaseModel):
+    auto_aug_mean:     Optional[float] = None
+    auto_aug_mean_adj: Optional[float] = None
+    pct_normalized:    Optional[float] = None
+
+
+class TaskDetail(BaseModel):
+    task:              str
+    task_normalized:   str
+    dwa_title:         Optional[str]  = None
+    iwa_title:         Optional[str]  = None
+    gwa_title:         Optional[str]  = None
+    freq_mean:         Optional[float] = None
+    importance:        Optional[float] = None
+    relevance:         Optional[float] = None
+    aei:               Optional[dict]  = None
+    mcp:               Optional[dict]  = None
+    microsoft:         Optional[dict]  = None
+    avg_auto_aug:          Optional[float] = None
+    max_auto_aug:          Optional[float] = None
+    avg_pct_normalized:    Optional[float] = None
+    max_pct_normalized:    Optional[float] = None
+
+
+class OccupationTasksResponse(BaseModel):
+    title: str
+    tasks: list[TaskDetail]
+
+
+@app.get("/api/explorer/tasks", response_model=OccupationTasksResponse)
+def explorer_tasks(title: str = Query(..., description="Occupation title (title_current)")):
+    result = get_occupation_tasks(title)
+    if result is None:
+        raise HTTPException(status_code=404, detail=f"Occupation '{title}' not found")
+    return OccupationTasksResponse(
+        title=result["title"],
+        tasks=[TaskDetail(**t) for t in result["tasks"]],
+    )

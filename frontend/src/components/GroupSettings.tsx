@@ -11,32 +11,28 @@ interface Props {
   onChange: (s: GroupSettings) => void;
 }
 
-function Radio({
-  label,
-  options,
-  value,
-  onChange,
-  horizontal = false,
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 6 }}>
+      {children}
+    </p>
+  );
+}
+
+function RadioGroup({
+  label, options, value, onChange, horizontal = false,
 }: {
-  label: string;
-  options: string[];
-  value: string;
-  onChange: (v: string) => void;
-  horizontal?: boolean;
+  label: string; options: string[]; value: string;
+  onChange: (v: string) => void; horizontal?: boolean;
 }) {
   return (
-    <div className="mb-3">
-      <p className="text-xs font-semibold text-gray-600 mb-1">{label}</p>
-      <div className={horizontal ? "flex gap-3 flex-wrap" : "flex flex-col gap-1"}>
+    <div style={{ marginBottom: 12 }}>
+      <SectionLabel>{label}</SectionLabel>
+      <div style={{ display: "flex", flexDirection: horizontal ? "row" : "column", gap: horizontal ? 12 : 4, flexWrap: "wrap" }}>
         {options.map((opt) => (
-          <label key={opt} className="flex items-center gap-1.5 cursor-pointer text-xs">
-            <input
-              type="radio"
-              name={`${label}-${opt}`}
-              checked={value === opt}
-              onChange={() => onChange(opt)}
-              className="accent-current"
-            />
+          <label key={opt} style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 12, color: "var(--text-primary)" }}>
+            <input type="radio" name={`${label}-${opt}`} checked={value === opt} onChange={() => onChange(opt)}
+              style={{ accentColor: "var(--brand)" }} />
             {opt}
           </label>
         ))}
@@ -45,80 +41,56 @@ function Radio({
   );
 }
 
-function Checkbox({
-  label,
-  checked,
-  onChange,
-  help,
-}: {
-  label: string;
-  checked: boolean;
-  onChange: (v: boolean) => void;
-  help?: string;
+function CheckboxRow({ label, checked, onChange, help }: {
+  label: string; checked: boolean; onChange: (v: boolean) => void; help?: string;
 }) {
   return (
-    <label className="flex items-start gap-2 cursor-pointer mb-2">
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-        className="mt-0.5 accent-current"
-      />
-      <span className="text-xs text-gray-700">
+    <label style={{ display: "flex", alignItems: "flex-start", gap: 8, cursor: "pointer", marginBottom: 8 }}>
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)}
+        style={{ marginTop: 2, accentColor: "var(--brand)" }} />
+      <span style={{ fontSize: 12, color: "var(--text-primary)" }}>
         {label}
-        {help && <span className="block text-gray-400 text-xs mt-0.5">{help}</span>}
+        {help && <span style={{ display: "block", fontSize: 11, color: "var(--text-muted)", marginTop: 1 }}>{help}</span>}
       </span>
     </label>
   );
 }
 
-const AGG_DISPLAY_LABELS: Record<string, string> = {
-  major: "Major Category",
-  minor: "Minor Category",
-  broad: "Broad Occupation",
-  occupation: "Occupation",
+const AGG_LABELS: Record<string, string> = {
+  major: "Major Category", minor: "Minor Category",
+  broad: "Broad Occupation", occupation: "Occupation",
 };
-
 const AGG_INTERNAL: Record<string, GroupSettings["aggLevel"]> = {
-  "Major Category": "major",
-  "Minor Category": "minor",
-  "Broad Occupation": "broad",
-  Occupation: "occupation",
+  "Major Category": "major", "Minor Category": "minor",
+  "Broad Occupation": "broad", "Occupation": "occupation",
 };
 
 export default function GroupSettings({ groupId, color, settings, config, onChange }: Props) {
   const [advancedOpen, setAdvancedOpen] = useState(false);
 
   const hasAei = settings.selectedDatasets.some((n) =>
-    ["AEI v1", "AEI v2", "AEI v3", "AEI v4", "AEI API v3", "AEI API v4", "Eco 2015"].includes(n)
+    ["AEI v1","AEI v2","AEI v3","AEI v4","AEI API v3","AEI API v4"].includes(n)
   );
   const hasMcp = settings.selectedDatasets.some((n) => n.startsWith("MCP"));
 
-  const update = (patch: Partial<GroupSettings>) =>
-    onChange({ ...settings, ...patch });
-
+  const update = (patch: Partial<GroupSettings>) => onChange({ ...settings, ...patch });
   const maxN = settings.aggLevel === "occupation" ? 50 : 30;
 
   return (
     <div>
-      {/* Group header */}
-      <div
-        className="rounded px-3 py-1.5 mb-3 text-white text-sm font-bold"
-        style={{ backgroundColor: color }}
-      >
+      <div style={{ backgroundColor: color, borderRadius: 8, padding: "7px 12px", marginBottom: 16, color: "white", fontSize: 13, fontWeight: 700 }}>
         Group {groupId}
       </div>
 
-      {/* Dataset multi-select */}
-      <div className="mb-3">
-        <p className="text-xs font-semibold text-gray-600 mb-1">Datasets</p>
-        <div className="flex flex-col gap-1 max-h-48 overflow-y-auto pr-1">
+      {/* Datasets */}
+      <div style={{ marginBottom: 12 }}>
+        <SectionLabel>Datasets</SectionLabel>
+        <div style={{ display: "flex", flexDirection: "column", gap: 4, maxHeight: 180, overflowY: "auto", paddingRight: 2 }}>
           {config.datasets.map((name) => {
             const available = config.dataset_availability[name];
             return (
-              <label key={name} className="flex items-center gap-1.5 cursor-pointer">
-                <input
-                  type="checkbox"
+              <label key={name} style={{ display: "flex", alignItems: "center", gap: 6, cursor: available ? "pointer" : "default" }}>
+                <input type="checkbox"
                   checked={settings.selectedDatasets.includes(name)}
                   disabled={!available}
                   onChange={(e) => {
@@ -127,13 +99,10 @@ export default function GroupSettings({ groupId, color, settings, config, onChan
                       : settings.selectedDatasets.filter((d) => d !== name);
                     update({ selectedDatasets: next });
                   }}
-                  className="accent-current"
+                  style={{ accentColor: color }}
                 />
-                <span
-                  className={`text-xs ${available ? "text-gray-700" : "text-gray-400 line-through"}`}
-                >
-                  {name}
-                  {!available && " (missing)"}
+                <span style={{ fontSize: 12, color: available ? "var(--text-primary)" : "var(--text-muted)", textDecoration: available ? "none" : "line-through" }}>
+                  {name}{!available && " (missing)"}
                 </span>
               </label>
             );
@@ -141,138 +110,72 @@ export default function GroupSettings({ groupId, color, settings, config, onChan
         </div>
       </div>
 
-      {/* Combine method — only if >1 dataset */}
       {settings.selectedDatasets.length > 1 && (
-        <Radio
-          label="Combine multiple datasets by"
-          options={["Average", "Max"]}
+        <RadioGroup label="Combine datasets by" options={["Average", "Max"]}
           value={settings.combineMethod}
-          onChange={(v) => update({ combineMethod: v as "Average" | "Max" })}
-          horizontal
-        />
+          onChange={(v) => update({ combineMethod: v as "Average" | "Max" })} horizontal />
       )}
 
-      {/* Task completion method */}
-      <Radio
-        label="Task completion method"
-        options={["Frequency", "Importance-weighted"]}
+      <RadioGroup label="Task completion method" options={["Frequency", "Importance-weighted"]}
         value={settings.method === "freq" ? "Frequency" : "Importance-weighted"}
-        onChange={(v) => update({ method: v === "Frequency" ? "freq" : "imp" })}
-        horizontal
-      />
+        onChange={(v) => update({ method: v === "Frequency" ? "freq" : "imp" })} horizontal />
 
-      {/* Geography */}
-      <Radio
-        label="Geography"
-        options={["National", "Utah"]}
+      <RadioGroup label="Geography" options={["National", "Utah"]}
         value={settings.geo === "nat" ? "National" : "Utah"}
-        onChange={(v) => update({ geo: v === "National" ? "nat" : "ut" })}
-        horizontal
-      />
+        onChange={(v) => update({ geo: v === "National" ? "nat" : "ut" })} horizontal />
 
-      {/* Aggregation level */}
-      <Radio
-        label="Aggregation level"
-        options={Object.keys(AGG_INTERNAL)}
-        value={AGG_DISPLAY_LABELS[settings.aggLevel]}
+      <RadioGroup label="Aggregation level" options={Object.keys(AGG_INTERNAL)}
+        value={AGG_LABELS[settings.aggLevel]}
         onChange={(v) => {
           const newAgg = AGG_INTERNAL[v];
-          const newMax = newAgg === "occupation" ? 50 : 30;
-          update({ aggLevel: newAgg, topN: Math.min(settings.topN, newMax) });
-        }}
-      />
+          update({ aggLevel: newAgg, topN: Math.min(settings.topN, newAgg === "occupation" ? 50 : 30) });
+        }} />
 
       {/* Top N */}
-      <div className="mb-3">
-        <p className="text-xs font-semibold text-gray-600 mb-1">
-          Top N to display: <span className="font-bold">{settings.topN}</span>
-        </p>
-        <input
-          type="range"
-          min={5}
-          max={maxN}
-          step={1}
-          value={settings.topN}
+      <div style={{ marginBottom: 12 }}>
+        <SectionLabel>Top N: <span style={{ fontWeight: 800, color: "var(--text-primary)", textTransform: "none" }}>{settings.topN}</span></SectionLabel>
+        <input type="range" min={5} max={maxN} step={1} value={settings.topN}
           onChange={(e) => update({ topN: Number(e.target.value) })}
-          className="w-full accent-current"
-        />
-        <div className="flex justify-between text-xs text-gray-400 mt-0.5">
-          <span>5</span>
-          <span>{maxN}</span>
+          style={{ width: "100%", accentColor: color }} />
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "var(--text-muted)", marginTop: 2 }}>
+          <span>5</span><span>{maxN}</span>
         </div>
       </div>
 
-      {/* Sort by */}
-      <div className="mb-3">
-        <p className="text-xs font-semibold text-gray-600 mb-1">Rank by</p>
-        <select
-          value={settings.sortBy}
-          onChange={(e) => update({ sortBy: e.target.value })}
-          className="w-full text-xs border border-gray-300 rounded px-2 py-1 bg-white"
-        >
-          {config.sort_options.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
+      {/* Rank by */}
+      <div style={{ marginBottom: 12 }}>
+        <SectionLabel>Rank by</SectionLabel>
+        <select value={settings.sortBy} onChange={(e) => update({ sortBy: e.target.value })}
+          style={{ width: "100%", fontSize: 12, border: "1px solid var(--border)", borderRadius: 6, padding: "5px 8px", background: "var(--bg-surface)", color: "var(--text-primary)" }}>
+          {config.sort_options.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
         </select>
       </div>
 
-      {/* Advanced Options */}
-      <div className="border border-gray-200 rounded">
-        <button
-          onClick={() => setAdvancedOpen((o) => !o)}
-          className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-50"
-        >
-          <span>⚙ Advanced Options</span>
-          <span>{advancedOpen ? "▲" : "▼"}</span>
+      {/* Advanced */}
+      <div style={{ border: "1px solid var(--border)", borderRadius: 8 }}>
+        <button onClick={() => setAdvancedOpen((o) => !o)}
+          style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "7px 12px", background: "transparent", border: "none", cursor: "pointer", fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+          <span>⚙ Advanced</span>
+          <span style={{ fontSize: 10 }}>{advancedOpen ? "▲" : "▼"}</span>
         </button>
         {advancedOpen && (
-          <div className="px-3 pb-3 pt-2 border-t border-gray-100">
-            <Radio
-              label="Physical tasks"
+          <div style={{ padding: "8px 12px 12px", borderTop: "1px solid var(--border-light)" }}>
+            <RadioGroup label="Physical tasks"
               options={["Include all", "Exclude physical", "Only physical"]}
-              value={
-                settings.physicalMode === "all"
-                  ? "Include all"
-                  : settings.physicalMode === "exclude"
-                  ? "Exclude physical"
-                  : "Only physical"
-              }
-              onChange={(v) =>
-                update({
-                  physicalMode:
-                    v === "Include all"
-                      ? "all"
-                      : v === "Exclude physical"
-                      ? "exclude"
-                      : "only",
-                })
-              }
-            />
-
-            <div className="border-t border-gray-100 my-2" />
-
-            <Checkbox
-              label="Apply auto-aug multiplier"
-              checked={settings.useAutoAug}
+              value={settings.physicalMode === "all" ? "Include all" : settings.physicalMode === "exclude" ? "Exclude physical" : "Only physical"}
+              onChange={(v) => update({ physicalMode: v === "Include all" ? "all" : v === "Exclude physical" ? "exclude" : "only" })} />
+            <div style={{ borderTop: "1px solid var(--border-light)", margin: "4px 0 8px" }} />
+            <CheckboxRow label="Apply auto-aug multiplier" checked={settings.useAutoAug}
               onChange={(v) => update({ useAutoAug: v, useAdjMean: v ? settings.useAdjMean : false })}
-              help="Multiply task completion by auto_aug_mean / 5."
-            />
-
+              help="Multiply task completion by auto_aug_mean / 5." />
             {hasMcp && settings.useAutoAug && (
-              <Checkbox
-                label="Use adjusted auto-aug mean for MCP"
-                checked={settings.useAdjMean}
+              <CheckboxRow label="Use adjusted auto-aug for MCP" checked={settings.useAdjMean}
                 onChange={(v) => update({ useAdjMean: v })}
-                help="Uses auto_aug_mean_adj which excludes flagged MCP ratings."
-              />
+                help="Uses auto_aug_mean_adj (excludes flagged ratings)." />
             )}
-
             {hasAei && !config.crosswalk_available && (
-              <div className="mt-2 text-xs bg-yellow-50 border border-yellow-200 rounded p-2 text-yellow-800">
-                AEI / Eco 2015 datasets require the SOC 2010→2019 crosswalk file.
-                Add <code>2010_to_2019_soc_crosswalk.csv</code> to <code>data/</code>.
+              <div style={{ marginTop: 8, fontSize: 11, background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 6, padding: "6px 8px", color: "#92400e" }}>
+                AEI datasets require <code>2010_to_2019_soc_crosswalk.csv</code> in <code>data/</code>.
               </div>
             )}
           </div>

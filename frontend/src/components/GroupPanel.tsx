@@ -18,12 +18,10 @@ function buildSubtitle(settings: GroupSettings): string {
   let label = names.join(" + ");
   if (names.length > 1) label += ` (${settings.combineMethod})`;
   const methodStr = settings.method === "freq" ? "Freq" : "Imp";
-  const geoStr = settings.geo === "nat" ? "National" : "Utah";
+  const geoStr    = settings.geo === "nat" ? "National" : "Utah";
   const aggMap: Record<string, string> = {
-    major: "Major Category",
-    minor: "Minor Category",
-    broad: "Broad Occupation",
-    occupation: "Occupation",
+    major: "Major Category", minor: "Minor Category",
+    broad: "Broad Occupation", occupation: "Occupation",
   };
   const extras: string[] = [];
   if (settings.useAutoAug) extras.push("auto-aug");
@@ -33,15 +31,12 @@ function buildSubtitle(settings: GroupSettings): string {
 }
 
 export default function GroupPanel({ groupId, color, settings, config }: Props) {
-  const [rows, setRows] = useState<ChartRow[] | null>(null);
+  const [rows, setRows]     = useState<ChartRow[] | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError]   = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    if (!settings.selectedDatasets.length) {
-      setRows([]);
-      return;
-    }
+    if (!settings.selectedDatasets.length) { setRows([]); return; }
     setLoading(true);
     setError(null);
     try {
@@ -55,57 +50,45 @@ export default function GroupPanel({ groupId, color, settings, config }: Props) 
     }
   }, [settings]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  useEffect(() => { load(); }, [load]);
 
   const subtitle = buildSubtitle(settings);
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Group header banner */}
-      <div
-        className="rounded px-4 py-2 text-white text-base font-bold"
-        style={{ backgroundColor: color }}
-      >
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      {/* Group header */}
+      <div style={{ backgroundColor: color, borderRadius: 8, padding: "10px 16px", color: "white", fontSize: 14, fontWeight: 700, letterSpacing: "-0.01em" }}>
         Group {groupId}
       </div>
 
       {loading && (
-        <div className="flex items-center justify-center py-16">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: color }} />
-          <span className="ml-3 text-sm text-gray-500">Computing…</span>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "48px 0" }}>
+          <div style={{ width: 28, height: 28, borderRadius: "50%", border: `3px solid ${color}`, borderTopColor: "transparent", animation: "spin 0.7s linear infinite" }} />
+          <span style={{ marginLeft: 10, fontSize: 13, color: "var(--text-muted)" }}>Computing…</span>
         </div>
       )}
 
       {error && (
-        <div className="rounded border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div style={{ borderRadius: 8, border: "1px solid #fca5a5", background: "#fef2f2", padding: "12px 16px", fontSize: 13, color: "#b91c1c" }}>
           Error: {error}
         </div>
       )}
 
       {!loading && !error && (
         <>
-          <HorizontalBarChart
-            rows={rows ?? []}
-            metric="workers"
-            color={color}
-            subtitle={subtitle}
-          />
-          <HorizontalBarChart
-            rows={rows ?? []}
-            metric="wages"
-            color={color}
-            subtitle={subtitle}
-          />
-          <HorizontalBarChart
-            rows={rows ?? []}
-            metric="tasks"
-            color={color}
-            subtitle={subtitle}
-          />
+          {[
+            { metric: "workers" as const },
+            { metric: "wages"   as const },
+            { metric: "tasks"   as const },
+          ].map(({ metric }) => (
+            <div key={metric} style={{ background: "var(--bg-surface)", borderRadius: 10, border: "1px solid var(--border)", padding: "4px 8px 8px", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
+              <HorizontalBarChart rows={rows ?? []} metric={metric} color={color} subtitle={subtitle} />
+            </div>
+          ))}
         </>
       )}
+
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }
