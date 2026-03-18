@@ -164,7 +164,7 @@ export default function GroupPanel({
                 totalEmp={totalEmp}
                 totalWages={totalWages}
                 otherGroupRows={otherRows}
-                matchedCategory={matchedCategory ?? response.matched_category}
+                matchedCategory={matchedCategory ?? response?.matched_category}
               />
             </ChartCard>
           ))}

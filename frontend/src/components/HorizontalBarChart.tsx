@@ -287,12 +287,12 @@ export default function HorizontalBarChart({
           dataKey="category"
           tickFormatter={(v: string) => truncate(v, 28)}
           width={178}
-          tick={({ x, y, payload }: { x: number; y: number; payload: { value: string } }) => {
+          tick={({ x, y, payload }: { x: string | number; y: string | number; payload: { value: string } }) => {
             const isMatch = matchedCategory && payload.value === matchedCategory;
             return (
               <text
-                x={x}
-                y={y}
+                x={Number(x)}
+                y={Number(y)}
                 dy={4}
                 textAnchor="end"
                 fontSize={11}
