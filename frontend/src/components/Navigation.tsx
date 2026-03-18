@@ -223,6 +223,7 @@ export default function Navigation() {
           height: "var(--nav-height)",
           zIndex: 50,
           backgroundColor: "var(--bg-surface)",
+          borderTop: "3px solid var(--brand)",
           borderBottom: "1px solid var(--border)",
           display: "flex",
           alignItems: "center",

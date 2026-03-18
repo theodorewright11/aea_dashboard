@@ -182,9 +182,10 @@ function ActivityGroupPanel({
     <div style={{
       background: "var(--bg-surface)",
       border: "1px solid var(--border)",
-      borderRadius: 10,
+      borderLeft: `3px solid ${color}`,
+      borderRadius: 12,
       overflow: "hidden",
-      boxShadow: "0 1px 4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
     }}>
       {/* Sub-panel header */}
       <div style={{
@@ -314,16 +315,20 @@ export default function WorkActivitiesPanel({ groupId, color, settings }: Props)
   const hasAny = data && (data.aei_group || data.mcp_group);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16, width: "100%", minWidth: 0 }}>
-      {/* Group header badge */}
-      <div style={{
-        backgroundColor: color,
-        borderRadius: 8,
-        padding: "10px 16px",
-        color: "white",
-        fontSize: 14, fontWeight: 700,
-      }}>
-        Group {groupId}
+    <div style={{ display: "flex", flexDirection: "column", gap: 20, width: "100%", minWidth: 0 }}>
+      {/* Group label — subtle accent */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <span style={{ width: 3, height: 18, borderRadius: 2, background: color, flexShrink: 0 }} />
+        <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text-secondary)", letterSpacing: "-0.01em" }}>
+          Group {groupId}
+          {settings.selectedDatasets.length > 0 && (
+            <span style={{ fontWeight: 400, color: "var(--text-muted)", marginLeft: 6 }}>
+              · {settings.selectedDatasets.length === 1
+                  ? settings.selectedDatasets[0]
+                  : `${settings.selectedDatasets.length} datasets`}
+            </span>
+          )}
+        </span>
       </div>
 
       {loading && (

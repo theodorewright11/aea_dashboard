@@ -288,33 +288,25 @@ export default function TrendsView({ config }: Props) {
       height: "calc(100vh - var(--nav-height))",
       overflow: "hidden",
     }}>
-      {/* ── Top bar ── */}
+      {/* ── Header band (title + controls) ── */}
       <div style={{
-        background: "var(--bg-surface)",
+        background: "var(--bg-header)",
         borderBottom: "1px solid var(--border)",
-        padding: "0 24px",
-        height: 52,
-        display: "flex", alignItems: "center",
+        padding: "18px 24px 16px",
         flexShrink: 0,
       }}>
-        <div>
-          <h1 style={{ fontSize: 15, fontWeight: 600, color: "var(--text-primary)", letterSpacing: "-0.01em", margin: 0 }}>
+        {/* Page title */}
+        <div style={{ marginBottom: 14 }}>
+          <h1 style={{ fontSize: 19, fontWeight: 600, color: "var(--text-primary)", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.25 }}>
             Trends
           </h1>
-          <p style={{ fontSize: 11, color: "var(--text-muted)", margin: 0 }}>
+          <p style={{ fontSize: 12, color: "var(--text-muted)", margin: "3px 0 0", lineHeight: 1.5 }}>
             How automation exposure metrics shift across dataset versions over time.
           </p>
         </div>
-      </div>
 
-      {/* ── Controls bar ── */}
-      <div style={{
-        background: "var(--bg-surface)",
-        borderBottom: "1px solid var(--border)",
-        padding: "14px 24px",
-        flexShrink: 0,
-      }}>
-        <div style={{ display: "flex", gap: 20, flexWrap: "wrap", alignItems: "flex-end" }}>
+        {/* Controls */}
+        <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "flex-end" }}>
 
           {/* Dataset series — multi-select pills */}
           <div>
@@ -403,7 +395,7 @@ export default function TrendsView({ config }: Props) {
       </div>
 
       {/* ── Chart area ── */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "24px" }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: "32px 24px 24px" }}>
         {loading && (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 300 }}>
             <div style={{ width: 32, height: 32, borderRadius: "50%", border: "3px solid var(--brand)", borderTopColor: "transparent", animation: "spin 0.7s linear infinite" }} />
@@ -442,12 +434,12 @@ export default function TrendsView({ config }: Props) {
             border: "1px solid var(--border)",
             borderRadius: 12,
             overflow: "hidden",
-            boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
           }}>
             {/* Chart card header */}
             <div style={{
               display: "flex", justifyContent: "space-between", alignItems: "center",
-              padding: "14px 20px 8px",
+              padding: "16px 20px 8px",
             }}>
               <span style={{ fontSize: 14, fontWeight: 600, color: "var(--text-primary)" }}>
                 {metaLabel} over time

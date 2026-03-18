@@ -35,10 +35,11 @@ function DownloadIcon() {
 // ── Chart card with header + download ────────────────────────────────────────
 
 function ChartCard({
-  title, downloadSlug, children,
+  title, downloadSlug, accentColor, children,
 }: {
   title: string;
   downloadSlug: string;
+  accentColor: string;
   children: React.ReactNode;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -47,19 +48,20 @@ function ChartCard({
     <div style={{
       background: "var(--bg-surface)",
       border: "1px solid var(--border)",
-      borderRadius: 10,
+      borderLeft: `3px solid ${accentColor}`,
+      borderRadius: 12,
       overflow: "hidden",
-      boxShadow: "0 1px 4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
     }}>
       {/* Card header */}
       <div style={{
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "12px 16px 4px",
+        padding: "14px 18px 4px",
       }}>
         <span style={{
-          fontSize: 13, fontWeight: 600,
+          fontSize: 14, fontWeight: 600,
           color: "var(--text-primary)",
           letterSpacing: "-0.01em",
         }}>
@@ -82,7 +84,7 @@ function ChartCard({
       </div>
 
       {/* Chart area — containerRef wraps just the chart SVG */}
-      <div ref={containerRef} style={{ padding: "0 8px 12px" }}>
+      <div ref={containerRef} style={{ padding: "0 12px 16px" }}>
         {children}
       </div>
     </div>
@@ -119,17 +121,20 @@ export default function GroupPanel({ groupId, color, settings, config }: Props) 
   const geo    = settings.geo;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16, width: "100%", minWidth: 0 }}>
-      {/* Group header badge */}
-      <div style={{
-        backgroundColor: color,
-        borderRadius: 8,
-        padding: "10px 16px",
-        color: "white",
-        fontSize: 14, fontWeight: 700,
-        letterSpacing: "-0.01em",
-      }}>
-        Group {groupId}
+    <div style={{ display: "flex", flexDirection: "column", gap: 20, width: "100%", minWidth: 0 }}>
+      {/* Group label — subtle accent */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <span style={{ width: 3, height: 18, borderRadius: 2, background: color, flexShrink: 0 }} />
+        <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text-secondary)", letterSpacing: "-0.01em" }}>
+          Group {groupId}
+          {settings.selectedDatasets.length > 0 && (
+            <span style={{ fontWeight: 400, color: "var(--text-muted)", marginLeft: 6 }}>
+              · {settings.selectedDatasets.length === 1
+                  ? settings.selectedDatasets[0]
+                  : `${settings.selectedDatasets.length} datasets`}
+            </span>
+          )}
+        </span>
       </div>
 
       {loading && (
@@ -146,12 +151,13 @@ export default function GroupPanel({ groupId, color, settings, config }: Props) 
       )}
 
       {!loading && !error && (
-        <>
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           {(["workers", "wages", "tasks"] as const).map((metric) => (
             <ChartCard
               key={metric}
               title={METRIC_TITLES[metric]}
               downloadSlug={`group-${groupId}-${metric}-${ds}-${method}-${geo}`}
+              accentColor={color}
             >
               <HorizontalBarChart
                 rows={rows ?? []}
@@ -160,7 +166,7 @@ export default function GroupPanel({ groupId, color, settings, config }: Props) 
               />
             </ChartCard>
           ))}
-        </>
+        </div>
       )}
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
