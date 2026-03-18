@@ -1,22 +1,26 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useRef } from "react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Tooltip, LabelList, ResponsiveContainer,
+  Tooltip, LabelList, ResponsiveContainer, Cell,
 } from "recharts";
-import type { GroupSettings, WorkActivitiesResponse, ActivityGroup, ActivityRow } from "@/lib/types";
-import { fetchWorkActivities } from "@/lib/api";
+import type { WorkActivitiesResponse, ActivityRow } from "@/lib/types";
 import { downloadChartAsPng } from "@/lib/downloadChart";
 import { fmtChartValue } from "./HorizontalBarChart";
 
-type ActivityLevel  = "gwa" | "iwa" | "dwa";
-type ActivityMetric = "workers" | "wages" | "tasks";
+type ActivityLevel = "gwa" | "iwa" | "dwa";
+type MetricKey     = "workers" | "wages" | "tasks";
 
 interface Props {
-  groupId: "A" | "B";
-  color: string;
-  settings: GroupSettings;
+  groupId:       "A" | "B";
+  color:         string;
+  response:      WorkActivitiesResponse | null;
+  loading:       boolean;
+  error:         string | null;
+  activityLevel: ActivityLevel;
+  searchQuery:   string;
+  contextSize:   number;
 }
 
 const LEVEL_LABELS: Record<ActivityLevel, string> = {
@@ -25,10 +29,38 @@ const LEVEL_LABELS: Record<ActivityLevel, string> = {
   dwa: "Detailed Work Activities",
 };
 
-const CHART_FONT = "Inter, -apple-system, BlinkMacSystemFont, sans-serif";
+const METRIC_TITLES: Record<MetricKey, string> = {
+  workers: "Workers Affected",
+  wages:   "Wages Affected",
+  tasks:   "% Tasks Affected",
+};
+
+const METRIC_CONFIG = {
+  workers: { col: "workers_affected"   as keyof ActivityRow, xLabel: "Workers",           formatType: "number",     unitScale: 1   },
+  wages:   { col: "wages_affected"     as keyof ActivityRow, xLabel: "Annual Wages ($B)",  formatType: "currency_B", unitScale: 1e9 },
+  tasks:   { col: "pct_tasks_affected" as keyof ActivityRow, xLabel: "% Tasks Affected",   formatType: "percent",    unitScale: 1   },
+} as const;
+
+const MATCH_COLOR = "#c05621";
+const CHART_FONT  = "Inter, -apple-system, BlinkMacSystemFont, sans-serif";
 
 function truncate(s: string, max = 28): string {
   return s.length > max ? s.slice(0, max - 1) + "…" : s;
+}
+
+function applySearch(
+  rows: ActivityRow[],
+  searchQuery: string,
+  contextSize: number,
+): { rows: ActivityRow[]; matchedCategory: string | null } {
+  if (!searchQuery.trim()) return { rows, matchedCategory: null };
+  const q   = searchQuery.toLowerCase().trim();
+  const idx = rows.findIndex((r) => r.category.toLowerCase().includes(q));
+  if (idx < 0) return { rows: [], matchedCategory: null };
+  const matchedCategory = rows[idx].category;
+  const start = Math.max(0, idx - contextSize);
+  const end   = Math.min(rows.length, idx + contextSize + 1);
+  return { rows: rows.slice(start, end), matchedCategory };
 }
 
 // ── Download icon ─────────────────────────────────────────────────────────────
@@ -44,65 +76,96 @@ function DownloadIcon() {
   );
 }
 
-// ── Activity chart (Recharts) ─────────────────────────────────────────────────
+// ── Chart card ────────────────────────────────────────────────────────────────
 
-function ActivityChart({
-  rows, color, metric,
+function ChartCard({
+  title, downloadSlug, downloadTitle, accentColor, children,
+}: {
+  title: string; downloadSlug: string; downloadTitle: string;
+  accentColor: string; children: React.ReactNode;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  return (
+    <div style={{
+      background: "var(--bg-surface)", border: "1px solid var(--border)",
+      borderLeft: `3px solid ${accentColor}`, borderRadius: 12,
+      overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+    }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 18px 4px" }}>
+        <span style={{ fontSize: 14, fontWeight: 600, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
+          {title}
+        </span>
+        <button
+          onClick={() => downloadChartAsPng(containerRef.current, downloadSlug, { title: downloadTitle })}
+          title={`Download ${title} as PNG`}
+          style={{
+            background: "none", border: "none", cursor: "pointer",
+            color: "var(--text-muted)", padding: "4px",
+            borderRadius: 4, display: "flex", alignItems: "center",
+            transition: "color 0.12s",
+          }}
+          onMouseOver={(e) => (e.currentTarget.style.color = "var(--text-primary)")}
+          onMouseOut={(e)  => (e.currentTarget.style.color = "var(--text-muted)")}
+        ><DownloadIcon /></button>
+      </div>
+      <div ref={containerRef} style={{ padding: "0 12px 16px" }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ── Bar chart ─────────────────────────────────────────────────────────────────
+
+function ActivityBarChart({
+  rows, metric, color, matchedCategory,
 }: {
   rows: ActivityRow[];
+  metric: MetricKey;
   color: string;
-  metric: ActivityMetric;
+  matchedCategory: string | null;
 }) {
+  const cfg = METRIC_CONFIG[metric];
+
   if (!rows.length) {
     return (
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "center",
-        height: 100, fontSize: 12, color: "var(--text-muted)",
+        height: 120, fontSize: 13, color: "var(--text-muted)",
       }}>
-        No data
+        No data available
       </div>
     );
   }
 
-  type ColKey = "workers_affected" | "wages_affected" | "pct_tasks_affected";
-  const metaMap: Record<ActivityMetric, { col: ColKey; xLabel: string; formatType: string; unitScale: number }> = {
-    workers: { col: "workers_affected",   xLabel: "Workers",    formatType: "number",     unitScale: 1    },
-    wages:   { col: "wages_affected",     xLabel: "Wages ($B)", formatType: "currency_B", unitScale: 1e9  },
-    tasks:   { col: "pct_tasks_affected", xLabel: "% Tasks",    formatType: "percent",    unitScale: 1    },
-  };
-  const meta = metaMap[metric];
-
   const data = rows.map((r) => ({
     category:  r.category,
-    plotValue: meta.unitScale > 1
-      ? (r[meta.col] as number) / meta.unitScale
-      : (r[meta.col] as number),
-    rawValue: r[meta.col] as number,
+    plotValue: cfg.unitScale > 1
+      ? (r[cfg.col] as number) / cfg.unitScale
+      : (r[cfg.col] as number),
+    rawValue: r[cfg.col] as number,
   }));
 
   const n           = rows.length;
-  const barSize     = 14;
-  const chartHeight = Math.max(160, n * (barSize + 16) + 50);
+  const barSize     = 16;
+  const rowPitch    = barSize + 18;
+  const chartHeight = Math.max(180, n * rowPitch + 56);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function tooltipContent(p: any) {
-    if (!p.active || !p.payload?.length) return null;
-    const { category, rawValue } = p.payload[0].payload as { category: string; rawValue: number };
+  function TooltipContent({ active, payload }: any) {
+    if (!active || !payload?.length) return null;
+    const { category, rawValue } = payload[0].payload as { category: string; rawValue: number };
     return (
       <div style={{
-        background: "var(--bg-surface)",
-        border: "1px solid var(--border)",
-        borderRadius: 7,
-        padding: "8px 12px",
-        fontSize: 12,
-        boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
-        maxWidth: 260,
+        background: "var(--bg-surface)", border: "1px solid var(--border)",
+        borderRadius: 8, padding: "10px 13px", fontSize: 12,
+        boxShadow: "0 3px 12px rgba(0,0,0,0.11)", maxWidth: 280, minWidth: 180,
       }}>
-        <p style={{ fontWeight: 600, color: "var(--text-primary)", marginBottom: 3, lineHeight: 1.4 }}>
+        <p style={{ fontWeight: 700, color: "var(--text-primary)", marginBottom: 6, lineHeight: 1.35 }}>
           {category}
         </p>
-        <p style={{ color: "var(--text-secondary)" }}>
-          {fmtChartValue(rawValue, meta.formatType)}
+        <p style={{ fontWeight: 600, color: "var(--text-primary)" }}>
+          {fmtChartValue(rawValue, cfg.formatType)}
         </p>
       </div>
     );
@@ -113,48 +176,63 @@ function ActivityChart({
       <BarChart
         data={data}
         layout="vertical"
-        margin={{ top: 4, right: 80, bottom: 20, left: 8 }}
+        margin={{ top: 4, right: 88, bottom: 24, left: 8 }}
         barCategoryGap="32%"
       >
-        <CartesianGrid
-          horizontal={false}
-          stroke="rgba(0,0,0,0.05)"
-          strokeDasharray="4 4"
-        />
+        <CartesianGrid horizontal={false} stroke="rgba(0,0,0,0.05)" strokeDasharray="4 4" />
         <XAxis
           type="number"
           tickFormatter={(v: number) => fmtChartValue(
-            v * (meta.unitScale > 1 ? meta.unitScale : 1),
-            meta.formatType,
+            v * (cfg.unitScale > 1 ? cfg.unitScale : 1),
+            cfg.formatType,
           )}
           tick={{ fontSize: 10, fill: "#999", fontFamily: CHART_FONT }}
           axisLine={{ stroke: "rgba(0,0,0,0.07)" }}
           tickLine={false}
           label={{
-            value: meta.xLabel,
-            position: "insideBottom",
-            offset: -10,
-            fontSize: 10,
-            fill: "#bbb",
-            fontFamily: CHART_FONT,
+            value: cfg.xLabel, position: "insideBottom", offset: -12,
+            fontSize: 10, fill: "#bbb", fontFamily: CHART_FONT,
           }}
         />
         <YAxis
           type="category"
           dataKey="category"
           tickFormatter={(v: string) => truncate(v, 28)}
-          width={176}
-          tick={{ fontSize: 11, fill: "#555", fontFamily: CHART_FONT }}
+          width={178}
+          tick={({ x, y, payload }: { x: string | number; y: string | number; payload: { value: string } }) => {
+            const isMatch = matchedCategory && payload.value === matchedCategory;
+            return (
+              <text
+                x={Number(x)} y={Number(y)} dy={4}
+                textAnchor="end" fontSize={11}
+                fontWeight={isMatch ? 700 : 400}
+                fill={isMatch ? MATCH_COLOR : "#555"}
+                fontFamily={CHART_FONT}
+              >
+                {truncate(payload.value, 28)}
+              </text>
+            );
+          }}
           axisLine={false}
           tickLine={false}
         />
-        <Tooltip content={tooltipContent} cursor={{ fill: "rgba(0,0,0,0.03)" }} />
-        <Bar dataKey="plotValue" fill={color} radius={[0, 3, 3, 0]} maxBarSize={barSize}>
+        <Tooltip content={(p) => <TooltipContent {...p} />} cursor={{ fill: "rgba(0,0,0,0.03)" }} />
+        <Bar dataKey="plotValue" radius={[0, 3, 3, 0]} maxBarSize={barSize}>
+          {data.map((entry) => {
+            const isMatch = matchedCategory && entry.category === matchedCategory;
+            return (
+              <Cell
+                key={entry.category}
+                fill={isMatch ? MATCH_COLOR : color}
+                opacity={matchedCategory && !isMatch ? 0.55 : 1}
+              />
+            );
+          })}
           <LabelList
             dataKey="rawValue"
             position="right"
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            formatter={(v: any) => fmtChartValue(Number(v), meta.formatType)}
+            formatter={(v: any) => fmtChartValue(Number(v), cfg.formatType)}
             style={{ fontSize: 10, fill: "#888", fontFamily: CHART_FONT }}
           />
         </Bar>
@@ -163,169 +241,32 @@ function ActivityChart({
   );
 }
 
-// ── Activity group sub-panel ──────────────────────────────────────────────────
-
-function ActivityGroupPanel({
-  group, color, label,
-}: {
-  group: ActivityGroup;
-  color: string;
-  label: string;
-}) {
-  const [level,  setLevel]  = useState<ActivityLevel>("gwa");
-  const [metric, setMetric] = useState<ActivityMetric>("workers");
-  const chartRef = useRef<HTMLDivElement>(null);
-
-  const rows = group[level] ?? [];
-
-  return (
-    <div style={{
-      background: "var(--bg-surface)",
-      border: "1px solid var(--border)",
-      borderLeft: `3px solid ${color}`,
-      borderRadius: 12,
-      overflow: "hidden",
-      boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
-    }}>
-      {/* Sub-panel header */}
-      <div style={{
-        padding: "10px 14px 10px",
-        borderBottom: "1px solid var(--border-light)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-        gap: 8,
-      }}>
-        <span style={{ fontSize: 12, fontWeight: 600, color: "var(--text-secondary)", flex: 1, minWidth: 120 }}>
-          {label}
-        </span>
-
-        <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-          {/* Level segmented control: GWA / IWA / DWA */}
-          <div style={{
-            display: "flex",
-            border: "1px solid var(--border)",
-            borderRadius: 6,
-            overflow: "hidden",
-          }}>
-            {(["gwa", "iwa", "dwa"] as ActivityLevel[]).map((l, i) => (
-              <button
-                key={l}
-                onClick={() => setLevel(l)}
-                style={{
-                  padding: "4px 9px",
-                  fontSize: 11, fontWeight: level === l ? 700 : 400,
-                  background: level === l ? color : "transparent",
-                  color: level === l ? "white" : "var(--text-secondary)",
-                  border: "none",
-                  borderRight: i < 2 ? "1px solid var(--border)" : "none",
-                  cursor: "pointer",
-                  transition: "background 0.12s",
-                }}
-              >
-                {l.toUpperCase()}
-              </button>
-            ))}
-          </div>
-
-          {/* Metric segmented control: Workers / Wages / % Tasks */}
-          <div style={{
-            display: "flex",
-            border: "1px solid var(--border)",
-            borderRadius: 6,
-            overflow: "hidden",
-          }}>
-            {([
-              { key: "workers", label: "Workers" },
-              { key: "wages",   label: "Wages"   },
-              { key: "tasks",   label: "% Tasks" },
-            ] as { key: ActivityMetric; label: string }[]).map((m, i) => (
-              <button
-                key={m.key}
-                onClick={() => setMetric(m.key)}
-                style={{
-                  padding: "4px 9px",
-                  fontSize: 11, fontWeight: metric === m.key ? 700 : 400,
-                  background: metric === m.key ? "var(--brand-light)" : "transparent",
-                  color: metric === m.key ? "var(--brand)" : "var(--text-secondary)",
-                  border: "none",
-                  borderRight: i < 2 ? "1px solid var(--border)" : "none",
-                  cursor: "pointer",
-                  transition: "background 0.12s",
-                }}
-              >
-                {m.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Download button */}
-          <button
-            onClick={() => downloadChartAsPng(chartRef.current, `work-activities-${label.slice(0, 12)}-${level}-${metric}`)}
-            title="Download chart as PNG"
-            style={{
-              background: "none", border: "none", cursor: "pointer",
-              color: "var(--text-muted)", padding: "4px",
-              borderRadius: 4, display: "flex", alignItems: "center",
-              transition: "color 0.12s",
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.color = "var(--text-primary)")}
-            onMouseOut={(e)  => (e.currentTarget.style.color = "var(--text-muted)")}
-          >
-            <DownloadIcon />
-          </button>
-        </div>
-      </div>
-
-      {/* Level label */}
-      <div style={{ padding: "6px 14px 2px", fontSize: 10, color: "var(--text-muted)" }}>
-        {LEVEL_LABELS[level]}
-      </div>
-
-      {/* Chart */}
-      <div ref={chartRef} style={{ padding: "0 8px 12px" }}>
-        <ActivityChart rows={rows} color={color} metric={metric} />
-      </div>
-    </div>
-  );
-}
-
 // ── WorkActivitiesPanel ───────────────────────────────────────────────────────
 
-export default function WorkActivitiesPanel({ groupId, color, settings }: Props) {
-  const [data, setData]       = useState<WorkActivitiesResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState<string | null>(null);
+export default function WorkActivitiesPanel({
+  groupId, color, response, loading, error,
+  activityLevel, searchQuery, contextSize,
+}: Props) {
+  const group    = response?.aei_group ?? response?.mcp_group ?? null;
+  const allRows  = group?.[activityLevel] ?? [];
+  const { rows, matchedCategory } = applySearch(allRows, searchQuery, contextSize);
 
-  const load = useCallback(async () => {
-    if (!settings.selectedDatasets.length) { setData(null); return; }
-    setLoading(true); setError(null);
-    try {
-      setData(await fetchWorkActivities(settings));
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Failed to load");
-    } finally {
-      setLoading(false);
-    }
-  }, [settings]);
-
-  useEffect(() => { load(); }, [load]);
-
-  const hasAny = data && (data.aei_group || data.mcp_group);
+  const baselineLabel = response?.aei_group
+    ? "ECO 2015 baseline"
+    : response?.mcp_group
+    ? "ECO 2025 baseline"
+    : "";
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20, width: "100%", minWidth: 0 }}>
-      {/* Group label — subtle accent */}
+      {/* Group label */}
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <span style={{ width: 3, height: 18, borderRadius: 2, background: color, flexShrink: 0 }} />
         <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text-secondary)", letterSpacing: "-0.01em" }}>
           Group {groupId}
-          {settings.selectedDatasets.length > 0 && (
-            <span style={{ fontWeight: 400, color: "var(--text-muted)", marginLeft: 6 }}>
-              · {settings.selectedDatasets.length === 1
-                  ? settings.selectedDatasets[0]
-                  : `${settings.selectedDatasets.length} datasets`}
+          {baselineLabel && (
+            <span style={{ fontWeight: 400, color: "var(--text-muted)", fontSize: 12, marginLeft: 6 }}>
+              · {baselineLabel}
             </span>
           )}
         </span>
@@ -338,37 +279,45 @@ export default function WorkActivitiesPanel({ groupId, color, settings }: Props)
         </div>
       )}
 
-      {error && (
+      {!loading && error && (
         <div style={{ borderRadius: 8, border: "1px solid #fca5a5", background: "#fef2f2", padding: "12px 16px", fontSize: 13, color: "#b91c1c" }}>
           Error: {error}
         </div>
       )}
 
-      {!loading && !error && !settings.selectedDatasets.length && (
+      {!loading && !error && response && !group && (
         <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 10, padding: "32px", textAlign: "center", fontSize: 13, color: "var(--text-muted)" }}>
-          Select at least one dataset to view work activity charts.
+          No work activity data returned. Check dataset and ECO baseline availability.
         </div>
       )}
 
-      {!loading && !error && settings.selectedDatasets.length > 0 && !hasAny && data && (
+      {!loading && !error && group && rows.length === 0 && (
         <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 10, padding: "32px", textAlign: "center", fontSize: 13, color: "var(--text-muted)" }}>
-          No work activity data returned. The selected datasets may need the ECO 2015 baseline or crosswalk file.
+          {searchQuery
+            ? `No match for "${searchQuery}" in ${LEVEL_LABELS[activityLevel]}.`
+            : `No data for ${LEVEL_LABELS[activityLevel]}.`}
         </div>
       )}
 
-      {!loading && !error && data?.aei_group && (
-        <ActivityGroupPanel
-          group={data.aei_group}
-          color={color}
-          label={`AEI — ${data.aei_group.datasets.join(", ")} (ECO 2015 baseline)`}
-        />
-      )}
-      {!loading && !error && data?.mcp_group && (
-        <ActivityGroupPanel
-          group={data.mcp_group}
-          color={color}
-          label={`MCP / Microsoft — ${data.mcp_group.datasets.join(", ")} (ECO 2025 baseline)`}
-        />
+      {!loading && !error && rows.length > 0 && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          {(["workers", "wages", "tasks"] as MetricKey[]).map((metric) => (
+            <ChartCard
+              key={metric}
+              title={METRIC_TITLES[metric]}
+              downloadSlug={`wa-group-${groupId}-${activityLevel}-${metric}`}
+              downloadTitle={`Group ${groupId} — ${LEVEL_LABELS[activityLevel]} — ${METRIC_TITLES[metric]}`}
+              accentColor={color}
+            >
+              <ActivityBarChart
+                rows={rows}
+                metric={metric}
+                color={color}
+                matchedCategory={matchedCategory}
+              />
+            </ChartCard>
+          ))}
+        </div>
       )}
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
