@@ -559,12 +559,7 @@ function DrilldownRow({
 
   const pct = pctAffectedMap?.get(row.name);
 
-  // Apply filters
-  if (autoAugMin > 0 && (row.avg_auto_aug == null || row.avg_auto_aug < autoAugMin)) return null;
-  if (minEmp  > 0 && row.emp < minEmp)  return null;
-  if (minWage > 0 && (row.wage == null || row.wage < minWage)) return null;
-  if (minPctAffected > 0 && (pct == null || pct < minPctAffected)) return null;
-
+  // Hooks must all come before any conditional return
   const handleClick = useCallback(async () => {
     setOpen((o) => !o);
     if (isOccupation && !tasks && !loadingT) {
@@ -606,6 +601,12 @@ function DrilldownRow({
       .map(([name, occs]) => ({ name, ...aggregateOccs(occs, geo, aggMode), sourceOccs: occs }))
       .sort((a, b) => b.emp - a.emp);
   }, [open, isOccupation, child, row.sourceOccs, geo, aggMode]);
+
+  // Apply filters after all hooks
+  if (autoAugMin > 0 && (row.avg_auto_aug == null || row.avg_auto_aug < autoAugMin)) return null;
+  if (minEmp  > 0 && row.emp < minEmp)  return null;
+  if (minWage > 0 && (row.wage == null || row.wage < minWage)) return null;
+  if (minPctAffected > 0 && (pct == null || pct < minPctAffected)) return null;
 
   return (
     <>

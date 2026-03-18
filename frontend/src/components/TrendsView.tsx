@@ -621,10 +621,12 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
     try {
       const seriesToFetch = getSeriesToFetch(selectedDatasets, config.dataset_series ?? {});
       if (!seriesToFetch.length) { setError("No valid series for selected datasets."); return; }
+      // Fetch a larger pool so sort-by-increase can pick the true top N
+      const fetchTopN = Math.max(topN, 50);
       const settings: TrendsSettings = {
         series: seriesToFetch, method, useAutoAug,
         useAdjMean: useAutoAug && useAdjMean,
-        physicalMode, geo, aggLevel, topN, sortBy: "Workers Affected",
+        physicalMode, geo, aggLevel, topN: fetchTopN, sortBy: "Workers Affected",
       };
       const data = await fetchTrends(settings);
       setResult(data);
@@ -634,7 +636,7 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
           .filter((dp) => selectedDatasets.includes(dp.dataset))
           .forEach((dp) => dp.rows.forEach((r) => cats.add(r.category)));
       });
-      setAllCats(Array.from(cats).slice(0, topN));
+      setAllCats(Array.from(cats)); // store full pool; topN slice happens after sorting
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Failed to fetch trends");
     } finally { setLoading(false); }
@@ -654,21 +656,19 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
     [rawChartData, rawLineConfigs, metric, incMode],
   );
 
-  // Apply sort-by-increase
+  // Apply sort-by-increase: sort full pool, then slice to topN
   const sortedCats = useMemo(() => {
-    if (sortMode !== "increase" || !allIncreases) return allCats;
-    return [...allCats].sort((a, b) => {
-      // For individual mode the keys are "ds — cat"; extract increase per cat
-      const getInc = (cat: string) => {
-        let max = -Infinity;
-        allIncreases.forEach((v, key) => {
-          if (key === cat || key.endsWith(` — ${cat}`)) max = Math.max(max, v);
-        });
-        return max === -Infinity ? -Infinity : max;
-      };
-      return getInc(b) - getInc(a);
-    });
-  }, [allCats, sortMode, allIncreases]);
+    if (sortMode !== "increase" || !allIncreases) return allCats.slice(0, topN);
+    const getInc = (cat: string) => {
+      // For individual mode the keys are "ds — cat"; aggregate mode keys are just the cat name
+      let max = -Infinity;
+      allIncreases.forEach((v, key) => {
+        if (key === cat || key.endsWith(` — ${cat}`)) max = Math.max(max, v);
+      });
+      return max === -Infinity ? -Infinity : max;
+    };
+    return [...allCats].sort((a, b) => getInc(b) - getInc(a)).slice(0, topN);
+  }, [allCats, topN, sortMode, allIncreases]);
 
   // Apply search filter
   const shownCats = useMemo(() => {
@@ -870,10 +870,11 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
     try {
       const seriesToFetch = getSeriesToFetch(selectedDatasets, config.dataset_series ?? {});
       if (!seriesToFetch.length) { setError("No valid series for selected datasets."); return; }
+      const fetchTopN = Math.max(topN, 50);
       const settings: WATrendsSettings = {
         series: seriesToFetch, method, useAutoAug,
         useAdjMean: useAutoAug && useAdjMean,
-        physicalMode, geo, topN, sortBy: "Workers Affected", activityLevel,
+        physicalMode, geo, topN: fetchTopN, sortBy: "Workers Affected", activityLevel,
       };
       const data = await fetchWATrends(settings);
       setResult(data);
@@ -883,7 +884,7 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
           .filter((dp) => selectedDatasets.includes(dp.dataset))
           .forEach((dp) => dp.rows.forEach((r) => cats.add(r.category)));
       });
-      setAllCats(Array.from(cats).slice(0, topN));
+      setAllCats(Array.from(cats));
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Failed to fetch WA trends");
     } finally { setLoading(false); }
@@ -903,18 +904,16 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
   );
 
   const sortedCats = useMemo(() => {
-    if (sortMode !== "increase" || !allIncreases) return allCats;
-    return [...allCats].sort((a, b) => {
-      const getInc = (cat: string) => {
-        let max = -Infinity;
-        allIncreases.forEach((v, key) => {
-          if (key === cat || key.endsWith(` — ${cat}`)) max = Math.max(max, v);
-        });
-        return max === -Infinity ? -Infinity : max;
-      };
-      return getInc(b) - getInc(a);
-    });
-  }, [allCats, sortMode, allIncreases]);
+    if (sortMode !== "increase" || !allIncreases) return allCats.slice(0, topN);
+    const getInc = (cat: string) => {
+      let max = -Infinity;
+      allIncreases.forEach((v, key) => {
+        if (key === cat || key.endsWith(` — ${cat}`)) max = Math.max(max, v);
+      });
+      return max === -Infinity ? -Infinity : max;
+    };
+    return [...allCats].sort((a, b) => getInc(b) - getInc(a)).slice(0, topN);
+  }, [allCats, topN, sortMode, allIncreases]);
 
   const shownCats = useMemo(() => {
     const q = trendSearch.trim().toLowerCase();
