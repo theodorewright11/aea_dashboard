@@ -1,14 +1,12 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import type { OccupationSummary, TaskDetail, OccupationTasksResponse } from "@/lib/types";
 import { fetchOccupationTasks } from "@/lib/api";
 
-interface Props {
-  occupations: OccupationSummary[];
-}
+interface Props { occupations: OccupationSummary[] }
 
-// ── Utility formatters ─────────────────────────────────────────────────────────
+// ── Formatters ────────────────────────────────────────────────────────────────
 
 function fmtEmp(v?: number | null): string {
   if (v == null) return "—";
@@ -20,29 +18,49 @@ function fmtWage(v?: number | null): string {
   if (v == null) return "—";
   return `$${v.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
 }
-function fmtNum(v?: number | null, dec = 2): string {
-  if (v == null) return <span style={{ color: "var(--text-muted)", fontStyle: "italic", fontSize: 11 }}>n/a</span> as unknown as string;
-  return v.toFixed(dec);
-}
 function fmtPct(v?: number | null): string {
   if (v == null) return "—";
   return `${(v * 100).toFixed(1)}%`;
 }
 
-// ── Small badge ────────────────────────────────────────────────────────────────
-
-function Tag({ label, cls }: { label: string; cls: string }) {
-  return <span className={`tag ${cls}`}>{label}</span>;
+function getAutoAug(occ: OccupationSummary): number | null {
+  const vals = [occ.avg_auto_aug_aei, occ.avg_auto_aug_mcp, occ.avg_auto_aug_ms].filter((v) => v != null) as number[];
+  return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null;
 }
 
-// ── Metric cell ────────────────────────────────────────────────────────────────
+// ── Flat table aggregation ────────────────────────────────────────────────────
 
-function MetricCell({ value, dec = 2 }: { value?: number | null; dec?: number }) {
-  if (value == null) return <span style={{ color: "var(--text-muted)", fontSize: 11, fontStyle: "italic" }}>n/a</span>;
-  return <span>{value.toFixed(dec)}</span>;
+interface FlatRow {
+  name: string;
+  emp: number;
+  wage: number | null;
+  n_occs: number;
+  n_tasks: number;
+  avg_auto_aug: number | null;
 }
 
-// ── SVG icon components ────────────────────────────────────────────────────────
+function aggregateOccs(occs: OccupationSummary[], geo: "nat" | "ut"): Omit<FlatRow, "name"> {
+  let totalEmp = 0, wageSum = 0, wageTotalEmp = 0, totalTasks = 0;
+  const autoAugs: number[] = [];
+  occs.forEach((occ) => {
+    const emp  = (geo === "nat" ? occ.emp_nat  : occ.emp_ut)  ?? 0;
+    const wage = (geo === "nat" ? occ.wage_nat : occ.wage_ut) ?? null;
+    totalEmp  += emp;
+    totalTasks += occ.n_tasks;
+    if (wage != null && emp > 0) { wageSum += wage * emp; wageTotalEmp += emp; }
+    const aa = getAutoAug(occ);
+    if (aa != null) autoAugs.push(aa);
+  });
+  return {
+    emp: totalEmp,
+    wage: wageTotalEmp > 0 ? wageSum / wageTotalEmp : null,
+    n_occs: occs.length,
+    n_tasks: totalTasks,
+    avg_auto_aug: autoAugs.length ? autoAugs.reduce((a, b) => a + b, 0) / autoAugs.length : null,
+  };
+}
+
+// ── SVG icons ─────────────────────────────────────────────────────────────────
 
 function SearchIcon() {
   return (
@@ -57,32 +75,63 @@ function SearchIcon() {
 
 function ChevronIcon({ open }: { open: boolean }) {
   return (
-    <svg
-      width="11" height="11" viewBox="0 0 24 24"
-      fill="none" stroke="currentColor"
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-      style={{
-        transform: open ? "rotate(0deg)" : "rotate(-90deg)",
-        transition: "transform 0.2s ease",
-        flexShrink: 0,
-        color: "var(--text-muted)",
-      }}
-      aria-hidden="true"
-    >
+      style={{ transform: open ? "rotate(0deg)" : "rotate(-90deg)", transition: "transform 0.2s ease", flexShrink: 0, color: "var(--text-muted)" }}
+      aria-hidden="true">
       <polyline points="6 9 12 15 18 9" />
     </svg>
   );
 }
 
-// ── Task row ───────────────────────────────────────────────────────────────────
+// ── Info tooltip ──────────────────────────────────────────────────────────────
+
+function InfoTooltip({ text }: { text: string }) {
+  const [show, setShow] = useState(false);
+  return (
+    <span style={{ position: "relative", display: "inline-flex", alignItems: "center", marginLeft: 3 }}>
+      <span
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        style={{
+          cursor: "help", color: "var(--text-muted)", fontSize: 9, fontWeight: 700,
+          border: "1px solid var(--border)", borderRadius: "50%",
+          width: 12, height: 12, display: "inline-flex", alignItems: "center", justifyContent: "center",
+          lineHeight: 1, userSelect: "none",
+        }}
+      >?</span>
+      {show && (
+        <div style={{
+          position: "absolute", bottom: "calc(100% + 4px)", left: "50%", transform: "translateX(-50%)",
+          background: "#1a1a1a", color: "#fff", fontSize: 11, padding: "6px 10px",
+          borderRadius: 6, whiteSpace: "nowrap", zIndex: 200, pointerEvents: "none",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+        }}>
+          {text}
+        </div>
+      )}
+    </span>
+  );
+}
+
+// ── Small badge ───────────────────────────────────────────────────────────────
+
+function Tag({ label, cls }: { label: string; cls: string }) {
+  return <span className={`tag ${cls}`}>{label}</span>;
+}
+
+function MetricCell({ value, dec = 2 }: { value?: number | null; dec?: number }) {
+  if (value == null) return <span style={{ color: "var(--text-muted)", fontSize: 11, fontStyle: "italic" }}>n/a</span>;
+  return <span>{value.toFixed(dec)}</span>;
+}
+
+// ── Task row ──────────────────────────────────────────────────────────────────
 
 function TaskRow({ task, aggMode }: { task: TaskDetail; aggMode: "avg" | "max" }) {
   const [expanded, setExpanded] = useState(false);
-
   const aggAuto = aggMode === "avg" ? task.avg_auto_aug : task.max_auto_aug;
   const aggPct  = aggMode === "avg" ? task.avg_pct_normalized : task.max_pct_normalized;
-
-  const barPct = aggAuto != null ? Math.min(aggAuto / 5, 1) * 100 : null;
+  const barPct  = aggAuto != null ? Math.min(aggAuto / 5, 1) * 100 : null;
 
   return (
     <>
@@ -92,32 +141,46 @@ function TaskRow({ task, aggMode }: { task: TaskDetail; aggMode: "avg" | "max" }
         onMouseEnter={(e) => (e.currentTarget.style.background = "#f9f9f7")}
         onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
       >
-        <td style={{ padding: "7px 12px", fontSize: 12, color: "var(--text-primary)", maxWidth: 340, verticalAlign: "top" }}>
+        {/* Task */}
+        <td style={{ padding: "7px 12px", fontSize: 12, color: "var(--text-primary)", verticalAlign: "top" }}>
           <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
             <ChevronIcon open={expanded} />
             <span style={{ lineHeight: 1.4 }}>{task.task}</span>
           </div>
         </td>
-        <td style={{ padding: "7px 8px", fontSize: 12, color: "var(--text-secondary)", verticalAlign: "top" }}>
+        {/* Physical */}
+        <td style={{ padding: "7px 8px", textAlign: "center", verticalAlign: "top", width: 52 }}>
+          {task.physical === true
+            ? <span style={{ color: "#16a34a", fontSize: 12 }}>✓</span>
+            : task.physical === false
+            ? <span style={{ color: "var(--text-muted)", fontSize: 12 }}>✗</span>
+            : <span style={{ color: "var(--text-muted)", fontSize: 11, fontStyle: "italic" }}>—</span>}
+        </td>
+        {/* Freq */}
+        <td style={{ padding: "7px 8px", fontSize: 12, color: "var(--text-secondary)", textAlign: "right", verticalAlign: "top", width: 56 }}>
           {task.freq_mean?.toFixed(1) ?? "—"}
         </td>
-        <td style={{ padding: "7px 8px", fontSize: 12, color: "var(--text-secondary)", verticalAlign: "top" }}>
+        {/* Imp */}
+        <td style={{ padding: "7px 8px", fontSize: 12, color: "var(--text-secondary)", textAlign: "right", verticalAlign: "top", width: 56 }}>
           {task.importance?.toFixed(1) ?? "—"}
         </td>
-        <td style={{ padding: "7px 8px", fontSize: 12, color: "var(--text-secondary)", verticalAlign: "top" }}>
+        {/* Rel */}
+        <td style={{ padding: "7px 8px", fontSize: 12, color: "var(--text-secondary)", textAlign: "right", verticalAlign: "top", width: 56 }}>
           {task.relevance?.toFixed(0) ?? "—"}
         </td>
-        <td style={{ padding: "7px 8px", verticalAlign: "top" }}>
+        {/* Auto-aug bar */}
+        <td style={{ padding: "7px 8px", verticalAlign: "top", width: 110 }}>
           {barPct != null ? (
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <div style={{ width: 60, height: 6, background: "var(--border)", borderRadius: 3, overflow: "hidden" }}>
+              <div style={{ width: 56, height: 6, background: "var(--border)", borderRadius: 3, overflow: "hidden", flexShrink: 0 }}>
                 <div style={{ width: `${barPct}%`, height: "100%", background: "var(--brand)", borderRadius: 3 }} />
               </div>
               <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>{aggAuto?.toFixed(2)}</span>
             </div>
           ) : <span style={{ fontSize: 11, color: "var(--text-muted)", fontStyle: "italic" }}>n/a</span>}
         </td>
-        <td style={{ padding: "7px 8px", fontSize: 12, verticalAlign: "top" }}>
+        {/* Pct Norm */}
+        <td style={{ padding: "7px 8px", fontSize: 12, textAlign: "right", verticalAlign: "top", width: 80 }}>
           {aggPct != null
             ? <span style={{ color: "var(--brand)", fontWeight: 500 }}>{fmtPct(aggPct)}</span>
             : <span style={{ fontSize: 11, color: "var(--text-muted)", fontStyle: "italic" }}>n/a</span>}
@@ -125,9 +188,9 @@ function TaskRow({ task, aggMode }: { task: TaskDetail; aggMode: "avg" | "max" }
       </tr>
       {expanded && (
         <tr style={{ background: "#fafaf8", borderBottom: "1px solid var(--border-light)" }}>
-          <td colSpan={6} style={{ padding: "10px 24px 14px" }}>
+          <td colSpan={7} style={{ padding: "10px 24px 14px" }}>
             <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-              {/* GWA/IWA/DWA */}
+              {/* Activity classification */}
               <div style={{ minWidth: 220 }}>
                 <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 6 }}>Activity Classification</p>
                 {task.gwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>GWA:</b> {task.gwa_title}</p>}
@@ -140,52 +203,48 @@ function TaskRow({ task, aggMode }: { task: TaskDetail; aggMode: "avg" | "max" }
                 <table style={{ fontSize: 11, borderCollapse: "collapse" }}>
                   <thead>
                     <tr>
-                      <th style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600, textAlign: "left" }}>Source</th>
+                      <th style={{ padding: "2px 12px 2px 0", color: "var(--text-muted)", fontWeight: 600, textAlign: "left" }}>Source</th>
                       <th style={{ padding: "2px 10px", color: "var(--text-muted)", fontWeight: 600, textAlign: "right" }}>Auto-aug</th>
                       <th style={{ padding: "2px 10px", color: "var(--text-muted)", fontWeight: 600, textAlign: "right" }}>Pct Norm</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td style={{ padding: "2px 10px 2px 0" }}><Tag label="AEI" cls="tag-aei" /></td>
+                      <td style={{ padding: "2px 12px 2px 0" }}><Tag label="AEI" cls="tag-aei" /></td>
+                      <td style={{ padding: "2px 10px", textAlign: "right" }}><MetricCell value={task.aei?.auto_aug_mean} /></td>
                       <td style={{ padding: "2px 10px", textAlign: "right" }}>
-                        <MetricCell value={task.aei?.auto_aug_mean} />
-                      </td>
-                      <td style={{ padding: "2px 10px", textAlign: "right" }}>
-                        <MetricCell value={task.aei?.pct_normalized != null ? task.aei.pct_normalized * 100 : null} />
-                        {task.aei?.pct_normalized != null && <span style={{ color: "var(--text-muted)" }}>%</span>}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: "2px 10px 2px 0" }}><Tag label="MCP" cls="tag-mcp" /></td>
-                      <td style={{ padding: "2px 10px", textAlign: "right" }}>
-                        <MetricCell value={task.mcp?.auto_aug_mean_adj} />
-                      </td>
-                      <td style={{ padding: "2px 10px", textAlign: "right" }}>
-                        <MetricCell value={task.mcp?.pct_normalized != null ? task.mcp.pct_normalized * 100 : null} />
-                        {task.mcp?.pct_normalized != null && <span style={{ color: "var(--text-muted)" }}>%</span>}
+                        {task.aei?.pct_normalized != null
+                          ? <>{(task.aei.pct_normalized * 100).toFixed(2)}<span style={{ color: "var(--text-muted)" }}>%</span></>
+                          : <MetricCell value={null} />}
                       </td>
                     </tr>
                     <tr>
-                      <td style={{ padding: "2px 10px 2px 0" }}><Tag label="MS" cls="tag-ms" /></td>
+                      <td style={{ padding: "2px 12px 2px 0" }}><Tag label="MCP" cls="tag-mcp" /></td>
+                      <td style={{ padding: "2px 10px", textAlign: "right" }}><MetricCell value={task.mcp?.auto_aug_mean_adj} /></td>
                       <td style={{ padding: "2px 10px", textAlign: "right" }}>
-                        <MetricCell value={task.microsoft?.auto_aug_mean} />
+                        {task.mcp?.pct_normalized != null
+                          ? <>{(task.mcp.pct_normalized * 100).toFixed(2)}<span style={{ color: "var(--text-muted)" }}>%</span></>
+                          : <MetricCell value={null} />}
                       </td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: "2px 12px 2px 0" }}><Tag label="MS" cls="tag-ms" /></td>
+                      <td style={{ padding: "2px 10px", textAlign: "right" }}><MetricCell value={task.microsoft?.auto_aug_mean} /></td>
                       <td style={{ padding: "2px 10px", textAlign: "right" }}>
-                        <MetricCell value={task.microsoft?.pct_normalized != null ? task.microsoft.pct_normalized * 100 : null} />
-                        {task.microsoft?.pct_normalized != null && <span style={{ color: "var(--text-muted)" }}>%</span>}
+                        {task.microsoft?.pct_normalized != null
+                          ? <>{(task.microsoft.pct_normalized * 100).toFixed(2)}<span style={{ color: "var(--text-muted)" }}>%</span></>
+                          : <MetricCell value={null} />}
                       </td>
                     </tr>
                     <tr style={{ borderTop: "1px solid var(--border-light)" }}>
-                      <td style={{ padding: "4px 10px 2px 0", fontWeight: 700 }}>
+                      <td style={{ padding: "4px 12px 2px 0", fontWeight: 700 }}>
                         <Tag label={aggMode === "avg" ? "AVG" : "MAX"} cls={aggMode === "avg" ? "tag-avg" : "tag-max"} />
                       </td>
+                      <td style={{ padding: "4px 10px 2px", textAlign: "right", fontWeight: 700 }}><MetricCell value={aggAuto} /></td>
                       <td style={{ padding: "4px 10px 2px", textAlign: "right", fontWeight: 700 }}>
-                        <MetricCell value={aggAuto} />
-                      </td>
-                      <td style={{ padding: "4px 10px 2px", textAlign: "right", fontWeight: 700 }}>
-                        <MetricCell value={aggPct != null ? aggPct * 100 : null} />
-                        {aggPct != null && <span style={{ color: "var(--text-muted)" }}>%</span>}
+                        {aggPct != null
+                          ? <>{(aggPct * 100).toFixed(2)}<span style={{ color: "var(--text-muted)" }}>%</span></>
+                          : <MetricCell value={null} />}
                       </td>
                     </tr>
                   </tbody>
@@ -199,34 +258,60 @@ function TaskRow({ task, aggMode }: { task: TaskDetail; aggMode: "avg" | "max" }
   );
 }
 
+// ── Task table header ─────────────────────────────────────────────────────────
+
+function TaskTableHeader() {
+  return (
+    <tr style={{ borderBottom: "2px solid var(--border)" }}>
+      <th style={{ padding: "5px 12px 5px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Task</th>
+      <th style={{ padding: "5px 8px", textAlign: "center", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", width: 52 }}>
+        Phys<InfoTooltip text="Physical task (truly requires physical presence)" />
+      </th>
+      <th style={{ padding: "5px 8px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", width: 56, whiteSpace: "nowrap" }}>
+        Freq<InfoTooltip text="O*NET frequency rating (0–10). How often workers perform this task." />
+      </th>
+      <th style={{ padding: "5px 8px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", width: 56, whiteSpace: "nowrap" }}>
+        Imp<InfoTooltip text="O*NET importance rating (0–5). How critical this task is to the job." />
+      </th>
+      <th style={{ padding: "5px 8px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", width: 56, whiteSpace: "nowrap" }}>
+        Rel<InfoTooltip text="O*NET relevance score (0–100). Overall relevance weighting." />
+      </th>
+      <th style={{ padding: "5px 8px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", width: 110, whiteSpace: "nowrap" }}>
+        Auto-aug<InfoTooltip text="AI automatability score (0–5, averaged across sources). Higher = more automatable." />
+      </th>
+      <th style={{ padding: "5px 8px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", width: 80, whiteSpace: "nowrap" }}>
+        Pct Norm<InfoTooltip text="Share of AI conversations referencing this task. From AI datasets only." />
+      </th>
+    </tr>
+  );
+}
+
 // ── Occupation row ─────────────────────────────────────────────────────────────
 
 function OccupationRow({ occ, aggMode, geo }: { occ: OccupationSummary; aggMode: "avg" | "max"; geo: "nat" | "ut" }) {
   const [expanded, setExpanded]   = useState(false);
-  const [tasks, setTasks]         = useState<TaskDetail[] | null>(null);
-  const [loadingTasks, setLoading] = useState(false);
-  const [taskError, setTaskError] = useState<string | null>(null);
+  const [tasks,    setTasks]      = useState<TaskDetail[] | null>(null);
+  const [loadingT, setLoadingT]   = useState(false);
+  const [taskErr,  setTaskErr]    = useState<string | null>(null);
 
   const handleExpand = useCallback(async () => {
     setExpanded((e) => !e);
-    if (!tasks && !loadingTasks) {
-      setLoading(true);
+    if (!tasks && !loadingT) {
+      setLoadingT(true);
       try {
         const data: OccupationTasksResponse = await fetchOccupationTasks(occ.title_current);
         setTasks(data.tasks);
       } catch (e: unknown) {
-        setTaskError(e instanceof Error ? e.message : "Failed to load tasks");
-      } finally {
-        setLoading(false);
-      }
+        setTaskErr(e instanceof Error ? e.message : "Failed to load tasks");
+      } finally { setLoadingT(false); }
     }
-  }, [occ.title_current, tasks, loadingTasks]);
+  }, [occ.title_current, tasks, loadingT]);
 
   const emp  = geo === "nat" ? occ.emp_nat  : occ.emp_ut;
   const wage = geo === "nat" ? occ.wage_nat : occ.wage_ut;
 
-  const avgAuto = [occ.avg_auto_aug_aei, occ.avg_auto_aug_mcp, occ.avg_auto_aug_ms].filter((v) => v != null) as number[];
-  const aggAutoVal = avgAuto.length ? (aggMode === "avg" ? avgAuto.reduce((a, b) => a + b, 0) / avgAuto.length : Math.max(...avgAuto)) : null;
+  const vals = [occ.avg_auto_aug_aei, occ.avg_auto_aug_mcp, occ.avg_auto_aug_ms].filter((v) => v != null) as number[];
+  const aggAutoVal = vals.length ? (aggMode === "avg" ? vals.reduce((a, b) => a + b, 0) / vals.length : Math.max(...vals)) : null;
   const barPct = aggAutoVal != null ? Math.min(aggAutoVal / 5, 1) * 100 : null;
 
   return (
@@ -243,15 +328,9 @@ function OccupationRow({ occ, aggMode, geo }: { occ: OccupationSummary; aggMode:
             {occ.title_current}
           </div>
         </td>
-        <td style={{ padding: "9px 8px", fontSize: 12, color: "var(--text-secondary)", textAlign: "right", whiteSpace: "nowrap" }}>
-          {fmtEmp(emp)}
-        </td>
-        <td style={{ padding: "9px 8px", fontSize: 12, color: "var(--text-secondary)", textAlign: "right", whiteSpace: "nowrap" }}>
-          {fmtWage(wage)}
-        </td>
-        <td style={{ padding: "9px 8px", fontSize: 12, color: "var(--text-muted)", textAlign: "center" }}>
-          {occ.n_tasks}
-        </td>
+        <td style={{ padding: "9px 8px", fontSize: 12, color: "var(--text-secondary)", textAlign: "right", whiteSpace: "nowrap" }}>{fmtEmp(emp)}</td>
+        <td style={{ padding: "9px 8px", fontSize: 12, color: "var(--text-secondary)", textAlign: "right", whiteSpace: "nowrap" }}>{fmtWage(wage)}</td>
+        <td style={{ padding: "9px 8px", fontSize: 12, color: "var(--text-muted)", textAlign: "center" }}>{occ.n_tasks}</td>
         <td style={{ padding: "9px 8px" }}>
           {barPct != null ? (
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -266,36 +345,23 @@ function OccupationRow({ occ, aggMode, geo }: { occ: OccupationSummary; aggMode:
       {expanded && (
         <tr style={{ background: "#f7f7f5", borderBottom: "1px solid var(--border)" }}>
           <td colSpan={5} style={{ padding: "0 0 4px 24px" }}>
-            {loadingTasks && (
+            {loadingT && (
               <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "16px 0" }}>
                 <div style={{ width: 18, height: 18, borderRadius: "50%", border: "2px solid var(--brand)", borderTopColor: "transparent", animation: "spin 0.7s linear infinite" }} />
                 <span style={{ fontSize: 12, color: "var(--text-muted)" }}>Loading tasks…</span>
               </div>
             )}
-            {taskError && (
-              <p style={{ fontSize: 12, color: "#b91c1c", padding: "8px 0" }}>Error: {taskError}</p>
-            )}
+            {taskErr && <p style={{ fontSize: 12, color: "#b91c1c", padding: "8px 0" }}>Error: {taskErr}</p>}
             {tasks && tasks.length > 0 && (
               <div style={{ overflowX: "auto", marginTop: 8, marginRight: 8 }}>
                 <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-                  <thead>
-                    <tr style={{ borderBottom: "2px solid var(--border)" }}>
-                      <th style={{ padding: "5px 12px 5px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Task</th>
-                      <th style={{ padding: "5px 8px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>Freq</th>
-                      <th style={{ padding: "5px 8px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>Imp</th>
-                      <th style={{ padding: "5px 8px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>Rel</th>
-                      <th style={{ padding: "5px 8px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>Auto-aug</th>
-                      <th style={{ padding: "5px 8px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>Pct Norm</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {tasks.map((t) => <TaskRow key={t.task_normalized} task={t} aggMode={aggMode} />)}
-                  </tbody>
+                  <thead><TaskTableHeader /></thead>
+                  <tbody>{tasks.map((t) => <TaskRow key={t.task_normalized} task={t} aggMode={aggMode} />)}</tbody>
                 </table>
               </div>
             )}
             {tasks && tasks.length === 0 && (
-              <p style={{ fontSize: 12, color: "var(--text-muted)", padding: "10px 0" }}>No tasks found for this occupation.</p>
+              <p style={{ fontSize: 12, color: "var(--text-muted)", padding: "10px 0" }}>No tasks found.</p>
             )}
           </td>
         </tr>
@@ -304,10 +370,14 @@ function OccupationRow({ occ, aggMode, geo }: { occ: OccupationSummary; aggMode:
   );
 }
 
-// ── Broad occupation block ────────────────────────────────────────────────────
+// ── Broad block ───────────────────────────────────────────────────────────────
 
-function BroadBlock({ name, occs, aggMode, geo }: { name: string; occs: OccupationSummary[]; aggMode: "avg" | "max"; geo: "nat" | "ut" }) {
-  const [open, setOpen] = useState(false);
+function BroadBlock({ name, occs, aggMode, geo, autoOpen }: {
+  name: string; occs: OccupationSummary[]; aggMode: "avg" | "max"; geo: "nat" | "ut"; autoOpen: boolean;
+}) {
+  const [open, setOpen] = useState(autoOpen);
+  useEffect(() => { setOpen(autoOpen); }, [autoOpen]);
+
   return (
     <div style={{ marginBottom: 2 }}>
       <button onClick={() => setOpen((o) => !o)}
@@ -316,14 +386,9 @@ function BroadBlock({ name, occs, aggMode, geo }: { name: string; occs: Occupati
         onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
         <ChevronIcon open={open} />
         <span style={{ fontSize: 12, fontWeight: 600, color: "var(--text-secondary)" }}>{name}</span>
-        <span style={{ marginLeft: "auto", fontSize: 11, color: "var(--text-muted)" }}>{occs.length} occupation{occs.length !== 1 ? "s" : ""}</span>
+        <span style={{ marginLeft: "auto", fontSize: 11, color: "var(--text-muted)" }}>{occs.length} occ.</span>
       </button>
-      <div style={{
-        overflow: "hidden",
-        maxHeight: open ? "9999px" : "0px",
-        opacity: open ? 1 : 0,
-        transition: "max-height 0.25s ease, opacity 0.18s ease",
-      }}>
+      <div style={{ overflow: "hidden", maxHeight: open ? "9999px" : "0px", opacity: open ? 1 : 0, transition: "max-height 0.25s ease, opacity 0.18s ease" }}>
         <div style={{ marginLeft: 16 }}>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
@@ -335,9 +400,7 @@ function BroadBlock({ name, occs, aggMode, geo }: { name: string; occs: Occupati
                 <th style={{ padding: "4px 8px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>Avg Auto-aug</th>
               </tr>
             </thead>
-            <tbody>
-              {occs.map((o) => <OccupationRow key={o.title_current} occ={o} aggMode={aggMode} geo={geo} />)}
-            </tbody>
+            <tbody>{occs.map((o) => <OccupationRow key={o.title_current} occ={o} aggMode={aggMode} geo={geo} />)}</tbody>
           </table>
         </div>
       </div>
@@ -345,17 +408,17 @@ function BroadBlock({ name, occs, aggMode, geo }: { name: string; occs: Occupati
   );
 }
 
-// ── Minor category block ───────────────────────────────────────────────────────
+// ── Minor block ───────────────────────────────────────────────────────────────
 
-function MinorBlock({ name, occs, aggMode, geo }: { name: string; occs: OccupationSummary[]; aggMode: "avg" | "max"; geo: "nat" | "ut" }) {
-  const [open, setOpen] = useState(false);
+function MinorBlock({ name, occs, aggMode, geo, autoOpen }: {
+  name: string; occs: OccupationSummary[]; aggMode: "avg" | "max"; geo: "nat" | "ut"; autoOpen: boolean;
+}) {
+  const [open, setOpen] = useState(autoOpen);
+  useEffect(() => { setOpen(autoOpen); }, [autoOpen]);
+
   const broadGroups = useMemo(() => {
     const map = new Map<string, OccupationSummary[]>();
-    occs.forEach((o) => {
-      const k = o.broad ?? "Unknown";
-      if (!map.has(k)) map.set(k, []);
-      map.get(k)!.push(o);
-    });
+    occs.forEach((o) => { const k = o.broad ?? "Unknown"; if (!map.has(k)) map.set(k, []); map.get(k)!.push(o); });
     return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0]));
   }, [occs]);
 
@@ -369,15 +432,10 @@ function MinorBlock({ name, occs, aggMode, geo }: { name: string; occs: Occupati
         <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)" }}>{name}</span>
         <span style={{ marginLeft: "auto", fontSize: 11, color: "var(--text-muted)" }}>{occs.length} occ.</span>
       </button>
-      <div style={{
-        overflow: "hidden",
-        maxHeight: open ? "9999px" : "0px",
-        opacity: open ? 1 : 0,
-        transition: "max-height 0.25s ease, opacity 0.18s ease",
-      }}>
+      <div style={{ overflow: "hidden", maxHeight: open ? "9999px" : "0px", opacity: open ? 1 : 0, transition: "max-height 0.25s ease, opacity 0.18s ease" }}>
         <div style={{ marginLeft: 12, paddingLeft: 8, borderLeft: "2px solid var(--border-light)" }}>
           {broadGroups.map(([bName, bOccs]) => (
-            <BroadBlock key={bName} name={bName} occs={bOccs} aggMode={aggMode} geo={geo} />
+            <BroadBlock key={bName} name={bName} occs={bOccs} aggMode={aggMode} geo={geo} autoOpen={autoOpen} />
           ))}
         </div>
       </div>
@@ -385,22 +443,21 @@ function MinorBlock({ name, occs, aggMode, geo }: { name: string; occs: Occupati
   );
 }
 
-// ── Major category block ───────────────────────────────────────────────────────
+// ── Major block ───────────────────────────────────────────────────────────────
 
-function MajorBlock({ name, occs, aggMode, geo }: { name: string; occs: OccupationSummary[]; aggMode: "avg" | "max"; geo: "nat" | "ut" }) {
-  const [open, setOpen] = useState(false);
+function MajorBlock({ name, occs, aggMode, geo, autoOpen }: {
+  name: string; occs: OccupationSummary[]; aggMode: "avg" | "max"; geo: "nat" | "ut"; autoOpen: boolean;
+}) {
+  const [open, setOpen] = useState(autoOpen);
+  useEffect(() => { setOpen(autoOpen); }, [autoOpen]);
 
   const minorGroups = useMemo(() => {
     const map = new Map<string, OccupationSummary[]>();
-    occs.forEach((o) => {
-      const k = o.minor ?? "Unknown";
-      if (!map.has(k)) map.set(k, []);
-      map.get(k)!.push(o);
-    });
+    occs.forEach((o) => { const k = o.minor ?? "Unknown"; if (!map.has(k)) map.set(k, []); map.get(k)!.push(o); });
     return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0]));
   }, [occs]);
 
-  const totalEmp = occs.reduce((s, o) => s + (geo === "nat" ? o.emp_nat ?? 0 : o.emp_ut ?? 0), 0);
+  const totalEmp = occs.reduce((s, o) => s + ((geo === "nat" ? o.emp_nat : o.emp_ut) ?? 0), 0);
 
   return (
     <div style={{ marginBottom: 4, background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 10, overflow: "hidden", boxShadow: "0 1px 2px rgba(0,0,0,0.03)" }}>
@@ -414,15 +471,10 @@ function MajorBlock({ name, occs, aggMode, geo }: { name: string; occs: Occupati
           {occs.length} occupations · {fmtEmp(totalEmp)} workers
         </span>
       </button>
-      <div style={{
-        overflow: "hidden",
-        maxHeight: open ? "9999px" : "0px",
-        opacity: open ? 1 : 0,
-        transition: "max-height 0.25s ease, opacity 0.18s ease",
-      }}>
+      <div style={{ overflow: "hidden", maxHeight: open ? "9999px" : "0px", opacity: open ? 1 : 0, transition: "max-height 0.25s ease, opacity 0.18s ease" }}>
         <div style={{ borderTop: "1px solid var(--border-light)" }}>
           {minorGroups.map(([mName, mOccs]) => (
-            <MinorBlock key={mName} name={mName} occs={mOccs} aggMode={aggMode} geo={geo} />
+            <MinorBlock key={mName} name={mName} occs={mOccs} aggMode={aggMode} geo={geo} autoOpen={autoOpen} />
           ))}
         </div>
       </div>
@@ -430,14 +482,127 @@ function MajorBlock({ name, occs, aggMode, geo }: { name: string; occs: Occupati
   );
 }
 
+// ── Flat table view ───────────────────────────────────────────────────────────
+
+type TableLevel = "major" | "minor" | "broad" | "occupation";
+
+function FlatTable({
+  occupations, geo, aggMode, tableLevel, autoAugMin,
+}: {
+  occupations: OccupationSummary[];
+  geo: "nat" | "ut";
+  aggMode: "avg" | "max";
+  tableLevel: TableLevel;
+  autoAugMin: number;
+}) {
+  const rows = useMemo<FlatRow[]>(() => {
+    let result: FlatRow[];
+
+    if (tableLevel === "occupation") {
+      result = occupations.map((occ) => {
+        const aa = getAutoAug(occ);
+        return {
+          name: occ.title_current,
+          emp:  (geo === "nat" ? occ.emp_nat  : occ.emp_ut)  ?? 0,
+          wage: (geo === "nat" ? occ.wage_nat : occ.wage_ut) ?? null,
+          n_occs: 1,
+          n_tasks: occ.n_tasks,
+          avg_auto_aug: aa,
+        };
+      });
+    } else {
+      const map = new Map<string, OccupationSummary[]>();
+      occupations.forEach((occ) => {
+        const k = occ[tableLevel] ?? "Unknown";
+        if (!map.has(k)) map.set(k, []);
+        map.get(k)!.push(occ);
+      });
+      result = Array.from(map.entries())
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([name, occs]) => ({ name, ...aggregateOccs(occs, geo) }));
+    }
+
+    if (autoAugMin > 0) {
+      result = result.filter((r) => r.avg_auto_aug != null && r.avg_auto_aug >= autoAugMin);
+    }
+
+    return result.sort((a, b) => b.emp - a.emp);
+  }, [occupations, geo, tableLevel, autoAugMin, aggMode]);
+
+  return (
+    <div style={{ overflowX: "auto" }}>
+      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+        <thead>
+          <tr style={{ borderBottom: "2px solid var(--border)" }}>
+            <th style={{ padding: "7px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+              {tableLevel.charAt(0).toUpperCase() + tableLevel.slice(1)}
+            </th>
+            <th style={{ padding: "7px 8px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>Employment</th>
+            <th style={{ padding: "7px 8px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>Med. Wage</th>
+            {tableLevel !== "occupation" && (
+              <th style={{ padding: "7px 8px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}># Occs</th>
+            )}
+            <th style={{ padding: "7px 8px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>Tasks</th>
+            <th style={{ padding: "7px 8px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>
+              Avg Auto-aug<InfoTooltip text="Average AI automatability score (0–5) across AEI, MCP, and Microsoft sources." />
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => {
+            const barPct = row.avg_auto_aug != null ? Math.min(row.avg_auto_aug / 5, 1) * 100 : null;
+            return (
+              <tr key={row.name}
+                style={{ borderBottom: "1px solid var(--border-light)", transition: "background 0.1s" }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#f9f9f7")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+              >
+                <td style={{ padding: "8px 12px", fontSize: 13, color: "var(--text-primary)", fontWeight: tableLevel !== "occupation" ? 600 : 400 }}>{row.name}</td>
+                <td style={{ padding: "8px 8px", textAlign: "right", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>{fmtEmp(row.emp)}</td>
+                <td style={{ padding: "8px 8px", textAlign: "right", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>{fmtWage(row.wage)}</td>
+                {tableLevel !== "occupation" && (
+                  <td style={{ padding: "8px 8px", textAlign: "right", color: "var(--text-muted)" }}>{row.n_occs}</td>
+                )}
+                <td style={{ padding: "8px 8px", textAlign: "right", color: "var(--text-muted)" }}>{row.n_tasks}</td>
+                <td style={{ padding: "8px 8px" }}>
+                  {barPct != null ? (
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <div style={{ width: 60, height: 6, background: "var(--border)", borderRadius: 3, overflow: "hidden", flexShrink: 0 }}>
+                        <div style={{ width: `${barPct}%`, height: "100%", background: "var(--brand)", borderRadius: 3 }} />
+                      </div>
+                      <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>{row.avg_auto_aug?.toFixed(2)}</span>
+                    </div>
+                  ) : <span style={{ fontSize: 11, color: "var(--text-muted)", fontStyle: "italic" }}>—</span>}
+                </td>
+              </tr>
+            );
+          })}
+          {rows.length === 0 && (
+            <tr>
+              <td colSpan={6} style={{ padding: "32px", textAlign: "center", color: "var(--text-muted)", fontSize: 13 }}>
+                No rows match the current filters.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 // ── Main ExplorerView ─────────────────────────────────────────────────────────
 
 export default function ExplorerView({ occupations }: Props) {
-  const [search, setSearch]     = useState("");
+  const [search,        setSearch]        = useState("");
   const [selectedMajor, setSelectedMajor] = useState<string | null>(null);
-  const [aggMode, setAggMode]   = useState<"avg" | "max">("avg");
-  const [geo, setGeo]           = useState<"nat" | "ut">("nat");
+  const [aggMode,       setAggMode]       = useState<"avg" | "max">("avg");
+  const [geo,           setGeo]           = useState<"nat" | "ut">("nat");
+  const [viewMode,      setViewMode]      = useState<"accordion" | "table">("accordion");
+  const [tableLevel,    setTableLevel]    = useState<TableLevel>("major");
+  const [autoAugMin,    setAutoAugMin]    = useState(0);
   const [searchFocused, setSearchFocused] = useState(false);
+
+  const searchActive = search.trim().length > 0;
 
   const allMajors = useMemo(() => {
     const s = new Set(occupations.map((o) => o.major ?? "Unknown"));
@@ -449,46 +614,54 @@ export default function ExplorerView({ occupations }: Props) {
     if (selectedMajor) list = list.filter((o) => o.major === selectedMajor);
     if (search.trim()) {
       const q = search.toLowerCase();
-      list = list.filter((o) => o.title_current.toLowerCase().includes(q) || (o.minor?.toLowerCase().includes(q)) || (o.broad?.toLowerCase().includes(q)));
+      list = list.filter((o) =>
+        o.title_current.toLowerCase().includes(q) ||
+        (o.minor?.toLowerCase().includes(q)) ||
+        (o.broad?.toLowerCase().includes(q))
+      );
     }
     return list;
   }, [occupations, selectedMajor, search]);
 
   const majorGroups = useMemo(() => {
     const map = new Map<string, OccupationSummary[]>();
-    filtered.forEach((o) => {
-      const k = o.major ?? "Unknown";
-      if (!map.has(k)) map.set(k, []);
-      map.get(k)!.push(o);
-    });
+    filtered.forEach((o) => { const k = o.major ?? "Unknown"; if (!map.has(k)) map.set(k, []); map.get(k)!.push(o); });
     return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0]));
   }, [filtered]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - var(--nav-height))", overflow: "hidden" }}>
-      {/* Header */}
+
+      {/* ── Header ── */}
       <div style={{ background: "var(--bg-surface)", borderBottom: "1px solid var(--border)", padding: "0 24px", height: 52, display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
         <div>
           <h1 style={{ fontSize: 15, fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>Job Explorer</h1>
-          <p style={{ fontSize: 11, color: "var(--text-muted)" }}>
-            {occupations.length} occupations · click to expand tasks
-          </p>
+          <p style={{ fontSize: 11, color: "var(--text-muted)" }}>{occupations.length} occupations</p>
         </div>
         <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
+          {/* View toggle */}
+          <div style={{ display: "flex", border: "1px solid var(--border)", borderRadius: 7, overflow: "hidden" }}>
+            {(["accordion", "table"] as const).map((m, i) => (
+              <button key={m} onClick={() => setViewMode(m)}
+                style={{ padding: "5px 12px", fontSize: 12, fontWeight: m === viewMode ? 700 : 400, background: m === viewMode ? "var(--brand-light)" : "transparent", color: m === viewMode ? "var(--brand)" : "var(--text-secondary)", border: "none", cursor: "pointer", borderRight: i === 0 ? "1px solid var(--border)" : "none" }}>
+                {m === "accordion" ? "Accordion" : "Table"}
+              </button>
+            ))}
+          </div>
           {/* Agg mode */}
           <div style={{ display: "flex", border: "1px solid var(--border)", borderRadius: 7, overflow: "hidden" }}>
-            {(["avg", "max"] as const).map((m) => (
+            {(["avg", "max"] as const).map((m, i) => (
               <button key={m} onClick={() => setAggMode(m)}
-                style={{ padding: "5px 12px", fontSize: 12, fontWeight: m === aggMode ? 700 : 400, background: m === aggMode ? "var(--brand-light)" : "transparent", color: m === aggMode ? "var(--brand)" : "var(--text-secondary)", border: "none", cursor: "pointer", borderRight: m === "avg" ? "1px solid var(--border)" : "none" }}>
+                style={{ padding: "5px 12px", fontSize: 12, fontWeight: m === aggMode ? 700 : 400, background: m === aggMode ? "var(--brand-light)" : "transparent", color: m === aggMode ? "var(--brand)" : "var(--text-secondary)", border: "none", cursor: "pointer", borderRight: i === 0 ? "1px solid var(--border)" : "none" }}>
                 {m === "avg" ? "Average" : "Max"}
               </button>
             ))}
           </div>
           {/* Geo */}
           <div style={{ display: "flex", border: "1px solid var(--border)", borderRadius: 7, overflow: "hidden" }}>
-            {(["nat", "ut"] as const).map((g) => (
+            {(["nat", "ut"] as const).map((g, i) => (
               <button key={g} onClick={() => setGeo(g)}
-                style={{ padding: "5px 12px", fontSize: 12, fontWeight: g === geo ? 700 : 400, background: g === geo ? "var(--brand-light)" : "transparent", color: g === geo ? "var(--brand)" : "var(--text-secondary)", border: "none", cursor: "pointer", borderRight: g === "nat" ? "1px solid var(--border)" : "none" }}>
+                style={{ padding: "5px 12px", fontSize: 12, fontWeight: g === geo ? 700 : 400, background: g === geo ? "var(--brand-light)" : "transparent", color: g === geo ? "var(--brand)" : "var(--text-secondary)", border: "none", cursor: "pointer", borderRight: i === 0 ? "1px solid var(--border)" : "none" }}>
                 {g === "nat" ? "National" : "Utah"}
               </button>
             ))}
@@ -496,30 +669,23 @@ export default function ExplorerView({ occupations }: Props) {
         </div>
       </div>
 
-      {/* Search + filters */}
+      {/* ── Search + filters ── */}
       <div style={{ background: "var(--bg-surface)", borderBottom: "1px solid var(--border)", padding: "12px 24px 10px", flexShrink: 0 }}>
-        {/* Search */}
+        {/* Search bar */}
         <div style={{ position: "relative", marginBottom: 8 }}>
           <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", display: "flex", alignItems: "center" }}>
             <SearchIcon />
           </span>
           <input
-            type="text"
-            placeholder="Search occupations…"
-            value={search}
+            type="text" placeholder="Search occupations…" value={search}
             onChange={(e) => setSearch(e.target.value)}
-            onFocus={() => setSearchFocused(true)}
-            onBlur={() => setSearchFocused(false)}
+            onFocus={() => setSearchFocused(true)} onBlur={() => setSearchFocused(false)}
             style={{
-              width: "100%",
-              fontSize: 13,
+              width: "100%", fontSize: 13,
               border: `1px solid ${searchFocused ? "var(--brand)" : "var(--border)"}`,
-              borderRadius: 8,
-              padding: "8px 12px 8px 32px",
-              background: "var(--bg-surface)",
-              color: "var(--text-primary)",
-              outline: "none",
-              boxSizing: "border-box",
+              borderRadius: 8, padding: "8px 12px 8px 32px",
+              background: "var(--bg-surface)", color: "var(--text-primary)",
+              outline: "none", boxSizing: "border-box",
               boxShadow: searchFocused ? "0 0 0 2px var(--brand-light)" : "none",
               transition: "border-color 0.15s ease, box-shadow 0.15s ease",
             }}
@@ -531,8 +697,9 @@ export default function ExplorerView({ occupations }: Props) {
             </button>
           )}
         </div>
+
         {/* Major category chips */}
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 5, flexWrap: "wrap", maxHeight: 72, overflowY: "auto" }}>
           <button
             onClick={() => setSelectedMajor(null)}
             className={`filter-chip${!selectedMajor ? " selected" : ""}`}>
@@ -549,18 +716,54 @@ export default function ExplorerView({ occupations }: Props) {
             );
           })}
         </div>
+
+        {/* Table-mode controls */}
+        {viewMode === "table" && (
+          <div style={{ display: "flex", gap: 16, alignItems: "center", marginTop: 10, flexWrap: "wrap" }}>
+            <div>
+              <span style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginRight: 8 }}>Level</span>
+              <div style={{ display: "inline-flex", border: "1px solid var(--border)", borderRadius: 7, overflow: "hidden" }}>
+                {(["major", "minor", "broad", "occupation"] as TableLevel[]).map((lv, i, arr) => (
+                  <button key={lv} onClick={() => setTableLevel(lv)}
+                    style={{ padding: "4px 10px", fontSize: 11, fontWeight: lv === tableLevel ? 600 : 400, background: lv === tableLevel ? "var(--brand-light)" : "transparent", color: lv === tableLevel ? "var(--brand)" : "var(--text-secondary)", border: "none", cursor: "pointer", borderRight: i < arr.length - 1 ? "1px solid var(--border)" : "none" }}>
+                    {lv.charAt(0).toUpperCase() + lv.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", whiteSpace: "nowrap" }}>
+                Auto-aug ≥ {autoAugMin.toFixed(1)}
+              </span>
+              <input type="range" min={0} max={5} step={0.1} value={autoAugMin}
+                onChange={(e) => setAutoAugMin(Number(e.target.value))}
+                style={{ width: 100, accentColor: "var(--brand)" }} />
+              {autoAugMin > 0 && (
+                <button onClick={() => setAutoAugMin(0)}
+                  style={{ fontSize: 11, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+                  Reset
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Results */}
+      {/* ── Content ── */}
       <div style={{ flex: 1, overflowY: "auto", padding: "16px 24px" }}>
-        {filtered.length === 0 ? (
+        {viewMode === "table" ? (
+          <FlatTable
+            occupations={filtered} geo={geo} aggMode={aggMode}
+            tableLevel={tableLevel} autoAugMin={autoAugMin}
+          />
+        ) : filtered.length === 0 ? (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 200, fontSize: 13, color: "var(--text-muted)" }}>
             No occupations match your search.
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             {majorGroups.map(([mName, mOccs]) => (
-              <MajorBlock key={mName} name={mName} occs={mOccs} aggMode={aggMode} geo={geo} />
+              <MajorBlock key={mName} name={mName} occs={mOccs} aggMode={aggMode} geo={geo} autoOpen={searchActive} />
             ))}
           </div>
         )}
