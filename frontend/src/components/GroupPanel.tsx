@@ -55,7 +55,7 @@ export default function GroupPanel({ groupId, color, settings, config }: Props) 
   const subtitle = buildSubtitle(settings);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 16, width: "100%", minWidth: 0 }}>
       {/* Group header */}
       <div style={{ backgroundColor: color, borderRadius: 8, padding: "10px 16px", color: "white", fontSize: 14, fontWeight: 700, letterSpacing: "-0.01em" }}>
         Group {groupId}

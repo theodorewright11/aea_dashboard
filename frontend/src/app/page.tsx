@@ -172,20 +172,21 @@ export default function HomePage() {
       </div>
 
       {/* ── Charts — full width, two-up grid ── */}
-      <div style={{
-        flex: 1,
-        overflowY: "auto",
-        padding: "28px 28px 0",
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(480px, 1fr))",
-        gap: 28,
-        alignContent: "start",
-      }}>
-        <GroupPanel groupId="A" color={GROUP_A_COLOR} settings={appliedA} config={config} />
-        <GroupPanel groupId="B" color={GROUP_B_COLOR} settings={appliedB} config={config} />
+      <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
+        <div style={{
+          padding: "28px",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(480px, 1fr))",
+          gap: 28,
+          alignContent: "start",
+          flex: 1,
+        }}>
+          <GroupPanel groupId="A" color={GROUP_A_COLOR} settings={appliedA} config={config} />
+          <GroupPanel groupId="B" color={GROUP_B_COLOR} settings={appliedB} config={config} />
+        </div>
 
-        {/* Footer inside scroll area */}
-        <div style={{ gridColumn: "1 / -1", padding: "12px 0 20px", borderTop: "1px solid var(--border)" }}>
+        {/* Footer outside the grid so it doesn't affect column sizing */}
+        <div style={{ padding: "12px 28px 20px", borderTop: "1px solid var(--border)", marginTop: "auto" }}>
           <p style={{ fontSize: 11, color: "var(--text-muted)", margin: 0 }}>
             Source: 2025 O*NET task data · 2024 BLS OEWS · AEI conversation data · MCP server classification pipeline
           </p>

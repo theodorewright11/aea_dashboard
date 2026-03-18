@@ -52,23 +52,23 @@ export default function SettingsDrawer({
         }}
       />
 
-      {/* Drawer panel */}
+      {/* Drawer panel — slides in from the right */}
       <div
         role="dialog"
         aria-modal="true"
         aria-label="Dashboard settings"
         style={{
           position: "fixed",
-          top: 0, left: 0, bottom: 0,
+          top: 0, right: 0, bottom: 0,
           zIndex: 101,
           width: "var(--drawer-width)",
           background: "var(--bg-sidebar)",
-          borderRight: "1px solid var(--border)",
+          borderLeft: "1px solid var(--border)",
           display: "flex",
           flexDirection: "column",
-          transform: open ? "translateX(0)" : "translateX(-100%)",
+          transform: open ? "translateX(0)" : "translateX(100%)",
           transition: "transform 0.2s ease",
-          boxShadow: open ? "6px 0 28px rgba(0,0,0,0.10)" : "none",
+          boxShadow: open ? "-6px 0 28px rgba(0,0,0,0.10)" : "none",
         }}
       >
         {/* Header */}
