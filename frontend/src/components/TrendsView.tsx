@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useMemo } from "react";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
-  Tooltip, Legend, ResponsiveContainer,
+  Tooltip, ResponsiveContainer,
 } from "recharts";
 import type {
   ConfigResponse, TrendsSettings, WATrendsSettings,
@@ -11,6 +11,7 @@ import type {
 } from "@/lib/types";
 import { fetchTrends, fetchWATrends } from "@/lib/api";
 import { downloadChartAsPng } from "@/lib/downloadChart";
+import type { LegendItem } from "@/lib/downloadChart";
 
 interface Props { config: ConfigResponse }
 
@@ -45,7 +46,9 @@ function getSeriesToFetch(
 // ── Formatters ────────────────────────────────────────────────────────────────
 
 type MetricKey = "workers_affected" | "wages_affected" | "pct_tasks_affected";
-type LineMode   = "individual" | "average" | "max";
+type LineMode  = "individual" | "average" | "max";
+type SortMode  = "value" | "increase";
+type IncMode   = "abs" | "pct";
 
 const METRIC_OPTIONS: { key: MetricKey; label: string }[] = [
   { key: "workers_affected",   label: "Workers Affected"    },
@@ -67,6 +70,12 @@ function fmtVal(v: number, metric: MetricKey): string {
   return String(v);
 }
 
+function fmtIncrease(v: number, metric: MetricKey, mode: IncMode): string {
+  if (mode === "pct") return `${v >= 0 ? "+" : ""}${v.toFixed(1)}%`;
+  const prefix = v >= 0 ? "+" : "";
+  return prefix + fmtVal(Math.abs(v), metric);
+}
+
 function fmtDate(dateStr: string): string {
   const d = new Date(dateStr + "T00:00:00Z");
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -79,14 +88,12 @@ const CHART_FONT = "Inter, -apple-system, BlinkMacSystemFont, sans-serif";
 
 type LineConfig = { key: string; color: string };
 
-/** Individual mode: one line per (dataset × category) */
 function buildIndividualData(
   result: TrendsResponse,
   selectedDatasets: string[],
   shownCats: string[],
   metric: MetricKey,
 ): { chartData: Record<string, number | string>[]; lineConfigs: LineConfig[] } {
-  // lookup: dataset → date → category → value
   const lookup = new Map<string, Map<string, Map<string, number>>>();
 
   result.series.forEach((s: TrendSeries) => {
@@ -134,7 +141,10 @@ function buildIndividualData(
   return { chartData, lineConfigs };
 }
 
-/** Average or Max mode: one line per category, aggregated across selected datasets */
+/**
+ * Aggregate (average or cumulative-max) across selected datasets per category.
+ * Max mode never decreases — running max is carried forward across dates.
+ */
 function buildAggregatedData(
   result: TrendsResponse,
   selectedDatasets: string[],
@@ -164,19 +174,29 @@ function buildAggregatedData(
 
   const dates = Array.from(dateSet).sort();
 
+  // Running max per category (only used in max mode)
+  const runningMax = new Map<string, number>();
+
   const chartData = dates.map((date) => {
     const point: Record<string, number | string> = { date };
     const byCat = lookup.get(date);
-    if (byCat) {
-      shownCats.forEach((cat) => {
-        const vals = byCat.get(cat);
-        if (vals && vals.length > 0) {
-          point[cat] = mode === "average"
-            ? vals.reduce((a, b) => a + b, 0) / vals.length
-            : Math.max(...vals);
+    shownCats.forEach((cat) => {
+      const vals = byCat?.get(cat);
+      if (vals && vals.length > 0) {
+        if (mode === "average") {
+          point[cat] = vals.reduce((a, b) => a + b, 0) / vals.length;
+        } else {
+          const dateMax = Math.max(...vals);
+          const prev    = runningMax.get(cat) ?? -Infinity;
+          const cumulMax = Math.max(prev, dateMax);
+          runningMax.set(cat, cumulMax);
+          point[cat] = cumulMax;
         }
-      });
-    }
+      } else if (mode === "max" && runningMax.has(cat)) {
+        // Carry forward running max when no data at this date
+        point[cat] = runningMax.get(cat)!;
+      }
+    });
     return point;
   });
 
@@ -185,6 +205,30 @@ function buildAggregatedData(
     .filter((lc) => chartData.some((p) => p[lc.key] !== undefined));
 
   return { chartData, lineConfigs };
+}
+
+/**
+ * Compute increase (absolute or %) for each line key from first to last available data point.
+ */
+function computeIncreases(
+  chartData: Record<string, number | string>[],
+  lineConfigs: LineConfig[],
+  metric: MetricKey,
+  incMode: IncMode,
+): Map<string, number> {
+  const increases = new Map<string, number>();
+  lineConfigs.forEach(({ key }) => {
+    const points = chartData.filter((p) => typeof p[key] === "number") as Record<string, number>[];
+    if (points.length < 2) return;
+    const first = points[0][key];
+    const last  = points[points.length - 1][key];
+    if (incMode === "abs") {
+      increases.set(key, last - first);
+    } else {
+      if (first !== 0) increases.set(key, ((last - first) / Math.abs(first)) * 100);
+    }
+  });
+  return increases;
 }
 
 // ── UI components ─────────────────────────────────────────────────────────────
@@ -268,56 +312,153 @@ function DownloadIcon() {
   );
 }
 
+// ── Custom grid legend ────────────────────────────────────────────────────────
+
+function ChartLegend({
+  lineConfigs, increases, metric, incMode, lockedLine, setLockedLine,
+}: {
+  lineConfigs: LineConfig[];
+  increases: Map<string, number> | null;
+  metric: MetricKey;
+  incMode: IncMode;
+  lockedLine: string | null;
+  setLockedLine: (k: string | null) => void;
+}) {
+  if (!lineConfigs.length) return null;
+  return (
+    <div style={{
+      display: "flex", flexWrap: "wrap", gap: "3px 8px",
+      padding: "10px 16px 4px",
+      borderTop: "1px solid var(--border-light)",
+    }}>
+      {lineConfigs.map(({ key, color }) => {
+        const inc     = increases?.get(key);
+        const isLocked = lockedLine === key;
+        const isDimmed = lockedLine != null && !isLocked;
+        return (
+          <button
+            key={key}
+            onClick={() => setLockedLine(isLocked ? null : key)}
+            title={isLocked ? "Click to unlock" : "Click to lock focus"}
+            style={{
+              display: "flex", alignItems: "center", gap: 5,
+              padding: "3px 7px", borderRadius: 5, cursor: "pointer",
+              background: isLocked ? "var(--brand-light)" : "transparent",
+              border: `1px solid ${isLocked ? "var(--brand)" : "transparent"}`,
+              opacity: isDimmed ? 0.4 : 1,
+              transition: "all 0.12s",
+            }}
+          >
+            <span style={{
+              width: 10, height: 3, borderRadius: 2,
+              background: color, flexShrink: 0,
+            }} />
+            <span style={{
+              fontSize: 11, color: "var(--text-secondary)",
+              maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+            }}>{key}</span>
+            {inc != null && (
+              <span style={{
+                fontSize: 10, fontWeight: 600, marginLeft: 2,
+                color: inc >= 0 ? "#16a34a" : "#dc2626",
+              }}>
+                {fmtIncrease(inc, metric, incMode)}
+              </span>
+            )}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 // ── Chart panel ───────────────────────────────────────────────────────────────
 
 function ChartPanel({
-  title, metric, chartData, lineConfigs, loading, error, hasResult,
+  title, metric, chartData, lineConfigs, increases, incMode,
+  loading, error, hasResult, lockedLine, setLockedLine,
 }: {
   title: string; metric: MetricKey;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   chartData: Record<string, any>[];
-  lineConfigs: LineConfig[]; loading: boolean; error: string | null; hasResult: boolean;
+  lineConfigs: LineConfig[];
+  increases: Map<string, number> | null;
+  incMode: IncMode;
+  loading: boolean; error: string | null; hasResult: boolean;
+  lockedLine: string | null;
+  setLockedLine: (k: string | null) => void;
 }) {
   const chartRef = useRef<HTMLDivElement>(null);
   const [hoveredLine, setHoveredLine] = useState<string | null>(null);
+
+  const activeLine = lockedLine ?? hoveredLine;
   const chartHeight = Math.max(380, Math.min(lineConfigs.length, 14) * 22 + 180);
+
+  // Build legendItems for download
+  const downloadLegendItems = useMemo<LegendItem[]>(() => lineConfigs.map((lc) => {
+    const inc = increases?.get(lc.key);
+    return {
+      color: lc.color,
+      label: lc.key,
+      extra: inc != null ? fmtIncrease(inc, metric, incMode) : undefined,
+    };
+  }), [lineConfigs, increases, metric, incMode]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function TrendsTooltip(props: any) {
     if (!props.active || !props.payload?.length) return null;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const payload = hoveredLine ? props.payload.filter((p: any) => p.dataKey === hoveredLine) : props.payload;
+    const payload = activeLine ? props.payload.filter((p: any) => p.dataKey === activeLine) : props.payload;
     return (
       <div style={{
         background: "var(--bg-surface)", border: "1px solid var(--border)",
         borderRadius: 8, padding: "10px 14px", fontSize: 12,
-        boxShadow: "0 2px 8px rgba(0,0,0,0.09)", maxWidth: 340,
+        boxShadow: "0 2px 8px rgba(0,0,0,0.09)", maxWidth: 360,
       }}>
         <p style={{ fontWeight: 700, color: "var(--text-primary)", marginBottom: 8 }}>
           {fmtDate(props.label ?? "")}
         </p>
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-        {payload.map((p: any, i: number) => (
-          <div key={i} style={{ display: "flex", justifyContent: "space-between", gap: 16, marginBottom: 3, alignItems: "baseline" }}>
-            <span style={{ color: p.color, fontWeight: 500, fontSize: 11, flex: 1 }}>{p.name}</span>
-            <span style={{ color: "var(--text-primary)", fontWeight: 600, whiteSpace: "nowrap" }}>
-              {fmtVal(p.value ?? 0, metric)}
-            </span>
-          </div>
-        ))}
+        {payload.map((p: any, i: number) => {
+          const inc = increases?.get(p.name);
+          return (
+            <div key={i} style={{ display: "flex", justifyContent: "space-between", gap: 12, marginBottom: 3, alignItems: "baseline" }}>
+              <span style={{ color: p.color, fontWeight: 500, fontSize: 11, flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</span>
+              <span style={{ color: "var(--text-primary)", fontWeight: 600, whiteSpace: "nowrap" }}>
+                {fmtVal(p.value ?? 0, metric)}
+              </span>
+              {inc != null && (
+                <span style={{ fontSize: 10, fontWeight: 600, whiteSpace: "nowrap", color: inc >= 0 ? "#16a34a" : "#dc2626" }}>
+                  {fmtIncrease(inc, metric, incMode)}
+                </span>
+              )}
+            </div>
+          );
+        })}
       </div>
     );
   }
 
   return (
-    <div style={{
-      background: "var(--bg-surface)", border: "1px solid var(--border)",
-      borderRadius: 12, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
-    }}>
+    <div
+      style={{
+        background: "var(--bg-surface)", border: "1px solid var(--border)",
+        borderRadius: 12, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+      }}
+      onClick={(e) => {
+        // Click on chart background clears lock
+        if ((e.target as HTMLElement).closest(".recharts-line")) return;
+        if ((e.target as HTMLElement).closest("[data-legend-btn]")) return;
+        setLockedLine(null);
+      }}
+    >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px 8px" }}>
         <span style={{ fontSize: 14, fontWeight: 600, color: "var(--text-primary)" }}>{title}</span>
         <button
-          onClick={() => downloadChartAsPng(chartRef.current, `trends-${metric}`, { title })}
+          onClick={(e) => {
+            e.stopPropagation();
+            downloadChartAsPng(chartRef.current, `trends-${metric}`, { title, legendItems: downloadLegendItems });
+          }}
           title="Download chart as PNG"
           style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: "4px", borderRadius: 4, display: "flex", alignItems: "center", transition: "color 0.12s" }}
           onMouseOver={(e) => (e.currentTarget.style.color = "var(--text-primary)")}
@@ -325,45 +466,37 @@ function ChartPanel({
         ><DownloadIcon /></button>
       </div>
 
-      <div ref={chartRef} style={{ padding: "0 16px 16px" }}>
+      <div ref={chartRef} style={{ padding: "0 16px 4px" }}>
         {loading && (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 300 }}>
             <div style={{ width: 28, height: 28, borderRadius: "50%", border: "3px solid var(--brand)", borderTopColor: "transparent", animation: "spin 0.7s linear infinite" }} />
             <span style={{ marginLeft: 10, fontSize: 13, color: "var(--text-muted)" }}>Computing trends…</span>
           </div>
         )}
-
         {!loading && error && (
           <div style={{ background: "#fef2f2", border: "1px solid #fca5a5", borderRadius: 8, padding: "12px 16px", fontSize: 13, color: "#b91c1c", margin: "16px 0" }}>
             Error: {error}
           </div>
         )}
-
         {!loading && !error && !hasResult && (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 280 }}>
             <div style={{ textAlign: "center" }}>
-              <p style={{ fontSize: 14, color: "var(--text-secondary)", fontWeight: 500, marginBottom: 4 }}>
-                Select datasets and click Run to view trends
-              </p>
-              <p style={{ fontSize: 12, color: "var(--text-muted)" }}>
-                Tracks how metrics changed across dataset versions over time
-              </p>
+              <p style={{ fontSize: 14, color: "var(--text-secondary)", fontWeight: 500, marginBottom: 4 }}>Select datasets and click Run to view trends</p>
+              <p style={{ fontSize: 12, color: "var(--text-muted)" }}>Tracks how metrics changed across dataset versions over time</p>
             </div>
           </div>
         )}
-
         {!loading && !error && hasResult && lineConfigs.length === 0 && (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 200, fontSize: 13, color: "var(--text-muted)" }}>
             No matching data for the selected configuration.
           </div>
         )}
-
         {!loading && !error && hasResult && lineConfigs.length > 0 && (
           <ResponsiveContainer width="100%" height={chartHeight}>
             <LineChart
               data={chartData}
               margin={{ top: 10, right: 30, bottom: 20, left: 60 }}
-              onMouseLeave={() => setHoveredLine(null)}
+              onMouseLeave={() => { if (!lockedLine) setHoveredLine(null); }}
             >
               <CartesianGrid strokeDasharray="4 4" stroke="rgba(0,0,0,0.05)" vertical={false} />
               <XAxis
@@ -377,22 +510,44 @@ function ChartPanel({
                 axisLine={false} tickLine={false} width={56}
               />
               <Tooltip content={(p) => <TrendsTooltip {...p} />} />
-              <Legend wrapperStyle={{ fontSize: 10, fontFamily: CHART_FONT, paddingTop: 12, color: "var(--text-secondary)" }} />
-              {lineConfigs.map((lc) => (
-                <Line
-                  key={lc.key} type="monotone" dataKey={lc.key} stroke={lc.color}
-                  strokeWidth={hoveredLine && hoveredLine !== lc.key ? 1 : 2}
-                  opacity={hoveredLine && hoveredLine !== lc.key ? 0.3 : 1}
-                  dot={{ r: 4, strokeWidth: 0, fill: lc.color }} activeDot={{ r: 5 }}
-                  connectNulls={false}
-                  onMouseEnter={() => setHoveredLine(lc.key)}
-                  onMouseLeave={() => setHoveredLine(null)}
-                />
-              ))}
+              {lineConfigs.map((lc) => {
+                const isActive = activeLine === lc.key;
+                const isDimmed = activeLine != null && !isActive;
+                return (
+                  <Line
+                    key={lc.key} type="monotone" dataKey={lc.key} stroke={lc.color}
+                    strokeWidth={isDimmed ? 1.5 : isActive ? 3.5 : 2.5}
+                    opacity={isDimmed ? 0.25 : 1}
+                    dot={{ r: 4.5, strokeWidth: 0, fill: lc.color }}
+                    activeDot={{
+                      r: 7, strokeWidth: 2, stroke: "#fff",
+                      onClick: () => setLockedLine(lockedLine === lc.key ? null : lc.key),
+                    }}
+                    connectNulls={false}
+                    onMouseEnter={() => { if (!lockedLine) setHoveredLine(lc.key); }}
+                    onMouseLeave={() => { if (!lockedLine) setHoveredLine(null); }}
+                    className="recharts-line"
+                  />
+                );
+              })}
             </LineChart>
           </ResponsiveContainer>
         )}
       </div>
+
+      {/* Custom grid legend */}
+      {!loading && !error && hasResult && lineConfigs.length > 0 && (
+        <div data-legend-btn="true">
+          <ChartLegend
+            lineConfigs={lineConfigs}
+            increases={increases}
+            metric={metric}
+            incMode={incMode}
+            lockedLine={lockedLine}
+            setLockedLine={setLockedLine}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -444,13 +599,25 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
   const [loading,      setLoading]      = useState(false);
   const [error,        setError]        = useState<string | null>(null);
   const [result,       setResult]       = useState<TrendsResponse | null>(null);
-  const [shownCats,    setShownCats]    = useState<string[]>([]);
+  const [allCats,      setAllCats]      = useState<string[]>([]);
+
+  // Sort / increase options
+  const [sortMode,     setSortMode]     = useState<SortMode>("value");
+  const [incMode,      setIncMode]      = useState<IncMode>("abs");
+
+  // Search / context
+  const [trendSearch,  setTrendSearch]  = useState("");
+  const [ctxSize,      setCtxSize]      = useState(5);
+  const searchFocused = useRef(false);
+
+  // Lock state shared across the single chart panel
+  const [lockedLine, setLockedLine] = useState<string | null>(null);
 
   const hasMCP = selectedDatasets.some((d) => d.startsWith("MCP") || d === "Microsoft");
 
   const run = useCallback(async () => {
     if (!selectedDatasets.length) return;
-    setLoading(true); setError(null);
+    setLoading(true); setError(null); setLockedLine(null);
     try {
       const seriesToFetch = getSeriesToFetch(selectedDatasets, config.dataset_series ?? {});
       if (!seriesToFetch.length) { setError("No valid series for selected datasets."); return; }
@@ -467,19 +634,64 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
           .filter((dp) => selectedDatasets.includes(dp.dataset))
           .forEach((dp) => dp.rows.forEach((r) => cats.add(r.category)));
       });
-      setShownCats(Array.from(cats).slice(0, topN));
+      setAllCats(Array.from(cats).slice(0, topN));
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Failed to fetch trends");
     } finally { setLoading(false); }
-  }, [selectedDatasets, metric, aggLevel, method, geo, topN, useAutoAug, useAdjMean, physicalMode, config]);
+  }, [selectedDatasets, aggLevel, method, geo, topN, useAutoAug, useAdjMean, physicalMode, config]);
 
   const metaLabel = METRIC_OPTIONS.find((m) => m.key === metric)?.label ?? "";
 
+  const { chartData: rawChartData, lineConfigs: rawLineConfigs } = result
+    ? lineMode === "individual"
+      ? buildIndividualData(result, selectedDatasets, allCats, metric)
+      : buildAggregatedData(result, selectedDatasets, allCats, metric, lineMode)
+    : { chartData: [], lineConfigs: [] };
+
+  // Compute increases for all lines
+  const allIncreases = useMemo(
+    () => rawLineConfigs.length > 0 ? computeIncreases(rawChartData, rawLineConfigs, metric, incMode) : null,
+    [rawChartData, rawLineConfigs, metric, incMode],
+  );
+
+  // Apply sort-by-increase
+  const sortedCats = useMemo(() => {
+    if (sortMode !== "increase" || !allIncreases) return allCats;
+    return [...allCats].sort((a, b) => {
+      // For individual mode the keys are "ds — cat"; extract increase per cat
+      const getInc = (cat: string) => {
+        let max = -Infinity;
+        allIncreases.forEach((v, key) => {
+          if (key === cat || key.endsWith(` — ${cat}`)) max = Math.max(max, v);
+        });
+        return max === -Infinity ? -Infinity : max;
+      };
+      return getInc(b) - getInc(a);
+    });
+  }, [allCats, sortMode, allIncreases]);
+
+  // Apply search filter
+  const shownCats = useMemo(() => {
+    const q = trendSearch.trim().toLowerCase();
+    if (!q) return sortedCats;
+    const idx = sortedCats.findIndex((c) => c.toLowerCase().includes(q));
+    if (idx < 0) return [];
+    const start = Math.max(0, idx - ctxSize);
+    const end   = Math.min(sortedCats.length, idx + ctxSize + 1);
+    return sortedCats.slice(start, end);
+  }, [sortedCats, trendSearch, ctxSize]);
+
+  // Re-build chart data from shownCats
   const { chartData, lineConfigs } = result
     ? lineMode === "individual"
       ? buildIndividualData(result, selectedDatasets, shownCats, metric)
       : buildAggregatedData(result, selectedDatasets, shownCats, metric, lineMode)
     : { chartData: [], lineConfigs: [] };
+
+  const increases = useMemo(
+    () => lineConfigs.length > 0 ? computeIncreases(chartData, lineConfigs, metric, incMode) : null,
+    [chartData, lineConfigs, metric, incMode],
+  );
 
   return (
     <>
@@ -497,7 +709,11 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
           <div>
             <ControlLabel>Lines</ControlLabel>
             <SegmentedControl
-              options={[{ value: "individual" as LineMode, label: "Individual" }, { value: "average" as LineMode, label: "Average" }, { value: "max" as LineMode, label: "Max" }]}
+              options={[
+                { value: "individual" as LineMode, label: "Individual" },
+                { value: "average"    as LineMode, label: "Average"    },
+                { value: "max"        as LineMode, label: "Max"        },
+              ]}
               value={lineMode} onChange={setLineMode}
             />
           </div>
@@ -546,13 +762,74 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
           </div>
         </div>
 
+        {/* Row 4 — Sort + Search (only shown when result is loaded) */}
+        {result && (
+          <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
+            <div>
+              <ControlLabel>Sort</ControlLabel>
+              <SegmentedControl
+                options={[
+                  { value: "value"    as SortMode, label: "By value"    },
+                  { value: "increase" as SortMode, label: "By increase" },
+                ]}
+                value={sortMode} onChange={setSortMode}
+              />
+            </div>
+            {sortMode === "increase" && (
+              <div>
+                <ControlLabel>Increase type</ControlLabel>
+                <SegmentedControl
+                  options={[{ value: "abs" as IncMode, label: "Absolute" }, { value: "pct" as IncMode, label: "% change" }]}
+                  value={incMode} onChange={setIncMode}
+                />
+              </div>
+            )}
+            {/* Search */}
+            <div>
+              <ControlLabel>Search category</ControlLabel>
+              <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                <input
+                  type="text" placeholder="Filter categories…" value={trendSearch}
+                  onChange={(e) => setTrendSearch(e.target.value)}
+                  onFocus={() => { searchFocused.current = true; }}
+                  onBlur={() => { searchFocused.current = false; }}
+                  style={{
+                    fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
+                    padding: "5px 26px 5px 8px", background: "var(--bg-surface)",
+                    color: "var(--text-primary)", width: 160, height: 31, outline: "none",
+                    transition: "border-color 0.15s",
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.borderColor = "var(--brand)")}
+                  onMouseOut={(e)  => (e.currentTarget.style.borderColor = "var(--border)")}
+                />
+                {trendSearch && (
+                  <button onClick={() => setTrendSearch("")}
+                    style={{ position: "absolute", right: 6, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
+                )}
+              </div>
+            </div>
+            {trendSearch && (
+              <div>
+                <ControlLabel>Context ±</ControlLabel>
+                <SegmentedControl
+                  options={[{ value: "3" as never, label: "3" }, { value: "5" as never, label: "5" }, { value: "10" as never, label: "10" }]}
+                  value={String(ctxSize) as never}
+                  onChange={(v) => setCtxSize(Number(v))}
+                />
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div style={{ marginTop: 24 }}>
         <ChartPanel
           title={`${metaLabel} over time`} metric={metric}
           chartData={chartData} lineConfigs={lineConfigs}
+          increases={sortMode === "increase" ? increases : null}
+          incMode={incMode}
           loading={loading} error={error} hasResult={!!result}
+          lockedLine={lockedLine} setLockedLine={setLockedLine}
         />
       </div>
     </>
@@ -577,13 +854,19 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
   const [loading,       setLoading]       = useState(false);
   const [error,         setError]         = useState<string | null>(null);
   const [result,        setResult]        = useState<TrendsResponse | null>(null);
-  const [shownCats,     setShownCats]     = useState<string[]>([]);
+  const [allCats,       setAllCats]       = useState<string[]>([]);
+
+  const [sortMode,  setSortMode]  = useState<SortMode>("value");
+  const [incMode,   setIncMode]   = useState<IncMode>("abs");
+  const [trendSearch, setTrendSearch] = useState("");
+  const [ctxSize,   setCtxSize]   = useState(5);
+  const [lockedLine, setLockedLine] = useState<string | null>(null);
 
   const hasMCP = selectedDatasets.some((d) => d.startsWith("MCP") || d === "Microsoft");
 
   const run = useCallback(async () => {
     if (!selectedDatasets.length) return;
-    setLoading(true); setError(null);
+    setLoading(true); setError(null); setLockedLine(null);
     try {
       const seriesToFetch = getSeriesToFetch(selectedDatasets, config.dataset_series ?? {});
       if (!seriesToFetch.length) { setError("No valid series for selected datasets."); return; }
@@ -600,19 +883,59 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
           .filter((dp) => selectedDatasets.includes(dp.dataset))
           .forEach((dp) => dp.rows.forEach((r) => cats.add(r.category)));
       });
-      setShownCats(Array.from(cats).slice(0, topN));
+      setAllCats(Array.from(cats).slice(0, topN));
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Failed to fetch WA trends");
     } finally { setLoading(false); }
-  }, [selectedDatasets, activityLevel, metric, method, geo, topN, useAutoAug, useAdjMean, physicalMode, config]);
+  }, [selectedDatasets, activityLevel, method, geo, topN, useAutoAug, useAdjMean, physicalMode, config]);
 
   const metaLabel = METRIC_OPTIONS.find((m) => m.key === metric)?.label ?? "";
+
+  const { chartData: rawChartData, lineConfigs: rawLineConfigs } = result
+    ? lineMode === "individual"
+      ? buildIndividualData(result, selectedDatasets, allCats, metric)
+      : buildAggregatedData(result, selectedDatasets, allCats, metric, lineMode)
+    : { chartData: [], lineConfigs: [] };
+
+  const allIncreases = useMemo(
+    () => rawLineConfigs.length > 0 ? computeIncreases(rawChartData, rawLineConfigs, metric, incMode) : null,
+    [rawChartData, rawLineConfigs, metric, incMode],
+  );
+
+  const sortedCats = useMemo(() => {
+    if (sortMode !== "increase" || !allIncreases) return allCats;
+    return [...allCats].sort((a, b) => {
+      const getInc = (cat: string) => {
+        let max = -Infinity;
+        allIncreases.forEach((v, key) => {
+          if (key === cat || key.endsWith(` — ${cat}`)) max = Math.max(max, v);
+        });
+        return max === -Infinity ? -Infinity : max;
+      };
+      return getInc(b) - getInc(a);
+    });
+  }, [allCats, sortMode, allIncreases]);
+
+  const shownCats = useMemo(() => {
+    const q = trendSearch.trim().toLowerCase();
+    if (!q) return sortedCats;
+    const idx = sortedCats.findIndex((c) => c.toLowerCase().includes(q));
+    if (idx < 0) return [];
+    const start = Math.max(0, idx - ctxSize);
+    const end   = Math.min(sortedCats.length, idx + ctxSize + 1);
+    return sortedCats.slice(start, end);
+  }, [sortedCats, trendSearch, ctxSize]);
 
   const { chartData, lineConfigs } = result
     ? lineMode === "individual"
       ? buildIndividualData(result, selectedDatasets, shownCats, metric)
       : buildAggregatedData(result, selectedDatasets, shownCats, metric, lineMode)
     : { chartData: [], lineConfigs: [] };
+
+  const increases = useMemo(
+    () => lineConfigs.length > 0 ? computeIncreases(chartData, lineConfigs, metric, incMode) : null,
+    [chartData, lineConfigs, metric, incMode],
+  );
 
   const levelLabels: Record<string, string> = {
     gwa: "General Work Activities", iwa: "Intermediate Work Activities", dwa: "Detailed Work Activities",
@@ -634,7 +957,11 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
           <div>
             <ControlLabel>Lines</ControlLabel>
             <SegmentedControl
-              options={[{ value: "individual" as LineMode, label: "Individual" }, { value: "average" as LineMode, label: "Average" }, { value: "max" as LineMode, label: "Max" }]}
+              options={[
+                { value: "individual" as LineMode, label: "Individual" },
+                { value: "average"    as LineMode, label: "Average"    },
+                { value: "max"        as LineMode, label: "Max"        },
+              ]}
               value={lineMode} onChange={setLineMode}
             />
           </div>
@@ -685,6 +1012,58 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
             )}
           </div>
         </div>
+
+        {/* Row 4 — Sort + Search */}
+        {result && (
+          <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
+            <div>
+              <ControlLabel>Sort</ControlLabel>
+              <SegmentedControl
+                options={[{ value: "value" as SortMode, label: "By value" }, { value: "increase" as SortMode, label: "By increase" }]}
+                value={sortMode} onChange={setSortMode}
+              />
+            </div>
+            {sortMode === "increase" && (
+              <div>
+                <ControlLabel>Increase type</ControlLabel>
+                <SegmentedControl
+                  options={[{ value: "abs" as IncMode, label: "Absolute" }, { value: "pct" as IncMode, label: "% change" }]}
+                  value={incMode} onChange={setIncMode}
+                />
+              </div>
+            )}
+            <div>
+              <ControlLabel>Search category</ControlLabel>
+              <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                <input
+                  type="text" placeholder="Filter categories…" value={trendSearch}
+                  onChange={(e) => setTrendSearch(e.target.value)}
+                  style={{
+                    fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
+                    padding: "5px 26px 5px 8px", background: "var(--bg-surface)",
+                    color: "var(--text-primary)", width: 160, height: 31, outline: "none",
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.borderColor = "var(--brand)")}
+                  onMouseOut={(e)  => (e.currentTarget.style.borderColor = "var(--border)")}
+                />
+                {trendSearch && (
+                  <button onClick={() => setTrendSearch("")}
+                    style={{ position: "absolute", right: 6, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
+                )}
+              </div>
+            </div>
+            {trendSearch && (
+              <div>
+                <ControlLabel>Context ±</ControlLabel>
+                <SegmentedControl
+                  options={[{ value: "3" as never, label: "3" }, { value: "5" as never, label: "5" }, { value: "10" as never, label: "10" }]}
+                  value={String(ctxSize) as never}
+                  onChange={(v) => setCtxSize(Number(v))}
+                />
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <p style={{ fontSize: 11, color: "var(--text-muted)", margin: "8px 0 0" }}>
@@ -695,7 +1074,10 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
         <ChartPanel
           title={`${levelLabels[activityLevel]} — ${metaLabel} over time`} metric={metric}
           chartData={chartData} lineConfigs={lineConfigs}
+          increases={sortMode === "increase" ? increases : null}
+          incMode={incMode}
           loading={loading} error={error} hasResult={!!result}
+          lockedLine={lockedLine} setLockedLine={setLockedLine}
         />
       </div>
     </>

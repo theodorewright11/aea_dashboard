@@ -13,14 +13,16 @@ type ActivityLevel = "gwa" | "iwa" | "dwa";
 type MetricKey     = "workers" | "wages" | "tasks";
 
 interface Props {
-  groupId:       "A" | "B";
-  color:         string;
-  response:      WorkActivitiesResponse | null;
-  loading:       boolean;
-  error:         string | null;
-  activityLevel: ActivityLevel;
-  searchQuery:   string;
-  contextSize:   number;
+  groupId:        "A" | "B";
+  color:          string;
+  response:       WorkActivitiesResponse | null;
+  loading:        boolean;
+  error:          string | null;
+  activityLevel:  ActivityLevel;
+  searchQuery:    string;
+  contextSize:    number;
+  /** Config summary lines shown as footer in downloaded PNGs */
+  configSummary?: string[];
 }
 
 const LEVEL_LABELS: Record<ActivityLevel, string> = {
@@ -79,10 +81,10 @@ function DownloadIcon() {
 // ── Chart card ────────────────────────────────────────────────────────────────
 
 function ChartCard({
-  title, downloadSlug, downloadTitle, accentColor, children,
+  title, downloadSlug, downloadTitle, accentColor, configLines, children,
 }: {
   title: string; downloadSlug: string; downloadTitle: string;
-  accentColor: string; children: React.ReactNode;
+  accentColor: string; configLines?: string[]; children: React.ReactNode;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   return (
@@ -96,7 +98,7 @@ function ChartCard({
           {title}
         </span>
         <button
-          onClick={() => downloadChartAsPng(containerRef.current, downloadSlug, { title: downloadTitle })}
+          onClick={() => downloadChartAsPng(containerRef.current, downloadSlug, { title: downloadTitle, configLines })}
           title={`Download ${title} as PNG`}
           style={{
             background: "none", border: "none", cursor: "pointer",
@@ -245,7 +247,7 @@ function ActivityBarChart({
 
 export default function WorkActivitiesPanel({
   groupId, color, response, loading, error,
-  activityLevel, searchQuery, contextSize,
+  activityLevel, searchQuery, contextSize, configSummary,
 }: Props) {
   const group    = response?.aei_group ?? response?.mcp_group ?? null;
   const allRows  = group?.[activityLevel] ?? [];
@@ -308,6 +310,7 @@ export default function WorkActivitiesPanel({
               downloadSlug={`wa-group-${groupId}-${activityLevel}-${metric}`}
               downloadTitle={`Group ${groupId} — ${LEVEL_LABELS[activityLevel]} — ${METRIC_TITLES[metric]}`}
               accentColor={color}
+              configLines={configSummary}
             >
               <ActivityBarChart
                 rows={rows}

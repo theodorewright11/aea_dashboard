@@ -6,16 +6,18 @@ import HorizontalBarChart from "./HorizontalBarChart";
 import { downloadChartAsPng } from "@/lib/downloadChart";
 
 interface Props {
-  groupId:       "A" | "B";
-  color:         string;
+  groupId:        "A" | "B";
+  color:          string;
   /** This group's compute result */
-  response:      ComputeResponse | null;
+  response:       ComputeResponse | null;
   /** Other group's compute result — for delta tooltips */
-  otherResponse: ComputeResponse | null;
-  loading:       boolean;
-  error:         string | null;
+  otherResponse:  ComputeResponse | null;
+  loading:        boolean;
+  error:          string | null;
   /** Highlight this category if search matched */
   matchedCategory?: string | null;
+  /** Config summary lines shown as footer in downloaded PNGs */
+  configSummary?: string[];
 }
 
 const METRIC_TITLES = {
@@ -40,12 +42,13 @@ function DownloadIcon() {
 // ── Chart card with header + download ────────────────────────────────────────
 
 function ChartCard({
-  title, downloadSlug, downloadTitle, accentColor, children,
+  title, downloadSlug, downloadTitle, accentColor, configLines, children,
 }: {
   title: string;
   downloadSlug: string;
   downloadTitle: string;
   accentColor: string;
+  configLines?: string[];
   children: React.ReactNode;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -73,7 +76,7 @@ function ChartCard({
           {title}
         </span>
         <button
-          onClick={() => downloadChartAsPng(containerRef.current, downloadSlug, { title: downloadTitle })}
+          onClick={() => downloadChartAsPng(containerRef.current, downloadSlug, { title: downloadTitle, configLines })}
           title={`Download ${title} as PNG`}
           style={{
             background: "none", border: "none", cursor: "pointer",
@@ -105,6 +108,7 @@ export default function GroupPanel({
   loading,
   error,
   matchedCategory,
+  configSummary,
 }: Props) {
   const rows      = response?.rows      ?? [];
   const otherRows = otherResponse?.rows ?? [];
@@ -155,6 +159,7 @@ export default function GroupPanel({
               downloadSlug={`group-${groupId}-${metric}`}
               downloadTitle={`Group ${groupId} — ${METRIC_TITLES[metric]}`}
               accentColor={color}
+              configLines={configSummary}
             >
               <HorizontalBarChart
                 rows={rows}

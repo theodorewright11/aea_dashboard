@@ -23,6 +23,17 @@ interface WAGroupPending {
   contextSize:   number;
 }
 
+function pendingToConfigSummary(p: WAGroupPending, groupId: "A" | "B"): string[] {
+  const dsLabel = p.datasets.length === 0 ? "None"
+    : p.datasets.length === 1 ? p.datasets[0]
+    : `${p.datasets.join(", ")} (${p.combineMethod})`;
+  const line1 = `Group ${groupId}  ·  Datasets: ${dsLabel}  ·  Activity: ${p.activityLevel.toUpperCase()}  ·  Method: ${p.method === "freq" ? "Frequency" : "Importance"}  ·  Geo: ${p.geo === "nat" ? "National" : "Utah"}`;
+  const physLabel = p.physicalMode === "all" ? "All tasks" : p.physicalMode === "exclude" ? "Non-physical only" : "Physical only";
+  const augLabel  = p.useAutoAug ? `Auto-aug: On${p.useAdjMean ? " (adj)" : ""}` : "Auto-aug: Off";
+  const line2 = `${physLabel}  ·  ${augLabel}  ·  Top ${p.topN}${p.searchQuery ? `  ·  Search: "${p.searchQuery}"` : ""}`;
+  return [line1, line2];
+}
+
 function defaultPending(datasets: string[]): WAGroupPending {
   return {
     datasets, combineMethod: "Average",
@@ -398,6 +409,8 @@ export default function WorkActivitiesPage() {
   const [loadingB, setLoadingB]   = useState(false);
   const [errorA, setErrorA]       = useState<string | null>(null);
   const [errorB, setErrorB]       = useState<string | null>(null);
+  const [appliedPendingA, setAppliedPendingA] = useState<WAGroupPending | null>(null);
+  const [appliedPendingB, setAppliedPendingB] = useState<WAGroupPending | null>(null);
 
   useEffect(() => {
     fetchConfig()
@@ -441,6 +454,8 @@ export default function WorkActivitiesPage() {
       }
     };
 
+    setAppliedPendingA(pendingA);
+    setAppliedPendingB(pendingB);
     setLoadingA(true); setErrorA(null);
     setLoadingB(true); setErrorB(null);
 
@@ -621,6 +636,7 @@ export default function WorkActivitiesPage() {
             activityLevel={pendingA.activityLevel}
             searchQuery={pendingA.searchQuery}
             contextSize={pendingA.contextSize}
+            configSummary={appliedPendingA ? pendingToConfigSummary(appliedPendingA, "A") : undefined}
           />
           <WorkActivitiesPanel
             groupId="B"
@@ -631,6 +647,7 @@ export default function WorkActivitiesPage() {
             activityLevel={pendingB.activityLevel}
             searchQuery={pendingB.searchQuery}
             contextSize={pendingB.contextSize}
+            configSummary={appliedPendingB ? pendingToConfigSummary(appliedPendingB, "B") : undefined}
           />
         </div>
 

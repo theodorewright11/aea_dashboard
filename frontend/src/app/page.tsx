@@ -23,6 +23,17 @@ interface GroupPending {
   contextSize:  number;
 }
 
+function pendingToConfigSummary(p: GroupPending, groupId: "A" | "B"): string[] {
+  const dsLabel = p.datasets.length === 0 ? "None"
+    : p.datasets.length === 1 ? p.datasets[0]
+    : `${p.datasets.join(", ")} (${p.combineMethod})`;
+  const line1 = `Group ${groupId}  ·  Datasets: ${dsLabel}  ·  Method: ${p.method === "freq" ? "Frequency" : "Importance"}  ·  Geo: ${p.geo === "nat" ? "National" : "Utah"}`;
+  const physLabel = p.physicalMode === "all" ? "All tasks" : p.physicalMode === "exclude" ? "Non-physical only" : "Physical only";
+  const augLabel  = p.useAutoAug ? `Auto-aug: On${p.useAdjMean ? " (adj)" : ""}` : "Auto-aug: Off";
+  const line2 = `Aggregation: ${p.aggLevel}  ·  Top ${p.topN}  ·  ${physLabel}  ·  ${augLabel}${p.searchQuery ? `  ·  Search: "${p.searchQuery}"` : ""}`;
+  return [line1, line2];
+}
+
 function pendingToSettings(p: GroupPending): GroupSettings {
   return {
     selectedDatasets: p.datasets,
@@ -450,6 +461,10 @@ export default function HomePage() {
   const [errorA, setErrorA]       = useState<string | null>(null);
   const [errorB, setErrorB]       = useState<string | null>(null);
 
+  // Track applied settings for config summary in downloads
+  const [appliedPendingA, setAppliedPendingA] = useState<GroupPending | null>(null);
+  const [appliedPendingB, setAppliedPendingB] = useState<GroupPending | null>(null);
+
   // Track applied search query for highlighting
   const [appliedSearchA, setAppliedSearchA] = useState<string>("");
   const [appliedSearchB, setAppliedSearchB] = useState<string>("");
@@ -469,6 +484,8 @@ export default function HomePage() {
   const run = useCallback(async () => {
     const settingsA = pendingToSettings(pendingA);
     const settingsB = pendingToSettings(pendingB);
+    setAppliedPendingA(pendingA);
+    setAppliedPendingB(pendingB);
     setAppliedSearchA(pendingA.searchQuery);
     setAppliedSearchB(pendingB.searchQuery);
 
@@ -675,6 +692,7 @@ export default function HomePage() {
             loading={loadingA}
             error={errorA}
             matchedCategory={responseA?.matched_category ?? (appliedSearchA ? null : undefined)}
+            configSummary={appliedPendingA ? pendingToConfigSummary(appliedPendingA, "A") : undefined}
           />
           <GroupPanel
             groupId="B"
@@ -684,6 +702,7 @@ export default function HomePage() {
             loading={loadingB}
             error={errorB}
             matchedCategory={responseB?.matched_category ?? (appliedSearchB ? null : undefined)}
+            configSummary={appliedPendingB ? pendingToConfigSummary(appliedPendingB, "B") : undefined}
           />
         </div>
 
