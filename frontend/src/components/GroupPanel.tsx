@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import type { GroupSettings, ChartRow, ConfigResponse } from "@/lib/types";
 import { fetchCompute } from "@/lib/api";
 import HorizontalBarChart from "./HorizontalBarChart";
+import { downloadChartAsPng } from "@/lib/downloadChart";
 
 interface Props {
   groupId: "A" | "B";
@@ -12,28 +13,88 @@ interface Props {
   config: ConfigResponse;
 }
 
-function buildSubtitle(settings: GroupSettings): string {
-  const names = settings.selectedDatasets;
-  if (!names.length) return "No datasets selected";
-  let label = names.join(" + ");
-  if (names.length > 1) label += ` (${settings.combineMethod})`;
-  const methodStr = settings.method === "freq" ? "Freq" : "Imp";
-  const geoStr    = settings.geo === "nat" ? "National" : "Utah";
-  const aggMap: Record<string, string> = {
-    major: "Major Category", minor: "Minor Category",
-    broad: "Broad Occupation", occupation: "Occupation",
-  };
-  const extras: string[] = [];
-  if (settings.useAutoAug) extras.push("auto-aug");
-  if (settings.physicalMode !== "all") extras.push(settings.physicalMode);
-  const extrasStr = extras.length ? `  ·  ${extras.join(", ")}` : "";
-  return `${label}  ·  ${methodStr}  ·  ${geoStr}  ·  ${aggMap[settings.aggLevel]}${extrasStr}  ·  Top ${settings.topN}`;
+const METRIC_TITLES = {
+  workers: "Workers Affected",
+  wages:   "Wages Affected",
+  tasks:   "% Tasks Affected",
+} as const;
+
+// ── Download icon ─────────────────────────────────────────────────────────────
+
+function DownloadIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" y1="15" x2="12" y2="3" />
+    </svg>
+  );
 }
 
+// ── Chart card with header + download ────────────────────────────────────────
+
+function ChartCard({
+  title, downloadSlug, children,
+}: {
+  title: string;
+  downloadSlug: string;
+  children: React.ReactNode;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <div style={{
+      background: "var(--bg-surface)",
+      border: "1px solid var(--border)",
+      borderRadius: 10,
+      overflow: "hidden",
+      boxShadow: "0 1px 4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)",
+    }}>
+      {/* Card header */}
+      <div style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "12px 16px 4px",
+      }}>
+        <span style={{
+          fontSize: 13, fontWeight: 600,
+          color: "var(--text-primary)",
+          letterSpacing: "-0.01em",
+        }}>
+          {title}
+        </span>
+        <button
+          onClick={() => downloadChartAsPng(containerRef.current, downloadSlug)}
+          title={`Download ${title} as PNG`}
+          style={{
+            background: "none", border: "none", cursor: "pointer",
+            color: "var(--text-muted)", padding: "4px",
+            borderRadius: 4, display: "flex", alignItems: "center",
+            transition: "color 0.12s",
+          }}
+          onMouseOver={(e) => (e.currentTarget.style.color = "var(--text-primary)")}
+          onMouseOut={(e)  => (e.currentTarget.style.color = "var(--text-muted)")}
+        >
+          <DownloadIcon />
+        </button>
+      </div>
+
+      {/* Chart area — containerRef wraps just the chart SVG */}
+      <div ref={containerRef} style={{ padding: "0 8px 12px" }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ── GroupPanel ────────────────────────────────────────────────────────────────
+
 export default function GroupPanel({ groupId, color, settings, config }: Props) {
-  const [rows, setRows]     = useState<ChartRow[] | null>(null);
+  const [rows, setRows]       = useState<ChartRow[] | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError]   = useState<string | null>(null);
+  const [error, setError]     = useState<string | null>(null);
 
   const load = useCallback(async () => {
     if (!settings.selectedDatasets.length) { setRows([]); return; }
@@ -52,12 +113,22 @@ export default function GroupPanel({ groupId, color, settings, config }: Props) 
 
   useEffect(() => { load(); }, [load]);
 
-  const subtitle = buildSubtitle(settings);
+  // Build a human-readable slug for the download filename
+  const ds     = settings.selectedDatasets.join("+") || "none";
+  const method = settings.method === "freq" ? "freq" : "imp";
+  const geo    = settings.geo;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16, width: "100%", minWidth: 0 }}>
-      {/* Group header */}
-      <div style={{ backgroundColor: color, borderRadius: 8, padding: "10px 16px", color: "white", fontSize: 14, fontWeight: 700, letterSpacing: "-0.01em" }}>
+      {/* Group header badge */}
+      <div style={{
+        backgroundColor: color,
+        borderRadius: 8,
+        padding: "10px 16px",
+        color: "white",
+        fontSize: 14, fontWeight: 700,
+        letterSpacing: "-0.01em",
+      }}>
         Group {groupId}
       </div>
 
@@ -76,14 +147,18 @@ export default function GroupPanel({ groupId, color, settings, config }: Props) 
 
       {!loading && !error && (
         <>
-          {[
-            { metric: "workers" as const },
-            { metric: "wages"   as const },
-            { metric: "tasks"   as const },
-          ].map(({ metric }) => (
-            <div key={metric} style={{ background: "var(--bg-surface)", borderRadius: 10, border: "1px solid var(--border)", padding: "4px 8px 8px", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
-              <HorizontalBarChart rows={rows ?? []} metric={metric} color={color} subtitle={subtitle} />
-            </div>
+          {(["workers", "wages", "tasks"] as const).map((metric) => (
+            <ChartCard
+              key={metric}
+              title={METRIC_TITLES[metric]}
+              downloadSlug={`group-${groupId}-${metric}-${ds}-${method}-${geo}`}
+            >
+              <HorizontalBarChart
+                rows={rows ?? []}
+                metric={metric}
+                color={color}
+              />
+            </ChartCard>
           ))}
         </>
       )}

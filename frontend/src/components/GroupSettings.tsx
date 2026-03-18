@@ -85,7 +85,7 @@ export default function GroupSettings({ groupId, color, settings, config, onChan
       {/* Datasets */}
       <div style={{ marginBottom: 12 }}>
         <SectionLabel>Datasets</SectionLabel>
-        <div style={{ display: "flex", flexDirection: "column", gap: 4, maxHeight: 180, overflowY: "auto", paddingRight: 2 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
           {config.datasets.map((name) => {
             const available = config.dataset_availability[name];
             return (

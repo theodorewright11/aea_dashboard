@@ -42,6 +42,38 @@ function MetricCell({ value, dec = 2 }: { value?: number | null; dec?: number })
   return <span>{value.toFixed(dec)}</span>;
 }
 
+// ── SVG icon components ────────────────────────────────────────────────────────
+
+function SearchIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+      style={{ color: "var(--text-muted)" }} aria-hidden="true">
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  );
+}
+
+function ChevronIcon({ open }: { open: boolean }) {
+  return (
+    <svg
+      width="11" height="11" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor"
+      strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+      style={{
+        transform: open ? "rotate(0deg)" : "rotate(-90deg)",
+        transition: "transform 0.2s ease",
+        flexShrink: 0,
+        color: "var(--text-muted)",
+      }}
+      aria-hidden="true"
+    >
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  );
+}
+
 // ── Task row ───────────────────────────────────────────────────────────────────
 
 function TaskRow({ task, aggMode }: { task: TaskDetail; aggMode: "avg" | "max" }) {
@@ -62,7 +94,7 @@ function TaskRow({ task, aggMode }: { task: TaskDetail; aggMode: "avg" | "max" }
       >
         <td style={{ padding: "7px 12px", fontSize: 12, color: "var(--text-primary)", maxWidth: 340, verticalAlign: "top" }}>
           <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
-            <span style={{ color: "var(--text-muted)", fontSize: 10, marginTop: 1, flexShrink: 0 }}>{expanded ? "▼" : "▶"}</span>
+            <ChevronIcon open={expanded} />
             <span style={{ lineHeight: 1.4 }}>{task.task}</span>
           </div>
         </td>
@@ -207,7 +239,7 @@ function OccupationRow({ occ, aggMode, geo }: { occ: OccupationSummary; aggMode:
       >
         <td style={{ padding: "9px 12px", fontSize: 13, fontWeight: 500, color: "var(--text-primary)", verticalAlign: "top" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ color: "var(--text-muted)", fontSize: 11, flexShrink: 0 }}>{expanded ? "▼" : "▶"}</span>
+            <ChevronIcon open={expanded} />
             {occ.title_current}
           </div>
         </td>
@@ -282,11 +314,16 @@ function BroadBlock({ name, occs, aggMode, geo }: { name: string; occs: Occupati
         style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "7px 14px", background: "transparent", border: "none", cursor: "pointer", textAlign: "left" }}
         onMouseEnter={(e) => (e.currentTarget.style.background = "#f2f2ef")}
         onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
-        <span style={{ fontSize: 10, color: "var(--text-muted)" }}>{open ? "▼" : "▶"}</span>
+        <ChevronIcon open={open} />
         <span style={{ fontSize: 12, fontWeight: 600, color: "var(--text-secondary)" }}>{name}</span>
         <span style={{ marginLeft: "auto", fontSize: 11, color: "var(--text-muted)" }}>{occs.length} occupation{occs.length !== 1 ? "s" : ""}</span>
       </button>
-      {open && (
+      <div style={{
+        overflow: "hidden",
+        maxHeight: open ? "9999px" : "0px",
+        opacity: open ? 1 : 0,
+        transition: "max-height 0.25s ease, opacity 0.18s ease",
+      }}>
         <div style={{ marginLeft: 16 }}>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
@@ -303,7 +340,7 @@ function BroadBlock({ name, occs, aggMode, geo }: { name: string; occs: Occupati
             </tbody>
           </table>
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -328,17 +365,22 @@ function MinorBlock({ name, occs, aggMode, geo }: { name: string; occs: Occupati
         style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: "transparent", border: "none", cursor: "pointer", textAlign: "left" }}
         onMouseEnter={(e) => (e.currentTarget.style.background = "#eeeeea")}
         onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
-        <span style={{ fontSize: 11, color: "var(--text-muted)" }}>{open ? "▼" : "▶"}</span>
+        <ChevronIcon open={open} />
         <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)" }}>{name}</span>
         <span style={{ marginLeft: "auto", fontSize: 11, color: "var(--text-muted)" }}>{occs.length} occ.</span>
       </button>
-      {open && (
+      <div style={{
+        overflow: "hidden",
+        maxHeight: open ? "9999px" : "0px",
+        opacity: open ? 1 : 0,
+        transition: "max-height 0.25s ease, opacity 0.18s ease",
+      }}>
         <div style={{ marginLeft: 12, paddingLeft: 8, borderLeft: "2px solid var(--border-light)" }}>
           {broadGroups.map(([bName, bOccs]) => (
             <BroadBlock key={bName} name={bName} occs={bOccs} aggMode={aggMode} geo={geo} />
           ))}
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -366,19 +408,24 @@ function MajorBlock({ name, occs, aggMode, geo }: { name: string; occs: Occupati
         style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", background: "transparent", border: "none", cursor: "pointer", textAlign: "left" }}
         onMouseEnter={(e) => (e.currentTarget.style.background = "#fafaf7")}
         onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
-        <span style={{ fontSize: 13, color: "var(--text-secondary)" }}>{open ? "▼" : "▶"}</span>
+        <ChevronIcon open={open} />
         <span style={{ fontSize: 15, fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>{name}</span>
         <span style={{ marginLeft: "auto", fontSize: 11, color: "var(--text-muted)" }}>
           {occs.length} occupations · {fmtEmp(totalEmp)} workers
         </span>
       </button>
-      {open && (
+      <div style={{
+        overflow: "hidden",
+        maxHeight: open ? "9999px" : "0px",
+        opacity: open ? 1 : 0,
+        transition: "max-height 0.25s ease, opacity 0.18s ease",
+      }}>
         <div style={{ borderTop: "1px solid var(--border-light)" }}>
           {minorGroups.map(([mName, mOccs]) => (
             <MinorBlock key={mName} name={mName} occs={mOccs} aggMode={aggMode} geo={geo} />
           ))}
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -390,6 +437,7 @@ export default function ExplorerView({ occupations }: Props) {
   const [selectedMajor, setSelectedMajor] = useState<string | null>(null);
   const [aggMode, setAggMode]   = useState<"avg" | "max">("avg");
   const [geo, setGeo]           = useState<"nat" | "ut">("nat");
+  const [searchFocused, setSearchFocused] = useState(false);
 
   const allMajors = useMemo(() => {
     const s = new Set(occupations.map((o) => o.major ?? "Unknown"));
@@ -417,7 +465,7 @@ export default function ExplorerView({ occupations }: Props) {
   }, [filtered]);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 56px)", overflow: "hidden" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - var(--nav-height))", overflow: "hidden" }}>
       {/* Header */}
       <div style={{ background: "var(--bg-surface)", borderBottom: "1px solid var(--border)", padding: "0 24px", height: 52, display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
         <div>
@@ -449,16 +497,32 @@ export default function ExplorerView({ occupations }: Props) {
       </div>
 
       {/* Search + filters */}
-      <div style={{ background: "var(--bg-surface)", borderBottom: "1px solid var(--border)", padding: "12px 24px", flexShrink: 0 }}>
+      <div style={{ background: "var(--bg-surface)", borderBottom: "1px solid var(--border)", padding: "12px 24px 10px", flexShrink: 0 }}>
         {/* Search */}
-        <div style={{ position: "relative", marginBottom: 10 }}>
-          <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", fontSize: 13 }}>🔍</span>
+        <div style={{ position: "relative", marginBottom: 8 }}>
+          <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", display: "flex", alignItems: "center" }}>
+            <SearchIcon />
+          </span>
           <input
             type="text"
             placeholder="Search occupations…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            style={{ width: "100%", fontSize: 13, border: "1px solid var(--border)", borderRadius: 8, padding: "8px 12px 8px 32px", background: "var(--bg-surface)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
+            style={{
+              width: "100%",
+              fontSize: 13,
+              border: `1px solid ${searchFocused ? "var(--brand)" : "var(--border)"}`,
+              borderRadius: 8,
+              padding: "8px 12px 8px 32px",
+              background: "var(--bg-surface)",
+              color: "var(--text-primary)",
+              outline: "none",
+              boxSizing: "border-box",
+              boxShadow: searchFocused ? "0 0 0 2px var(--brand-light)" : "none",
+              transition: "border-color 0.15s ease, box-shadow 0.15s ease",
+            }}
           />
           {search && (
             <button onClick={() => setSearch("")}

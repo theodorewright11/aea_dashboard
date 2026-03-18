@@ -1,9 +1,10 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid,
+  Tooltip, LabelList, ResponsiveContainer,
+} from "recharts";
 import type { ChartRow } from "@/lib/types";
-
-const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
 type MetricKey = "workers" | "wages" | "tasks";
 
@@ -11,128 +12,166 @@ interface Props {
   rows: ChartRow[];
   metric: MetricKey;
   color: string;
-  subtitle: string;
 }
 
 const METRIC_CONFIG = {
   workers: {
-    title: "Workers Affected",
-    col: "workers_affected" as keyof ChartRow,
-    xLabel: "Number of Workers Affected",
-    unitScale: 1,
+    col:        "workers_affected" as keyof ChartRow,
+    xLabel:     "Workers",
+    unitScale:  1,
     formatType: "number",
   },
   wages: {
-    title: "Wages Affected",
-    col: "wages_affected" as keyof ChartRow,
-    xLabel: "Annual Wages Affected ($B)",
-    unitScale: 1e9,
+    col:        "wages_affected" as keyof ChartRow,
+    xLabel:     "Annual Wages ($B)",
+    unitScale:  1e9,
     formatType: "currency_B",
   },
   tasks: {
-    title: "% Tasks Affected",
-    col: "pct_tasks_affected" as keyof ChartRow,
-    xLabel: "% of Tasks Affected",
-    unitScale: 1,
+    col:        "pct_tasks_affected" as keyof ChartRow,
+    xLabel:     "% Tasks Affected",
+    unitScale:  1,
     formatType: "percent",
   },
 } as const;
 
-function fmt(value: number, formatType: string): string {
-  if (formatType === "number")     return value.toLocaleString("en-US", { maximumFractionDigits: 0 });
+export function fmtChartValue(value: number, formatType: string): string {
+  if (formatType === "number") {
+    if (value >= 1e6) return `${(value / 1e6).toFixed(2)}M`;
+    if (value >= 1e3) return `${(value / 1e3).toFixed(0)}K`;
+    return value.toLocaleString("en-US", { maximumFractionDigits: 0 });
+  }
   if (formatType === "currency_B") return `$${(value / 1e9).toFixed(2)}B`;
   if (formatType === "percent")    return `${value.toFixed(1)}%`;
   return String(value);
 }
 
-function barLabel(value: number, total: number, formatType: string): string {
-  if (formatType === "percent") return fmt(value, "percent");
-  const share = total > 0 ? (value / total) * 100 : 0;
-  return `${fmt(value, formatType)} (${share.toFixed(1)}%)`;
+function truncate(s: string, max = 28): string {
+  return s.length > max ? s.slice(0, max - 1) + "…" : s;
 }
 
-const GRID_COLOR = "rgba(200,200,200,0.3)";
+const CHART_FONT = "Inter, -apple-system, BlinkMacSystemFont, sans-serif";
 
-export default function HorizontalBarChart({ rows, metric, color, subtitle }: Props) {
+// ── Custom tooltip ────────────────────────────────────────────────────────────
+
+function makeBarTooltip(formatType: string) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return function BarTooltip({ active, payload }: any) {
+    if (!active || !payload?.length) return null;
+    const { category, rawValue } = payload[0].payload as { category: string; rawValue: number };
+    return (
+      <div style={{
+        background: "var(--bg-surface)",
+        border: "1px solid var(--border)",
+        borderRadius: 7,
+        padding: "8px 12px",
+        fontSize: 12,
+        boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
+        maxWidth: 280,
+      }}>
+        <p style={{ fontWeight: 600, color: "var(--text-primary)", marginBottom: 3, lineHeight: 1.4 }}>
+          {category}
+        </p>
+        <p style={{ color: "var(--text-secondary)" }}>
+          {fmtChartValue(rawValue, formatType)}
+        </p>
+      </div>
+    );
+  };
+}
+
+// ── Chart ─────────────────────────────────────────────────────────────────────
+
+export default function HorizontalBarChart({ rows, metric, color }: Props) {
   const cfg = METRIC_CONFIG[metric];
 
   if (!rows || rows.length === 0) {
     return (
-      <div
-        className="flex items-center justify-center h-36"
-        style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 10 }}
-      >
-        <span style={{ color: "var(--text-muted)", fontSize: 13 }}>No data available</span>
+      <div style={{
+        display: "flex", alignItems: "center", justifyContent: "center",
+        height: 120, fontSize: 13, color: "var(--text-muted)",
+      }}>
+        No data available
       </div>
     );
   }
 
-  const rawValues  = rows.map((r) => r[cfg.col] as number);
-  const plotValues = cfg.unitScale > 1 ? rawValues.map((v) => v / cfg.unitScale) : rawValues;
-  const categories = rows.map((r) => r.category);
-  const total      = rawValues.reduce((a, b) => a + b, 0);
-  const labels     = rawValues.map((v) => barLabel(v, total, cfg.formatType));
+  const data = rows.map((r) => ({
+    category:  r.category,
+    plotValue: cfg.unitScale > 1
+      ? (r[cfg.col] as number) / cfg.unitScale
+      : (r[cfg.col] as number),
+    rawValue: r[cfg.col] as number,
+  }));
 
-  const hoverText = categories.map((cat, i) => {
-    const raw   = rawValues[i];
-    const share = total > 0 ? (raw / total) * 100 : 0;
-    return `<b>${cat}</b><br>${cfg.xLabel}: ${fmt(raw, cfg.formatType)}<br>Share of total: ${share.toFixed(1)}%`;
-  });
-
-  const n      = rows.length;
-  const height = Math.max(280, 34 * n + 120);
+  const n          = rows.length;
+  const barSize    = 16;
+  const rowPitch   = barSize + 18;
+  const chartHeight = Math.max(180, n * rowPitch + 56);
 
   return (
-    <Plot
-      data={[
-        {
-          type:             "bar",
-          orientation:      "h",
-          x:                plotValues,
-          y:                categories,
-          marker:           { color, line: { width: 0 } },
-          text:             labels,
-          textposition:     "inside",
-          insidetextanchor: "middle",
-          textfont:         { color: "white", size: 10, family: "Inter, system-ui, sans-serif" },
-          hovertext:        hoverText,
-          hoverinfo:        "text",
-          cliponaxis:       false,
-        },
-      ]}
-      layout={{
-        title: {
-          text:    `<b>${cfg.title}</b><br><span style="font-size:11px;color:#888">${subtitle}</span>`,
-          font:    { size: 14, color: "#1a1a1a", family: "Inter, system-ui, sans-serif" },
-          x:       0,
-          xanchor: "left",
-          pad:     { b: 4 },
-        },
-        xaxis: {
-          title:         { text: cfg.xLabel, font: { size: 11, color: "#666" } },
-          showgrid:      true,
-          gridcolor:     GRID_COLOR,
-          gridwidth:     1,
-          zeroline:      true,
-          zerolinecolor: "#ddd",
-          tickfont:      { size: 10, color: "#666" },
-        },
-        yaxis: {
-          title:      { text: "" },
-          tickfont:   { size: 10, color: "#333" },
-          automargin: true,
-        },
-        height,
-        margin:        { l: 10, r: 30, t: 70, b: 30 },
-        plot_bgcolor:  "white",
-        paper_bgcolor: "white",
-        showlegend:    false,
-        bargap:        0.28,
-        annotations:   [],
-      }}
-      config={{ displayModeBar: false, responsive: true }}
-      style={{ width: "100%" }}
-      useResizeHandler
-    />
+    <ResponsiveContainer width="100%" height={chartHeight}>
+      <BarChart
+        data={data}
+        layout="vertical"
+        margin={{ top: 4, right: 88, bottom: 24, left: 8 }}
+        barCategoryGap="32%"
+      >
+        <CartesianGrid
+          horizontal={false}
+          stroke="rgba(0,0,0,0.05)"
+          strokeDasharray="4 4"
+        />
+
+        <XAxis
+          type="number"
+          tickFormatter={(v: number) => fmtChartValue(
+            v * (cfg.unitScale > 1 ? cfg.unitScale : 1),
+            cfg.formatType,
+          )}
+          tick={{ fontSize: 10, fill: "#999", fontFamily: CHART_FONT }}
+          axisLine={{ stroke: "rgba(0,0,0,0.07)" }}
+          tickLine={false}
+          label={{
+            value:    cfg.xLabel,
+            position: "insideBottom",
+            offset:   -12,
+            fontSize: 10,
+            fill:     "#bbb",
+            fontFamily: CHART_FONT,
+          }}
+        />
+
+        <YAxis
+          type="category"
+          dataKey="category"
+          tickFormatter={(v: string) => truncate(v, 28)}
+          width={178}
+          tick={{ fontSize: 11, fill: "#555", fontFamily: CHART_FONT }}
+          axisLine={false}
+          tickLine={false}
+        />
+
+        <Tooltip
+          content={makeBarTooltip(cfg.formatType)}
+          cursor={{ fill: "rgba(0,0,0,0.03)" }}
+        />
+
+        <Bar
+          dataKey="plotValue"
+          fill={color}
+          radius={[0, 3, 3, 0]}
+          maxBarSize={barSize}
+        >
+          <LabelList
+            dataKey="rawValue"
+            position="right"
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            formatter={(v: any) => fmtChartValue(Number(v), cfg.formatType)}
+            style={{ fontSize: 10, fill: "#888", fontFamily: CHART_FONT }}
+          />
+        </Bar>
+      </BarChart>
+    </ResponsiveContainer>
   );
 }
