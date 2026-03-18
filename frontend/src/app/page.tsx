@@ -1,12 +1,65 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import type { GroupSettings as GroupSettingsType, ConfigResponse } from "@/lib/types";
-import { fetchConfig } from "@/lib/api";
+import { useEffect, useRef, useState, useCallback } from "react";
+import type { GroupSettings, ComputeResponse, ConfigResponse } from "@/lib/types";
+import { fetchConfig, fetchCompute } from "@/lib/api";
 import GroupPanel from "@/components/GroupPanel";
 import { GROUP_A_COLOR, GROUP_B_COLOR } from "@/lib/theme";
 
-// ── Shared control sub-components ─────────────────────────────────────────────
+// ── Types ──────────────────────────────────────────────────────────────────────
+
+interface GroupPending {
+  datasets:     string[];
+  combineMethod: "Average" | "Max";
+  method:       "freq" | "imp";
+  geo:          "nat" | "ut";
+  aggLevel:     GroupSettings["aggLevel"];
+  topN:         number;
+  sortBy:       string;
+  physicalMode: "all" | "exclude" | "only";
+  useAutoAug:   boolean;
+  useAdjMean:   boolean;
+  searchQuery:  string;
+  contextSize:  number;
+}
+
+function pendingToSettings(p: GroupPending): GroupSettings {
+  return {
+    selectedDatasets: p.datasets,
+    combineMethod:    p.combineMethod,
+    method:           p.method,
+    geo:              p.geo,
+    aggLevel:         p.aggLevel,
+    topN:             p.topN,
+    sortBy:           p.sortBy,
+    physicalMode:     p.physicalMode,
+    useAutoAug:       p.useAutoAug,
+    useAdjMean:       p.useAdjMean,
+    searchQuery:      p.searchQuery,
+    contextSize:      p.contextSize,
+  };
+}
+
+// ── Defaults ───────────────────────────────────────────────────────────────────
+
+function defaultPending(datasets: string[]): GroupPending {
+  return {
+    datasets,
+    combineMethod: "Average",
+    method:       "freq",
+    geo:          "nat",
+    aggLevel:     "major",
+    topN:         10,
+    sortBy:       "Workers Affected",
+    physicalMode: "all",
+    useAutoAug:   false,
+    useAdjMean:   false,
+    searchQuery:  "",
+    contextSize:  5,
+  };
+}
+
+// ── Shared sub-components ──────────────────────────────────────────────────────
 
 function ControlLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -54,8 +107,11 @@ function SegBtn<T extends string>({
   );
 }
 
+// ── Dataset dropdown ───────────────────────────────────────────────────────────
+
 function DatasetDropdown({
-  label, color, datasets, availability, selected, combineMethod, onChange, onChangeCombine,
+  label, color, datasets, availability, selected, combineMethod,
+  onChange, onChangeCombine,
 }: {
   label: string;
   color: string;
@@ -78,8 +134,7 @@ function DatasetDropdown({
     return () => document.removeEventListener("mousedown", handle);
   }, [open]);
 
-  const summary =
-    selected.length === 0 ? "None"
+  const summary = selected.length === 0 ? "None"
     : selected.length === 1 ? selected[0]
     : `${selected.length} datasets`;
 
@@ -101,7 +156,7 @@ function DatasetDropdown({
           transition: "border-color 0.12s",
         }}
         onMouseOver={(e) => (e.currentTarget.style.borderColor = "var(--brand)")}
-        onMouseOut={(e) => (e.currentTarget.style.borderColor = "var(--border)")}
+        onMouseOut={(e)  => (e.currentTarget.style.borderColor = "var(--border)")}
       >
         <span style={{ width: 8, height: 8, borderRadius: "50%", background: color, flexShrink: 0 }} />
         <span style={{ flex: 1, textAlign: "left" as const }}>{summary}</span>
@@ -188,11 +243,194 @@ function DatasetDropdown({
   );
 }
 
-// ── Default settings ───────────────────────────────────────────────────────────
+// ── Group settings panel ───────────────────────────────────────────────────────
 
-const DEFAULT_SHARED = { method: "freq" as const, geo: "nat" as const, aggLevel: "major" as const, topN: 10, sortBy: "Workers Affected" };
-const DEFAULT_APPLIED_A: GroupSettingsType = { selectedDatasets: ["AEI v4"], combineMethod: "Average", ...DEFAULT_SHARED, useAutoAug: false, useAdjMean: false, physicalMode: "all" };
-const DEFAULT_APPLIED_B: GroupSettingsType = { selectedDatasets: ["MCP v4"], combineMethod: "Average", ...DEFAULT_SHARED, useAutoAug: false, useAdjMean: false, physicalMode: "all" };
+function GroupSettingsPanel({
+  groupId,
+  color,
+  pending,
+  setPending,
+  config,
+  sortOptions,
+}: {
+  groupId: "A" | "B";
+  color: string;
+  pending: GroupPending;
+  setPending: (p: GroupPending) => void;
+  config: ConfigResponse;
+  sortOptions: string[];
+}) {
+  const maxN = pending.aggLevel === "occupation" ? 50 : 30;
+  const hasMCP = pending.datasets.some((d) => d.startsWith("MCP"));
+
+  function set<K extends keyof GroupPending>(k: K, v: GroupPending[K]) {
+    setPending({ ...pending, [k]: v });
+  }
+
+  return (
+    <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
+
+      <DatasetDropdown
+        label={`Group ${groupId} datasets`}
+        color={color}
+        datasets={config.datasets}
+        availability={config.dataset_availability}
+        selected={pending.datasets}
+        combineMethod={pending.combineMethod}
+        onChange={(v) => set("datasets", v)}
+        onChangeCombine={(v) => set("combineMethod", v)}
+      />
+
+      <div style={{ width: 1, height: 28, background: "var(--border)", alignSelf: "flex-end", marginBottom: 1 }} />
+
+      <div>
+        <ControlLabel>Method</ControlLabel>
+        <SegBtn
+          options={[{ value: "freq", label: "Freq" }, { value: "imp", label: "Imp" }]}
+          value={pending.method}
+          onChange={(v) => set("method", v)}
+        />
+      </div>
+
+      <div>
+        <ControlLabel>Geography</ControlLabel>
+        <SegBtn
+          options={[{ value: "nat", label: "National" }, { value: "ut", label: "Utah" }]}
+          value={pending.geo}
+          onChange={(v) => set("geo", v)}
+        />
+      </div>
+
+      <div>
+        <ControlLabel>Aggregation</ControlLabel>
+        <select
+          value={pending.aggLevel}
+          onChange={(e) => {
+            const v = e.target.value as GroupPending["aggLevel"];
+            const newTopN = v !== "occupation" ? Math.min(pending.topN, 30) : pending.topN;
+            setPending({ ...pending, aggLevel: v, topN: newTopN });
+          }}
+          style={{
+            fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
+            padding: "5px 8px", background: "var(--bg-surface)", color: "var(--text-primary)",
+            cursor: "pointer", height: 31,
+          }}
+        >
+          <option value="major">Major</option>
+          <option value="minor">Minor</option>
+          <option value="broad">Broad</option>
+          <option value="occupation">Occupation</option>
+        </select>
+      </div>
+
+      {/* Search bar */}
+      <div>
+        <ControlLabel>Search category</ControlLabel>
+        <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+          <input
+            type="text"
+            placeholder="Search…"
+            value={pending.searchQuery}
+            onChange={(e) => set("searchQuery", e.target.value)}
+            style={{
+              fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
+              padding: "5px 8px", background: "var(--bg-surface)", color: "var(--text-primary)",
+              width: 140, height: 31,
+              outline: "none",
+            }}
+            onFocus={(e) => (e.currentTarget.style.borderColor = "var(--brand)")}
+            onBlur={(e)  => (e.currentTarget.style.borderColor = "var(--border)")}
+          />
+          {pending.searchQuery && (
+            <button
+              onClick={() => set("searchQuery", "")}
+              style={{
+                position: "absolute", right: 6,
+                background: "none", border: "none", cursor: "pointer",
+                color: "var(--text-muted)", fontSize: 14, lineHeight: 1,
+                padding: 0,
+              }}
+            >×</button>
+          )}
+        </div>
+      </div>
+
+      {/* Context size or Top N */}
+      {pending.searchQuery ? (
+        <div>
+          <ControlLabel>Context ±</ControlLabel>
+          <SegBtn
+            options={[{ value: "5" as never, label: "5" }, { value: "10" as never, label: "10" }]}
+            value={String(pending.contextSize) as never}
+            onChange={(v) => set("contextSize", Number(v))}
+          />
+        </div>
+      ) : (
+        <div>
+          <ControlLabel>Top {pending.topN}</ControlLabel>
+          <input
+            type="range" min={5} max={maxN} step={1} value={pending.topN}
+            onChange={(e) => set("topN", Number(e.target.value))}
+            style={{ width: 80, accentColor: "var(--brand)", display: "block", marginTop: 4 }}
+          />
+        </div>
+      )}
+
+      <div>
+        <ControlLabel>Sort by</ControlLabel>
+        <select
+          value={pending.sortBy}
+          onChange={(e) => set("sortBy", e.target.value)}
+          style={{
+            fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
+            padding: "5px 8px", background: "var(--bg-surface)", color: "var(--text-primary)",
+            cursor: "pointer", height: 31,
+          }}
+        >
+          {sortOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+        </select>
+      </div>
+
+      <div style={{ width: 1, height: 28, background: "var(--border)", alignSelf: "flex-end", marginBottom: 1 }} />
+
+      {/* Physical mode */}
+      <div>
+        <ControlLabel>Tasks</ControlLabel>
+        <SegBtn
+          options={[
+            { value: "all",     label: "All"      },
+            { value: "exclude", label: "No Phys"  },
+            { value: "only",    label: "Phys only" },
+          ]}
+          value={pending.physicalMode}
+          onChange={(v) => set("physicalMode", v)}
+        />
+      </div>
+
+      {/* Auto-aug toggle */}
+      <div>
+        <ControlLabel>Auto-aug weight</ControlLabel>
+        <SegBtn
+          options={[{ value: "false" as never, label: "Off" }, { value: "true" as never, label: "On" }]}
+          value={String(pending.useAutoAug) as never}
+          onChange={(v) => set("useAutoAug", v === "true")}
+        />
+      </div>
+
+      {/* Adj mean — only when MCP selected and auto-aug on */}
+      {hasMCP && pending.useAutoAug && (
+        <div>
+          <ControlLabel>MCP adj mean</ControlLabel>
+          <SegBtn
+            options={[{ value: "false" as never, label: "Off" }, { value: "true" as never, label: "On" }]}
+            value={String(pending.useAdjMean) as never}
+            onChange={(v) => set("useAdjMean", v === "true")}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ── Page ───────────────────────────────────────────────────────────────────────
 
@@ -200,44 +438,57 @@ export default function HomePage() {
   const [config, setConfig]           = useState<ConfigResponse | null>(null);
   const [configError, setConfigError] = useState<string | null>(null);
 
-  // Pending (form) state — group-specific
-  const [datasetsA, setDatasetsA] = useState<string[]>(["AEI v4"]);
-  const [combineA,  setCombineA]  = useState<"Average" | "Max">("Average");
-  const [datasetsB, setDatasetsB] = useState<string[]>(["MCP v4"]);
-  const [combineB,  setCombineB]  = useState<"Average" | "Max">("Average");
+  const [pendingA, setPendingA] = useState<GroupPending>(defaultPending(["AEI v4"]));
+  const [pendingB, setPendingB] = useState<GroupPending>(defaultPending(["MCP v4"]));
+  const [activeGroup, setActiveGroup] = useState<"A" | "B">("A");
 
-  // Pending (form) state — shared
-  const [method,   setMethod]   = useState<"freq" | "imp">("freq");
-  const [geo,      setGeo]      = useState<"nat" | "ut">("nat");
-  const [aggLevel, setAggLevel] = useState<GroupSettingsType["aggLevel"]>("major");
-  const [topN,     setTopN]     = useState(10);
-  const [sortBy,   setSortBy]   = useState("Workers Affected");
+  // Applied (chart) results
+  const [responseA, setResponseA] = useState<ComputeResponse | null>(null);
+  const [responseB, setResponseB] = useState<ComputeResponse | null>(null);
+  const [loadingA, setLoadingA]   = useState(false);
+  const [loadingB, setLoadingB]   = useState(false);
+  const [errorA, setErrorA]       = useState<string | null>(null);
+  const [errorB, setErrorB]       = useState<string | null>(null);
 
-  // Applied (chart) state
-  const [appliedA, setAppliedA] = useState<GroupSettingsType>(DEFAULT_APPLIED_A);
-  const [appliedB, setAppliedB] = useState<GroupSettingsType>(DEFAULT_APPLIED_B);
+  // Track applied search query for highlighting
+  const [appliedSearchA, setAppliedSearchA] = useState<string>("");
+  const [appliedSearchB, setAppliedSearchB] = useState<string>("");
 
   useEffect(() => {
     fetchConfig()
       .then((cfg) => {
         setConfig(cfg);
         const avail = cfg.datasets.filter((d) => cfg.dataset_availability[d]);
-        const filter = (ds: string[]) => ds.filter((d) => avail.includes(d));
-        setDatasetsA((prev) => filter(prev));
-        setDatasetsB((prev) => filter(prev));
-        setAppliedA((prev) => ({ ...prev, selectedDatasets: filter(prev.selectedDatasets) }));
-        setAppliedB((prev) => ({ ...prev, selectedDatasets: filter(prev.selectedDatasets) }));
+        const filterDs = (ds: string[]) => ds.filter((d) => avail.includes(d));
+        setPendingA((p) => ({ ...p, datasets: filterDs(p.datasets) }));
+        setPendingB((p) => ({ ...p, datasets: filterDs(p.datasets) }));
       })
       .catch((e) => setConfigError(e.message));
   }, []);
 
-  function run() {
-    const shared = { method, geo, aggLevel, topN, sortBy, physicalMode: "all" as const, useAutoAug: false, useAdjMean: false };
-    setAppliedA({ ...shared, selectedDatasets: datasetsA, combineMethod: combineA });
-    setAppliedB({ ...shared, selectedDatasets: datasetsB, combineMethod: combineB });
-  }
+  const run = useCallback(async () => {
+    const settingsA = pendingToSettings(pendingA);
+    const settingsB = pendingToSettings(pendingB);
+    setAppliedSearchA(pendingA.searchQuery);
+    setAppliedSearchB(pendingB.searchQuery);
 
-  const maxN = aggLevel === "occupation" ? 50 : 30;
+    setLoadingA(true); setErrorA(null);
+    setLoadingB(true); setErrorB(null);
+
+    const [resA, resB] = await Promise.all([
+      pendingA.datasets.length > 0
+        ? fetchCompute(settingsA).catch((e: unknown) => { setErrorA(e instanceof Error ? e.message : "Failed"); return null; })
+        : Promise.resolve(null),
+      pendingB.datasets.length > 0
+        ? fetchCompute(settingsB).catch((e: unknown) => { setErrorB(e instanceof Error ? e.message : "Failed"); return null; })
+        : Promise.resolve(null),
+    ]);
+
+    setResponseA(resA);
+    setResponseB(resB);
+    setLoadingA(false);
+    setLoadingB(false);
+  }, [pendingA, pendingB]);
 
   if (configError) {
     return (
@@ -265,6 +516,17 @@ export default function HomePage() {
     );
   }
 
+  const activePending = activeGroup === "A" ? pendingA : pendingB;
+  const setActivePending = activeGroup === "A" ? setPendingA : setPendingB;
+  const otherPending  = activeGroup === "A" ? pendingB : pendingA;
+  const activeColor   = activeGroup === "A" ? GROUP_A_COLOR : GROUP_B_COLOR;
+
+  function syncToOther() {
+    const copy = { ...activePending };
+    if (activeGroup === "A") setPendingB(copy);
+    else setPendingA(copy);
+  }
+
   return (
     <div style={{
       height: "calc(100vh - var(--nav-height))",
@@ -277,120 +539,121 @@ export default function HomePage() {
         flexShrink: 0,
         background: "var(--bg-header)",
         borderBottom: "1px solid var(--border)",
-        padding: "18px 24px 16px",
+        padding: "14px 24px 14px",
       }}>
         {/* Page title */}
-        <div style={{ marginBottom: 14 }}>
+        <div style={{ marginBottom: 12 }}>
           <h1 style={{ fontSize: 19, fontWeight: 600, color: "var(--text-primary)", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.25 }}>
-            Automation Exposure Analysis
+            Occupation Categories
           </h1>
           <p style={{ fontSize: 12, color: "var(--text-muted)", margin: "3px 0 0", lineHeight: 1.5 }}>
             Compare automation exposure across datasets, geographies, and aggregation levels.
           </p>
         </div>
 
-        {/* Config bar */}
-        <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
-
-          <DatasetDropdown
-            label="Group A"
-            color={GROUP_A_COLOR}
-            datasets={config.datasets}
-            availability={config.dataset_availability}
-            selected={datasetsA}
-            combineMethod={combineA}
-            onChange={setDatasetsA}
-            onChangeCombine={setCombineA}
-          />
-
-          <DatasetDropdown
-            label="Group B"
-            color={GROUP_B_COLOR}
-            datasets={config.datasets}
-            availability={config.dataset_availability}
-            selected={datasetsB}
-            combineMethod={combineB}
-            onChange={setDatasetsB}
-            onChangeCombine={setCombineB}
-          />
-
-          {/* Visual divider */}
-          <div style={{ width: 1, height: 28, background: "var(--border)", alignSelf: "flex-end", marginBottom: 1 }} />
-
-          <div>
-            <ControlLabel>Method</ControlLabel>
-            <SegBtn
-              options={[{ value: "freq", label: "Freq" }, { value: "imp", label: "Imp" }]}
-              value={method}
-              onChange={setMethod}
-            />
+        {/* Group tab toggle + sync */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+          {/* Group A/B tab */}
+          <div style={{ display: "flex", border: "1px solid var(--border)", borderRadius: 7, overflow: "hidden" }}>
+            {(["A", "B"] as const).map((g) => {
+              const col = g === "A" ? GROUP_A_COLOR : GROUP_B_COLOR;
+              const isActive = activeGroup === g;
+              return (
+                <button
+                  key={g}
+                  onClick={() => setActiveGroup(g)}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 6,
+                    padding: "5px 14px",
+                    fontSize: 12, fontWeight: isActive ? 700 : 500,
+                    background: isActive ? "var(--brand-light)" : "transparent",
+                    color: isActive ? "var(--brand)" : "var(--text-secondary)",
+                    border: "none",
+                    borderRight: g === "A" ? "1px solid var(--border)" : "none",
+                    cursor: "pointer",
+                    transition: "background 0.12s",
+                  }}
+                >
+                  <span style={{ width: 8, height: 8, borderRadius: "50%", background: col }} />
+                  Group {g}
+                  {/* Summary of datasets */}
+                  <span style={{ fontSize: 10, color: "var(--text-muted)", fontWeight: 400 }}>
+                    ({(g === "A" ? pendingA : pendingB).datasets.length === 0 ? "none"
+                      : (g === "A" ? pendingA : pendingB).datasets.length === 1
+                        ? (g === "A" ? pendingA : pendingB).datasets[0]
+                        : `${(g === "A" ? pendingA : pendingB).datasets.length} ds`})
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
-          <div>
-            <ControlLabel>Geography</ControlLabel>
-            <SegBtn
-              options={[{ value: "nat", label: "National" }, { value: "ut", label: "Utah" }]}
-              value={geo}
-              onChange={setGeo}
-            />
-          </div>
+          {/* Sync button */}
+          <button
+            onClick={syncToOther}
+            title={`Copy Group ${activeGroup} settings to Group ${activeGroup === "A" ? "B" : "A"}`}
+            style={{
+              display: "flex", alignItems: "center", gap: 5,
+              padding: "5px 11px",
+              fontSize: 11, fontWeight: 500,
+              background: "var(--bg-surface)",
+              border: "1px solid var(--border)",
+              borderRadius: 6,
+              color: "var(--text-secondary)",
+              cursor: "pointer",
+              transition: "border-color 0.12s",
+            }}
+            onMouseOver={(e) => (e.currentTarget.style.borderColor = "var(--brand)")}
+            onMouseOut={(e)  => (e.currentTarget.style.borderColor = "var(--border)")}
+          >
+            <span style={{ fontSize: 13 }}>⇄</span>
+            Sync to {activeGroup === "A" ? "B" : "A"}
+          </button>
 
-          <div>
-            <ControlLabel>Aggregation</ControlLabel>
-            <select
-              value={aggLevel}
-              onChange={(e) => {
-                const v = e.target.value as GroupSettingsType["aggLevel"];
-                setAggLevel(v);
-                if (v !== "occupation") setTopN((n) => Math.min(n, 30));
-              }}
-              style={{
-                fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
-                padding: "5px 8px", background: "var(--bg-surface)", color: "var(--text-primary)",
-                cursor: "pointer", height: 31,
-              }}
-            >
-              <option value="major">Major</option>
-              <option value="minor">Minor</option>
-              <option value="broad">Broad</option>
-              <option value="occupation">Occupation</option>
-            </select>
-          </div>
-
-          <div>
-            <ControlLabel>Top {topN}</ControlLabel>
-            <input
-              type="range" min={5} max={maxN} step={1} value={topN}
-              onChange={(e) => setTopN(Number(e.target.value))}
-              style={{ width: 80, accentColor: "var(--brand)", display: "block", marginTop: 4 }}
-            />
-          </div>
-
-          <div>
-            <ControlLabel>Sort by</ControlLabel>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              style={{
-                fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
-                padding: "5px 8px", background: "var(--bg-surface)", color: "var(--text-primary)",
-                cursor: "pointer", height: 31,
-              }}
-            >
-              {config.sort_options.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-            </select>
-          </div>
+          {/* Quick visual divider */}
+          <div style={{ flex: 1 }} />
 
           {/* Run button */}
           <button
             onClick={run}
             className="btn-brand"
-            style={{ padding: "7px 22px", fontSize: 13, alignSelf: "flex-end" }}
+            style={{ padding: "7px 24px", fontSize: 13 }}
             onMouseOver={(e) => (e.currentTarget.style.background = "var(--brand-hover)")}
-            onMouseOut={(e) => (e.currentTarget.style.background = "var(--brand)")}
+            onMouseOut={(e)  => (e.currentTarget.style.background = "var(--brand)")}
           >
             Run
           </button>
+        </div>
+
+        {/* Settings for active group */}
+        <GroupSettingsPanel
+          groupId={activeGroup}
+          color={activeColor}
+          pending={activePending}
+          setPending={setActivePending}
+          config={config}
+          sortOptions={config.sort_options}
+        />
+
+        {/* Show other group summary */}
+        <div style={{ marginTop: 8, fontSize: 11, color: "var(--text-muted)" }}>
+          <span style={{
+            display: "inline-flex", alignItems: "center", gap: 4,
+            padding: "2px 8px",
+            background: "var(--bg-surface)",
+            border: "1px solid var(--border-light)",
+            borderRadius: 4,
+          }}>
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: activeGroup === "A" ? GROUP_B_COLOR : GROUP_A_COLOR }} />
+            Group {activeGroup === "A" ? "B" : "A"}:&nbsp;
+            {otherPending.datasets.length === 0 ? "no datasets"
+              : otherPending.datasets.length === 1 ? otherPending.datasets[0]
+              : `${otherPending.datasets.length} datasets`}
+            &nbsp;·&nbsp;{otherPending.method === "freq" ? "Freq" : "Imp"}
+            &nbsp;·&nbsp;{otherPending.geo === "nat" ? "National" : "Utah"}
+            &nbsp;·&nbsp;{otherPending.aggLevel}
+            {otherPending.searchQuery && ` · search: "${otherPending.searchQuery}"`}
+          </span>
         </div>
       </div>
 
@@ -404,8 +667,24 @@ export default function HomePage() {
           alignContent: "start",
           flex: 1,
         }}>
-          <GroupPanel groupId="A" color={GROUP_A_COLOR} settings={appliedA} config={config} />
-          <GroupPanel groupId="B" color={GROUP_B_COLOR} settings={appliedB} config={config} />
+          <GroupPanel
+            groupId="A"
+            color={GROUP_A_COLOR}
+            response={responseA}
+            otherResponse={responseB}
+            loading={loadingA}
+            error={errorA}
+            matchedCategory={responseA?.matched_category ?? (appliedSearchA ? null : undefined)}
+          />
+          <GroupPanel
+            groupId="B"
+            color={GROUP_B_COLOR}
+            response={responseB}
+            otherResponse={responseA}
+            loading={loadingB}
+            error={errorB}
+            matchedCategory={responseB?.matched_category ?? (appliedSearchB ? null : undefined)}
+          />
         </div>
 
         {/* Footer */}

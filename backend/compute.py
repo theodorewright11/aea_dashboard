@@ -401,7 +401,16 @@ def combine_results(
 
 # ── Group data (occupation-level overview) ─────────────────────────────────────
 
-def get_group_data(settings: dict) -> Optional[pd.DataFrame]:
+def get_group_data(settings: dict) -> Optional[dict]:
+    """
+    Returns a dict with:
+      - df:               DataFrame of rows (descending order, top_n or search window)
+      - group_col:        column name for the category
+      - total_categories: total number of categories before top_n/search filter
+      - total_emp:        sum of workers_affected across ALL categories
+      - total_wages:      sum of wages_affected across ALL categories
+      - matched_category: str or None (set when search_query was used)
+    """
     selected = settings.get("selected_datasets", [])
     if not selected:
         return None
@@ -413,8 +422,10 @@ def get_group_data(settings: dict) -> Optional[pd.DataFrame]:
     geo           = settings["geo"]
     agg_level     = settings["agg_level"]
     sort_by       = settings["sort_by"]
-    top_n         = settings["top_n"]
+    top_n         = int(settings["top_n"])
     combine       = settings.get("combine_method", "Average")
+    search_query  = (settings.get("search_query") or "").strip()
+    context_size  = int(settings.get("context_size") or 5)
 
     results = []
     for name in selected:
@@ -446,16 +457,50 @@ def get_group_data(settings: dict) -> Optional[pd.DataFrame]:
                 sort_col = c
                 break
         else:
-            return df
+            sort_col = group_col
 
-    df = (
-        df
-        .sort_values(sort_col, ascending=False, na_position="last")
-        .head(top_n)
-        .sort_values(sort_col, ascending=True, na_position="first")
-        .reset_index(drop=True)
-    )
-    return df
+    # Sort descending — highest value first (appears at TOP of horizontal bar chart)
+    df = df.sort_values(sort_col, ascending=False, na_position="last").reset_index(drop=True)
+
+    # Compute ranks across ALL categories (rank 1 = highest value)
+    for metric_col, rank_col in [
+        ("workers_affected",   "rank_workers"),
+        ("wages_affected",     "rank_wages"),
+        ("pct_tasks_affected", "rank_pct"),
+    ]:
+        if metric_col in df.columns:
+            df[rank_col] = df[metric_col].rank(ascending=False, method="min").astype(int)
+        else:
+            df[rank_col] = 0
+
+    total_categories = len(df)
+    total_emp   = float(df["workers_affected"].sum()) if "workers_affected" in df.columns else 0.0
+    total_wages = float(df["wages_affected"].sum())   if "wages_affected"   in df.columns else 0.0
+
+    # Apply search filter or top_n
+    matched_category: Optional[str] = None
+    if search_query:
+        q = search_query.lower()
+        mask = df[group_col].str.lower().str.contains(q, na=False, regex=False)
+        if mask.any():
+            pos = int(mask.idxmax())
+            matched_category = str(df.loc[pos, group_col])
+            start = max(0, pos - context_size)
+            end   = min(len(df), pos + context_size + 1)
+            df = df.iloc[start:end].copy()
+        else:
+            df = df.iloc[0:0].copy()  # empty — no match
+    else:
+        df = df.head(top_n).copy()
+
+    return {
+        "df":               df,
+        "group_col":        group_col,
+        "total_categories": total_categories,
+        "total_emp":        total_emp,
+        "total_wages":      total_wages,
+        "matched_category": matched_category,
+    }
 
 
 # ── Work Activities (DWA / IWA / GWA) ─────────────────────────────────────────
@@ -551,7 +596,6 @@ def _compute_wa_for_group(
 
     eco_unique = eco_unique.merge(n_tasks_per_occ, on=title_col, how="left")
     eco_unique = eco_unique.merge(occ_emp_wage, on=title_col, how="left", suffixes=("", "_ow"))
-    # If merge created suffixed duplicates, use the clean version
     for col in [emp_col, wage_col]:
         if f"{col}_ow" in eco_unique.columns:
             eco_unique[col] = eco_unique[f"{col}_ow"].fillna(eco_unique[col])
@@ -560,7 +604,7 @@ def _compute_wa_for_group(
     eco_unique["emp_per_task"] = (eco_unique[emp_col] / eco_unique["n_tasks"]).fillna(0.0)
 
     # -- Process each AI dataset
-    per_dataset: dict[str, dict] = {}  # act_key → list of DataFrames (one per dataset)
+    per_dataset: dict[str, list] = {}
     activity_cols = {
         "gwa": "gwa_title",
         "iwa": "iwa_title",
@@ -587,7 +631,6 @@ def _compute_wa_for_group(
         )
         ai_unique["ai_tc"] = compute_task_comp(ai_unique, method, use_auto_aug, effective_adj)
 
-        # Merge AI onto ECO (left join keeps all ECO tasks)
         merged = eco_unique.merge(
             ai_unique[[ai_title_col, "task_normalized", "ai_tc"]].rename(
                 columns={ai_title_col: title_col}
@@ -597,7 +640,6 @@ def _compute_wa_for_group(
         )
         merged["ai_tc"] = merged["ai_tc"].fillna(0.0)
 
-        # Per-task worker / wage contributions
         eco_tc_safe = merged["eco_tc"].replace(0, np.nan)
         merged["workers_contribution"] = (
             (merged["ai_tc"] / eco_tc_safe) * merged["emp_per_task"]
@@ -606,7 +648,6 @@ def _compute_wa_for_group(
             merged["workers_contribution"] * merged[wage_col].fillna(0.0)
         )
 
-        # Aggregate by each activity level
         for act_key, act_col in activity_cols.items():
             if act_col not in merged.columns:
                 continue
@@ -633,7 +674,7 @@ def _compute_wa_for_group(
     if not per_dataset:
         return None
 
-    # -- Combine across datasets
+    # -- Combine across datasets and sort descending (highest at top of chart)
     combined: dict = {}
     sort_col_map = {
         "Workers Affected":   "workers_affected",
@@ -650,11 +691,11 @@ def _compute_wa_for_group(
         if df.empty:
             continue
         sc = sort_col if sort_col in df.columns else "pct_tasks_affected"
+        # Sort descending — highest at top of chart
         df = (
             df
             .sort_values(sc, ascending=False, na_position="last")
             .head(top_n)
-            .sort_values(sc, ascending=True, na_position="first")
             .reset_index(drop=True)
         )
         combined[act_key] = df.to_dict(orient="records")
@@ -698,6 +739,18 @@ def _get_dataset_date(file_path: str) -> str:
     except Exception:
         pass
     return ""
+
+
+def _safe_num(v) -> Optional[float]:
+    if v is None:
+        return None
+    try:
+        f = float(v)
+        if np.isnan(f) or np.isinf(f):
+            return None
+        return f
+    except (TypeError, ValueError):
+        return None
 
 
 def compute_trends(settings: dict) -> dict:
@@ -781,19 +834,107 @@ def compute_trends(settings: dict) -> dict:
     return {"series": result_series}
 
 
+# ── Work Activity Trends ───────────────────────────────────────────────────────
+
+def compute_wa_trends(settings: dict) -> dict:
+    """
+    Computes work-activity time trends for AEI and MCP/Microsoft series separately.
+    For each dataset version, calls _compute_wa_for_group and records the date.
+    Returns {"series": [{"name": ..., "data_points": [...], "top_categories": [...]}]}
+    where each series is either "AEI" (eco_2015 baseline) or "MCP" (eco_2025 baseline).
+    """
+    series_names  = settings.get("series", ["AEI", "MCP"])
+    method        = settings["method"]
+    use_auto_aug  = settings["use_auto_aug"]
+    use_adj_mean  = settings.get("use_adj_mean", False)
+    physical_mode = settings["physical_mode"]
+    geo           = settings["geo"]
+    top_n         = int(settings.get("top_n", 10))
+    sort_by       = settings.get("sort_by", "Workers Affected")
+    activity_level = settings.get("activity_level", "gwa")  # gwa | iwa | dwa
+
+    # Map series name → (dataset family names, use_eco2015)
+    SERIES_MAP = {
+        "AEI":       (["AEI", "AEI API"], True),
+        "MCP":       (["MCP"],            False),
+        "Microsoft": (["Microsoft"],      False),
+    }
+
+    result_series = []
+
+    for series_name in series_names:
+        if series_name not in SERIES_MAP:
+            continue
+        family_names, use_eco2015 = SERIES_MAP[series_name]
+
+        # Collect all datasets in this series family
+        ds_list = []
+        for family in family_names:
+            ds_list.extend(DATASET_SERIES.get(family, []))
+
+        series_data = []
+        latest_categories: list[str] = []
+
+        for ds_name in ds_list:
+            meta = DATASETS.get(ds_name)
+            if meta is None or not Path(meta["file"]).exists():
+                continue
+
+            date = _get_dataset_date(meta["file"])
+            effective_adj = use_adj_mean and meta["is_mcp"]
+
+            wa_settings = {
+                "method":        method,
+                "use_auto_aug":  use_auto_aug,
+                "use_adj_mean":  effective_adj,
+                "physical_mode": physical_mode,
+                "geo":           geo,
+                "combine_method": "Average",
+                "top_n":         top_n,
+                "sort_by":       sort_by,
+            }
+
+            wa_result = _compute_wa_for_group([ds_name], wa_settings, use_eco2015)
+            if wa_result is None or activity_level not in wa_result:
+                continue
+
+            rows_raw = wa_result[activity_level]
+            # rows_raw is already sorted descending, top_n already applied
+            latest_categories = [r["category"] for r in rows_raw]
+
+            # For time series we want ALL categories, not just top_n
+            # Re-run without top_n limit
+            wa_settings_all = dict(wa_settings)
+            wa_settings_all["top_n"] = 9999
+            wa_result_all = _compute_wa_for_group([ds_name], wa_settings_all, use_eco2015)
+            rows_all = wa_result_all.get(activity_level, []) if wa_result_all else rows_raw
+
+            series_data.append({
+                "dataset": ds_name,
+                "date":    date,
+                "rows": [
+                    {
+                        "category":           str(r["category"]),
+                        "pct_tasks_affected": _safe_num(r.get("pct_tasks_affected", 0)),
+                        "workers_affected":   _safe_num(r.get("workers_affected", 0)),
+                        "wages_affected":     _safe_num(r.get("wages_affected", 0)),
+                    }
+                    for r in rows_all
+                ],
+            })
+
+        if series_data:
+            result_series.append({
+                "name":           series_name,
+                "data_points":    series_data,
+                "top_categories": latest_categories,
+                "group_col":      activity_level,
+            })
+
+    return {"series": result_series}
+
+
 # ── Explorer ───────────────────────────────────────────────────────────────────
-
-def _safe_num(v) -> Optional[float]:
-    if v is None:
-        return None
-    try:
-        f = float(v)
-        if np.isnan(f) or np.isinf(f):
-            return None
-        return f
-    except (TypeError, ValueError):
-        return None
-
 
 def _safe_float(v) -> float:
     f = _safe_num(v)
@@ -823,7 +964,6 @@ def get_explorer_occupations() -> list:
     mcp = pd.read_csv(mcp_file) if Path(mcp_file).exists() else None
     ms  = pd.read_csv(ms_file)  if Path(ms_file).exists()  else None
 
-    # Build task-level mean lookups {task_normalized → {auto_aug, pct_normalized}}
     def build_task_lookup(df, auto_col, pct_col="pct_normalized"):
         if df is None or df.empty:
             return {}
@@ -843,7 +983,6 @@ def get_explorer_occupations() -> list:
     mcp_lookup = build_task_lookup(mcp, "auto_aug_mean_adj")
     ms_lookup  = build_task_lookup(ms,  "auto_aug_mean")
 
-    # Map task_normalized → occupations from eco_2025 (for occ-level averages)
     task_occ = eco[["title_current", "task_normalized"]].drop_duplicates()
 
     def occ_avg_stats(lookup):
@@ -867,7 +1006,6 @@ def get_explorer_occupations() -> list:
     mcp_occ = occ_avg_stats(mcp_lookup)
     ms_occ  = occ_avg_stats(ms_lookup)
 
-    # Occupation-level stats from eco_2025
     occ_stats = (
         eco.groupby("title_current")
         .agg(
@@ -915,6 +1053,7 @@ def get_occupation_tasks(title: str) -> Optional[dict]:
     """
     Returns task-level details for one occupation, cross-referenced with
     AEI v4, MCP v4, and Microsoft by task_normalized.
+    Includes 'physical' flag from eco_2025.
     """
     if title in _explorer_task_cache:
         return _explorer_task_cache[title]
@@ -927,7 +1066,6 @@ def get_occupation_tasks(title: str) -> Optional[dict]:
     if occ_tasks.empty:
         return None
 
-    # Load AI datasets
     aei_file = DATASETS.get("AEI v4", {}).get("file", "")
     mcp_file = DATASETS.get("MCP v4", {}).get("file", "")
     ms_file  = DATASETS.get("Microsoft", {}).get("file", "")
@@ -957,7 +1095,6 @@ def get_occupation_tasks(title: str) -> Optional[dict]:
     ms_tasks  = task_lookup(ms,  "auto_aug_mean")
 
     tasks_list = []
-    # Use unique (task_normalized) per occupation to avoid DWA duplicates in display
     seen_task_norm = set()
     for _, row in occ_tasks.iterrows():
         tn = row["task_normalized"]
@@ -1003,6 +1140,13 @@ def get_occupation_tasks(title: str) -> Optional[dict]:
             ] if v is not None
         ]
 
+        # Physical flag from eco_2025
+        phys_val = row.get("physical")
+        if phys_val is None or (isinstance(phys_val, float) and np.isnan(phys_val)):
+            is_physical = None
+        else:
+            is_physical = bool(phys_val)
+
         tasks_list.append({
             "task":           row["task"],
             "task_normalized": tn,
@@ -1012,6 +1156,7 @@ def get_occupation_tasks(title: str) -> Optional[dict]:
             "freq_mean":      _safe_num(row.get("freq_mean")),
             "importance":     _safe_num(row.get("importance")),
             "relevance":      _safe_num(row.get("relevance")),
+            "physical":       is_physical,
             "aei":            aei_info,
             "mcp":            mcp_info,
             "microsoft":      ms_info,

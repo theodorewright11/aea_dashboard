@@ -1,16 +1,21 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
-import type { GroupSettings, ChartRow, ConfigResponse } from "@/lib/types";
-import { fetchCompute } from "@/lib/api";
+import { useRef } from "react";
+import type { ComputeResponse } from "@/lib/types";
 import HorizontalBarChart from "./HorizontalBarChart";
 import { downloadChartAsPng } from "@/lib/downloadChart";
 
 interface Props {
-  groupId: "A" | "B";
-  color: string;
-  settings: GroupSettings;
-  config: ConfigResponse;
+  groupId:       "A" | "B";
+  color:         string;
+  /** This group's compute result */
+  response:      ComputeResponse | null;
+  /** Other group's compute result — for delta tooltips */
+  otherResponse: ComputeResponse | null;
+  loading:       boolean;
+  error:         string | null;
+  /** Highlight this category if search matched */
+  matchedCategory?: string | null;
 }
 
 const METRIC_TITLES = {
@@ -35,10 +40,11 @@ function DownloadIcon() {
 // ── Chart card with header + download ────────────────────────────────────────
 
 function ChartCard({
-  title, downloadSlug, accentColor, children,
+  title, downloadSlug, downloadTitle, accentColor, children,
 }: {
   title: string;
   downloadSlug: string;
+  downloadTitle: string;
   accentColor: string;
   children: React.ReactNode;
 }) {
@@ -53,7 +59,6 @@ function ChartCard({
       overflow: "hidden",
       boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
     }}>
-      {/* Card header */}
       <div style={{
         display: "flex",
         justifyContent: "space-between",
@@ -68,7 +73,7 @@ function ChartCard({
           {title}
         </span>
         <button
-          onClick={() => downloadChartAsPng(containerRef.current, downloadSlug)}
+          onClick={() => downloadChartAsPng(containerRef.current, downloadSlug, { title: downloadTitle })}
           title={`Download ${title} as PNG`}
           style={{
             background: "none", border: "none", cursor: "pointer",
@@ -83,7 +88,6 @@ function ChartCard({
         </button>
       </div>
 
-      {/* Chart area — containerRef wraps just the chart SVG */}
       <div ref={containerRef} style={{ padding: "0 12px 16px" }}>
         {children}
       </div>
@@ -93,47 +97,31 @@ function ChartCard({
 
 // ── GroupPanel ────────────────────────────────────────────────────────────────
 
-export default function GroupPanel({ groupId, color, settings, config }: Props) {
-  const [rows, setRows]       = useState<ChartRow[] | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState<string | null>(null);
+export default function GroupPanel({
+  groupId,
+  color,
+  response,
+  otherResponse,
+  loading,
+  error,
+  matchedCategory,
+}: Props) {
+  const rows      = response?.rows      ?? [];
+  const otherRows = otherResponse?.rows ?? [];
 
-  const load = useCallback(async () => {
-    if (!settings.selectedDatasets.length) { setRows([]); return; }
-    setLoading(true);
-    setError(null);
-    try {
-      const resp = await fetchCompute(settings);
-      setRows(resp.rows);
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Failed to load data");
-      setRows([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [settings]);
+  const totalCategories = response?.total_categories ?? 0;
+  const totalEmp        = response?.total_emp        ?? 0;
+  const totalWages      = response?.total_wages      ?? 0;
 
-  useEffect(() => { load(); }, [load]);
-
-  // Build a human-readable slug for the download filename
-  const ds     = settings.selectedDatasets.join("+") || "none";
-  const method = settings.method === "freq" ? "freq" : "imp";
-  const geo    = settings.geo;
+  const datasetLabel = ""; // caller can add to group label if desired
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20, width: "100%", minWidth: 0 }}>
-      {/* Group label — subtle accent */}
+      {/* Group label */}
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <span style={{ width: 3, height: 18, borderRadius: 2, background: color, flexShrink: 0 }} />
         <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text-secondary)", letterSpacing: "-0.01em" }}>
-          Group {groupId}
-          {settings.selectedDatasets.length > 0 && (
-            <span style={{ fontWeight: 400, color: "var(--text-muted)", marginLeft: 6 }}>
-              · {settings.selectedDatasets.length === 1
-                  ? settings.selectedDatasets[0]
-                  : `${settings.selectedDatasets.length} datasets`}
-            </span>
-          )}
+          Group {groupId}{datasetLabel}
         </span>
       </div>
 
@@ -144,25 +132,39 @@ export default function GroupPanel({ groupId, color, settings, config }: Props) 
         </div>
       )}
 
-      {error && (
+      {!loading && error && (
         <div style={{ borderRadius: 8, border: "1px solid #fca5a5", background: "#fef2f2", padding: "12px 16px", fontSize: 13, color: "#b91c1c" }}>
           Error: {error}
         </div>
       )}
 
-      {!loading && !error && (
+      {!loading && !error && response && rows.length === 0 && (
+        <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 10, padding: "32px", textAlign: "center", fontSize: 13, color: "var(--text-muted)" }}>
+          {matchedCategory === undefined && response.matched_category === null
+            ? "No match found for your search."
+            : "No data available for the selected settings."}
+        </div>
+      )}
+
+      {!loading && !error && rows.length > 0 && (
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           {(["workers", "wages", "tasks"] as const).map((metric) => (
             <ChartCard
               key={metric}
               title={METRIC_TITLES[metric]}
-              downloadSlug={`group-${groupId}-${metric}-${ds}-${method}-${geo}`}
+              downloadSlug={`group-${groupId}-${metric}`}
+              downloadTitle={`Group ${groupId} — ${METRIC_TITLES[metric]}`}
               accentColor={color}
             >
               <HorizontalBarChart
-                rows={rows ?? []}
+                rows={rows}
                 metric={metric}
                 color={color}
+                totalCategories={totalCategories}
+                totalEmp={totalEmp}
+                totalWages={totalWages}
+                otherGroupRows={otherRows}
+                matchedCategory={matchedCategory ?? response.matched_category}
               />
             </ChartCard>
           ))}

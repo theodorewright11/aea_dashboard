@@ -11,6 +11,8 @@ export interface GroupSettings {
   aggLevel: "major" | "minor" | "broad" | "occupation";
   sortBy: string;
   topN: number;
+  searchQuery?: string;
+  contextSize?: number;
 }
 
 export interface ChartRow {
@@ -18,11 +20,18 @@ export interface ChartRow {
   pct_tasks_affected: number;
   workers_affected: number;
   wages_affected: number;
+  rank_workers: number;
+  rank_wages: number;
+  rank_pct: number;
 }
 
 export interface ComputeResponse {
   rows: ChartRow[];
   group_col: string;
+  total_categories: number;
+  total_emp: number;
+  total_wages: number;
+  matched_category?: string | null;
 }
 
 export interface ConfigResponse {
@@ -94,6 +103,18 @@ export interface TrendsSettings {
   sortBy: string;
 }
 
+export interface WATrendsSettings {
+  series: string[];
+  method: "freq" | "imp";
+  useAutoAug: boolean;
+  useAdjMean: boolean;
+  physicalMode: "all" | "exclude" | "only";
+  geo: "nat" | "ut";
+  topN: number;
+  sortBy: string;
+  activityLevel: "gwa" | "iwa" | "dwa";
+}
+
 // ── Explorer ──────────────────────────────────────────────────────────────────
 
 export interface OccupationSummary {
@@ -123,6 +144,7 @@ export interface TaskDetail {
   freq_mean?: number;
   importance?: number;
   relevance?: number;
+  physical?: boolean | null;
   aei?: { auto_aug_mean?: number; pct_normalized?: number } | null;
   mcp?: { auto_aug_mean_adj?: number; pct_normalized?: number } | null;
   microsoft?: { auto_aug_mean?: number; pct_normalized?: number } | null;

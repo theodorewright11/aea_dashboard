@@ -5,6 +5,7 @@ import type {
   WorkActivitiesResponse,
   TrendsResponse,
   TrendsSettings,
+  WATrendsSettings,
   OccupationSummary,
   OccupationTasksResponse,
 } from "./types";
@@ -33,6 +34,8 @@ export async function fetchCompute(settings: GroupSettings): Promise<ComputeResp
       agg_level:         settings.aggLevel,
       sort_by:           settings.sortBy,
       top_n:             settings.topN,
+      search_query:      settings.searchQuery ?? "",
+      context_size:      settings.contextSize ?? 5,
     }),
   });
   if (!res.ok) throw new Error("Compute request failed");
@@ -54,6 +57,8 @@ export async function fetchWorkActivities(settings: GroupSettings): Promise<Work
       agg_level:         settings.aggLevel,
       sort_by:           settings.sortBy,
       top_n:             settings.topN,
+      search_query:      settings.searchQuery ?? "",
+      context_size:      settings.contextSize ?? 5,
     }),
   });
   if (!res.ok) throw new Error("Work activities request failed");
@@ -77,6 +82,26 @@ export async function fetchTrends(settings: TrendsSettings): Promise<TrendsRespo
     }),
   });
   if (!res.ok) throw new Error("Trends request failed");
+  return res.json();
+}
+
+export async function fetchWATrends(settings: WATrendsSettings): Promise<TrendsResponse> {
+  const res = await fetch(`${API_BASE}/api/trends/work-activities`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      series:         settings.series,
+      method:         settings.method,
+      use_auto_aug:   settings.useAutoAug,
+      use_adj_mean:   settings.useAdjMean,
+      physical_mode:  settings.physicalMode,
+      geo:            settings.geo,
+      top_n:          settings.topN,
+      sort_by:        settings.sortBy,
+      activity_level: settings.activityLevel,
+    }),
+  });
+  if (!res.ok) throw new Error("WA Trends request failed");
   return res.json();
 }
 
