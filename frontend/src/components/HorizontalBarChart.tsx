@@ -89,6 +89,13 @@ interface TooltipPayloadItem {
   };
 }
 
+function fmtPctChange(thisV: number, otherV: number): string | null {
+  if (otherV === 0) return null;
+  const pct = ((thisV - otherV) / Math.abs(otherV)) * 100;
+  const sign = pct >= 0 ? "+" : "−";
+  return `${sign}${Math.abs(pct).toFixed(1)}%`;
+}
+
 function makeBarTooltip(
   metric: MetricKey,
   totalCategories: number,
@@ -96,15 +103,21 @@ function makeBarTooltip(
   totalWages: number,
   otherGroupRows: ChartRow[],
 ) {
+  const hasOtherGroup = otherGroupRows.length > 0;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return function BarTooltip({ active, payload }: any) {
     if (!active || !payload?.length) return null;
     const item = (payload[0] as TooltipPayloadItem).payload;
 
-    // Find matching row in other group
-    const other = otherGroupRows.find((r) => r.category === item.category);
+    // Find matching row in other group (full rows, not just visible top-N)
+    const other = hasOtherGroup
+      ? otherGroupRows.find((r) => r.category === item.category)
+      : undefined;
+    const notInOther = hasOtherGroup && other === undefined;
 
-    const rows: { label: string; value: string; sub?: string; delta?: string }[] = [];
+    type MetricRow = { label: string; value: string; sub?: string; delta?: string; pctChange?: string | null; absent?: boolean };
+    const rows: MetricRow[] = [];
 
     // Workers
     {
@@ -119,7 +132,9 @@ function makeBarTooltip(
           rank > 0 && totalCategories > 0 ? `${ordinal(rank)} of ${totalCategories}` : null,
           share != null ? `${share.toFixed(1)}% of economy` : null,
         ].filter(Boolean).join(" · "),
-        delta: otherV != null ? fmtDelta(v - otherV, "number") : undefined,
+        delta:     otherV != null ? fmtDelta(v - otherV, "number") : undefined,
+        pctChange: otherV != null ? fmtPctChange(v, otherV) : undefined,
+        absent:    notInOther,
       });
     }
 
@@ -136,7 +151,9 @@ function makeBarTooltip(
           rank > 0 && totalCategories > 0 ? `${ordinal(rank)} of ${totalCategories}` : null,
           share != null ? `${share.toFixed(1)}% of economy` : null,
         ].filter(Boolean).join(" · "),
-        delta: otherV != null ? fmtDelta(v - otherV, "currency_B") : undefined,
+        delta:     otherV != null ? fmtDelta(v - otherV, "currency_B") : undefined,
+        pctChange: otherV != null ? fmtPctChange(v, otherV) : undefined,
+        absent:    notInOther,
       });
     }
 
@@ -151,7 +168,9 @@ function makeBarTooltip(
         sub:   rank > 0 && totalCategories > 0
           ? `${ordinal(rank)} of ${totalCategories}`
           : undefined,
-        delta: otherV != null ? fmtDelta(v - otherV, "percent") : undefined,
+        delta:     otherV != null ? fmtDelta(v - otherV, "percent") : undefined,
+        pctChange: otherV != null ? fmtPctChange(v, otherV) : undefined,
+        absent:    notInOther,
       });
     }
 
@@ -188,6 +207,11 @@ function makeBarTooltip(
             {r.sub && (
               <p style={{ fontSize: 10, color: "var(--text-muted)", margin: "1px 0 0" }}>{r.sub}</p>
             )}
+            {r.absent && (
+              <p style={{ fontSize: 10, margin: "1px 0 0", color: "var(--text-muted)", fontStyle: "italic" }}>
+                not in other group
+              </p>
+            )}
             {r.delta !== undefined && (
               <p style={{
                 fontSize: 10,
@@ -195,7 +219,7 @@ function makeBarTooltip(
                 color: r.delta.startsWith("+") ? "#166534" : r.delta.startsWith("−") ? "#991b1b" : "var(--text-muted)",
                 fontWeight: 500,
               }}>
-                vs other group: {r.delta}
+                vs other: {r.delta}{r.pctChange ? ` (${r.pctChange})` : ""}
               </p>
             )}
           </div>

@@ -202,6 +202,9 @@ export interface AllTaskRow {
   gwa_title?: string | null;
   physical?: boolean | null;
   n_occs: number;
+  emp_nat?: number | null;
+  emp_ut?: number | null;
+  wage_nat?: number | null;
   sources: Record<string, TaskSourceStats>;
   avg_auto_aug?: number | null;
   max_auto_aug?: number | null;

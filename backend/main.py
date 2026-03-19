@@ -552,6 +552,9 @@ class AllTaskRow(BaseModel):
     gwa_title:         Optional[str]   = None
     physical:          Optional[bool]  = None
     n_occs:            int             = 0
+    emp_nat:           Optional[float] = None
+    emp_ut:            Optional[float] = None
+    wage_nat:          Optional[float] = None
     sources:           dict            = {}
     avg_auto_aug:      Optional[float] = None
     max_auto_aug:      Optional[float] = None

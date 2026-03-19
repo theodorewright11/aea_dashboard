@@ -99,6 +99,9 @@ interface DisplayRow {
   level: "gwa" | "iwa" | "dwa";
   gwa: string | null;
   parent: string | null;
+  gwa_title?: string | null;
+  iwa_title?: string | null;
+  dwa_title?: string | null;
   emp: number;
   wage: number | null;
   n_occs: number;
@@ -881,6 +884,9 @@ export default function WAExplorerView({ rows, config }: Props) {
           level: "dwa" as const, // placeholder level badge
           gwa: t.gwa_title ?? null,
           parent: t.iwa_title ?? null,
+          gwa_title: t.gwa_title ?? null,
+          iwa_title: t.iwa_title ?? null,
+          dwa_title: t.dwa_title ?? null,
           emp: 0,
           wage: null,
           n_occs: t.n_occs,
@@ -1078,7 +1084,7 @@ export default function WAExplorerView({ rows, config }: Props) {
     const searchQ = search.trim().toLowerCase();
 
     const isTaskLevel = viewLevel === "task";
-    const canExpandRow = !isTaskLevel && canExpand;
+    const canExpandRow = canExpand; // task-level rows expand to show hierarchy info
     const children = isExpanded && !isDwa && !isTaskLevel ? getChildRows(row) : [];
     const tasks = isDwa && isExpanded && !isTaskLevel ? rowTasks[row.name] : undefined;
 
@@ -1167,8 +1173,28 @@ export default function WAExplorerView({ rows, config }: Props) {
           </tr>
         )}
 
+        {/* Task-level expansion: show GWA/IWA/DWA classification */}
+        {isTaskLevel && isExpanded && (
+          <tr style={{ background: "#fafaf8", borderBottom: "1px solid var(--border-light)" }}>
+            <td colSpan={visibleCols.length} style={{ padding: "8px 16px 10px 28px" }}>
+              {(row.gwa_title || row.iwa_title || row.dwa_title) ? (
+                <div>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>
+                    Activity Classification
+                  </p>
+                  {row.gwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>GWA:</b> {row.gwa_title}</p>}
+                  {row.iwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>IWA:</b> {row.iwa_title}</p>}
+                  {row.dwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>DWA:</b> {row.dwa_title}</p>}
+                </div>
+              ) : (
+                <p style={{ fontSize: 11, color: "var(--text-muted)" }}>No activity classification available.</p>
+              )}
+            </td>
+          </tr>
+        )}
+
         {/* Inline IWA/GWA child rows */}
-        {!isDwa && isExpanded && children.map((child, ci) => {
+        {!isDwa && !isTaskLevel && isExpanded && children.map((child, ci) => {
           const childKey = `${rowKey}__${child.name}__${ci}`;
           return renderDataRow(child, indent + 1, childKey);
         })}
@@ -1348,7 +1374,7 @@ export default function WAExplorerView({ rows, config }: Props) {
                     }}
                     onClick={() => handleSort(col.key)}
                   >
-                    <div style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>
+                    <div style={{ display: "inline-flex", alignItems: "center", gap: 3, paddingRight: col.numeric ? 14 : 0 }}>
                       {col.label}
                       {col.tooltip && <InfoTooltip text={col.tooltip} />}
                       {isSorted && (
@@ -1356,24 +1382,25 @@ export default function WAExplorerView({ rows, config }: Props) {
                           {sortDir === "desc" ? "↓" : "↑"}
                         </span>
                       )}
-                      {col.numeric && (
-                        <span
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setOpenFilter((prev) => (prev === col.key ? null : col.key));
-                          }}
-                          style={{
-                            cursor: "pointer",
-                            color: hasFilter ? "var(--brand)" : "var(--text-muted)",
-                            opacity: hasFilter ? 1 : 0.5,
-                            display: "inline-flex",
-                          }}
-                          title="Filter"
-                        >
-                          <FunnelIcon />
-                        </span>
-                      )}
                     </div>
+                    {col.numeric && (
+                      <span
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenFilter((prev) => (prev === col.key ? null : col.key));
+                        }}
+                        style={{
+                          position: "absolute", right: 4, top: "50%", transform: "translateY(-50%)",
+                          cursor: "pointer",
+                          color: hasFilter ? "var(--brand)" : "var(--text-muted)",
+                          opacity: hasFilter ? 1 : 0.5,
+                          display: "inline-flex",
+                        }}
+                        title="Filter"
+                      >
+                        <FunnelIcon />
+                      </span>
+                    )}
                     {openFilter === col.key && (
                       <ColumnFilterDropdown
                         colKey={col.key}

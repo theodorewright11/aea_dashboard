@@ -74,11 +74,12 @@ function ControlLabel({ children }: { children: React.ReactNode }) {
 }
 
 function SegBtn<T extends string>({
-  options, value, onChange,
+  options, value, onChange, padding = "5px 10px",
 }: {
   options: { value: T; label: string }[];
   value: T;
   onChange: (v: T) => void;
+  padding?: string;
 }) {
   return (
     <div style={{ display: "flex", border: "1px solid var(--border)", borderRadius: 6, overflow: "hidden" }}>
@@ -87,7 +88,7 @@ function SegBtn<T extends string>({
           key={v}
           onClick={() => onChange(v)}
           style={{
-            padding: "5px 10px",
+            padding,
             fontSize: 12, fontWeight: value === v ? 600 : 400,
             background: value === v ? "var(--brand-light)" : "transparent",
             color: value === v ? "var(--brand)" : "var(--text-secondary)",
@@ -264,16 +265,41 @@ function DatasetPillsWA({
   );
 }
 
+// ── Section header ─────────────────────────────────────────────────────────────
+
+function SectionHead({ label }: { label: string }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, marginTop: 4 }}>
+      <p style={{
+        fontSize: 9, fontWeight: 700, color: "var(--text-muted)",
+        textTransform: "uppercase", letterSpacing: "0.09em",
+        margin: 0, whiteSpace: "nowrap",
+      }}>{label}</p>
+      <div style={{ flex: 1, height: 1, background: "var(--border-light)" }} />
+    </div>
+  );
+}
+
+const SORT_SHORT: Record<string, string> = {
+  "Workers Affected": "Workers",
+  "Wages Affected":   "Wages",
+  "% Tasks Affected": "% Tasks",
+};
+
 // ── Group settings panel ───────────────────────────────────────────────────────
 
 function WAGroupSettingsPanel({
-  groupId, color, pending, setPending, config,
+  groupId, color, pending, setPending, config, sortOptions,
+  collapsed, onToggleCollapse,
 }: {
   groupId: "A" | "B";
   color: string;
   pending: WAGroupPending;
   setPending: (p: WAGroupPending) => void;
   config: ConfigResponse;
+  sortOptions: string[];
+  collapsed: boolean;
+  onToggleCollapse: () => void;
 }) {
   const hasMCP  = pending.datasets.some((d) => d.startsWith("MCP"));
 
@@ -281,66 +307,170 @@ function WAGroupSettingsPanel({
     setPending({ ...pending, [k]: v });
   }
 
+  const summaryDs = pending.datasets.length === 0 ? "No datasets"
+    : pending.datasets.length === 1 ? pending.datasets[0]
+    : `${pending.datasets.length} ds (${pending.combineMethod})`;
+  const summary = [
+    summaryDs,
+    pending.activityLevel.toUpperCase(),
+    pending.method === "freq" ? "Freq" : "Imp",
+    pending.geo === "nat" ? "National" : "Utah",
+    `Sort: ${SORT_SHORT[pending.sortBy] ?? pending.sortBy}`,
+    pending.physicalMode !== "all" ? (pending.physicalMode === "exclude" ? "No Phys" : "Phys only") : null,
+    pending.useAutoAug ? `Auto-aug On${pending.useAdjMean ? " (adj)" : ""}` : null,
+  ].filter(Boolean).join(" · ");
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-      {/* Dataset pills with mutual exclusivity */}
-      <DatasetPillsWA
-        label={`Group ${groupId} datasets`}
-        color={color}
-        datasets={config.datasets}
-        availability={config.dataset_availability}
-        selected={pending.datasets}
-        combineMethod={pending.combineMethod}
-        onChange={(v) => set("datasets", v)}
-        onChangeCombine={(v) => set("combineMethod", v)}
-      />
+    <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
 
-      <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
+      {!collapsed ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
 
-        <div style={{ width: 1, height: 28, background: "var(--border)", alignSelf: "flex-end", marginBottom: 1 }} />
-
-        {/* Activity level */}
-        <div>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <ControlLabel>Activity level</ControlLabel>
-            <InfoTooltip text="GWA: General Work Activities (broadest). IWA: Intermediate Work Activities. DWA: Detailed Work Activities (most granular)." />
-          </div>
-          <SegBtn
-            options={[
-              { value: "gwa", label: "GWA" },
-              { value: "iwa", label: "IWA" },
-              { value: "dwa", label: "DWA" },
-            ]}
-            value={pending.activityLevel}
-            onChange={(v) => set("activityLevel", v)}
+          {/* ─ Datasets ─ */}
+          <SectionHead label="Datasets" />
+          <DatasetPillsWA
+            label={`Group ${groupId} datasets`}
+            color={color}
+            datasets={config.datasets}
+            availability={config.dataset_availability}
+            selected={pending.datasets}
+            combineMethod={pending.combineMethod}
+            onChange={(v) => set("datasets", v)}
+            onChangeCombine={(v) => set("combineMethod", v)}
           />
-        </div>
 
-        <div>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <ControlLabel>Method</ControlLabel>
-            <InfoTooltip text="Frequency: weights tasks by how often they're done (freq_mean). Importance: weights by relevance × 2^importance." />
+          {/* ─ Display ─ */}
+          <SectionHead label="Display" />
+          <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
+            <div>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <ControlLabel>Activity level</ControlLabel>
+                <InfoTooltip text="GWA: General Work Activities (broadest). IWA: Intermediate Work Activities. DWA: Detailed Work Activities (most granular)." />
+              </div>
+              <SegBtn
+                options={[
+                  { value: "gwa", label: "GWA" },
+                  { value: "iwa", label: "IWA" },
+                  { value: "dwa", label: "DWA" },
+                ]}
+                value={pending.activityLevel}
+                onChange={(v) => set("activityLevel", v)}
+              />
+            </div>
+
+            <div>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <ControlLabel>Method</ControlLabel>
+                <InfoTooltip text="Frequency: weights tasks by how often they're done (freq_mean). Importance: weights by relevance × 2^importance." />
+              </div>
+              <SegBtn
+                options={[{ value: "freq", label: "Freq" }, { value: "imp", label: "Imp" }]}
+                value={pending.method}
+                onChange={(v) => set("method", v)}
+              />
+            </div>
+
+            <div>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <ControlLabel>Geography</ControlLabel>
+                <InfoTooltip text="National: uses BLS OEWS national employment and wages. Utah: uses Utah-specific employment and wages." />
+              </div>
+              <SegBtn
+                options={[{ value: "nat", label: "National" }, { value: "ut", label: "Utah" }]}
+                value={pending.geo}
+                onChange={(v) => set("geo", v)}
+              />
+            </div>
+
+            <div>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <ControlLabel>Sort by</ControlLabel>
+                <InfoTooltip text="Which metric to sort activities by (descending). Run required to re-sort." />
+              </div>
+              <SegBtn
+                options={sortOptions.map((opt) => ({ value: opt, label: SORT_SHORT[opt] ?? opt }))}
+                value={pending.sortBy}
+                onChange={(v) => set("sortBy", v)}
+              />
+            </div>
           </div>
-          <SegBtn
-            options={[{ value: "freq", label: "Freq" }, { value: "imp", label: "Imp" }]}
-            value={pending.method}
-            onChange={(v) => set("method", v)}
-          />
-        </div>
 
-        <div>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <ControlLabel>Geography</ControlLabel>
-            <InfoTooltip text="National: uses BLS OEWS national employment and wages. Utah: uses Utah-specific employment and wages." />
+          {/* ─ Filtering ─ */}
+          <SectionHead label="Filtering" />
+          <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
+            <div>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <ControlLabel>Tasks</ControlLabel>
+                <InfoTooltip text="Filter tasks by physical nature. 'Phys only' includes tasks that require physical presence. 'No Phys' excludes them." />
+              </div>
+              <SegBtn
+                options={[
+                  { value: "all",     label: "All"       },
+                  { value: "exclude", label: "No Phys"   },
+                  { value: "only",    label: "Phys only" },
+                ]}
+                value={pending.physicalMode}
+                onChange={(v) => set("physicalMode", v)}
+              />
+            </div>
+
+            <div>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <ControlLabel>Auto-aug weight</ControlLabel>
+                <InfoTooltip text="When On, multiplies each task's completion weight by its AI automatability score (auto_aug_mean / 5)." />
+              </div>
+              <SegBtn
+                options={[{ value: "false" as never, label: "Off" }, { value: "true" as never, label: "On" }]}
+                value={String(pending.useAutoAug) as never}
+                onChange={(v) => set("useAutoAug", v === "true")}
+                padding="5px 7px"
+              />
+            </div>
+
+            {hasMCP && pending.useAutoAug && (
+              <div>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <ControlLabel>MCP adj mean</ControlLabel>
+                  <InfoTooltip text="Use auto_aug_mean_adj for MCP datasets, which excludes flagged/unreliable ratings." />
+                </div>
+                <SegBtn
+                  options={[{ value: "false" as never, label: "Off" }, { value: "true" as never, label: "On" }]}
+                  value={String(pending.useAdjMean) as never}
+                  onChange={(v) => set("useAdjMean", v === "true")}
+                  padding="5px 7px"
+                />
+              </div>
+            )}
           </div>
-          <SegBtn
-            options={[{ value: "nat", label: "National" }, { value: "ut", label: "Utah" }]}
-            value={pending.geo}
-            onChange={(v) => set("geo", v)}
-          />
-        </div>
 
-        {/* Search bar */}
+          <button
+            onClick={onToggleCollapse}
+            style={{
+              alignSelf: "flex-start", marginTop: 4,
+              padding: "3px 10px", fontSize: 11,
+              background: "none", border: "1px solid var(--border)",
+              borderRadius: 5, color: "var(--text-muted)", cursor: "pointer",
+            }}
+          >▲ Collapse</button>
+        </div>
+      ) : (
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+          <span style={{ fontSize: 11, color: "var(--text-muted)", flexShrink: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {summary}
+          </span>
+          <button
+            onClick={onToggleCollapse}
+            style={{
+              flexShrink: 0, padding: "3px 10px", fontSize: 11,
+              background: "none", border: "1px solid var(--border)",
+              borderRadius: 5, color: "var(--text-secondary)", cursor: "pointer",
+            }}
+          >▼ Settings</button>
+        </div>
+      )}
+
+      {/* Always visible: Search + Top N */}
+      <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end", marginTop: 6 }}>
         <div>
           <div style={{ display: "flex", alignItems: "center" }}>
             <ControlLabel>Search activity</ControlLabel>
@@ -373,7 +503,6 @@ function WAGroupSettingsPanel({
           </div>
         </div>
 
-        {/* Context size or Top N */}
         {pending.searchQuery ? (
           <div>
             <div style={{ display: "flex", alignItems: "center" }}>
@@ -393,56 +522,9 @@ function WAGroupSettingsPanel({
               <InfoTooltip text="Number of top activities to display. Updates immediately after run." />
             </div>
             <input
-              type="range" min={5} max={50} step={1} value={pending.topN}
+              type="range" min={5} max={30} step={1} value={Math.min(pending.topN, 30)}
               onChange={(e) => set("topN", Number(e.target.value))}
               style={{ width: 80, accentColor: "var(--brand)", display: "block", marginTop: 4 }}
-            />
-          </div>
-        )}
-
-        <div style={{ width: 1, height: 28, background: "var(--border)", alignSelf: "flex-end", marginBottom: 1 }} />
-
-        {/* Physical mode */}
-        <div>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <ControlLabel>Tasks</ControlLabel>
-            <InfoTooltip text="Filter tasks by physical nature. 'Physical only' includes tasks that require physical presence. 'No Phys' excludes them." />
-          </div>
-          <SegBtn
-            options={[
-              { value: "all",     label: "All"       },
-              { value: "exclude", label: "No Phys"   },
-              { value: "only",    label: "Phys only" },
-            ]}
-            value={pending.physicalMode}
-            onChange={(v) => set("physicalMode", v)}
-          />
-        </div>
-
-        {/* Auto-aug toggle */}
-        <div>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <ControlLabel>Auto-aug weight</ControlLabel>
-            <InfoTooltip text="When On, multiplies each task's completion weight by its AI automatability score (auto_aug_mean / 5)." />
-          </div>
-          <SegBtn
-            options={[{ value: "false" as never, label: "Off" }, { value: "true" as never, label: "On" }]}
-            value={String(pending.useAutoAug) as never}
-            onChange={(v) => set("useAutoAug", v === "true")}
-          />
-        </div>
-
-        {/* Adj mean — only when MCP selected and auto-aug on */}
-        {hasMCP && pending.useAutoAug && (
-          <div>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <ControlLabel>MCP adj mean</ControlLabel>
-              <InfoTooltip text="Use auto_aug_mean_adj for MCP datasets, which excludes flagged/unreliable ratings." />
-            </div>
-            <SegBtn
-              options={[{ value: "false" as never, label: "Off" }, { value: "true" as never, label: "On" }]}
-              value={String(pending.useAdjMean) as never}
-              onChange={(v) => set("useAdjMean", v === "true")}
             />
           </div>
         )}
@@ -460,6 +542,7 @@ export default function WorkActivitiesPage() {
   const [pendingA, setPendingA] = useState<WAGroupPending>(defaultPending(["AEI v4"]));
   const [pendingB, setPendingB] = useState<WAGroupPending>(defaultPending(["MCP v4"]));
   const [activeGroup, setActiveGroup] = useState<"A" | "B">("A");
+  const [panelCollapsed, setPanelCollapsed] = useState(false);
 
   const [responseA, setResponseA] = useState<WorkActivitiesResponse | null>(null);
   const [responseB, setResponseB] = useState<WorkActivitiesResponse | null>(null);
@@ -522,6 +605,7 @@ export default function WorkActivitiesPage() {
     setResponseB(resB);
     setLoadingA(false);
     setLoadingB(false);
+    setPanelCollapsed(true);
   }, [pendingA, pendingB]);
 
   if (configError) {
@@ -657,6 +741,9 @@ export default function WorkActivitiesPage() {
           pending={activePending}
           setPending={setActivePending}
           config={config}
+          sortOptions={config.sort_options}
+          collapsed={panelCollapsed}
+          onToggleCollapse={() => setPanelCollapsed((c) => !c)}
         />
 
         {/* Full other group summary */}

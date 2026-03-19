@@ -1670,10 +1670,84 @@ def get_all_tasks() -> list:
     )
     task_meta = task_meta.merge(occ_counts, on="task_normalized", how="left")
 
+    # Compute emp/wage allocation per task:
+    # For each occ, n_unique_tasks = count of unique task_norms in that occ.
+    # Each task gets emp_occ / n_unique_tasks. Sum across all occs sharing the task.
+    emp_nat_col  = "emp_tot_nat_2024" if "emp_tot_nat_2024" in eco.columns else None
+    emp_ut_col   = "emp_tot_ut_2024"  if "emp_tot_ut_2024"  in eco.columns else None
+    wage_nat_col = "a_med_nat_2024"   if "a_med_nat_2024"   in eco.columns else None
+
+    # Build per-occ n_unique_tasks count
+    occ_task_counts = (
+        eco.drop_duplicates(subset=["title_current", "task_normalized"])
+        .groupby("title_current")["task_normalized"]
+        .count()
+        .rename("n_unique_tasks")
+    )
+    eco_occ = eco.drop_duplicates(subset=["title_current"]).set_index("title_current")
+
+    # Build per (occ, task) contribution rows
+    occ_task_pairs = eco.drop_duplicates(subset=["title_current", "task_normalized"])[
+        ["title_current", "task_normalized"]
+    ].copy()
+    occ_task_pairs = occ_task_pairs.join(occ_task_counts, on="title_current")
+
+    # Attach emp/wage from occ-level data
+    for col in [c for c in [emp_nat_col, emp_ut_col, wage_nat_col] if c]:
+        occ_task_pairs[col] = occ_task_pairs["title_current"].map(
+            eco_occ[col] if col in eco_occ.columns else {}
+        )
+
+    if emp_nat_col:
+        occ_task_pairs["emp_nat_contrib"] = (
+            occ_task_pairs[emp_nat_col].fillna(0) / occ_task_pairs["n_unique_tasks"].replace(0, 1)
+        )
+    if emp_ut_col:
+        occ_task_pairs["emp_ut_contrib"] = (
+            occ_task_pairs[emp_ut_col].fillna(0) / occ_task_pairs["n_unique_tasks"].replace(0, 1)
+        )
+
+    # Sum emp contributions by task
+    task_emp = occ_task_pairs.groupby("task_normalized").agg(
+        emp_nat=("emp_nat_contrib", "sum") if emp_nat_col else ("task_normalized", "count"),
+        emp_ut=("emp_ut_contrib", "sum")   if emp_ut_col  else ("task_normalized", "count"),
+    ).reset_index() if (emp_nat_col or emp_ut_col) else None
+
+    # Employment-weighted wage: Σ(emp_contrib × wage) / Σ(emp_contrib)
+    task_wage = None
+    if emp_nat_col and wage_nat_col:
+        occ_task_pairs["wage_contrib"] = (
+            occ_task_pairs["emp_nat_contrib"] * occ_task_pairs[wage_nat_col].fillna(0)
+        )
+        wage_agg = occ_task_pairs.groupby("task_normalized").agg(
+            wage_sum=("wage_contrib", "sum"),
+            emp_sum=("emp_nat_contrib", "sum"),
+        )
+        wage_agg["wage_nat"] = np.where(
+            wage_agg["emp_sum"] > 0,
+            wage_agg["wage_sum"] / wage_agg["emp_sum"],
+            np.nan,
+        )
+        task_wage = wage_agg[["wage_nat"]].reset_index()
+
+    # Merge emp/wage into task_meta
+    if task_emp is not None:
+        task_meta = task_meta.merge(task_emp, on="task_normalized", how="left")
+    if task_wage is not None:
+        task_meta = task_meta.merge(task_wage, on="task_normalized", how="left")
+
     def _phys_bool(v):
         if v is None: return False
         if isinstance(v, float) and np.isnan(v): return False
         return bool(v)
+
+    def _nan_to_none(v):
+        if v is None: return None
+        try:
+            if np.isnan(float(v)): return None
+        except Exception:
+            pass
+        return float(v)
 
     result = []
     for _, row in task_meta.sort_values("task").iterrows():
@@ -1695,6 +1769,9 @@ def get_all_tasks() -> list:
             "gwa_title":      row.get("gwa_title"),
             "physical":       is_physical,
             "n_occs":         int(row.get("n_occs", 0)),
+            "emp_nat":        _nan_to_none(row.get("emp_nat")),
+            "emp_ut":         _nan_to_none(row.get("emp_ut")),
+            "wage_nat":       _nan_to_none(row.get("wage_nat")),
             "sources":        sources,
             "avg_auto_aug":   round(sum(auto_vals) / len(auto_vals), 3) if auto_vals else None,
             "max_auto_aug":   round(max(auto_vals), 3)                  if auto_vals else None,

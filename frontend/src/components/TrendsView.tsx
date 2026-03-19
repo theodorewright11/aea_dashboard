@@ -280,11 +280,12 @@ function ControlLabel({ children }: { children: React.ReactNode }) {
 }
 
 function SegmentedControl<T extends string>({
-  options, value, onChange,
+  options, value, onChange, padding = "5px 11px",
 }: {
   options: { value: T; label: string }[];
   value: T;
   onChange: (v: T) => void;
+  padding?: string;
 }) {
   return (
     <div style={{ display: "flex", border: "1px solid var(--border)", borderRadius: 7, overflow: "hidden" }}>
@@ -292,7 +293,7 @@ function SegmentedControl<T extends string>({
         <button
           key={v} onClick={() => onChange(v)}
           style={{
-            padding: "5px 11px", fontSize: 12,
+            padding, fontSize: 12,
             fontWeight: value === v ? 600 : 400,
             background: value === v ? "var(--brand-light)" : "transparent",
             color: value === v ? "var(--brand)" : "var(--text-secondary)",
@@ -319,24 +320,6 @@ function DatasetPill({ label, active, onClick }: { label: string; active: boolea
   );
 }
 
-function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
-  return (
-    <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
-      <div onClick={() => onChange(!checked)} style={{
-        width: 30, height: 17, borderRadius: 9, cursor: "pointer",
-        background: checked ? "var(--brand)" : "var(--border)",
-        position: "relative", transition: "background 0.15s", flexShrink: 0,
-      }}>
-        <div style={{
-          position: "absolute", top: 2, left: checked ? 15 : 2,
-          width: 13, height: 13, borderRadius: "50%", background: "#fff",
-          transition: "left 0.15s", boxShadow: "0 1px 2px rgba(0,0,0,0.15)",
-        }} />
-      </div>
-      <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>{label}</span>
-    </label>
-  );
-}
 
 function DownloadIcon() {
   return (
@@ -346,6 +329,21 @@ function DownloadIcon() {
       <polyline points="7 10 12 15 17 10" />
       <line x1="12" y1="15" x2="12" y2="3" />
     </svg>
+  );
+}
+
+// ── Section header ────────────────────────────────────────────────────────────
+
+function SectionHead({ label }: { label: string }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+      <p style={{
+        fontSize: 9, fontWeight: 700, color: "var(--text-muted)",
+        textTransform: "uppercase", letterSpacing: "0.09em",
+        margin: 0, whiteSpace: "nowrap",
+      }}>{label}</p>
+      <div style={{ flex: 1, height: 1, background: "var(--border-light)" }} />
+    </div>
   );
 }
 
@@ -414,6 +412,7 @@ function ChartLegend({
 function ChartPanel({
   title, metric, chartData, lineConfigs, increases, incMode,
   loading, error, hasResult, lockedLine, setLockedLine, dateDatasets, catRanks,
+  showAllInTooltip,
 }: {
   title: string; metric: MetricKey;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -426,9 +425,12 @@ function ChartPanel({
   setLockedLine: (k: string | null) => void;
   dateDatasets?: Map<string, string[]>;
   catRanks?: Map<string, number>;
+  showAllInTooltip: boolean;
 }) {
   const chartRef = useRef<HTMLDivElement>(null);
   const [hoveredLine, setHoveredLine] = useState<string | null>(null);
+  const [lockedPos, setLockedPos] = useState<{ x: number; y: number } | null>(null);
+  const [lockedDate, setLockedDate] = useState<string | null>(null);
 
   const activeLine = lockedLine ?? hoveredLine;
   const chartHeight = Math.max(380, Math.min(lineConfigs.length, 14) * 22 + 180);
@@ -447,7 +449,9 @@ function ChartPanel({
   function TrendsTooltip(props: any) {
     if (!props.active || !props.payload?.length) return null;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const filteredPayload = activeLine ? props.payload.filter((p: any) => p.dataKey === activeLine) : props.payload;
+    const filteredPayload = activeLine
+      ? props.payload.filter((p: any) => p.dataKey === activeLine)
+      : showAllInTooltip ? props.payload : [];
     const currentDate = props.label ?? "";
 
     // Helper: extract category name from a line key ("ds — cat" or just "cat")
@@ -565,7 +569,7 @@ function ChartPanel({
         // Click on chart background clears lock
         if ((e.target as HTMLElement).closest(".recharts-line")) return;
         if ((e.target as HTMLElement).closest("[data-legend-btn]")) return;
-        setLockedLine(null);
+        setLockedLine(null); setLockedPos(null); setLockedDate(null);
       }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px 8px" }}>
@@ -652,7 +656,20 @@ function ChartPanel({
                     dot={{ r: 4.5, strokeWidth: 0, fill: lc.color }}
                     activeDot={{
                       r: 7, strokeWidth: 2, stroke: "#fff",
-                      onClick: () => setLockedLine(lockedLine === lc.key ? null : lc.key),
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      onClick: (dotProps: any, event: any) => {
+                        const newLock = lockedLine === lc.key ? null : lc.key;
+                        setLockedLine(newLock);
+                        if (newLock) {
+                          const date = dotProps?.payload?.date;
+                          const cx = event?.clientX ?? event?.nativeEvent?.clientX;
+                          const cy = event?.clientY ?? event?.nativeEvent?.clientY;
+                          if (date) setLockedDate(date);
+                          if (cx != null) setLockedPos({ x: cx, y: cy });
+                        } else {
+                          setLockedPos(null); setLockedDate(null);
+                        }
+                      },
                     }}
                     connectNulls={false}
                     onMouseEnter={() => { if (!lockedLine) setHoveredLine(lc.key); }}
@@ -679,6 +696,33 @@ function ChartPanel({
           />
         </div>
       )}
+
+      {/* Frozen tooltip panel — fixed at click position when a dot is locked */}
+      {lockedPos && lockedDate && lockedLine && (() => {
+        const pt = chartData.find((p) => p.date === lockedDate);
+        const lc = lineConfigs.find((l) => l.key === lockedLine);
+        if (!pt || !lc || typeof pt[lockedLine] !== "number") return null;
+        const fakePayload = [{
+          dataKey: lockedLine, name: lockedLine,
+          value: pt[lockedLine] as number,
+          color: lc.color,
+        }];
+        const winH = typeof window !== "undefined" ? window.innerHeight : 800;
+        const winW = typeof window !== "undefined" ? window.innerWidth  : 1200;
+        return (
+          <div style={{
+            position: "fixed",
+            top:  Math.min(lockedPos.y + 18, winH - 320),
+            left: Math.min(lockedPos.x + 12, winW - 340),
+            zIndex: 9999,
+            maxHeight: "60vh",
+            overflowY: "auto",
+            pointerEvents: "none",
+          }}>
+            <TrendsTooltip active={true} payload={fakePayload} label={lockedDate} />
+          </div>
+        );
+      })()}
     </div>
   );
 }
@@ -794,6 +838,9 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
   // Lock state shared across the single chart panel
   const [lockedLine, setLockedLine] = useState<string | null>(null);
 
+  const [panelCollapsed,    setPanelCollapsed]    = useState(false);
+  const [showAllInTooltip,  setShowAllInTooltip]  = useState(true);
+
   const hasMCP = selectedDatasets.some((d) => d.startsWith("MCP") || d === "Microsoft");
 
   const run = useCallback(async () => {
@@ -810,7 +857,7 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
         physicalMode, geo, aggLevel, topN: fetchTopN, sortBy: "Workers Affected",
       };
       const data = await fetchTrends(settings);
-      setResult(data);
+      setResult(data); setPanelCollapsed(true);
       const cats = new Set<string>();
       data.series.forEach((s: TrendSeries) => {
         s.data_points
@@ -909,136 +956,195 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
 
   return (
     <>
-      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
 
-        <DatasetSelector
-          allDatasets={allDatasets} selectedDatasets={selectedDatasets}
-          onToggle={(ds) => setSelectedDatasets((p) => p.includes(ds) ? p.filter((x) => x !== ds) : [...p, ds])}
-          onAll={() => setSelectedDatasets(allDatasets)}
-          onNone={() => setSelectedDatasets([])}
-        />
+        {/* ── Collapsible settings ── */}
+        {panelCollapsed ? (
+          <div style={{ display: "flex", gap: 10, alignItems: "center", padding: "7px 12px", background: "var(--bg-sidebar)", border: "1px solid var(--border-light)", borderRadius: 8 }}>
+            <span style={{ fontSize: 11, color: "var(--text-muted)", flex: 1, lineHeight: 1.5 }}>
+              {selectedDatasets.length} dataset{selectedDatasets.length !== 1 ? "s" : ""} · {aggLevel} · {method === "freq" ? "Frequency" : "Importance"} · {geo === "nat" ? "National" : "Utah"}{useAutoAug ? " · Auto-aug" : ""}
+            </span>
+            <button
+              onClick={() => setPanelCollapsed(false)}
+              style={{ fontSize: 11, color: "var(--brand)", background: "none", border: "1px solid var(--border)", borderRadius: 5, padding: "3px 8px", cursor: "pointer", whiteSpace: "nowrap" }}
+            >▼ Settings</button>
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
 
-        {/* Row 2 */}
+            {/* Datasets */}
+            <div>
+              <SectionHead label="Datasets" />
+              <DatasetSelector
+                allDatasets={allDatasets} selectedDatasets={selectedDatasets}
+                onToggle={(ds) => setSelectedDatasets((p) => p.includes(ds) ? p.filter((x) => x !== ds) : [...p, ds])}
+                onAll={() => setSelectedDatasets(allDatasets)}
+                onNone={() => setSelectedDatasets([])}
+              />
+            </div>
+
+            {/* Display */}
+            <div>
+              <SectionHead label="Display" />
+              <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
+                <div>
+                  <ControlLabel>Lines</ControlLabel>
+                  <SegmentedControl
+                    options={[
+                      { value: "individual" as LineMode, label: "Individual" },
+                      { value: "average"    as LineMode, label: "Average"    },
+                      { value: "max"        as LineMode, label: "Max"        },
+                    ]}
+                    value={lineMode} onChange={setLineMode}
+                  />
+                </div>
+                <div>
+                  <ControlLabel>Metric</ControlLabel>
+                  <SegmentedControl options={METRIC_OPTIONS.map((m) => ({ value: m.key, label: m.label }))} value={metric} onChange={setMetric} />
+                </div>
+                <div>
+                  <ControlLabel>Aggregation</ControlLabel>
+                  <SegmentedControl options={AGG_OPTIONS} value={aggLevel} onChange={setAggLevel} />
+                </div>
+                <div>
+                  <ControlLabel>Geography</ControlLabel>
+                  <SegmentedControl options={[{ value: "nat" as const, label: "National" }, { value: "ut" as const, label: "Utah" }]} value={geo} onChange={setGeo} />
+                </div>
+                <div>
+                  <ControlLabel>Tooltip labels</ControlLabel>
+                  <SegmentedControl
+                    options={[{ value: "all" as const, label: "All lines" }, { value: "active" as const, label: "Active only" }]}
+                    value={showAllInTooltip ? "all" : "active"}
+                    onChange={(v) => setShowAllInTooltip(v === "all")}
+                  />
+                </div>
+                <button onClick={run} className="btn-brand" style={{ padding: "9px 24px", fontSize: 13 }}
+                  onMouseOver={(e) => (e.currentTarget.style.background = "var(--brand-hover)")}
+                  onMouseOut={(e)  => (e.currentTarget.style.background = "var(--brand)")}>
+                  Run
+                </button>
+              </div>
+            </div>
+
+            {/* Filtering */}
+            <div>
+              <SectionHead label="Filtering" />
+              <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
+                <div>
+                  <ControlLabel>Method</ControlLabel>
+                  <SegmentedControl options={[{ value: "freq" as const, label: "Frequency" }, { value: "imp" as const, label: "Importance" }]} value={method} onChange={setMethod} />
+                </div>
+                <div>
+                  <ControlLabel>Physical tasks</ControlLabel>
+                  <SegmentedControl
+                    options={[{ value: "all" as const, label: "All" }, { value: "exclude" as const, label: "Non-physical" }, { value: "only" as const, label: "Physical only" }]}
+                    value={physicalMode} onChange={setPhysicalMode}
+                  />
+                </div>
+                <div>
+                  <ControlLabel>Auto-aug</ControlLabel>
+                  <SegmentedControl
+                    options={[{ value: "off" as const, label: "Off" }, { value: "on" as const, label: "On" }]}
+                    value={useAutoAug ? "on" : "off"}
+                    onChange={(v) => setUseAutoAug(v === "on")}
+                    padding="5px 7px"
+                  />
+                </div>
+                {useAutoAug && hasMCP && (
+                  <div>
+                    <ControlLabel>Adj mean (MCP)</ControlLabel>
+                    <SegmentedControl
+                      options={[{ value: "off" as const, label: "Off" }, { value: "on" as const, label: "On" }]}
+                      value={useAdjMean ? "on" : "off"}
+                      onChange={(v) => setUseAdjMean(v === "on")}
+                      padding="5px 7px"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Collapse button */}
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <button
+                onClick={() => setPanelCollapsed(true)}
+                style={{ fontSize: 11, color: "var(--text-muted)", background: "none", border: "1px solid var(--border-light)", borderRadius: 5, padding: "3px 8px", cursor: "pointer" }}
+              >▲ Collapse</button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Always visible: Top N + (post-run) Sort + Search ── */}
         <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
-          <div>
-            <ControlLabel>Lines</ControlLabel>
-            <SegmentedControl
-              options={[
-                { value: "individual" as LineMode, label: "Individual" },
-                { value: "average"    as LineMode, label: "Average"    },
-                { value: "max"        as LineMode, label: "Max"        },
-              ]}
-              value={lineMode} onChange={setLineMode}
-            />
-          </div>
-          <div>
-            <ControlLabel>Metric</ControlLabel>
-            <SegmentedControl options={METRIC_OPTIONS.map((m) => ({ value: m.key, label: m.label }))} value={metric} onChange={setMetric} />
-          </div>
-          <div>
-            <ControlLabel>Aggregation</ControlLabel>
-            <SegmentedControl options={AGG_OPTIONS} value={aggLevel} onChange={setAggLevel} />
-          </div>
-          <div>
-            <ControlLabel>Geography</ControlLabel>
-            <SegmentedControl options={[{ value: "nat" as const, label: "National" }, { value: "ut" as const, label: "Utah" }]} value={geo} onChange={setGeo} />
-          </div>
           <div>
             <ControlLabel>Top {topN}</ControlLabel>
-            <input type="range" min={2} max={20} value={topN} onChange={(e) => setTopN(Number(e.target.value))}
+            <input type="range" min={2} max={30} value={topN} onChange={(e) => setTopN(Number(e.target.value))}
               style={{ width: 96, accentColor: "var(--brand)", display: "block" }} />
           </div>
-          <button onClick={run} className="btn-brand" style={{ padding: "9px 24px", fontSize: 13 }}
-            onMouseOver={(e) => (e.currentTarget.style.background = "var(--brand-hover)")}
-            onMouseOut={(e)  => (e.currentTarget.style.background = "var(--brand)")}>
-            Run
-          </button>
-        </div>
-
-        {/* Row 3 */}
-        <div style={{ display: "flex", gap: 20, flexWrap: "wrap", alignItems: "center" }}>
-          <div>
-            <ControlLabel>Method</ControlLabel>
-            <SegmentedControl options={[{ value: "freq" as const, label: "Frequency" }, { value: "imp" as const, label: "Importance" }]} value={method} onChange={setMethod} />
-          </div>
-          <div>
-            <ControlLabel>Physical tasks</ControlLabel>
-            <SegmentedControl
-              options={[{ value: "all" as const, label: "All" }, { value: "exclude" as const, label: "Non-physical" }, { value: "only" as const, label: "Physical only" }]}
-              value={physicalMode} onChange={setPhysicalMode}
-            />
-          </div>
-          <div style={{ display: "flex", gap: 16, alignItems: "center", paddingBottom: 2 }}>
-            <Toggle label="Auto-aug" checked={useAutoAug} onChange={setUseAutoAug} />
-            {useAutoAug && hasMCP && (
-              <Toggle label="Adj mean (MCP)" checked={useAdjMean} onChange={setUseAdjMean} />
-            )}
-          </div>
-        </div>
-
-        {/* Row 4 — Sort + Search (always visible) */}
-        <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
-          <div>
-            <ControlLabel>Sort</ControlLabel>
-            <SegmentedControl
-              options={[
-                { value: "value"    as SortMode, label: "By value"    },
-                { value: "increase" as SortMode, label: "By increase" },
-              ]}
-              value={sortMode} onChange={setSortMode}
-            />
-          </div>
-          {sortMode === "value" && (
-            <div>
-              <ControlLabel>Value ranking</ControlLabel>
-              <SegmentedControl
-                options={[{ value: "max" as const, label: "Max" }, { value: "avg" as const, label: "Avg" }]}
-                value={valueAggMode} onChange={setValueAggMode}
-              />
-            </div>
-          )}
-          {sortMode === "increase" && (
-            <div>
-              <ControlLabel>Increase type</ControlLabel>
-              <SegmentedControl
-                options={[{ value: "abs" as IncMode, label: "Absolute" }, { value: "pct" as IncMode, label: "% change" }]}
-                value={incMode} onChange={setIncMode}
-              />
-            </div>
-          )}
-          {/* Search */}
-          <div>
-            <ControlLabel>Search category</ControlLabel>
-            <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-              <input
-                type="text" placeholder="Filter categories…" value={trendSearch}
-                onChange={(e) => setTrendSearch(e.target.value)}
-                onFocus={() => { searchFocused.current = true; }}
-                onBlur={() => { searchFocused.current = false; }}
-                style={{
-                  fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
-                  padding: "5px 26px 5px 8px", background: "var(--bg-surface)",
-                  color: "var(--text-primary)", width: 160, height: 31, outline: "none",
-                  transition: "border-color 0.15s",
-                }}
-                onMouseOver={(e) => (e.currentTarget.style.borderColor = "var(--brand)")}
-                onMouseOut={(e)  => (e.currentTarget.style.borderColor = "var(--border)")}
-              />
-              {trendSearch && (
-                <button onClick={() => setTrendSearch("")}
-                  style={{ position: "absolute", right: 6, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
+          {result && (
+            <>
+              <div>
+                <ControlLabel>Sort</ControlLabel>
+                <SegmentedControl
+                  options={[
+                    { value: "value"    as SortMode, label: "By value"    },
+                    { value: "increase" as SortMode, label: "By increase" },
+                  ]}
+                  value={sortMode} onChange={setSortMode}
+                />
+              </div>
+              {sortMode === "value" && (
+                <div>
+                  <ControlLabel>Value ranking</ControlLabel>
+                  <SegmentedControl
+                    options={[{ value: "max" as const, label: "Max" }, { value: "avg" as const, label: "Avg" }]}
+                    value={valueAggMode} onChange={setValueAggMode}
+                  />
+                </div>
               )}
-            </div>
-          </div>
-          {trendSearch && (
-            <div>
-              <ControlLabel>Context ±</ControlLabel>
-              <SegmentedControl
-                options={[{ value: "3" as never, label: "3" }, { value: "5" as never, label: "5" }, { value: "10" as never, label: "10" }]}
-                value={String(ctxSize) as never}
-                onChange={(v) => setCtxSize(Number(v))}
-              />
-            </div>
+              {sortMode === "increase" && (
+                <div>
+                  <ControlLabel>Increase type</ControlLabel>
+                  <SegmentedControl
+                    options={[{ value: "abs" as IncMode, label: "Absolute" }, { value: "pct" as IncMode, label: "% change" }]}
+                    value={incMode} onChange={setIncMode}
+                  />
+                </div>
+              )}
+              <div>
+                <ControlLabel>Search category</ControlLabel>
+                <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                  <input
+                    type="text" placeholder="Filter categories…" value={trendSearch}
+                    onChange={(e) => setTrendSearch(e.target.value)}
+                    onFocus={() => { searchFocused.current = true; }}
+                    onBlur={() => { searchFocused.current = false; }}
+                    style={{
+                      fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
+                      padding: "5px 26px 5px 8px", background: "var(--bg-surface)",
+                      color: "var(--text-primary)", width: 160, height: 31, outline: "none",
+                      transition: "border-color 0.15s",
+                    }}
+                    onMouseOver={(e) => (e.currentTarget.style.borderColor = "var(--brand)")}
+                    onMouseOut={(e)  => (e.currentTarget.style.borderColor = "var(--border)")}
+                  />
+                  {trendSearch && (
+                    <button onClick={() => setTrendSearch("")}
+                      style={{ position: "absolute", right: 6, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
+                  )}
+                </div>
+              </div>
+              {trendSearch && (
+                <div>
+                  <ControlLabel>Context ±</ControlLabel>
+                  <SegmentedControl
+                    options={[{ value: "3" as never, label: "3" }, { value: "5" as never, label: "5" }, { value: "10" as never, label: "10" }]}
+                    value={String(ctxSize) as never}
+                    onChange={(v) => setCtxSize(Number(v))}
+                  />
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -1053,6 +1159,7 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
           lockedLine={lockedLine} setLockedLine={setLockedLine}
           dateDatasets={dateDatasets}
           catRanks={catRanks}
+          showAllInTooltip={showAllInTooltip}
         />
       </div>
     </>
@@ -1086,6 +1193,9 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
   const [ctxSize,       setCtxSize]      = useState(5);
   const [lockedLine,    setLockedLine]   = useState<string | null>(null);
 
+  const [panelCollapsed,    setPanelCollapsed]    = useState(false);
+  const [showAllInTooltip,  setShowAllInTooltip]  = useState(true);
+
   const hasMCP = selectedDatasets.some((d) => d.startsWith("MCP") || d === "Microsoft");
 
   const run = useCallback(async () => {
@@ -1101,7 +1211,7 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
         physicalMode, geo, topN: fetchTopN, sortBy: "Workers Affected", activityLevel,
       };
       const data = await fetchWATrends(settings);
-      setResult(data);
+      setResult(data); setPanelCollapsed(true);
       const cats = new Set<string>();
       data.series.forEach((s: TrendSeries) => {
         s.data_points
@@ -1198,135 +1308,196 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
 
   return (
     <>
-      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
 
-        <DatasetSelectorWA
-          allDatasets={allDatasets} selectedDatasets={selectedDatasets}
-          onToggle={(ds) => setSelectedDatasets((p) => p.includes(ds) ? p.filter((x) => x !== ds) : [...p, ds])}
-          onAll={() => {
-            const hasAEI = selectedDatasets.some(isAEIFamily);
-            setSelectedDatasets(allDatasets.filter(hasAEI ? isAEIFamily : isMCPFamily));
-          }}
-          onNone={() => setSelectedDatasets([])}
-        />
+        {/* ── Collapsible settings ── */}
+        {panelCollapsed ? (
+          <div style={{ display: "flex", gap: 10, alignItems: "center", padding: "7px 12px", background: "var(--bg-sidebar)", border: "1px solid var(--border-light)", borderRadius: 8 }}>
+            <span style={{ fontSize: 11, color: "var(--text-muted)", flex: 1, lineHeight: 1.5 }}>
+              {selectedDatasets.length} dataset{selectedDatasets.length !== 1 ? "s" : ""} · {levelLabels[activityLevel]} · {method === "freq" ? "Frequency" : "Importance"} · {geo === "nat" ? "National" : "Utah"}{useAutoAug ? " · Auto-aug" : ""}
+            </span>
+            <button
+              onClick={() => setPanelCollapsed(false)}
+              style={{ fontSize: 11, color: "var(--brand)", background: "none", border: "1px solid var(--border)", borderRadius: 5, padding: "3px 8px", cursor: "pointer", whiteSpace: "nowrap" }}
+            >▼ Settings</button>
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
 
-        {/* Row 2 */}
+            {/* Datasets */}
+            <div>
+              <SectionHead label="Datasets" />
+              <DatasetSelectorWA
+                allDatasets={allDatasets} selectedDatasets={selectedDatasets}
+                onToggle={(ds) => setSelectedDatasets((p) => p.includes(ds) ? p.filter((x) => x !== ds) : [...p, ds])}
+                onAll={() => {
+                  const hasAEI = selectedDatasets.some(isAEIFamily);
+                  setSelectedDatasets(allDatasets.filter(hasAEI ? isAEIFamily : isMCPFamily));
+                }}
+                onNone={() => setSelectedDatasets([])}
+              />
+            </div>
+
+            {/* Display */}
+            <div>
+              <SectionHead label="Display" />
+              <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
+                <div>
+                  <ControlLabel>Lines</ControlLabel>
+                  <SegmentedControl
+                    options={[
+                      { value: "individual" as LineMode, label: "Individual" },
+                      { value: "average"    as LineMode, label: "Average"    },
+                      { value: "max"        as LineMode, label: "Max"        },
+                    ]}
+                    value={lineMode} onChange={setLineMode}
+                  />
+                </div>
+                <div>
+                  <ControlLabel>Activity level</ControlLabel>
+                  <SegmentedControl
+                    options={[{ value: "gwa" as const, label: "GWA" }, { value: "iwa" as const, label: "IWA" }, { value: "dwa" as const, label: "DWA" }]}
+                    value={activityLevel} onChange={setActivityLevel}
+                  />
+                </div>
+                <div>
+                  <ControlLabel>Metric</ControlLabel>
+                  <SegmentedControl options={METRIC_OPTIONS.map((m) => ({ value: m.key, label: m.label }))} value={metric} onChange={setMetric} />
+                </div>
+                <div>
+                  <ControlLabel>Geography</ControlLabel>
+                  <SegmentedControl options={[{ value: "nat" as const, label: "National" }, { value: "ut" as const, label: "Utah" }]} value={geo} onChange={setGeo} />
+                </div>
+                <div>
+                  <ControlLabel>Tooltip labels</ControlLabel>
+                  <SegmentedControl
+                    options={[{ value: "all" as const, label: "All lines" }, { value: "active" as const, label: "Active only" }]}
+                    value={showAllInTooltip ? "all" : "active"}
+                    onChange={(v) => setShowAllInTooltip(v === "all")}
+                  />
+                </div>
+                <button onClick={run} className="btn-brand" style={{ padding: "9px 24px", fontSize: 13 }}
+                  onMouseOver={(e) => (e.currentTarget.style.background = "var(--brand-hover)")}
+                  onMouseOut={(e)  => (e.currentTarget.style.background = "var(--brand)")}>
+                  Run
+                </button>
+              </div>
+            </div>
+
+            {/* Filtering */}
+            <div>
+              <SectionHead label="Filtering" />
+              <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
+                <div>
+                  <ControlLabel>Method</ControlLabel>
+                  <SegmentedControl options={[{ value: "freq" as const, label: "Frequency" }, { value: "imp" as const, label: "Importance" }]} value={method} onChange={setMethod} />
+                </div>
+                <div>
+                  <ControlLabel>Physical tasks</ControlLabel>
+                  <SegmentedControl
+                    options={[{ value: "all" as const, label: "All" }, { value: "exclude" as const, label: "Non-physical" }, { value: "only" as const, label: "Physical only" }]}
+                    value={physicalMode} onChange={setPhysicalMode}
+                  />
+                </div>
+                <div>
+                  <ControlLabel>Auto-aug</ControlLabel>
+                  <SegmentedControl
+                    options={[{ value: "off" as const, label: "Off" }, { value: "on" as const, label: "On" }]}
+                    value={useAutoAug ? "on" : "off"}
+                    onChange={(v) => setUseAutoAug(v === "on")}
+                    padding="5px 7px"
+                  />
+                </div>
+                {useAutoAug && hasMCP && (
+                  <div>
+                    <ControlLabel>Adj mean (MCP)</ControlLabel>
+                    <SegmentedControl
+                      options={[{ value: "off" as const, label: "Off" }, { value: "on" as const, label: "On" }]}
+                      value={useAdjMean ? "on" : "off"}
+                      onChange={(v) => setUseAdjMean(v === "on")}
+                      padding="5px 7px"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Collapse button */}
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <button
+                onClick={() => setPanelCollapsed(true)}
+                style={{ fontSize: 11, color: "var(--text-muted)", background: "none", border: "1px solid var(--border-light)", borderRadius: 5, padding: "3px 8px", cursor: "pointer" }}
+              >▲ Collapse</button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Always visible: Top N + (post-run) Sort + Search ── */}
         <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
-          <div>
-            <ControlLabel>Lines</ControlLabel>
-            <SegmentedControl
-              options={[
-                { value: "individual" as LineMode, label: "Individual" },
-                { value: "average"    as LineMode, label: "Average"    },
-                { value: "max"        as LineMode, label: "Max"        },
-              ]}
-              value={lineMode} onChange={setLineMode}
-            />
-          </div>
-          <div>
-            <ControlLabel>Activity level</ControlLabel>
-            <SegmentedControl
-              options={[{ value: "gwa" as const, label: "GWA" }, { value: "iwa" as const, label: "IWA" }, { value: "dwa" as const, label: "DWA" }]}
-              value={activityLevel} onChange={setActivityLevel}
-            />
-          </div>
-          <div>
-            <ControlLabel>Metric</ControlLabel>
-            <SegmentedControl options={METRIC_OPTIONS.map((m) => ({ value: m.key, label: m.label }))} value={metric} onChange={setMetric} />
-          </div>
-          <div>
-            <ControlLabel>Geography</ControlLabel>
-            <SegmentedControl options={[{ value: "nat" as const, label: "National" }, { value: "ut" as const, label: "Utah" }]} value={geo} onChange={setGeo} />
-          </div>
           <div>
             <ControlLabel>Top {topN}</ControlLabel>
-            <input type="range" min={2} max={20} value={topN} onChange={(e) => setTopN(Number(e.target.value))}
+            <input type="range" min={2} max={30} value={topN} onChange={(e) => setTopN(Number(e.target.value))}
               style={{ width: 96, accentColor: "var(--brand)", display: "block" }} />
           </div>
-          <button onClick={run} className="btn-brand" style={{ padding: "9px 24px", fontSize: 13 }}
-            onMouseOver={(e) => (e.currentTarget.style.background = "var(--brand-hover)")}
-            onMouseOut={(e)  => (e.currentTarget.style.background = "var(--brand)")}>
-            Run
-          </button>
-        </div>
-
-        {/* Row 3 */}
-        <div style={{ display: "flex", gap: 20, flexWrap: "wrap", alignItems: "center" }}>
-          <div>
-            <ControlLabel>Method</ControlLabel>
-            <SegmentedControl options={[{ value: "freq" as const, label: "Frequency" }, { value: "imp" as const, label: "Importance" }]} value={method} onChange={setMethod} />
-          </div>
-          <div>
-            <ControlLabel>Physical tasks</ControlLabel>
-            <SegmentedControl
-              options={[{ value: "all" as const, label: "All" }, { value: "exclude" as const, label: "Non-physical" }, { value: "only" as const, label: "Physical only" }]}
-              value={physicalMode} onChange={setPhysicalMode}
-            />
-          </div>
-          <div style={{ display: "flex", gap: 16, alignItems: "center", paddingBottom: 2 }}>
-            <Toggle label="Auto-aug" checked={useAutoAug} onChange={setUseAutoAug} />
-            {useAutoAug && hasMCP && (
-              <Toggle label="Adj mean (MCP)" checked={useAdjMean} onChange={setUseAdjMean} />
-            )}
-          </div>
-        </div>
-
-        {/* Row 4 — Sort + Search (always visible) */}
-        <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
-          <div>
-            <ControlLabel>Sort</ControlLabel>
-            <SegmentedControl
-              options={[{ value: "value" as SortMode, label: "By value" }, { value: "increase" as SortMode, label: "By increase" }]}
-              value={sortMode} onChange={setSortMode}
-            />
-          </div>
-          {sortMode === "value" && (
-            <div>
-              <ControlLabel>Value ranking</ControlLabel>
-              <SegmentedControl
-                options={[{ value: "max" as const, label: "Max" }, { value: "avg" as const, label: "Avg" }]}
-                value={valueAggMode} onChange={setValueAggMode}
-              />
-            </div>
-          )}
-          {sortMode === "increase" && (
-            <div>
-              <ControlLabel>Increase type</ControlLabel>
-              <SegmentedControl
-                options={[{ value: "abs" as IncMode, label: "Absolute" }, { value: "pct" as IncMode, label: "% change" }]}
-                value={incMode} onChange={setIncMode}
-              />
-            </div>
-          )}
-          <div>
-            <ControlLabel>Search category</ControlLabel>
-            <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-              <input
-                type="text" placeholder="Filter categories…" value={trendSearch}
-                onChange={(e) => setTrendSearch(e.target.value)}
-                style={{
-                  fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
-                  padding: "5px 26px 5px 8px", background: "var(--bg-surface)",
-                  color: "var(--text-primary)", width: 160, height: 31, outline: "none",
-                }}
-                onMouseOver={(e) => (e.currentTarget.style.borderColor = "var(--brand)")}
-                onMouseOut={(e)  => (e.currentTarget.style.borderColor = "var(--border)")}
-              />
-              {trendSearch && (
-                <button onClick={() => setTrendSearch("")}
-                  style={{ position: "absolute", right: 6, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
+          {result && (
+            <>
+              <div>
+                <ControlLabel>Sort</ControlLabel>
+                <SegmentedControl
+                  options={[{ value: "value" as SortMode, label: "By value" }, { value: "increase" as SortMode, label: "By increase" }]}
+                  value={sortMode} onChange={setSortMode}
+                />
+              </div>
+              {sortMode === "value" && (
+                <div>
+                  <ControlLabel>Value ranking</ControlLabel>
+                  <SegmentedControl
+                    options={[{ value: "max" as const, label: "Max" }, { value: "avg" as const, label: "Avg" }]}
+                    value={valueAggMode} onChange={setValueAggMode}
+                  />
+                </div>
               )}
-            </div>
-          </div>
-          {trendSearch && (
-            <div>
-              <ControlLabel>Context ±</ControlLabel>
-              <SegmentedControl
-                options={[{ value: "3" as never, label: "3" }, { value: "5" as never, label: "5" }, { value: "10" as never, label: "10" }]}
-                value={String(ctxSize) as never}
-                onChange={(v) => setCtxSize(Number(v))}
-              />
-            </div>
+              {sortMode === "increase" && (
+                <div>
+                  <ControlLabel>Increase type</ControlLabel>
+                  <SegmentedControl
+                    options={[{ value: "abs" as IncMode, label: "Absolute" }, { value: "pct" as IncMode, label: "% change" }]}
+                    value={incMode} onChange={setIncMode}
+                  />
+                </div>
+              )}
+              <div>
+                <ControlLabel>Search category</ControlLabel>
+                <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                  <input
+                    type="text" placeholder="Filter categories…" value={trendSearch}
+                    onChange={(e) => setTrendSearch(e.target.value)}
+                    style={{
+                      fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
+                      padding: "5px 26px 5px 8px", background: "var(--bg-surface)",
+                      color: "var(--text-primary)", width: 160, height: 31, outline: "none",
+                      transition: "border-color 0.15s",
+                    }}
+                    onMouseOver={(e) => (e.currentTarget.style.borderColor = "var(--brand)")}
+                    onMouseOut={(e)  => (e.currentTarget.style.borderColor = "var(--border)")}
+                  />
+                  {trendSearch && (
+                    <button onClick={() => setTrendSearch("")}
+                      style={{ position: "absolute", right: 6, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
+                  )}
+                </div>
+              </div>
+              {trendSearch && (
+                <div>
+                  <ControlLabel>Context ±</ControlLabel>
+                  <SegmentedControl
+                    options={[{ value: "3" as never, label: "3" }, { value: "5" as never, label: "5" }, { value: "10" as never, label: "10" }]}
+                    value={String(ctxSize) as never}
+                    onChange={(v) => setCtxSize(Number(v))}
+                  />
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -1341,6 +1512,7 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
           lockedLine={lockedLine} setLockedLine={setLockedLine}
           dateDatasets={dateDatasets}
           catRanks={catRanks}
+          showAllInTooltip={showAllInTooltip}
         />
       </div>
     </>

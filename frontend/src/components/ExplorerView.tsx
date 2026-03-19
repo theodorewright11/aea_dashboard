@@ -171,11 +171,11 @@ function occToRow(occ: OccupationSummary, geo: "nat" | "ut"): FlatRow {
   };
 }
 
-function taskToRow(t: AllTaskRow): FlatRow {
+function taskToRow(t: AllTaskRow, geo: "nat" | "ut" = "nat"): FlatRow {
   return {
     name: t.task,
-    emp: 0,
-    wage: null,
+    emp: (geo === "nat" ? t.emp_nat : t.emp_ut) ?? 0,
+    wage: t.wage_nat ?? null,
     n_occs: t.n_occs,
     n_tasks: 1,
     auto_avg_with_vals: t.avg_auto_aug ?? null,
@@ -472,9 +472,11 @@ function BtnSeg<T extends string>({
 function TaskSubRow({
   task,
   physicalMode,
+  occHierarchy,
 }: {
   task: TaskDetail;
   physicalMode: "all" | "exclude" | "only";
+  occHierarchy?: { broad?: string | null; minor?: string | null; major?: string | null };
 }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -547,6 +549,14 @@ function TaskSubRow({
         <tr style={{ background: "#fafaf8", borderBottom: "1px solid var(--border-light)" }}>
           <td colSpan={9} style={{ padding: "10px 20px 14px 28px" }}>
             <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+              {occHierarchy && (occHierarchy.broad || occHierarchy.minor || occHierarchy.major) && (
+                <div style={{ minWidth: 200 }}>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Occupation Classification</p>
+                  {occHierarchy.broad && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Broad:</b> {occHierarchy.broad}</p>}
+                  {occHierarchy.minor && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Minor:</b> {occHierarchy.minor}</p>}
+                  {occHierarchy.major && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>Major:</b> {occHierarchy.major}</p>}
+                </div>
+              )}
               {(task.gwa_title || task.iwa_title || task.dwa_title) && (
                 <div style={{ minWidth: 200 }}>
                   <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Activity Classification</p>
@@ -902,7 +912,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
 
     if (tableLevel === "task") {
       const data = taskData ?? [];
-      rows = data.map(taskToRow);
+      rows = data.map((t) => taskToRow(t, geo));
     } else if (tableLevel === "occupation") {
       let occs = occupations;
       if (selectedMajors.size > 0) {
@@ -1165,7 +1175,16 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                     <thead><TaskSubHeader /></thead>
                     <tbody>
                       {taskState.map((t) => (
-                        <TaskSubRow key={t.task_normalized} task={t} physicalMode={physicalMode} />
+                        <TaskSubRow
+                          key={t.task_normalized}
+                          task={t}
+                          physicalMode={physicalMode}
+                          occHierarchy={{
+                            broad: row.parent ?? null,
+                            minor: row.grandparent ?? null,
+                            major: row.sourceOccs?.[0]?.major ?? null,
+                          }}
+                        />
                       ))}
                     </tbody>
                   </table>
@@ -1403,7 +1422,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                     }}
                     onClick={() => handleSort(col.key)}
                   >
-                    <div style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>
+                    <div style={{ display: "inline-flex", alignItems: "center", gap: 3, paddingRight: col.numeric ? 14 : 0 }}>
                       {col.label}
                       {col.tooltip && <InfoTooltip text={col.tooltip} />}
                       {isSorted && (
@@ -1411,24 +1430,25 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                           {sortDir === "desc" ? "↓" : "↑"}
                         </span>
                       )}
-                      {col.numeric && (
-                        <span
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setOpenFilter((prev) => prev === col.key ? null : col.key);
-                          }}
-                          style={{
-                            cursor: "pointer",
-                            color: hasFilter ? "var(--brand)" : "var(--text-muted)",
-                            opacity: hasFilter ? 1 : 0.5,
-                            display: "inline-flex",
-                          }}
-                          title="Filter"
-                        >
-                          <FunnelIcon />
-                        </span>
-                      )}
                     </div>
+                    {col.numeric && (
+                      <span
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenFilter((prev) => prev === col.key ? null : col.key);
+                        }}
+                        style={{
+                          position: "absolute", right: 4, top: "50%", transform: "translateY(-50%)",
+                          cursor: "pointer",
+                          color: hasFilter ? "var(--brand)" : "var(--text-muted)",
+                          opacity: hasFilter ? 1 : 0.5,
+                          display: "inline-flex",
+                        }}
+                        title="Filter"
+                      >
+                        <FunnelIcon />
+                      </span>
+                    )}
                     {openFilter === col.key && (
                       <ColumnFilterDropdown
                         colKey={col.key}
