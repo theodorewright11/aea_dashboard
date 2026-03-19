@@ -21,6 +21,8 @@ interface Props {
   activityLevel:  ActivityLevel;
   searchQuery:    string;
   contextSize:    number;
+  /** Client-side topN slice applied before search */
+  topN?:          number;
   /** Config summary lines shown as footer in downloaded PNGs */
   configSummary?: string[];
 }
@@ -247,10 +249,12 @@ function ActivityBarChart({
 
 export default function WorkActivitiesPanel({
   groupId, color, response, loading, error,
-  activityLevel, searchQuery, contextSize, configSummary,
+  activityLevel, searchQuery, contextSize, topN, configSummary,
 }: Props) {
   const group    = response?.aei_group ?? response?.mcp_group ?? null;
-  const allRows  = group?.[activityLevel] ?? [];
+  const rawRows  = group?.[activityLevel] ?? [];
+  // Apply topN client-side before search (backend may have returned all rows)
+  const allRows  = topN != null ? rawRows.slice(0, topN) : rawRows;
   const { rows, matchedCategory } = applySearch(allRows, searchQuery, contextSize);
 
   const baselineLabel = response?.aei_group

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
-import type { GroupSettings, ComputeResponse, ConfigResponse } from "@/lib/types";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import type { GroupSettings, ComputeResponse, ConfigResponse, ChartRow } from "@/lib/types";
 import { fetchConfig, fetchCompute } from "@/lib/api";
 import GroupPanel from "@/components/GroupPanel";
 import { GROUP_A_COLOR, GROUP_B_COLOR } from "@/lib/theme";
@@ -27,10 +27,10 @@ function pendingToConfigSummary(p: GroupPending, groupId: "A" | "B"): string[] {
   const dsLabel = p.datasets.length === 0 ? "None"
     : p.datasets.length === 1 ? p.datasets[0]
     : `${p.datasets.join(", ")} (${p.combineMethod})`;
-  const line1 = `Group ${groupId}  ·  Datasets: ${dsLabel}  ·  Method: ${p.method === "freq" ? "Frequency" : "Importance"}  ·  Geo: ${p.geo === "nat" ? "National" : "Utah"}`;
   const physLabel = p.physicalMode === "all" ? "All tasks" : p.physicalMode === "exclude" ? "Non-physical only" : "Physical only";
   const augLabel  = p.useAutoAug ? `Auto-aug: On${p.useAdjMean ? " (adj)" : ""}` : "Auto-aug: Off";
-  const line2 = `Aggregation: ${p.aggLevel}  ·  Top ${p.topN}  ·  ${physLabel}  ·  ${augLabel}${p.searchQuery ? `  ·  Search: "${p.searchQuery}"` : ""}`;
+  const line1 = `Group ${groupId}  ·  Datasets: ${dsLabel}  ·  Method: ${p.method === "freq" ? "Frequency" : "Importance"}  ·  Geo: ${p.geo === "nat" ? "National" : "Utah"}`;
+  const line2 = `Aggregation: ${p.aggLevel}  ·  Top ${p.topN}  ·  Sort: ${p.sortBy}  ·  ${physLabel}  ·  ${augLabel}${p.searchQuery ? `  ·  Search: "${p.searchQuery}"` : ""}`;
   return [line1, line2];
 }
 
@@ -41,14 +41,35 @@ function pendingToSettings(p: GroupPending): GroupSettings {
     method:           p.method,
     geo:              p.geo,
     aggLevel:         p.aggLevel,
-    topN:             p.topN,
+    topN:             1000,        // always fetch all; client-side slice
     sortBy:           p.sortBy,
     physicalMode:     p.physicalMode,
     useAutoAug:       p.useAutoAug,
     useAdjMean:       p.useAdjMean,
-    searchQuery:      p.searchQuery,
+    searchQuery:      "",          // client-side search
     contextSize:      p.contextSize,
   };
+}
+
+// ── Client-side filter (topN or search) ────────────────────────────────────────
+
+function applyClientFilter(
+  full: ComputeResponse,
+  topN: number,
+  searchQuery: string,
+  contextSize: number,
+): ComputeResponse {
+  const q = searchQuery.trim().toLowerCase();
+  if (q) {
+    const idx = full.rows.findIndex((r: ChartRow) => r.category.toLowerCase().includes(q));
+    if (idx >= 0) {
+      const start = Math.max(0, idx - contextSize);
+      const end   = Math.min(full.rows.length, idx + contextSize + 1);
+      return { ...full, rows: full.rows.slice(start, end), matched_category: full.rows[idx].category };
+    }
+    return { ...full, rows: [], matched_category: null };
+  }
+  return { ...full, rows: full.rows.slice(0, topN), matched_category: undefined };
 }
 
 // ── Defaults ───────────────────────────────────────────────────────────────────
@@ -118,9 +139,54 @@ function SegBtn<T extends string>({
   );
 }
 
-// ── Dataset dropdown ───────────────────────────────────────────────────────────
+// ── Info tooltip ───────────────────────────────────────────────────────────────
 
-function DatasetDropdown({
+function InfoTooltip({ text }: { text: string }) {
+  const [show, setShow] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  return (
+    <div ref={ref} style={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
+      <span
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        style={{
+          display: "inline-flex", alignItems: "center", justifyContent: "center",
+          width: 14, height: 14, borderRadius: "50%",
+          background: "var(--border)", color: "var(--text-muted)",
+          fontSize: 9, fontWeight: 700, cursor: "default",
+          flexShrink: 0, marginLeft: 4,
+        }}
+      >?</span>
+      {show && (
+        <div style={{
+          position: "fixed",
+          zIndex: 9999,
+          background: "#1a1a1a", color: "#fff",
+          fontSize: 11, lineHeight: 1.5,
+          padding: "6px 10px", borderRadius: 6,
+          maxWidth: 220, pointerEvents: "none",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+          left: (() => {
+            if (!ref.current) return 0;
+            const rect = ref.current.getBoundingClientRect();
+            const tipW = 220;
+            return Math.min(rect.left + 18, window.innerWidth - tipW - 8);
+          })(),
+          top: (() => {
+            if (!ref.current) return 0;
+            const rect = ref.current.getBoundingClientRect();
+            return rect.top - 4;
+          })(),
+          transform: "translateY(-100%)",
+        }}>{text}</div>
+      )}
+    </div>
+  );
+}
+
+// ── Dataset pills (like Trends) ────────────────────────────────────────────────
+
+function DatasetPills({
   label, color, datasets, availability, selected, combineMethod,
   onChange, onChangeCombine,
 }: {
@@ -133,123 +199,61 @@ function DatasetDropdown({
   onChange: (v: string[]) => void;
   onChangeCombine: (v: "Average" | "Max") => void;
 }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    function handle(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    }
-    document.addEventListener("mousedown", handle);
-    return () => document.removeEventListener("mousedown", handle);
-  }, [open]);
-
-  const summary = selected.length === 0 ? "None"
-    : selected.length === 1 ? selected[0]
-    : `${selected.length} datasets`;
+  function toggle(name: string) {
+    if (selected.includes(name)) onChange(selected.filter((d) => d !== name));
+    else onChange([...selected, name]);
+  }
 
   return (
-    <div ref={ref} style={{ position: "relative" }}>
-      <ControlLabel>{label}</ControlLabel>
-      <button
-        onClick={() => setOpen((o) => !o)}
-        style={{
-          display: "flex", alignItems: "center", gap: 6,
-          background: "var(--bg-surface)",
-          border: "1px solid var(--border)",
-          borderRadius: 7, padding: "5px 10px",
-          fontSize: 12, fontWeight: 500,
-          color: "var(--text-primary)",
-          cursor: "pointer",
-          whiteSpace: "nowrap",
-          minWidth: 132,
-          transition: "border-color 0.12s",
-        }}
-        onMouseOver={(e) => (e.currentTarget.style.borderColor = "var(--brand)")}
-        onMouseOut={(e)  => (e.currentTarget.style.borderColor = "var(--border)")}
-      >
-        <span style={{ width: 8, height: 8, borderRadius: "50%", background: color, flexShrink: 0 }} />
-        <span style={{ flex: 1, textAlign: "left" as const }}>{summary}</span>
-        <span style={{ fontSize: 9, color: "var(--text-muted)" }}>▾</span>
-      </button>
-
-      {open && (
-        <div style={{
-          position: "absolute", top: "calc(100% + 4px)", left: 0, zIndex: 200,
-          background: "var(--bg-surface)",
-          border: "1px solid var(--border)",
-          borderRadius: 8, padding: "8px",
-          minWidth: 192,
-          boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
-        }}>
-          {datasets.map((name) => {
-            const avail = availability[name];
-            return (
-              <label
-                key={name}
+    <div>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 5 }}>
+        <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", margin: 0 }}>
+          {label}
+        </p>
+        <InfoTooltip text="Select one or more datasets to compute automation exposure metrics. When multiple are selected, choose Average or Max to combine them." />
+        <button onClick={() => onChange(datasets.filter((d) => availability[d]))} style={{ fontSize: 10, color: "var(--brand)", background: "none", border: "none", cursor: "pointer", padding: "0 2px", fontWeight: 600 }}>All</button>
+        <button onClick={() => onChange([])} style={{ fontSize: 10, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", padding: "0 2px" }}>None</button>
+        {selected.length > 1 && (
+          <>
+            <span style={{ width: 1, height: 12, background: "var(--border)", display: "inline-block" }} />
+            {(["Average", "Max"] as const).map((v) => (
+              <button
+                key={v}
+                onClick={() => onChangeCombine(v)}
                 style={{
-                  display: "flex", alignItems: "center", gap: 7,
-                  padding: "4px 6px",
-                  cursor: avail ? "pointer" : "default",
-                  borderRadius: 4,
+                  fontSize: 10, padding: "2px 7px", borderRadius: 4,
+                  border: `1.5px solid ${combineMethod === v ? "var(--brand)" : "var(--border)"}`,
+                  background: combineMethod === v ? "var(--brand-light)" : "transparent",
+                  color: combineMethod === v ? "var(--brand)" : "var(--text-secondary)",
+                  cursor: "pointer", fontWeight: combineMethod === v ? 600 : 400,
                 }}
-              >
-                <input
-                  type="checkbox"
-                  checked={selected.includes(name)}
-                  disabled={!avail}
-                  onChange={(e) => {
-                    const next = e.target.checked
-                      ? [...selected, name]
-                      : selected.filter((d) => d !== name);
-                    onChange(next);
-                  }}
-                  style={{ accentColor: color, flexShrink: 0 }}
-                />
-                <span style={{
-                  fontSize: 12,
-                  color: avail ? "var(--text-primary)" : "var(--text-muted)",
-                  textDecoration: avail ? "none" : "line-through",
-                }}>
-                  {name}{!avail ? " (unavailable)" : ""}
-                </span>
-              </label>
-            );
-          })}
-
-          {selected.length > 1 && (
-            <>
-              <div style={{ borderTop: "1px solid var(--border-light)", margin: "6px 0" }} />
-              <div style={{ padding: "0 6px 2px" }}>
-                <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 5px" }}>
-                  Combine by
-                </p>
-                <div style={{ display: "flex", gap: 5 }}>
-                  {(["Average", "Max"] as const).map((v) => (
-                    <button
-                      key={v}
-                      onClick={() => onChangeCombine(v)}
-                      style={{
-                        padding: "3px 9px", fontSize: 11,
-                        borderRadius: 5,
-                        border: `1.5px solid ${combineMethod === v ? "var(--brand)" : "var(--border)"}`,
-                        background: combineMethod === v ? "var(--brand-light)" : "transparent",
-                        color: combineMethod === v ? "var(--brand)" : "var(--text-secondary)",
-                        cursor: "pointer",
-                        fontWeight: combineMethod === v ? 600 : 400,
-                        transition: "all 0.1s",
-                      }}
-                    >
-                      {v}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-      )}
+              >{v}</button>
+            ))}
+          </>
+        )}
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+        {datasets.map((name) => {
+          const avail = availability[name];
+          const active = selected.includes(name);
+          return (
+            <button
+              key={name}
+              onClick={() => avail && toggle(name)}
+              style={{
+                fontSize: 11, padding: "4px 9px", borderRadius: 6,
+                border: `1.5px solid ${active ? color : "var(--border)"}`,
+                background: active ? color + "18" : "transparent",
+                color: active ? color : avail ? "var(--text-secondary)" : "var(--text-muted)",
+                cursor: avail ? "pointer" : "default",
+                fontWeight: active ? 600 : 400,
+                textDecoration: avail ? "none" : "line-through",
+                transition: "all 0.12s", whiteSpace: "nowrap",
+              }}
+            >{name}</button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -279,9 +283,10 @@ function GroupSettingsPanel({
   }
 
   return (
-    <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
 
-      <DatasetDropdown
+      {/* Dataset pills */}
+      <DatasetPills
         label={`Group ${groupId} datasets`}
         color={color}
         datasets={config.datasets}
@@ -292,153 +297,186 @@ function GroupSettingsPanel({
         onChangeCombine={(v) => set("combineMethod", v)}
       />
 
-      <div style={{ width: 1, height: 28, background: "var(--border)", alignSelf: "flex-end", marginBottom: 1 }} />
+      <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
 
-      <div>
-        <ControlLabel>Method</ControlLabel>
-        <SegBtn
-          options={[{ value: "freq", label: "Freq" }, { value: "imp", label: "Imp" }]}
-          value={pending.method}
-          onChange={(v) => set("method", v)}
-        />
-      </div>
+        <div style={{ width: 1, height: 28, background: "var(--border)", alignSelf: "flex-end", marginBottom: 1 }} />
 
-      <div>
-        <ControlLabel>Geography</ControlLabel>
-        <SegBtn
-          options={[{ value: "nat", label: "National" }, { value: "ut", label: "Utah" }]}
-          value={pending.geo}
-          onChange={(v) => set("geo", v)}
-        />
-      </div>
+        <div>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <ControlLabel>Method</ControlLabel>
+            <InfoTooltip text="Frequency: weights tasks by how often they're done (freq_mean). Importance: weights by relevance × 2^importance." />
+          </div>
+          <SegBtn
+            options={[{ value: "freq", label: "Freq" }, { value: "imp", label: "Imp" }]}
+            value={pending.method}
+            onChange={(v) => set("method", v)}
+          />
+        </div>
 
-      <div>
-        <ControlLabel>Aggregation</ControlLabel>
-        <select
-          value={pending.aggLevel}
-          onChange={(e) => {
-            const v = e.target.value as GroupPending["aggLevel"];
-            const newTopN = v !== "occupation" ? Math.min(pending.topN, 30) : pending.topN;
-            setPending({ ...pending, aggLevel: v, topN: newTopN });
-          }}
-          style={{
-            fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
-            padding: "5px 8px", background: "var(--bg-surface)", color: "var(--text-primary)",
-            cursor: "pointer", height: 31,
-          }}
-        >
-          <option value="major">Major</option>
-          <option value="minor">Minor</option>
-          <option value="broad">Broad</option>
-          <option value="occupation">Occupation</option>
-        </select>
-      </div>
+        <div>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <ControlLabel>Geography</ControlLabel>
+            <InfoTooltip text="National: uses BLS OEWS national employment and wages. Utah: uses Utah-specific employment and wages." />
+          </div>
+          <SegBtn
+            options={[{ value: "nat", label: "National" }, { value: "ut", label: "Utah" }]}
+            value={pending.geo}
+            onChange={(v) => set("geo", v)}
+          />
+        </div>
 
-      {/* Search bar */}
-      <div>
-        <ControlLabel>Search category</ControlLabel>
-        <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-          <input
-            type="text"
-            placeholder="Search…"
-            value={pending.searchQuery}
-            onChange={(e) => set("searchQuery", e.target.value)}
+        <div>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <ControlLabel>Aggregation</ControlLabel>
+            <InfoTooltip text="Level of occupation grouping: Major (broad categories), Minor, Broad, or individual Occupation." />
+          </div>
+          <select
+            value={pending.aggLevel}
+            onChange={(e) => {
+              const v = e.target.value as GroupPending["aggLevel"];
+              const newTopN = v !== "occupation" ? Math.min(pending.topN, 30) : pending.topN;
+              setPending({ ...pending, aggLevel: v, topN: newTopN });
+            }}
             style={{
               fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
               padding: "5px 8px", background: "var(--bg-surface)", color: "var(--text-primary)",
-              width: 140, height: 31,
-              outline: "none",
+              cursor: "pointer", height: 31,
             }}
-            onFocus={(e) => (e.currentTarget.style.borderColor = "var(--brand)")}
-            onBlur={(e)  => (e.currentTarget.style.borderColor = "var(--border)")}
-          />
-          {pending.searchQuery && (
-            <button
-              onClick={() => set("searchQuery", "")}
+          >
+            <option value="major">Major</option>
+            <option value="minor">Minor</option>
+            <option value="broad">Broad</option>
+            <option value="occupation">Occupation</option>
+          </select>
+        </div>
+
+        {/* Search bar — updates chart client-side without Run */}
+        <div>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <ControlLabel>Search category</ControlLabel>
+            <InfoTooltip text="Find a specific category. Results center around the match ± context rows. Updates chart immediately without needing Run." />
+          </div>
+          <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+            <input
+              type="text"
+              placeholder="Search…"
+              value={pending.searchQuery}
+              onChange={(e) => set("searchQuery", e.target.value)}
               style={{
-                position: "absolute", right: 6,
-                background: "none", border: "none", cursor: "pointer",
-                color: "var(--text-muted)", fontSize: 14, lineHeight: 1,
-                padding: 0,
+                fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
+                padding: "5px 8px", background: "var(--bg-surface)", color: "var(--text-primary)",
+                width: 140, height: 31,
+                outline: "none",
               }}
-            >×</button>
-          )}
+              onFocus={(e) => (e.currentTarget.style.borderColor = "var(--brand)")}
+              onBlur={(e)  => (e.currentTarget.style.borderColor = "var(--border)")}
+            />
+            {pending.searchQuery && (
+              <button
+                onClick={() => set("searchQuery", "")}
+                style={{
+                  position: "absolute", right: 6,
+                  background: "none", border: "none", cursor: "pointer",
+                  color: "var(--text-muted)", fontSize: 14, lineHeight: 1,
+                  padding: 0,
+                }}
+              >×</button>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Context size or Top N */}
-      {pending.searchQuery ? (
+        {/* Context size or Top N — both update client-side */}
+        {pending.searchQuery ? (
+          <div>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <ControlLabel>Context ±</ControlLabel>
+              <InfoTooltip text="How many rows above and below the matched category to show." />
+            </div>
+            <SegBtn
+              options={[{ value: "5" as never, label: "5" }, { value: "10" as never, label: "10" }]}
+              value={String(pending.contextSize) as never}
+              onChange={(v) => set("contextSize", Number(v))}
+            />
+          </div>
+        ) : (
+          <div>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <ControlLabel>Top {pending.topN}</ControlLabel>
+              <InfoTooltip text="Number of top categories to display, sorted by the chosen sort metric. Updates immediately." />
+            </div>
+            <input
+              type="range" min={5} max={maxN} step={1} value={pending.topN}
+              onChange={(e) => set("topN", Number(e.target.value))}
+              style={{ width: 80, accentColor: "var(--brand)", display: "block", marginTop: 4 }}
+            />
+          </div>
+        )}
+
         <div>
-          <ControlLabel>Context ±</ControlLabel>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <ControlLabel>Sort by</ControlLabel>
+            <InfoTooltip text="Which metric to sort categories by (descending). Run required to re-sort." />
+          </div>
+          <select
+            value={pending.sortBy}
+            onChange={(e) => set("sortBy", e.target.value)}
+            style={{
+              fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
+              padding: "5px 8px", background: "var(--bg-surface)", color: "var(--text-primary)",
+              cursor: "pointer", height: 31,
+            }}
+          >
+            {sortOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+          </select>
+        </div>
+
+        <div style={{ width: 1, height: 28, background: "var(--border)", alignSelf: "flex-end", marginBottom: 1 }} />
+
+        {/* Physical mode */}
+        <div>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <ControlLabel>Tasks</ControlLabel>
+            <InfoTooltip text="Filter tasks by physical nature. 'Physical only' includes tasks that require physical presence. 'No Phys' excludes them." />
+          </div>
           <SegBtn
-            options={[{ value: "5" as never, label: "5" }, { value: "10" as never, label: "10" }]}
-            value={String(pending.contextSize) as never}
-            onChange={(v) => set("contextSize", Number(v))}
+            options={[
+              { value: "all",     label: "All"      },
+              { value: "exclude", label: "No Phys"  },
+              { value: "only",    label: "Phys only" },
+            ]}
+            value={pending.physicalMode}
+            onChange={(v) => set("physicalMode", v)}
           />
         </div>
-      ) : (
+
+        {/* Auto-aug toggle */}
         <div>
-          <ControlLabel>Top {pending.topN}</ControlLabel>
-          <input
-            type="range" min={5} max={maxN} step={1} value={pending.topN}
-            onChange={(e) => set("topN", Number(e.target.value))}
-            style={{ width: 80, accentColor: "var(--brand)", display: "block", marginTop: 4 }}
-          />
-        </div>
-      )}
-
-      <div>
-        <ControlLabel>Sort by</ControlLabel>
-        <select
-          value={pending.sortBy}
-          onChange={(e) => set("sortBy", e.target.value)}
-          style={{
-            fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
-            padding: "5px 8px", background: "var(--bg-surface)", color: "var(--text-primary)",
-            cursor: "pointer", height: 31,
-          }}
-        >
-          {sortOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-        </select>
-      </div>
-
-      <div style={{ width: 1, height: 28, background: "var(--border)", alignSelf: "flex-end", marginBottom: 1 }} />
-
-      {/* Physical mode */}
-      <div>
-        <ControlLabel>Tasks</ControlLabel>
-        <SegBtn
-          options={[
-            { value: "all",     label: "All"      },
-            { value: "exclude", label: "No Phys"  },
-            { value: "only",    label: "Phys only" },
-          ]}
-          value={pending.physicalMode}
-          onChange={(v) => set("physicalMode", v)}
-        />
-      </div>
-
-      {/* Auto-aug toggle */}
-      <div>
-        <ControlLabel>Auto-aug weight</ControlLabel>
-        <SegBtn
-          options={[{ value: "false" as never, label: "Off" }, { value: "true" as never, label: "On" }]}
-          value={String(pending.useAutoAug) as never}
-          onChange={(v) => set("useAutoAug", v === "true")}
-        />
-      </div>
-
-      {/* Adj mean — only when MCP selected and auto-aug on */}
-      {hasMCP && pending.useAutoAug && (
-        <div>
-          <ControlLabel>MCP adj mean</ControlLabel>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <ControlLabel>Auto-aug weight</ControlLabel>
+            <InfoTooltip text="When On, multiplies each task's completion weight by its AI automatability score (auto_aug_mean / 5), so highly automatable tasks count more." />
+          </div>
           <SegBtn
             options={[{ value: "false" as never, label: "Off" }, { value: "true" as never, label: "On" }]}
-            value={String(pending.useAdjMean) as never}
-            onChange={(v) => set("useAdjMean", v === "true")}
+            value={String(pending.useAutoAug) as never}
+            onChange={(v) => set("useAutoAug", v === "true")}
           />
         </div>
-      )}
+
+        {/* Adj mean — only when MCP selected and auto-aug on */}
+        {hasMCP && pending.useAutoAug && (
+          <div>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <ControlLabel>MCP adj mean</ControlLabel>
+              <InfoTooltip text="Use auto_aug_mean_adj for MCP datasets, which excludes flagged/unreliable ratings. Only available for MCP datasets." />
+            </div>
+            <SegBtn
+              options={[{ value: "false" as never, label: "Off" }, { value: "true" as never, label: "On" }]}
+              value={String(pending.useAdjMean) as never}
+              onChange={(v) => set("useAdjMean", v === "true")}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -453,9 +491,9 @@ export default function HomePage() {
   const [pendingB, setPendingB] = useState<GroupPending>(defaultPending(["MCP v4"]));
   const [activeGroup, setActiveGroup] = useState<"A" | "B">("A");
 
-  // Applied (chart) results
-  const [responseA, setResponseA] = useState<ComputeResponse | null>(null);
-  const [responseB, setResponseB] = useState<ComputeResponse | null>(null);
+  // Full backend responses (high topN, no search)
+  const [fullResponseA, setFullResponseA] = useState<ComputeResponse | null>(null);
+  const [fullResponseB, setFullResponseB] = useState<ComputeResponse | null>(null);
   const [loadingA, setLoadingA]   = useState(false);
   const [loadingB, setLoadingB]   = useState(false);
   const [errorA, setErrorA]       = useState<string | null>(null);
@@ -464,10 +502,6 @@ export default function HomePage() {
   // Track applied settings for config summary in downloads
   const [appliedPendingA, setAppliedPendingA] = useState<GroupPending | null>(null);
   const [appliedPendingB, setAppliedPendingB] = useState<GroupPending | null>(null);
-
-  // Track applied search query for highlighting
-  const [appliedSearchA, setAppliedSearchA] = useState<string>("");
-  const [appliedSearchB, setAppliedSearchB] = useState<string>("");
 
   useEffect(() => {
     fetchConfig()
@@ -486,8 +520,6 @@ export default function HomePage() {
     const settingsB = pendingToSettings(pendingB);
     setAppliedPendingA(pendingA);
     setAppliedPendingB(pendingB);
-    setAppliedSearchA(pendingA.searchQuery);
-    setAppliedSearchB(pendingB.searchQuery);
 
     setLoadingA(true); setErrorA(null);
     setLoadingB(true); setErrorB(null);
@@ -501,11 +533,21 @@ export default function HomePage() {
         : Promise.resolve(null),
     ]);
 
-    setResponseA(resA);
-    setResponseB(resB);
+    setFullResponseA(resA);
+    setFullResponseB(resB);
     setLoadingA(false);
     setLoadingB(false);
   }, [pendingA, pendingB]);
+
+  // Apply client-side filter (topN + search) reactively
+  const displayResponseA = useMemo(() =>
+    fullResponseA ? applyClientFilter(fullResponseA, pendingA.topN, pendingA.searchQuery, pendingA.contextSize) : null,
+    [fullResponseA, pendingA.topN, pendingA.searchQuery, pendingA.contextSize]
+  );
+  const displayResponseB = useMemo(() =>
+    fullResponseB ? applyClientFilter(fullResponseB, pendingB.topN, pendingB.searchQuery, pendingB.contextSize) : null,
+    [fullResponseB, pendingB.topN, pendingB.searchQuery, pendingB.contextSize]
+  );
 
   if (configError) {
     return (
@@ -544,6 +586,15 @@ export default function HomePage() {
     else setPendingA(copy);
   }
 
+  // Full other-group summary
+  const physLabelOther = otherPending.physicalMode === "all" ? "All tasks"
+    : otherPending.physicalMode === "exclude" ? "No Phys" : "Phys only";
+  const augLabelOther = otherPending.useAutoAug
+    ? `Auto-aug On${otherPending.useAdjMean ? " (adj)" : ""}` : "Auto-aug Off";
+  const dsLabelOther = otherPending.datasets.length === 0 ? "none"
+    : otherPending.datasets.length === 1 ? otherPending.datasets[0]
+    : `${otherPending.datasets.length} datasets (${otherPending.combineMethod})`;
+
   return (
     <div style={{
       height: "calc(100vh - var(--nav-height))",
@@ -570,7 +621,6 @@ export default function HomePage() {
 
         {/* Group tab toggle + sync */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-          {/* Group A/B tab */}
           <div style={{ display: "flex", border: "1px solid var(--border)", borderRadius: 7, overflow: "hidden" }}>
             {(["A", "B"] as const).map((g) => {
               const col = g === "A" ? GROUP_A_COLOR : GROUP_B_COLOR;
@@ -593,7 +643,6 @@ export default function HomePage() {
                 >
                   <span style={{ width: 8, height: 8, borderRadius: "50%", background: col }} />
                   Group {g}
-                  {/* Summary of datasets */}
                   <span style={{ fontSize: 10, color: "var(--text-muted)", fontWeight: 400 }}>
                     ({(g === "A" ? pendingA : pendingB).datasets.length === 0 ? "none"
                       : (g === "A" ? pendingA : pendingB).datasets.length === 1
@@ -605,7 +654,6 @@ export default function HomePage() {
             })}
           </div>
 
-          {/* Sync button */}
           <button
             onClick={syncToOther}
             title={`Copy Group ${activeGroup} settings to Group ${activeGroup === "A" ? "B" : "A"}`}
@@ -627,10 +675,8 @@ export default function HomePage() {
             Sync to {activeGroup === "A" ? "B" : "A"}
           </button>
 
-          {/* Quick visual divider */}
           <div style={{ flex: 1 }} />
 
-          {/* Run button */}
           <button
             onClick={run}
             className="btn-brand"
@@ -652,24 +698,28 @@ export default function HomePage() {
           sortOptions={config.sort_options}
         />
 
-        {/* Show other group summary */}
+        {/* Full other group summary */}
         <div style={{ marginTop: 8, fontSize: 11, color: "var(--text-muted)" }}>
           <span style={{
             display: "inline-flex", alignItems: "center", gap: 4,
-            padding: "2px 8px",
+            padding: "3px 10px",
             background: "var(--bg-surface)",
             border: "1px solid var(--border-light)",
             borderRadius: 4,
+            flexWrap: "wrap",
+            rowGap: 2,
           }}>
-            <span style={{ width: 6, height: 6, borderRadius: "50%", background: activeGroup === "A" ? GROUP_B_COLOR : GROUP_A_COLOR }} />
-            Group {activeGroup === "A" ? "B" : "A"}:&nbsp;
-            {otherPending.datasets.length === 0 ? "no datasets"
-              : otherPending.datasets.length === 1 ? otherPending.datasets[0]
-              : `${otherPending.datasets.length} datasets`}
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: activeGroup === "A" ? GROUP_B_COLOR : GROUP_A_COLOR, flexShrink: 0 }} />
+            <strong style={{ fontWeight: 600 }}>Group {activeGroup === "A" ? "B" : "A"}:</strong>&nbsp;
+            {dsLabelOther}
             &nbsp;·&nbsp;{otherPending.method === "freq" ? "Freq" : "Imp"}
             &nbsp;·&nbsp;{otherPending.geo === "nat" ? "National" : "Utah"}
             &nbsp;·&nbsp;{otherPending.aggLevel}
-            {otherPending.searchQuery && ` · search: "${otherPending.searchQuery}"`}
+            &nbsp;·&nbsp;Top {otherPending.topN}
+            &nbsp;·&nbsp;Sort: {otherPending.sortBy}
+            &nbsp;·&nbsp;{physLabelOther}
+            &nbsp;·&nbsp;{augLabelOther}
+            {otherPending.searchQuery && `  ·  Search: "${otherPending.searchQuery}"`}
           </span>
         </div>
       </div>
@@ -687,21 +737,21 @@ export default function HomePage() {
           <GroupPanel
             groupId="A"
             color={GROUP_A_COLOR}
-            response={responseA}
-            otherResponse={responseB}
+            response={displayResponseA}
+            otherResponse={displayResponseB}
             loading={loadingA}
             error={errorA}
-            matchedCategory={responseA?.matched_category ?? (appliedSearchA ? null : undefined)}
+            matchedCategory={displayResponseA?.matched_category}
             configSummary={appliedPendingA ? pendingToConfigSummary(appliedPendingA, "A") : undefined}
           />
           <GroupPanel
             groupId="B"
             color={GROUP_B_COLOR}
-            response={responseB}
-            otherResponse={responseA}
+            response={displayResponseB}
+            otherResponse={displayResponseA}
             loading={loadingB}
             error={errorB}
-            matchedCategory={responseB?.matched_category ?? (appliedSearchB ? null : undefined)}
+            matchedCategory={displayResponseB?.matched_category}
             configSummary={appliedPendingB ? pendingToConfigSummary(appliedPendingB, "B") : undefined}
           />
         </div>

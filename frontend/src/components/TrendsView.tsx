@@ -30,6 +30,11 @@ const CAT_COLORS = [
   "#4682b4", "#2e8b57", "#cd853f", "#708090",
 ];
 
+// ── Dataset family helpers ─────────────────────────────────────────────────────
+
+function isAEIFamily(name: string) { return name.startsWith("AEI"); }
+function isMCPFamily(name: string) { return name.startsWith("MCP") || name === "Microsoft"; }
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function getSeriesToFetch(
@@ -376,7 +381,7 @@ function ChartLegend({
 
 function ChartPanel({
   title, metric, chartData, lineConfigs, increases, incMode,
-  loading, error, hasResult, lockedLine, setLockedLine,
+  loading, error, hasResult, lockedLine, setLockedLine, dateDatasets,
 }: {
   title: string; metric: MetricKey;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -387,6 +392,7 @@ function ChartPanel({
   loading: boolean; error: string | null; hasResult: boolean;
   lockedLine: string | null;
   setLockedLine: (k: string | null) => void;
+  dateDatasets?: Map<string, string[]>;
 }) {
   const chartRef = useRef<HTMLDivElement>(null);
   const [hoveredLine, setHoveredLine] = useState<string | null>(null);
@@ -408,30 +414,106 @@ function ChartPanel({
   function TrendsTooltip(props: any) {
     if (!props.active || !props.payload?.length) return null;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const payload = activeLine ? props.payload.filter((p: any) => p.dataKey === activeLine) : props.payload;
+    const filteredPayload = activeLine ? props.payload.filter((p: any) => p.dataKey === activeLine) : props.payload;
+    const currentDate = props.label ?? "";
+
+    // Rank among all lines with values at this date (highest = #1)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const ranked = [...props.payload].filter((p: any) => p.value != null).sort((a: any, b: any) => b.value - a.value);
+    const rankMap = new Map<string, number>(ranked.map((p: any, i: number) => [p.dataKey as string, i + 1]));
+
+    // Index of hovered date in chartData (for looking up prev value)
+    const dateIdx = chartData.findIndex((pt) => pt.date === currentDate);
+
+    // Format a change: abs diff → uses metric format; pct diff → uses percent
+    function fmtChange(absChange: number, baseVal: number): string {
+      if (incMode === "pct") {
+        if (baseVal === 0) return "—";
+        const pct = (absChange / Math.abs(baseVal)) * 100;
+        return `${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%`;
+      }
+      return fmtIncrease(absChange, metric, "abs");
+    }
+
     return (
       <div style={{
         background: "var(--bg-surface)", border: "1px solid var(--border)",
         borderRadius: 8, padding: "10px 14px", fontSize: 12,
-        boxShadow: "0 2px 8px rgba(0,0,0,0.09)", maxWidth: 360,
+        boxShadow: "0 2px 8px rgba(0,0,0,0.09)", maxWidth: 400,
       }}>
         <p style={{ fontWeight: 700, color: "var(--text-primary)", marginBottom: 8 }}>
-          {fmtDate(props.label ?? "")}
+          {fmtDate(currentDate)}
         </p>
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-        {payload.map((p: any, i: number) => {
-          const inc = increases?.get(p.name);
+        {filteredPayload.map((p: any, i: number) => {
+          const currentVal = p.value as number;
+          const rank = rankMap.get(p.dataKey);
+
+          // Change from previous data point (scan backwards for last known value)
+          let prevChange: number | null = null;
+          let prevVal: number | null = null;
+          if (dateIdx > 0) {
+            for (let j = dateIdx - 1; j >= 0; j--) {
+              const v = chartData[j][p.dataKey];
+              if (typeof v === "number") { prevVal = v; prevChange = currentVal - v; break; }
+            }
+          }
+
+          // Change from first data point for this line
+          let fromStart: number | null = null;
+          let firstVal: number | null = null;
+          for (const pt of chartData) {
+            const v = pt[p.dataKey];
+            if (typeof v === "number") { firstVal = v; fromStart = currentVal - v; break; }
+          }
+
+          // Overall (start-to-end) increase from increases map
+          const overallInc = increases?.get(p.dataKey);
+
           return (
-            <div key={i} style={{ display: "flex", justifyContent: "space-between", gap: 12, marginBottom: 3, alignItems: "baseline" }}>
-              <span style={{ color: p.color, fontWeight: 500, fontSize: 11, flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</span>
-              <span style={{ color: "var(--text-primary)", fontWeight: 600, whiteSpace: "nowrap" }}>
-                {fmtVal(p.value ?? 0, metric)}
-              </span>
-              {inc != null && (
-                <span style={{ fontSize: 10, fontWeight: 600, whiteSpace: "nowrap", color: inc >= 0 ? "#16a34a" : "#dc2626" }}>
-                  {fmtIncrease(inc, metric, incMode)}
-                </span>
-              )}
+            <div key={i} style={{
+              marginBottom: i < filteredPayload.length - 1 ? 8 : 0,
+              paddingBottom: i < filteredPayload.length - 1 ? 8 : 0,
+              borderBottom: i < filteredPayload.length - 1 ? "1px solid var(--border-light)" : "none",
+            }}>
+              {/* Line name + rank */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8, marginBottom: 3 }}>
+                <span style={{ color: p.color, fontWeight: 600, fontSize: 11, flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</span>
+                {rank != null && !activeLine && (
+                  <span style={{ fontSize: 10, color: "var(--text-muted)", whiteSpace: "nowrap" }}>#{rank}</span>
+                )}
+              </div>
+              {/* Current value */}
+              <div style={{ fontWeight: 700, fontSize: 13, color: "var(--text-primary)", marginBottom: 4 }}>
+                {fmtVal(currentVal, metric)}
+              </div>
+              {/* 3 interval changes */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                {prevChange != null && prevVal != null && (
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+                    <span style={{ fontSize: 10, color: "var(--text-muted)" }}>vs prev</span>
+                    <span style={{ fontSize: 10, fontWeight: 600, color: prevChange >= 0 ? "#16a34a" : "#dc2626" }}>
+                      {fmtChange(prevChange, prevVal)}
+                    </span>
+                  </div>
+                )}
+                {fromStart != null && firstVal != null && prevVal !== firstVal && (
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+                    <span style={{ fontSize: 10, color: "var(--text-muted)" }}>from start</span>
+                    <span style={{ fontSize: 10, fontWeight: 600, color: fromStart >= 0 ? "#16a34a" : "#dc2626" }}>
+                      {fmtChange(fromStart, firstVal)}
+                    </span>
+                  </div>
+                )}
+                {overallInc != null && (
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+                    <span style={{ fontSize: 10, color: "var(--text-muted)" }}>overall</span>
+                    <span style={{ fontSize: 10, fontWeight: 600, color: overallInc >= 0 ? "#16a34a" : "#dc2626" }}>
+                      {fmtIncrease(overallInc, metric, incMode)}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
           );
         })}
@@ -495,13 +577,28 @@ function ChartPanel({
           <ResponsiveContainer width="100%" height={chartHeight}>
             <LineChart
               data={chartData}
-              margin={{ top: 10, right: 30, bottom: 20, left: 60 }}
+              margin={{ top: 10, right: 30, bottom: 36, left: 60 }}
               onMouseLeave={() => { if (!lockedLine) setHoveredLine(null); }}
             >
               <CartesianGrid strokeDasharray="4 4" stroke="rgba(0,0,0,0.05)" vertical={false} />
               <XAxis
-                dataKey="date" tickFormatter={fmtDate}
-                tick={{ fontSize: 11, fill: "#888", fontFamily: CHART_FONT }}
+                dataKey="date"
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                tick={({ x, y, payload }: any) => {
+                  const datasets = dateDatasets?.get(payload.value as string) ?? [];
+                  const dsLabel  = datasets.join(", ");
+                  const dateLabel = fmtDate(payload.value as string);
+                  return (
+                    <g>
+                      {dsLabel && (
+                        <text x={x} y={y} dy={10} textAnchor="middle"
+                          fontSize={9} fill="#bbb" fontFamily={CHART_FONT}>{dsLabel}</text>
+                      )}
+                      <text x={x} y={y} dy={dsLabel ? 22 : 14} textAnchor="middle"
+                        fontSize={11} fill="#888" fontFamily={CHART_FONT}>{dateLabel}</text>
+                    </g>
+                  );
+                }}
                 axisLine={{ stroke: "rgba(0,0,0,0.08)" }} tickLine={false}
               />
               <YAxis
@@ -516,7 +613,7 @@ function ChartPanel({
                 return (
                   <Line
                     key={lc.key} type="monotone" dataKey={lc.key} stroke={lc.color}
-                    strokeWidth={isDimmed ? 1.5 : isActive ? 3.5 : 2.5}
+                    strokeWidth={isDimmed ? 1.5 : isActive ? 4.5 : 3}
                     opacity={isDimmed ? 0.25 : 1}
                     dot={{ r: 4.5, strokeWidth: 0, fill: lc.color }}
                     activeDot={{
@@ -577,6 +674,50 @@ function DatasetSelector({
           <DatasetPill key={ds} label={ds} active={selectedDatasets.includes(ds)} onClick={() => onToggle(ds)} />
         ))}
       </div>
+    </div>
+  );
+}
+
+// ── Family-aware dataset selector (Work Activity Trends) ─────────────────────
+
+function DatasetSelectorWA({
+  allDatasets, selectedDatasets, onToggle, onAll, onNone,
+}: {
+  allDatasets: string[];
+  selectedDatasets: string[];
+  onToggle: (ds: string) => void;
+  onAll: () => void;
+  onNone: () => void;
+}) {
+  const hasAEI = selectedDatasets.some(isAEIFamily);
+  const hasMCP = selectedDatasets.some(isMCPFamily);
+  const activeFamily: "aei" | "mcp" | null = hasAEI ? "aei" : hasMCP ? "mcp" : null;
+
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+        <ControlLabel>Datasets</ControlLabel>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button onClick={onAll}  style={{ fontSize: 10, color: "var(--brand)",      background: "none", border: "none", cursor: "pointer", padding: 0 }}>All</button>
+          <button onClick={onNone} style={{ fontSize: 10, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", padding: 0 }}>None</button>
+        </div>
+      </div>
+      <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+        {allDatasets.map((ds) => {
+          const hidden = activeFamily === "aei" ? isMCPFamily(ds) : activeFamily === "mcp" ? isAEIFamily(ds) : false;
+          if (hidden) return null;
+          return (
+            <DatasetPill key={ds} label={ds} active={selectedDatasets.includes(ds)} onClick={() => onToggle(ds)} />
+          );
+        })}
+      </div>
+      {activeFamily && (
+        <p style={{ fontSize: 11, color: "var(--text-muted)", margin: "6px 0 0" }}>
+          {activeFamily === "aei"
+            ? "AEI selected — MCP/Microsoft hidden (different ECO baseline)"
+            : "MCP/Microsoft selected — AEI hidden (different ECO baseline)"}
+        </p>
+      )}
     </div>
   );
 }
@@ -656,30 +797,32 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
     [rawChartData, rawLineConfigs, metric, incMode],
   );
 
-  // Apply sort-by-increase: sort full pool, then slice to topN
-  const sortedCats = useMemo(() => {
-    if (sortMode !== "increase" || !allIncreases) return allCats.slice(0, topN);
+  // Full sorted pool (no topN slice) — used for search so categories beyond topN are reachable
+  const sortedAllCats = useMemo(() => {
+    if (sortMode !== "increase" || !allIncreases) return allCats;
     const getInc = (cat: string) => {
-      // For individual mode the keys are "ds — cat"; aggregate mode keys are just the cat name
       let max = -Infinity;
       allIncreases.forEach((v, key) => {
         if (key === cat || key.endsWith(` — ${cat}`)) max = Math.max(max, v);
       });
       return max === -Infinity ? -Infinity : max;
     };
-    return [...allCats].sort((a, b) => getInc(b) - getInc(a)).slice(0, topN);
-  }, [allCats, topN, sortMode, allIncreases]);
+    return [...allCats].sort((a, b) => getInc(b) - getInc(a));
+  }, [allCats, sortMode, allIncreases]);
 
-  // Apply search filter
+  // Top-N slice for chart display when no search is active
+  const sortedCats = useMemo(() => sortedAllCats.slice(0, topN), [sortedAllCats, topN]);
+
+  // Search in full sorted pool so categories beyond topN can be found
   const shownCats = useMemo(() => {
     const q = trendSearch.trim().toLowerCase();
     if (!q) return sortedCats;
-    const idx = sortedCats.findIndex((c) => c.toLowerCase().includes(q));
+    const idx = sortedAllCats.findIndex((c) => c.toLowerCase().includes(q));
     if (idx < 0) return [];
     const start = Math.max(0, idx - ctxSize);
-    const end   = Math.min(sortedCats.length, idx + ctxSize + 1);
-    return sortedCats.slice(start, end);
-  }, [sortedCats, trendSearch, ctxSize]);
+    const end   = Math.min(sortedAllCats.length, idx + ctxSize + 1);
+    return sortedAllCats.slice(start, end);
+  }, [sortedCats, sortedAllCats, trendSearch, ctxSize]);
 
   // Re-build chart data from shownCats
   const { chartData, lineConfigs } = result
@@ -692,6 +835,21 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
     () => lineConfigs.length > 0 ? computeIncreases(chartData, lineConfigs, metric, incMode) : null,
     [chartData, lineConfigs, metric, incMode],
   );
+
+  // Build date → dataset name(s) map for x-axis labels
+  const dateDatasets = useMemo(() => {
+    if (!result) return undefined;
+    const map = new Map<string, string[]>();
+    result.series.forEach((s: TrendSeries) => {
+      s.data_points
+        .filter((dp) => selectedDatasets.includes(dp.dataset))
+        .forEach((dp) => {
+          if (!map.has(dp.date)) map.set(dp.date, []);
+          if (!map.get(dp.date)!.includes(dp.dataset)) map.get(dp.date)!.push(dp.dataset);
+        });
+    });
+    return map;
+  }, [result, selectedDatasets]);
 
   return (
     <>
@@ -762,64 +920,62 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
           </div>
         </div>
 
-        {/* Row 4 — Sort + Search (only shown when result is loaded) */}
-        {result && (
-          <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
+        {/* Row 4 — Sort + Search (always visible) */}
+        <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
+          <div>
+            <ControlLabel>Sort</ControlLabel>
+            <SegmentedControl
+              options={[
+                { value: "value"    as SortMode, label: "By value"    },
+                { value: "increase" as SortMode, label: "By increase" },
+              ]}
+              value={sortMode} onChange={setSortMode}
+            />
+          </div>
+          {sortMode === "increase" && (
             <div>
-              <ControlLabel>Sort</ControlLabel>
+              <ControlLabel>Increase type</ControlLabel>
               <SegmentedControl
-                options={[
-                  { value: "value"    as SortMode, label: "By value"    },
-                  { value: "increase" as SortMode, label: "By increase" },
-                ]}
-                value={sortMode} onChange={setSortMode}
+                options={[{ value: "abs" as IncMode, label: "Absolute" }, { value: "pct" as IncMode, label: "% change" }]}
+                value={incMode} onChange={setIncMode}
               />
             </div>
-            {sortMode === "increase" && (
-              <div>
-                <ControlLabel>Increase type</ControlLabel>
-                <SegmentedControl
-                  options={[{ value: "abs" as IncMode, label: "Absolute" }, { value: "pct" as IncMode, label: "% change" }]}
-                  value={incMode} onChange={setIncMode}
-                />
-              </div>
-            )}
-            {/* Search */}
-            <div>
-              <ControlLabel>Search category</ControlLabel>
-              <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-                <input
-                  type="text" placeholder="Filter categories…" value={trendSearch}
-                  onChange={(e) => setTrendSearch(e.target.value)}
-                  onFocus={() => { searchFocused.current = true; }}
-                  onBlur={() => { searchFocused.current = false; }}
-                  style={{
-                    fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
-                    padding: "5px 26px 5px 8px", background: "var(--bg-surface)",
-                    color: "var(--text-primary)", width: 160, height: 31, outline: "none",
-                    transition: "border-color 0.15s",
-                  }}
-                  onMouseOver={(e) => (e.currentTarget.style.borderColor = "var(--brand)")}
-                  onMouseOut={(e)  => (e.currentTarget.style.borderColor = "var(--border)")}
-                />
-                {trendSearch && (
-                  <button onClick={() => setTrendSearch("")}
-                    style={{ position: "absolute", right: 6, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
-                )}
-              </div>
+          )}
+          {/* Search */}
+          <div>
+            <ControlLabel>Search category</ControlLabel>
+            <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+              <input
+                type="text" placeholder="Filter categories…" value={trendSearch}
+                onChange={(e) => setTrendSearch(e.target.value)}
+                onFocus={() => { searchFocused.current = true; }}
+                onBlur={() => { searchFocused.current = false; }}
+                style={{
+                  fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
+                  padding: "5px 26px 5px 8px", background: "var(--bg-surface)",
+                  color: "var(--text-primary)", width: 160, height: 31, outline: "none",
+                  transition: "border-color 0.15s",
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.borderColor = "var(--brand)")}
+                onMouseOut={(e)  => (e.currentTarget.style.borderColor = "var(--border)")}
+              />
+              {trendSearch && (
+                <button onClick={() => setTrendSearch("")}
+                  style={{ position: "absolute", right: 6, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
+              )}
             </div>
-            {trendSearch && (
-              <div>
-                <ControlLabel>Context ±</ControlLabel>
-                <SegmentedControl
-                  options={[{ value: "3" as never, label: "3" }, { value: "5" as never, label: "5" }, { value: "10" as never, label: "10" }]}
-                  value={String(ctxSize) as never}
-                  onChange={(v) => setCtxSize(Number(v))}
-                />
-              </div>
-            )}
           </div>
-        )}
+          {trendSearch && (
+            <div>
+              <ControlLabel>Context ±</ControlLabel>
+              <SegmentedControl
+                options={[{ value: "3" as never, label: "3" }, { value: "5" as never, label: "5" }, { value: "10" as never, label: "10" }]}
+                value={String(ctxSize) as never}
+                onChange={(v) => setCtxSize(Number(v))}
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       <div style={{ marginTop: 24 }}>
@@ -830,6 +986,7 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
           incMode={incMode}
           loading={loading} error={error} hasResult={!!result}
           lockedLine={lockedLine} setLockedLine={setLockedLine}
+          dateDatasets={dateDatasets}
         />
       </div>
     </>
@@ -903,8 +1060,9 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
     [rawChartData, rawLineConfigs, metric, incMode],
   );
 
-  const sortedCats = useMemo(() => {
-    if (sortMode !== "increase" || !allIncreases) return allCats.slice(0, topN);
+  // Full sorted pool (no topN) — so search can find categories beyond topN
+  const sortedAllCats = useMemo(() => {
+    if (sortMode !== "increase" || !allIncreases) return allCats;
     const getInc = (cat: string) => {
       let max = -Infinity;
       allIncreases.forEach((v, key) => {
@@ -912,18 +1070,20 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
       });
       return max === -Infinity ? -Infinity : max;
     };
-    return [...allCats].sort((a, b) => getInc(b) - getInc(a)).slice(0, topN);
-  }, [allCats, topN, sortMode, allIncreases]);
+    return [...allCats].sort((a, b) => getInc(b) - getInc(a));
+  }, [allCats, sortMode, allIncreases]);
+
+  const sortedCats = useMemo(() => sortedAllCats.slice(0, topN), [sortedAllCats, topN]);
 
   const shownCats = useMemo(() => {
     const q = trendSearch.trim().toLowerCase();
     if (!q) return sortedCats;
-    const idx = sortedCats.findIndex((c) => c.toLowerCase().includes(q));
+    const idx = sortedAllCats.findIndex((c) => c.toLowerCase().includes(q));
     if (idx < 0) return [];
     const start = Math.max(0, idx - ctxSize);
-    const end   = Math.min(sortedCats.length, idx + ctxSize + 1);
-    return sortedCats.slice(start, end);
-  }, [sortedCats, trendSearch, ctxSize]);
+    const end   = Math.min(sortedAllCats.length, idx + ctxSize + 1);
+    return sortedAllCats.slice(start, end);
+  }, [sortedCats, sortedAllCats, trendSearch, ctxSize]);
 
   const { chartData, lineConfigs } = result
     ? lineMode === "individual"
@@ -936,6 +1096,21 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
     [chartData, lineConfigs, metric, incMode],
   );
 
+  // Build date → dataset name(s) map for x-axis labels
+  const dateDatasets = useMemo(() => {
+    if (!result) return undefined;
+    const map = new Map<string, string[]>();
+    result.series.forEach((s: TrendSeries) => {
+      s.data_points
+        .filter((dp) => selectedDatasets.includes(dp.dataset))
+        .forEach((dp) => {
+          if (!map.has(dp.date)) map.set(dp.date, []);
+          if (!map.get(dp.date)!.includes(dp.dataset)) map.get(dp.date)!.push(dp.dataset);
+        });
+    });
+    return map;
+  }, [result, selectedDatasets]);
+
   const levelLabels: Record<string, string> = {
     gwa: "General Work Activities", iwa: "Intermediate Work Activities", dwa: "Detailed Work Activities",
   };
@@ -944,7 +1119,7 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
     <>
       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
 
-        <DatasetSelector
+        <DatasetSelectorWA
           allDatasets={allDatasets} selectedDatasets={selectedDatasets}
           onToggle={(ds) => setSelectedDatasets((p) => p.includes(ds) ? p.filter((x) => x !== ds) : [...p, ds])}
           onAll={() => setSelectedDatasets(allDatasets)}
@@ -1012,62 +1187,56 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
           </div>
         </div>
 
-        {/* Row 4 — Sort + Search */}
-        {result && (
-          <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
+        {/* Row 4 — Sort + Search (always visible) */}
+        <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
+          <div>
+            <ControlLabel>Sort</ControlLabel>
+            <SegmentedControl
+              options={[{ value: "value" as SortMode, label: "By value" }, { value: "increase" as SortMode, label: "By increase" }]}
+              value={sortMode} onChange={setSortMode}
+            />
+          </div>
+          {sortMode === "increase" && (
             <div>
-              <ControlLabel>Sort</ControlLabel>
+              <ControlLabel>Increase type</ControlLabel>
               <SegmentedControl
-                options={[{ value: "value" as SortMode, label: "By value" }, { value: "increase" as SortMode, label: "By increase" }]}
-                value={sortMode} onChange={setSortMode}
+                options={[{ value: "abs" as IncMode, label: "Absolute" }, { value: "pct" as IncMode, label: "% change" }]}
+                value={incMode} onChange={setIncMode}
               />
             </div>
-            {sortMode === "increase" && (
-              <div>
-                <ControlLabel>Increase type</ControlLabel>
-                <SegmentedControl
-                  options={[{ value: "abs" as IncMode, label: "Absolute" }, { value: "pct" as IncMode, label: "% change" }]}
-                  value={incMode} onChange={setIncMode}
-                />
-              </div>
-            )}
-            <div>
-              <ControlLabel>Search category</ControlLabel>
-              <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-                <input
-                  type="text" placeholder="Filter categories…" value={trendSearch}
-                  onChange={(e) => setTrendSearch(e.target.value)}
-                  style={{
-                    fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
-                    padding: "5px 26px 5px 8px", background: "var(--bg-surface)",
-                    color: "var(--text-primary)", width: 160, height: 31, outline: "none",
-                  }}
-                  onMouseOver={(e) => (e.currentTarget.style.borderColor = "var(--brand)")}
-                  onMouseOut={(e)  => (e.currentTarget.style.borderColor = "var(--border)")}
-                />
-                {trendSearch && (
-                  <button onClick={() => setTrendSearch("")}
-                    style={{ position: "absolute", right: 6, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
-                )}
-              </div>
+          )}
+          <div>
+            <ControlLabel>Search category</ControlLabel>
+            <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+              <input
+                type="text" placeholder="Filter categories…" value={trendSearch}
+                onChange={(e) => setTrendSearch(e.target.value)}
+                style={{
+                  fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
+                  padding: "5px 26px 5px 8px", background: "var(--bg-surface)",
+                  color: "var(--text-primary)", width: 160, height: 31, outline: "none",
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.borderColor = "var(--brand)")}
+                onMouseOut={(e)  => (e.currentTarget.style.borderColor = "var(--border)")}
+              />
+              {trendSearch && (
+                <button onClick={() => setTrendSearch("")}
+                  style={{ position: "absolute", right: 6, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
+              )}
             </div>
-            {trendSearch && (
-              <div>
-                <ControlLabel>Context ±</ControlLabel>
-                <SegmentedControl
-                  options={[{ value: "3" as never, label: "3" }, { value: "5" as never, label: "5" }, { value: "10" as never, label: "10" }]}
-                  value={String(ctxSize) as never}
-                  onChange={(v) => setCtxSize(Number(v))}
-                />
-              </div>
-            )}
           </div>
-        )}
+          {trendSearch && (
+            <div>
+              <ControlLabel>Context ±</ControlLabel>
+              <SegmentedControl
+                options={[{ value: "3" as never, label: "3" }, { value: "5" as never, label: "5" }, { value: "10" as never, label: "10" }]}
+                value={String(ctxSize) as never}
+                onChange={(v) => setCtxSize(Number(v))}
+              />
+            </div>
+          )}
+        </div>
       </div>
-
-      <p style={{ fontSize: 11, color: "var(--text-muted)", margin: "8px 0 0" }}>
-        AEI series uses ECO 2015 baseline · MCP/Microsoft uses ECO 2025 — lines are not directly comparable
-      </p>
 
       <div style={{ marginTop: 16 }}>
         <ChartPanel
@@ -1077,6 +1246,7 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
           incMode={incMode}
           loading={loading} error={error} hasResult={!!result}
           lockedLine={lockedLine} setLockedLine={setLockedLine}
+          dateDatasets={dateDatasets}
         />
       </div>
     </>

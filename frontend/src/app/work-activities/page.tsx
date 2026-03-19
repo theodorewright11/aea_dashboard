@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import type { WorkActivitiesResponse, ConfigResponse } from "@/lib/types";
+import type { WorkActivitiesResponse, ConfigResponse, ActivityGroup } from "@/lib/types";
 import { fetchConfig, fetchWorkActivities } from "@/lib/api";
 import WorkActivitiesPanel from "@/components/WorkActivitiesPanel";
 import { GROUP_A_COLOR, GROUP_B_COLOR } from "@/lib/theme";
@@ -27,10 +27,10 @@ function pendingToConfigSummary(p: WAGroupPending, groupId: "A" | "B"): string[]
   const dsLabel = p.datasets.length === 0 ? "None"
     : p.datasets.length === 1 ? p.datasets[0]
     : `${p.datasets.join(", ")} (${p.combineMethod})`;
-  const line1 = `Group ${groupId}  ·  Datasets: ${dsLabel}  ·  Activity: ${p.activityLevel.toUpperCase()}  ·  Method: ${p.method === "freq" ? "Frequency" : "Importance"}  ·  Geo: ${p.geo === "nat" ? "National" : "Utah"}`;
   const physLabel = p.physicalMode === "all" ? "All tasks" : p.physicalMode === "exclude" ? "Non-physical only" : "Physical only";
   const augLabel  = p.useAutoAug ? `Auto-aug: On${p.useAdjMean ? " (adj)" : ""}` : "Auto-aug: Off";
-  const line2 = `${physLabel}  ·  ${augLabel}  ·  Top ${p.topN}${p.searchQuery ? `  ·  Search: "${p.searchQuery}"` : ""}`;
+  const line1 = `Group ${groupId}  ·  Datasets: ${dsLabel}  ·  Activity: ${p.activityLevel.toUpperCase()}  ·  Method: ${p.method === "freq" ? "Frequency" : "Importance"}  ·  Geo: ${p.geo === "nat" ? "National" : "Utah"}`;
+  const line2 = `${physLabel}  ·  ${augLabel}  ·  Top ${p.topN}  ·  Sort: ${p.sortBy}${p.searchQuery ? `  ·  Search: "${p.searchQuery}"` : ""}`;
   return [line1, line2];
 }
 
@@ -45,12 +45,17 @@ function defaultPending(datasets: string[]): WAGroupPending {
   };
 }
 
-// Mutual exclusivity helpers
-function isMixed(ds: string[]) {
-  const hasAEI = ds.some((d) => d.startsWith("AEI"));
-  const hasMCP = ds.some((d) => d.startsWith("MCP") || d === "Microsoft");
-  return hasAEI && hasMCP;
+// Family helpers — AEI and MCP/Microsoft cannot be mixed
+function getFamily(datasets: string[]): "aei" | "mcp" | "none" {
+  const hasAEI = datasets.some((d) => d.startsWith("AEI"));
+  const hasMCP = datasets.some((d) => d.startsWith("MCP") || d === "Microsoft");
+  if (hasAEI && !hasMCP) return "aei";
+  if (hasMCP && !hasAEI) return "mcp";
+  return "none";  // empty or mixed (shouldn't happen with UI enforcement)
 }
+
+function isAEIFamily(name: string) { return name.startsWith("AEI"); }
+function isMCPFamily(name: string) { return name.startsWith("MCP") || name === "Microsoft"; }
 
 // ── Shared sub-components ──────────────────────────────────────────────────────
 
@@ -100,8 +105,56 @@ function SegBtn<T extends string>({
   );
 }
 
-function DatasetDropdown({
-  label, color, datasets, availability, selected, combineMethod, onChange, onChangeCombine,
+// ── Info tooltip ───────────────────────────────────────────────────────────────
+
+function InfoTooltip({ text }: { text: string }) {
+  const [show, setShow] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  return (
+    <div ref={ref} style={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
+      <span
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        style={{
+          display: "inline-flex", alignItems: "center", justifyContent: "center",
+          width: 14, height: 14, borderRadius: "50%",
+          background: "var(--border)", color: "var(--text-muted)",
+          fontSize: 9, fontWeight: 700, cursor: "default",
+          flexShrink: 0, marginLeft: 4,
+        }}
+      >?</span>
+      {show && (
+        <div style={{
+          position: "fixed",
+          zIndex: 9999,
+          background: "#1a1a1a", color: "#fff",
+          fontSize: 11, lineHeight: 1.5,
+          padding: "6px 10px", borderRadius: 6,
+          maxWidth: 220, pointerEvents: "none",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+          left: (() => {
+            if (!ref.current) return 0;
+            const rect = ref.current.getBoundingClientRect();
+            const tipW = 220;
+            return Math.min(rect.left + 18, window.innerWidth - tipW - 8);
+          })(),
+          top: (() => {
+            if (!ref.current) return 0;
+            const rect = ref.current.getBoundingClientRect();
+            return rect.top - 4;
+          })(),
+          transform: "translateY(-100%)",
+        }}>{text}</div>
+      )}
+    </div>
+  );
+}
+
+// ── Dataset pills with family mutual exclusivity ───────────────────────────────
+
+function DatasetPillsWA({
+  label, color, datasets, availability, selected, combineMethod,
+  onChange, onChangeCombine,
 }: {
   label: string;
   color: string;
@@ -112,110 +165,99 @@ function DatasetDropdown({
   onChange: (v: string[]) => void;
   onChangeCombine: (v: "Average" | "Max") => void;
 }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  // Determine which family is currently locked in
+  const activeFamily = getFamily(selected);
 
-  useEffect(() => {
-    if (!open) return;
-    function handle(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+  function toggle(name: string) {
+    if (selected.includes(name)) {
+      onChange(selected.filter((d) => d !== name));
+    } else {
+      // If adding would mix families, clear the other family first
+      const newSelected = [...selected, name];
+      const hasAEI = newSelected.some(isAEIFamily);
+      const hasMCP = newSelected.some(isMCPFamily);
+      if (hasAEI && hasMCP) {
+        // Adding this dataset would mix — keep only same family
+        if (isAEIFamily(name)) onChange(newSelected.filter((d) => !isMCPFamily(d)));
+        else onChange(newSelected.filter((d) => !isAEIFamily(d)));
+      } else {
+        onChange(newSelected);
+      }
     }
-    document.addEventListener("mousedown", handle);
-    return () => document.removeEventListener("mousedown", handle);
-  }, [open]);
+  }
 
-  const summary = selected.length === 0 ? "None"
-    : selected.length === 1 ? selected[0]
-    : `${selected.length} datasets`;
+  // Show note when a family is active
+  const familyNote = activeFamily === "aei"
+    ? "AEI selected — MCP/Microsoft hidden (different ECO baseline)"
+    : activeFamily === "mcp"
+    ? "MCP/Microsoft selected — AEI hidden (different ECO baseline)"
+    : null;
 
   return (
-    <div ref={ref} style={{ position: "relative" }}>
-      <ControlLabel>{label}</ControlLabel>
-      <button
-        onClick={() => setOpen((o) => !o)}
-        style={{
-          display: "flex", alignItems: "center", gap: 6,
-          background: "var(--bg-surface)", border: "1px solid var(--border)",
-          borderRadius: 7, padding: "5px 10px",
-          fontSize: 12, fontWeight: 500, color: "var(--text-primary)",
-          cursor: "pointer", whiteSpace: "nowrap", minWidth: 132,
-          transition: "border-color 0.12s",
-        }}
-        onMouseOver={(e) => (e.currentTarget.style.borderColor = "var(--brand)")}
-        onMouseOut={(e)  => (e.currentTarget.style.borderColor = "var(--border)")}
-      >
-        <span style={{ width: 8, height: 8, borderRadius: "50%", background: color, flexShrink: 0 }} />
-        <span style={{ flex: 1, textAlign: "left" as const }}>{summary}</span>
-        <span style={{ fontSize: 9, color: "var(--text-muted)" }}>▾</span>
-      </button>
-
-      {open && (
-        <div style={{
-          position: "absolute", top: "calc(100% + 4px)", left: 0, zIndex: 200,
-          background: "var(--bg-surface)", border: "1px solid var(--border)",
-          borderRadius: 8, padding: "8px", minWidth: 192,
-          boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
-        }}>
-          {datasets.map((name) => {
-            const avail = availability[name];
-            return (
-              <label
-                key={name}
+    <div>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 5 }}>
+        <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", margin: 0 }}>
+          {label}
+        </p>
+        <InfoTooltip text="AEI and MCP/Microsoft cannot be mixed — they use different ECO baselines. Selecting one family hides the other." />
+        <button onClick={() => {
+          // All available in current family (or all if none selected)
+          const avail = datasets.filter((d) => availability[d]);
+          if (activeFamily === "aei") onChange(avail.filter(isAEIFamily));
+          else if (activeFamily === "mcp") onChange(avail.filter(isMCPFamily));
+          else onChange(avail);
+        }} style={{ fontSize: 10, color: "var(--brand)", background: "none", border: "none", cursor: "pointer", padding: "0 2px", fontWeight: 600 }}>All</button>
+        <button onClick={() => onChange([])} style={{ fontSize: 10, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", padding: "0 2px" }}>None</button>
+        {selected.length > 1 && (
+          <>
+            <span style={{ width: 1, height: 12, background: "var(--border)", display: "inline-block" }} />
+            {(["Average", "Max"] as const).map((v) => (
+              <button
+                key={v}
+                onClick={() => onChangeCombine(v)}
                 style={{
-                  display: "flex", alignItems: "center", gap: 7,
-                  padding: "4px 6px", cursor: avail ? "pointer" : "default", borderRadius: 4,
+                  fontSize: 10, padding: "2px 7px", borderRadius: 4,
+                  border: `1.5px solid ${combineMethod === v ? "var(--brand)" : "var(--border)"}`,
+                  background: combineMethod === v ? "var(--brand-light)" : "transparent",
+                  color: combineMethod === v ? "var(--brand)" : "var(--text-secondary)",
+                  cursor: "pointer", fontWeight: combineMethod === v ? 600 : 400,
                 }}
-              >
-                <input
-                  type="checkbox"
-                  checked={selected.includes(name)}
-                  disabled={!avail}
-                  onChange={(e) => {
-                    const next = e.target.checked ? [...selected, name] : selected.filter((d) => d !== name);
-                    onChange(next);
-                  }}
-                  style={{ accentColor: color, flexShrink: 0 }}
-                />
-                <span style={{
-                  fontSize: 12,
-                  color: avail ? "var(--text-primary)" : "var(--text-muted)",
-                  textDecoration: avail ? "none" : "line-through",
-                }}>
-                  {name}{!avail ? " (unavailable)" : ""}
-                </span>
-              </label>
-            );
-          })}
-          {selected.length > 1 && (
-            <>
-              <div style={{ borderTop: "1px solid var(--border-light)", margin: "6px 0" }} />
-              <div style={{ padding: "0 6px 2px" }}>
-                <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 5px" }}>
-                  Combine by
-                </p>
-                <div style={{ display: "flex", gap: 5 }}>
-                  {(["Average", "Max"] as const).map((v) => (
-                    <button
-                      key={v}
-                      onClick={() => onChangeCombine(v)}
-                      style={{
-                        padding: "3px 9px", fontSize: 11, borderRadius: 5,
-                        border: `1.5px solid ${combineMethod === v ? "var(--brand)" : "var(--border)"}`,
-                        background: combineMethod === v ? "var(--brand-light)" : "transparent",
-                        color: combineMethod === v ? "var(--brand)" : "var(--text-secondary)",
-                        cursor: "pointer", fontWeight: combineMethod === v ? 600 : 400,
-                        transition: "all 0.1s",
-                      }}
-                    >
-                      {v}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
-        </div>
+              >{v}</button>
+            ))}
+          </>
+        )}
+      </div>
+      {familyNote && (
+        <p style={{ fontSize: 10, color: "var(--text-muted)", margin: "0 0 5px", fontStyle: "italic" }}>
+          {familyNote}
+        </p>
       )}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+        {datasets.map((name) => {
+          const avail = availability[name];
+          const active = selected.includes(name);
+          // Hide datasets from the other family when one family is locked in
+          const hidden = (activeFamily === "aei" && isMCPFamily(name)) ||
+                         (activeFamily === "mcp" && isAEIFamily(name));
+          if (hidden) return null;
+          return (
+            <button
+              key={name}
+              onClick={() => avail && toggle(name)}
+              style={{
+                fontSize: 11, padding: "4px 9px", borderRadius: 6,
+                border: `1.5px solid ${active ? color : "var(--border)"}`,
+                background: active ? color + "18" : "transparent",
+                color: active ? color : avail ? "var(--text-secondary)" : "var(--text-muted)",
+                cursor: avail ? "pointer" : "default",
+                fontWeight: active ? 600 : 400,
+                textDecoration: avail ? "none" : "line-through",
+                transition: "all 0.12s", whiteSpace: "nowrap",
+              }}
+            >{name}</button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -232,45 +274,35 @@ function WAGroupSettingsPanel({
   config: ConfigResponse;
 }) {
   const hasMCP  = pending.datasets.some((d) => d.startsWith("MCP"));
-  const mixed   = isMixed(pending.datasets);
 
   function set<K extends keyof WAGroupPending>(k: K, v: WAGroupPending[K]) {
     setPending({ ...pending, [k]: v });
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-      {/* Mutual exclusivity warning */}
-      {mixed && (
-        <div style={{
-          background: "#fffbeb", border: "1px solid #fbbf24",
-          borderRadius: 7, padding: "6px 12px",
-          fontSize: 12, color: "#92400e",
-          display: "flex", alignItems: "center", gap: 6,
-        }}>
-          <span>⚠</span>
-          <span>AEI-family and MCP/Microsoft cannot be combined in the same group — they use different ECO baselines.</span>
-        </div>
-      )}
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      {/* Dataset pills with mutual exclusivity */}
+      <DatasetPillsWA
+        label={`Group ${groupId} datasets`}
+        color={color}
+        datasets={config.datasets}
+        availability={config.dataset_availability}
+        selected={pending.datasets}
+        combineMethod={pending.combineMethod}
+        onChange={(v) => set("datasets", v)}
+        onChangeCombine={(v) => set("combineMethod", v)}
+      />
 
       <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
-
-        <DatasetDropdown
-          label={`Group ${groupId} datasets`}
-          color={color}
-          datasets={config.datasets}
-          availability={config.dataset_availability}
-          selected={pending.datasets}
-          combineMethod={pending.combineMethod}
-          onChange={(v) => set("datasets", v)}
-          onChangeCombine={(v) => set("combineMethod", v)}
-        />
 
         <div style={{ width: 1, height: 28, background: "var(--border)", alignSelf: "flex-end", marginBottom: 1 }} />
 
         {/* Activity level */}
         <div>
-          <ControlLabel>Activity level</ControlLabel>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <ControlLabel>Activity level</ControlLabel>
+            <InfoTooltip text="GWA: General Work Activities (broadest). IWA: Intermediate Work Activities. DWA: Detailed Work Activities (most granular)." />
+          </div>
           <SegBtn
             options={[
               { value: "gwa", label: "GWA" },
@@ -283,7 +315,10 @@ function WAGroupSettingsPanel({
         </div>
 
         <div>
-          <ControlLabel>Method</ControlLabel>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <ControlLabel>Method</ControlLabel>
+            <InfoTooltip text="Frequency: weights tasks by how often they're done (freq_mean). Importance: weights by relevance × 2^importance." />
+          </div>
           <SegBtn
             options={[{ value: "freq", label: "Freq" }, { value: "imp", label: "Imp" }]}
             value={pending.method}
@@ -292,7 +327,10 @@ function WAGroupSettingsPanel({
         </div>
 
         <div>
-          <ControlLabel>Geography</ControlLabel>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <ControlLabel>Geography</ControlLabel>
+            <InfoTooltip text="National: uses BLS OEWS national employment and wages. Utah: uses Utah-specific employment and wages." />
+          </div>
           <SegBtn
             options={[{ value: "nat", label: "National" }, { value: "ut", label: "Utah" }]}
             value={pending.geo}
@@ -302,7 +340,10 @@ function WAGroupSettingsPanel({
 
         {/* Search bar */}
         <div>
-          <ControlLabel>Search activity</ControlLabel>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <ControlLabel>Search activity</ControlLabel>
+            <InfoTooltip text="Find a specific activity. Results center around the match ± context rows. Updates chart immediately." />
+          </div>
           <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
             <input
               type="text"
@@ -333,7 +374,10 @@ function WAGroupSettingsPanel({
         {/* Context size or Top N */}
         {pending.searchQuery ? (
           <div>
-            <ControlLabel>Context ±</ControlLabel>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <ControlLabel>Context ±</ControlLabel>
+              <InfoTooltip text="How many rows above and below the matched activity to show." />
+            </div>
             <SegBtn
               options={[{ value: "5" as never, label: "5" }, { value: "10" as never, label: "10" }]}
               value={String(pending.contextSize) as never}
@@ -342,7 +386,10 @@ function WAGroupSettingsPanel({
           </div>
         ) : (
           <div>
-            <ControlLabel>Top {pending.topN}</ControlLabel>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <ControlLabel>Top {pending.topN}</ControlLabel>
+              <InfoTooltip text="Number of top activities to display. Updates immediately after run." />
+            </div>
             <input
               type="range" min={5} max={50} step={1} value={pending.topN}
               onChange={(e) => set("topN", Number(e.target.value))}
@@ -355,7 +402,10 @@ function WAGroupSettingsPanel({
 
         {/* Physical mode */}
         <div>
-          <ControlLabel>Tasks</ControlLabel>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <ControlLabel>Tasks</ControlLabel>
+            <InfoTooltip text="Filter tasks by physical nature. 'Physical only' includes tasks that require physical presence. 'No Phys' excludes them." />
+          </div>
           <SegBtn
             options={[
               { value: "all",     label: "All"       },
@@ -369,7 +419,10 @@ function WAGroupSettingsPanel({
 
         {/* Auto-aug toggle */}
         <div>
-          <ControlLabel>Auto-aug weight</ControlLabel>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <ControlLabel>Auto-aug weight</ControlLabel>
+            <InfoTooltip text="When On, multiplies each task's completion weight by its AI automatability score (auto_aug_mean / 5)." />
+          </div>
           <SegBtn
             options={[{ value: "false" as never, label: "Off" }, { value: "true" as never, label: "On" }]}
             value={String(pending.useAutoAug) as never}
@@ -380,7 +433,10 @@ function WAGroupSettingsPanel({
         {/* Adj mean — only when MCP selected and auto-aug on */}
         {hasMCP && pending.useAutoAug && (
           <div>
-            <ControlLabel>MCP adj mean</ControlLabel>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <ControlLabel>MCP adj mean</ControlLabel>
+              <InfoTooltip text="Use auto_aug_mean_adj for MCP datasets, which excludes flagged/unreliable ratings." />
+            </div>
             <SegBtn
               options={[{ value: "false" as never, label: "Off" }, { value: "true" as never, label: "On" }]}
               value={String(pending.useAdjMean) as never}
@@ -430,7 +486,7 @@ export default function WorkActivitiesPage() {
       method:           p.method,
       geo:              p.geo,
       aggLevel:         "major" as const,
-      topN:             p.topN,
+      topN:             999,   // fetch all; topN applied client-side in WorkActivitiesPanel
       sortBy:           p.sortBy,
       physicalMode:     p.physicalMode,
       useAutoAug:       p.useAutoAug,
@@ -441,10 +497,6 @@ export default function WorkActivitiesPage() {
       p: WAGroupPending,
       setError: (e: string | null) => void,
     ): Promise<WorkActivitiesResponse | null> => {
-      if (isMixed(p.datasets)) {
-        setError("Cannot mix AEI and MCP/Microsoft datasets in the same group — they use different ECO baselines.");
-        return null;
-      }
       if (!p.datasets.length) return null;
       try {
         return await fetchWorkActivities(makeSettings(p));
@@ -497,6 +549,15 @@ export default function WorkActivitiesPage() {
     if (activeGroup === "A") setPendingB(copy);
     else setPendingA(copy);
   }
+
+  // Full other-group summary
+  const physLabelOther = otherPending.physicalMode === "all" ? "All tasks"
+    : otherPending.physicalMode === "exclude" ? "No Phys" : "Phys only";
+  const augLabelOther = otherPending.useAutoAug
+    ? `Auto-aug On${otherPending.useAdjMean ? " (adj)" : ""}` : "Auto-aug Off";
+  const dsLabelOther = otherPending.datasets.length === 0 ? "none"
+    : otherPending.datasets.length === 1 ? otherPending.datasets[0]
+    : `${otherPending.datasets.length} datasets (${otherPending.combineMethod})`;
 
   return (
     <div style={{
@@ -557,7 +618,6 @@ export default function WorkActivitiesPage() {
             })}
           </div>
 
-          {/* Sync button */}
           <button
             onClick={syncToOther}
             title={`Copy Group ${activeGroup} settings to Group ${activeGroup === "A" ? "B" : "A"}`}
@@ -597,22 +657,25 @@ export default function WorkActivitiesPage() {
           config={config}
         />
 
-        {/* Other group summary */}
+        {/* Full other group summary */}
         <div style={{ marginTop: 8, fontSize: 11, color: "var(--text-muted)" }}>
           <span style={{
             display: "inline-flex", alignItems: "center", gap: 4,
-            padding: "2px 8px",
+            padding: "3px 10px",
             background: "var(--bg-surface)", border: "1px solid var(--border-light)", borderRadius: 4,
+            flexWrap: "wrap", rowGap: 2,
           }}>
-            <span style={{ width: 6, height: 6, borderRadius: "50%", background: activeGroup === "A" ? GROUP_B_COLOR : GROUP_A_COLOR }} />
-            Group {activeGroup === "A" ? "B" : "A"}:&nbsp;
-            {otherPending.datasets.length === 0 ? "no datasets"
-              : otherPending.datasets.length === 1 ? otherPending.datasets[0]
-              : `${otherPending.datasets.length} datasets`}
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: activeGroup === "A" ? GROUP_B_COLOR : GROUP_A_COLOR, flexShrink: 0 }} />
+            <strong style={{ fontWeight: 600 }}>Group {activeGroup === "A" ? "B" : "A"}:</strong>&nbsp;
+            {dsLabelOther}
             &nbsp;·&nbsp;{otherPending.activityLevel.toUpperCase()}
             &nbsp;·&nbsp;{otherPending.method === "freq" ? "Freq" : "Imp"}
             &nbsp;·&nbsp;{otherPending.geo === "nat" ? "National" : "Utah"}
-            {otherPending.searchQuery && ` · search: "${otherPending.searchQuery}"`}
+            &nbsp;·&nbsp;Top {otherPending.topN}
+            &nbsp;·&nbsp;Sort: {otherPending.sortBy}
+            &nbsp;·&nbsp;{physLabelOther}
+            &nbsp;·&nbsp;{augLabelOther}
+            {otherPending.searchQuery && `  ·  Search: "${otherPending.searchQuery}"`}
           </span>
         </div>
       </div>
@@ -636,6 +699,7 @@ export default function WorkActivitiesPage() {
             activityLevel={pendingA.activityLevel}
             searchQuery={pendingA.searchQuery}
             contextSize={pendingA.contextSize}
+            topN={pendingA.topN}
             configSummary={appliedPendingA ? pendingToConfigSummary(appliedPendingA, "A") : undefined}
           />
           <WorkActivitiesPanel
@@ -647,6 +711,7 @@ export default function WorkActivitiesPage() {
             activityLevel={pendingB.activityLevel}
             searchQuery={pendingB.searchQuery}
             contextSize={pendingB.contextSize}
+            topN={pendingB.topN}
             configSummary={appliedPendingB ? pendingToConfigSummary(appliedPendingB, "B") : undefined}
           />
         </div>

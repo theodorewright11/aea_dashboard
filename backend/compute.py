@@ -548,6 +548,11 @@ def _compute_wa_for_group(
     """
     Compute DWA/IWA/GWA metrics for a group of datasets sharing the same SOC taxonomy.
     Returns dict with keys "gwa", "iwa", "dwa" → list of activity row dicts.
+
+    Dedup strategy:
+    - n_tasks_per_occ uses (title, task_normalized) dedup — for emp_per_task allocation
+    - Each activity level uses (title, task_normalized, act_col) dedup — preserves all
+      DWA/IWA/GWA associations a task may have (a task can map to multiple DWAs)
     """
     method        = settings["method"]
     use_auto_aug  = settings["use_auto_aug"]
@@ -572,17 +577,20 @@ def _compute_wa_for_group(
 
     title_col = "title" if use_eco2015 else "title_current"
 
-    # Unique (title, task_normalized) pairs → one row per task per occupation
-    eco_unique = (
+    activity_cols = {
+        "gwa": "gwa_title",
+        "iwa": "iwa_title",
+        "dwa": "dwa_title",
+    }
+
+    # -- n_tasks per occ: (title, task_normalized) dedup only — for emp allocation
+    eco_task_dedup = (
         eco.groupby([title_col, "task_normalized"], sort=False)
         .first()
         .reset_index()
     )
-    eco_unique["eco_tc"] = compute_task_comp(eco_unique, method, False, False)
-
-    # Count unique tasks per occupation for employment allocation
     n_tasks_per_occ = (
-        eco_unique.groupby(title_col)["task_normalized"]
+        eco_task_dedup.groupby(title_col)["task_normalized"]
         .count()
         .reset_index(name="n_tasks")
     )
@@ -594,22 +602,30 @@ def _compute_wa_for_group(
         .reset_index()
     )
 
-    eco_unique = eco_unique.merge(n_tasks_per_occ, on=title_col, how="left")
-    eco_unique = eco_unique.merge(occ_emp_wage, on=title_col, how="left", suffixes=("", "_ow"))
-    for col in [emp_col, wage_col]:
-        if f"{col}_ow" in eco_unique.columns:
-            eco_unique[col] = eco_unique[f"{col}_ow"].fillna(eco_unique[col])
-            eco_unique.drop(columns=[f"{col}_ow"], inplace=True)
-
-    eco_unique["emp_per_task"] = (eco_unique[emp_col] / eco_unique["n_tasks"]).fillna(0.0)
+    # -- Pre-compute eco_for_act per activity level
+    # Each uses (title, task_normalized, act_col) dedup to preserve all DWA/IWA/GWA associations
+    eco_for_acts: dict[str, pd.DataFrame] = {}
+    for act_key, act_col in activity_cols.items():
+        if act_col not in eco.columns:
+            continue
+        eco_for_act = (
+            eco.groupby([title_col, "task_normalized", act_col], sort=False)
+            .first()
+            .reset_index()
+        )
+        eco_for_act["eco_tc"] = compute_task_comp(eco_for_act, method, False, False)
+        eco_for_act = eco_for_act.merge(n_tasks_per_occ, on=title_col, how="left")
+        eco_for_act = eco_for_act.merge(occ_emp_wage, on=title_col, how="left", suffixes=("", "_ow"))
+        for col in [emp_col, wage_col]:
+            ow = f"{col}_ow"
+            if ow in eco_for_act.columns:
+                eco_for_act[col] = eco_for_act[ow].fillna(eco_for_act[col])
+                eco_for_act.drop(columns=[ow], inplace=True)
+        eco_for_act["emp_per_task"] = (eco_for_act[emp_col] / eco_for_act["n_tasks"]).fillna(0.0)
+        eco_for_acts[act_key] = eco_for_act
 
     # -- Process each AI dataset
     per_dataset: dict[str, list] = {}
-    activity_cols = {
-        "gwa": "gwa_title",
-        "iwa": "iwa_title",
-        "dwa": "dwa_title",
-    }
 
     for name in dataset_names:
         meta = DATASETS.get(name)
@@ -621,36 +637,42 @@ def _compute_wa_for_group(
         if ai_raw.empty:
             continue
 
-        ai_title_col   = "title" if meta["is_aei"] else "title_current"
-        effective_adj  = use_adj_mean and meta["is_mcp"]
-
-        ai_unique = (
-            ai_raw.groupby([ai_title_col, "task_normalized"], sort=False)
-            .first()
-            .reset_index()
-        )
-        ai_unique["ai_tc"] = compute_task_comp(ai_unique, method, use_auto_aug, effective_adj)
-
-        merged = eco_unique.merge(
-            ai_unique[[ai_title_col, "task_normalized", "ai_tc"]].rename(
-                columns={ai_title_col: title_col}
-            ),
-            on=[title_col, "task_normalized"],
-            how="left",
-        )
-        merged["ai_tc"] = merged["ai_tc"].fillna(0.0)
-
-        eco_tc_safe = merged["eco_tc"].replace(0, np.nan)
-        merged["workers_contribution"] = (
-            (merged["ai_tc"] / eco_tc_safe) * merged["emp_per_task"]
-        ).fillna(0.0).clip(lower=0)
-        merged["wages_contribution"] = (
-            merged["workers_contribution"] * merged[wage_col].fillna(0.0)
-        )
+        ai_title_col  = "title" if meta["is_aei"] else "title_current"
+        effective_adj = use_adj_mean and meta["is_mcp"]
 
         for act_key, act_col in activity_cols.items():
-            if act_col not in merged.columns:
+            if act_key not in eco_for_acts:
                 continue
+            if act_col not in ai_raw.columns:
+                continue
+
+            eco_for_act = eco_for_acts[act_key]
+
+            # Dedup AI on (ai_title, task_normalized, act_col) to match eco dedup
+            ai_for_act = (
+                ai_raw.groupby([ai_title_col, "task_normalized", act_col], sort=False)
+                .first()
+                .reset_index()
+            )
+            ai_for_act["ai_tc"] = compute_task_comp(ai_for_act, method, use_auto_aug, effective_adj)
+
+            merged = eco_for_act.merge(
+                ai_for_act[[ai_title_col, "task_normalized", act_col, "ai_tc"]].rename(
+                    columns={ai_title_col: title_col}
+                ),
+                on=[title_col, "task_normalized", act_col],
+                how="left",
+            )
+            merged["ai_tc"] = merged["ai_tc"].fillna(0.0)
+
+            eco_tc_safe = merged["eco_tc"].replace(0, np.nan)
+            merged["workers_contribution"] = (
+                (merged["ai_tc"] / eco_tc_safe) * merged["emp_per_task"]
+            ).fillna(0.0).clip(lower=0)
+            merged["wages_contribution"] = (
+                merged["workers_contribution"] * merged[wage_col].fillna(0.0)
+            )
+
             by_act = (
                 merged.groupby(act_col)
                 .agg(
@@ -667,9 +689,7 @@ def _compute_wa_for_group(
             ).fillna(0.0).clip(upper=100.0)
             by_act = by_act[["category", "pct_tasks_affected", "workers_affected", "wages_affected"]]
 
-            if act_key not in per_dataset:
-                per_dataset[act_key] = []
-            per_dataset[act_key].append(by_act)
+            per_dataset.setdefault(act_key, []).append(by_act)
 
     if not per_dataset:
         return None
