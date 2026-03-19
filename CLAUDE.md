@@ -34,7 +34,9 @@ aea_dashboard/
 │       │   ├── work-activities/page.tsx — DWA/IWA/GWA activity charts
 │       │   ├── trends/page.tsx         — Time-series trends
 │       │   ├── explorer/page.tsx       — Job explorer (table view)
-│       │   └── wa-explorer/page.tsx    — WA Explorer (new, 5th tab)
+│       │   ├── wa-explorer/page.tsx    — WA Explorer (5th tab)
+│       │   ├── about/page.tsx          — About page (project overview)
+│       │   └── instructions/page.tsx   — Instructions page (interactive exposure calculator)
 │       ├── components/
 │       │   ├── Navigation.tsx          — Sticky top nav (5 tabs)
 │       │   ├── GroupPanel.tsx          — Container for one group's 3 bar charts (Overview)
@@ -159,7 +161,7 @@ Set `NEXT_PUBLIC_API_URL=http://localhost:8000` if needed (default).
 
 - `get_occupation_tasks(title)` — returns all tasks for one occupation sorted alphabetically by `task` column. Uses all 8 AEI/MCP/MS sources. `sources` dict keyed by source name. Returns `avg_pct_norm` and `max_pct_norm` (not `avg_pct_normalized`). Cached per title.
 
-- `get_all_tasks()` — returns all unique task_normalized values across eco_2025 with their metrics (from `_compute_task_metrics`) and activity hierarchy columns. Used for the Task-level flat table in the Explorer. Cached.
+- `get_all_tasks()` — returns all unique task_normalized values across eco_2025 with their metrics (from `_compute_task_metrics`) and activity hierarchy columns. Also computes per-task emp/wage: `emp_nat`/`emp_ut` = sum of `emp_occ / n_unique_tasks_per_occ` across all occupations sharing the task; `wage_nat` = employment-weighted median wage. Used for the Task-level flat table in the Explorer. Cached.
 
 - `get_wa_explorer_data()` — builds GWA/IWA/DWA rows. Emp is allocated as `emp_occ / n_unique_tasks_in_occ` per task. Activity levels deduplicate differently:
   - GWA: dedup on (task_norm, gwa_title)
@@ -184,7 +186,7 @@ Set `NEXT_PUBLIC_API_URL=http://localhost:8000` if needed (default).
 | GET | `/api/explorer` | Full occupation list with 10 metric fields (no tasks) |
 | GET | `/api/explorer/tasks?title=…` | Task details for one occupation (all 8 sources) |
 | GET | `/api/explorer/groups` | Pre-computed major/minor/broad group rows |
-| GET | `/api/explorer/all-tasks` | All unique tasks with metrics (for Task level table) |
+| GET | `/api/explorer/all-tasks` | All unique tasks with metrics + emp_nat/emp_ut/wage_nat (for Task level table) |
 | GET | `/api/explorer/wa` | WA Explorer rows: GWA/IWA/DWA with emp + metrics |
 | GET | `/api/explorer/wa/tasks?level=…&name=…` | Task details for one WA activity |
 
@@ -202,6 +204,8 @@ Set `NEXT_PUBLIC_API_URL=http://localhost:8000` if needed (default).
 - **Trends** (`/trends`) — line charts of metrics over dataset versions
 - **Job Explorer** (`/explorer`) — flat table: Major/Minor/Broad/Occ/Task levels with inline drilldown
 - **WA Explorer** (`/wa-explorer`) — GWA/IWA/DWA hierarchy table with inline drilldown
+
+Additional pages linked from nav (not tabs): **About** (`/about`) — project overview; **Instructions** (`/instructions`) — interactive exposure calculator explaining the methodology.
 
 ### Design System (`globals.css` + `tailwind.config.ts`)
 CSS variables:
@@ -247,6 +251,8 @@ Key interfaces: `GroupSettings`, `ConfigResponse`, `ChartRow`, `ComputeResponse`
 
 **`TaskDetail`:** `sources: Record<string, TaskSourceStats>` (keyed by source name, e.g. "AEI v1", "MCP v4", "Microsoft"); `avg_pct_norm` and `max_pct_norm` (not `avg_pct_normalized`).
 
+**`AllTaskRow`:** includes `emp_nat`, `emp_ut`, `wage_nat` (all `number | null`) — allocated from eco_2025 using `emp_occ / n_unique_tasks_per_occ` summed across occupations. `taskToRow(t, geo)` in ExplorerView uses these for the Emp and Med Wage columns at the Task level.
+
 ### State Pattern (Overview + Work Activities)
 Staged settings: `pendingA/B` (form state) + `appliedA/B` (chart state). Charts only update on "Run" click. This prevents recomputation on every slider move.
 
@@ -256,12 +262,14 @@ Staged settings: `pendingA/B` (form state) + `appliedA/B` (chart state). Charts 
 - `run()` calls `Promise.all([fetchCompute(settingsA), fetchCompute(settingsB)])` so both groups update simultaneously
 - `otherResponse` is passed between GroupPanels for cross-group delta in tooltips
 - `appliedPendingA/B` state stored at run time; `pendingToConfigSummary()` converts it to 2 config lines passed to `GroupPanel` as `configSummary`
+- **Controls layout (Stop 7):** Three labeled sections — **Datasets**, **Display** (method/geo/agg level/topN), **Filtering** (physical/auto-aug/adj mean). Sections collapse to a summary bar after Run. Auto-aug rendered as `SegmentedControl` (Off / On). TopN max = 30. Search + Sort always visible after first run.
 
 **Work Activities (`work-activities/page.tsx`):**
 - `WAGroupPending` interface similar to `GroupPending` but with `activityLevel: "gwa"|"iwa"|"dwa"` instead of `aggLevel`
 - Mutual exclusivity enforced client-side: mixing AEI-family and MCP/Microsoft-family datasets shows a warning and blocks the API call
 - Search is entirely client-side — backend returns all activity rows, frontend slices ±contextSize around the matched row
 - `appliedPendingA/B` state + `pendingToConfigSummary()` same pattern as Occupation Categories; passed to `WorkActivitiesPanel` as `configSummary`
+- **Controls layout (Stop 7):** Same grouped sections as Occupation Categories (Datasets / Display / Filtering), collapse after Run, auto-aug as SegmentedControl, TopN max 30.
 
 ---
 
@@ -272,6 +280,7 @@ Staged settings: `pendingA/B` (form state) + `appliedA/B` (chart state). Charts 
 - Rich tooltip shows all 3 metrics (workers, wages, % tasks), rank within economy, economy share %, and delta vs other group
 - Bars sorted descending (highest = top). `matchedCategory` bar rendered orange with others dimmed
 - `totalCategories`, `totalEmp`, `totalWages` passed in for rank/share calculations (summed across ALL categories, not just top-N)
+- **Stop 7:** Delta and % change vs other group shown even when the category is not within the other group's visible top-N — `otherGroupRows` is the full response rows, not just the displayed slice
 
 ### `GroupPanel.tsx`
 - Pure renderer: receives `response`, `otherResponse`, `loading`, `error`, `matchedCategory`, `configSummary?: string[]`
@@ -303,11 +312,15 @@ Two tabs: **Occupation Categories** and **Work Activities**
 - `average` — one line per category; at each date, averages values across all selected datasets present at that date; `buildAggregatedData(..., "average")`
 - `max` — **cumulative running max** per category; value at date T = max(all dataset values at dates ≤ T); implemented with `runningMax` Map that carries forward; `buildAggregatedData(..., "max")`
 
-**Controls:** Row 1–3 (shown before run): dataset pills, line mode, method, physical, auto-aug, geo, top-N, Run. Row 4 (shown only after run): Sort (by value / by increase), Increase type (abs/%), Search category, Context ± slider.
+**Controls (Stop 7 layout):** Three collapsible labeled sections — **Datasets**, **Display** (line mode/method/geo/agg level/TopN — max 30), **Filtering** (physical/auto-aug). Sections collapse to a summary bar after Run. Auto-aug rendered as `SegmentedControl` (Off / On). Sort (by value / by increase), Increase type, Search, Context ± shown only after first run.
 
 **Sort by increase:** `computeIncreases()` computes Map<lineKey, increase> from first to last data point in each line. `sortedCats` sorted by max increase per category when `sortMode === "increase"`. `shownCats` filters by search ± ctxSize.
 
 **Hover + lock:** `hoveredLine` state + `lockedLine` state. `activeLine = lockedLine ?? hoveredLine`. Clicking an `activeDot` toggles `lockedLine`. Active line gets `strokeWidth` 3.5; dimmed lines 1.5; others 2.5. Tooltip shows only active line when focused.
+
+**Frozen tooltip panel (Stop 7):** Clicking an active dot captures `lockedPos` (screen x/y) and `lockedDate`. A fixed-position panel renders a `TrendsTooltip` with a synthetic payload for that line/date — persists until the user clicks elsewhere or clicks the same dot again. Panel is clamped to window bounds.
+
+**Tooltip labels toggle (Stop 7):** `showAllInTooltip` boolean state (in Display section). When `true`, the hover tooltip shows all lines; when `false` (default), only the active/hovered line is shown. Passed as prop to `ChartPanel`.
 
 **Custom `ChartLegend` component:** Grid layout replacing Recharts `<Legend>`. Colored square indicators, clickable (click = lock), shows increase badge per item. Passed as `legendItems` to `downloadChartAsPng` for capture in PNG.
 
@@ -349,7 +362,11 @@ The accordion view has been removed. This is now a flat sortable/filterable tabl
 
 **Recursive `renderRow(row, level, indent)`:** renders a table row, and if expanded, its children inline with indentation. At occupation level, fetches tasks via `fetchOccupationTasks()` on expand.
 
-**Task detail expansion:** Expanding a task row shows Activity Classification (GWA/IWA/DWA) and per-source breakdown table with all AEI versions listed individually (v1–v4, API v3–v4) plus MCP v4 and Microsoft, plus AVG and MAX summary rows.
+**Task detail expansion:** Expanding a task row shows **Occupation Classification** (Broad → Minor → Major, drawn from the parent occupation's hierarchy) **before** Activity Classification (GWA/IWA/DWA), then the per-source breakdown table with all AEI versions listed individually (v1–v4, API v3–v4) plus MCP v4 and Microsoft, plus AVG and MAX summary rows.
+
+**Filter icon fix (Stop 7):** The `FunnelIcon` filter button is positioned `absolute` at `right: 4px, top: 50%` inside each `<th>`, with `paddingRight: 14px` on the label div — prevents the icon from overflowing into adjacent columns on narrow headers.
+
+**Task-level emp/wage:** `taskToRow(t, geo)` reads `t.emp_nat`/`t.emp_ut` and `t.wage_nat` from the backend `AllTaskRow` response — no longer hard-coded to 0/null.
 
 **`PctComputePanel` component (retained):**
 - Collapsible panel with full compute settings: dataset selector, method, physical, auto-aug, adj mean
@@ -373,6 +390,10 @@ Displays GWA → IWA → DWA hierarchy with inline drilldown, same 16-column str
 **Hierarchy:** When a GWA row is expanded, its IWA children appear inline; IWA expansion shows DWA children; DWA expansion fetches tasks via `fetchWAActivityTasks("dwa", name)` and shows a task sub-table.
 
 **Task sub-table (under DWA):** shows task, physical flag, activity hierarchy, per-source breakdown, avg/max auto_aug, pct norm columns. Source breakdown expansion mirrors ExplorerView.
+
+**Task-level expandable rows (Stop 7):** Task rows in the WA Explorer table are now expandable. Expanding a task row shows an Activity Classification panel with GWA/IWA/DWA values stored on the `DisplayRow` (populated from `AllTaskRow` fields when building task rows — no extra API call needed).
+
+**Filter icon fix (Stop 7):** Same `position: absolute` fix as ExplorerView — FunnelIcon at `right: 4px` with `paddingRight` on the label div.
 
 **Pagination (`rowLimit` state):** Same 100-row-at-a-time pattern as ExplorerView. `rowLimit` resets on level/filter/search/sort changes. "Load 100 more →" footer appears when `topRows.length > rowLimit`.
 
@@ -489,3 +510,8 @@ Values in CSV are already in percent form (e.g., 0.4 means 0.4%). Do **not** mul
 20. InfoTooltip uses `createPortal` into `document.body` — required to avoid clipping by `overflow: hidden` ancestor containers; tooltip position is `fixed` at mouse coordinates
 21. Explorer tables use `rowLimit` (100) pagination for **all** levels — never render all rows at once. The occupation level has ~923 rows and DWA has hundreds; rendering them all causes 10K+ DOM nodes and scroll jank. Always slice `topRows.slice(0, rowLimit)` before rendering.
 22. Explorer search/text inputs are debounced (250–300ms) via `useDebounce` before being included in `topRows` useMemo deps — do not add raw input state directly to useMemo dependency arrays or every keystroke will trigger a full filter+sort pass
+23. `AllTaskRow.emp_nat/emp_ut/wage_nat` are allocated emp/wage values (not occ-level totals) — computed as `Σ(emp_occ / n_unique_tasks_per_occ)` across all occupations sharing that task. `wage_nat` is the employment-weighted median. `taskToRow(t, geo)` must be called with `geo` to select the right emp column.
+24. The filter icon (`FunnelIcon`) in explorer column headers must be `position: absolute` inside the `<th>` — do NOT place it inside the inline-flex label div, or it will push the column text and overflow into adjacent columns on narrow headers.
+25. Trends `panelCollapsed` state: set to `true` after Run. Only the Datasets/Display/Filtering sections collapse; TopN is always visible in the always-on controls row. Sort/Search controls appear only after `result` is non-null (first successful run).
+26. Trends frozen tooltip: `lockedPos` captures the screen-space click position of an activeDot; `lockedDate` captures the x-axis label; a fixed `<div>` renders `TrendsTooltip` with a synthetic single-item payload. The panel clamps to `window.innerHeight/innerWidth` to stay on-screen.
+27. `/about` and `/instructions` are standalone pages linked from the nav — they are not tabs in the main nav strip and do not use `height: calc(100vh - 56px)` layout.
