@@ -200,13 +200,15 @@ function DatasetPillsWA({
           {label}
         </p>
         <InfoTooltip text="AEI and MCP/Microsoft cannot be mixed — they use different ECO baselines. Selecting one family hides the other." />
-        <button onClick={() => {
-          // All available in current family (or all if none selected)
-          const avail = datasets.filter((d) => availability[d]);
-          if (activeFamily === "aei") onChange(avail.filter(isAEIFamily));
-          else if (activeFamily === "mcp") onChange(avail.filter(isMCPFamily));
-          else onChange(avail);
-        }} style={{ fontSize: 10, color: "var(--brand)", background: "none", border: "none", cursor: "pointer", padding: "0 2px", fontWeight: 600 }}>All</button>
+        <button
+          disabled={activeFamily === "none"}
+          onClick={() => {
+            const avail = datasets.filter((d) => availability[d]);
+            if (activeFamily === "aei") onChange(avail.filter(isAEIFamily));
+            else if (activeFamily === "mcp") onChange(avail.filter(isMCPFamily));
+          }}
+          style={{ fontSize: 10, color: activeFamily !== "none" ? "var(--brand)" : "var(--text-muted)", background: "none", border: "none", cursor: activeFamily !== "none" ? "pointer" : "default", padding: "0 2px", fontWeight: 600, opacity: activeFamily !== "none" ? 1 : 0.4 }}
+        >All</button>
         <button onClick={() => onChange([])} style={{ fontSize: 10, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", padding: "0 2px" }}>None</button>
         {selected.length > 1 && (
           <>

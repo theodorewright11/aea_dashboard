@@ -218,7 +218,7 @@ function buildAggregatedData(
 function computeIncreases(
   chartData: Record<string, number | string>[],
   lineConfigs: LineConfig[],
-  metric: MetricKey,
+  _metric: MetricKey,
   incMode: IncMode,
 ): Map<string, number> {
   const increases = new Map<string, number>();
@@ -234,6 +234,38 @@ function computeIncreases(
     }
   });
   return increases;
+}
+
+/** Extract category name from a line key: "ds — cat" → "cat", "cat" → "cat" */
+function catFromKey(key: string): string {
+  const idx = key.indexOf(" — ");
+  return idx >= 0 ? key.slice(idx + 3) : key;
+}
+
+/**
+ * Compute a value score per category (max or avg across all data points).
+ * Used for sort-by-value ordering.
+ */
+function computeCatValueScores(
+  chartData: Record<string, number | string>[],
+  lineConfigs: LineConfig[],
+  mode: "max" | "avg",
+): Map<string, number> {
+  const acc = new Map<string, number[]>();
+  chartData.forEach((pt) => {
+    lineConfigs.forEach(({ key }) => {
+      const v = pt[key];
+      if (typeof v !== "number") return;
+      const cat = catFromKey(key);
+      if (!acc.has(cat)) acc.set(cat, []);
+      acc.get(cat)!.push(v);
+    });
+  });
+  const scores = new Map<string, number>();
+  acc.forEach((vals, cat) => {
+    scores.set(cat, mode === "max" ? Math.max(...vals) : vals.reduce((a, b) => a + b, 0) / vals.length);
+  });
+  return scores;
 }
 
 // ── UI components ─────────────────────────────────────────────────────────────
@@ -381,7 +413,7 @@ function ChartLegend({
 
 function ChartPanel({
   title, metric, chartData, lineConfigs, increases, incMode,
-  loading, error, hasResult, lockedLine, setLockedLine, dateDatasets,
+  loading, error, hasResult, lockedLine, setLockedLine, dateDatasets, catRanks,
 }: {
   title: string; metric: MetricKey;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -393,6 +425,7 @@ function ChartPanel({
   lockedLine: string | null;
   setLockedLine: (k: string | null) => void;
   dateDatasets?: Map<string, string[]>;
+  catRanks?: Map<string, number>;
 }) {
   const chartRef = useRef<HTMLDivElement>(null);
   const [hoveredLine, setHoveredLine] = useState<string | null>(null);
@@ -417,10 +450,11 @@ function ChartPanel({
     const filteredPayload = activeLine ? props.payload.filter((p: any) => p.dataKey === activeLine) : props.payload;
     const currentDate = props.label ?? "";
 
-    // Rank among all lines with values at this date (highest = #1)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const ranked = [...props.payload].filter((p: any) => p.value != null).sort((a: any, b: any) => b.value - a.value);
-    const rankMap = new Map<string, number>(ranked.map((p: any, i: number) => [p.dataKey as string, i + 1]));
+    // Helper: extract category name from a line key ("ds — cat" or just "cat")
+    function catOf(key: string): string {
+      const idx = key.indexOf(" — ");
+      return idx >= 0 ? key.slice(idx + 3) : key;
+    }
 
     // Index of hovered date in chartData (for looking up prev value)
     const dateIdx = chartData.findIndex((pt) => pt.date === currentDate);
@@ -447,7 +481,7 @@ function ChartPanel({
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         {filteredPayload.map((p: any, i: number) => {
           const currentVal = p.value as number;
-          const rank = rankMap.get(p.dataKey);
+          const rank = catRanks?.get(catOf(p.dataKey as string));
 
           // Change from previous data point (scan backwards for last known value)
           let prevChange: number | null = null;
@@ -479,7 +513,7 @@ function ChartPanel({
               {/* Line name + rank */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8, marginBottom: 3 }}>
                 <span style={{ color: p.color, fontWeight: 600, fontSize: 11, flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</span>
-                {rank != null && !activeLine && (
+                {rank != null && (
                   <span style={{ fontSize: 10, color: "var(--text-muted)", whiteSpace: "nowrap" }}>#{rank}</span>
                 )}
               </div>
@@ -507,7 +541,7 @@ function ChartPanel({
                 )}
                 {overallInc != null && (
                   <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-                    <span style={{ fontSize: 10, color: "var(--text-muted)" }}>overall</span>
+                    <span style={{ fontSize: 10, color: "var(--text-muted)" }}>start→end</span>
                     <span style={{ fontSize: 10, fontWeight: 600, color: overallInc >= 0 ? "#16a34a" : "#dc2626" }}>
                       {fmtIncrease(overallInc, metric, incMode)}
                     </span>
@@ -692,13 +726,18 @@ function DatasetSelectorWA({
   const hasAEI = selectedDatasets.some(isAEIFamily);
   const hasMCP = selectedDatasets.some(isMCPFamily);
   const activeFamily: "aei" | "mcp" | null = hasAEI ? "aei" : hasMCP ? "mcp" : null;
+  const canAll = activeFamily != null;
 
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
         <ControlLabel>Datasets</ControlLabel>
         <div style={{ display: "flex", gap: 8 }}>
-          <button onClick={onAll}  style={{ fontSize: 10, color: "var(--brand)",      background: "none", border: "none", cursor: "pointer", padding: 0 }}>All</button>
+          <button
+            disabled={!canAll}
+            onClick={canAll ? onAll : undefined}
+            style={{ fontSize: 10, color: canAll ? "var(--brand)" : "var(--text-muted)", background: "none", border: "none", cursor: canAll ? "pointer" : "default", padding: 0, opacity: canAll ? 1 : 0.4 }}
+          >All</button>
           <button onClick={onNone} style={{ fontSize: 10, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", padding: 0 }}>None</button>
         </div>
       </div>
@@ -742,9 +781,10 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
   const [result,       setResult]       = useState<TrendsResponse | null>(null);
   const [allCats,      setAllCats]      = useState<string[]>([]);
 
-  // Sort / increase options
-  const [sortMode,     setSortMode]     = useState<SortMode>("value");
-  const [incMode,      setIncMode]      = useState<IncMode>("abs");
+  // Sort / increase / value-agg options
+  const [sortMode,      setSortMode]     = useState<SortMode>("value");
+  const [incMode,       setIncMode]      = useState<IncMode>("abs");
+  const [valueAggMode,  setValueAggMode] = useState<"max" | "avg">("max");
 
   // Search / context
   const [trendSearch,  setTrendSearch]  = useState("");
@@ -797,18 +837,34 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
     [rawChartData, rawLineConfigs, metric, incMode],
   );
 
+  // Value scores per category (max or avg across all data) — for sort-by-value
+  const catValueScores = useMemo(
+    () => rawLineConfigs.length > 0 ? computeCatValueScores(rawChartData, rawLineConfigs, valueAggMode) : new Map<string, number>(),
+    [rawChartData, rawLineConfigs, valueAggMode],
+  );
+
   // Full sorted pool (no topN slice) — used for search so categories beyond topN are reachable
   const sortedAllCats = useMemo(() => {
-    if (sortMode !== "increase" || !allIncreases) return allCats;
-    const getInc = (cat: string) => {
-      let max = -Infinity;
-      allIncreases.forEach((v, key) => {
-        if (key === cat || key.endsWith(` — ${cat}`)) max = Math.max(max, v);
-      });
-      return max === -Infinity ? -Infinity : max;
-    };
-    return [...allCats].sort((a, b) => getInc(b) - getInc(a));
-  }, [allCats, sortMode, allIncreases]);
+    if (sortMode === "increase" && allIncreases) {
+      const getInc = (cat: string) => {
+        let max = -Infinity;
+        allIncreases.forEach((v, key) => {
+          if (key === cat || key.endsWith(` — ${cat}`)) max = Math.max(max, v);
+        });
+        return max === -Infinity ? -Infinity : max;
+      };
+      return [...allCats].sort((a, b) => getInc(b) - getInc(a));
+    }
+    // Sort by value (max or avg across time range)
+    return [...allCats].sort((a, b) => (catValueScores.get(b) ?? -Infinity) - (catValueScores.get(a) ?? -Infinity));
+  }, [allCats, sortMode, allIncreases, catValueScores]);
+
+  // Ranks based on full sorted pool (rank 1 = highest)
+  const catRanks = useMemo(() => {
+    const map = new Map<string, number>();
+    sortedAllCats.forEach((cat, i) => map.set(cat, i + 1));
+    return map;
+  }, [sortedAllCats]);
 
   // Top-N slice for chart display when no search is active
   const sortedCats = useMemo(() => sortedAllCats.slice(0, topN), [sortedAllCats, topN]);
@@ -932,6 +988,15 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
               value={sortMode} onChange={setSortMode}
             />
           </div>
+          {sortMode === "value" && (
+            <div>
+              <ControlLabel>Value ranking</ControlLabel>
+              <SegmentedControl
+                options={[{ value: "max" as const, label: "Max" }, { value: "avg" as const, label: "Avg" }]}
+                value={valueAggMode} onChange={setValueAggMode}
+              />
+            </div>
+          )}
           {sortMode === "increase" && (
             <div>
               <ControlLabel>Increase type</ControlLabel>
@@ -982,11 +1047,12 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
         <ChartPanel
           title={`${metaLabel} over time`} metric={metric}
           chartData={chartData} lineConfigs={lineConfigs}
-          increases={sortMode === "increase" ? increases : null}
+          increases={increases}
           incMode={incMode}
           loading={loading} error={error} hasResult={!!result}
           lockedLine={lockedLine} setLockedLine={setLockedLine}
           dateDatasets={dateDatasets}
+          catRanks={catRanks}
         />
       </div>
     </>
@@ -1013,11 +1079,12 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
   const [result,        setResult]        = useState<TrendsResponse | null>(null);
   const [allCats,       setAllCats]       = useState<string[]>([]);
 
-  const [sortMode,  setSortMode]  = useState<SortMode>("value");
-  const [incMode,   setIncMode]   = useState<IncMode>("abs");
-  const [trendSearch, setTrendSearch] = useState("");
-  const [ctxSize,   setCtxSize]   = useState(5);
-  const [lockedLine, setLockedLine] = useState<string | null>(null);
+  const [sortMode,      setSortMode]     = useState<SortMode>("value");
+  const [incMode,       setIncMode]      = useState<IncMode>("abs");
+  const [valueAggMode,  setValueAggMode] = useState<"max" | "avg">("max");
+  const [trendSearch,   setTrendSearch]  = useState("");
+  const [ctxSize,       setCtxSize]      = useState(5);
+  const [lockedLine,    setLockedLine]   = useState<string | null>(null);
 
   const hasMCP = selectedDatasets.some((d) => d.startsWith("MCP") || d === "Microsoft");
 
@@ -1060,18 +1127,32 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
     [rawChartData, rawLineConfigs, metric, incMode],
   );
 
+  // Value scores per category for sort-by-value
+  const catValueScores = useMemo(
+    () => rawLineConfigs.length > 0 ? computeCatValueScores(rawChartData, rawLineConfigs, valueAggMode) : new Map<string, number>(),
+    [rawChartData, rawLineConfigs, valueAggMode],
+  );
+
   // Full sorted pool (no topN) — so search can find categories beyond topN
   const sortedAllCats = useMemo(() => {
-    if (sortMode !== "increase" || !allIncreases) return allCats;
-    const getInc = (cat: string) => {
-      let max = -Infinity;
-      allIncreases.forEach((v, key) => {
-        if (key === cat || key.endsWith(` — ${cat}`)) max = Math.max(max, v);
-      });
-      return max === -Infinity ? -Infinity : max;
-    };
-    return [...allCats].sort((a, b) => getInc(b) - getInc(a));
-  }, [allCats, sortMode, allIncreases]);
+    if (sortMode === "increase" && allIncreases) {
+      const getInc = (cat: string) => {
+        let max = -Infinity;
+        allIncreases.forEach((v, key) => {
+          if (key === cat || key.endsWith(` — ${cat}`)) max = Math.max(max, v);
+        });
+        return max === -Infinity ? -Infinity : max;
+      };
+      return [...allCats].sort((a, b) => getInc(b) - getInc(a));
+    }
+    return [...allCats].sort((a, b) => (catValueScores.get(b) ?? -Infinity) - (catValueScores.get(a) ?? -Infinity));
+  }, [allCats, sortMode, allIncreases, catValueScores]);
+
+  const catRanks = useMemo(() => {
+    const map = new Map<string, number>();
+    sortedAllCats.forEach((cat, i) => map.set(cat, i + 1));
+    return map;
+  }, [sortedAllCats]);
 
   const sortedCats = useMemo(() => sortedAllCats.slice(0, topN), [sortedAllCats, topN]);
 
@@ -1122,7 +1203,10 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
         <DatasetSelectorWA
           allDatasets={allDatasets} selectedDatasets={selectedDatasets}
           onToggle={(ds) => setSelectedDatasets((p) => p.includes(ds) ? p.filter((x) => x !== ds) : [...p, ds])}
-          onAll={() => setSelectedDatasets(allDatasets)}
+          onAll={() => {
+            const hasAEI = selectedDatasets.some(isAEIFamily);
+            setSelectedDatasets(allDatasets.filter(hasAEI ? isAEIFamily : isMCPFamily));
+          }}
           onNone={() => setSelectedDatasets([])}
         />
 
@@ -1196,6 +1280,15 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
               value={sortMode} onChange={setSortMode}
             />
           </div>
+          {sortMode === "value" && (
+            <div>
+              <ControlLabel>Value ranking</ControlLabel>
+              <SegmentedControl
+                options={[{ value: "max" as const, label: "Max" }, { value: "avg" as const, label: "Avg" }]}
+                value={valueAggMode} onChange={setValueAggMode}
+              />
+            </div>
+          )}
           {sortMode === "increase" && (
             <div>
               <ControlLabel>Increase type</ControlLabel>
@@ -1242,11 +1335,12 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
         <ChartPanel
           title={`${levelLabels[activityLevel]} — ${metaLabel} over time`} metric={metric}
           chartData={chartData} lineConfigs={lineConfigs}
-          increases={sortMode === "increase" ? increases : null}
+          increases={increases}
           incMode={incMode}
           loading={loading} error={error} hasResult={!!result}
           lockedLine={lockedLine} setLockedLine={setLockedLine}
           dateDatasets={dateDatasets}
+          catRanks={catRanks}
         />
       </div>
     </>
