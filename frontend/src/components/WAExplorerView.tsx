@@ -11,6 +11,17 @@ import { createPortal } from "react-dom";
 import type { WAExplorerRow, WATaskDetail, ConfigResponse, AllTaskRow, ActivityRow } from "@/lib/types";
 import { fetchWAActivityTasks, fetchWorkActivities, fetchAllTasks } from "@/lib/api";
 
+// ── Debounce hook ──────────────────────────────────────────────────────────────
+
+function useDebounce<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState<T>(value);
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(t);
+  }, [value, delay]);
+  return debounced;
+}
+
 // ── Props ──────────────────────────────────────────────────────────────────────
 
 interface Props {
@@ -823,6 +834,9 @@ export default function WAExplorerView({ rows, config }: Props) {
   const [taskData, setTaskData]     = useState<AllTaskRow[] | null>(null);
   const [taskLoading, setTaskLoading] = useState(false);
 
+  // ── Debounced search ──────────────────────────────────────────────────────
+  const debouncedSearch = useDebounce(search, 250);
+
   // ── Load task data when task level selected ──────────────────────────────
   useEffect(() => {
     if (viewLevel === "task" && taskData === null && !taskLoading) {
@@ -841,7 +855,7 @@ export default function WAExplorerView({ rows, config }: Props) {
 
   // ── Build top-level display rows ───────────────────────────────────────────
   const topRows = useMemo<DisplayRow[]>(() => {
-    const searchQ = search.trim().toLowerCase();
+    const searchQ = debouncedSearch.trim().toLowerCase();
 
     let displayRows: DisplayRow[] = [];
 
@@ -948,7 +962,7 @@ export default function WAExplorerView({ rows, config }: Props) {
     });
 
     return displayRows;
-  }, [rows, viewLevel, selectedGwas, geo, search, sortCol, sortDir, colFilters, physicalMode, pctAffectedMap, minPctAffected, taskData]);
+  }, [rows, viewLevel, selectedGwas, geo, debouncedSearch, sortCol, sortDir, colFilters, physicalMode, pctAffectedMap, minPctAffected, taskData]);
 
   // ── Visible columns (hide pct/workers/wages columns when no pctMap) ──────
   const visibleCols = useMemo(() => {
@@ -958,23 +972,35 @@ export default function WAExplorerView({ rows, config }: Props) {
     });
   }, [pctAffectedMap]);
 
+  // ── Pre-built child row cache (avoids O(n) filtering on every render) ─────
+  const childRowCache = useMemo(() => {
+    const cache = new Map<string, DisplayRow[]>();
+    const gwaMap = new Map<string, WAExplorerRow[]>();
+    const iwaMap = new Map<string, WAExplorerRow[]>();
+    rows.forEach((r) => {
+      if (r.level === "iwa" && r.gwa) {
+        const arr = gwaMap.get(r.gwa) ?? [];
+        arr.push(r);
+        gwaMap.set(r.gwa, arr);
+      }
+      if (r.level === "dwa" && r.parent) {
+        const arr = iwaMap.get(r.parent) ?? [];
+        arr.push(r);
+        iwaMap.set(r.parent, arr);
+      }
+    });
+    gwaMap.forEach((children, gwaName) => {
+      cache.set(`gwa:${gwaName}`, children.map((r) => waRowToDisplay(r, geo)).sort((a, b) => b.emp - a.emp));
+    });
+    iwaMap.forEach((children, iwaName) => {
+      cache.set(`iwa:${iwaName}`, children.map((r) => waRowToDisplay(r, geo)).sort((a, b) => b.emp - a.emp));
+    });
+    return cache;
+  }, [rows, geo]);
+
   // ── Child row helpers ──────────────────────────────────────────────────────
   function getChildRows(parentRow: DisplayRow): DisplayRow[] {
-    if (parentRow.level === "gwa") {
-      // Children are IWA rows where gwa === parentRow.name
-      return rows
-        .filter((r) => r.level === "iwa" && r.gwa === parentRow.name)
-        .map((r) => waRowToDisplay(r, geo))
-        .sort((a, b) => b.emp - a.emp);
-    }
-    if (parentRow.level === "iwa") {
-      // Children are DWA rows where parent === parentRow.name
-      return rows
-        .filter((r) => r.level === "dwa" && r.parent === parentRow.name)
-        .map((r) => waRowToDisplay(r, geo))
-        .sort((a, b) => b.emp - a.emp);
-    }
-    return [];
+    return childRowCache.get(`${parentRow.level}:${parentRow.name}`) ?? [];
   }
 
   // ── Toggle row expand ──────────────────────────────────────────────────────

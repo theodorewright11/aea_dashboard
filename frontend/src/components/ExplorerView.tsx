@@ -14,6 +14,17 @@ import type {
 } from "@/lib/types";
 import { fetchOccupationTasks, fetchCompute, fetchAllTasks } from "@/lib/api";
 
+// ── Debounce hook ──────────────────────────────────────────────────────────────
+
+function useDebounce<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState<T>(value);
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(t);
+  }, [value, delay]);
+  return debounced;
+}
+
 // ── Props ──────────────────────────────────────────────────────────────────────
 
 interface Props {
@@ -840,6 +851,11 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
   const [minEmp, setMinEmp] = useState("");
   const [minWage, setMinWage] = useState("");
 
+  // ── Debounced inputs (prevents topRows recompute on every keystroke) ──────
+  const debouncedSearch   = useDebounce(search,   250);
+  const debouncedMinEmp   = useDebounce(minEmp,   300);
+  const debouncedMinWage  = useDebounce(minWage,  300);
+
   // ── Load task data when task level selected ──────────────────────────────
   useEffect(() => {
     if (tableLevel === "task" && taskData === null && !taskLoading) {
@@ -868,7 +884,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
 
   // ── Build top-level rows ─────────────────────────────────────────────────
   const topRows = useMemo<FlatRow[]>(() => {
-    const searchQ = search.trim().toLowerCase();
+    const searchQ = debouncedSearch.trim().toLowerCase();
 
     // Effective search level
     const effectiveLevel = searchLevel === "all" ? tableLevel : (
@@ -913,8 +929,8 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
     }
 
     // Emp/wage filter
-    const empMin = parseFloat(minEmp);
-    const wageMin = parseFloat(minWage);
+    const empMin = parseFloat(debouncedMinEmp);
+    const wageMin = parseFloat(debouncedMinWage);
     if (!isNaN(empMin) && empMin > 0) rows = rows.filter((r) => r.emp >= empMin);
     if (!isNaN(wageMin) && wageMin > 0) rows = rows.filter((r) => r.wage != null && r.wage >= wageMin);
 
@@ -963,8 +979,8 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
 
     return rows;
   }, [
-    tableLevel, groups, occupations, taskData, geo, selectedMajors, search, searchLevel,
-    sortCol, sortDir, colFilters, physicalMode, pctAffectedMap, minPctAffected, minEmp, minWage,
+    tableLevel, groups, occupations, taskData, geo, selectedMajors, debouncedSearch, searchLevel,
+    sortCol, sortDir, colFilters, physicalMode, pctAffectedMap, minPctAffected, debouncedMinEmp, debouncedMinWage,
   ]);
 
   // ── Expand/collapse ──────────────────────────────────────────────────────
@@ -1025,29 +1041,34 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
   const totalOccs = occupations.length;
   const totalTasks = taskData?.length ?? null;
 
+  // ── Pre-built child row cache (avoids O(n) filtering on every render) ─────
+  const childRowCache = useMemo(() => {
+    const cache = new Map<string, FlatRow[]>();
+    (groups.major ?? []).forEach((g) => {
+      cache.set(`major:${g.name}`, (groups.minor ?? [])
+        .filter((m) => m.parent === g.name)
+        .map((m) => groupToRow(m, geo))
+        .sort((a, b) => b.emp - a.emp));
+    });
+    (groups.minor ?? []).forEach((g) => {
+      cache.set(`minor:${g.name}`, (groups.broad ?? [])
+        .filter((b) => b.parent === g.name)
+        .map((b) => groupToRow(b, geo))
+        .sort((a, b) => b.emp - a.emp));
+    });
+    (groups.broad ?? []).forEach((g) => {
+      cache.set(`broad:${g.name}`, occupations
+        .filter((o) => o.broad === g.name)
+        .map((o) => occToRow(o, geo))
+        .sort((a, b) => b.emp - a.emp));
+    });
+    return cache;
+  }, [groups, occupations, geo]);
+
   // ── Build child rows for drilldown ────────────────────────────────────────
   function buildChildRows(row: FlatRow, currentLevel: TableLevel): FlatRow[] {
     if (currentLevel === "task" || currentLevel === "occupation") return [];
-    if (currentLevel === "major") {
-      // children are minor rows with parent === row.name
-      return (groups.minor ?? [])
-        .filter((g) => g.parent === row.name)
-        .map((g) => groupToRow(g, geo))
-        .sort((a, b) => b.emp - a.emp);
-    }
-    if (currentLevel === "minor") {
-      return (groups.broad ?? [])
-        .filter((g) => g.parent === row.name)
-        .map((g) => groupToRow(g, geo))
-        .sort((a, b) => b.emp - a.emp);
-    }
-    if (currentLevel === "broad") {
-      return occupations
-        .filter((o) => o.broad === row.name)
-        .map((o) => occToRow(o, geo))
-        .sort((a, b) => b.emp - a.emp);
-    }
-    return [];
+    return childRowCache.get(`${currentLevel}:${row.name}`) ?? [];
   }
 
   function childLevel(level: TableLevel): TableLevel {
