@@ -115,9 +115,27 @@ export interface WATrendsSettings {
   activityLevel: "gwa" | "iwa" | "dwa";
 }
 
-// ── Explorer ──────────────────────────────────────────────────────────────────
+// ── Explorer shared metrics ───────────────────────────────────────────────────
 
-export interface OccupationSummary {
+export interface ExplorerMetrics {
+  n_tasks: number;
+  n_physical_tasks: number;
+  pct_physical?: number | null;
+  auto_avg_with_vals?: number | null;
+  auto_max_with_vals?: number | null;
+  auto_avg_all?: number | null;
+  auto_max_all?: number | null;
+  pct_avg_with_vals?: number | null;
+  pct_max_with_vals?: number | null;
+  pct_avg_all?: number | null;
+  pct_max_all?: number | null;
+  sum_pct_avg?: number | null;
+  sum_pct_max?: number | null;
+}
+
+// ── Explorer — Occupations ────────────────────────────────────────────────────
+
+export interface OccupationSummary extends ExplorerMetrics {
   title_current: string;
   major?: string;
   minor?: string;
@@ -126,13 +144,11 @@ export interface OccupationSummary {
   emp_ut?: number;
   wage_nat?: number;
   wage_ut?: number;
-  n_tasks: number;
-  avg_auto_aug_aei?: number;
-  avg_auto_aug_mcp?: number;
-  avg_auto_aug_ms?: number;
-  avg_pct_norm_aei?: number;
-  avg_pct_norm_mcp?: number;
-  avg_pct_norm_ms?: number;
+}
+
+export interface TaskSourceStats {
+  auto_aug?: number | null;
+  pct_norm?: number | null;
 }
 
 export interface TaskDetail {
@@ -145,16 +161,91 @@ export interface TaskDetail {
   importance?: number;
   relevance?: number;
   physical?: boolean | null;
-  aei?: { auto_aug_mean?: number; pct_normalized?: number } | null;
-  mcp?: { auto_aug_mean_adj?: number; pct_normalized?: number } | null;
-  microsoft?: { auto_aug_mean?: number; pct_normalized?: number } | null;
-  avg_auto_aug?: number;
-  max_auto_aug?: number;
-  avg_pct_normalized?: number;
-  max_pct_normalized?: number;
+  sources: Record<string, TaskSourceStats>;
+  avg_auto_aug?: number | null;
+  max_auto_aug?: number | null;
+  avg_pct_norm?: number | null;
+  max_pct_norm?: number | null;
 }
 
 export interface OccupationTasksResponse {
   title: string;
   tasks: TaskDetail[];
+}
+
+// ── Explorer — Groups (major/minor/broad level pre-computed) ──────────────────
+
+export interface ExplorerGroupRow extends ExplorerMetrics {
+  name: string;
+  parent?: string | null;
+  grandparent?: string | null;
+  emp_nat?: number | null;
+  emp_ut?: number | null;
+  wage_nat?: number | null;
+  wage_ut?: number | null;
+  n_occs: number;
+}
+
+export interface ExplorerGroupsResponse {
+  major: ExplorerGroupRow[];
+  minor: ExplorerGroupRow[];
+  broad: ExplorerGroupRow[];
+}
+
+// ── Explorer — All Tasks ──────────────────────────────────────────────────────
+
+export interface AllTaskRow {
+  task: string;
+  task_normalized: string;
+  dwa_title?: string | null;
+  iwa_title?: string | null;
+  gwa_title?: string | null;
+  physical?: boolean | null;
+  n_occs: number;
+  sources: Record<string, TaskSourceStats>;
+  avg_auto_aug?: number | null;
+  max_auto_aug?: number | null;
+  avg_pct_norm?: number | null;
+  max_pct_norm?: number | null;
+}
+
+// ── WA Explorer ───────────────────────────────────────────────────────────────
+
+export interface WAExplorerRow extends ExplorerMetrics {
+  level: "gwa" | "iwa" | "dwa";
+  name: string;
+  parent?: string | null;
+  gwa?: string | null;
+  emp_nat?: number | null;
+  emp_ut?: number | null;
+  wage_nat?: number | null;
+  wage_ut?: number | null;
+  n_occs: number;
+}
+
+export interface WAExplorerResponse {
+  rows: WAExplorerRow[];
+}
+
+export interface WATaskDetail {
+  task: string;
+  task_normalized: string;
+  dwa_title?: string | null;
+  iwa_title?: string | null;
+  gwa_title?: string | null;
+  physical?: boolean | null;
+  emp_nat?: number | null;
+  emp_ut?: number | null;
+  wage_nat?: number | null;
+  sources: Record<string, TaskSourceStats>;
+  avg_auto_aug?: number | null;
+  max_auto_aug?: number | null;
+  avg_pct_norm?: number | null;
+  max_pct_norm?: number | null;
+}
+
+export interface WATasksResponse {
+  level: string;
+  name: string;
+  tasks: WATaskDetail[];
 }

@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { href: "/work-activities", label: "Work Activities" },
   { href: "/trends",          label: "Trends" },
   { href: "/explorer",        label: "Job Explorer" },
+  { href: "/wa-explorer",     label: "WA Explorer" },
 ];
 
 /* ── About modal ─────────────────────────────────────────────────── */

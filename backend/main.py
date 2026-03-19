@@ -27,6 +27,10 @@ from compute import (
     compute_wa_trends,
     get_explorer_occupations,
     get_occupation_tasks,
+    get_explorer_groups,
+    get_wa_explorer_data,
+    get_wa_tasks_for_activity,
+    get_all_tasks,
     crosswalk_available,
     dataset_exists,
     eco2015_available,
@@ -342,21 +346,29 @@ def trends_work_activities(req: WATrendsRequest):
 # ── /api/explorer ──────────────────────────────────────────────────────────────
 
 class OccupationSummary(BaseModel):
-    title_current:     str
-    major:             Optional[str] = None
-    minor:             Optional[str] = None
-    broad:             Optional[str] = None
-    emp_nat:           Optional[float] = None
-    emp_ut:            Optional[float] = None
-    wage_nat:          Optional[float] = None
-    wage_ut:           Optional[float] = None
-    n_tasks:           int = 0
-    avg_auto_aug_aei:  Optional[float] = None
-    avg_auto_aug_mcp:  Optional[float] = None
-    avg_auto_aug_ms:   Optional[float] = None
-    avg_pct_norm_aei:  Optional[float] = None
-    avg_pct_norm_mcp:  Optional[float] = None
-    avg_pct_norm_ms:   Optional[float] = None
+    title_current:      str
+    major:              Optional[str]   = None
+    minor:              Optional[str]   = None
+    broad:              Optional[str]   = None
+    emp_nat:            Optional[float] = None
+    emp_ut:             Optional[float] = None
+    wage_nat:           Optional[float] = None
+    wage_ut:            Optional[float] = None
+    n_tasks:            int             = 0
+    n_physical_tasks:   int             = 0
+    pct_physical:       Optional[float] = None
+    # 4 auto-aug variants
+    auto_avg_with_vals: Optional[float] = None
+    auto_max_with_vals: Optional[float] = None
+    auto_avg_all:       Optional[float] = None
+    auto_max_all:       Optional[float] = None
+    # 4 pct variants + sum
+    pct_avg_with_vals:  Optional[float] = None
+    pct_max_with_vals:  Optional[float] = None
+    pct_avg_all:        Optional[float] = None
+    pct_max_all:        Optional[float] = None
+    sum_pct_avg:        Optional[float] = None
+    sum_pct_max:        Optional[float] = None
 
 
 class ExplorerResponse(BaseModel):
@@ -372,9 +384,8 @@ def explorer():
 # ── /api/explorer/tasks ────────────────────────────────────────────────────────
 
 class SourceStats(BaseModel):
-    auto_aug_mean:     Optional[float] = None
-    auto_aug_mean_adj: Optional[float] = None
-    pct_normalized:    Optional[float] = None
+    auto_aug: Optional[float] = None
+    pct_norm: Optional[float] = None
 
 
 class TaskDetail(BaseModel):
@@ -387,13 +398,11 @@ class TaskDetail(BaseModel):
     importance:        Optional[float] = None
     relevance:         Optional[float] = None
     physical:          Optional[bool]  = None
-    aei:               Optional[dict]  = None
-    mcp:               Optional[dict]  = None
-    microsoft:         Optional[dict]  = None
-    avg_auto_aug:          Optional[float] = None
-    max_auto_aug:          Optional[float] = None
-    avg_pct_normalized:    Optional[float] = None
-    max_pct_normalized:    Optional[float] = None
+    sources:           dict            = {}   # source_name -> {auto_aug, pct_norm}
+    avg_auto_aug:      Optional[float] = None
+    max_auto_aug:      Optional[float] = None
+    avg_pct_norm:      Optional[float] = None
+    max_pct_norm:      Optional[float] = None
 
 
 class OccupationTasksResponse(BaseModel):
@@ -410,3 +419,151 @@ def explorer_tasks(title: str = Query(..., description="Occupation title (title_
         title=result["title"],
         tasks=[TaskDetail(**t) for t in result["tasks"]],
     )
+
+
+# ── /api/explorer/groups ───────────────────────────────────────────────────────
+
+class ExplorerGroupRow(BaseModel):
+    name:               str
+    parent:             Optional[str]   = None
+    grandparent:        Optional[str]   = None
+    emp_nat:            Optional[float] = None
+    emp_ut:             Optional[float] = None
+    wage_nat:           Optional[float] = None
+    wage_ut:            Optional[float] = None
+    n_occs:             int             = 0
+    n_tasks:            int             = 0
+    n_physical_tasks:   int             = 0
+    pct_physical:       Optional[float] = None
+    auto_avg_with_vals: Optional[float] = None
+    auto_max_with_vals: Optional[float] = None
+    auto_avg_all:       Optional[float] = None
+    auto_max_all:       Optional[float] = None
+    pct_avg_with_vals:  Optional[float] = None
+    pct_max_with_vals:  Optional[float] = None
+    pct_avg_all:        Optional[float] = None
+    pct_max_all:        Optional[float] = None
+    sum_pct_avg:        Optional[float] = None
+    sum_pct_max:        Optional[float] = None
+
+
+class ExplorerGroupsResponse(BaseModel):
+    major: list[ExplorerGroupRow]
+    minor: list[ExplorerGroupRow]
+    broad: list[ExplorerGroupRow]
+
+
+@app.get("/api/explorer/groups", response_model=ExplorerGroupsResponse)
+def explorer_groups():
+    data = get_explorer_groups()
+    def _parse(rows: list) -> list[ExplorerGroupRow]:
+        return [ExplorerGroupRow(**r) for r in rows]
+    return ExplorerGroupsResponse(
+        major=_parse(data.get("major", [])),
+        minor=_parse(data.get("minor", [])),
+        broad=_parse(data.get("broad", [])),
+    )
+
+
+# ── /api/explorer/wa ───────────────────────────────────────────────────────────
+
+class WAExplorerRow(BaseModel):
+    level:              str
+    name:               str
+    parent:             Optional[str]   = None
+    gwa:                Optional[str]   = None
+    emp_nat:            Optional[float] = None
+    emp_ut:             Optional[float] = None
+    wage_nat:           Optional[float] = None
+    wage_ut:            Optional[float] = None
+    n_occs:             int             = 0
+    n_tasks:            int             = 0
+    n_physical_tasks:   int             = 0
+    pct_physical:       Optional[float] = None
+    auto_avg_with_vals: Optional[float] = None
+    auto_max_with_vals: Optional[float] = None
+    auto_avg_all:       Optional[float] = None
+    auto_max_all:       Optional[float] = None
+    pct_avg_with_vals:  Optional[float] = None
+    pct_max_with_vals:  Optional[float] = None
+    pct_avg_all:        Optional[float] = None
+    pct_max_all:        Optional[float] = None
+    sum_pct_avg:        Optional[float] = None
+    sum_pct_max:        Optional[float] = None
+
+
+class WAExplorerResponse(BaseModel):
+    rows: list[WAExplorerRow]
+
+
+@app.get("/api/explorer/wa", response_model=WAExplorerResponse)
+def wa_explorer():
+    rows = get_wa_explorer_data()
+    return WAExplorerResponse(rows=[WAExplorerRow(**r) for r in rows])
+
+
+# ── /api/explorer/wa/tasks ─────────────────────────────────────────────────────
+
+class WATaskDetail(BaseModel):
+    task:              str
+    task_normalized:   str
+    dwa_title:         Optional[str]   = None
+    iwa_title:         Optional[str]   = None
+    gwa_title:         Optional[str]   = None
+    physical:          Optional[bool]  = None
+    emp_nat:           Optional[float] = None
+    emp_ut:            Optional[float] = None
+    wage_nat:          Optional[float] = None
+    sources:           dict            = {}
+    avg_auto_aug:      Optional[float] = None
+    max_auto_aug:      Optional[float] = None
+    avg_pct_norm:      Optional[float] = None
+    max_pct_norm:      Optional[float] = None
+
+
+class WATasksResponse(BaseModel):
+    level: str
+    name:  str
+    tasks: list[WATaskDetail]
+
+
+@app.get("/api/explorer/wa/tasks", response_model=WATasksResponse)
+def wa_explorer_tasks(
+    level: str = Query(..., description="Activity level: gwa, iwa, or dwa"),
+    name:  str = Query(..., description="Activity name"),
+):
+    if level not in ("gwa", "iwa", "dwa"):
+        raise HTTPException(status_code=400, detail="level must be gwa, iwa, or dwa")
+    tasks = get_wa_tasks_for_activity(level, name)
+    return WATasksResponse(
+        level=level,
+        name=name,
+        tasks=[WATaskDetail(**t) for t in tasks],
+    )
+
+
+# ── /api/explorer/all-tasks ────────────────────────────────────────────────────
+
+class AllTaskRow(BaseModel):
+    task:              str
+    task_normalized:   str
+    dwa_title:         Optional[str]   = None
+    iwa_title:         Optional[str]   = None
+    gwa_title:         Optional[str]   = None
+    physical:          Optional[bool]  = None
+    n_occs:            int             = 0
+    sources:           dict            = {}
+    avg_auto_aug:      Optional[float] = None
+    max_auto_aug:      Optional[float] = None
+    avg_pct_norm:      Optional[float] = None
+    max_pct_norm:      Optional[float] = None
+
+
+class AllTasksResponse(BaseModel):
+    tasks: list[AllTaskRow]
+
+
+@app.get("/api/explorer/all-tasks", response_model=AllTasksResponse)
+def explorer_all_tasks():
+    tasks = get_all_tasks()
+    return AllTasksResponse(tasks=[AllTaskRow(**t) for t in tasks])

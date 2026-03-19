@@ -14,6 +14,8 @@ from config import (
     AGG_LEVEL_COL, DATASETS, DATASET_SERIES, SORT_COL_MAP,
 )
 
+AEI_EXPLORER_DATASETS = ["AEI v1", "AEI v2", "AEI v3", "AEI v4", "AEI API v3", "AEI API v4"]
+
 # ── Simple in-process caches ───────────────────────────────────────────────────
 _crosswalk_cache: Optional[pd.DataFrame] = None
 _eco_raw_cache:   Optional[pd.DataFrame] = None
@@ -24,6 +26,10 @@ _explorer_occ_cache: Optional[list] = None
 _explorer_task_cache: dict = {}
 _wa_cache: dict = {}
 _trends_cache: dict = {}
+_explorer_task_lookup_cache: Optional[dict] = None
+_explorer_groups_cache: Optional[dict] = None
+_wa_explorer_cache: Optional[list] = None
+_all_tasks_cache: Optional[list] = None
 
 
 def _find_crosswalk() -> Optional[Path]:
@@ -963,9 +969,9 @@ def _safe_float(v) -> float:
 
 def get_explorer_occupations() -> list:
     """
-    Returns a list of all occupations from eco_2025 with hierarchy, employment,
-    wage stats, and average AI metrics (auto_aug, pct_normalized) from AEI v4,
-    MCP v4, and Microsoft — looked up by task_normalized.
+    Returns list of all occupations from eco_2025 with hierarchy, employment,
+    wage stats, and AI metrics from all AEI versions, MCP v4, and Microsoft.
+    Results are cached.
     """
     global _explorer_occ_cache
     if _explorer_occ_cache is not None:
@@ -975,68 +981,43 @@ def get_explorer_occupations() -> list:
     if eco is None:
         return []
 
-    # Load AI datasets
-    aei_file = DATASETS.get("AEI v4", {}).get("file", "")
-    mcp_file = DATASETS.get("MCP v4", {}).get("file", "")
-    ms_file  = DATASETS.get("Microsoft", {}).get("file", "")
+    lookup = _build_explorer_task_lookup()
 
-    aei = pd.read_csv(aei_file) if Path(aei_file).exists() else None
-    mcp = pd.read_csv(mcp_file) if Path(mcp_file).exists() else None
-    ms  = pd.read_csv(ms_file)  if Path(ms_file).exists()  else None
+    # Unique (title, task_norm) pairs with physical flag
+    def _phys_bool(v):
+        if v is None: return False
+        if isinstance(v, float) and np.isnan(v): return False
+        return bool(v)
 
-    def build_task_lookup(df, auto_col, pct_col="pct_normalized"):
-        if df is None or df.empty:
-            return {}
-        cols = [c for c in [auto_col, pct_col, "task_normalized"] if c in df.columns]
-        if "task_normalized" not in cols:
-            return {}
-        sub = df[cols].copy()
-        sub[auto_col] = pd.to_numeric(sub[auto_col], errors="coerce")
-        sub[pct_col]  = pd.to_numeric(sub.get(pct_col, pd.Series(dtype=float)), errors="coerce")
-        agg = sub.groupby("task_normalized").agg(
-            auto_aug=(auto_col, "mean"),
-            pct_norm=(pct_col,  "mean"),
-        )
-        return agg.to_dict(orient="index")
+    task_pairs = eco[["title_current", "task_normalized", "physical"]].drop_duplicates(
+        subset=["title_current", "task_normalized"]
+    ).copy()
+    task_pairs["physical_bool"] = task_pairs["physical"].apply(_phys_bool)
 
-    aei_lookup = build_task_lookup(aei, "auto_aug_mean")
-    mcp_lookup = build_task_lookup(mcp, "auto_aug_mean_adj")
-    ms_lookup  = build_task_lookup(ms,  "auto_aug_mean")
+    # Build occ → task list and physical count
+    occ_task_map: dict = {}
+    occ_physical_map: dict = {}
+    for _, row in task_pairs.iterrows():
+        title = row["title_current"]
+        tn = row["task_normalized"]
+        if title not in occ_task_map:
+            occ_task_map[title] = []
+            occ_physical_map[title] = 0
+        occ_task_map[title].append(tn)
+        if row["physical_bool"]:
+            occ_physical_map[title] += 1
 
-    task_occ = eco[["title_current", "task_normalized"]].drop_duplicates()
-
-    def occ_avg_stats(lookup):
-        if not lookup:
-            return {}
-        rows = []
-        for _, r in task_occ.iterrows():
-            tn = r["task_normalized"]
-            if tn in lookup:
-                rows.append({"title_current": r["title_current"], **lookup[tn]})
-        if not rows:
-            return {}
-        df2 = pd.DataFrame(rows)
-        return (
-            df2.groupby("title_current")
-            .agg(avg_auto=("auto_aug", "mean"), avg_pct=("pct_norm", "mean"))
-            .to_dict(orient="index")
-        )
-
-    aei_occ = occ_avg_stats(aei_lookup)
-    mcp_occ = occ_avg_stats(mcp_lookup)
-    ms_occ  = occ_avg_stats(ms_lookup)
-
+    # Basic occ stats
     occ_stats = (
         eco.groupby("title_current")
         .agg(
-            major  =("major_occ_category", "first"),
-            minor  =("minor_occ_category", "first"),
-            broad  =("broad_occ",           "first"),
-            emp_nat=("emp_tot_nat_2024",    "first"),
-            emp_ut =("emp_tot_ut_2024",     "first"),
-            wage_nat=("a_med_nat_2024",     "first"),
-            wage_ut =("a_med_ut_2024",      "first"),
-            n_tasks =("task_normalized",    "nunique"),
+            major   =("major_occ_category", "first"),
+            minor   =("minor_occ_category", "first"),
+            broad   =("broad_occ",           "first"),
+            emp_nat =("emp_tot_nat_2024",    "first"),
+            emp_ut  =("emp_tot_ut_2024",     "first"),
+            wage_nat=("a_med_nat_2024",      "first"),
+            wage_ut =("a_med_ut_2024",       "first"),
         )
         .reset_index()
     )
@@ -1044,6 +1025,12 @@ def get_explorer_occupations() -> list:
     result = []
     for _, row in occ_stats.iterrows():
         title = row["title_current"]
+        task_norms = occ_task_map.get(title, [])
+        n_tasks = len(task_norms)
+        n_phys  = occ_physical_map.get(title, 0)
+
+        metrics = _compute_task_metrics(task_norms, lookup)
+
         occ_dict: dict = {
             "title_current": title,
             "major":   row.get("major"),
@@ -1053,16 +1040,11 @@ def get_explorer_occupations() -> list:
             "emp_ut":   _safe_num(row.get("emp_ut")),
             "wage_nat": _safe_num(row.get("wage_nat")),
             "wage_ut":  _safe_num(row.get("wage_ut")),
-            "n_tasks":  int(row.get("n_tasks", 0)),
+            "n_tasks":  n_tasks,
+            "n_physical_tasks": n_phys,
+            "pct_physical": round(n_phys / n_tasks, 4) if n_tasks else None,
+            **metrics,
         }
-        for src_key, src_dict in [("aei", aei_occ), ("mcp", mcp_occ), ("ms", ms_occ)]:
-            if title in src_dict:
-                s = src_dict[title]
-                occ_dict[f"avg_auto_aug_{src_key}"] = round(float(s["avg_auto"]), 3) if s["avg_auto"] is not None and not np.isnan(s["avg_auto"]) else None
-                occ_dict[f"avg_pct_norm_{src_key}"] = round(float(s["avg_pct"]),  4) if s["avg_pct"]  is not None and not np.isnan(s["avg_pct"])  else None
-            else:
-                occ_dict[f"avg_auto_aug_{src_key}"] = None
-                occ_dict[f"avg_pct_norm_{src_key}"] = None
         result.append(occ_dict)
 
     _explorer_occ_cache = result
@@ -1072,8 +1054,9 @@ def get_explorer_occupations() -> list:
 def get_occupation_tasks(title: str) -> Optional[dict]:
     """
     Returns task-level details for one occupation, cross-referenced with
-    AEI v4, MCP v4, and Microsoft by task_normalized.
-    Includes 'physical' flag from eco_2025.
+    all AEI versions, MCP v4, and Microsoft by task_normalized.
+    Tasks are sorted alphabetically by the `task` column.
+    pct_norm values are stored as-is from the CSV (already in % form, 0-100 range).
     """
     if title in _explorer_task_cache:
         return _explorer_task_cache[title]
@@ -1086,81 +1069,26 @@ def get_occupation_tasks(title: str) -> Optional[dict]:
     if occ_tasks.empty:
         return None
 
-    aei_file = DATASETS.get("AEI v4", {}).get("file", "")
-    mcp_file = DATASETS.get("MCP v4", {}).get("file", "")
-    ms_file  = DATASETS.get("Microsoft", {}).get("file", "")
+    lookup = _build_explorer_task_lookup()
 
-    aei = pd.read_csv(aei_file) if Path(aei_file).exists() else None
-    mcp = pd.read_csv(mcp_file) if Path(mcp_file).exists() else None
-    ms  = pd.read_csv(ms_file)  if Path(ms_file).exists()  else None
-
-    def task_lookup(df, auto_col, pct_col="pct_normalized"):
-        if df is None:
-            return {}
-        cols = [c for c in [auto_col, pct_col, "task_normalized"] if c in df.columns]
-        if "task_normalized" not in cols:
-            return {}
-        sub = df[cols].copy()
-        for c in [auto_col, pct_col]:
-            if c in sub.columns:
-                sub[c] = pd.to_numeric(sub[c], errors="coerce")
-        agg = sub.groupby("task_normalized").agg(
-            auto=(auto_col, "mean"),
-            pct =(pct_col,  "mean"),
-        )
-        return {tn: {"auto": row["auto"], "pct": row["pct"]} for tn, row in agg.iterrows()}
-
-    aei_tasks = task_lookup(aei, "auto_aug_mean")
-    mcp_tasks = task_lookup(mcp, "auto_aug_mean_adj")
-    ms_tasks  = task_lookup(ms,  "auto_aug_mean")
+    # Sort by task name alphabetically
+    occ_tasks = occ_tasks.sort_values("task")
 
     tasks_list = []
-    seen_task_norm = set()
+    seen_task_norm: set = set()
+
     for _, row in occ_tasks.iterrows():
         tn = row["task_normalized"]
         if tn in seen_task_norm:
             continue
         seen_task_norm.add(tn)
 
-        aei_info = None
-        mcp_info = None
-        ms_info  = None
+        sources = dict(lookup.get(tn, {}))
 
-        if tn in aei_tasks:
-            r = aei_tasks[tn]
-            aei_info = {
-                "auto_aug_mean":   round(float(r["auto"]), 3) if _safe_num(r["auto"]) is not None else None,
-                "pct_normalized":  round(float(r["pct"]),  4) if _safe_num(r["pct"])  is not None else None,
-            }
-        if tn in mcp_tasks:
-            r = mcp_tasks[tn]
-            mcp_info = {
-                "auto_aug_mean_adj": round(float(r["auto"]), 3) if _safe_num(r["auto"]) is not None else None,
-                "pct_normalized":    round(float(r["pct"]),  4) if _safe_num(r["pct"])  is not None else None,
-            }
-        if tn in ms_tasks:
-            r = ms_tasks[tn]
-            ms_info = {
-                "auto_aug_mean":  round(float(r["auto"]), 3) if _safe_num(r["auto"]) is not None else None,
-                "pct_normalized": round(float(r["pct"]),  4) if _safe_num(r["pct"])  is not None else None,
-            }
+        # Avg/max across all sources
+        auto_vals = [v["auto_aug"] for v in sources.values() if v.get("auto_aug") is not None]
+        pct_vals  = [v["pct_norm"]  for v in sources.values() if v.get("pct_norm")  is not None]
 
-        auto_vals = [
-            v for v in [
-                aei_info["auto_aug_mean"]     if aei_info else None,
-                mcp_info["auto_aug_mean_adj"] if mcp_info else None,
-                ms_info["auto_aug_mean"]      if ms_info  else None,
-            ] if v is not None
-        ]
-        pct_vals = [
-            v for v in [
-                aei_info["pct_normalized"] if aei_info else None,
-                mcp_info["pct_normalized"] if mcp_info else None,
-                ms_info["pct_normalized"]  if ms_info  else None,
-            ] if v is not None
-        ]
-
-        # Physical flag from eco_2025
         phys_val = row.get("physical")
         if phys_val is None or (isinstance(phys_val, float) and np.isnan(phys_val)):
             is_physical = None
@@ -1177,15 +1105,602 @@ def get_occupation_tasks(title: str) -> Optional[dict]:
             "importance":     _safe_num(row.get("importance")),
             "relevance":      _safe_num(row.get("relevance")),
             "physical":       is_physical,
-            "aei":            aei_info,
-            "mcp":            mcp_info,
-            "microsoft":      ms_info,
-            "avg_auto_aug":     round(sum(auto_vals) / len(auto_vals), 3) if auto_vals else None,
-            "max_auto_aug":     round(max(auto_vals), 3)                  if auto_vals else None,
-            "avg_pct_normalized": round(sum(pct_vals) / len(pct_vals), 4) if pct_vals else None,
-            "max_pct_normalized": round(max(pct_vals), 4)                 if pct_vals else None,
+            "sources":        sources,
+            "avg_auto_aug":   round(sum(auto_vals) / len(auto_vals), 3) if auto_vals else None,
+            "max_auto_aug":   round(max(auto_vals), 3)                  if auto_vals else None,
+            "avg_pct_norm":   round(sum(pct_vals) / len(pct_vals), 4)  if pct_vals  else None,
+            "max_pct_norm":   round(max(pct_vals), 4)                  if pct_vals  else None,
         })
 
     result = {"title": title, "tasks": tasks_list}
     _explorer_task_cache[title] = result
+    return result
+
+
+def _build_explorer_task_lookup() -> dict:
+    """
+    Builds and caches a dict: task_normalized -> {source_name: {"auto_aug": float|None, "pct_norm": float|None}}
+    Sources: all AEI versions (using auto_aug_mean), MCP v4 (auto_aug_mean_adj), Microsoft (auto_aug_mean).
+    """
+    global _explorer_task_lookup_cache
+    if _explorer_task_lookup_cache is not None:
+        return _explorer_task_lookup_cache
+
+    result: dict = {}
+
+    for ds_name in AEI_EXPLORER_DATASETS:
+        meta = DATASETS.get(ds_name, {})
+        fpath = meta.get("file", "")
+        if not Path(fpath).exists():
+            continue
+        df = pd.read_csv(fpath)
+        if "task_normalized" not in df.columns:
+            continue
+        if "auto_aug_mean" not in df.columns:
+            df["auto_aug_mean"] = np.nan
+        if "pct_normalized" not in df.columns:
+            df["pct_normalized"] = np.nan
+        df["auto_aug_mean"] = pd.to_numeric(df["auto_aug_mean"], errors="coerce")
+        df["pct_normalized"] = pd.to_numeric(df["pct_normalized"], errors="coerce")
+        agg = df.groupby("task_normalized", sort=False).agg(
+            auto_aug=("auto_aug_mean", "mean"),
+            pct_norm=("pct_normalized", "mean"),
+        ).reset_index()
+        for _, row in agg.iterrows():
+            tn = row["task_normalized"]
+            if tn not in result:
+                result[tn] = {}
+            result[tn][ds_name] = {
+                "auto_aug": _safe_num(row["auto_aug"]),
+                "pct_norm": _safe_num(row["pct_norm"]),
+            }
+
+    # MCP v4
+    mcp_meta = DATASETS.get("MCP v4", {})
+    mcp_file = mcp_meta.get("file", "")
+    if Path(mcp_file).exists():
+        mcp = pd.read_csv(mcp_file)
+        if "auto_aug_mean_adj" not in mcp.columns:
+            mcp["auto_aug_mean_adj"] = np.nan
+        if "pct_normalized" not in mcp.columns:
+            mcp["pct_normalized"] = np.nan
+        mcp["auto_aug_mean_adj"] = pd.to_numeric(mcp["auto_aug_mean_adj"], errors="coerce")
+        mcp["pct_normalized"] = pd.to_numeric(mcp["pct_normalized"], errors="coerce")
+        if "task_normalized" in mcp.columns:
+            agg = mcp.groupby("task_normalized", sort=False).agg(
+                auto_aug=("auto_aug_mean_adj", "mean"),
+                pct_norm=("pct_normalized", "mean"),
+            ).reset_index()
+            for _, row in agg.iterrows():
+                tn = row["task_normalized"]
+                if tn not in result:
+                    result[tn] = {}
+                result[tn]["MCP"] = {
+                    "auto_aug": _safe_num(row["auto_aug"]),
+                    "pct_norm": _safe_num(row["pct_norm"]),
+                }
+
+    # Microsoft
+    ms_meta = DATASETS.get("Microsoft", {})
+    ms_file = ms_meta.get("file", "")
+    if Path(ms_file).exists():
+        ms = pd.read_csv(ms_file)
+        if "auto_aug_mean" not in ms.columns:
+            ms["auto_aug_mean"] = np.nan
+        if "pct_normalized" not in ms.columns:
+            ms["pct_normalized"] = np.nan
+        ms["auto_aug_mean"] = pd.to_numeric(ms["auto_aug_mean"], errors="coerce")
+        ms["pct_normalized"] = pd.to_numeric(ms["pct_normalized"], errors="coerce")
+        if "task_normalized" in ms.columns:
+            agg = ms.groupby("task_normalized", sort=False).agg(
+                auto_aug=("auto_aug_mean", "mean"),
+                pct_norm=("pct_normalized", "mean"),
+            ).reset_index()
+            for _, row in agg.iterrows():
+                tn = row["task_normalized"]
+                if tn not in result:
+                    result[tn] = {}
+                result[tn]["Microsoft"] = {
+                    "auto_aug": _safe_num(row["auto_aug"]),
+                    "pct_norm": _safe_num(row["pct_norm"]),
+                }
+
+    _explorer_task_lookup_cache = result
+    return result
+
+
+def _compute_task_metrics(task_norms: list, lookup: dict) -> dict:
+    """
+    Given a list of unique task_normalized values and the lookup, compute 10 metrics:
+    - auto_avg_with_vals: avg of (per-task avg-across-sources), only tasks with >=1 source
+    - auto_max_with_vals: avg of (per-task max-across-sources), only tasks with >=1 source
+    - auto_avg_all:       sum of (per-task avg, nulls=0) / total_n_tasks
+    - auto_max_all:       sum of (per-task max, nulls=0) / total_n_tasks
+    - pct_avg_with_vals, pct_max_with_vals, pct_avg_all, pct_max_all  (same pattern)
+    - sum_pct_avg:        sum of per-task pct_avg (only tasks with pct values)
+    - sum_pct_max:        sum of per-task pct_max (only tasks with pct values)
+    """
+    total_n = len(task_norms)
+    auto_avgs_with: list = []
+    auto_maxs_with: list = []
+    auto_avgs_sum = 0.0
+    auto_maxs_sum = 0.0
+
+    pct_avgs_with: list = []
+    pct_maxs_with: list = []
+    pct_avgs_sum = 0.0
+    pct_maxs_sum = 0.0
+
+    for tn in task_norms:
+        sources = lookup.get(tn, {})
+
+        auto_vals = [v["auto_aug"] for v in sources.values() if v.get("auto_aug") is not None]
+        if auto_vals:
+            t_avg = sum(auto_vals) / len(auto_vals)
+            t_max = max(auto_vals)
+            auto_avgs_with.append(t_avg)
+            auto_maxs_with.append(t_max)
+            auto_avgs_sum += t_avg
+            auto_maxs_sum += t_max
+
+        pct_vals = [v["pct_norm"] for v in sources.values() if v.get("pct_norm") is not None]
+        if pct_vals:
+            t_pct_avg = sum(pct_vals) / len(pct_vals)
+            t_pct_max = max(pct_vals)
+            pct_avgs_with.append(t_pct_avg)
+            pct_maxs_with.append(t_pct_max)
+            pct_avgs_sum += t_pct_avg
+            pct_maxs_sum += t_pct_max
+
+    n_with_auto = len(auto_avgs_with)
+    n_with_pct  = len(pct_avgs_with)
+
+    def _r3(v): return round(v, 3) if v is not None else None
+    def _r4(v): return round(v, 4) if v is not None else None
+
+    return {
+        "auto_avg_with_vals": _r3(sum(auto_avgs_with) / n_with_auto) if n_with_auto else None,
+        "auto_max_with_vals": _r3(sum(auto_maxs_with) / n_with_auto) if n_with_auto else None,
+        "auto_avg_all":       _r3(auto_avgs_sum / total_n) if total_n else None,
+        "auto_max_all":       _r3(auto_maxs_sum / total_n) if total_n else None,
+        "pct_avg_with_vals":  _r4(sum(pct_avgs_with) / n_with_pct)  if n_with_pct  else None,
+        "pct_max_with_vals":  _r4(sum(pct_maxs_with) / n_with_pct)  if n_with_pct  else None,
+        "pct_avg_all":        _r4(pct_avgs_sum / total_n) if total_n else None,
+        "pct_max_all":        _r4(pct_maxs_sum / total_n) if total_n else None,
+        "sum_pct_avg":        _r4(pct_avgs_sum) if pct_avgs_with else None,
+        "sum_pct_max":        _r4(pct_maxs_sum) if pct_maxs_with else None,
+    }
+
+
+def get_explorer_groups() -> dict:
+    """
+    Returns pre-computed aggregations for major/minor/broad levels.
+    Each group's metrics are computed from unique task_norms across all occupations
+    in that group (NOT averaged from occ-level values).
+    Each row also includes parent hierarchy fields.
+    Results are cached.
+    """
+    global _explorer_groups_cache
+    if _explorer_groups_cache is not None:
+        return _explorer_groups_cache
+
+    eco = load_eco_raw()
+    if eco is None:
+        return {"major": [], "minor": [], "broad": []}
+
+    lookup = _build_explorer_task_lookup()
+
+    # Basic occ stats
+    occ_basic = (
+        eco.groupby("title_current")
+        .agg(
+            major   =("major_occ_category", "first"),
+            minor   =("minor_occ_category", "first"),
+            broad   =("broad_occ",          "first"),
+            emp_nat =("emp_tot_nat_2024",    "first"),
+            emp_ut  =("emp_tot_ut_2024",     "first"),
+            wage_nat=("a_med_nat_2024",      "first"),
+            wage_ut =("a_med_ut_2024",       "first"),
+        )
+        .reset_index()
+    )
+
+    # Unique (title, task_norm) pairs with physical flag
+    task_pairs = eco[["title_current", "task_normalized", "physical"]].drop_duplicates(
+        subset=["title_current", "task_normalized"]
+    ).copy()
+
+    def _phys_bool(v):
+        if v is None:
+            return False
+        if isinstance(v, float) and np.isnan(v):
+            return False
+        return bool(v)
+
+    task_pairs["physical_bool"] = task_pairs["physical"].apply(_phys_bool)
+
+    # Build occ→level mappings
+    occ_to_major = dict(zip(occ_basic["title_current"], occ_basic["major"]))
+    occ_to_minor = dict(zip(occ_basic["title_current"], occ_basic["minor"]))
+    occ_to_broad = dict(zip(occ_basic["title_current"], occ_basic["broad"]))
+    occ_to_emp_nat  = dict(zip(occ_basic["title_current"], occ_basic["emp_nat"]))
+    occ_to_emp_ut   = dict(zip(occ_basic["title_current"], occ_basic["emp_ut"]))
+    occ_to_wage_nat = dict(zip(occ_basic["title_current"], occ_basic["wage_nat"]))
+    occ_to_wage_ut  = dict(zip(occ_basic["title_current"], occ_basic["wage_ut"]))
+
+    result: dict = {}
+
+    level_configs = [
+        ("major", occ_to_major, None,       None),
+        ("minor", occ_to_minor, occ_to_major, None),
+        ("broad", occ_to_broad, occ_to_minor, occ_to_major),
+    ]
+
+    for level_key, occ_to_level, occ_to_parent, occ_to_grandparent in level_configs:
+        from collections import defaultdict
+        level_to_occs: dict = defaultdict(set)
+        for title in occ_basic["title_current"]:
+            lv = occ_to_level.get(title) or "Unknown"
+            level_to_occs[lv].add(title)
+
+        groups_data = []
+        for group_name in sorted(level_to_occs.keys()):
+            occs = level_to_occs[group_name]
+
+            # Unique task_norms for this group
+            group_tasks = task_pairs[task_pairs["title_current"].isin(occs)]
+            unique_task_norms = group_tasks["task_normalized"].unique().tolist()
+            n_tasks = len(unique_task_norms)
+
+            # Physical: count unique task_norms that are physical
+            phys_by_task = group_tasks.groupby("task_normalized")["physical_bool"].any()
+            n_phys = int(phys_by_task.sum())
+
+            metrics = _compute_task_metrics(unique_task_norms, lookup)
+
+            # Emp and wage
+            total_emp_nat = sum((_safe_num(occ_to_emp_nat.get(t)) or 0) for t in occs)
+            total_emp_ut  = sum((_safe_num(occ_to_emp_ut.get(t))  or 0) for t in occs)
+            wage_sum_nat = 0.0; wage_emp_nat = 0.0
+            wage_sum_ut  = 0.0; wage_emp_ut  = 0.0
+            for t in occs:
+                en = _safe_num(occ_to_emp_nat.get(t)) or 0
+                eu = _safe_num(occ_to_emp_ut.get(t))  or 0
+                wn = _safe_num(occ_to_wage_nat.get(t))
+                wu = _safe_num(occ_to_wage_ut.get(t))
+                if wn is not None and en > 0:
+                    wage_sum_nat += wn * en; wage_emp_nat += en
+                if wu is not None and eu > 0:
+                    wage_sum_ut  += wu * eu; wage_emp_ut  += eu
+
+            # Parent info (take mode from occs)
+            parent_name = None
+            grandparent_name = None
+            if occ_to_parent is not None:
+                from collections import Counter
+                parents = [occ_to_parent.get(t) for t in occs if occ_to_parent.get(t)]
+                if parents:
+                    parent_name = Counter(parents).most_common(1)[0][0]
+            if occ_to_grandparent is not None:
+                from collections import Counter
+                grandparents = [occ_to_grandparent.get(t) for t in occs if occ_to_grandparent.get(t)]
+                if grandparents:
+                    grandparent_name = Counter(grandparents).most_common(1)[0][0]
+
+            row = {
+                "name":    group_name,
+                "parent":  parent_name,
+                "grandparent": grandparent_name,
+                "emp_nat": round(total_emp_nat, 0) if total_emp_nat else None,
+                "emp_ut":  round(total_emp_ut,  0) if total_emp_ut  else None,
+                "wage_nat": round(wage_sum_nat / wage_emp_nat, 0) if wage_emp_nat else None,
+                "wage_ut":  round(wage_sum_ut  / wage_emp_ut,  0) if wage_emp_ut  else None,
+                "n_occs":  len(occs),
+                "n_tasks": n_tasks,
+                "n_physical_tasks": n_phys,
+                "pct_physical": round(n_phys / n_tasks, 4) if n_tasks else None,
+                **metrics,
+            }
+            groups_data.append(row)
+
+        result[level_key] = groups_data
+
+    _explorer_groups_cache = result
+    return result
+
+
+def get_wa_explorer_data() -> list:
+    """
+    Returns WA explorer data: list of rows for GWA, IWA, DWA levels.
+    Each row includes: level, name, parent, gwa, emp, wage, n_occs, n_tasks, metrics.
+    emp uses the same allocation logic as the WA backend (emp_occ / n_unique_tasks_in_occ).
+    AI metrics are computed from tasks deduplicated at each level (task_norm x activity).
+    Results are cached.
+    """
+    global _wa_explorer_cache
+    if _wa_explorer_cache is not None:
+        return _wa_explorer_cache
+
+    eco = load_eco_raw()
+    if eco is None:
+        return []
+
+    lookup = _build_explorer_task_lookup()
+
+    needed_cols = [
+        "title_current", "task_normalized", "task",
+        "dwa_title", "iwa_title", "gwa_title",
+        "physical", "emp_tot_nat_2024", "emp_tot_ut_2024",
+        "a_med_nat_2024", "a_med_ut_2024",
+    ]
+    avail_cols = [c for c in needed_cols if c in eco.columns]
+    df = eco[avail_cols].copy()
+
+    # n_unique_tasks_per_occ
+    n_tasks_per_occ = (
+        df.groupby("title_current")["task_normalized"]
+        .nunique()
+        .reset_index()
+        .rename(columns={"task_normalized": "n_tasks_occ"})
+    )
+    df = df.merge(n_tasks_per_occ, on="title_current", how="left")
+
+    for geo_col, emp_col in [("emp_per_task_nat", "emp_tot_nat_2024"), ("emp_per_task_ut", "emp_tot_ut_2024")]:
+        if emp_col in df.columns:
+            df[geo_col] = df[emp_col].fillna(0) / df["n_tasks_occ"].replace(0, np.nan)
+        else:
+            df[geo_col] = 0.0
+
+    def _phys_bool(v):
+        if v is None:
+            return False
+        if isinstance(v, float) and np.isnan(v):
+            return False
+        return bool(v)
+
+    df["physical_bool"] = df["physical"].apply(_phys_bool)
+
+    rows_out: list = []
+
+    level_specs = [
+        ("gwa", "gwa_title", None,        "gwa_title"),
+        ("iwa", "iwa_title", "gwa_title", "gwa_title"),
+        ("dwa", "dwa_title", "iwa_title", "gwa_title"),
+    ]
+
+    for level_key, act_col, parent_col, gwa_col in level_specs:
+        if act_col not in df.columns:
+            continue
+
+        level_df = df[df[act_col].notna()].copy()
+        if level_df.empty:
+            continue
+
+        # Unique (task_norm, act) pairs for deduplication at this level
+        unique_pairs = level_df[[act_col, "task_normalized"]].drop_duplicates()
+
+        for act_name, act_df in sorted(level_df.groupby(act_col), key=lambda x: x[0]):
+            # emp: sum emp_per_task across unique (occ, task_norm) combos
+            occ_task_dedup = act_df.drop_duplicates(subset=["title_current", "task_normalized"])
+            total_emp_nat = occ_task_dedup["emp_per_task_nat"].fillna(0).sum()
+            total_emp_ut  = occ_task_dedup["emp_per_task_ut"].fillna(0).sum()
+
+            # wage: emp-weighted avg
+            wage_sum_nat = 0.0; wage_emp_nat = 0.0
+            wage_sum_ut  = 0.0; wage_emp_ut  = 0.0
+            for _, r in occ_task_dedup.iterrows():
+                en = _safe_num(r.get("emp_per_task_nat")) or 0
+                eu = _safe_num(r.get("emp_per_task_ut"))  or 0
+                wn = _safe_num(r.get("a_med_nat_2024"))
+                wu = _safe_num(r.get("a_med_ut_2024"))
+                if wn is not None and en > 0:
+                    wage_sum_nat += wn * en; wage_emp_nat += en
+                if wu is not None and eu > 0:
+                    wage_sum_ut  += wu * eu; wage_emp_ut  += eu
+
+            n_occs = int(act_df["title_current"].nunique())
+
+            # Unique task_norms at this activity level
+            unique_task_norms = unique_pairs[unique_pairs[act_col] == act_name]["task_normalized"].unique().tolist()
+            n_tasks = len(unique_task_norms)
+
+            # Physical: unique tasks that are physical
+            phys_by_task = act_df.drop_duplicates(subset=["task_normalized"]).set_index("task_normalized")["physical_bool"]
+            n_phys = int(phys_by_task.sum())
+
+            metrics = _compute_task_metrics(unique_task_norms, lookup)
+
+            # Parent / gwa info
+            parent_name = None
+            gwa_name    = None
+            if parent_col and parent_col in act_df.columns:
+                from collections import Counter
+                parents = [v for v in act_df[parent_col].dropna() if v]
+                parent_name = Counter(parents).most_common(1)[0][0] if parents else None
+            if gwa_col and gwa_col in act_df.columns:
+                from collections import Counter
+                gwas = [v for v in act_df[gwa_col].dropna() if v]
+                gwa_name = Counter(gwas).most_common(1)[0][0] if gwas else None
+            elif level_key == "gwa":
+                gwa_name = act_name
+
+            rows_out.append({
+                "level":   level_key,
+                "name":    str(act_name),
+                "parent":  parent_name,
+                "gwa":     gwa_name,
+                "emp_nat": round(float(total_emp_nat), 1) if total_emp_nat else None,
+                "emp_ut":  round(float(total_emp_ut),  1) if total_emp_ut  else None,
+                "wage_nat": round(wage_sum_nat / wage_emp_nat, 0) if wage_emp_nat else None,
+                "wage_ut":  round(wage_sum_ut  / wage_emp_ut,  0) if wage_emp_ut  else None,
+                "n_occs":  n_occs,
+                "n_tasks": n_tasks,
+                "n_physical_tasks": n_phys,
+                "pct_physical": round(n_phys / n_tasks, 4) if n_tasks else None,
+                **metrics,
+            })
+
+    _wa_explorer_cache = rows_out
+    return rows_out
+
+
+def get_wa_tasks_for_activity(level: str, name: str) -> list:
+    """
+    Returns task-level details for a specific WA activity (gwa/iwa/dwa).
+    Tasks are deduplicated by task_normalized, with emp summed across all occupations.
+    """
+    eco = load_eco_raw()
+    if eco is None:
+        return []
+
+    lookup = _build_explorer_task_lookup()
+
+    act_col_map = {"gwa": "gwa_title", "iwa": "iwa_title", "dwa": "dwa_title"}
+    act_col = act_col_map.get(level)
+    if not act_col or act_col not in eco.columns:
+        return []
+
+    # Filter to this activity
+    act_df = eco[eco[act_col] == name].copy()
+    if act_df.empty:
+        return []
+
+    # emp allocation
+    n_tasks_per_occ = (
+        eco.groupby("title_current")["task_normalized"]
+        .nunique()
+        .reset_index()
+        .rename(columns={"task_normalized": "n_tasks_occ"})
+    )
+    act_df = act_df.merge(n_tasks_per_occ, on="title_current", how="left")
+    if "emp_tot_nat_2024" in act_df.columns:
+        act_df["emp_per_task_nat"] = act_df["emp_tot_nat_2024"].fillna(0) / act_df["n_tasks_occ"].replace(0, np.nan)
+    else:
+        act_df["emp_per_task_nat"] = 0.0
+    if "emp_tot_ut_2024" in act_df.columns:
+        act_df["emp_per_task_ut"] = act_df["emp_tot_ut_2024"].fillna(0) / act_df["n_tasks_occ"].replace(0, np.nan)
+    else:
+        act_df["emp_per_task_ut"] = 0.0
+
+    def _phys_bool(v):
+        if v is None: return False
+        if isinstance(v, float) and np.isnan(v): return False
+        return bool(v)
+
+    tasks_out = []
+    seen_norms = set()
+
+    for tn, grp in act_df.groupby("task_normalized"):
+        if tn in seen_norms:
+            continue
+        seen_norms.add(tn)
+
+        # Use first row for task text, hierarchy, physical
+        first = grp.iloc[0]
+        emp_nat = float(grp.drop_duplicates(subset=["title_current"])["emp_per_task_nat"].fillna(0).sum())
+        emp_ut  = float(grp.drop_duplicates(subset=["title_current"])["emp_per_task_ut"].fillna(0).sum())
+
+        # wage: emp-weighted avg
+        wage_sum_nat = 0.0; wage_emp_nat = 0.0
+        for _, r in grp.drop_duplicates(subset=["title_current"]).iterrows():
+            en = _safe_num(r.get("emp_per_task_nat")) or 0
+            wn = _safe_num(r.get("a_med_nat_2024"))
+            if wn is not None and en > 0:
+                wage_sum_nat += wn * en; wage_emp_nat += en
+
+        sources = lookup.get(tn, {})
+        auto_vals = [v["auto_aug"] for v in sources.values() if v.get("auto_aug") is not None]
+        pct_vals  = [v["pct_norm"]  for v in sources.values() if v.get("pct_norm")  is not None]
+
+        phys_val = first.get("physical")
+        is_physical = None
+        if phys_val is not None and not (isinstance(phys_val, float) and np.isnan(phys_val)):
+            is_physical = bool(phys_val)
+
+        tasks_out.append({
+            "task":           str(first.get("task", tn)),
+            "task_normalized": tn,
+            "dwa_title":      first.get("dwa_title"),
+            "iwa_title":      first.get("iwa_title"),
+            "gwa_title":      first.get("gwa_title"),
+            "physical":       is_physical,
+            "emp_nat":        round(emp_nat, 2) if emp_nat else None,
+            "emp_ut":         round(emp_ut,  2) if emp_ut  else None,
+            "wage_nat":       round(wage_sum_nat / wage_emp_nat, 0) if wage_emp_nat else None,
+            "sources":        dict(sources),
+            "avg_auto_aug":   round(sum(auto_vals) / len(auto_vals), 3) if auto_vals else None,
+            "max_auto_aug":   round(max(auto_vals), 3) if auto_vals else None,
+            "avg_pct_norm":   round(sum(pct_vals) / len(pct_vals), 4) if pct_vals else None,
+            "max_pct_norm":   round(max(pct_vals), 4) if pct_vals else None,
+        })
+
+    tasks_out.sort(key=lambda t: t["task"])
+    return tasks_out
+
+
+def get_all_tasks() -> list:
+    """
+    Returns all unique tasks from eco_2025 with their AI metrics from the task lookup.
+    Each task row includes: task, task_normalized, dwa_title, iwa_title, gwa_title,
+    physical, n_occs (unique occ count), avg_auto_aug, max_auto_aug, avg_pct_norm, max_pct_norm,
+    plus the sources dict.
+    Results are cached.
+    """
+    global _all_tasks_cache
+    if _all_tasks_cache is not None:
+        return _all_tasks_cache
+
+    eco = load_eco_raw()
+    if eco is None:
+        return []
+
+    lookup = _build_explorer_task_lookup()
+
+    # Get unique tasks with their metadata (use first occurrence for text/hierarchy)
+    task_cols = ["task_normalized", "task", "dwa_title", "iwa_title", "gwa_title", "physical"]
+    avail = [c for c in task_cols if c in eco.columns]
+    task_meta = eco[avail].drop_duplicates(subset=["task_normalized"]).copy()
+
+    # Count unique occs per task
+    occ_counts = (
+        eco.groupby("task_normalized")["title_current"]
+        .nunique()
+        .reset_index()
+        .rename(columns={"title_current": "n_occs"})
+    )
+    task_meta = task_meta.merge(occ_counts, on="task_normalized", how="left")
+
+    def _phys_bool(v):
+        if v is None: return False
+        if isinstance(v, float) and np.isnan(v): return False
+        return bool(v)
+
+    result = []
+    for _, row in task_meta.sort_values("task").iterrows():
+        tn = row["task_normalized"]
+        sources = dict(lookup.get(tn, {}))
+        auto_vals = [v["auto_aug"] for v in sources.values() if v.get("auto_aug") is not None]
+        pct_vals  = [v["pct_norm"]  for v in sources.values() if v.get("pct_norm")  is not None]
+
+        phys_val = row.get("physical")
+        is_physical = None
+        if phys_val is not None and not (isinstance(phys_val, float) and np.isnan(phys_val)):
+            is_physical = bool(phys_val)
+
+        result.append({
+            "task":           str(row.get("task", tn)),
+            "task_normalized": tn,
+            "dwa_title":      row.get("dwa_title"),
+            "iwa_title":      row.get("iwa_title"),
+            "gwa_title":      row.get("gwa_title"),
+            "physical":       is_physical,
+            "n_occs":         int(row.get("n_occs", 0)),
+            "sources":        sources,
+            "avg_auto_aug":   round(sum(auto_vals) / len(auto_vals), 3) if auto_vals else None,
+            "max_auto_aug":   round(max(auto_vals), 3)                  if auto_vals else None,
+            "avg_pct_norm":   round(sum(pct_vals) / len(pct_vals), 4)  if pct_vals  else None,
+            "max_pct_norm":   round(max(pct_vals), 4)                  if pct_vals  else None,
+        })
+
+    _all_tasks_cache = result
     return result

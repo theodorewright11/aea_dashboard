@@ -8,6 +8,9 @@ import type {
   WATrendsSettings,
   OccupationSummary,
   OccupationTasksResponse,
+  ExplorerGroupsResponse,
+  WAExplorerResponse,
+  WATasksResponse,
 } from "./types";
 
 const API_BASE =
@@ -117,5 +120,31 @@ export async function fetchOccupationTasks(title: string): Promise<OccupationTas
     `${API_BASE}/api/explorer/tasks?title=${encodeURIComponent(title)}`
   );
   if (!res.ok) throw new Error(`Tasks request failed for ${title}`);
+  return res.json();
+}
+
+export async function fetchExplorerGroups(): Promise<ExplorerGroupsResponse> {
+  const res = await fetch(`${API_BASE}/api/explorer/groups`);
+  if (!res.ok) throw new Error("Explorer groups request failed");
+  return res.json();
+}
+
+export async function fetchAllTasks(): Promise<{ tasks: import("./types").AllTaskRow[] }> {
+  const res = await fetch(`${API_BASE}/api/explorer/all-tasks`);
+  if (!res.ok) throw new Error("All tasks request failed");
+  return res.json();
+}
+
+export async function fetchWAExplorer(): Promise<WAExplorerResponse> {
+  const res = await fetch(`${API_BASE}/api/explorer/wa`);
+  if (!res.ok) throw new Error("WA Explorer request failed");
+  return res.json();
+}
+
+export async function fetchWAActivityTasks(level: string, name: string): Promise<WATasksResponse> {
+  const res = await fetch(
+    `${API_BASE}/api/explorer/wa/tasks?level=${encodeURIComponent(level)}&name=${encodeURIComponent(name)}`
+  );
+  if (!res.ok) throw new Error(`WA tasks request failed for ${level}/${name}`);
   return res.json();
 }
