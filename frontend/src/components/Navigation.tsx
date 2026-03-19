@@ -8,8 +8,8 @@ const NAV_LINKS = [
   { href: "/",                label: "Occupation Categories" },
   { href: "/work-activities", label: "Work Activities" },
   { href: "/trends",          label: "Trends" },
-  { href: "/explorer",        label: "Job Explorer" },
-  { href: "/wa-explorer",     label: "WA Explorer" },
+  { href: "/explorer",        label: "Occupation Explorer" },
+  { href: "/wa-explorer",     label: "Work Activities Explorer" },
 ];
 
 /* ── About modal ─────────────────────────────────────────────────── */

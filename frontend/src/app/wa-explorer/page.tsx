@@ -1,17 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { WAExplorerResponse } from "@/lib/types";
-import { fetchWAExplorer } from "@/lib/api";
+import type { WAExplorerResponse, ConfigResponse } from "@/lib/types";
+import { fetchWAExplorer, fetchConfig } from "@/lib/api";
 import WAExplorerView from "@/components/WAExplorerView";
 
 export default function WAExplorerPage() {
-  const [data,  setData]  = useState<WAExplorerResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [data,   setData]   = useState<WAExplorerResponse | null>(null);
+  const [config, setConfig] = useState<ConfigResponse | null>(null);
+  const [error,  setError]  = useState<string | null>(null);
 
   useEffect(() => {
-    fetchWAExplorer()
-      .then((d) => setData(d))
+    Promise.all([fetchWAExplorer(), fetchConfig()])
+      .then(([d, c]) => { setData(d); setConfig(c); })
       .catch((e) => setError(e.message));
   }, []);
 
@@ -21,7 +22,7 @@ export default function WAExplorerPage() {
     </div>
   );
 
-  if (!data) return (
+  if (!data || !config) return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "calc(100vh - 56px)", gap: 16 }}>
       <div style={{ width: 36, height: 36, borderRadius: "50%", border: "3px solid var(--brand)", borderTopColor: "transparent", animation: "spin 0.7s linear infinite" }} />
       <p style={{ fontSize: 13, color: "var(--text-muted)" }}>Loading work activity data…</p>
@@ -29,5 +30,5 @@ export default function WAExplorerPage() {
     </div>
   );
 
-  return <WAExplorerView rows={data.rows} />;
+  return <WAExplorerView rows={data.rows} config={config} />;
 }

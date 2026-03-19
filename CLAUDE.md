@@ -33,14 +33,16 @@ aea_dashboard/
 │       │   ├── page.tsx                — Overview page (two-group bar charts)
 │       │   ├── work-activities/page.tsx — DWA/IWA/GWA activity charts
 │       │   ├── trends/page.tsx         — Time-series trends
-│       │   └── explorer/page.tsx       — Job explorer accordion
+│       │   ├── explorer/page.tsx       — Job explorer (table view)
+│       │   └── wa-explorer/page.tsx    — WA Explorer (new, 5th tab)
 │       ├── components/
-│       │   ├── Navigation.tsx          — Sticky top nav (4 tabs)
+│       │   ├── Navigation.tsx          — Sticky top nav (5 tabs)
 │       │   ├── GroupPanel.tsx          — Container for one group's 3 bar charts (Overview)
 │       │   ├── HorizontalBarChart.tsx  — Recharts horizontal bar chart with rich tooltip
 │       │   ├── WorkActivitiesPanel.tsx — DWA/IWA/GWA Recharts charts (pure renderer)
 │       │   ├── TrendsView.tsx          — Line-chart trends page (2 tabs)
-│       │   └── ExplorerView.tsx        — Accordion + flat-table occupation explorer
+│       │   ├── ExplorerView.tsx        — Table-only occupation explorer (overhauled)
+│       │   └── WAExplorerView.tsx      — WA Explorer: GWA/IWA/DWA hierarchy table (new)
 │       └── lib/
 │           ├── types.ts         — All TypeScript interfaces
 │           ├── api.ts           — All fetch functions (wraps FastAPI)
@@ -88,7 +90,7 @@ Set `NEXT_PUBLIC_API_URL=http://localhost:8000` if needed (default).
 - `freq_mean` (0–10), `importance` (0–5), `relevance` (0–100) — O*NET survey
 - `auto_aug_mean` (0–5) — AI automatability score (all datasets)
 - `auto_aug_mean_adj` — MCP only; excludes flagged ratings (preferred for MCP)
-- `pct_normalized` — share of conversations for this task (AEI/MCP/Microsoft only; all zeros in ECO files)
+- `pct_normalized` — share of conversations for this task (AEI/MCP/Microsoft only; all zeros in ECO files); **values are already in percent form (e.g., 0.4 means 0.4%, NOT 40%)**
 - `physical` — boolean; truly physical task
 - `date` — dataset snapshot date (used for time-trend analysis)
 - `emp_tot_nat_2024`, `emp_tot_ut_2024` — employment (BLS OEWS 2024)
@@ -136,11 +138,38 @@ Set `NEXT_PUBLIC_API_URL=http://localhost:8000` if needed (default).
 **Trends:**
 - `compute_trends(settings)` — for each selected series, runs `compute_single_dataset` for every version, records date, returns time series per category. `TrendSeries.data_points[i].dataset` is the individual dataset name (e.g. "AEI v2").
 
-**Explorer:**
-- `get_explorer_occupations()` — builds list of all 923 eco_2025 occupations with hierarchy, emp, wage, and avg AI stats (auto_aug, pct_normalized) from AEI v4 / MCP v4 / Microsoft, looked up by task_normalized; cached after first call
-- `get_occupation_tasks(title)` — returns all tasks for one occupation with per-source AI stats (AEI v4 by task_normalized, MCP v4 by task_normalized, Microsoft by task_normalized); also returns `physical` flag per task; cached
+**Explorer — new functions (Stop 5):**
 
-**Caching:** All expensive computations are cached in module-level dicts/vars. The explorer occupations list is precomputed on first `/api/explorer` call (~2-3s). Individual occupation task lookups are cached on demand.
+- `AEI_EXPLORER_DATASETS` — constant: `["AEI v1", "AEI v2", "AEI v3", "AEI v4", "AEI API v3", "AEI API v4"]`; used for all explorer lookups (not just v4)
+
+- `_build_explorer_task_lookup()` — builds a dict `task_normalized → {source_name: {"auto_aug": float|None, "pct_norm": float|None}}` for all 8 sources (6 AEI + MCP v4 + Microsoft). AEI values are averaged across all 2010 SOC occupations sharing that task. MCP uses `auto_aug_mean_adj`. Cached in `_explorer_task_lookup_cache`.
+
+- `_compute_task_metrics(task_norms, lookup)` — given a list of task_normalized values and the lookup dict, returns 10 metrics:
+  - `auto_avg_with_vals` — per-task avg across sources, then averaged over tasks **with at least one value**
+  - `auto_max_with_vals` — per-task max across sources, then averaged over tasks with values
+  - `auto_avg_all` — same but over **all tasks** (nulls counted as 0)
+  - `auto_max_all` — same but max variant over all tasks (nulls = 0)
+  - `pct_avg_with_vals`, `pct_max_with_vals` — same pattern for pct_norm
+  - `pct_avg_all`, `pct_max_all` — same over all tasks
+  - `sum_pct_avg`, `sum_pct_max` — sum of per-task avg/max pct across tasks with values
+
+- `get_explorer_occupations()` — builds list of all 923 eco_2025 occupations with hierarchy, emp, wage, `n_tasks`, `n_physical_tasks`, `pct_physical`, and 10 metric fields. Uses `_build_explorer_task_lookup()` + `_compute_task_metrics()`. Cached.
+
+- `get_explorer_groups()` — pre-computes major/minor/broad aggregations. For each group, collects **unique task_norms** across all occupations in the group (not averages of occ-level averages). Calls `_compute_task_metrics()` on those unique tasks. Returns `{major: [...], minor: [...], broad: [...]}` with parent/grandparent hierarchy fields and `n_occs`. Cached in `_explorer_groups_cache`.
+
+- `get_occupation_tasks(title)` — returns all tasks for one occupation sorted alphabetically by `task` column. Uses all 8 AEI/MCP/MS sources. `sources` dict keyed by source name. Returns `avg_pct_norm` and `max_pct_norm` (not `avg_pct_normalized`). Cached per title.
+
+- `get_all_tasks()` — returns all unique task_normalized values across eco_2025 with their metrics (from `_compute_task_metrics`) and activity hierarchy columns. Used for the Task-level flat table in the Explorer. Cached.
+
+- `get_wa_explorer_data()` — builds GWA/IWA/DWA rows. Emp is allocated as `emp_occ / n_unique_tasks_in_occ` per task. Activity levels deduplicate differently:
+  - GWA: dedup on (task_norm, gwa_title)
+  - IWA: dedup on (task_norm, iwa_title)
+  - DWA: dedup on (task_norm, dwa_title)
+  Returns all rows in one flat list with `level` field. Cached in `_wa_explorer_cache`.
+
+- `get_wa_tasks_for_activity(level, name)` — returns task details for one GWA/IWA/DWA activity, fetching AI metrics from the lookup. Cached per (level, name).
+
+**Caching:** All expensive computations are cached in module-level vars. The explorer occupations list is precomputed on first `/api/explorer` call (~2-3s). Individual occupation task lookups are cached on demand.
 
 ### `main.py` — API Endpoints
 
@@ -152,8 +181,12 @@ Set `NEXT_PUBLIC_API_URL=http://localhost:8000` if needed (default).
 | POST | `/api/work-activities` | DWA/IWA/GWA activity data |
 | POST | `/api/trends` | Time-series data per dataset series |
 | POST | `/api/wa-trends` | Work-activity time-series data |
-| GET | `/api/explorer` | Full occupation list (no tasks) |
-| GET | `/api/explorer/tasks?title=…` | Task details for one occupation |
+| GET | `/api/explorer` | Full occupation list with 10 metric fields (no tasks) |
+| GET | `/api/explorer/tasks?title=…` | Task details for one occupation (all 8 sources) |
+| GET | `/api/explorer/groups` | Pre-computed major/minor/broad group rows |
+| GET | `/api/explorer/all-tasks` | All unique tasks with metrics (for Task level table) |
+| GET | `/api/explorer/wa` | WA Explorer rows: GWA/IWA/DWA with emp + metrics |
+| GET | `/api/explorer/wa/tasks?level=…&name=…` | Task details for one WA activity |
 
 `/api/compute` accepts optional `searchQuery` and `contextSize` params in the body; returns `matched_category` in response.
 `/api/config` returns `dataset_series` and `eco2015_available` fields.
@@ -163,11 +196,12 @@ Set `NEXT_PUBLIC_API_URL=http://localhost:8000` if needed (default).
 ## Frontend Architecture
 
 ### Navigation
-4-tab sticky top nav at `var(--nav-height): 56px`. Pages use `height: calc(100vh - 56px)`.
+5-tab sticky top nav at `var(--nav-height): 56px`. Pages use `height: calc(100vh - 56px)`.
 - **Occupation Categories** (`/`) — two-group occupation bar charts
 - **Work Activities** (`/work-activities`) — DWA/IWA/GWA charts, same two-group layout
 - **Trends** (`/trends`) — line charts of metrics over dataset versions
-- **Job Explorer** (`/explorer`) — accordion: Major → Minor → Broad → Occupation → Tasks
+- **Job Explorer** (`/explorer`) — flat table: Major/Minor/Broad/Occ/Task levels with inline drilldown
+- **WA Explorer** (`/wa-explorer`) — GWA/IWA/DWA hierarchy table with inline drilldown
 
 ### Design System (`globals.css` + `tailwind.config.ts`)
 CSS variables:
@@ -189,7 +223,29 @@ Group A color: `#3a5f83` (slate blue) | Group B: `#4a7c6f` (sage green)
 Utility classes: `.card`, `.pill`, `.btn-brand`, `.btn-ghost`, `.filter-chip`, `.tag`, `.tag-aei`, `.tag-mcp`, `.tag-ms`, `.tag-avg`, `.tag-max`
 
 ### TypeScript Interfaces (`lib/types.ts`)
-Key interfaces: `GroupSettings`, `ConfigResponse`, `ChartRow`, `ComputeResponse`, `ActivityRow`, `ActivityGroup`, `WorkActivitiesResponse`, `TrendsSettings`, `WATrendsSettings`, `TrendsResponse`, `TrendSeries`, `TrendDataPoint`, `OccupationSummary`, `TaskDetail`, `OccupationTasksResponse`
+
+**Shared metrics base (`ExplorerMetrics`):**
+```ts
+interface ExplorerMetrics {
+  n_tasks: number;
+  n_physical_tasks: number;
+  pct_physical?: number | null;
+  auto_avg_with_vals?: number | null;
+  auto_max_with_vals?: number | null;
+  auto_avg_all?: number | null;
+  auto_max_all?: number | null;
+  pct_avg_with_vals?: number | null;
+  pct_max_with_vals?: number | null;
+  pct_avg_all?: number | null;
+  pct_max_all?: number | null;
+  sum_pct_avg?: number | null;
+  sum_pct_max?: number | null;
+}
+```
+
+Key interfaces: `GroupSettings`, `ConfigResponse`, `ChartRow`, `ComputeResponse`, `ActivityRow`, `ActivityGroup`, `WorkActivitiesResponse`, `TrendsSettings`, `WATrendsSettings`, `TrendsResponse`, `TrendSeries`, `TrendDataPoint`, `OccupationSummary extends ExplorerMetrics`, `TaskDetail`, `OccupationTasksResponse`, `ExplorerGroupRow extends ExplorerMetrics`, `ExplorerGroupsResponse`, `AllTaskRow`, `WAExplorerRow extends ExplorerMetrics`, `WAExplorerResponse`, `WATaskDetail`, `WATasksResponse`
+
+**`TaskDetail`:** `sources: Record<string, TaskSourceStats>` (keyed by source name, e.g. "AEI v1", "MCP v4", "Microsoft"); `avg_pct_norm` and `max_pct_norm` (not `avg_pct_normalized`).
 
 ### State Pattern (Overview + Work Activities)
 Staged settings: `pendingA/B` (form state) + `appliedA/B` (chart state). Charts only update on "Run" click. This prevents recomputation on every slider move.
@@ -255,46 +311,65 @@ Two tabs: **Occupation Categories** and **Work Activities**
 
 **Custom `ChartLegend` component:** Grid layout replacing Recharts `<Legend>`. Colored square indicators, clickable (click = lock), shows increase badge per item. Passed as `legendItems` to `downloadChartAsPng` for capture in PNG.
 
-### `ExplorerView.tsx`
-Two view modes toggled in header: **Accordion** and **Table**.
-Props: `occupations: OccupationSummary[]` + `config: ConfigResponse` (needed for PctComputePanel dataset list).
+### `ExplorerView.tsx` (overhauled — table only)
+Props: `occupations: OccupationSummary[]` + `groups: ExplorerGroupsResponse` + `config: ConfigResponse`.
+The accordion view has been removed. This is now a flat sortable/filterable table with inline drilldown.
 
-**`getAutoAug(occ, aggMode)`:** Returns `max` or `avg` of `[avg_auto_aug_aei, avg_auto_aug_mcp, avg_auto_aug_ms]` (non-null sources only).
+**Formatters:**
+- `fmtPctNorm(v)` — displays value directly as % (no ×100); `< 0.00001` → full decimal; `< 0.01` → `toPrecision(1)`; `≥ 0.01` → `toFixed(4)`
+- `fmtAutoAug(v)` — `toFixed(3)`
+- `fmtPctPhys(v)` — multiplies by 100 for display (this field is stored as 0–1 fraction)
 
-**`aggregateOccs(occs, geo, aggMode)`:** Aggregates a group of `OccupationSummary` into one `FlatRow`. Uses `aggMode` for both per-occupation auto_aug (via `getAutoAug`) and cross-occupation aggregation (max or mean).
+**`COLUMNS` array (16 columns):** Name, Emp, Med Wage, # Occs (group levels), # Tasks, Auto Avg↑, Auto Max↑, Auto Avg (all), Auto Max (all), % Phys, Pct Avg↑, Pct Max↑, Pct Avg (all), Pct Max (all), Σ Pct Avg, Σ Pct Max
 
-**Accordion view:**
-- Hierarchy: MajorBlock → MinorBlock → BroadBlock → OccupationRow → TaskRow
-- `autoOpen` prop (boolean) passed to all accordion levels; `useEffect` opens/closes them when `autoOpen` changes
-- When search is active (`search.trim().length > 0`), `autoOpen={true}` is passed — all sections containing matches auto-expand
-- Accordion controls: Auto-aug min slider, Physical tasks segmented control (All / Non-physical / Physical only)
-- `OccupationRow` accepts `physicalMode` and `autoAugMin`; returns null if filtered out
-- `TaskRow` accepts `physicalMode`; returns null if task is filtered (physical/non-physical)
-- Major category chips have `maxHeight: 72, overflowY: auto`
+**`FlatRow` interface:** holds all metric fields plus `sourceOccs: OccupationSummary[]` (for lazy drilldown) and `level: "major"|"minor"|"broad"|"occupation"|"task"`.
 
-**Task breakdown table (inside OccupationRow):**
-- Columns: Task | Physical (✓/✗/—) | Freq | Imp | Rel | Auto-aug (bar + number) | Pct Norm
-- `InfoTooltip` (hover `?` badge) next to Freq, Imp, Rel, Auto-aug, Pct Norm headers
-- Expanding a task row shows Activity Classification (GWA/IWA/DWA) and per-source breakdown table (AEI/MCP/MS + AVG or MAX row)
+**Level selector:** Major / Minor / Broad / Occupation / Task. At "Task" level, data is fetched from `/api/explorer/all-tasks` (paginated: shows 100 at a time, "Load 100 more" button).
 
-**Flat table view:**
-- Controls (above table): Level selector (Major/Minor/Broad/Occupation), Auto-aug min slider, Min Emp input, Min Wage input, Physical tasks segmented control, % Affected slider (shown when pct map computed), `PctComputePanel` collapsible
-- `FlatRow` type has `sourceOccs: OccupationSummary[]` for drilldown — child rows are computed from this on expand
-- Rows sorted descending by employment; all filters applied before render
-- **Inline drilldown**: `DrilldownRow` recursive component renders indented child rows inline (no page replacement). At occupation level, fetches tasks via API on expand.
+**`buildChildRows(row, level)`:** uses `groups.minor/broad` data for major/minor drilldown; filters `occupations` by broad for broad→occupation drilldown. Lazy — only computed on expand.
 
-**`DrilldownRow` component:**
-- Props: `row, level, geo, aggMode, autoAugMin, minEmp, minWage, pctAffectedMap, minPctAffected, physicalMode, indent, showOccsCol`
-- `nextLevel()`: major→minor→broad→occupation; occupation level fetches tasks
-- `childRows` computed from `row.sourceOccs` grouped by `nextLevel()` using `aggregateOccs`
-- Returns null if row doesn't pass filters
+**Controls:**
+- Multi-select major category pills (empty set = show all)
+- Sort by any column (click header to sort asc/desc; clicking same column toggles direction)
+- Per-column ≥/≤ filter dropdowns (`ColumnFilterDropdown` component)
+- Search bar with level selector (All / Major / Minor / Broad / Occ / Task) + text highlighting via `highlightText()`
+- Avg/Max toggle (controls which auto_aug variant is used for the "Auto Avg↑"/"Auto Max↑" display and filters)
+- Nat/Utah toggle for emp/wage columns
+- Auto-aug min slider (two sliders: one for "with vals" variant, one for "all tasks" variant)
+- Reset button clears all filters/sort/search/selections
 
-**`PctComputePanel` component:**
-- Collapsible panel with full compute settings: dataset selector (using `config`), method, physical, auto-aug, adj mean
+**`InfoTooltip` component:** Uses `createPortal(tooltip, document.body)` with `position: fixed` at mouse coordinates to avoid clipping by `overflow: hidden` parent containers.
+
+**Recursive `renderRow(row, level, indent)`:** renders a table row, and if expanded, its children inline with indentation. At occupation level, fetches tasks via `fetchOccupationTasks()` on expand.
+
+**Task detail expansion:** Expanding a task row shows Activity Classification (GWA/IWA/DWA) and per-source breakdown table with all AEI versions listed individually (v1–v4, API v3–v4) plus MCP v4 and Microsoft, plus AVG and MAX summary rows.
+
+**`PctComputePanel` component (retained):**
+- Collapsible panel with full compute settings: dataset selector, method, physical, auto-aug, adj mean
 - "Compute %" button calls `fetchCompute` with `aggLevel: "occupation"`, `topN: 1000`
-- Physical affects numerator only; denominator is always all tasks (matches other pages)
 - Returns `Map<string, number>` (occupation title → pct_tasks_affected) via `onResult` callback
 - `minPctAffected` slider appears in table controls once map is computed
+
+### `WAExplorerView.tsx` (new)
+Props: `rows: WAExplorerRow[]`
+
+Displays GWA → IWA → DWA hierarchy with inline drilldown, same 16-column structure as ExplorerView.
+
+**Controls:**
+- Level selector: GWA | IWA | DWA (filters which rows are shown as top-level)
+- GWA multi-select pills (empty = all)
+- Sort by any column (click header)
+- Per-column ≥/≤ filter dropdowns
+- Avg/Max toggle, Nat/Utah toggle
+- Auto-aug min slider (with_vals and all_tasks variants)
+
+**Hierarchy:** When a GWA row is expanded, its IWA children appear inline; IWA expansion shows DWA children; DWA expansion fetches tasks via `fetchWAActivityTasks("dwa", name)` and shows a task sub-table.
+
+**Task sub-table (under DWA):** shows task, physical flag, activity hierarchy, per-source breakdown, avg/max auto_aug, pct norm columns. Source breakdown expansion mirrors ExplorerView.
+
+**Emp computation:** `emp_nat` / `emp_ut` on WA rows represent emp_occ / n_unique_tasks summed over all occs in that activity — same allocation logic as the WA page backend.
+
+**`InfoTooltip`:** same portal pattern as ExplorerView.
 
 ---
 
@@ -337,11 +412,29 @@ A task mapping to multiple DWAs contributes its full emp allocation to each DWA 
 ### Trends — Individual Dataset Filtering
 The backend receives series family names (e.g. `["AEI", "MCP"]`) derived from whatever individual datasets the user selected. It returns all versions within those families. The frontend then filters each `TrendSeries.data_points` by `dp.dataset in selectedDatasets` before building chart data. This means selecting "AEI v2" only shows the v2 data point even though the backend computed v1–v4.
 
-### Explorer Task Lookup
-For each task in eco_2025, auto_aug and pct_normalized are fetched by `task_normalized` from:
-- AEI v4 (auto_aug_mean — averaged across all 2010 SOC occupations having that task)
-- MCP v4 (auto_aug_mean_adj — preferred over base)
-- Microsoft (auto_aug_mean)
+### Explorer Metrics Computation (`_compute_task_metrics`)
+Given a set of `task_norms` and the lookup dict:
+```
+For each task:
+  per_task_avg = mean of non-null auto_aug values across all sources
+  per_task_max = max of non-null auto_aug values across all sources
+
+auto_avg_with_vals = mean(per_task_avg) over tasks where per_task_avg is not null
+auto_max_with_vals = mean(per_task_max) over tasks where per_task_max is not null
+auto_avg_all       = mean(per_task_avg OR 0) over ALL tasks
+auto_max_all       = mean(per_task_max OR 0) over ALL tasks
+(same pattern for pct_norm variants)
+sum_pct_avg        = sum(per_task_avg pct) over tasks with values
+sum_pct_max        = sum(per_task_max pct) over tasks with values
+```
+
+For group-level rows (major/minor/broad/GWA/IWA/DWA), task_norms are collected as **unique values across all occupations/activities** in the group — not averaged from sub-group metrics.
+
+### pct_normalized Display
+Values in CSV are already in percent form (e.g., 0.4 means 0.4%). Do **not** multiply by 100 before display. `fmtPctNorm(v)` uses `v` directly:
+- `v < 0.00001` → full decimal string + `%`
+- `v < 0.01` → `toPrecision(1)` + `%`
+- `v >= 0.01` → `toFixed(4)` + `%`
 
 ---
 
@@ -364,7 +457,7 @@ For each task in eco_2025, auto_aug and pct_normalized are fetched by `task_norm
 1. Don't show Eco 2015 as a selectable dataset to users — it's only an internal baseline for work-activity AEI analysis
 2. AEI files use `title` (2010 SOC); MCP/Microsoft use `title_current` (2019 SOC) — don't mix them without crosswalk
 3. The crosswalk CSV lives in `data/` or `../aea_dashboard_dev/data/` — checked automatically
-4. pct_normalized and auto_aug_mean are **zero/null in eco_2025 and eco_2015** — must come from AI datasets
+4. `pct_normalized` and `auto_aug_mean` are **zero/null in eco_2025 and eco_2015** — must come from AI datasets
 5. For work activities, the eco_2025 denominator DWA associations come from eco_2025 itself (not the AI dataset)
 6. For trends, `compute_single_dataset` is reused — its results are cached by full parameter tuple
 7. The explorer `/api/explorer` precomputes 923 occupation summaries on first call — allow ~3–5s on cold start
@@ -375,3 +468,9 @@ For each task in eco_2025, auto_aug and pct_normalized are fetched by `task_norm
 12. Trends cumulative max carries forward: if a category has no data at a given date, the running max from prior dates is used — it never decreases
 13. Explorer flat table drilldown stores `sourceOccs` on each `FlatRow`; never pre-build the full tree — compute children lazily on expand
 14. Explorer `PctComputePanel` calls `/api/compute` with `aggLevel: "occupation"` at `topN: 1000` to get all occupations; physical filter here affects numerator only, consistent with the rest of the app
+15. **`pct_normalized` is already in % form** — do not multiply by 100. `fmtPctNorm(v)` displays `v` directly.
+16. Explorer group metrics (major/minor/broad) are pre-computed from unique task_norms across all occs in the group — never average the per-occupation metric values, as that produces incorrect results
+17. ExplorerView accordion view was removed in Stop 5 — the component is table-only; `groups: ExplorerGroupsResponse` is now a required prop for the pre-computed group rows
+18. All 8 sources are shown in explorer task breakdowns (AEI v1–v4, AEI API v3–v4, MCP v4, Microsoft) — not just the latest versions
+19. WA Explorer emp allocation uses `emp_occ / n_unique_tasks` per task — same logic as the WA page backend; each activity level deduplicates tasks independently (IWA on task_norm+iwa_title, DWA on task_norm+dwa_title)
+20. InfoTooltip uses `createPortal` into `document.body` — required to avoid clipping by `overflow: hidden` ancestor containers; tooltip position is `fixed` at mouse coordinates

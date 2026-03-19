@@ -8,13 +8,14 @@ import React, {
   useRef,
 } from "react";
 import { createPortal } from "react-dom";
-import type { WAExplorerRow, WATaskDetail } from "@/lib/types";
-import { fetchWAActivityTasks } from "@/lib/api";
+import type { WAExplorerRow, WATaskDetail, ConfigResponse, AllTaskRow, ActivityRow } from "@/lib/types";
+import { fetchWAActivityTasks, fetchWorkActivities, fetchAllTasks } from "@/lib/api";
 
 // ── Props ──────────────────────────────────────────────────────────────────────
 
 interface Props {
   rows: WAExplorerRow[];
+  config: ConfigResponse;
 }
 
 // ── Formatters ─────────────────────────────────────────────────────────────────
@@ -33,7 +34,7 @@ function fmtWage(v?: number | null): string {
 
 function fmtPctNorm(v?: number | null): string {
   if (v == null) return "—";
-  if (v < 0.00001) return `${v}%`;
+  if (v < 0.0001) return ">.0001%";
   if (v < 0.01) return `${parseFloat(v.toPrecision(1))}%`;
   return `${parseFloat(v.toFixed(4))}%`;
 }
@@ -75,6 +76,9 @@ const COLUMNS: ColDef[] = [
   { key: "pct_max_all",  label: "Pct Max (all)",    width: 100, numeric: true,  tooltip: "Max pct averaged across ALL tasks (0 for no value)." },
   { key: "sum_pct_avg",  label: "\u03A3 Pct Avg",   width: 90,  numeric: true,  tooltip: "Sum of per-task avg pct across all tasks with a value." },
   { key: "sum_pct_max",  label: "\u03A3 Pct Max",   width: 90,  numeric: true,  tooltip: "Sum of per-task max pct across all tasks with a value." },
+  { key: "pct_affected", label: "% Tasks Aff.",     width: 100, numeric: true,  tooltip: "% Tasks Affected from the compute panel. Uses the selected datasets and method." },
+  { key: "workers_aff",  label: "Workers Aff.",      width: 110, numeric: true,  tooltip: "Workers affected = % Tasks Affected × employment. Requires compute panel result." },
+  { key: "wages_aff",    label: "Wages Aff. ($B)",   width: 120, numeric: true,  tooltip: "Wages affected (billions) = % Tasks Affected × employment × median wage. Requires compute panel result." },
 ];
 
 // ── Display row model ──────────────────────────────────────────────────────────
@@ -99,6 +103,7 @@ interface DisplayRow {
   pct_max_all: number | null;
   sum_pct_avg: number | null;
   sum_pct_max: number | null;
+  pct_affected?: number | null;
 }
 
 function waRowToDisplay(row: WAExplorerRow, geo: "nat" | "ut"): DisplayRow {
@@ -144,6 +149,15 @@ function getVal(row: DisplayRow, col: string): number | null {
     case "pct_max_all":  return row.pct_max_all;
     case "sum_pct_avg":  return row.sum_pct_avg;
     case "sum_pct_max":  return row.sum_pct_max;
+    case "pct_affected": return row.pct_affected ?? null;
+    case "workers_aff": {
+      const pct = row.pct_affected;
+      return pct != null ? (pct / 100) * row.emp : null;
+    }
+    case "wages_aff": {
+      const pct = row.pct_affected;
+      return (pct != null && row.wage != null) ? (pct / 100) * row.emp * row.wage / 1e9 : null;
+    }
     default:             return null;
   }
 }
@@ -177,6 +191,23 @@ function renderCell(col: string, row: DisplayRow): React.ReactNode {
     case "pct_max_all":  return fmtPctNorm(row.pct_max_all);
     case "sum_pct_avg":  return fmtPctNorm(row.sum_pct_avg);
     case "sum_pct_max":  return fmtPctNorm(row.sum_pct_max);
+    case "pct_affected": {
+      const v = row.pct_affected;
+      return v != null
+        ? <span style={{ color: "var(--brand)", fontWeight: 500 }}>{v.toFixed(2)}%</span>
+        : <span style={muted}>—</span>;
+    }
+    case "workers_aff": {
+      const pct = row.pct_affected;
+      if (pct == null) return <span style={muted}>—</span>;
+      return <span style={{ color: "var(--brand)", fontWeight: 500 }}>{fmtEmp((pct / 100) * row.emp)}</span>;
+    }
+    case "wages_aff": {
+      const pct = row.pct_affected;
+      if (pct == null || row.wage == null) return <span style={muted}>—</span>;
+      const v = (pct / 100) * row.emp * row.wage / 1e9;
+      return <span style={{ color: "var(--brand)", fontWeight: 500 }}>${v.toFixed(2)}B</span>;
+    }
     default: return <span style={muted}>—</span>;
   }
 }
@@ -218,28 +249,11 @@ function ChevronIcon({ open }: { open: boolean }) {
   );
 }
 
-function SortIcon({ col, sortCol, sortDir }: { col: string; sortCol: string; sortDir: "asc" | "desc" }) {
-  if (col !== sortCol) {
-    return (
-      <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        strokeWidth="2" style={{ color: "var(--text-muted)", opacity: 0.4, flexShrink: 0 }}>
-        <polyline points="6 9 12 15 18 9" />
-      </svg>
-    );
-  }
-  return (
-    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth="2.5" style={{ color: "var(--brand)", flexShrink: 0, transform: sortDir === "asc" ? "rotate(180deg)" : undefined }}>
-      <polyline points="6 9 12 15 18 9" />
-    </svg>
-  );
-}
-
-function FunnelIcon({ active }: { active?: boolean }) {
+function FunnelIcon() {
   return (
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-      style={{ color: active ? "var(--brand)" : "var(--text-muted)" }} aria-hidden="true">
+      aria-hidden="true">
       <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
     </svg>
   );
@@ -249,15 +263,23 @@ function FunnelIcon({ active }: { active?: boolean }) {
 
 function InfoTooltip({ text }: { text: string }) {
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
+  const TOOLTIP_W = 300;
+  const TOOLTIP_H = 60;
+
+  const clamp = (x: number, y: number) => {
+    const safeX = typeof window !== "undefined" ? Math.min(x, window.innerWidth - TOOLTIP_W - 10) : x;
+    const safeY = typeof window !== "undefined" && y + TOOLTIP_H > window.innerHeight ? y - TOOLTIP_H - 10 : y;
+    return { x: safeX, y: safeY };
+  };
 
   const handleMove = (e: React.MouseEvent) => {
-    setPos({ x: e.clientX + 12, y: e.clientY + 14 });
+    setPos(clamp(e.clientX + 12, e.clientY + 14));
   };
 
   return (
     <span style={{ position: "relative", display: "inline-flex", alignItems: "center", marginLeft: 3 }}>
       <span
-        onMouseEnter={(e) => setPos({ x: e.clientX + 12, y: e.clientY + 14 })}
+        onMouseEnter={(e) => setPos(clamp(e.clientX + 12, e.clientY + 14))}
         onMouseMove={handleMove}
         onMouseLeave={() => setPos(null)}
         style={{
@@ -271,7 +293,7 @@ function InfoTooltip({ text }: { text: string }) {
         <div style={{
           position: "fixed", left: pos.x, top: pos.y,
           background: "#1a1a1a", color: "#fff", fontSize: 11, padding: "6px 10px",
-          borderRadius: 6, maxWidth: 300, zIndex: 9999, pointerEvents: "none",
+          borderRadius: 6, maxWidth: TOOLTIP_W, zIndex: 9999, pointerEvents: "none",
           boxShadow: "0 2px 8px rgba(0,0,0,0.25)", lineHeight: 1.45,
         }}>
           {text}
@@ -556,24 +578,24 @@ function WATaskSubRow({ task, geo }: { task: WATaskDetail; geo: "nat" | "ut" }) 
 function WATaskSubHeader({ geo }: { geo: "nat" | "ut" }) {
   return (
     <tr style={{ borderBottom: "2px solid var(--border)" }}>
-      <th style={{ padding: "5px 10px 5px", textAlign: "left", fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Task</th>
-      <th style={{ padding: "5px 6px", textAlign: "center", fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", width: 44 }}>Phys</th>
-      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 80, whiteSpace: "nowrap" }}>
+      <th style={{ padding: "5px 10px 5px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Task</th>
+      <th style={{ padding: "5px 6px", textAlign: "center", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", width: 44 }}>Phys</th>
+      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 80, whiteSpace: "nowrap" }}>
         Emp {geo === "ut" ? "(UT)" : "(Nat)"}
       </th>
-      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 80, whiteSpace: "nowrap" }}>
+      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 80, whiteSpace: "nowrap" }}>
         Med Wage
       </th>
-      <th style={{ padding: "5px 6px", textAlign: "left", fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 100, whiteSpace: "nowrap" }}>
+      <th style={{ padding: "5px 6px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 100, whiteSpace: "nowrap" }}>
         Auto Avg<InfoTooltip text="Avg auto-aug (0–5) across sources" />
       </th>
-      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 72, whiteSpace: "nowrap" }}>
+      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 72, whiteSpace: "nowrap" }}>
         Auto Max
       </th>
-      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 80, whiteSpace: "nowrap" }}>
+      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 80, whiteSpace: "nowrap" }}>
         Pct Avg<InfoTooltip text="Avg pct (share of AI conversations)" />
       </th>
-      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 80, whiteSpace: "nowrap" }}>
+      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 80, whiteSpace: "nowrap" }}>
         Pct Max
       </th>
     </tr>
@@ -597,12 +619,193 @@ function LevelBadge({ level }: { level: "gwa" | "iwa" | "dwa" }) {
 
 // ── WALevel type ───────────────────────────────────────────────────────────────
 
-type WALevel = "gwa" | "iwa" | "dwa";
+type WALevel = "gwa" | "iwa" | "dwa" | "task";
 type SortDir = "asc" | "desc";
+
+// ── WA % Tasks Affected compute panel ─────────────────────────────────────────
+
+interface WaPctSettings {
+  datasets: string[];
+  combineMethod: "Average" | "Max";
+  method: "freq" | "imp";
+  geo: "nat" | "ut";
+  physicalMode: "all" | "exclude" | "only";
+  useAutoAug: boolean;
+  useAdjMean: boolean;
+}
+
+function WaPctComputePanel({
+  config,
+  geo,
+  viewLevel,
+  onResult,
+}: {
+  config: ConfigResponse;
+  geo: "nat" | "ut";
+  viewLevel: WALevel;
+  onResult: (map: Map<string, number> | null) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [settings, setSettings] = useState<WaPctSettings>({
+    datasets: ["AEI v4"],
+    combineMethod: "Average",
+    method: "freq",
+    geo,
+    physicalMode: "all",
+    useAutoAug: false,
+    useAdjMean: false,
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [computed, setComputed] = useState(false);
+
+  useEffect(() => { setSettings((s) => ({ ...s, geo })); }, [geo]);
+
+  function set<K extends keyof WaPctSettings>(k: K, v: WaPctSettings[K]) {
+    setSettings((s) => ({ ...s, [k]: v }));
+  }
+
+  const hasMCP = settings.datasets.some((d) => d.startsWith("MCP"));
+
+  // Check if datasets are AEI-family (cannot mix)
+  const hasAEI = settings.datasets.some((d) => d.startsWith("AEI"));
+  const hasMCPorMS = settings.datasets.some((d) => d.startsWith("MCP") || d === "Microsoft");
+  const isMixed = hasAEI && hasMCPorMS;
+
+  const compute = useCallback(async () => {
+    if (!settings.datasets.length || isMixed) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const resp = await fetchWorkActivities({
+        selectedDatasets: settings.datasets,
+        combineMethod: settings.combineMethod,
+        method: settings.method,
+        useAutoAug: settings.useAutoAug,
+        useAdjMean: settings.useAutoAug && settings.useAdjMean,
+        physicalMode: settings.physicalMode,
+        geo: settings.geo,
+        aggLevel: "major", // not used by WA endpoint but required
+        sortBy: "Workers Affected",
+        topN: 5000,
+        searchQuery: "",
+        contextSize: 5,
+      });
+      // Extract pct by the current viewLevel from whichever group was returned
+      const group = resp.aei_group ?? resp.mcp_group;
+      if (!group) { setError("No data returned"); setLoading(false); return; }
+      // "task" level doesn't exist on ActivityGroup; fall back to "dwa"
+      const actLevel = (viewLevel === "task" ? "dwa" : viewLevel) as "gwa" | "iwa" | "dwa";
+      const actRows: ActivityRow[] = group[actLevel] ?? [];
+      const map = new Map<string, number>();
+      actRows.forEach((r) => map.set(r.category, r.pct_tasks_affected));
+      onResult(map);
+      setComputed(true);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Compute failed");
+    } finally {
+      setLoading(false);
+    }
+  }, [settings, onResult, viewLevel, isMixed]);
+
+  return (
+    <div style={{ border: "1px solid var(--border)", borderRadius: 8, overflow: "hidden", marginTop: 4 }}>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        style={{
+          width: "100%", display: "flex", alignItems: "center", gap: 8,
+          padding: "8px 14px", background: open ? "var(--brand-light)" : "var(--bg-surface)",
+          border: "none", cursor: "pointer", textAlign: "left",
+        }}
+      >
+        <ChevronIcon open={open} />
+        <span style={{ fontSize: 11, fontWeight: 600, color: open ? "var(--brand)" : "var(--text-secondary)" }}>
+          % Tasks Affected {computed ? "✓" : "(configure & compute)"}
+        </span>
+        {computed && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onResult(null); setComputed(false); }}
+            style={{ marginLeft: "auto", fontSize: 10, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", padding: 0 }}
+          >Clear</button>
+        )}
+      </button>
+      {open && (
+        <div style={{ padding: "12px 14px", borderTop: "1px solid var(--border)", background: "var(--bg-surface)", display: "flex", flexDirection: "column", gap: 10 }}>
+          {isMixed && (
+            <p style={{ fontSize: 11, color: "#b91c1c", margin: 0 }}>
+              Cannot mix AEI and MCP/Microsoft datasets — they use different baselines.
+            </p>
+          )}
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
+            <div>
+              <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>Datasets</p>
+              <div style={{ display: "flex", gap: 4, flexWrap: "wrap", maxWidth: 420 }}>
+                {config.datasets.map((ds) => {
+                  const avail = config.dataset_availability[ds];
+                  const sel = settings.datasets.includes(ds);
+                  return (
+                    <button key={ds} disabled={!avail} onClick={() => {
+                      const next = sel ? settings.datasets.filter((d) => d !== ds) : [...settings.datasets, ds];
+                      set("datasets", next);
+                    }} style={{
+                      fontSize: 10, padding: "3px 7px", borderRadius: 5,
+                      border: `1.5px solid ${sel ? "var(--brand)" : "var(--border)"}`,
+                      background: sel ? "var(--brand-light)" : "transparent",
+                      color: sel ? "var(--brand)" : avail ? "var(--text-secondary)" : "var(--text-muted)",
+                      cursor: avail ? "pointer" : "default",
+                      fontWeight: sel ? 600 : 400,
+                      textDecoration: avail ? "none" : "line-through",
+                    }}>{ds}</button>
+                  );
+                })}
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-end" }}>
+              {settings.datasets.length > 1 && (
+                <div>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>Combine</p>
+                  <BtnSeg opts={[{ v: "Average", l: "Avg" }, { v: "Max", l: "Max" }]} val={settings.combineMethod} onChange={(v) => set("combineMethod", v)} />
+                </div>
+              )}
+              <div>
+                <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>Method</p>
+                <BtnSeg opts={[{ v: "freq", l: "Freq" }, { v: "imp", l: "Imp" }]} val={settings.method} onChange={(v) => set("method", v)} />
+              </div>
+              <div>
+                <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>Physical</p>
+                <BtnSeg opts={[{ v: "all", l: "All" }, { v: "exclude", l: "No Phys" }, { v: "only", l: "Phys only" }]} val={settings.physicalMode} onChange={(v) => set("physicalMode", v)} />
+              </div>
+              <div>
+                <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>Auto-aug</p>
+                <BtnSeg opts={[{ v: "false", l: "Off" }, { v: "true", l: "On" }]} val={String(settings.useAutoAug)} onChange={(v) => set("useAutoAug", v === "true")} />
+              </div>
+              {hasMCP && settings.useAutoAug && (
+                <div>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>MCP adj mean</p>
+                  <BtnSeg opts={[{ v: "false", l: "Off" }, { v: "true", l: "On" }]} val={String(settings.useAdjMean)} onChange={(v) => set("useAdjMean", v === "true")} />
+                </div>
+              )}
+              <button
+                onClick={compute}
+                disabled={loading || !settings.datasets.length || isMixed}
+                className="btn-brand"
+                style={{ padding: "6px 18px", fontSize: 12, opacity: (loading || !settings.datasets.length || isMixed) ? 0.5 : 1 }}
+              >
+                {loading ? "Computing…" : "Compute %"}
+              </button>
+            </div>
+          </div>
+          {error && <p style={{ fontSize: 11, color: "#b91c1c", margin: 0 }}>Error: {error}</p>}
+          {computed && <p style={{ fontSize: 11, color: "#16a34a", margin: 0 }}>Computed for {viewLevel.toUpperCase()} level — use slider to filter rows.</p>}
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ── Main WAExplorerView ────────────────────────────────────────────────────────
 
-export default function WAExplorerView({ rows }: Props) {
+export default function WAExplorerView({ rows, config }: Props) {
   // ── State ──────────────────────────────────────────────────────────────────
   const [viewLevel, setViewLevel]   = useState<WALevel>("gwa");
   const [selectedGwas, setSelectedGwas] = useState<Set<string>>(new Set());
@@ -612,8 +815,24 @@ export default function WAExplorerView({ rows }: Props) {
   const [colFilters, setColFilters] = useState<Record<string, { min: string; max: string }>>({});
   const [openFilter, setOpenFilter] = useState<string | null>(null);
   const [geo, setGeo]               = useState<"nat" | "ut">("nat");
+  const [physicalMode, setPhysicalMode] = useState<"all" | "exclude" | "only">("all");
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [rowTasks, setRowTasks]     = useState<Record<string, WATaskDetail[] | "loading" | "error">>({});
+  const [pctAffectedMap, setPctAffectedMap] = useState<Map<string, number> | null>(null);
+  const [minPctAffected, setMinPctAffected] = useState(0);
+  const [taskData, setTaskData]     = useState<AllTaskRow[] | null>(null);
+  const [taskLoading, setTaskLoading] = useState(false);
+
+  // ── Load task data when task level selected ──────────────────────────────
+  useEffect(() => {
+    if (viewLevel === "task" && taskData === null && !taskLoading) {
+      setTaskLoading(true);
+      fetchAllTasks()
+        .then((res) => setTaskData(res.tasks))
+        .catch(() => setTaskData([]))
+        .finally(() => setTaskLoading(false));
+    }
+  }, [viewLevel, taskData, taskLoading]);
 
   // ── Derived: GWA pill names ────────────────────────────────────────────────
   const allGwas = useMemo(() => {
@@ -624,22 +843,76 @@ export default function WAExplorerView({ rows }: Props) {
   const topRows = useMemo<DisplayRow[]>(() => {
     const searchQ = search.trim().toLowerCase();
 
-    let filtered = rows.filter((r) => r.level === viewLevel);
+    let displayRows: DisplayRow[] = [];
 
-    // GWA pill filter
-    if (selectedGwas.size > 0) {
-      if (viewLevel === "gwa") {
-        filtered = filtered.filter((r) => selectedGwas.has(r.name));
-      } else if (viewLevel === "iwa") {
-        // For IWA rows the gwa field stores the parent GWA name
-        filtered = filtered.filter((r) => r.gwa != null && selectedGwas.has(r.gwa));
-      } else if (viewLevel === "dwa") {
-        // For DWA rows the gwa field also stores the GWA ancestor
-        filtered = filtered.filter((r) => r.gwa != null && selectedGwas.has(r.gwa));
+    if (viewLevel === "task") {
+      // Task level: use all-tasks data filtered by selected GWAs
+      const data = taskData ?? [];
+      displayRows = data
+        .filter((t) => {
+          if (selectedGwas.size === 0) return true;
+          return t.gwa_title != null && selectedGwas.has(t.gwa_title);
+        })
+        .filter((t) => {
+          if (physicalMode === "exclude") return t.physical !== true;
+          if (physicalMode === "only") return t.physical === true;
+          return true;
+        })
+        .map((t) => ({
+          name: t.task,
+          level: "dwa" as const, // placeholder level badge
+          gwa: t.gwa_title ?? null,
+          parent: t.iwa_title ?? null,
+          emp: 0,
+          wage: null,
+          n_occs: t.n_occs,
+          n_tasks: 1,
+          auto_avg_with_vals: t.avg_auto_aug ?? null,
+          auto_max_with_vals: t.max_auto_aug ?? null,
+          auto_avg_all: null,
+          auto_max_all: null,
+          pct_physical: t.physical === true ? 1 : t.physical === false ? 0 : null,
+          pct_avg_with_vals: t.avg_pct_norm ?? null,
+          pct_max_with_vals: t.max_pct_norm ?? null,
+          pct_avg_all: null,
+          pct_max_all: null,
+          sum_pct_avg: null,
+          sum_pct_max: null,
+        }));
+    } else {
+      let filtered = rows.filter((r) => r.level === viewLevel);
+
+      // GWA pill filter
+      if (selectedGwas.size > 0) {
+        if (viewLevel === "gwa") {
+          filtered = filtered.filter((r) => selectedGwas.has(r.name));
+        } else if (viewLevel === "iwa" || viewLevel === "dwa") {
+          filtered = filtered.filter((r) => r.gwa != null && selectedGwas.has(r.gwa));
+        }
+      }
+
+      displayRows = filtered.map((r) => waRowToDisplay(r, geo));
+
+      // Physical filter on pct_physical
+      if (physicalMode === "exclude") {
+        displayRows = displayRows.filter((r) => r.pct_physical !== 1);
+      } else if (physicalMode === "only") {
+        displayRows = displayRows.filter((r) => r.pct_physical === 1 || r.pct_physical === null);
       }
     }
 
-    let displayRows = filtered.map((r) => waRowToDisplay(r, geo));
+    // Inject pct_affected from map
+    if (pctAffectedMap) {
+      displayRows = displayRows.map((r) => ({
+        ...r,
+        pct_affected: pctAffectedMap.get(r.name) ?? null,
+      }));
+
+      // pct filter
+      if (minPctAffected > 0) {
+        displayRows = displayRows.filter((r) => (r.pct_affected ?? 0) >= minPctAffected);
+      }
+    }
 
     // Search filter
     if (searchQ) {
@@ -675,7 +948,15 @@ export default function WAExplorerView({ rows }: Props) {
     });
 
     return displayRows;
-  }, [rows, viewLevel, selectedGwas, geo, search, sortCol, sortDir, colFilters]);
+  }, [rows, viewLevel, selectedGwas, geo, search, sortCol, sortDir, colFilters, physicalMode, pctAffectedMap, minPctAffected, taskData]);
+
+  // ── Visible columns (hide pct/workers/wages columns when no pctMap) ──────
+  const visibleCols = useMemo(() => {
+    return COLUMNS.filter((c) => {
+      if ((c.key === "pct_affected" || c.key === "workers_aff" || c.key === "wages_aff") && !pctAffectedMap) return false;
+      return true;
+    });
+  }, [pctAffectedMap]);
 
   // ── Child row helpers ──────────────────────────────────────────────────────
   function getChildRows(parentRow: DisplayRow): DisplayRow[] {
@@ -735,7 +1016,10 @@ export default function WAExplorerView({ rows }: Props) {
     setColFilters({});
     setOpenFilter(null);
     setGeo("nat");
+    setPhysicalMode("all");
     setExpandedRows(new Set());
+    setPctAffectedMap(null);
+    setMinPctAffected(0);
   };
 
   // ── GWA pill toggle ────────────────────────────────────────────────────────
@@ -762,35 +1046,37 @@ export default function WAExplorerView({ rows }: Props) {
     const canExpand = row.level !== "dwa" || true; // DWA can expand to tasks
     const searchQ = search.trim().toLowerCase();
 
-    const children = isExpanded && !isDwa ? getChildRows(row) : [];
-    const tasks = isDwa && isExpanded ? rowTasks[row.name] : undefined;
+    const isTaskLevel = viewLevel === "task";
+    const canExpandRow = !isTaskLevel && canExpand;
+    const children = isExpanded && !isDwa && !isTaskLevel ? getChildRows(row) : [];
+    const tasks = isDwa && isExpanded && !isTaskLevel ? rowTasks[row.name] : undefined;
 
     return (
       <React.Fragment key={rowKey}>
         <tr
-          onClick={() => toggleRow(rowKey, isDwa, row.name)}
+          onClick={canExpandRow ? () => toggleRow(rowKey, isDwa, row.name) : undefined}
           style={{
-            cursor: canExpand ? "pointer" : "default",
+            cursor: canExpandRow ? "pointer" : "default",
             borderBottom: "1px solid var(--border-light)",
             background: indent > 0 ? `rgba(0,0,0,${indent * 0.015})` : undefined,
           }}
           onMouseEnter={(e) => (e.currentTarget.style.background = "#f5f5f0")}
           onMouseLeave={(e) => (e.currentTarget.style.background = indent > 0 ? `rgba(0,0,0,${indent * 0.015})` : "")}
         >
-          {COLUMNS.map((col, ci) => {
+          {visibleCols.map((col, ci) => {
             const isName = col.key === "name";
             return (
               <td
                 key={col.key}
                 style={{
                   padding: isName ? "7px 10px" : "7px 8px",
-                  fontSize: 12,
+                  fontSize: 13,
                   textAlign: col.numeric ? "right" : "left",
                   verticalAlign: "middle",
                   color: "var(--text-primary)",
                   minWidth: col.width,
                   maxWidth: isName ? 400 : undefined,
-                  borderRight: ci < COLUMNS.length - 1 ? "1px solid var(--border-light)" : undefined,
+                  borderRight: ci < visibleCols.length - 1 ? "1px solid var(--border-light)" : undefined,
                 }}
               >
                 {isName ? (
@@ -798,11 +1084,16 @@ export default function WAExplorerView({ rows }: Props) {
                     display: "flex", alignItems: "center",
                     gap: 5, paddingLeft: indent * 20,
                   }}>
-                    <ChevronIcon open={isExpanded} />
-                    <LevelBadge level={row.level} />
+                    {!isTaskLevel && <ChevronIcon open={isExpanded} />}
+                    {!isTaskLevel && <LevelBadge level={row.level} />}
                     <span style={{ lineHeight: 1.3 }}>
                       {highlightText(row.name, searchQ)}
                     </span>
+                    {isTaskLevel && row.gwa && (
+                      <span style={{ fontSize: 10, color: "var(--text-muted)", marginLeft: 4 }}>
+                        ({row.gwa})
+                      </span>
+                    )}
                   </div>
                 ) : (
                   renderCell(col.key, row)
@@ -813,9 +1104,9 @@ export default function WAExplorerView({ rows }: Props) {
         </tr>
 
         {/* Inline DWA task sub-table */}
-        {isDwa && isExpanded && (
+        {isDwa && isExpanded && !isTaskLevel && (
           <tr style={{ borderBottom: "1px solid var(--border)" }}>
-            <td colSpan={COLUMNS.length} style={{ padding: 0, background: "#fafaf8" }}>
+            <td colSpan={visibleCols.length} style={{ padding: 0, background: "#fafaf8" }}>
               <div style={{ paddingLeft: (indent + 1) * 20 + 10, paddingRight: 10, paddingTop: 8, paddingBottom: 12 }}>
                 {tasks === "loading" && (
                   <p style={{ fontSize: 12, color: "var(--text-muted)", padding: "8px 0" }}>Loading tasks…</p>
@@ -873,7 +1164,7 @@ export default function WAExplorerView({ rows }: Props) {
         {/* Row 1: title + count */}
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <h1 style={{ fontSize: 15, fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>
-            WA Explorer
+            Work Activities Explorer
           </h1>
           <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
             {topRows.length.toLocaleString()} {viewLevel.toUpperCase()} rows
@@ -882,9 +1173,10 @@ export default function WAExplorerView({ rows }: Props) {
 
         {/* Row 2: GWA pills */}
         <div style={{
-          display: "flex", flexWrap: "wrap", gap: 5,
-          maxHeight: 72, overflowY: "auto",
-        }}>
+          display: "flex", flexWrap: "nowrap", gap: 5,
+          overflowX: "auto", paddingBottom: 2,
+          scrollbarWidth: "none", msOverflowStyle: "none",
+        } as React.CSSProperties}>
           <button
             onClick={() => setSelectedGwas(new Set())}
             style={{
@@ -909,9 +1201,8 @@ export default function WAExplorerView({ rows }: Props) {
                   color: sel ? "var(--brand)" : "var(--text-secondary)",
                   fontWeight: sel ? 600 : 400,
                   cursor: "pointer",
-                  maxWidth: 240, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                  title: gwa,
-                } as React.CSSProperties}
+                  whiteSpace: "nowrap", flexShrink: 0,
+                }}
               >{gwa}</button>
             );
           })}
@@ -922,7 +1213,7 @@ export default function WAExplorerView({ rows }: Props) {
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <span style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 600 }}>Level:</span>
             <BtnSeg<WALevel>
-              opts={[{ v: "gwa", l: "GWA" }, { v: "iwa", l: "IWA" }, { v: "dwa", l: "DWA" }]}
+              opts={[{ v: "gwa", l: "GWA" }, { v: "iwa", l: "IWA" }, { v: "dwa", l: "DWA" }, { v: "task", l: "Task" }]}
               val={viewLevel}
               onChange={(v) => {
                 setViewLevel(v);
@@ -933,14 +1224,14 @@ export default function WAExplorerView({ rows }: Props) {
 
           <input
             type="text"
-            placeholder="Search activity name…"
+            placeholder="Search…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             style={{
               fontSize: 12, padding: "4px 10px", borderRadius: 5,
               border: "1px solid var(--border)", outline: "none",
               color: "var(--text-primary)", background: "var(--bg-surface)",
-              minWidth: 220,
+              minWidth: 180,
             }}
           />
 
@@ -953,6 +1244,15 @@ export default function WAExplorerView({ rows }: Props) {
             />
           </div>
 
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 600 }}>Phys:</span>
+            <BtnSeg<"all" | "exclude" | "only">
+              opts={[{ v: "all", l: "All" }, { v: "exclude", l: "No Phys" }, { v: "only", l: "Phys Only" }]}
+              val={physicalMode}
+              onChange={setPhysicalMode}
+            />
+          </div>
+
           <button
             onClick={handleReset}
             style={{
@@ -962,6 +1262,25 @@ export default function WAExplorerView({ rows }: Props) {
             }}
           >Reset</button>
         </div>
+
+        {/* Row 4: % Tasks Affected panel */}
+        <WaPctComputePanel config={config} geo={geo} viewLevel={viewLevel} onResult={setPctAffectedMap} />
+
+        {/* % Tasks Affected slider (shown when map computed) */}
+        {pctAffectedMap && (
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 11, color: "var(--text-secondary)", whiteSpace: "nowrap" }}>
+              % Tasks Aff. &ge; {minPctAffected.toFixed(0)}%
+            </span>
+            <input
+              type="range"
+              min={0} max={100} step={1}
+              value={minPctAffected}
+              onChange={(e) => setMinPctAffected(Number(e.target.value))}
+              style={{ width: 160 }}
+            />
+          </div>
+        )}
       </div>
 
       {/* ── Table ──────────────────────────────────────────────────────────── */}
@@ -969,50 +1288,58 @@ export default function WAExplorerView({ rows }: Props) {
         <table style={{
           borderCollapse: "collapse",
           tableLayout: "fixed",
-          minWidth: COLUMNS.reduce((s, c) => s + c.width, 0),
+          minWidth: visibleCols.reduce((s, c) => s + c.width, 0),
           width: "100%",
         }}>
-          <thead style={{
-            position: "sticky", top: 0, zIndex: 10,
-            background: "var(--bg-surface)",
-            boxShadow: "0 1px 0 var(--border)",
-          }}>
-            <tr>
-              {COLUMNS.map((col) => {
+          <thead>
+            <tr style={{
+              position: "sticky", top: 0,
+              background: "var(--bg-surface)", zIndex: 10,
+              borderBottom: "2px solid var(--border)",
+            }}>
+              {visibleCols.map((col) => {
+                const isSorted = sortCol === col.key;
                 const hasFilter = !!(colFilters[col.key]?.min || colFilters[col.key]?.max);
                 return (
                   <th
                     key={col.key}
                     style={{
-                      padding: "8px 8px",
-                      textAlign: col.numeric ? "right" : "left",
-                      fontSize: 10, fontWeight: 700,
-                      color: sortCol === col.key ? "var(--brand)" : "var(--text-muted)",
+                      padding: "7px 8px",
+                      textAlign: col.key === "name" ? "left" : "right",
+                      fontSize: 11, fontWeight: 700,
+                      color: isSorted ? "var(--brand)" : "var(--text-muted)",
                       textTransform: "uppercase", letterSpacing: "0.06em",
+                      whiteSpace: "nowrap",
                       width: col.width, minWidth: col.width,
-                      whiteSpace: "nowrap", userSelect: "none",
                       cursor: "pointer",
+                      userSelect: "none",
                       position: "relative",
                     }}
                     onClick={() => handleSort(col.key)}
                   >
-                    <div style={{
-                      display: "inline-flex", alignItems: "center", gap: 3,
-                      justifyContent: col.numeric ? "flex-end" : "flex-start",
-                      width: "100%",
-                    }}>
+                    <div style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>
                       {col.label}
                       {col.tooltip && <InfoTooltip text={col.tooltip} />}
-                      <SortIcon col={col.key} sortCol={sortCol} sortDir={sortDir} />
+                      {isSorted && (
+                        <span style={{ color: "var(--brand)", fontSize: 10 }}>
+                          {sortDir === "desc" ? "↓" : "↑"}
+                        </span>
+                      )}
                       {col.numeric && (
                         <span
-                          style={{ cursor: "pointer", display: "inline-flex", alignItems: "center" }}
                           onClick={(e) => {
                             e.stopPropagation();
                             setOpenFilter((prev) => (prev === col.key ? null : col.key));
                           }}
+                          style={{
+                            cursor: "pointer",
+                            color: hasFilter ? "var(--brand)" : "var(--text-muted)",
+                            opacity: hasFilter ? 1 : 0.5,
+                            display: "inline-flex",
+                          }}
+                          title="Filter"
                         >
-                          <FunnelIcon active={hasFilter} />
+                          <FunnelIcon />
                         </span>
                       )}
                     </div>
@@ -1030,9 +1357,20 @@ export default function WAExplorerView({ rows }: Props) {
             </tr>
           </thead>
           <tbody>
-            {topRows.length === 0 && (
+            {/* Task level loading */}
+            {viewLevel === "task" && taskLoading && (
               <tr>
-                <td colSpan={COLUMNS.length} style={{
+                <td colSpan={visibleCols.length} style={{ padding: "40px", textAlign: "center" }}>
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ width: 20, height: 20, borderRadius: "50%", border: "2px solid var(--brand)", borderTopColor: "transparent", animation: "spin 0.7s linear infinite" }} />
+                    <span style={{ fontSize: 13, color: "var(--text-muted)" }}>Loading tasks…</span>
+                  </div>
+                </td>
+              </tr>
+            )}
+            {!taskLoading && topRows.length === 0 && (
+              <tr>
+                <td colSpan={visibleCols.length} style={{
                   padding: "40px 20px", textAlign: "center",
                   fontSize: 13, color: "var(--text-muted)",
                 }}>
@@ -1040,7 +1378,7 @@ export default function WAExplorerView({ rows }: Props) {
                 </td>
               </tr>
             )}
-            {topRows.map((row, i) => renderDataRow(row, 0, `${viewLevel}__${row.name}__${i}`))}
+            {!taskLoading && topRows.map((row, i) => renderDataRow(row, 0, `${viewLevel}__${row.name}__${i}`))}
           </tbody>
         </table>
       </div>

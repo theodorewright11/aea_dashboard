@@ -38,7 +38,7 @@ function fmtWage(v?: number | null): string {
 
 function fmtPctNorm(v?: number | null): string {
   if (v == null) return "—";
-  if (v < 0.00001) return `${v}%`;
+  if (v < 0.0001) return ">.0001%";
   if (v < 0.01) return `${parseFloat(v.toPrecision(1))}%`;
   return `${parseFloat(v.toFixed(4))}%`;
 }
@@ -80,7 +80,9 @@ const COLUMNS: ColDef[] = [
   { key: "pct_max_all",  label: "Pct Max (all)",    width: 100, numeric: true,  tooltip: "Max pct averaged across ALL tasks (0 for no value)." },
   { key: "sum_pct_avg",  label: "\u03A3 Pct Avg",   width: 90,  numeric: true,  tooltip: "Sum of per-task avg pct across all tasks with a value." },
   { key: "sum_pct_max",  label: "\u03A3 Pct Max",   width: 90,  numeric: true,  tooltip: "Sum of per-task max pct across all tasks with a value." },
-  { key: "pct_affected", label: "% Tasks Aff.",     width: 100, numeric: true,  tooltip: "% Tasks Affected from the compute panel. Uses the selected datasets and method." },
+  { key: "pct_affected",  label: "% Tasks Aff.",     width: 100, numeric: true,  tooltip: "% Tasks Affected from the compute panel. Uses the selected datasets and method." },
+  { key: "workers_aff",   label: "Workers Aff.",     width: 110, numeric: true,  tooltip: "Workers affected = % Tasks Affected × employment. Requires compute panel result." },
+  { key: "wages_aff",     label: "Wages Aff. ($B)",  width: 120, numeric: true,  tooltip: "Wages affected (billions) = % Tasks Affected × employment × median wage. Requires compute panel result." },
 ];
 
 // ── FlatRow model ──────────────────────────────────────────────────────────────
@@ -199,6 +201,14 @@ function getVal(row: FlatRow, col: string, pctMap: Map<string, number> | null): 
     case "sum_pct_avg":  return row.sum_pct_avg;
     case "sum_pct_max":  return row.sum_pct_max;
     case "pct_affected": return pctMap?.get(row.name) ?? null;
+    case "workers_aff": {
+      const pct = pctMap?.get(row.name);
+      return pct != null ? (pct / 100) * row.emp : null;
+    }
+    case "wages_aff": {
+      const pct = pctMap?.get(row.name);
+      return (pct != null && row.wage != null) ? (pct / 100) * row.emp * row.wage / 1e9 : null;
+    }
     default:             return null;
   }
 }
@@ -230,8 +240,20 @@ function renderCell(
     case "pct_affected": {
       const v = pctMap?.get(row.name) ?? null;
       return v != null
-        ? <span style={{ color: "var(--brand)", fontWeight: 500 }}>{v.toFixed(1)}%</span>
+        ? <span style={{ color: "var(--brand)", fontWeight: 500 }}>{v.toFixed(2)}%</span>
         : <span style={muted}>—</span>;
+    }
+    case "workers_aff": {
+      const pct = pctMap?.get(row.name);
+      if (pct == null) return <span style={muted}>—</span>;
+      const v = (pct / 100) * row.emp;
+      return <span style={{ color: "var(--brand)", fontWeight: 500 }}>{fmtEmp(v)}</span>;
+    }
+    case "wages_aff": {
+      const pct = pctMap?.get(row.name);
+      if (pct == null || row.wage == null) return <span style={muted}>—</span>;
+      const v = (pct / 100) * row.emp * row.wage / 1e9;
+      return <span style={{ color: "var(--brand)", fontWeight: 500 }}>${v.toFixed(2)}B</span>;
     }
     default: return null;
   }
@@ -289,15 +311,23 @@ function FunnelIcon() {
 
 function InfoTooltip({ text }: { text: string }) {
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
+  const TOOLTIP_W = 300;
+  const TOOLTIP_H = 60;
+
+  const clamp = (x: number, y: number) => {
+    const safeX = typeof window !== "undefined" ? Math.min(x, window.innerWidth - TOOLTIP_W - 10) : x;
+    const safeY = typeof window !== "undefined" && y + TOOLTIP_H > window.innerHeight ? y - TOOLTIP_H - 10 : y;
+    return { x: safeX, y: safeY };
+  };
 
   const handleMove = (e: React.MouseEvent) => {
-    setPos({ x: e.clientX + 12, y: e.clientY + 14 });
+    setPos(clamp(e.clientX + 12, e.clientY + 14));
   };
 
   return (
     <span style={{ position: "relative", display: "inline-flex", alignItems: "center", marginLeft: 3 }}>
       <span
-        onMouseEnter={(e) => setPos({ x: e.clientX + 12, y: e.clientY + 14 })}
+        onMouseEnter={(e) => setPos(clamp(e.clientX + 12, e.clientY + 14))}
         onMouseMove={handleMove}
         onMouseLeave={() => setPos(null)}
         style={{
@@ -311,7 +341,7 @@ function InfoTooltip({ text }: { text: string }) {
         <div style={{
           position: "fixed", left: pos.x, top: pos.y,
           background: "#1a1a1a", color: "#fff", fontSize: 11, padding: "6px 10px",
-          borderRadius: 6, maxWidth: 300, zIndex: 9999, pointerEvents: "none",
+          borderRadius: 6, maxWidth: TOOLTIP_W, zIndex: 9999, pointerEvents: "none",
           boxShadow: "0 2px 8px rgba(0,0,0,0.25)", lineHeight: 1.45,
         }}>
           {text}
@@ -456,7 +486,7 @@ function TaskSubRow({
         onMouseEnter={(e) => (e.currentTarget.style.background = "#f9f9f7")}
         onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
       >
-        <td style={{ padding: "6px 10px", fontSize: 11, color: "var(--text-primary)", verticalAlign: "top" }}>
+        <td style={{ padding: "6px 10px", fontSize: 12, color: "var(--text-primary)", verticalAlign: "top" }}>
           <div style={{ display: "flex", alignItems: "flex-start", gap: 5 }}>
             <ChevronIcon open={expanded} />
             <span style={{ lineHeight: 1.4 }}>{task.task}</span>
@@ -464,18 +494,18 @@ function TaskSubRow({
         </td>
         <td style={{ padding: "6px 6px", textAlign: "center", verticalAlign: "top", width: 44 }}>
           {task.physical === true
-            ? <span style={{ color: "#16a34a", fontSize: 11 }}>✓</span>
+            ? <span style={{ color: "#16a34a", fontSize: 12 }}>✓</span>
             : task.physical === false
-            ? <span style={{ color: "var(--text-muted)", fontSize: 11 }}>✗</span>
-            : <span style={{ color: "var(--text-muted)", fontSize: 10 }}>—</span>}
+            ? <span style={{ color: "var(--text-muted)", fontSize: 12 }}>✗</span>
+            : <span style={{ color: "var(--text-muted)", fontSize: 11 }}>—</span>}
         </td>
-        <td style={{ padding: "6px 6px", fontSize: 11, color: "var(--text-secondary)", textAlign: "right", width: 48 }}>
+        <td style={{ padding: "6px 6px", fontSize: 12, color: "var(--text-secondary)", textAlign: "right", width: 48 }}>
           {task.freq_mean?.toFixed(1) ?? "—"}
         </td>
-        <td style={{ padding: "6px 6px", fontSize: 11, color: "var(--text-secondary)", textAlign: "right", width: 48 }}>
+        <td style={{ padding: "6px 6px", fontSize: 12, color: "var(--text-secondary)", textAlign: "right", width: 48 }}>
           {task.importance?.toFixed(1) ?? "—"}
         </td>
-        <td style={{ padding: "6px 6px", fontSize: 11, color: "var(--text-secondary)", textAlign: "right", width: 48 }}>
+        <td style={{ padding: "6px 6px", fontSize: 12, color: "var(--text-secondary)", textAlign: "right", width: 48 }}>
           {task.relevance?.toFixed(0) ?? "—"}
         </td>
         <td style={{ padding: "6px 6px", verticalAlign: "top", width: 100 }}>
@@ -484,19 +514,19 @@ function TaskSubRow({
               <div style={{ width: 48, height: 5, background: "var(--border)", borderRadius: 3, overflow: "hidden", flexShrink: 0 }}>
                 <div style={{ width: `${barPct}%`, height: "100%", background: "var(--brand)", borderRadius: 3 }} />
               </div>
-              <span style={{ fontSize: 10, color: "var(--text-secondary)" }}>{avgAuto?.toFixed(2)}</span>
+              <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>{avgAuto?.toFixed(2)}</span>
             </div>
-          ) : <span style={{ fontSize: 10, color: "var(--text-muted)" }}>—</span>}
+          ) : <span style={{ fontSize: 11, color: "var(--text-muted)" }}>—</span>}
         </td>
-        <td style={{ padding: "6px 6px", fontSize: 11, color: "var(--text-secondary)", textAlign: "right", width: 72, verticalAlign: "top" }}>
+        <td style={{ padding: "6px 6px", fontSize: 12, color: "var(--text-secondary)", textAlign: "right", width: 72, verticalAlign: "top" }}>
           {fmtAutoAug(maxAuto)}
         </td>
-        <td style={{ padding: "6px 6px", fontSize: 11, textAlign: "right", width: 80, verticalAlign: "top" }}>
+        <td style={{ padding: "6px 6px", fontSize: 12, textAlign: "right", width: 80, verticalAlign: "top" }}>
           {avgPct != null
             ? <span style={{ color: "var(--brand)" }}>{fmtPctNorm(avgPct)}</span>
             : <span style={{ color: "var(--text-muted)" }}>—</span>}
         </td>
-        <td style={{ padding: "6px 6px", fontSize: 11, textAlign: "right", width: 80, verticalAlign: "top" }}>
+        <td style={{ padding: "6px 6px", fontSize: 12, textAlign: "right", width: 80, verticalAlign: "top" }}>
           {maxPct != null
             ? <span style={{ color: "var(--brand)" }}>{fmtPctNorm(maxPct)}</span>
             : <span style={{ color: "var(--text-muted)" }}>—</span>}
@@ -577,27 +607,27 @@ function TaskSubRow({
 function TaskSubHeader() {
   return (
     <tr style={{ borderBottom: "2px solid var(--border)" }}>
-      <th style={{ padding: "5px 10px 5px", textAlign: "left", fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Task</th>
-      <th style={{ padding: "5px 6px", textAlign: "center", fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", width: 44 }}>Phys</th>
-      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 48, whiteSpace: "nowrap" }}>
+      <th style={{ padding: "5px 10px 5px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Task</th>
+      <th style={{ padding: "5px 6px", textAlign: "center", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", width: 44 }}>Phys</th>
+      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 48, whiteSpace: "nowrap" }}>
         Freq<InfoTooltip text="O*NET frequency (0–10)" />
       </th>
-      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 48, whiteSpace: "nowrap" }}>
+      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 48, whiteSpace: "nowrap" }}>
         Imp<InfoTooltip text="O*NET importance (0–5)" />
       </th>
-      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 48, whiteSpace: "nowrap" }}>
+      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 48, whiteSpace: "nowrap" }}>
         Rel<InfoTooltip text="O*NET relevance (0–100)" />
       </th>
-      <th style={{ padding: "5px 6px", textAlign: "left", fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 100, whiteSpace: "nowrap" }}>
+      <th style={{ padding: "5px 6px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 100, whiteSpace: "nowrap" }}>
         Auto Avg<InfoTooltip text="Avg auto-aug (0–5) across sources" />
       </th>
-      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 72, whiteSpace: "nowrap" }}>
+      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 72, whiteSpace: "nowrap" }}>
         Auto Max
       </th>
-      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 80, whiteSpace: "nowrap" }}>
+      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 80, whiteSpace: "nowrap" }}>
         Pct Avg<InfoTooltip text="Avg pct (share of AI conversations)" />
       </th>
-      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 80, whiteSpace: "nowrap" }}>
+      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 80, whiteSpace: "nowrap" }}>
         Pct Max
       </th>
     </tr>
@@ -619,10 +649,12 @@ interface PctSettings {
 function PctComputePanel({
   config,
   geo,
+  tableLevel,
   onResult,
 }: {
   config: ConfigResponse;
   geo: "nat" | "ut";
+  tableLevel: TableLevel;
   onResult: (map: Map<string, number> | null) => void;
 }) {
   const [open, setOpen] = useState(false);
@@ -647,6 +679,10 @@ function PctComputePanel({
 
   const hasMCP = settings.datasets.some((d) => d.startsWith("MCP"));
 
+  // Map task/occupation level → "occupation" for backend; task level treated as occupation
+  const backendAggLevel = (tableLevel === "task" || tableLevel === "occupation") ? "occupation"
+    : tableLevel as "major" | "minor" | "broad";
+
   const compute = useCallback(async () => {
     if (!settings.datasets.length) return;
     setLoading(true);
@@ -660,9 +696,9 @@ function PctComputePanel({
         useAdjMean: settings.useAutoAug && settings.useAdjMean,
         physicalMode: settings.physicalMode,
         geo: settings.geo,
-        aggLevel: "occupation",
+        aggLevel: backendAggLevel,
         sortBy: "Workers Affected",
-        topN: 1000,
+        topN: 5000,
         searchQuery: "",
         contextSize: 5,
       });
@@ -675,7 +711,7 @@ function PctComputePanel({
     } finally {
       setLoading(false);
     }
-  }, [settings, onResult]);
+  }, [settings, onResult, backendAggLevel]);
 
   return (
     <div style={{ border: "1px solid var(--border)", borderRadius: 8, overflow: "hidden" }}>
@@ -725,6 +761,12 @@ function PctComputePanel({
               </div>
             </div>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-end" }}>
+              {settings.datasets.length > 1 && (
+                <div>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>Combine</p>
+                  <BtnSeg opts={[{ v: "Average", l: "Avg" }, { v: "Max", l: "Max" }]} val={settings.combineMethod} onChange={(v) => set("combineMethod", v)} />
+                </div>
+              )}
               <div>
                 <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>Method</p>
                 <BtnSeg opts={[{ v: "freq", l: "Freq" }, { v: "imp", l: "Imp" }]} val={settings.method} onChange={(v) => set("method", v)} />
@@ -974,7 +1016,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
   // ── Visible columns (hide pct_affected when no map, hide n_occs at occ/task level) ──
   const visibleCols = useMemo(() => {
     return COLUMNS.filter((c) => {
-      if (c.key === "pct_affected" && !pctAffectedMap) return false;
+      if ((c.key === "pct_affected" || c.key === "workers_aff" || c.key === "wages_aff") && !pctAffectedMap) return false;
       return true;
     });
   }, [pctAffectedMap]);
@@ -1051,7 +1093,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                 style={{
                   padding: "7px 8px",
                   paddingLeft: isName ? 8 + indentPx : 8,
-                  fontSize: 12,
+                  fontSize: 13,
                   color: "var(--text-primary)",
                   textAlign: isName ? "left" : "right",
                   whiteSpace: isName ? "normal" : "nowrap",
@@ -1132,7 +1174,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
         padding: "0 20px", height: 52, display: "flex", alignItems: "center", gap: 14, flexShrink: 0,
       }}>
         <div>
-          <h1 style={{ fontSize: 15, fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.01em", margin: 0 }}>Job Explorer</h1>
+          <h1 style={{ fontSize: 15, fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.01em", margin: 0 }}>Occupation Explorer</h1>
           <p style={{ fontSize: 11, color: "var(--text-muted)", margin: 0 }}>
             {totalOccs} occupations{totalTasks != null ? ` · ${totalTasks.toLocaleString()} tasks` : ""}
           </p>
@@ -1147,18 +1189,6 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
               color: "var(--text-secondary)",
             }}
           >Reset</button>
-          {/* Geo */}
-          <BtnSeg
-            opts={[{ v: "nat", l: "Nat" }, { v: "ut", l: "Utah" }]}
-            val={geo}
-            onChange={setGeo}
-          />
-          {/* Physical */}
-          <BtnSeg
-            opts={[{ v: "all", l: "All" }, { v: "exclude", l: "No Phys" }, { v: "only", l: "Phys only" }]}
-            val={physicalMode}
-            onChange={setPhysicalMode}
-          />
         </div>
       </div>
 
@@ -1205,7 +1235,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
           })}
         </div>
 
-        {/* Row 2: Level + Search */}
+        {/* Row 2: Level + Search + Geo + Phys + Min filters */}
         <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
           {/* Level selector */}
           <div style={{ display: "flex", border: "1px solid var(--border)", borderRadius: 5, overflow: "hidden" }}>
@@ -1219,6 +1249,18 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
               }}>{l}</button>
             ))}
           </div>
+          {/* Geo */}
+          <BtnSeg
+            opts={[{ v: "nat", l: "Nat" }, { v: "ut", l: "Utah" }]}
+            val={geo}
+            onChange={setGeo}
+          />
+          {/* Physical */}
+          <BtnSeg
+            opts={[{ v: "all", l: "All" }, { v: "exclude", l: "No Phys" }, { v: "only", l: "Phys only" }]}
+            val={physicalMode}
+            onChange={setPhysicalMode}
+          />
 
           {/* Search */}
           <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
@@ -1284,7 +1326,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
         </div>
 
         {/* Row 3: PctComputePanel */}
-        <PctComputePanel config={config} geo={geo} onResult={setPctAffectedMap} />
+        <PctComputePanel config={config} geo={geo} tableLevel={tableLevel} onResult={setPctAffectedMap} />
 
         {/* % Tasks Affected slider (shown when map computed) */}
         {pctAffectedMap && (
@@ -1305,7 +1347,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
 
       {/* ── Table ── */}
       <div style={{ flex: 1, overflowY: "auto", overflowX: "auto" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
 
           {/* Sticky header */}
           <thead>
@@ -1323,7 +1365,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                     style={{
                       padding: "7px 8px",
                       textAlign: col.key === "name" ? "left" : "right",
-                      fontSize: 10,
+                      fontSize: 11,
                       fontWeight: 700,
                       color: isSorted ? "var(--brand)" : "var(--text-muted)",
                       textTransform: "uppercase",
