@@ -324,9 +324,11 @@ The accordion view has been removed. This is now a flat sortable/filterable tabl
 
 **`FlatRow` interface:** holds all metric fields plus `sourceOccs: OccupationSummary[]` (for lazy drilldown) and `level: "major"|"minor"|"broad"|"occupation"|"task"`.
 
-**Level selector:** Major / Minor / Broad / Occupation / Task. At "Task" level, data is fetched from `/api/explorer/all-tasks` (paginated: shows 100 at a time, "Load 100 more" button).
+**Level selector:** Major / Minor / Broad / Occupation / Task. At "Task" level, data is fetched from `/api/explorer/all-tasks` on first switch and cached in `taskData` state.
 
-**`buildChildRows(row, level)`:** uses `groups.minor/broad` data for major/minor drilldown; filters `occupations` by broad for broad→occupation drilldown. Lazy — only computed on expand.
+**Pagination (`rowLimit` state):** All levels are paginated to 100 rows at a time with a "Load 100 more →" footer. `rowLimit` resets to 100 whenever level, filters, search, or sort changes. This keeps the DOM small (~100 `<tr>` × 16 columns) regardless of level size, preventing scroll jank with 900+ occupation rows.
+
+**`buildChildRows(row, level)`:** uses `childRowCache` (a pre-built `useMemo` Map keyed by `"level:name"`) for O(1) child lookups. Previously filtered arrays on every render; now computed once when `groups`/`occupations`/`geo` change.
 
 **Controls:**
 - Multi-select major category pills (empty set = show all)
@@ -337,6 +339,11 @@ The accordion view has been removed. This is now a flat sortable/filterable tabl
 - Nat/Utah toggle for emp/wage columns
 - Auto-aug min slider (two sliders: one for "with vals" variant, one for "all tasks" variant)
 - Reset button clears all filters/sort/search/selections
+
+**Performance notes:**
+- `search`, `minEmp`, `minWage` are debounced (250–300ms) via `useDebounce` before being used in `topRows` useMemo deps — prevents recompute on every keystroke
+- `topRows` useMemo rebuilds only when debounced values or other stable deps change
+- All rendering is paginated via `rowLimit` (see above) — never render all 923 occupation rows at once
 
 **`InfoTooltip` component:** Uses `createPortal(tooltip, document.body)` with `position: fixed` at mouse coordinates to avoid clipping by `overflow: hidden` parent containers.
 
@@ -366,6 +373,12 @@ Displays GWA → IWA → DWA hierarchy with inline drilldown, same 16-column str
 **Hierarchy:** When a GWA row is expanded, its IWA children appear inline; IWA expansion shows DWA children; DWA expansion fetches tasks via `fetchWAActivityTasks("dwa", name)` and shows a task sub-table.
 
 **Task sub-table (under DWA):** shows task, physical flag, activity hierarchy, per-source breakdown, avg/max auto_aug, pct norm columns. Source breakdown expansion mirrors ExplorerView.
+
+**Pagination (`rowLimit` state):** Same 100-row-at-a-time pattern as ExplorerView. `rowLimit` resets on level/filter/search/sort changes. "Load 100 more →" footer appears when `topRows.length > rowLimit`.
+
+**`getChildRows(parentRow)`:** uses `childRowCache` (pre-built `useMemo` Map keyed by `"level:name"`) for O(1) IWA/DWA child lookups instead of O(n) array filtering on every render.
+
+**`search` debounced** 250ms via `useDebounce` before use in `topRows` useMemo deps.
 
 **Emp computation:** `emp_nat` / `emp_ut` on WA rows represent emp_occ / n_unique_tasks summed over all occs in that activity — same allocation logic as the WA page backend.
 
@@ -466,7 +479,7 @@ Values in CSV are already in percent form (e.g., 0.4 means 0.4%). Do **not** mul
 10. `ComputeResponse.total_emp` and `total_wages` are sums across ALL categories (before top-N filter) — used for economy-share % in tooltips, not just the visible bars
 11. The first nav tab is named **"Occupation Categories"** (not "Overview") — the route is still `/`
 12. Trends cumulative max carries forward: if a category has no data at a given date, the running max from prior dates is used — it never decreases
-13. Explorer flat table drilldown stores `sourceOccs` on each `FlatRow`; never pre-build the full tree — compute children lazily on expand
+13. Explorer flat table drilldown stores `sourceOccs` on each `FlatRow`. Child rows (major→minor→broad→occ) are pre-built in a `childRowCache` useMemo Map (keyed `"level:name"`) that recomputes when groups/occupations/geo change — do not re-filter group arrays inside render functions
 14. Explorer `PctComputePanel` calls `/api/compute` with `aggLevel: "occupation"` at `topN: 1000` to get all occupations; physical filter here affects numerator only, consistent with the rest of the app
 15. **`pct_normalized` is already in % form** — do not multiply by 100. `fmtPctNorm(v)` displays `v` directly.
 16. Explorer group metrics (major/minor/broad) are pre-computed from unique task_norms across all occs in the group — never average the per-occupation metric values, as that produces incorrect results
@@ -474,3 +487,5 @@ Values in CSV are already in percent form (e.g., 0.4 means 0.4%). Do **not** mul
 18. All 8 sources are shown in explorer task breakdowns (AEI v1–v4, AEI API v3–v4, MCP v4, Microsoft) — not just the latest versions
 19. WA Explorer emp allocation uses `emp_occ / n_unique_tasks` per task — same logic as the WA page backend; each activity level deduplicates tasks independently (IWA on task_norm+iwa_title, DWA on task_norm+dwa_title)
 20. InfoTooltip uses `createPortal` into `document.body` — required to avoid clipping by `overflow: hidden` ancestor containers; tooltip position is `fixed` at mouse coordinates
+21. Explorer tables use `rowLimit` (100) pagination for **all** levels — never render all rows at once. The occupation level has ~923 rows and DWA has hundreds; rendering them all causes 10K+ DOM nodes and scroll jank. Always slice `topRows.slice(0, rowLimit)` before rendering.
+22. Explorer search/text inputs are debounced (250–300ms) via `useDebounce` before being included in `topRows` useMemo deps — do not add raw input state directly to useMemo dependency arrays or every keystroke will trigger a full filter+sort pass
