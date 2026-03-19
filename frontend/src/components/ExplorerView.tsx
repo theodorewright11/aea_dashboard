@@ -845,7 +845,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
   const [minPctAffected, setMinPctAffected] = useState(0);
   const [taskData, setTaskData] = useState<AllTaskRow[] | null>(null);
   const [taskLoading, setTaskLoading] = useState(false);
-  const [taskPage, setTaskPage] = useState(100);
+  const [rowLimit, setRowLimit] = useState(100);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [rowTasks, setRowTasks] = useState<Record<string, TaskDetail[] | "loading" | "error">>({});
   const [minEmp, setMinEmp] = useState("");
@@ -866,6 +866,9 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
         .finally(() => setTaskLoading(false));
     }
   }, [tableLevel, taskData, taskLoading]);
+
+  // ── Reset row limit whenever the visible set changes ─────────────────────
+  useEffect(() => { setRowLimit(100); }, [tableLevel, selectedMajors, debouncedSearch, searchLevel, colFilters, physicalMode, pctAffectedMap, minPctAffected, debouncedMinEmp, debouncedMinWage, sortCol, sortDir]);
 
   // ── Derived: major pills ─────────────────────────────────────────────────
   const allMajors = useMemo(() => {
@@ -1027,6 +1030,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
     setMinEmp("");
     setMinWage("");
     setExpandedRows(new Set());
+    setRowLimit(100);
   };
 
   // ── Visible columns (hide pct_affected when no map, hide n_occs at occ/task level) ──
@@ -1182,8 +1186,8 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
     );
   }
 
-  // ── Task level rows with pagination ──────────────────────────────────────
-  const shownTaskRows = tableLevel === "task" ? topRows.slice(0, taskPage) : topRows;
+  // ── Paginate all levels (keeps DOM small → no scroll jank) ──────────────
+  const shownRows = topRows.slice(0, rowLimit);
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
@@ -1462,20 +1466,20 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
             )}
 
             {/* Data rows */}
-            {!taskLoading && (tableLevel === "task" ? shownTaskRows : topRows).map((row) =>
+            {!taskLoading && shownRows.map((row: FlatRow) =>
               renderRow(row, tableLevel, 0)
             )}
           </tbody>
         </table>
 
-        {/* Task pagination */}
-        {tableLevel === "task" && !taskLoading && topRows.length > taskPage && (
+        {/* Pagination footer — applies to all levels */}
+        {!taskLoading && topRows.length > rowLimit && (
           <div style={{ padding: "14px 20px", textAlign: "center", borderTop: "1px solid var(--border-light)" }}>
             <span style={{ fontSize: 12, color: "var(--text-muted)", marginRight: 12 }}>
-              Showing {Math.min(taskPage, topRows.length)} of {topRows.length} tasks.
+              Showing {Math.min(rowLimit, topRows.length)} of {topRows.length} rows.
             </span>
             <button
-              onClick={() => setTaskPage((p) => p + 100)}
+              onClick={() => setRowLimit((r) => r + 100)}
               style={{
                 fontSize: 12, color: "var(--brand)", background: "none", border: "none",
                 cursor: "pointer", padding: 0, fontWeight: 600,

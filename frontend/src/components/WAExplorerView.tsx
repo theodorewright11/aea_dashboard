@@ -833,9 +833,13 @@ export default function WAExplorerView({ rows, config }: Props) {
   const [minPctAffected, setMinPctAffected] = useState(0);
   const [taskData, setTaskData]     = useState<AllTaskRow[] | null>(null);
   const [taskLoading, setTaskLoading] = useState(false);
+  const [rowLimit, setRowLimit]     = useState(100);
 
   // ── Debounced search ──────────────────────────────────────────────────────
   const debouncedSearch = useDebounce(search, 250);
+
+  // ── Reset row limit when filters/level change ────────────────────────────
+  useEffect(() => { setRowLimit(100); }, [viewLevel, selectedGwas, debouncedSearch, colFilters, physicalMode, pctAffectedMap, minPctAffected, sortCol, sortDir]);
 
   // ── Load task data when task level selected ──────────────────────────────
   useEffect(() => {
@@ -1046,6 +1050,7 @@ export default function WAExplorerView({ rows, config }: Props) {
     setExpandedRows(new Set());
     setPctAffectedMap(null);
     setMinPctAffected(0);
+    setRowLimit(100);
   };
 
   // ── GWA pill toggle ────────────────────────────────────────────────────────
@@ -1404,9 +1409,25 @@ export default function WAExplorerView({ rows, config }: Props) {
                 </td>
               </tr>
             )}
-            {!taskLoading && topRows.map((row, i) => renderDataRow(row, 0, `${viewLevel}__${row.name}__${i}`))}
+            {!taskLoading && topRows.slice(0, rowLimit).map((row, i) => renderDataRow(row, 0, `${viewLevel}__${row.name}__${i}`))}
           </tbody>
         </table>
+
+        {/* Pagination footer */}
+        {!taskLoading && topRows.length > rowLimit && (
+          <div style={{ padding: "14px 20px", textAlign: "center", borderTop: "1px solid var(--border-light)" }}>
+            <span style={{ fontSize: 12, color: "var(--text-muted)", marginRight: 12 }}>
+              Showing {Math.min(rowLimit, topRows.length)} of {topRows.length} rows.
+            </span>
+            <button
+              onClick={() => setRowLimit((r) => r + 100)}
+              style={{
+                fontSize: 12, color: "var(--brand)", background: "none", border: "none",
+                cursor: "pointer", padding: 0, fontWeight: 600,
+              }}
+            >Load 100 more →</button>
+          </div>
+        )}
       </div>
     </div>
   );
