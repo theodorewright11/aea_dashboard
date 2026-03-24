@@ -740,15 +740,27 @@ function ChartPanel({
       )}
 
       {/* Frozen tooltip — rendered via portal to document.body so it escapes overflow:hidden */}
-      {frozenContent && typeof document !== "undefined" && createPortal(
+      {frozenContent && typeof document !== "undefined" && (() => {
+        const panelW = 380;
+        const pad = 12;
+        const winW = window.innerWidth;
+        const winH = window.innerHeight;
+        // Position: prefer right of click, flip left if it would overflow
+        let left = frozenContent.pos.x + pad;
+        if (left + panelW > winW - pad) left = Math.max(pad, frozenContent.pos.x - panelW - pad);
+        // Vertical: prefer below click, but clamp to viewport
+        let top = frozenContent.pos.y + pad;
+        if (top > winH * 0.6) top = Math.max(pad, frozenContent.pos.y - winH * 0.4);
+        // maxHeight = remaining space from top to bottom of viewport, with padding
+        const maxH = winH - top - pad;
+        return createPortal(
         <div
           id="frozen-tooltip-panel"
           style={{
             position: "fixed",
-            top:  Math.min(frozenContent.pos.y + 18, window.innerHeight - 400),
-            left: Math.min(frozenContent.pos.x + 12, window.innerWidth - 360),
+            top, left, width: panelW,
             zIndex: 99999,
-            maxHeight: "60vh",
+            maxHeight: Math.max(200, maxH),
             overflowY: "auto",
             pointerEvents: "auto",
             borderRadius: 10,
@@ -774,7 +786,8 @@ function ChartPanel({
           <TrendsTooltip active={true} payload={frozenContent.payload} label={frozenContent.date} showAll={true} />
         </div>,
         document.body,
-      )}
+      );
+      })()}
     </div>
   );
 }
