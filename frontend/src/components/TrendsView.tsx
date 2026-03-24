@@ -569,7 +569,11 @@ function ChartPanel({
         // Skip clear if a dot was just clicked (ref flag set by activeDot onClick)
         if (dotClickedRef.current) { dotClickedRef.current = false; return; }
         if ((e.target as HTMLElement).closest("[data-legend-btn]")) return;
-        setLockedLine(null); setLockedPos(null); setLockedDate(null);
+        // Defer clear to next tick so activeDot onClick has time to set the ref flag
+        setTimeout(() => {
+          if (dotClickedRef.current) { dotClickedRef.current = false; return; }
+          setLockedLine(null); setLockedPos(null); setLockedDate(null);
+        }, 0);
       }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px 8px" }}>
@@ -659,6 +663,9 @@ function ChartPanel({
                       // eslint-disable-next-line @typescript-eslint/no-explicit-any
                       onClick: (dotProps: any, event: any) => {
                         dotClickedRef.current = true;
+                        // Stop the DOM event from bubbling to the parent clear handler
+                        if (event?.stopPropagation) event.stopPropagation();
+                        if (event?.nativeEvent?.stopImmediatePropagation) event.nativeEvent.stopImmediatePropagation();
                         const newLock = lockedLine === lc.key ? null : lc.key;
                         setLockedLine(newLock);
                         if (newLock) {
@@ -723,9 +730,23 @@ function ChartPanel({
             maxHeight: "60vh",
             overflowY: "auto",
             pointerEvents: "auto",
+            borderRadius: 8,
+            boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
           }}
-            onClick={(e) => { e.stopPropagation(); setLockedLine(null); setLockedPos(null); setLockedDate(null); }}
+            onClick={(e) => e.stopPropagation()}
           >
+            {/* Close button */}
+            <button
+              onClick={(e) => { e.stopPropagation(); setLockedLine(null); setLockedPos(null); setLockedDate(null); }}
+              style={{
+                position: "sticky", top: 0, float: "right",
+                background: "var(--bg-surface)", border: "1px solid var(--border)",
+                borderRadius: "50%", width: 20, height: 20,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                cursor: "pointer", fontSize: 12, color: "var(--text-muted)",
+                zIndex: 1, marginTop: 4, marginRight: 4,
+              }}
+            >×</button>
             <TrendsTooltip active={true} payload={fakePayload} label={lockedDate} />
           </div>
         );

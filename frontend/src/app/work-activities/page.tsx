@@ -74,7 +74,7 @@ function ControlLabel({ children }: { children: React.ReactNode }) {
 }
 
 function SegBtn<T extends string>({
-  options, value, onChange, padding = "5px 10px",
+  options, value, onChange, padding = "5px 11px",
 }: {
   options: { value: T; label: string }[];
   value: T;
@@ -82,7 +82,7 @@ function SegBtn<T extends string>({
   padding?: string;
 }) {
   return (
-    <div style={{ display: "flex", border: "1px solid var(--border)", borderRadius: 7, overflow: "hidden" }}>
+    <div style={{ display: "inline-flex", border: "1px solid var(--border)", borderRadius: 7, overflow: "hidden" }}>
       {options.map(({ value: v, label }, i) => (
         <button
           key={v}
