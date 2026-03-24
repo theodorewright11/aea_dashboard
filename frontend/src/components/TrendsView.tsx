@@ -412,7 +412,6 @@ function ChartLegend({
 function ChartPanel({
   title, metric, chartData, lineConfigs, increases, incMode,
   loading, error, hasResult, lockedLine, setLockedLine, dateDatasets, catRanks,
-  showAllInTooltip,
 }: {
   title: string; metric: MetricKey;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -425,12 +424,13 @@ function ChartPanel({
   setLockedLine: (k: string | null) => void;
   dateDatasets?: Map<string, string[]>;
   catRanks?: Map<string, number>;
-  showAllInTooltip: boolean;
 }) {
   const chartRef = useRef<HTMLDivElement>(null);
   const [hoveredLine, setHoveredLine] = useState<string | null>(null);
   const [lockedPos, setLockedPos] = useState<{ x: number; y: number } | null>(null);
   const [lockedDate, setLockedDate] = useState<string | null>(null);
+  // Ref flag: set by activeDot onClick to prevent the parent div onClick from clearing the lock in the same tick
+  const dotClickedRef = useRef(false);
 
   const activeLine = lockedLine ?? hoveredLine;
   const chartHeight = Math.max(380, Math.min(lineConfigs.length, 14) * 22 + 180);
@@ -451,7 +451,7 @@ function ChartPanel({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const filteredPayload = activeLine
       ? props.payload.filter((p: any) => p.dataKey === activeLine)
-      : showAllInTooltip ? props.payload : [];
+      : props.payload;
     const currentDate = props.label ?? "";
 
     // Helper: extract category name from a line key ("ds — cat" or just "cat")
@@ -566,10 +566,8 @@ function ChartPanel({
         borderRadius: 12, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
       }}
       onClick={(e) => {
-        // Click on chart background clears lock — but not when clicking lines, dots, or legend
-        if ((e.target as HTMLElement).closest(".recharts-line")) return;
-        if ((e.target as HTMLElement).closest(".recharts-dot")) return;
-        if ((e.target as HTMLElement).closest(".recharts-active-dot")) return;
+        // Skip clear if a dot was just clicked (ref flag set by activeDot onClick)
+        if (dotClickedRef.current) { dotClickedRef.current = false; return; }
         if ((e.target as HTMLElement).closest("[data-legend-btn]")) return;
         setLockedLine(null); setLockedPos(null); setLockedDate(null);
       }}
@@ -660,6 +658,7 @@ function ChartPanel({
                       r: 7, strokeWidth: 2, stroke: "#fff",
                       // eslint-disable-next-line @typescript-eslint/no-explicit-any
                       onClick: (dotProps: any, event: any) => {
+                        dotClickedRef.current = true;
                         const newLock = lockedLine === lc.key ? null : lc.key;
                         setLockedLine(newLock);
                         if (newLock) {
@@ -703,22 +702,15 @@ function ChartPanel({
       {lockedPos && lockedDate && lockedLine && (() => {
         const pt = chartData.find((p) => p.date === lockedDate);
         if (!pt) return null;
-        // Show all lines or just the locked line depending on showAllInTooltip
+        // Always show all lines in the frozen tooltip, sorted by value desc
         const fakePayload: { dataKey: string; name: string; value: number; color: string }[] = [];
-        if (showAllInTooltip) {
-          // Build payload for all lines that have data at this date, sorted by value desc
-          lineConfigs.forEach((lc2) => {
-            const v = pt[lc2.key];
-            if (typeof v === "number") {
-              fakePayload.push({ dataKey: lc2.key, name: lc2.key, value: v, color: lc2.color });
-            }
-          });
-          fakePayload.sort((a, b) => b.value - a.value);
-        } else {
-          const lc = lineConfigs.find((l) => l.key === lockedLine);
-          if (!lc || typeof pt[lockedLine] !== "number") return null;
-          fakePayload.push({ dataKey: lockedLine, name: lockedLine, value: pt[lockedLine] as number, color: lc.color });
-        }
+        lineConfigs.forEach((lc2) => {
+          const v = pt[lc2.key];
+          if (typeof v === "number") {
+            fakePayload.push({ dataKey: lc2.key, name: lc2.key, value: v, color: lc2.color });
+          }
+        });
+        fakePayload.sort((a, b) => b.value - a.value);
         if (!fakePayload.length) return null;
         const winH = typeof window !== "undefined" ? window.innerHeight : 800;
         const winW = typeof window !== "undefined" ? window.innerWidth  : 1200;
@@ -850,7 +842,6 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
   const [lockedLine, setLockedLine] = useState<string | null>(null);
 
   const [panelCollapsed,    setPanelCollapsed]    = useState(false);
-  const [showAllInTooltip,  setShowAllInTooltip]  = useState(true);
 
   const hasMCP = selectedDatasets.some((d) => d.startsWith("MCP") || d === "Microsoft");
 
@@ -1021,14 +1012,6 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
                   <ControlLabel>Geography</ControlLabel>
                   <SegmentedControl options={[{ value: "nat" as const, label: "National" }, { value: "ut" as const, label: "Utah" }]} value={geo} onChange={setGeo} />
                 </div>
-                <div>
-                  <ControlLabel>Tooltip labels</ControlLabel>
-                  <SegmentedControl
-                    options={[{ value: "all" as const, label: "All lines" }, { value: "active" as const, label: "Active only" }]}
-                    value={showAllInTooltip ? "all" : "active"}
-                    onChange={(v) => setShowAllInTooltip(v === "all")}
-                  />
-                </div>
                 <button onClick={run} className="btn-brand" style={{ padding: "9px 24px", fontSize: 13 }}
                   onMouseOver={(e) => (e.currentTarget.style.background = "var(--brand-hover)")}
                   onMouseOut={(e)  => (e.currentTarget.style.background = "var(--brand)")}>
@@ -1164,7 +1147,6 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
           lockedLine={lockedLine} setLockedLine={setLockedLine}
           dateDatasets={dateDatasets}
           catRanks={catRanks}
-          showAllInTooltip={showAllInTooltip}
         />
       </div>
     </>
@@ -1199,7 +1181,6 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
   const [lockedLine,    setLockedLine]   = useState<string | null>(null);
 
   const [panelCollapsed,    setPanelCollapsed]    = useState(false);
-  const [showAllInTooltip,  setShowAllInTooltip]  = useState(true);
 
   const hasMCP = selectedDatasets.some((d) => d.startsWith("MCP") || d === "Microsoft");
 
@@ -1373,14 +1354,6 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
                   <ControlLabel>Geography</ControlLabel>
                   <SegmentedControl options={[{ value: "nat" as const, label: "National" }, { value: "ut" as const, label: "Utah" }]} value={geo} onChange={setGeo} />
                 </div>
-                <div>
-                  <ControlLabel>Tooltip labels</ControlLabel>
-                  <SegmentedControl
-                    options={[{ value: "all" as const, label: "All lines" }, { value: "active" as const, label: "Active only" }]}
-                    value={showAllInTooltip ? "all" : "active"}
-                    onChange={(v) => setShowAllInTooltip(v === "all")}
-                  />
-                </div>
                 <button onClick={run} className="btn-brand" style={{ padding: "9px 24px", fontSize: 13 }}
                   onMouseOver={(e) => (e.currentTarget.style.background = "var(--brand-hover)")}
                   onMouseOut={(e)  => (e.currentTarget.style.background = "var(--brand)")}>
@@ -1511,7 +1484,6 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
           lockedLine={lockedLine} setLockedLine={setLockedLine}
           dateDatasets={dateDatasets}
           catRanks={catRanks}
-          showAllInTooltip={showAllInTooltip}
         />
       </div>
     </>

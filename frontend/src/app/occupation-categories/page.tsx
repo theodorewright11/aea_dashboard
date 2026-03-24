@@ -116,7 +116,7 @@ function SegBtn<T extends string>({
   padding?: string;
 }) {
   return (
-    <div style={{ display: "flex", border: "1px solid var(--border)", borderRadius: 6, overflow: "hidden" }}>
+    <div style={{ display: "flex", border: "1px solid var(--border)", borderRadius: 7, overflow: "hidden" }}>
       {options.map(({ value: v, label }, i) => (
         <button
           key={v}
@@ -427,7 +427,7 @@ function GroupSettingsPanel({
                 options={[{ value: "false" as never, label: "Off" }, { value: "true" as never, label: "On" }]}
                 value={String(pending.useAutoAug) as never}
                 onChange={(v) => set("useAutoAug", v === "true")}
-                padding="4px 6px"
+                padding="5px 7px"
               />
             </div>
 
@@ -441,7 +441,7 @@ function GroupSettingsPanel({
                   options={[{ value: "false" as never, label: "Off" }, { value: "true" as never, label: "On" }]}
                   value={String(pending.useAdjMean) as never}
                   onChange={(v) => set("useAdjMean", v === "true")}
-                  padding="4px 6px"
+                  padding="5px 7px"
                 />
               </div>
             )}
