@@ -445,12 +445,15 @@ function ChartPanel({
   }), [lineConfigs, increases, metric, incMode]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function TrendsTooltip(props: any) {
+  function TrendsTooltip(props: any & { showAll?: boolean }) {
     if (!props.active || !props.payload?.length) return null;
+    // When showAll is true (frozen panel), skip the activeLine filter — show everything
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const filteredPayload = activeLine
-      ? props.payload.filter((p: any) => p.dataKey === activeLine)
-      : props.payload;
+    const filteredPayload = props.showAll
+      ? props.payload
+      : activeLine
+        ? props.payload.filter((p: any) => p.dataKey === activeLine)
+        : props.payload;
     const currentDate = props.label ?? "";
 
     // Helper: extract category name from a line key ("ds — cat" or just "cat")
@@ -477,6 +480,7 @@ function ChartPanel({
         background: "var(--bg-surface)", border: "1px solid var(--border)",
         borderRadius: 8, padding: "10px 14px", fontSize: 12,
         boxShadow: "0 2px 8px rgba(0,0,0,0.09)", maxWidth: 400,
+        maxHeight: props.showAll ? undefined : "50vh", overflowY: props.showAll ? undefined : "auto",
       }}>
         <p style={{ fontWeight: 700, color: "var(--text-primary)", marginBottom: 8 }}>
           {fmtDate(currentDate)}
@@ -767,7 +771,7 @@ function ChartPanel({
               onMouseOut={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
             >×</button>
           </div>
-          <TrendsTooltip active={true} payload={frozenContent.payload} label={frozenContent.date} />
+          <TrendsTooltip active={true} payload={frozenContent.payload} label={frozenContent.date} showAll={true} />
         </div>,
         document.body,
       )}
