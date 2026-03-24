@@ -19,7 +19,10 @@ from pydantic import BaseModel
 import math
 from typing import Optional
 
-from config import DATASETS, DATASET_SERIES, AGG_LEVEL_OPTIONS, SORT_OPTIONS, AGG_LEVEL_COL
+from config import (
+    DATASETS, DATASET_SERIES, AGG_LEVEL_OPTIONS, SORT_OPTIONS, AGG_LEVEL_COL,
+    AEI_SNAPSHOT_DATASETS, AEI_CUMULATIVE_DATASETS, MCP_DATASETS,
+)
 from compute import (
     get_group_data,
     compute_work_activities,
@@ -83,13 +86,16 @@ class GroupSettingsModel(BaseModel):
 # ── /api/config ────────────────────────────────────────────────────────────────
 
 class ConfigResponse(BaseModel):
-    datasets:             list[str]
-    dataset_availability: dict[str, bool]
-    dataset_series:       dict[str, list[str]]
-    agg_levels:           dict[str, str]
-    sort_options:         list[str]
-    crosswalk_available:  bool
-    eco2015_available:    bool
+    datasets:               list[str]
+    dataset_availability:   dict[str, bool]
+    dataset_series:         dict[str, list[str]]
+    agg_levels:             dict[str, str]
+    sort_options:           list[str]
+    crosswalk_available:    bool
+    eco2015_available:      bool
+    aei_snapshot_datasets:  list[str]
+    aei_cumulative_datasets: list[str]
+    mcp_datasets:           list[str]
 
 
 @app.get("/api/health")
@@ -107,6 +113,9 @@ def config():
         sort_options=SORT_OPTIONS,
         crosswalk_available=crosswalk_available(),
         eco2015_available=eco2015_available(),
+        aei_snapshot_datasets=sorted(AEI_SNAPSHOT_DATASETS),
+        aei_cumulative_datasets=sorted(AEI_CUMULATIVE_DATASETS),
+        mcp_datasets=sorted(MCP_DATASETS),
     )
 
 
@@ -389,6 +398,12 @@ class SourceStats(BaseModel):
     pct_norm: Optional[float] = None
 
 
+class McpEntry(BaseModel):
+    title:  str
+    rating: Optional[float] = None
+    url:    Optional[str]   = None
+
+
 class TaskDetail(BaseModel):
     task:              str
     task_normalized:   str
@@ -404,6 +419,7 @@ class TaskDetail(BaseModel):
     max_auto_aug:      Optional[float] = None
     avg_pct_norm:      Optional[float] = None
     max_pct_norm:      Optional[float] = None
+    top_mcps:          list[McpEntry]   = []
 
 
 class OccupationTasksResponse(BaseModel):
@@ -506,20 +522,28 @@ def wa_explorer():
 # ── /api/explorer/wa/tasks ─────────────────────────────────────────────────────
 
 class WATaskDetail(BaseModel):
-    task:              str
-    task_normalized:   str
-    dwa_title:         Optional[str]   = None
-    iwa_title:         Optional[str]   = None
-    gwa_title:         Optional[str]   = None
-    physical:          Optional[bool]  = None
-    emp_nat:           Optional[float] = None
-    emp_ut:            Optional[float] = None
-    wage_nat:          Optional[float] = None
-    sources:           dict            = {}
-    avg_auto_aug:      Optional[float] = None
-    max_auto_aug:      Optional[float] = None
-    avg_pct_norm:      Optional[float] = None
-    max_pct_norm:      Optional[float] = None
+    task:               str
+    task_normalized:    str
+    dwa_title:          Optional[str]   = None
+    iwa_title:          Optional[str]   = None
+    gwa_title:          Optional[str]   = None
+    physical:           Optional[bool]  = None
+    emp_nat:            Optional[float] = None
+    emp_ut:             Optional[float] = None
+    wage_nat:           Optional[float] = None
+    freq_mean:          Optional[float] = None
+    importance:         Optional[float] = None
+    relevance:          Optional[float] = None
+    title_current:      Optional[str]   = None
+    broad_occ:          Optional[str]   = None
+    minor_occ_category: Optional[str]   = None
+    major_occ_category: Optional[str]   = None
+    sources:            dict            = {}
+    avg_auto_aug:       Optional[float] = None
+    max_auto_aug:       Optional[float] = None
+    avg_pct_norm:       Optional[float] = None
+    max_pct_norm:       Optional[float] = None
+    top_mcps:           list[McpEntry]  = []
 
 
 class WATasksResponse(BaseModel):
@@ -591,11 +615,15 @@ class EcoTaskRow(BaseModel):
     wage_nat:           Optional[float] = None
     wage_ut:            Optional[float] = None
     n_tasks_per_occ:    int             = 1
+    freq_mean:          Optional[float] = None
+    importance:         Optional[float] = None
+    relevance:          Optional[float] = None
     sources:            dict            = {}
     avg_auto_aug:       Optional[float] = None
     max_auto_aug:       Optional[float] = None
     avg_pct_norm:       Optional[float] = None
     max_pct_norm:       Optional[float] = None
+    top_mcps:           list[McpEntry]  = []
 
 
 class EcoTasksResponse(BaseModel):

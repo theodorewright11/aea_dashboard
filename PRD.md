@@ -20,7 +20,7 @@ The dashboard draws on five independent data sources. Using multiple AI scoring 
 
 ### AI Scoring Sources
 
-**Anthropic Economic Index (AEI)** — Derived from analysis of real Claude conversations. Each O*NET task has an automatability score (0–5) based on the averages of the collaboration patterns that each task was used for in the given Claude conversation (directive, feedback loop, task iteration, validation, learning). Four snapshot versions (v1–v4) span December 2024 to November 2025, plus two "API" variants (v3–v4) that measure tool-use/API interactions specifically. AEI data uses 2010 SOC occupation codes and must be crosswalked to the current 2019 SOC system before comparison with other sources.
+**Anthropic Economic Index (AEI)** — Derived from analysis of real Claude conversations. Each O*NET task has an automatability score (0–5) based on the averages of the collaboration patterns that each task was used for in the given Claude conversation (directive, feedback loop, task iteration, validation, learning). Four **snapshot** versions (v1–v4) span December 2024 to November 2025, plus two "API" variants (v3–v4) that measure tool-use/API interactions specifically. Additionally, four **cumulative** versions (Cumul. v1–v4) each aggregate all conversations up to their snapshot date — v4 already contains v1–v3's data, so only one cumulative version should be selected at a time. AEI data uses 2010 SOC occupation codes and must be crosswalked to the current 2019 SOC system before comparison with other sources.
 
 **MCP Server Pipeline** — AI task classifications drawn from Model Context Protocol server logs. These capture what AI systems can do when given access to tools and external resources, rather than conversation-only capability. Four snapshot versions (v1–v4) from April 2025 to February 2026. MCP data includes both a standard automatability score and an adjusted score that excludes flagged or low-confidence ratings. Uses 2019 SOC codes natively.
 
@@ -40,7 +40,7 @@ The dashboard has seven pages accessible from the top navigation bar. The **defa
 
 ### 3.1 Occupation Explorer
 
-A sortable, filterable data table covering all 923 occupations in the O*NET/BLS universe, with pre-computed AI exposure metrics drawn from all eight AI dataset sources (AEI v1–v4, AEI API v3–v4, MCP v4, Microsoft).
+A sortable, filterable data table covering all 923 occupations in the O*NET/BLS universe, with pre-computed AI exposure metrics drawn from all eight baseline AI dataset sources (AEI v1–v4, AEI API v3–v4, MCP v4, Microsoft). The Pct Compute Panel additionally supports all 15 user-selectable datasets including cumulative AEI versions.
 
 **What questions it answers:**
 - Which specific occupations or occupational categories have the highest AI exposure scores?
@@ -48,10 +48,10 @@ A sortable, filterable data table covering all 923 occupations in the O*NET/BLS 
 - For a given occupation, which of its tasks are most exposed and which AI sources agree?
 
 **What the user sees and can do:**
-- A table with columns for name, employment, median wage, number of occupations (at group levels), number of tasks, four auto-aug score variants (avg/max, with values only or across all tasks), percent physical, four pct_normalized variants, and two sum-of-pct columns. At the Task level, additional columns are available: Occupation, Major, Minor, and Broad occupation category.
-- A **column selector** (gear icon in the header bar) that lets users toggle which columns are visible. Persisted to localStorage.
+- A table with columns for name, employment, median wage, number of occupations (at group levels), number of tasks, four auto-aug score variants (avg/max, with values only or across all tasks), percent physical, four pct_normalized variants, and two sum-of-pct columns. At the Task level, additional columns are available: Occupation, Major, Minor, Broad occupation category, and DWA/IWA/GWA work activity classifications.
+- A **column selector** (gear icon in the header bar) that lets users toggle which columns are visible. Persisted to localStorage. In Simple mode, only a curated subset of columns is selectable.
 - A **level selector** (Major / Minor / Broad / Occupation / Task) that controls the granularity of the table. At the Task level, each row is one task × occupation combination from the full ECO 2025 dataset (~23,850 rows). Tasks can repeat across occupations but each row has a unique combination of task, occupation, and work activity classification. Employment and wage columns show the raw occupation-level numbers (not divided).
-- **Inline drilldown**: clicking any row expands it to show child rows at the next level down. At the occupation level, expanding shows individual tasks. At the task level, expanding a row shows its occupation classification (Occupation → Broad → Minor → Major), its activity classification (GWA/IWA/DWA), and a per-source breakdown table showing scores from all eight AI sources plus computed averages and maximums.
+- **Inline drilldown**: clicking any row expands it to show child rows at the next level down. At the occupation level, expanding shows individual tasks. At the task level, expanding a row shows its occupation classification (Occupation → Broad → Minor → Major), its activity classification (GWA/IWA/DWA), a Task Details panel (physical flag, frequency, importance, relevance, auto-aug score, % conversations), and a per-source breakdown table showing scores from all eight AI sources plus computed averages and maximums.
 - **Multi-select major category pills** to filter to specific SOC major groups. At the task level, filtering applies to the task's `major_occ_category`.
 - **Click-to-sort** on any column header (toggles ascending/descending).
 - **Per-column threshold filters** via a filter icon on each column header (set ≥ or ≤ cutoffs).
@@ -70,10 +70,11 @@ The same sortable/filterable table interface as the Occupation Explorer, but org
 
 **What the user sees and can do:**
 - A **level selector** (GWA / IWA / DWA / Task) controlling which tier of the hierarchy is shown as top-level rows. The Task level shows all ~23,850 eco rows (same data as the Occupation Explorer task level).
-- **Inline drilldown**: GWA rows expand to show IWA children; IWA rows expand to show DWA children; DWA rows expand to show individual tasks. Task rows are expandable to show their occupation classification, activity classification, and per-source AI score breakdown.
+- **Inline drilldown**: GWA rows expand to show IWA children; IWA rows expand to show DWA children; DWA rows expand to show individual tasks with a sub-table showing Physical, Frequency, Importance, Relevance, auto-aug score, % conversations, % Tasks Affected, and workers/wages affected per task. Task rows are expandable to show a Task Details panel (physical flag, frequency, importance, relevance, auto-aug score, % conversations), Top MCPs panel, occupation classification, and activity classification.
 - **GWA multi-select pills** for filtering to specific General Work Activity groups. Scrollbar is visible for horizontal overflow.
-- **Column selector** (gear icon) — same as Occupation Explorer: toggles column visibility, persisted to localStorage.
-- Same column structure (including task-level Occupation/Major/Minor/Broad columns), sorting, filtering, search, Avg/Max toggle, Nat/Utah toggle, and pagination as the Occupation Explorer. Task-level search also matches occupation name and classification columns.
+- **Column selector** (gear icon) — same as Occupation Explorer: toggles column visibility, persisted to localStorage. In Simple mode, only a curated subset of columns is selectable (different sets at the WA level vs. task level).
+- **Text column filters** (multi-select dropdown) on the Occupation, Major, Minor, Broad, DWA, IWA, and GWA columns at the task level — lets users filter to specific occupational or activity categories by clicking a funnel icon in the column header.
+- Same column structure (including task-level Occupation/Major/Minor/Broad and DWA/IWA/GWA columns), sorting, filtering, search, Avg/Max toggle, Nat/Utah toggle, and pagination as the Occupation Explorer. Task-level search also matches occupation name and classification columns.
 
 ### 3.3 Occupation Categories
 
@@ -121,7 +122,7 @@ Time-series line charts showing how automation exposure metrics have changed acr
 
 **What the user sees and can do:**
 - **Two tabs**: Occupation Categories and Work Activities, each with independent controls.
-- **Dataset pills** — select individual dataset versions (e.g., "AEI v2", "MCP v3") to include. Only selected versions appear as data points on the chart.
+- **Dataset pills** — select individual dataset versions (e.g., "AEI v2", "MCP v3", "AEI Cumul. v4") to include. Only selected versions appear as data points on the chart. The "AEI Cumul." family is a separate series from the snapshot "AEI" family.
 - **Three line modes**: *Individual* (one line per dataset × category), *Average* (averages across selected datasets at each date), and *Max* (cumulative running maximum — the line never decreases).
 - **Display controls** — metric (workers, wages, tasks), method (freq, imp), geography, aggregation level, Top N (up to 30), physical, auto-aug toggle.
 - **Sort modes** — sort categories by current value or by increase (absolute or percentage change from first to last data point).
@@ -170,7 +171,7 @@ The percentage of AI conversations (from AEI/MCP/Microsoft data) that involved a
 
 | Option | Values | What it controls |
 |--------|--------|-----------------|
-| **Dataset selection** | AEI v1–v4, AEI API v3–v4, MCP v1–v4, Microsoft | Which AI scoring source(s) to use. Different sources capture different AI capabilities. |
+| **Dataset selection** | AEI v1–v4, AEI API v3–v4, AEI Cumul. v1–v4, MCP v1–v4, Microsoft | Which AI scoring source(s) to use. Different sources capture different AI capabilities. Dataset selection enforces three rules: (1) only one cumulative AEI version at a time (v4 already includes all prior data); (2) cumulative and snapshot AEI cannot be mixed; (3) only one MCP version at a time. The UI auto-deselects conflicting choices when a new dataset is added. |
 | **Combine method** | Average / Max | When multiple datasets are selected, whether to average their scores or take the maximum per task. Max shows peak capability across sources; Average shows consensus. |
 | **Method** | Frequency / Importance-weighted | How task weights are computed. Frequency uses reported task frequency directly. Importance-weighted uses `relevance × 2^importance`, giving more weight to tasks that are both important and relevant. |
 | **Geography** | National / Utah | Which BLS employment and wage figures to use. Utah figures are relevant for state-level policy. |
@@ -222,7 +223,7 @@ Tooltips on each bar show the delta versus the same category in the other group,
 **What the dashboard does NOT do:**
 - **Predict job loss or replacement.** The metrics show task-level exposure overlap with AI capability, not employment forecasts. A high % Tasks Affected does not mean those workers will lose their jobs.
 - **Capture all AI capabilities.** The AI scoring sources measure what current systems (Claude, MCP tools, Microsoft Copilot) can do as of their snapshot dates. Capabilities not captured in these datasets are not reflected.
-- **Provide real-time data.** All data is from past snapshots. AEI data spans Dec 2024–Nov 2025; MCP spans Apr 2025–Feb 2026; Microsoft is a single Sep 2024 snapshot. BLS employment/wage data is from 2024 OEWS.
+- **Provide real-time data.** All data is from past snapshots. AEI snapshot data spans Dec 2024–Nov 2025; AEI cumulative data aggregates all conversations through each snapshot date; MCP spans Apr 2025–Feb 2026; Microsoft is a single Sep 2024 snapshot. BLS employment/wage data is from 2024 OEWS.
 - **Cover non-U.S. labor markets.** Employment and wage data are U.S. national and Utah state only. The occupational taxonomy (O*NET / SOC) is U.S.-specific.
 
 **Edge cases and caveats:**

@@ -6,6 +6,7 @@ import { fetchConfig, fetchCompute } from "@/lib/api";
 import GroupPanel from "@/components/GroupPanel";
 import { GROUP_A_COLOR, GROUP_B_COLOR } from "@/lib/theme";
 import { useSimpleMode } from "@/lib/SimpleModeContext";
+import { enforceDatasetToggle } from "@/lib/datasetRules";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -204,6 +205,7 @@ function InfoTooltip({ text }: { text: string }) {
 
 function DatasetPills({
   label, color, datasets, availability, selected, combineMethod,
+  aeiSnapshotDatasets, aeiCumulativeDatasets, mcpDatasets,
   onChange, onChangeCombine,
 }: {
   label: string;
@@ -212,12 +214,14 @@ function DatasetPills({
   availability: Record<string, boolean>;
   selected: string[];
   combineMethod: "Average" | "Max";
+  aeiSnapshotDatasets: string[];
+  aeiCumulativeDatasets: string[];
+  mcpDatasets: string[];
   onChange: (v: string[]) => void;
   onChangeCombine: (v: "Average" | "Max") => void;
 }) {
   function toggle(name: string) {
-    if (selected.includes(name)) onChange(selected.filter((d) => d !== name));
-    else onChange([...selected, name]);
+    onChange(enforceDatasetToggle(selected, name, { aeiSnapshotDatasets, aeiCumulativeDatasets, mcpDatasets }));
   }
 
   return (
@@ -394,6 +398,9 @@ function GroupSettingsPanel({
             availability={config.dataset_availability}
             selected={pending.datasets}
             combineMethod={pending.combineMethod}
+            aeiSnapshotDatasets={config.aei_snapshot_datasets ?? []}
+            aeiCumulativeDatasets={config.aei_cumulative_datasets ?? []}
+            mcpDatasets={config.mcp_datasets ?? []}
             onChange={(v) => set("datasets", v)}
             onChangeCombine={(v) => set("combineMethod", v)}
           />

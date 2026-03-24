@@ -12,9 +12,11 @@ import type {
   ExplorerGroupRow,
   ExplorerGroupsResponse,
   EcoTaskRow,
+  McpEntry,
 } from "@/lib/types";
 import { fetchOccupationTasks, fetchCompute, fetchAllEcoTasks } from "@/lib/api";
 import { useSimpleMode } from "@/lib/SimpleModeContext";
+import { enforceDatasetToggle } from "@/lib/datasetRules";
 
 // ── Debounce hook ──────────────────────────────────────────────────────────────
 
@@ -79,9 +81,12 @@ interface ColDef {
 const COLUMNS: ColDef[] = [
   { key: "name",         label: "Name",            width: 280, numeric: false },
   { key: "occ",          label: "Occupation",       width: 200, numeric: false, tooltip: "Occupation this task belongs to" },
-  { key: "major_cat",    label: "Major",            width: 180, numeric: false, tooltip: "Major occupation category" },
-  { key: "minor_cat",    label: "Minor",            width: 180, numeric: false, tooltip: "Minor occupation category" },
   { key: "broad_cat",    label: "Broad",            width: 180, numeric: false, tooltip: "Broad occupation" },
+  { key: "minor_cat",    label: "Minor",            width: 180, numeric: false, tooltip: "Minor occupation category" },
+  { key: "major_cat",    label: "Major",            width: 180, numeric: false, tooltip: "Major occupation category" },
+  { key: "dwa_col",      label: "DWA",              width: 200, numeric: false, tooltip: "Detailed Work Activity" },
+  { key: "iwa_col",      label: "IWA",              width: 200, numeric: false, tooltip: "Intermediate Work Activity" },
+  { key: "gwa_col",      label: "GWA",              width: 200, numeric: false, tooltip: "General Work Activity" },
   { key: "emp",          label: "Emp",              width: 90,  numeric: true,  tooltip: "Total employment (BLS OEWS 2024)" },
   { key: "wage",         label: "Med Wage",         width: 90,  numeric: true,  tooltip: "Median annual wage (BLS OEWS 2024)" },
   { key: "n_occs",       label: "# Occs",           width: 65,  numeric: true,  tooltip: "Number of unique occupations" },
@@ -136,6 +141,7 @@ interface FlatRow {
   gwa_title?: string | null;
   n_tasks_per_occ?: number;
   sources?: Record<string, TaskSourceStats>;
+  top_mcps?: McpEntry[];
 }
 
 // ── Row converters ─────────────────────────────────────────────────────────────
@@ -216,6 +222,7 @@ function ecoTaskToRow(t: EcoTaskRow, idx: number, geo: "nat" | "ut" = "nat"): Fl
     gwa_title: t.gwa_title ?? null,
     n_tasks_per_occ: t.n_tasks_per_occ,
     sources: t.sources,
+    top_mcps: t.top_mcps ?? [],
   };
 }
 
@@ -270,6 +277,9 @@ function renderCell(
     case "major_cat":    return row.major_occ_category ?? <span style={muted}>—</span>;
     case "minor_cat":    return row.minor_occ_category ?? <span style={muted}>—</span>;
     case "broad_cat":    return row.broad_occ ?? <span style={muted}>—</span>;
+    case "dwa_col":      return row.dwa_title ?? <span style={muted}>—</span>;
+    case "iwa_col":      return row.iwa_title ?? <span style={muted}>—</span>;
+    case "gwa_col":      return row.gwa_title ?? <span style={muted}>—</span>;
     case "emp":          return fmtEmp(row.emp);
     case "wage":         return fmtWage(row.wage);
     case "n_occs":       return row.isOcc ? <span style={muted}>—</span> : row.n_occs;
@@ -482,6 +492,147 @@ function ColumnFilterDropdown({
   );
 }
 
+// ── Text column filter dropdown ──────────────────────────────────────────────
+
+const TEXT_FILTER_COLS = new Set(["occ", "broad_cat", "minor_cat", "major_cat", "dwa_col", "iwa_col", "gwa_col"]);
+
+function TextColumnFilterDropdown({
+  colKey,
+  uniqueValues,
+  selectedValues,
+  onSelectionChange,
+  onClose,
+}: {
+  colKey: string;
+  uniqueValues: string[];
+  selectedValues: Set<string> | null; // null means "all"
+  onSelectionChange: (colKey: string, values: Set<string> | null) => void;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [filterSearch, setFilterSearch] = useState("");
+
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) onClose();
+    }
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [onClose]);
+
+  const isAll = selectedValues === null;
+  const filtered = filterSearch
+    ? uniqueValues.filter((v) => v.toLowerCase().includes(filterSearch.toLowerCase()))
+    : uniqueValues;
+
+  return (
+    <div ref={ref} style={{
+      position: "absolute", top: "100%", left: 0, zIndex: 500,
+      background: "var(--bg-surface)", border: "1px solid var(--border)",
+      borderRadius: 7, padding: "8px 0", boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+      minWidth: 220, maxWidth: 320, display: "flex", flexDirection: "column",
+    }} onClick={(e) => e.stopPropagation()}>
+      {/* Search box */}
+      <div style={{ padding: "0 8px 6px" }}>
+        <input
+          type="text"
+          placeholder="Search..."
+          value={filterSearch}
+          onChange={(e) => setFilterSearch(e.target.value)}
+          style={{
+            width: "100%", fontSize: 11, padding: "4px 6px",
+            border: "1px solid var(--border)", borderRadius: 4,
+            outline: "none", color: "var(--text-primary)", background: "var(--bg-surface)",
+            boxSizing: "border-box",
+          }}
+        />
+      </div>
+      {/* All toggle */}
+      <label
+        style={{
+          display: "flex", alignItems: "center", gap: 8,
+          padding: "3px 10px", fontSize: 11, cursor: "pointer",
+          color: "var(--text-primary)", fontWeight: 600,
+          borderBottom: "1px solid var(--border-light)",
+        }}
+      >
+        <input
+          type="checkbox"
+          checked={isAll}
+          onChange={() => {
+            if (isAll) {
+              // Deselect all — set empty
+              onSelectionChange(colKey, new Set());
+            } else {
+              // Select all
+              onSelectionChange(colKey, null);
+            }
+          }}
+          style={{ margin: 0 }}
+        />
+        All ({uniqueValues.length})
+      </label>
+      {/* Values list */}
+      <div style={{ maxHeight: 250, overflowY: "auto" }}>
+        {filtered.map((val) => {
+          const checked = isAll || (selectedValues?.has(val) ?? false);
+          return (
+            <label
+              key={val}
+              style={{
+                display: "flex", alignItems: "center", gap: 8,
+                padding: "3px 10px", fontSize: 11, cursor: "pointer",
+                color: checked ? "var(--text-primary)" : "var(--text-muted)",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "#f5f5f3"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+            >
+              <input
+                type="checkbox"
+                checked={checked}
+                onChange={() => {
+                  if (isAll) {
+                    // Switching from "all" to specific: select all except this one
+                    const next = new Set(uniqueValues);
+                    next.delete(val);
+                    onSelectionChange(colKey, next);
+                  } else {
+                    const next = new Set(selectedValues);
+                    if (next.has(val)) next.delete(val); else next.add(val);
+                    // If all are selected, switch back to null (all)
+                    if (next.size === uniqueValues.length) {
+                      onSelectionChange(colKey, null);
+                    } else {
+                      onSelectionChange(colKey, next);
+                    }
+                  }
+                }}
+                style={{ margin: 0 }}
+              />
+              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{val}</span>
+            </label>
+          );
+        })}
+        {filtered.length === 0 && (
+          <p style={{ fontSize: 11, color: "var(--text-muted)", padding: "6px 10px", margin: 0 }}>No matches</p>
+        )}
+      </div>
+      {/* Clear button */}
+      {!isAll && (
+        <div style={{ borderTop: "1px solid var(--border-light)", padding: "4px 10px 2px" }}>
+          <button
+            onClick={() => onSelectionChange(colKey, null)}
+            style={{
+              fontSize: 10, color: "var(--brand)", background: "none", border: "none",
+              cursor: "pointer", padding: 0, textAlign: "left",
+            }}
+          >Reset to All</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Segmented button control ───────────────────────────────────────────────────
 
 function BtnSeg<T extends string>({
@@ -606,6 +757,36 @@ function TaskSubRow({
                   {task.dwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>DWA:</b> {task.dwa_title}</p>}
                 </div>
               )}
+              {/* Task Details side table */}
+              <div style={{ minWidth: 140 }}>
+                <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Task Details</p>
+                <table style={{ fontSize: 11, borderCollapse: "collapse" }}>
+                  <tbody>
+                    <tr>
+                      <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Physical</td>
+                      <td style={{ padding: "2px 0" }}>
+                        {task.physical === true
+                          ? <span style={{ color: "#16a34a" }}>Yes</span>
+                          : task.physical === false
+                          ? <span style={{ color: "var(--text-secondary)" }}>No</span>
+                          : <span style={{ color: "var(--text-muted)" }}>—</span>}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Freq Mean</td>
+                      <td style={{ padding: "2px 0" }}>{task.freq_mean?.toFixed(1) ?? "—"}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Importance</td>
+                      <td style={{ padding: "2px 0" }}>{task.importance?.toFixed(1) ?? "—"}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Relevance</td>
+                      <td style={{ padding: "2px 0" }}>{task.relevance?.toFixed(0) ?? "—"}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
               {sources.length > 0 && (
                 <div>
                   <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Source Breakdown</p>
@@ -655,6 +836,24 @@ function TaskSubRow({
                       </tr>
                     </tbody>
                   </table>
+                </div>
+              )}
+              {/* Top MCPs */}
+              {task.top_mcps && task.top_mcps.length > 0 && (
+                <div style={{ minWidth: 200 }}>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Top MCP Servers</p>
+                  <ul style={{ margin: 0, paddingLeft: 16, listStyleType: "disc" }}>
+                    {task.top_mcps.slice(0, 5).map((mcp, mi) => (
+                      <li key={mi} style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 3 }}>
+                        {mcp.url
+                          ? <a href={mcp.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--brand)", textDecoration: "underline" }}>{mcp.title}</a>
+                          : mcp.title}
+                        {mcp.rating != null && (
+                          <span style={{ marginLeft: 6, fontSize: 10, color: "var(--text-muted)" }}>({mcp.rating.toFixed(2)})</span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
             </div>
@@ -807,7 +1006,11 @@ function PctComputePanel({
                   const sel = settings.datasets.includes(ds);
                   return (
                     <button key={ds} disabled={!avail} onClick={() => {
-                      const next = sel ? settings.datasets.filter((d) => d !== ds) : [...settings.datasets, ds];
+                      const next = enforceDatasetToggle(settings.datasets, ds, {
+                        aeiSnapshotDatasets: config.aei_snapshot_datasets ?? [],
+                        aeiCumulativeDatasets: config.aei_cumulative_datasets ?? [],
+                        mcpDatasets: config.mcp_datasets ?? [],
+                      });
                       set("datasets", next);
                     }} style={{
                       fontSize: 10, padding: "3px 7px", borderRadius: 5,
@@ -888,6 +1091,24 @@ const SIMPLE_COLS = new Set([
   "pct_affected", "workers_aff", "wages_aff",
 ]);
 
+// Columns visible in simple mode at task level (replaces SIMPLE_COLS for task view)
+const SIMPLE_TASK_COLS = new Set([
+  "name", "occ", "broad_cat", "minor_cat", "major_cat",
+  "dwa_col", "iwa_col", "gwa_col",
+  "emp", "wage", "n_tasks",
+  "auto_avg_w", "auto_max_w",
+  "pct_avg_w", "pct_max_w",
+  "pct_affected", "workers_aff", "wages_aff",
+]);
+
+// Label overrides for simple task mode
+const SIMPLE_TASK_LABELS: Record<string, string> = {
+  auto_avg_w: "Auto Avg",
+  auto_max_w: "Auto Max",
+  pct_avg_w: "Pct Avg",
+  pct_max_w: "Pct Max",
+};
+
 export default function ExplorerView({ occupations, groups, config }: Props) {
   const { isSimple } = useSimpleMode();
 
@@ -909,16 +1130,14 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
   const [rowLimit, setRowLimit] = useState(100);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [rowTasks, setRowTasks] = useState<Record<string, TaskDetail[] | "loading" | "error">>({});
-  const [minEmp, setMinEmp] = useState("");
-  const [minWage, setMinWage] = useState("");
+  const [textColFilters, setTextColFilters] = useState<Record<string, Set<string> | null>>({});
+  const [openTextFilter, setOpenTextFilter] = useState<string | null>(null);
 
   // ── Debounced inputs (prevents topRows recompute on every keystroke) ──────
   const debouncedSearch   = useDebounce(search,   250);
-  const debouncedMinEmp   = useDebounce(minEmp,   300);
-  const debouncedMinWage  = useDebounce(minWage,  300);
 
   // ── Column selector state (persisted to localStorage) ──────────────────
-  const TASK_ONLY_COLS = new Set(["occ", "major_cat", "minor_cat", "broad_cat"]);
+  const TASK_ONLY_COLS = new Set(["occ", "major_cat", "minor_cat", "broad_cat", "dwa_col", "iwa_col", "gwa_col"]);
   const [hiddenCols, setHiddenCols] = useState<Set<string>>(() => {
     if (typeof window === "undefined") return new Set<string>();
     try {
@@ -975,7 +1194,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
   }, [isSimple, geo, tableLevel, config.datasets, config.dataset_availability]);
 
   // ── Reset row limit whenever the visible set changes ─────────────────────
-  useEffect(() => { setRowLimit(100); }, [tableLevel, selectedMajors, debouncedSearch, searchLevel, colFilters, physicalMode, pctAffectedMap, minPctAffected, debouncedMinEmp, debouncedMinWage, sortCol, sortDir]);
+  useEffect(() => { setRowLimit(100); }, [tableLevel, selectedMajors, debouncedSearch, searchLevel, colFilters, textColFilters, physicalMode, pctAffectedMap, minPctAffected, sortCol, sortDir]);
 
   // ── Derived: major pills ─────────────────────────────────────────────────
   const allMajors = useMemo(() => {
@@ -1042,12 +1261,6 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
       rows = rows.filter((r) => r.pct_physical === 1 || r.pct_physical === null);
     }
 
-    // Emp/wage filter
-    const empMin = parseFloat(debouncedMinEmp);
-    const wageMin = parseFloat(debouncedMinWage);
-    if (!isNaN(empMin) && empMin > 0) rows = rows.filter((r) => r.emp >= empMin);
-    if (!isNaN(wageMin) && wageMin > 0) rows = rows.filter((r) => r.wage != null && r.wage >= wageMin);
-
     // % Tasks Affected filter
     if (pctAffectedMap && minPctAffected > 0) {
       rows = rows.filter((r) => {
@@ -1069,6 +1282,28 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
         });
       }
     });
+
+    // Text column filters
+    const textValGetter: Record<string, (r: FlatRow) => string | null | undefined> = {
+      occ: (r) => r.title_current,
+      major_cat: (r) => r.major_occ_category,
+      minor_cat: (r) => r.minor_occ_category,
+      broad_cat: (r) => r.broad_occ,
+      dwa_col: (r) => r.dwa_title,
+      iwa_col: (r) => r.iwa_title,
+      gwa_col: (r) => r.gwa_title,
+    };
+    for (const [colKey, selected] of Object.entries(textColFilters)) {
+      if (selected === null || selected === undefined) continue; // null means "all"
+      if (selected.size === 0) { rows = []; break; }
+      const getter = textValGetter[colKey];
+      if (getter) {
+        rows = rows.filter((r) => {
+          const v = getter(r);
+          return v != null && selected.has(v);
+        });
+      }
+    }
 
     // Search
     if (searchQ) {
@@ -1094,6 +1329,9 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
         major_cat: (r) => r.major_occ_category,
         minor_cat: (r) => r.minor_occ_category,
         broad_cat: (r) => r.broad_occ,
+        dwa_col: (r) => r.dwa_title,
+        iwa_col: (r) => r.iwa_title,
+        gwa_col: (r) => r.gwa_title,
       };
       if (textColMap[sortCol]) {
         const aStr = textColMap[sortCol](a) ?? "";
@@ -1112,7 +1350,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
     return rows;
   }, [
     tableLevel, groups, occupations, taskData, geo, selectedMajors, debouncedSearch, searchLevel,
-    sortCol, sortDir, colFilters, physicalMode, pctAffectedMap, minPctAffected, debouncedMinEmp, debouncedMinWage,
+    sortCol, sortDir, colFilters, textColFilters, physicalMode, pctAffectedMap, minPctAffected,
   ]);
 
   // ── Expand/collapse ──────────────────────────────────────────────────────
@@ -1152,34 +1390,61 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
     setSortCol("emp");
     setSortDir("desc");
     setColFilters({});
+    setTextColFilters({});
     setPhysicalMode("all");
     setPctAffectedMap(null);
     setMinPctAffected(0);
     setTableLevel("major");
-    setMinEmp("");
-    setMinWage("");
     setExpandedRows(new Set());
     setRowLimit(100);
   };
 
   // ── Visible columns (hide pct_affected when no map; simple mode filters; column selector) ──
+  const isSimpleTask = isSimple && tableLevel === "task";
   const visibleCols = useMemo(() => {
     return COLUMNS.filter((c) => {
       // Hide compute columns when no data
       if ((c.key === "pct_affected" || c.key === "workers_aff" || c.key === "wages_aff") && !pctAffectedMap) return false;
-      // Simple mode column filter
-      if (isSimple && !SIMPLE_COLS.has(c.key)) return false;
+      // Simple mode column filter (task level uses different set)
+      if (isSimpleTask && !SIMPLE_TASK_COLS.has(c.key)) return false;
+      if (isSimple && !isSimpleTask && !SIMPLE_COLS.has(c.key)) return false;
       // Task-only columns hidden when not at task level
       if (TASK_ONLY_COLS.has(c.key) && tableLevel !== "task") return false;
       // User column selector
       if (hiddenCols.has(c.key)) return false;
       return true;
+    }).map((c) => {
+      // Relabel columns in simple task mode
+      if (isSimpleTask && SIMPLE_TASK_LABELS[c.key]) {
+        return { ...c, label: SIMPLE_TASK_LABELS[c.key] };
+      }
+      return c;
     });
-  }, [pctAffectedMap, isSimple, tableLevel, hiddenCols]);
+  }, [pctAffectedMap, isSimple, isSimpleTask, tableLevel, hiddenCols]);
 
   // ── Total count for header ────────────────────────────────────────────────
   const totalOccs = occupations.length;
   const totalTasks = taskData?.length ?? null;
+
+  // ── Unique values for text column filter dropdowns ─────────────────────
+  const textColUniqueValues = useMemo(() => {
+    const getters: Record<string, (r: FlatRow) => string | null | undefined> = {
+      occ:       (r) => r.title_current,
+      major_cat: (r) => r.major_occ_category,
+      minor_cat: (r) => r.minor_occ_category,
+      broad_cat: (r) => r.broad_occ,
+      dwa_col:   (r) => r.dwa_title,
+      iwa_col:   (r) => r.iwa_title,
+      gwa_col:   (r) => r.gwa_title,
+    };
+    const result: Record<string, string[]> = {};
+    for (const [key, getter] of Object.entries(getters)) {
+      const seen = new Set<string>();
+      topRows.forEach((r) => { const v = getter(r); if (v) seen.add(v); });
+      result[key] = Array.from(seen).sort();
+    }
+    return result;
+  }, [topRows]);
 
   // ── Pre-built child row cache (avoids O(n) filtering on every render) ─────
   const childRowCache = useMemo(() => {
@@ -1267,7 +1532,16 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                 {isName ? (
                   <div style={{ display: "flex", alignItems: "flex-start", gap: 5 }}>
                     <span style={{ marginTop: 1, flexShrink: 0 }}><ChevronIcon open={isExpanded} /></span>
-                    <span style={{ lineHeight: 1.4 }}>
+                    <span style={{
+                      lineHeight: 1.4,
+                      ...(isTask ? {
+                        display: "-webkit-box",
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: "vertical" as const,
+                        overflow: "hidden",
+                        wordBreak: "break-word" as const,
+                      } : {}),
+                    }}>
                       {search.trim() ? highlightText(row.name, search.trim()) : row.name}
                     </span>
                   </div>
@@ -1326,11 +1600,45 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
           </tr>
         )}
 
-        {/* Task-level expansion: show occupation + activity classification + sources */}
+        {/* Task-level expansion: show occupation + activity classification + details + sources + top MCPs */}
         {isExpanded && isTask && (
           <tr style={{ background: "#f7f7f5", borderBottom: "1px solid var(--border)" }}>
             <td colSpan={visibleCols.length} style={{ padding: "10px 20px 14px 28px" }}>
               <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+                {/* Task Details */}
+                <div style={{ minWidth: 140 }}>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Task Details</p>
+                  <table style={{ fontSize: 11, borderCollapse: "collapse" }}>
+                    <tbody>
+                      <tr>
+                        <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Physical</td>
+                        <td style={{ padding: "2px 0" }}>
+                          {row.pct_physical === 1
+                            ? <span style={{ color: "#16a34a" }}>Yes</span>
+                            : row.pct_physical === 0
+                            ? <span style={{ color: "var(--text-secondary)" }}>No</span>
+                            : <span style={{ color: "var(--text-muted)" }}>—</span>}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Auto Avg</td>
+                        <td style={{ padding: "2px 0" }}>{fmtAutoAug(row.auto_avg_with_vals)}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Auto Max</td>
+                        <td style={{ padding: "2px 0" }}>{fmtAutoAug(row.auto_max_with_vals)}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Pct Avg</td>
+                        <td style={{ padding: "2px 0" }}>{fmtPctNorm(row.pct_avg_with_vals)}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Pct Max</td>
+                        <td style={{ padding: "2px 0" }}>{fmtPctNorm(row.pct_max_with_vals)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
                 {/* Occupation Classification */}
                 {(row.title_current || row.broad_occ || row.minor_occ_category || row.major_occ_category) && (
                   <div style={{ minWidth: 200 }}>
@@ -1403,6 +1711,24 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                     </div>
                   );
                 })()}
+                {/* Top MCPs */}
+                {row.top_mcps && row.top_mcps.length > 0 && (
+                  <div style={{ minWidth: 200 }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Top MCP Servers</p>
+                    <ul style={{ margin: 0, paddingLeft: 16, listStyleType: "disc" }}>
+                      {row.top_mcps.slice(0, 5).map((mcp, mi) => (
+                        <li key={mi} style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 3 }}>
+                          {mcp.url
+                            ? <a href={mcp.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--brand)", textDecoration: "underline" }}>{mcp.title}</a>
+                            : mcp.title}
+                          {mcp.rating != null && (
+                            <span style={{ marginLeft: 6, fontSize: 10, color: "var(--text-muted)" }}>({mcp.rating.toFixed(2)})</span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </td>
           </tr>
@@ -1433,81 +1759,6 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
           <p style={{ fontSize: 11, color: "var(--text-muted)", margin: 0 }}>
             {totalOccs} occupations{totalTasks != null ? ` · ${totalTasks.toLocaleString()} tasks` : ""}
           </p>
-        </div>
-        <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
-          {/* Column selector */}
-          <div style={{ position: "relative" }}>
-            <button
-              onClick={() => setColSelectorOpen((p) => !p)}
-              title="Select columns"
-              style={{
-                fontSize: 11, padding: "4px 8px", border: "1px solid var(--border)",
-                borderRadius: 5, background: colSelectorOpen ? "var(--brand-light)" : "transparent",
-                cursor: "pointer", color: colSelectorOpen ? "var(--brand)" : "var(--text-secondary)",
-                display: "inline-flex", alignItems: "center", gap: 4,
-              }}
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
-                <rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" />
-              </svg>
-              Columns
-            </button>
-            {colSelectorOpen && (
-              <div
-                style={{
-                  position: "absolute", right: 0, top: "100%", marginTop: 4,
-                  background: "var(--bg-surface)", border: "1px solid var(--border)",
-                  borderRadius: 8, padding: "8px 0", zIndex: 100,
-                  boxShadow: "0 4px 16px rgba(0,0,0,0.12)", width: 220,
-                  maxHeight: 400, overflowY: "auto",
-                }}
-              >
-                {COLUMNS.filter((c) => {
-                  if (c.key === "name") return false; // name is always shown
-                  if (TASK_ONLY_COLS.has(c.key) && tableLevel !== "task") return false;
-                  return true;
-                }).map((c) => {
-                  const checked = !hiddenCols.has(c.key);
-                  return (
-                    <label
-                      key={c.key}
-                      style={{
-                        display: "flex", alignItems: "center", gap: 8,
-                        padding: "4px 12px", fontSize: 11, cursor: "pointer",
-                        color: checked ? "var(--text-primary)" : "var(--text-muted)",
-                      }}
-                      onMouseEnter={(e) => { e.currentTarget.style.background = "#f5f5f3"; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        onChange={() => {
-                          setHiddenCols((prev) => {
-                            const next = new Set(prev);
-                            if (next.has(c.key)) next.delete(c.key); else next.add(c.key);
-                            return next;
-                          });
-                        }}
-                        style={{ margin: 0 }}
-                      />
-                      {c.label}
-                    </label>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-          {/* Reset */}
-          <button
-            onClick={handleReset}
-            style={{
-              fontSize: 11, padding: "4px 10px", border: "1px solid var(--border)",
-              borderRadius: 5, background: "transparent", cursor: "pointer",
-              color: "var(--text-secondary)",
-            }}
-          >Reset</button>
         </div>
       </div>
 
@@ -1612,39 +1863,82 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
             )}
           </div>
 
-          {/* Min Emp / Min Wage inputs (hidden in simple mode) */}
-          {!isSimple && (
-          <>
-          <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-            <span style={{ fontSize: 11, color: "var(--text-muted)" }}>Min Emp:</span>
-            <input
-              type="number"
-              value={minEmp}
-              onChange={(e) => setMinEmp(e.target.value)}
-              placeholder="0"
+          {/* Column selector */}
+          <div style={{ position: "relative" }}>
+            <button
+              onClick={() => setColSelectorOpen((p) => !p)}
+              title="Select columns"
               style={{
-                width: 80, fontSize: 11, padding: "4px 6px",
-                border: "1px solid var(--border)", borderRadius: 4,
-                outline: "none", color: "var(--text-primary)", background: "var(--bg-surface)",
+                fontSize: 11, padding: "4px 8px", border: "1px solid var(--border)",
+                borderRadius: 5, background: colSelectorOpen ? "var(--brand-light)" : "transparent",
+                cursor: "pointer", color: colSelectorOpen ? "var(--brand)" : "var(--text-secondary)",
+                display: "inline-flex", alignItems: "center", gap: 4,
               }}
-            />
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" />
+              </svg>
+              Columns
+            </button>
+            {colSelectorOpen && (
+              <div
+                style={{
+                  position: "absolute", right: 0, top: "100%", marginTop: 4,
+                  background: "var(--bg-surface)", border: "1px solid var(--border)",
+                  borderRadius: 8, padding: "8px 0", zIndex: 100,
+                  boxShadow: "0 4px 16px rgba(0,0,0,0.12)", width: 220,
+                  maxHeight: 400, overflowY: "auto",
+                }}
+              >
+                {COLUMNS.filter((c) => {
+                  if (c.key === "name") return false;
+                  if (TASK_ONLY_COLS.has(c.key) && tableLevel !== "task") return false;
+                  if (isSimpleTask && !SIMPLE_TASK_COLS.has(c.key)) return false;
+                  if (isSimple && !isSimpleTask && !SIMPLE_COLS.has(c.key)) return false;
+                  return true;
+                }).map((c) => {
+                  const checked = !hiddenCols.has(c.key);
+                  return (
+                    <label
+                      key={c.key}
+                      style={{
+                        display: "flex", alignItems: "center", gap: 8,
+                        padding: "4px 12px", fontSize: 11, cursor: "pointer",
+                        color: checked ? "var(--text-primary)" : "var(--text-muted)",
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = "#f5f5f3"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => {
+                          setHiddenCols((prev) => {
+                            const next = new Set(prev);
+                            if (next.has(c.key)) next.delete(c.key); else next.add(c.key);
+                            return next;
+                          });
+                        }}
+                        style={{ margin: 0 }}
+                      />
+                      {c.label}
+                    </label>
+                  );
+                })}
+              </div>
+            )}
           </div>
-          <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-            <span style={{ fontSize: 11, color: "var(--text-muted)" }}>Min Wage:</span>
-            <input
-              type="number"
-              value={minWage}
-              onChange={(e) => setMinWage(e.target.value)}
-              placeholder="0"
-              style={{
-                width: 80, fontSize: 11, padding: "4px 6px",
-                border: "1px solid var(--border)", borderRadius: 4,
-                outline: "none", color: "var(--text-primary)", background: "var(--bg-surface)",
-              }}
-            />
-          </div>
-          </>
-          )}
+
+          {/* Reset */}
+          <button
+            onClick={handleReset}
+            style={{
+              fontSize: 11, padding: "4px 12px", borderRadius: 5,
+              border: "1px solid var(--border)", background: "transparent",
+              color: "var(--text-secondary)", cursor: "pointer",
+            }}
+          >Reset</button>
 
           {/* Showing count */}
           <span style={{ fontSize: 11, color: "var(--text-muted)", marginLeft: "auto" }}>
@@ -1693,7 +1987,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                     key={col.key}
                     style={{
                       padding: "7px 8px",
-                      textAlign: col.key === "name" ? "left" : "right",
+                      textAlign: !col.numeric ? "left" : "right",
                       fontSize: 11,
                       fontWeight: 700,
                       color: isSorted ? "var(--brand)" : "var(--text-muted)",
@@ -1707,7 +2001,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                     }}
                     onClick={() => handleSort(col.key)}
                   >
-                    <div style={{ display: "inline-flex", alignItems: "center", gap: 3, paddingRight: col.numeric ? 14 : 0 }}>
+                    <div style={{ display: "inline-flex", alignItems: "center", gap: 3, paddingRight: (col.numeric || TEXT_FILTER_COLS.has(col.key)) ? 14 : 0 }}>
                       {col.label}
                       {col.tooltip && <InfoTooltip text={col.tooltip} />}
                       {isSorted && (
@@ -1742,6 +2036,38 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                         onClose={() => setOpenFilter(null)}
                       />
                     )}
+                    {TEXT_FILTER_COLS.has(col.key) && (() => {
+                      const hasTextFilter = textColFilters[col.key] !== null && textColFilters[col.key] !== undefined;
+                      return (
+                        <>
+                          <span
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setOpenTextFilter((prev) => prev === col.key ? null : col.key);
+                            }}
+                            style={{
+                              position: "absolute", right: 4, top: "50%", transform: "translateY(-50%)",
+                              cursor: "pointer",
+                              color: hasTextFilter ? "var(--brand)" : "var(--text-muted)",
+                              opacity: hasTextFilter ? 1 : 0.5,
+                              display: "inline-flex",
+                            }}
+                            title="Filter values"
+                          >
+                            <FunnelIcon />
+                          </span>
+                          {openTextFilter === col.key && (
+                            <TextColumnFilterDropdown
+                              colKey={col.key}
+                              uniqueValues={textColUniqueValues[col.key] ?? []}
+                              selectedValues={textColFilters[col.key] ?? null}
+                              onSelectionChange={(ck, vals) => setTextColFilters((prev) => ({ ...prev, [ck]: vals }))}
+                              onClose={() => setOpenTextFilter(null)}
+                            />
+                          )}
+                        </>
+                      );
+                    })()}
                   </th>
                 );
               })}

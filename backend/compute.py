@@ -4,6 +4,7 @@ All @st.cache_data decorators replaced with simple in-process dict caches.
 """
 from __future__ import annotations
 
+import re
 import pandas as pd
 import numpy as np
 from pathlib import Path
@@ -12,6 +13,7 @@ from typing import Optional
 from config import (
     ECO_BASELINE_FILE, ECO_2015_FILE, CROSSWALK_PATHS,
     AGG_LEVEL_COL, DATASETS, DATASET_SERIES, SORT_COL_MAP,
+    AEI_SNAPSHOT_DATASETS, AEI_CUMULATIVE_DATASETS, MCP_DATASETS,
 )
 
 AEI_EXPLORER_DATASETS = ["AEI v1", "AEI v2", "AEI v3", "AEI v4", "AEI API v3", "AEI API v4"]
@@ -30,6 +32,7 @@ _explorer_task_lookup_cache: Optional[dict] = None
 _explorer_groups_cache: Optional[dict] = None
 _wa_explorer_cache: Optional[list] = None
 _all_tasks_cache: Optional[list] = None
+_top_mcps_cache: Optional[dict] = None
 
 
 def _find_crosswalk() -> Optional[Path]:
@@ -1070,6 +1073,7 @@ def get_occupation_tasks(title: str) -> Optional[dict]:
         return None
 
     lookup = _build_explorer_task_lookup()
+    top_mcps_lookup = _build_top_mcps_lookup()
 
     # Sort by task name alphabetically
     occ_tasks = occ_tasks.sort_values("task")
@@ -1110,6 +1114,7 @@ def get_occupation_tasks(title: str) -> Optional[dict]:
             "max_auto_aug":   round(max(auto_vals), 3)                  if auto_vals else None,
             "avg_pct_norm":   round(sum(pct_vals) / len(pct_vals), 4)  if pct_vals  else None,
             "max_pct_norm":   round(max(pct_vals), 4)                  if pct_vals  else None,
+            "top_mcps":       top_mcps_lookup.get(tn, []),
         })
 
     result = {"title": title, "tasks": tasks_list}
@@ -1206,6 +1211,61 @@ def _build_explorer_task_lookup() -> dict:
                 }
 
     _explorer_task_lookup_cache = result
+    return result
+
+
+def _build_top_mcps_lookup() -> dict:
+    """
+    Builds and caches a dict: task_normalized -> list of {title, rating, url}.
+    Source: MCP v4 `top_mcps` (pipe-delimited "Name (rating)") and `top_mcp_urls` (pipe-delimited URLs).
+    Returns up to 5 entries per task.
+    """
+    global _top_mcps_cache
+    if _top_mcps_cache is not None:
+        return _top_mcps_cache
+
+    result: dict = {}
+    mcp_meta = DATASETS.get("MCP v4", {})
+    mcp_file = mcp_meta.get("file", "")
+    if not Path(mcp_file).exists():
+        _top_mcps_cache = result
+        return result
+
+    mcp = pd.read_csv(mcp_file)
+    if "top_mcps" not in mcp.columns or "top_mcp_urls" not in mcp.columns:
+        _top_mcps_cache = result
+        return result
+    if "task_normalized" not in mcp.columns:
+        _top_mcps_cache = result
+        return result
+
+    for _, row in mcp.iterrows():
+        tn = row.get("task_normalized")
+        if pd.isna(tn) or tn in result:
+            continue
+        raw_mcps = row.get("top_mcps", "")
+        raw_urls = row.get("top_mcp_urls", "")
+        if pd.isna(raw_mcps) or not raw_mcps:
+            continue
+
+        titles_raw = [s.strip() for s in str(raw_mcps).split("||")]
+        urls_raw = [s.strip() for s in str(raw_urls).split("||")] if not pd.isna(raw_urls) else []
+
+        entries: list[dict] = []
+        for i, title_str in enumerate(titles_raw[:5]):
+            # Parse "Name (rating)" format
+            m = re.match(r"^(.+?)\s*\((\d+(?:\.\d+)?)\)\s*$", title_str)
+            if m:
+                name = m.group(1).strip()
+                rating = float(m.group(2))
+            else:
+                name = title_str
+                rating = None
+            url = urls_raw[i] if i < len(urls_raw) else None
+            entries.append({"title": name, "rating": rating, "url": url})
+        result[tn] = entries
+
+    _top_mcps_cache = result
     return result
 
 
@@ -1554,6 +1614,7 @@ def get_wa_tasks_for_activity(level: str, name: str) -> list:
         return []
 
     lookup = _build_explorer_task_lookup()
+    top_mcps_lookup = _build_top_mcps_lookup()
 
     act_col_map = {"gwa": "gwa_title", "iwa": "iwa_title", "dwa": "dwa_title"}
     act_col = act_col_map.get(level)
@@ -1618,20 +1679,28 @@ def get_wa_tasks_for_activity(level: str, name: str) -> list:
             is_physical = bool(phys_val)
 
         tasks_out.append({
-            "task":           str(first.get("task", tn)),
-            "task_normalized": tn,
-            "dwa_title":      first.get("dwa_title"),
-            "iwa_title":      first.get("iwa_title"),
-            "gwa_title":      first.get("gwa_title"),
-            "physical":       is_physical,
-            "emp_nat":        round(emp_nat, 2) if emp_nat else None,
-            "emp_ut":         round(emp_ut,  2) if emp_ut  else None,
-            "wage_nat":       round(wage_sum_nat / wage_emp_nat, 0) if wage_emp_nat else None,
-            "sources":        dict(sources),
-            "avg_auto_aug":   round(sum(auto_vals) / len(auto_vals), 3) if auto_vals else None,
-            "max_auto_aug":   round(max(auto_vals), 3) if auto_vals else None,
-            "avg_pct_norm":   round(sum(pct_vals) / len(pct_vals), 4) if pct_vals else None,
-            "max_pct_norm":   round(max(pct_vals), 4) if pct_vals else None,
+            "task":                str(first.get("task", tn)),
+            "task_normalized":     tn,
+            "dwa_title":           first.get("dwa_title"),
+            "iwa_title":           first.get("iwa_title"),
+            "gwa_title":           first.get("gwa_title"),
+            "physical":            is_physical,
+            "emp_nat":             round(emp_nat, 2) if emp_nat else None,
+            "emp_ut":              round(emp_ut,  2) if emp_ut  else None,
+            "wage_nat":            round(wage_sum_nat / wage_emp_nat, 0) if wage_emp_nat else None,
+            "freq_mean":           _safe_num(first.get("freq_mean")),
+            "importance":          _safe_num(first.get("importance")),
+            "relevance":           _safe_num(first.get("relevance")),
+            "title_current":       str(first.get("title_current", "")) or None,
+            "broad_occ":           first.get("broad_occ") if not (isinstance(first.get("broad_occ"), float) and np.isnan(first.get("broad_occ"))) else None,
+            "minor_occ_category":  first.get("minor_occ_category") if not (isinstance(first.get("minor_occ_category"), float) and np.isnan(first.get("minor_occ_category"))) else None,
+            "major_occ_category":  first.get("major_occ_category") if not (isinstance(first.get("major_occ_category"), float) and np.isnan(first.get("major_occ_category"))) else None,
+            "sources":             dict(sources),
+            "avg_auto_aug":        round(sum(auto_vals) / len(auto_vals), 3) if auto_vals else None,
+            "max_auto_aug":        round(max(auto_vals), 3) if auto_vals else None,
+            "avg_pct_norm":        round(sum(pct_vals) / len(pct_vals), 4) if pct_vals else None,
+            "max_pct_norm":        round(max(pct_vals), 4) if pct_vals else None,
+            "top_mcps":            top_mcps_lookup.get(tn, []),
         })
 
     tasks_out.sort(key=lambda t: t["task"])
@@ -1805,6 +1874,7 @@ def get_all_eco_task_rows() -> list:
         return []
 
     lookup = _build_explorer_task_lookup()
+    top_mcps_lookup = _build_top_mcps_lookup()
 
     # Pre-compute n_tasks_per_occ (unique task_normalized per occupation)
     n_tasks_per_occ = (
@@ -1879,11 +1949,15 @@ def get_all_eco_task_rows() -> list:
             "wage_nat": _safe_float(row.get(wage_nat_col)),
             "wage_ut": _safe_float(row.get(wage_ut_col)),
             "n_tasks_per_occ": n_tasks_per_occ.get(occ, 1),
+            "freq_mean":  _safe_float(row.get("freq_mean")),
+            "importance": _safe_float(row.get("importance")),
+            "relevance":  _safe_float(row.get("relevance")),
             "sources": metrics.get("sources", {}),
             "avg_auto_aug": metrics.get("avg_auto_aug"),
             "max_auto_aug": metrics.get("max_auto_aug"),
             "avg_pct_norm": metrics.get("avg_pct_norm"),
             "max_pct_norm": metrics.get("max_pct_norm"),
+            "top_mcps": top_mcps_lookup.get(tn, []),
         })
 
     _all_eco_task_rows_cache = result

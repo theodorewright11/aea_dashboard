@@ -8,9 +8,10 @@ import React, {
   useRef,
 } from "react";
 import { createPortal } from "react-dom";
-import type { WAExplorerRow, WATaskDetail, ConfigResponse, EcoTaskRow, TaskSourceStats, ActivityRow } from "@/lib/types";
+import type { WAExplorerRow, WATaskDetail, ConfigResponse, EcoTaskRow, TaskSourceStats, ActivityRow, McpEntry } from "@/lib/types";
 import { fetchWAActivityTasks, fetchWorkActivities, fetchAllEcoTasks } from "@/lib/api";
 import { useSimpleMode } from "@/lib/SimpleModeContext";
+import { enforceDatasetToggle } from "@/lib/datasetRules";
 
 // ── Debounce hook ──────────────────────────────────────────────────────────────
 
@@ -71,14 +72,18 @@ interface ColDef {
   numeric: boolean;
 }
 
-const TASK_ONLY_COLS = new Set(["occ", "major_cat", "minor_cat", "broad_cat"]);
+const TASK_ONLY_COLS = new Set(["occ", "major_cat", "minor_cat", "broad_cat", "dwa_col", "iwa_col", "gwa_col"]);
+const TEXT_FILTER_COLS = new Set(["occ", "major_cat", "minor_cat", "broad_cat", "dwa_col", "iwa_col", "gwa_col"]);
 
 const COLUMNS: ColDef[] = [
   { key: "name",         label: "Name",            width: 300, numeric: false },
-  { key: "occ",          label: "Occupation",       width: 200, numeric: false, tooltip: "Occupation this task belongs to" },
-  { key: "major_cat",    label: "Major",            width: 180, numeric: false, tooltip: "Major occupation category" },
-  { key: "minor_cat",    label: "Minor",            width: 180, numeric: false, tooltip: "Minor occupation category" },
-  { key: "broad_cat",    label: "Broad",            width: 180, numeric: false, tooltip: "Broad occupation" },
+  { key: "occ",          label: "Occupation",      width: 200, numeric: false, tooltip: "Occupation this task belongs to" },
+  { key: "broad_cat",    label: "Broad",           width: 180, numeric: false, tooltip: "Broad occupation" },
+  { key: "minor_cat",    label: "Minor",           width: 180, numeric: false, tooltip: "Minor occupation category" },
+  { key: "major_cat",    label: "Major",           width: 180, numeric: false, tooltip: "Major occupation category" },
+  { key: "dwa_col",      label: "DWA",             width: 220, numeric: false, tooltip: "Detailed Work Activity" },
+  { key: "iwa_col",      label: "IWA",             width: 200, numeric: false, tooltip: "Intermediate Work Activity" },
+  { key: "gwa_col",      label: "GWA",             width: 180, numeric: false, tooltip: "Generalized Work Activity" },
   { key: "emp",          label: "Emp",              width: 90,  numeric: true,  tooltip: "Total employment (BLS OEWS 2024) across occupations in this activity" },
   { key: "wage",         label: "Med Wage",         width: 90,  numeric: true,  tooltip: "Employment-weighted median annual wage" },
   { key: "n_occs",       label: "# Occs",           width: 65,  numeric: true,  tooltip: "Number of unique occupations that include tasks in this activity" },
@@ -132,7 +137,11 @@ interface DisplayRow {
   minor_occ_category?: string | null;
   broad_occ?: string | null;
   n_tasks_per_occ?: number;
+  freq_mean?: number | null;
+  importance?: number | null;
+  relevance?: number | null;
   sources?: Record<string, TaskSourceStats>;
+  top_mcps?: McpEntry[];
 }
 
 function waRowToDisplay(row: WAExplorerRow, geo: "nat" | "ut"): DisplayRow {
@@ -208,9 +217,12 @@ function renderCell(col: string, row: DisplayRow): React.ReactNode {
   const nDiv = row.n_tasks_per_occ ?? 1;
   switch (col) {
     case "occ":          return row.title_current ?? <span style={muted}>—</span>;
-    case "major_cat":    return row.major_occ_category ?? <span style={muted}>—</span>;
-    case "minor_cat":    return row.minor_occ_category ?? <span style={muted}>—</span>;
     case "broad_cat":    return row.broad_occ ?? <span style={muted}>—</span>;
+    case "minor_cat":    return row.minor_occ_category ?? <span style={muted}>—</span>;
+    case "major_cat":    return row.major_occ_category ?? <span style={muted}>—</span>;
+    case "dwa_col":      return row.dwa_title ?? <span style={muted}>—</span>;
+    case "iwa_col":      return row.iwa_title ?? <span style={muted}>—</span>;
+    case "gwa_col":      return row.gwa ?? <span style={muted}>—</span>;
     case "emp":          return fmtEmp(row.emp);
     case "wage":         return fmtWage(row.wage);
     case "n_occs":       return row.n_occs;
@@ -421,6 +433,71 @@ function ColumnFilterDropdown({
   );
 }
 
+// ── Text column filter dropdown (multi-select values) ─────────────────────────
+
+function TextColumnFilterDropdown({
+  colKey,
+  values,
+  selected,
+  setFilters,
+  onClose,
+}: {
+  colKey: string;
+  values: string[];
+  selected: string[];
+  setFilters: React.Dispatch<React.SetStateAction<Record<string, string[]>>>;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) onClose();
+    }
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [onClose]);
+
+  const toggle = (v: string) => {
+    setFilters((prev) => {
+      const cur = prev[colKey] ?? [];
+      const next = cur.includes(v) ? cur.filter((x) => x !== v) : [...cur, v];
+      return { ...prev, [colKey]: next };
+    });
+  };
+
+  return (
+    <div ref={ref} style={{
+      position: "absolute", top: "100%", right: 0, zIndex: 500,
+      background: "var(--bg-surface)", border: "1px solid var(--border)",
+      borderRadius: 7, padding: "6px 0", boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+      minWidth: 180, maxWidth: 260, maxHeight: 280, overflowY: "auto",
+    }}>
+      {selected.length > 0 && (
+        <button
+          onClick={() => setFilters((prev) => ({ ...prev, [colKey]: [] }))}
+          style={{ fontSize: 10, color: "var(--brand)", background: "none", border: "none", cursor: "pointer", padding: "2px 10px 6px", display: "block" }}
+        >Clear ({selected.length})</button>
+      )}
+      {values.map((v) => (
+        <label key={v} style={{
+          display: "flex", alignItems: "center", gap: 6,
+          padding: "3px 10px", fontSize: 11, cursor: "pointer",
+          color: selected.includes(v) ? "var(--brand)" : "var(--text-primary)",
+        }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#f5f5f3"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+        >
+          <input type="checkbox" checked={selected.includes(v)} onChange={() => toggle(v)} style={{ margin: 0, flexShrink: 0 }} />
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{v}</span>
+        </label>
+      ))}
+      {values.length === 0 && (
+        <p style={{ fontSize: 11, color: "var(--text-muted)", padding: "4px 10px", margin: 0 }}>No values</p>
+      )}
+    </div>
+  );
+}
+
 // ── Segmented button control ───────────────────────────────────────────────────
 
 function BtnSeg<T extends string>({
@@ -459,6 +536,8 @@ function WATaskSubRow({ task, geo }: { task: WATaskDetail; geo: "nat" | "ut" }) 
   const barPct  = avgAuto != null ? Math.min(avgAuto / 5, 1) * 100 : null;
   const emp     = geo === "nat" ? task.emp_nat : task.emp_ut;
   const sources = Object.entries(task.sources ?? {});
+  const muted = { color: "var(--text-muted)" } as React.CSSProperties;
+  const topMcps = task.top_mcps ?? [];
 
   return (
     <>
@@ -468,7 +547,7 @@ function WATaskSubRow({ task, geo }: { task: WATaskDetail; geo: "nat" | "ut" }) 
         onMouseEnter={(e) => (e.currentTarget.style.background = "#f9f9f7")}
         onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
       >
-        <td style={{ padding: "6px 10px", fontSize: 11, color: "var(--text-primary)", verticalAlign: "top" }}>
+        <td style={{ padding: "6px 10px", fontSize: 11, color: "var(--text-primary)", verticalAlign: "top", maxWidth: 340 }}>
           <div style={{ display: "flex", alignItems: "flex-start", gap: 5 }}>
             <ChevronIcon open={expanded} />
             <span style={{ lineHeight: 1.4 }}>{task.task}</span>
@@ -486,6 +565,15 @@ function WATaskSubRow({ task, geo }: { task: WATaskDetail; geo: "nat" | "ut" }) 
         </td>
         <td style={{ padding: "6px 6px", fontSize: 11, color: "var(--text-secondary)", textAlign: "right", width: 80, verticalAlign: "top" }}>
           {fmtWage(task.wage_nat)}
+        </td>
+        <td style={{ padding: "6px 6px", fontSize: 11, color: "var(--text-secondary)", textAlign: "right", width: 64, verticalAlign: "top" }}>
+          {task.freq_mean != null ? task.freq_mean.toFixed(2) : <span style={muted}>—</span>}
+        </td>
+        <td style={{ padding: "6px 6px", fontSize: 11, color: "var(--text-secondary)", textAlign: "right", width: 56, verticalAlign: "top" }}>
+          {task.importance != null ? task.importance.toFixed(2) : <span style={muted}>—</span>}
+        </td>
+        <td style={{ padding: "6px 6px", fontSize: 11, color: "var(--text-secondary)", textAlign: "right", width: 56, verticalAlign: "top" }}>
+          {task.relevance != null ? task.relevance.toFixed(2) : <span style={muted}>—</span>}
         </td>
         <td style={{ padding: "6px 6px", verticalAlign: "top", width: 100 }}>
           {barPct != null ? (
@@ -513,30 +601,32 @@ function WATaskSubRow({ task, geo }: { task: WATaskDetail; geo: "nat" | "ut" }) 
       </tr>
       {expanded && (
         <tr style={{ background: "#fafaf8", borderBottom: "1px solid var(--border-light)" }}>
-          <td colSpan={8} style={{ padding: "10px 20px 14px 28px" }}>
+          <td colSpan={11} style={{ padding: "10px 20px 14px 28px" }}>
             <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+              {/* Occupation context */}
+              {task.title_current && (
+                <div style={{ minWidth: 200 }}>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>
+                    Occupation Context
+                  </p>
+                  <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Occ:</b> {task.title_current}</p>
+                  {task.broad_occ && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Broad:</b> {task.broad_occ}</p>}
+                  {task.minor_occ_category && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Minor:</b> {task.minor_occ_category}</p>}
+                  {task.major_occ_category && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>Major:</b> {task.major_occ_category}</p>}
+                </div>
+              )}
+              {/* Activity Classification */}
               {(task.gwa_title || task.iwa_title || task.dwa_title) && (
                 <div style={{ minWidth: 200 }}>
                   <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>
                     Activity Classification
                   </p>
-                  {task.gwa_title && (
-                    <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}>
-                      <b>GWA:</b> {task.gwa_title}
-                    </p>
-                  )}
-                  {task.iwa_title && (
-                    <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}>
-                      <b>IWA:</b> {task.iwa_title}
-                    </p>
-                  )}
-                  {task.dwa_title && (
-                    <p style={{ fontSize: 11, color: "var(--text-secondary)" }}>
-                      <b>DWA:</b> {task.dwa_title}
-                    </p>
-                  )}
+                  {task.gwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>GWA:</b> {task.gwa_title}</p>}
+                  {task.iwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>IWA:</b> {task.iwa_title}</p>}
+                  {task.dwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>DWA:</b> {task.dwa_title}</p>}
                 </div>
               )}
+              {/* Source Breakdown */}
               {sources.length > 0 && (
                 <div>
                   <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>
@@ -554,56 +644,50 @@ function WATaskSubRow({ task, geo }: { task: WATaskDetail; geo: "nat" | "ut" }) 
                       {sources.map(([src, stats]) => (
                         <tr key={src}>
                           <td style={{ padding: "2px 10px 2px 0" }}>
-                            <span style={{
-                              fontSize: 10, padding: "1px 5px", borderRadius: 4,
-                              background: "var(--bg-sidebar)", border: "1px solid var(--border)",
-                              color: "var(--text-secondary)",
-                            }}>{src}</span>
+                            <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--bg-sidebar)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>{src}</span>
                           </td>
                           <td style={{ padding: "2px 8px", textAlign: "right" }}>
-                            {stats.auto_aug != null
-                              ? stats.auto_aug.toFixed(3)
-                              : <span style={{ color: "var(--text-muted)" }}>—</span>}
+                            {stats.auto_aug != null ? stats.auto_aug.toFixed(3) : <span style={muted}>—</span>}
                           </td>
                           <td style={{ padding: "2px 8px", textAlign: "right" }}>
-                            {stats.pct_norm != null
-                              ? fmtPctNorm(stats.pct_norm)
-                              : <span style={{ color: "var(--text-muted)" }}>—</span>}
+                            {stats.pct_norm != null ? fmtPctNorm(stats.pct_norm) : <span style={muted}>—</span>}
                           </td>
                         </tr>
                       ))}
                       <tr style={{ borderTop: "1px solid var(--border-light)" }}>
                         <td style={{ padding: "4px 10px 2px 0", fontWeight: 700 }}>
-                          <span style={{
-                            fontSize: 10, padding: "1px 5px", borderRadius: 4,
-                            background: "var(--brand-light)", border: "1px solid var(--brand)",
-                            color: "var(--brand)", fontWeight: 700,
-                          }}>AVG</span>
+                          <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--brand-light)", border: "1px solid var(--brand)", color: "var(--brand)", fontWeight: 700 }}>AVG</span>
                         </td>
-                        <td style={{ padding: "4px 8px 2px", textAlign: "right", fontWeight: 700 }}>
-                          {avgAuto != null ? avgAuto.toFixed(3) : <span style={{ color: "var(--text-muted)" }}>—</span>}
-                        </td>
-                        <td style={{ padding: "4px 8px 2px", textAlign: "right", fontWeight: 700 }}>
-                          {avgPct != null ? fmtPctNorm(avgPct) : <span style={{ color: "var(--text-muted)" }}>—</span>}
-                        </td>
+                        <td style={{ padding: "4px 8px 2px", textAlign: "right", fontWeight: 700 }}>{avgAuto != null ? avgAuto.toFixed(3) : <span style={muted}>—</span>}</td>
+                        <td style={{ padding: "4px 8px 2px", textAlign: "right", fontWeight: 700 }}>{avgPct != null ? fmtPctNorm(avgPct) : <span style={muted}>—</span>}</td>
                       </tr>
                       <tr>
                         <td style={{ padding: "2px 10px 4px 0", fontWeight: 700 }}>
-                          <span style={{
-                            fontSize: 10, padding: "1px 5px", borderRadius: 4,
-                            background: "#fffbeb", border: "1px solid #d97706",
-                            color: "#d97706", fontWeight: 700,
-                          }}>MAX</span>
+                          <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "#fffbeb", border: "1px solid #d97706", color: "#d97706", fontWeight: 700 }}>MAX</span>
                         </td>
-                        <td style={{ padding: "2px 8px 4px", textAlign: "right", fontWeight: 700 }}>
-                          {maxAuto != null ? maxAuto.toFixed(3) : <span style={{ color: "var(--text-muted)" }}>—</span>}
-                        </td>
-                        <td style={{ padding: "2px 8px 4px", textAlign: "right", fontWeight: 700 }}>
-                          {maxPct != null ? fmtPctNorm(maxPct) : <span style={{ color: "var(--text-muted)" }}>—</span>}
-                        </td>
+                        <td style={{ padding: "2px 8px 4px", textAlign: "right", fontWeight: 700 }}>{maxAuto != null ? maxAuto.toFixed(3) : <span style={muted}>—</span>}</td>
+                        <td style={{ padding: "2px 8px 4px", textAlign: "right", fontWeight: 700 }}>{maxPct != null ? fmtPctNorm(maxPct) : <span style={muted}>—</span>}</td>
                       </tr>
                     </tbody>
                   </table>
+                </div>
+              )}
+              {/* Top MCPs */}
+              {topMcps.length > 0 && (
+                <div style={{ minWidth: 200 }}>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>
+                    Top MCPs
+                  </p>
+                  <ol style={{ margin: 0, paddingLeft: 16, display: "flex", flexDirection: "column", gap: 3 }}>
+                    {topMcps.slice(0, 5).map((mcp, i) => (
+                      <li key={i} style={{ fontSize: 11, color: "var(--text-secondary)" }}>
+                        {mcp.url
+                          ? <a href={mcp.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--brand)", textDecoration: "none" }}>{mcp.title}</a>
+                          : <span>{mcp.title}</span>}
+                        {mcp.rating != null && <span style={{ color: "var(--text-muted)", marginLeft: 4 }}>({mcp.rating.toFixed(1)})</span>}
+                      </li>
+                    ))}
+                  </ol>
                 </div>
               )}
             </div>
@@ -624,6 +708,15 @@ function WATaskSubHeader({ geo }: { geo: "nat" | "ut" }) {
       </th>
       <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 80, whiteSpace: "nowrap" }}>
         Med Wage
+      </th>
+      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 64, whiteSpace: "nowrap" }}>
+        Freq
+      </th>
+      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 56, whiteSpace: "nowrap" }}>
+        Imp
+      </th>
+      <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 56, whiteSpace: "nowrap" }}>
+        Rel
       </th>
       <th style={{ padding: "5px 6px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 100, whiteSpace: "nowrap" }}>
         Auto Avg<InfoTooltip text="Avg auto-aug (0–5) across sources" />
@@ -784,7 +877,11 @@ function WaPctComputePanel({
                   const sel = settings.datasets.includes(ds);
                   return (
                     <button key={ds} disabled={!avail} onClick={() => {
-                      const next = sel ? settings.datasets.filter((d) => d !== ds) : [...settings.datasets, ds];
+                      const next = enforceDatasetToggle(settings.datasets, ds, {
+                        aeiSnapshotDatasets: config.aei_snapshot_datasets ?? [],
+                        aeiCumulativeDatasets: config.aei_cumulative_datasets ?? [],
+                        mcpDatasets: config.mcp_datasets ?? [],
+                      });
                       set("datasets", next);
                     }} style={{
                       fontSize: 10, padding: "3px 7px", borderRadius: 5,
@@ -844,11 +941,20 @@ function WaPctComputePanel({
 
 // ── Main WAExplorerView ────────────────────────────────────────────────────────
 
-// Columns visible in simple mode
+// Columns visible in simple mode (activity levels: gwa/iwa/dwa)
 const WA_SIMPLE_COLS = new Set([
   "name", "emp", "wage", "n_occs", "n_tasks",
   "auto_avg_all",
   "pct_avg_all", "sum_pct_avg",
+  "pct_affected", "workers_aff", "wages_aff",
+]);
+
+// Columns visible in simple mode at task level
+const WA_SIMPLE_TASK_COLS = new Set([
+  "name", "occ", "broad_cat", "minor_cat", "major_cat",
+  "dwa_col", "iwa_col", "gwa_col",
+  "emp", "wage", "pct_phys",
+  "auto_avg_w", "auto_max_w", "pct_avg_w", "pct_max_w",
   "pct_affected", "workers_aff", "wages_aff",
 ]);
 
@@ -863,6 +969,8 @@ export default function WAExplorerView({ rows, config }: Props) {
   const [sortDir, setSortDir]       = useState<SortDir>("desc");
   const [colFilters, setColFilters] = useState<Record<string, { min: string; max: string }>>({});
   const [openFilter, setOpenFilter] = useState<string | null>(null);
+  const [textColFilters, setTextColFilters] = useState<Record<string, string[]>>({});
+  const [openTextFilter, setOpenTextFilter] = useState<string | null>(null);
   const [geo, setGeo]               = useState<"nat" | "ut">("nat");
   const [physicalMode, setPhysicalMode] = useState<"all" | "exclude" | "only">("all");
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
@@ -924,7 +1032,7 @@ export default function WAExplorerView({ rows, config }: Props) {
   }, [isSimple, geo, viewLevel, config.datasets, config.dataset_availability]);
 
   // ── Reset row limit when filters/level change ────────────────────────────
-  useEffect(() => { setRowLimit(100); }, [viewLevel, selectedGwas, debouncedSearch, colFilters, physicalMode, pctAffectedMap, minPctAffected, sortCol, sortDir]);
+  useEffect(() => { setRowLimit(100); }, [viewLevel, selectedGwas, debouncedSearch, colFilters, textColFilters, physicalMode, pctAffectedMap, minPctAffected, sortCol, sortDir]);
 
   // ── Load task data when task level selected ──────────────────────────────
   useEffect(() => {
@@ -990,7 +1098,11 @@ export default function WAExplorerView({ rows, config }: Props) {
           minor_occ_category: t.minor_occ_category ?? null,
           broad_occ: t.broad_occ ?? null,
           n_tasks_per_occ: t.n_tasks_per_occ,
+          freq_mean: t.freq_mean ?? null,
+          importance: t.importance ?? null,
+          relevance: t.relevance ?? null,
           sources: t.sources,
+          top_mcps: t.top_mcps ?? [],
         }));
     } else {
       let filtered = rows.filter((r) => r.level === viewLevel);
@@ -1015,10 +1127,13 @@ export default function WAExplorerView({ rows, config }: Props) {
     }
 
     // Inject pct_affected from map
+    // Task-level rows are keyed by DWA title (pctAffectedMap is at DWA level when viewLevel=task)
     if (pctAffectedMap) {
       displayRows = displayRows.map((r) => ({
         ...r,
-        pct_affected: pctAffectedMap.get(r.name) ?? null,
+        pct_affected: viewLevel === "task"
+          ? (pctAffectedMap.get(r.dwa_title ?? "") ?? null)
+          : (pctAffectedMap.get(r.name) ?? null),
       }));
 
       // pct filter
@@ -1053,14 +1168,36 @@ export default function WAExplorerView({ rows, config }: Props) {
       }
     });
 
+    // Text column filters (multi-select)
+    const textGetters: Record<string, (r: DisplayRow) => string | null | undefined> = {
+      occ: (r) => r.title_current,
+      broad_cat: (r) => r.broad_occ,
+      minor_cat: (r) => r.minor_occ_category,
+      major_cat: (r) => r.major_occ_category,
+      dwa_col: (r) => r.dwa_title,
+      iwa_col: (r) => r.iwa_title,
+      gwa_col: (r) => r.gwa,
+    };
+    Object.entries(textColFilters).forEach(([key, vals]) => {
+      if (vals.length > 0 && textGetters[key]) {
+        displayRows = displayRows.filter((r) => {
+          const v = textGetters[key](r) ?? "";
+          return vals.includes(v);
+        });
+      }
+    });
+
     // Sort
     displayRows = [...displayRows].sort((a, b) => {
       const textColMap: Record<string, (r: DisplayRow) => string | null | undefined> = {
         name: (r) => r.name,
         occ: (r) => r.title_current,
-        major_cat: (r) => r.major_occ_category,
-        minor_cat: (r) => r.minor_occ_category,
         broad_cat: (r) => r.broad_occ,
+        minor_cat: (r) => r.minor_occ_category,
+        major_cat: (r) => r.major_occ_category,
+        dwa_col: (r) => r.dwa_title,
+        iwa_col: (r) => r.iwa_title,
+        gwa_col: (r) => r.gwa,
       };
       if (textColMap[sortCol]) {
         const aStr = textColMap[sortCol](a) ?? "";
@@ -1077,14 +1214,36 @@ export default function WAExplorerView({ rows, config }: Props) {
     });
 
     return displayRows;
-  }, [rows, viewLevel, selectedGwas, geo, debouncedSearch, sortCol, sortDir, colFilters, physicalMode, pctAffectedMap, minPctAffected, taskData]);
+  }, [rows, viewLevel, selectedGwas, geo, debouncedSearch, sortCol, sortDir, colFilters, textColFilters, physicalMode, pctAffectedMap, minPctAffected, taskData]);
+
+  // ── textColUniqueValues: unique sorted values per text column ─────────────
+  const textColUniqueValues = useMemo(() => {
+    const getters: Record<string, (r: DisplayRow) => string | null | undefined> = {
+      occ: (r) => r.title_current,
+      broad_cat: (r) => r.broad_occ,
+      minor_cat: (r) => r.minor_occ_category,
+      major_cat: (r) => r.major_occ_category,
+      dwa_col: (r) => r.dwa_title,
+      iwa_col: (r) => r.iwa_title,
+      gwa_col: (r) => r.gwa,
+    };
+    const result: Record<string, string[]> = {};
+    for (const [key, getter] of Object.entries(getters)) {
+      const seen = new Set<string>();
+      topRows.forEach((r) => { const v = getter(r); if (v) seen.add(v); });
+      result[key] = Array.from(seen).sort();
+    }
+    return result;
+  }, [topRows]);
 
   // ── Visible columns (hide pct/workers/wages columns when no pctMap) ──────
   const visibleCols = useMemo(() => {
+    const isTaskLevel = viewLevel === "task";
     return COLUMNS.filter((c) => {
       if ((c.key === "pct_affected" || c.key === "workers_aff" || c.key === "wages_aff") && !pctAffectedMap) return false;
-      if (isSimple && !WA_SIMPLE_COLS.has(c.key)) return false;
-      if (TASK_ONLY_COLS.has(c.key) && viewLevel !== "task") return false;
+      if (isSimple && isTaskLevel && !WA_SIMPLE_TASK_COLS.has(c.key)) return false;
+      if (isSimple && !isTaskLevel && !WA_SIMPLE_COLS.has(c.key)) return false;
+      if (TASK_ONLY_COLS.has(c.key) && !isTaskLevel) return false;
       if (hiddenCols.has(c.key)) return false;
       return true;
     });
@@ -1159,6 +1318,8 @@ export default function WAExplorerView({ rows, config }: Props) {
     setSortDir("desc");
     setColFilters({});
     setOpenFilter(null);
+    setTextColFilters({});
+    setOpenTextFilter(null);
     setGeo("nat");
     setPhysicalMode("all");
     setExpandedRows(new Set());
@@ -1276,40 +1437,84 @@ export default function WAExplorerView({ rows, config }: Props) {
           </tr>
         )}
 
-        {/* Task-level expansion: show occupation + activity + sources */}
-        {isTaskLevel && isExpanded && (
-          <tr style={{ background: "#f7f7f5", borderBottom: "1px solid var(--border)" }}>
-            <td colSpan={visibleCols.length} style={{ padding: "10px 20px 14px 28px" }}>
-              <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-                {/* Occupation Classification */}
-                {(row.title_current || row.broad_occ || row.minor_occ_category || row.major_occ_category) && (
-                  <div style={{ minWidth: 200 }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Occupation Classification</p>
-                    {row.title_current && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Occupation:</b> {row.title_current}</p>}
-                    {row.broad_occ && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Broad:</b> {row.broad_occ}</p>}
-                    {row.minor_occ_category && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Minor:</b> {row.minor_occ_category}</p>}
-                    {row.major_occ_category && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>Major:</b> {row.major_occ_category}</p>}
+        {/* Task-level expansion: show occupation + activity + task details + sources + top MCPs */}
+        {isTaskLevel && isExpanded && (() => {
+          const muted = { color: "var(--text-muted)" } as React.CSSProperties;
+          const sources = row.sources ? Object.entries(row.sources) : [];
+          const autoVals = sources.map(([, s]) => s.auto_aug).filter((v): v is number => v != null);
+          const pctVals = sources.map(([, s]) => s.pct_norm).filter((v): v is number => v != null);
+          const avgAuto = autoVals.length > 0 ? autoVals.reduce((a, b) => a + b, 0) / autoVals.length : null;
+          const maxAuto = autoVals.length > 0 ? Math.max(...autoVals) : null;
+          const avgPct = pctVals.length > 0 ? pctVals.reduce((a, b) => a + b, 0) / pctVals.length : null;
+          const maxPct = pctVals.length > 0 ? Math.max(...pctVals) : null;
+          const topMcps = row.top_mcps ?? [];
+          return (
+            <tr style={{ background: "#f7f7f5", borderBottom: "1px solid var(--border)" }}>
+              <td colSpan={visibleCols.length} style={{ padding: "10px 20px 14px 28px" }}>
+                <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+                  {/* Occupation Classification */}
+                  {(row.title_current || row.broad_occ || row.minor_occ_category || row.major_occ_category) && (
+                    <div style={{ minWidth: 200 }}>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Occupation</p>
+                      {row.title_current && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Occ:</b> {row.title_current}</p>}
+                      {row.broad_occ && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Broad:</b> {row.broad_occ}</p>}
+                      {row.minor_occ_category && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Minor:</b> {row.minor_occ_category}</p>}
+                      {row.major_occ_category && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>Major:</b> {row.major_occ_category}</p>}
+                    </div>
+                  )}
+                  {/* Activity Classification */}
+                  {(row.gwa_title || row.iwa_title || row.dwa_title) && (
+                    <div style={{ minWidth: 200 }}>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Activity</p>
+                      {row.gwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>GWA:</b> {row.gwa_title}</p>}
+                      {row.iwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>IWA:</b> {row.iwa_title}</p>}
+                      {row.dwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>DWA:</b> {row.dwa_title}</p>}
+                    </div>
+                  )}
+                  {/* Task Details */}
+                  <div>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Task Details</p>
+                    <table style={{ fontSize: 11, borderCollapse: "collapse" }}>
+                      <tbody>
+                        <tr>
+                          <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Physical</td>
+                          <td style={{ padding: "2px 0" }}>
+                            {row.pct_physical === 1 ? <span style={{ color: "#16a34a" }}>✓ Yes</span> : row.pct_physical === 0 ? <span style={muted}>✗ No</span> : <span style={muted}>—</span>}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Freq</td>
+                          <td style={{ padding: "2px 0" }}>{row.freq_mean != null ? row.freq_mean.toFixed(2) : <span style={muted}>—</span>}</td>
+                        </tr>
+                        <tr>
+                          <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Importance</td>
+                          <td style={{ padding: "2px 0" }}>{row.importance != null ? row.importance.toFixed(2) : <span style={muted}>—</span>}</td>
+                        </tr>
+                        <tr>
+                          <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Relevance</td>
+                          <td style={{ padding: "2px 0" }}>{row.relevance != null ? row.relevance.toFixed(2) : <span style={muted}>—</span>}</td>
+                        </tr>
+                        <tr>
+                          <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Auto Avg</td>
+                          <td style={{ padding: "2px 0" }}>{avgAuto != null ? avgAuto.toFixed(3) : <span style={muted}>—</span>}</td>
+                        </tr>
+                        <tr>
+                          <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Auto Max</td>
+                          <td style={{ padding: "2px 0" }}>{maxAuto != null ? maxAuto.toFixed(3) : <span style={muted}>—</span>}</td>
+                        </tr>
+                        <tr>
+                          <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Pct Avg</td>
+                          <td style={{ padding: "2px 0" }}>{avgPct != null ? fmtPctNorm(avgPct) : <span style={muted}>—</span>}</td>
+                        </tr>
+                        <tr>
+                          <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Pct Max</td>
+                          <td style={{ padding: "2px 0" }}>{maxPct != null ? fmtPctNorm(maxPct) : <span style={muted}>—</span>}</td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
-                )}
-                {/* Activity Classification */}
-                {(row.gwa_title || row.iwa_title || row.dwa_title) && (
-                  <div style={{ minWidth: 200 }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Activity Classification</p>
-                    {row.gwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>GWA:</b> {row.gwa_title}</p>}
-                    {row.iwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>IWA:</b> {row.iwa_title}</p>}
-                    {row.dwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>DWA:</b> {row.dwa_title}</p>}
-                  </div>
-                )}
-                {/* Source Breakdown */}
-                {row.sources && Object.keys(row.sources).length > 0 && (() => {
-                  const sources = Object.entries(row.sources);
-                  const autoVals = sources.map(([, s]) => s.auto_aug).filter((v): v is number => v != null);
-                  const pctVals = sources.map(([, s]) => s.pct_norm).filter((v): v is number => v != null);
-                  const avgAuto = autoVals.length > 0 ? autoVals.reduce((a, b) => a + b, 0) / autoVals.length : null;
-                  const maxAuto = autoVals.length > 0 ? Math.max(...autoVals) : null;
-                  const avgPct = pctVals.length > 0 ? pctVals.reduce((a, b) => a + b, 0) / pctVals.length : null;
-                  const maxPct = pctVals.length > 0 ? Math.max(...pctVals) : null;
-                  return (
+                  {/* Source Breakdown */}
+                  {sources.length > 0 && (
                     <div>
                       <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Source Breakdown</p>
                       <table style={{ fontSize: 11, borderCollapse: "collapse" }}>
@@ -1326,33 +1531,35 @@ export default function WAExplorerView({ rows, config }: Props) {
                               <td style={{ padding: "2px 10px 2px 0" }}>
                                 <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--bg-sidebar)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>{src}</span>
                               </td>
-                              <td style={{ padding: "2px 8px", textAlign: "right" }}>{stats.auto_aug != null ? stats.auto_aug.toFixed(3) : <span style={{ color: "var(--text-muted)" }}>—</span>}</td>
-                              <td style={{ padding: "2px 8px", textAlign: "right" }}>{stats.pct_norm != null ? fmtPctNorm(stats.pct_norm) : <span style={{ color: "var(--text-muted)" }}>—</span>}</td>
+                              <td style={{ padding: "2px 8px", textAlign: "right" }}>{stats.auto_aug != null ? stats.auto_aug.toFixed(3) : <span style={muted}>—</span>}</td>
+                              <td style={{ padding: "2px 8px", textAlign: "right" }}>{stats.pct_norm != null ? fmtPctNorm(stats.pct_norm) : <span style={muted}>—</span>}</td>
                             </tr>
                           ))}
-                          <tr style={{ borderTop: "1px solid var(--border-light)" }}>
-                            <td style={{ padding: "4px 10px 2px 0", fontWeight: 700 }}>
-                              <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--brand-light)", border: "1px solid var(--brand)", color: "var(--brand)", fontWeight: 700 }}>AVG</span>
-                            </td>
-                            <td style={{ padding: "4px 8px 2px", textAlign: "right", fontWeight: 700 }}>{avgAuto != null ? avgAuto.toFixed(3) : "—"}</td>
-                            <td style={{ padding: "4px 8px 2px", textAlign: "right", fontWeight: 700 }}>{avgPct != null ? fmtPctNorm(avgPct) : "—"}</td>
-                          </tr>
-                          <tr>
-                            <td style={{ padding: "2px 10px 4px 0", fontWeight: 700 }}>
-                              <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "#fffbeb", border: "1px solid #d97706", color: "#d97706", fontWeight: 700 }}>MAX</span>
-                            </td>
-                            <td style={{ padding: "2px 8px 4px", textAlign: "right", fontWeight: 700 }}>{maxAuto != null ? maxAuto.toFixed(3) : "—"}</td>
-                            <td style={{ padding: "2px 8px 4px", textAlign: "right", fontWeight: 700 }}>{maxPct != null ? fmtPctNorm(maxPct) : "—"}</td>
-                          </tr>
                         </tbody>
                       </table>
                     </div>
-                  );
-                })()}
-              </div>
-            </td>
-          </tr>
-        )}
+                  )}
+                  {/* Top MCPs */}
+                  {topMcps.length > 0 && (
+                    <div style={{ minWidth: 200 }}>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Top MCPs</p>
+                      <ol style={{ margin: 0, paddingLeft: 16, display: "flex", flexDirection: "column", gap: 3 }}>
+                        {topMcps.slice(0, 5).map((mcp, i) => (
+                          <li key={i} style={{ fontSize: 11, color: "var(--text-secondary)" }}>
+                            {mcp.url
+                              ? <a href={mcp.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--brand)", textDecoration: "none" }}>{mcp.title}</a>
+                              : <span>{mcp.title}</span>}
+                            {mcp.rating != null && <span style={{ color: "var(--text-muted)", marginLeft: 4 }}>({mcp.rating.toFixed(1)})</span>}
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  )}
+                </div>
+              </td>
+            </tr>
+          );
+        })()}
 
         {/* Inline IWA/GWA child rows */}
         {!isDwa && !isTaskLevel && isExpanded && children.map((child, ci) => {
@@ -1505,6 +1712,8 @@ export default function WAExplorerView({ rows, config }: Props) {
                 {COLUMNS.filter((c) => {
                   if (c.key === "name") return false;
                   if (TASK_ONLY_COLS.has(c.key) && viewLevel !== "task") return false;
+                  if (isSimple && viewLevel === "task" && !WA_SIMPLE_TASK_COLS.has(c.key)) return false;
+                  if (isSimple && viewLevel !== "task" && !WA_SIMPLE_COLS.has(c.key)) return false;
                   return true;
                 }).map((c) => {
                   const checked = !hiddenCols.has(c.key);
@@ -1587,13 +1796,15 @@ export default function WAExplorerView({ rows, config }: Props) {
             }}>
               {visibleCols.map((col) => {
                 const isSorted = sortCol === col.key;
-                const hasFilter = !!(colFilters[col.key]?.min || colFilters[col.key]?.max);
+                const hasNumFilter = !!(colFilters[col.key]?.min || colFilters[col.key]?.max);
+                const isTextCol = TEXT_FILTER_COLS.has(col.key);
+                const hasTextFilter = isTextCol && (textColFilters[col.key]?.length ?? 0) > 0;
                 return (
                   <th
                     key={col.key}
                     style={{
                       padding: "7px 8px",
-                      textAlign: col.key === "name" ? "left" : "right",
+                      textAlign: (col.key === "name" || isTextCol) ? "left" : "right",
                       fontSize: 11, fontWeight: 700,
                       color: isSorted ? "var(--brand)" : "var(--text-muted)",
                       textTransform: "uppercase", letterSpacing: "0.06em",
@@ -1605,7 +1816,7 @@ export default function WAExplorerView({ rows, config }: Props) {
                     }}
                     onClick={() => handleSort(col.key)}
                   >
-                    <div style={{ display: "inline-flex", alignItems: "center", gap: 3, paddingRight: col.numeric ? 14 : 0 }}>
+                    <div style={{ display: "inline-flex", alignItems: "center", gap: 3, paddingRight: (col.numeric || isTextCol) ? 14 : 0 }}>
                       {col.label}
                       {col.tooltip && <InfoTooltip text={col.tooltip} />}
                       {isSorted && (
@@ -1619,15 +1830,35 @@ export default function WAExplorerView({ rows, config }: Props) {
                         onClick={(e) => {
                           e.stopPropagation();
                           setOpenFilter((prev) => (prev === col.key ? null : col.key));
+                          setOpenTextFilter(null);
                         }}
                         style={{
                           position: "absolute", right: 4, top: "50%", transform: "translateY(-50%)",
                           cursor: "pointer",
-                          color: hasFilter ? "var(--brand)" : "var(--text-muted)",
-                          opacity: hasFilter ? 1 : 0.5,
+                          color: hasNumFilter ? "var(--brand)" : "var(--text-muted)",
+                          opacity: hasNumFilter ? 1 : 0.5,
                           display: "inline-flex",
                         }}
                         title="Filter"
+                      >
+                        <FunnelIcon />
+                      </span>
+                    )}
+                    {isTextCol && (
+                      <span
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenTextFilter((prev) => (prev === col.key ? null : col.key));
+                          setOpenFilter(null);
+                        }}
+                        style={{
+                          position: "absolute", right: 4, top: "50%", transform: "translateY(-50%)",
+                          cursor: "pointer",
+                          color: hasTextFilter ? "var(--brand)" : "var(--text-muted)",
+                          opacity: hasTextFilter ? 1 : 0.5,
+                          display: "inline-flex",
+                        }}
+                        title="Filter values"
                       >
                         <FunnelIcon />
                       </span>
@@ -1638,6 +1869,15 @@ export default function WAExplorerView({ rows, config }: Props) {
                         filters={colFilters}
                         setFilters={setColFilters}
                         onClose={() => setOpenFilter(null)}
+                      />
+                    )}
+                    {openTextFilter === col.key && (
+                      <TextColumnFilterDropdown
+                        colKey={col.key}
+                        values={textColUniqueValues[col.key] ?? []}
+                        selected={textColFilters[col.key] ?? []}
+                        setFilters={setTextColFilters}
+                        onClose={() => setOpenTextFilter(null)}
                       />
                     )}
                   </th>

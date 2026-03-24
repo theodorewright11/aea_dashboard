@@ -42,6 +42,9 @@ export interface ConfigResponse {
   sort_options: string[];
   crosswalk_available: boolean;
   eco2015_available: boolean;
+  aei_snapshot_datasets: string[];
+  aei_cumulative_datasets: string[];
+  mcp_datasets: string[];
 }
 
 // ── Work Activities ───────────────────────────────────────────────────────────
@@ -151,6 +154,12 @@ export interface TaskSourceStats {
   pct_norm?: number | null;
 }
 
+export interface McpEntry {
+  title: string;
+  rating?: number | null;
+  url?: string | null;
+}
+
 export interface TaskDetail {
   task: string;
   task_normalized: string;
@@ -166,6 +175,7 @@ export interface TaskDetail {
   max_auto_aug?: number | null;
   avg_pct_norm?: number | null;
   max_pct_norm?: number | null;
+  top_mcps?: McpEntry[];
 }
 
 export interface OccupationTasksResponse {
@@ -230,11 +240,15 @@ export interface EcoTaskRow {
   wage_nat?: number | null;
   wage_ut?: number | null;
   n_tasks_per_occ: number;
+  freq_mean?: number | null;
+  importance?: number | null;
+  relevance?: number | null;
   sources: Record<string, TaskSourceStats>;
   avg_auto_aug?: number | null;
   max_auto_aug?: number | null;
   avg_pct_norm?: number | null;
   max_pct_norm?: number | null;
+  top_mcps?: McpEntry[];
 }
 
 // ── WA Explorer ───────────────────────────────────────────────────────────────
@@ -265,11 +279,19 @@ export interface WATaskDetail {
   emp_nat?: number | null;
   emp_ut?: number | null;
   wage_nat?: number | null;
+  freq_mean?: number | null;
+  importance?: number | null;
+  relevance?: number | null;
+  title_current?: string | null;
+  broad_occ?: string | null;
+  minor_occ_category?: string | null;
+  major_occ_category?: string | null;
   sources: Record<string, TaskSourceStats>;
   avg_auto_aug?: number | null;
   max_auto_aug?: number | null;
   avg_pct_norm?: number | null;
   max_pct_norm?: number | null;
+  top_mcps?: McpEntry[];
 }
 
 export interface WATasksResponse {

@@ -28,17 +28,28 @@ DATASETS = {
     "MCP v3":     {"file": str(DATA_DIR / "final_mcp_v3.csv"),     "is_aei": False, "is_mcp": True},
     "MCP v4":     {"file": str(DATA_DIR / "final_mcp_v4.csv"),     "is_aei": False, "is_mcp": True},
     "Microsoft":  {"file": str(DATA_DIR / "final_microsoft.csv"),  "is_aei": False, "is_mcp": False},
+    # Cumulative AEI — each version accumulates all conversations up to that snapshot date
+    "AEI Cumul. v1": {"file": str(DATA_DIR / "final_aei_cumulative_v1.csv"), "is_aei": True, "is_mcp": False},
+    "AEI Cumul. v2": {"file": str(DATA_DIR / "final_aei_cumulative_v2.csv"), "is_aei": True, "is_mcp": False},
+    "AEI Cumul. v3": {"file": str(DATA_DIR / "final_aei_cumulative_v3.csv"), "is_aei": True, "is_mcp": False},
+    "AEI Cumul. v4": {"file": str(DATA_DIR / "final_aei_cumulative_v4.csv"), "is_aei": True, "is_mcp": False},
 }
 
 # Eco 2015 is used internally as the baseline for AEI work-activity analysis (not user-selectable)
 ECO_2015_META = {"file": ECO_2015_FILE, "is_aei": True, "is_mcp": False}
 
+# Which datasets are AEI snapshot vs cumulative (for selection enforcement)
+AEI_SNAPSHOT_DATASETS = {"AEI v1", "AEI v2", "AEI v3", "AEI v4", "AEI API v3", "AEI API v4"}
+AEI_CUMULATIVE_DATASETS = {"AEI Cumul. v1", "AEI Cumul. v2", "AEI Cumul. v3", "AEI Cumul. v4"}
+MCP_DATASETS = {"MCP v1", "MCP v2", "MCP v3", "MCP v4"}
+
 # Dataset series for time-trend analysis
 DATASET_SERIES = {
-    "AEI":       ["AEI v1", "AEI v2", "AEI v3", "AEI v4"],
-    "AEI API":   ["AEI API v3", "AEI API v4"],
-    "MCP":       ["MCP v1", "MCP v2", "MCP v3", "MCP v4"],
-    "Microsoft": ["Microsoft"],
+    "AEI":           ["AEI v1", "AEI v2", "AEI v3", "AEI v4"],
+    "AEI API":       ["AEI API v3", "AEI API v4"],
+    "AEI Cumul.":    ["AEI Cumul. v1", "AEI Cumul. v2", "AEI Cumul. v3", "AEI Cumul. v4"],
+    "MCP":           ["MCP v1", "MCP v2", "MCP v3", "MCP v4"],
+    "Microsoft":     ["Microsoft"],
 }
 
 AGG_LEVEL_COL = {

@@ -54,10 +54,18 @@ All CSVs live in `data/`. There are two SOC taxonomies in play:
 
 | Dataset | File | SOC | `is_aei` | `is_mcp` | Notes |
 |---------|------|-----|----------|----------|-------|
-| AEI v1–v4 | `final_aei_v{1..4}.csv` | 2010 | true | false | Needs crosswalk to 2019 |
-| AEI API v3–v4 | `final_aei_api_v{3,4}.csv` | 2010 | true | false | Needs crosswalk to 2019 |
-| MCP v1–v4 | `final_mcp_v{1..4}.csv` | 2019 | false | true | Has `auto_aug_mean_adj` |
+| AEI v1–v4 | `final_aei_v{1..4}.csv` | 2010 | true | false | Snapshot; needs crosswalk to 2019 |
+| AEI API v3–v4 | `final_aei_api_v{3,4}.csv` | 2010 | true | false | Snapshot; needs crosswalk to 2019 |
+| AEI Cumul. v1–v4 | `final_aei_cumulative_v{1..4}.csv` | 2010 | true | false | Cumulative (each version accumulates all prior); needs crosswalk. Only one at a time; cannot mix with snapshot AEI. |
+| MCP v1–v4 | `final_mcp_v{1..4}.csv` | 2019 | false | true | Has `auto_aug_mean_adj`; only one version at a time |
 | Microsoft | `final_microsoft.csv` | 2019 | false | false | Single snapshot |
+
+**Dataset families in `config.py`:**
+- `AEI_SNAPSHOT_DATASETS` — `{"AEI v1", "AEI v2", "AEI v3", "AEI v4", "AEI API v3", "AEI API v4"}`
+- `AEI_CUMULATIVE_DATASETS` — `{"AEI Cumul. v1", ..., "AEI Cumul. v4"}`
+- `MCP_DATASETS` — `{"MCP v1", ..., "MCP v4"}`
+
+These sets are exposed via `GET /api/config` as `aei_snapshot_datasets`, `aei_cumulative_datasets`, `mcp_datasets` and consumed by `frontend/src/lib/datasetRules.ts` for selection enforcement (see §6).
 
 ### Baseline Files (not user-selectable)
 
@@ -111,9 +119,12 @@ All CSVs live in `data/`. There are two SOC taxonomies in play:
 ### `config.py` — Registry & Constants
 
 ```python
-DATASETS           # dict[str, {file, is_aei, is_mcp}] — 11 selectable datasets
+DATASETS           # dict[str, {file, is_aei, is_mcp}] — 15 selectable datasets (11 original + 4 cumulative AEI)
 ECO_2015_META      # internal-only baseline for AEI work-activity analysis
-DATASET_SERIES     # {"AEI": ["AEI v1"..v4], "AEI API": [...], "MCP": [...], "Microsoft": [...]}
+AEI_SNAPSHOT_DATASETS    # set of snapshot AEI names: {AEI v1..v4, AEI API v3..v4}
+AEI_CUMULATIVE_DATASETS  # set of cumulative AEI names: {AEI Cumul. v1..v4}
+MCP_DATASETS       # set of MCP names: {MCP v1..v4}
+DATASET_SERIES     # {"AEI": ["AEI v1"..v4], "AEI API": [...], "AEI Cumul.": [...], "MCP": [...], "Microsoft": [...]}
 AGG_LEVEL_COL      # {"major": "major_occ_category", "minor": "minor_occ_category",
                    #  "broad": "broad_occ", "occupation": "title_current"}
 AGG_LEVEL_OPTIONS  # human-readable → key mapping
@@ -308,6 +319,7 @@ For the Task-level view in both explorers, returns every row from eco_2025 (~23,
 - `physical` — physical task flag
 - `emp_nat`, `emp_ut`, `wage_nat`, `wage_ut` — **raw** occupation-level BLS numbers (NOT divided by task count)
 - `n_tasks_per_occ` — count of unique `task_normalized` values for this occupation (used by frontend to divide workers/wages affected)
+- `freq_mean`, `importance`, `relevance` — O*NET survey measures read directly from eco_2025 rows
 - `sources`, `avg_auto_aug`, `max_auto_aug`, `avg_pct_norm`, `max_pct_norm` — AI metrics from the task lookup
 
 The frontend uses `n_tasks_per_occ` to compute per-task workers/wages affected: `workers_aff = (pct/100) × emp / n_tasks_per_occ`.
@@ -346,13 +358,16 @@ Returns `{"status": "ok"}`.
 Response:
 ```ts
 {
-  datasets: string[];                        // 11 dataset names
+  datasets: string[];                        // all dataset names (15: 11 original + 4 cumulative AEI)
   dataset_availability: Record<string, boolean>;
-  dataset_series: Record<string, string[]>;  // {"AEI": ["AEI v1"..], ...}
+  dataset_series: Record<string, string[]>;  // {"AEI": ["AEI v1"..], "AEI Cumul.": [...], "MCP": [...], ...}
   agg_levels: Record<string, string>;        // {"Major Category": "major", ...}
   sort_options: string[];                    // ["Workers Affected", ...]
   crosswalk_available: boolean;
   eco2015_available: boolean;
+  aei_snapshot_datasets: string[];          // names of all snapshot AEI datasets
+  aei_cumulative_datasets: string[];        // names of all cumulative AEI datasets
+  mcp_datasets: string[];                   // names of all MCP datasets
 }
 ```
 
@@ -588,6 +603,9 @@ Response:
     wage_nat?: number;                 // raw occupation wage (NOT divided)
     wage_ut?: number;
     n_tasks_per_occ: number;           // unique task count for this occupation
+    freq_mean?: number;                // O*NET task frequency (0–10)
+    importance?: number;               // O*NET task importance (0–5)
+    relevance?: number;                // O*NET task relevance (0–100)
     sources: Record<string, { auto_aug?: number; pct_norm?: number }>;
     avg_auto_aug?: number;
     max_auto_aug?: number;
@@ -637,11 +655,19 @@ Response:
     emp_nat?: number;
     emp_ut?: number;
     wage_nat?: number;
+    freq_mean?: number;               // O*NET task frequency (0–10)
+    importance?: number;              // O*NET task importance (0–5)
+    relevance?: number;               // O*NET task relevance (0–100)
+    title_current?: string;           // occupation name (first occ in group sharing this task)
+    broad_occ?: string;
+    minor_occ_category?: string;
+    major_occ_category?: string;
     sources: Record<string, { auto_aug?: number; pct_norm?: number }>;
     avg_auto_aug?: number;
     max_auto_aug?: number;
     avg_pct_norm?: number;
     max_pct_norm?: number;
+    top_mcps?: Array<{ title: string; url?: string }>;
   }>;
 }
 ```
@@ -812,13 +838,50 @@ Levels: Major / Minor / Broad / Occupation / Task. At "Task" level, data fetched
 
 Props: `rows: WAExplorerRow[]`, `config: ConfigResponse`.
 
-Same 16-column table structure as ExplorerView but hierarchy is GWA → IWA → DWA → Tasks.
+Same general table structure as ExplorerView but hierarchy is GWA → IWA → DWA → Tasks.
 
-- Level selector: GWA / IWA / DWA
-- GWA multi-select pills
-- Same sort, filter, search, pagination, Avg/Max, Nat/Utah patterns
-- DWA task expansion fetches via `fetchWAActivityTasks()`
-- Task rows expandable to show Activity Classification panel
+**Level selector:** GWA / IWA / DWA / Task. Task level uses the same all-eco-tasks dataset as ExplorerView (fetched once from `/api/explorer/all-eco-tasks`).
+
+**Columns:** name, occ, broad_cat, minor_cat, major_cat, dwa_col, iwa_col, gwa_col, emp, wage, n_tasks, pct_phys, auto_avg/max (with_vals/all), pct_avg/max, sum_pct. At task level, "name" is the task text and occ/broad/minor/major/dwa/iwa/gwa columns are populated.
+
+**Column selector (gear icon):**
+- Simple mode (non-task level): only `WA_SIMPLE_COLS` are selectable
+- Simple mode (task level): only `WA_SIMPLE_TASK_COLS` are selectable
+- Advanced mode: all columns selectable; selection persisted to localStorage
+
+**Text column filters (`TextColumnFilterDropdown`):**
+- Available for occ, major_cat, minor_cat, broad_cat, dwa_col, iwa_col, gwa_col columns
+- Funnel icon in column header opens a multi-select dropdown of all unique values in that column
+- Applied to `topRows` after numeric and text filters
+
+**DWA row expansion (accordion):**
+- Fetches task list via `/api/explorer/wa/tasks` (cached)
+- Renders a `WATaskSubHeader` + `WATaskSubRow` per task (11 columns: Task, Physical, Freq, Imp, Rel, auto_aug, pct_norm, avg_auto_aug, max_auto_aug, pct_aff, workers_aff/wages_aff)
+- Each sub-row is itself expandable to show an inline Task Details panel (physical/freq/imp/rel/auto/pct) and a Top MCPs panel (if applicable)
+- pct_affected is injected from `pctAffectedMap` — keyed by **DWA activity name** (not task text)
+
+**Task-level expansion:**
+- Expands to show Occupation Classification (occ → broad → minor → major), Activity Classification (GWA/IWA/DWA), Task Details panel (physical/freq/imp/rel/auto/pct), and Top MCPs panel
+- pct_affected injected via `pctAffectedMap.get(r.dwa_title ?? "")` — uses DWA title as key (not task text)
+
+**`WaPctComputePanel`:** Same as ExplorerView `PctComputePanel` but calls `/api/work-activities` with the current WA settings. Injects pct/workers/wages columns. Dataset selection uses `enforceDatasetToggle` from `lib/datasetRules.ts`.
+
+**GWA multi-select pills**, same sort/filter/search/pagination/Avg/Max/Nat/Utah patterns as ExplorerView.
+
+### Utility: `lib/datasetRules.ts`
+
+Shared dataset selection enforcement. Exports:
+- `DatasetClassification` interface: `{ aeiSnapshotDatasets, aeiCumulativeDatasets, mcpDatasets }`
+- `enforceDatasetToggle(current, name, cls)` — returns the new selection after toggling `name`, with rules applied:
+  - Selecting a **cumulative AEI** → removes all other cumulative and all snapshot AEI
+  - Selecting a **snapshot AEI** → removes all cumulative AEI
+  - Selecting an **MCP** → removes all other MCP (only one MCP at a time)
+  - Deselecting anything → always allowed
+- `getDatasetConflictMessage(current, cls)` — returns a conflict description string or null if valid
+
+Used by: `ExplorerView` `PctComputePanel`, `WAExplorerView` `WaPctComputePanel`, `occupation-categories/page.tsx` `DatasetPills`, `work-activities/page.tsx` `DatasetPillsWA`.
+
+The classification arrays are sourced from `config.aei_snapshot_datasets`, `config.aei_cumulative_datasets`, `config.mcp_datasets` (from `GET /api/config`).
 
 ### Utility: `downloadChart.ts`
 
@@ -848,6 +911,8 @@ All caching is in-module Python dicts. **Nothing invalidates caches except serve
 | `_explorer_groups_cache` | singleton | Major/minor/broad group rows |
 | `_wa_explorer_cache` | singleton | WA explorer rows (GWA/IWA/DWA) |
 | `_all_tasks_cache` | singleton | All unique tasks with metrics |
+| `_all_eco_task_rows_cache` | singleton | All ~23,850 eco_2025 task×occ rows with AI metrics |
+| `_top_mcps_cache` | singleton | `task_normalized → [{title, url}]` from MCP v4 top_mcps column |
 | `_wa_cache` | (varies) | Work activity computation results |
 | `_trends_cache` | (varies) | Trends computation results |
 
@@ -906,3 +971,9 @@ The explorer endpoints are **cold-start heavy** (~2–5s on first `/api/explorer
 24. **Currency formatting is adaptive.** `fmtChartValue` (HorizontalBarChart) and `fmtVal` (TrendsView) display wages in billions ($B) when ≥ $1B, millions ($M) when ≥ $1M, thousands ($K) when ≥ $1K, otherwise raw dollars. TrendsView values are already divided by 1e9 before reaching `fmtVal`, so thresholds are 1 / 0.001 / 0.000001. Explorer `wages_aff` cells use the same adaptive logic.
 
 25. **Simple mode auto-computes explorer pct.** In simple mode, `ExplorerView` and `WAExplorerView` run a `useEffect` that calls `fetchCompute` / `fetchWorkActivities` with preset settings (all datasets / all AEI, freq, all phys, auto-aug on) on mount and when `geo` / `tableLevel` changes. The `PctComputePanel` UI is hidden.
+
+26. **`pctAffectedMap` in WAExplorerView is keyed by DWA activity name, not task text.** At the DWA level the map key is `r.name` (the DWA name). At the Task level each row's `r.name` is the task text — use `r.dwa_title ?? ""` as the lookup key to find the parent DWA's pct_affected. Using `r.name` at task level produces no matches.
+
+27. **Dataset selection enforcement is client-side only.** `enforceDatasetToggle()` in `lib/datasetRules.ts` auto-deselects conflicting datasets in the UI. The backend does not enforce these rules — any combination technically computes, but the results are only meaningful when selection constraints are respected (e.g., cumulative AEI v4 already includes v1–v3, so selecting multiple cumulative versions is redundant).
+
+28. **Cumulative AEI datasets cannot be mixed with snapshot AEI datasets.** `AEI Cumul. v1–v4` and `AEI v1–v4 / AEI API v3–v4` are mutually exclusive. The cumulative versions aggregate all conversations up to their snapshot date, so their scale is not comparable to the per-snapshot versions.

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { WorkActivitiesResponse, ConfigResponse, ActivityGroup } from "@/lib/types";
 import { fetchConfig, fetchWorkActivities } from "@/lib/api";
+import { enforceDatasetToggle } from "@/lib/datasetRules";
 import WorkActivitiesPanel from "@/components/WorkActivitiesPanel";
 import { GROUP_A_COLOR, GROUP_B_COLOR } from "@/lib/theme";
 import { useSimpleMode } from "@/lib/SimpleModeContext";
@@ -172,6 +173,7 @@ function InfoTooltip({ text }: { text: string }) {
 
 function DatasetPillsWA({
   label, color, datasets, availability, selected, combineMethod,
+  aeiSnapshotDatasets, aeiCumulativeDatasets, mcpDatasets,
   onChange, onChangeCombine,
 }: {
   label: string;
@@ -180,6 +182,9 @@ function DatasetPillsWA({
   availability: Record<string, boolean>;
   selected: string[];
   combineMethod: "Average" | "Max";
+  aeiSnapshotDatasets: string[];
+  aeiCumulativeDatasets: string[];
+  mcpDatasets: string[];
   onChange: (v: string[]) => void;
   onChangeCombine: (v: "Average" | "Max") => void;
 }) {
@@ -187,21 +192,16 @@ function DatasetPillsWA({
   const activeFamily = getFamily(selected);
 
   function toggle(name: string) {
-    if (selected.includes(name)) {
-      onChange(selected.filter((d) => d !== name));
-    } else {
-      // If adding would mix families, clear the other family first
-      const newSelected = [...selected, name];
-      const hasAEI = newSelected.some(isAEIFamily);
-      const hasMCP = newSelected.some(isMCPFamily);
-      if (hasAEI && hasMCP) {
-        // Adding this dataset would mix — keep only same family
-        if (isAEIFamily(name)) onChange(newSelected.filter((d) => !isMCPFamily(d)));
-        else onChange(newSelected.filter((d) => !isAEIFamily(d)));
-      } else {
-        onChange(newSelected);
-      }
+    // Apply both family-separation rule and cumulative/MCP enforcement
+    let next = enforceDatasetToggle(selected, name, { aeiSnapshotDatasets, aeiCumulativeDatasets, mcpDatasets });
+    // Also enforce AEI vs MCP/Microsoft family separation (existing WA rule)
+    const hasAEI = next.some(isAEIFamily);
+    const hasMCP = next.some(isMCPFamily);
+    if (hasAEI && hasMCP) {
+      if (isAEIFamily(name)) next = next.filter((d) => !isMCPFamily(d));
+      else next = next.filter((d) => !isAEIFamily(d));
     }
+    onChange(next);
   }
 
   // Show note when a family is active
@@ -381,6 +381,9 @@ function WAGroupSettingsPanel({
             availability={config.dataset_availability}
             selected={pending.datasets}
             combineMethod={pending.combineMethod}
+            aeiSnapshotDatasets={config.aei_snapshot_datasets ?? []}
+            aeiCumulativeDatasets={config.aei_cumulative_datasets ?? []}
+            mcpDatasets={config.mcp_datasets ?? []}
             onChange={(v) => set("datasets", v)}
             onChangeCombine={(v) => set("combineMethod", v)}
           />
