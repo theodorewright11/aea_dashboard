@@ -159,7 +159,8 @@ Organized by pipeline stage:
 - `get_explorer_occupations()` — 923 occupation summaries with hierarchy, emp, wages, 10 metrics. Cached.
 - `get_explorer_groups()` — pre-computed major/minor/broad aggregations (unique task_norms per group, not averages of occ-level values). Cached.
 - `get_occupation_tasks(title)` — task details for one occupation (all 8 sources). Cached per title.
-- `get_all_tasks()` — all unique tasks with metrics + allocated emp/wage. Cached.
+- `get_all_tasks()` — all unique tasks (deduplicated by `task_normalized`) with metrics + allocated emp/wage. Cached.
+- `get_all_eco_task_rows()` — all ~23,850 rows from eco_2025 (each task × occupation combination) with occupation hierarchy, raw emp/wage, `n_tasks_per_occ`, and AI metrics from the task lookup. Cached. Used by both explorer task-level views.
 - `get_wa_explorer_data()` — GWA/IWA/DWA rows with emp allocation + metrics. Cached.
 - `get_wa_tasks_for_activity(level, name)` — task details for one WA activity.
 
@@ -297,6 +298,19 @@ wage_nat           = employment-weighted median: Σ(emp_contrib × wage) / Σ(em
 ```
 
 Same allocation logic used for WA Explorer rows.
+
+### 4.8.1 All Eco Task Rows (`get_all_eco_task_rows()`)
+
+For the Task-level view in both explorers, returns every row from eco_2025 (~23,850 rows) as a task × occupation combination. Each row includes:
+- `task`, `task_normalized` — task text (properly cased) and dedup key
+- `title_current`, `broad_occ`, `minor_occ_category`, `major_occ_category` — occupation hierarchy
+- `dwa_title`, `iwa_title`, `gwa_title` — work activity hierarchy
+- `physical` — physical task flag
+- `emp_nat`, `emp_ut`, `wage_nat`, `wage_ut` — **raw** occupation-level BLS numbers (NOT divided by task count)
+- `n_tasks_per_occ` — count of unique `task_normalized` values for this occupation (used by frontend to divide workers/wages affected)
+- `sources`, `avg_auto_aug`, `max_auto_aug`, `avg_pct_norm`, `max_pct_norm` — AI metrics from the task lookup
+
+The frontend uses `n_tasks_per_occ` to compute per-task workers/wages affected: `workers_aff = (pct/100) × emp / n_tasks_per_occ`.
 
 ### 4.9 Trends
 
@@ -542,6 +556,38 @@ Response:
     emp_nat?: number;                 // allocated: Σ(emp_occ / n_unique_tasks) across sharing occs
     emp_ut?: number;
     wage_nat?: number;                // employment-weighted median
+    sources: Record<string, { auto_aug?: number; pct_norm?: number }>;
+    avg_auto_aug?: number;
+    max_auto_aug?: number;
+    avg_pct_norm?: number;
+    max_pct_norm?: number;
+  }>;
+}
+```
+
+### `GET /api/explorer/all-eco-tasks`
+
+Returns all ~23,850 eco_2025 rows (one per task × occupation). Used by both explorer task-level views.
+
+Response:
+```ts
+{
+  tasks: Array<{
+    task: string;
+    task_normalized: string;
+    title_current: string;             // occupation name
+    broad_occ?: string;
+    minor_occ_category?: string;
+    major_occ_category?: string;
+    dwa_title?: string;
+    iwa_title?: string;
+    gwa_title?: string;
+    physical?: boolean;
+    emp_nat?: number;                  // raw occupation emp (NOT divided)
+    emp_ut?: number;
+    wage_nat?: number;                 // raw occupation wage (NOT divided)
+    wage_ut?: number;
+    n_tasks_per_occ: number;           // unique task count for this occupation
     sources: Record<string, { auto_aug?: number; pct_norm?: number }>;
     avg_auto_aug?: number;
     max_auto_aug?: number;

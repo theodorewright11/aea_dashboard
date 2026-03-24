@@ -31,6 +31,7 @@ from compute import (
     get_wa_explorer_data,
     get_wa_tasks_for_activity,
     get_all_tasks,
+    get_all_eco_task_rows,
     crosswalk_available,
     dataset_exists,
     eco2015_available,
@@ -570,3 +571,38 @@ class AllTasksResponse(BaseModel):
 def explorer_all_tasks():
     tasks = get_all_tasks()
     return AllTasksResponse(tasks=[AllTaskRow(**t) for t in tasks])
+
+
+# ── /api/explorer/all-eco-tasks ───────────────────────────────────────────────
+
+class EcoTaskRow(BaseModel):
+    task:               str
+    task_normalized:    str
+    title_current:      str
+    broad_occ:          Optional[str]   = None
+    minor_occ_category: Optional[str]   = None
+    major_occ_category: Optional[str]   = None
+    dwa_title:          Optional[str]   = None
+    iwa_title:          Optional[str]   = None
+    gwa_title:          Optional[str]   = None
+    physical:           Optional[bool]  = None
+    emp_nat:            Optional[float] = None
+    emp_ut:             Optional[float] = None
+    wage_nat:           Optional[float] = None
+    wage_ut:            Optional[float] = None
+    n_tasks_per_occ:    int             = 1
+    sources:            dict            = {}
+    avg_auto_aug:       Optional[float] = None
+    max_auto_aug:       Optional[float] = None
+    avg_pct_norm:       Optional[float] = None
+    max_pct_norm:       Optional[float] = None
+
+
+class EcoTasksResponse(BaseModel):
+    tasks: list[EcoTaskRow]
+
+
+@app.get("/api/explorer/all-eco-tasks", response_model=EcoTasksResponse)
+def explorer_all_eco_tasks():
+    rows = get_all_eco_task_rows()
+    return EcoTasksResponse(tasks=[EcoTaskRow(**r) for r in rows])

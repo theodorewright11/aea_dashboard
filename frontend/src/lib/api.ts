@@ -135,6 +135,12 @@ export async function fetchAllTasks(): Promise<{ tasks: import("./types").AllTas
   return res.json();
 }
 
+export async function fetchAllEcoTasks(): Promise<{ tasks: import("./types").EcoTaskRow[] }> {
+  const res = await fetch(`${API_BASE}/api/explorer/all-eco-tasks`);
+  if (!res.ok) throw new Error("All eco tasks request failed");
+  return res.json();
+}
+
 export async function fetchWAExplorer(): Promise<WAExplorerResponse> {
   const res = await fetch(`${API_BASE}/api/explorer/wa`);
   if (!res.ok) throw new Error("WA Explorer request failed");

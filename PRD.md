@@ -48,13 +48,14 @@ A sortable, filterable data table covering all 923 occupations in the O*NET/BLS 
 - For a given occupation, which of its tasks are most exposed and which AI sources agree?
 
 **What the user sees and can do:**
-- A 16-column table with columns for name, employment, median wage, number of occupations (at group levels), number of tasks, four auto-aug score variants (avg/max, with values only or across all tasks), percent physical, four pct_normalized variants, and two sum-of-pct columns.
-- A **level selector** (Major / Minor / Broad / Occupation / Task) that controls the granularity of the table. At the Task level, each row is a unique O*NET task rather than an occupation.
-- **Inline drilldown**: clicking any row expands it to show child rows at the next level down. At the occupation level, expanding shows individual tasks. Expanding a task shows its occupation classification (Broad → Minor → Major), its activity classification (GWA/IWA/DWA), and a per-source breakdown table showing scores from all eight AI sources plus computed averages and maximums.
-- **Multi-select major category pills** to filter to specific SOC major groups.
+- A table with columns for name, employment, median wage, number of occupations (at group levels), number of tasks, four auto-aug score variants (avg/max, with values only or across all tasks), percent physical, four pct_normalized variants, and two sum-of-pct columns. At the Task level, additional columns are available: Occupation, Major, Minor, and Broad occupation category.
+- A **column selector** (gear icon in the header bar) that lets users toggle which columns are visible. Persisted to localStorage.
+- A **level selector** (Major / Minor / Broad / Occupation / Task) that controls the granularity of the table. At the Task level, each row is one task × occupation combination from the full ECO 2025 dataset (~23,850 rows). Tasks can repeat across occupations but each row has a unique combination of task, occupation, and work activity classification. Employment and wage columns show the raw occupation-level numbers (not divided).
+- **Inline drilldown**: clicking any row expands it to show child rows at the next level down. At the occupation level, expanding shows individual tasks. At the task level, expanding a row shows its occupation classification (Occupation → Broad → Minor → Major), its activity classification (GWA/IWA/DWA), and a per-source breakdown table showing scores from all eight AI sources plus computed averages and maximums.
+- **Multi-select major category pills** to filter to specific SOC major groups. At the task level, filtering applies to the task's `major_occ_category`.
 - **Click-to-sort** on any column header (toggles ascending/descending).
 - **Per-column threshold filters** via a filter icon on each column header (set ≥ or ≤ cutoffs).
-- **Search** with a level-scope selector (All / Major / Minor / Broad / Occ / Task) and text highlighting on matches.
+- **Search** with a level-scope selector (All / Major / Minor / Broad / Occ / Task) and text highlighting on matches. At the task level, search also matches against occupation name and occupation classification columns.
 - **Nat/Utah toggle** switching employment and wage figures between national and Utah.
 - **Pct Compute Panel** — an optional expandable panel that runs the full computation pipeline (with configurable dataset, combine option, method, physical filter, and auto-aug settings) and overlays "% Tasks Affected", "Workers Affected", and "Wages Affected" columns directly in the table. This lets users see the dashboard's computed metrics alongside the raw pre-computed scores.
 - **Pagination** — rows load 100 at a time with a "Load 100 more" button.
@@ -68,10 +69,11 @@ The same sortable/filterable table interface as the Occupation Explorer, but org
 - How does exposure differ between broad activity categories (GWA) and their specific sub-activities (IWA, DWA)?
 
 **What the user sees and can do:**
-- A **level selector** (GWA / IWA / DWA) controlling which tier of the hierarchy is shown as top-level rows.
-- **Inline drilldown**: GWA rows expand to show IWA children; IWA rows expand to show DWA children; DWA rows expand to show individual tasks. Task rows are themselves expandable to show their activity classification.
-- **GWA multi-select pills** for filtering to specific General Work Activity groups.
-- Same column structure, sorting, filtering, search, Avg/Max toggle, Nat/Utah toggle, and pagination as the Occupation Explorer.
+- A **level selector** (GWA / IWA / DWA / Task) controlling which tier of the hierarchy is shown as top-level rows. The Task level shows all ~23,850 eco rows (same data as the Occupation Explorer task level).
+- **Inline drilldown**: GWA rows expand to show IWA children; IWA rows expand to show DWA children; DWA rows expand to show individual tasks. Task rows are expandable to show their occupation classification, activity classification, and per-source AI score breakdown.
+- **GWA multi-select pills** for filtering to specific General Work Activity groups. Scrollbar is visible for horizontal overflow.
+- **Column selector** (gear icon) — same as Occupation Explorer: toggles column visibility, persisted to localStorage.
+- Same column structure (including task-level Occupation/Major/Minor/Broad columns), sorting, filtering, search, Avg/Max toggle, Nat/Utah toggle, and pagination as the Occupation Explorer. Task-level search also matches occupation name and classification columns.
 
 ### 3.3 Occupation Categories
 

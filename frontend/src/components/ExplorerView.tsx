@@ -5,14 +5,15 @@ import { createPortal } from "react-dom";
 import type {
   OccupationSummary,
   TaskDetail,
+  TaskSourceStats,
   OccupationTasksResponse,
   ConfigResponse,
   ChartRow,
   ExplorerGroupRow,
   ExplorerGroupsResponse,
-  AllTaskRow,
+  EcoTaskRow,
 } from "@/lib/types";
-import { fetchOccupationTasks, fetchCompute, fetchAllTasks } from "@/lib/api";
+import { fetchOccupationTasks, fetchCompute, fetchAllEcoTasks } from "@/lib/api";
 import { useSimpleMode } from "@/lib/SimpleModeContext";
 
 // ── Debounce hook ──────────────────────────────────────────────────────────────
@@ -77,6 +78,10 @@ interface ColDef {
 
 const COLUMNS: ColDef[] = [
   { key: "name",         label: "Name",            width: 280, numeric: false },
+  { key: "occ",          label: "Occupation",       width: 200, numeric: false, tooltip: "Occupation this task belongs to" },
+  { key: "major_cat",    label: "Major",            width: 180, numeric: false, tooltip: "Major occupation category" },
+  { key: "minor_cat",    label: "Minor",            width: 180, numeric: false, tooltip: "Minor occupation category" },
+  { key: "broad_cat",    label: "Broad",            width: 180, numeric: false, tooltip: "Broad occupation" },
   { key: "emp",          label: "Emp",              width: 90,  numeric: true,  tooltip: "Total employment (BLS OEWS 2024)" },
   { key: "wage",         label: "Med Wage",         width: 90,  numeric: true,  tooltip: "Median annual wage (BLS OEWS 2024)" },
   { key: "n_occs",       label: "# Occs",           width: 65,  numeric: true,  tooltip: "Number of unique occupations" },
@@ -101,6 +106,7 @@ const COLUMNS: ColDef[] = [
 
 interface FlatRow {
   name: string;
+  rowId?: string;
   emp: number;
   wage: number | null;
   n_occs: number;
@@ -120,6 +126,16 @@ interface FlatRow {
   grandparent?: string | null;
   sourceOccs?: OccupationSummary[];
   isOcc?: boolean;
+  // Task-level fields (only set when tableLevel === "task")
+  title_current?: string | null;
+  major_occ_category?: string | null;
+  minor_occ_category?: string | null;
+  broad_occ?: string | null;
+  dwa_title?: string | null;
+  iwa_title?: string | null;
+  gwa_title?: string | null;
+  n_tasks_per_occ?: number;
+  sources?: Record<string, TaskSourceStats>;
 }
 
 // ── Row converters ─────────────────────────────────────────────────────────────
@@ -172,12 +188,13 @@ function occToRow(occ: OccupationSummary, geo: "nat" | "ut"): FlatRow {
   };
 }
 
-function taskToRow(t: AllTaskRow, geo: "nat" | "ut" = "nat"): FlatRow {
+function ecoTaskToRow(t: EcoTaskRow, idx: number, geo: "nat" | "ut" = "nat"): FlatRow {
   return {
     name: t.task,
+    rowId: `eco:${idx}`,
     emp: (geo === "nat" ? t.emp_nat : t.emp_ut) ?? 0,
-    wage: t.wage_nat ?? null,
-    n_occs: t.n_occs,
+    wage: (geo === "nat" ? t.wage_nat : t.wage_ut) ?? null,
+    n_occs: 1,
     n_tasks: 1,
     auto_avg_with_vals: t.avg_auto_aug ?? null,
     auto_max_with_vals: t.max_auto_aug ?? null,
@@ -190,12 +207,24 @@ function taskToRow(t: AllTaskRow, geo: "nat" | "ut" = "nat"): FlatRow {
     pct_max_all: null,
     sum_pct_avg: null,
     sum_pct_max: null,
+    title_current: t.title_current,
+    major_occ_category: t.major_occ_category ?? null,
+    minor_occ_category: t.minor_occ_category ?? null,
+    broad_occ: t.broad_occ ?? null,
+    dwa_title: t.dwa_title ?? null,
+    iwa_title: t.iwa_title ?? null,
+    gwa_title: t.gwa_title ?? null,
+    n_tasks_per_occ: t.n_tasks_per_occ,
+    sources: t.sources,
   };
 }
 
 // ── Column value getter ────────────────────────────────────────────────────────
 
 function getVal(row: FlatRow, col: string, pctMap: Map<string, number> | null): number | null {
+  // For task-level rows, pct is looked up by occupation name
+  const pctKey = row.title_current ?? row.name;
+  const nDiv = row.n_tasks_per_occ ?? 1;
   switch (col) {
     case "emp":          return row.emp;
     case "wage":         return row.wage;
@@ -212,14 +241,14 @@ function getVal(row: FlatRow, col: string, pctMap: Map<string, number> | null): 
     case "pct_max_all":  return row.pct_max_all;
     case "sum_pct_avg":  return row.sum_pct_avg;
     case "sum_pct_max":  return row.sum_pct_max;
-    case "pct_affected": return pctMap?.get(row.name) ?? null;
+    case "pct_affected": return pctMap?.get(pctKey) ?? null;
     case "workers_aff": {
-      const pct = pctMap?.get(row.name);
-      return pct != null ? (pct / 100) * row.emp : null;
+      const pct = pctMap?.get(pctKey);
+      return pct != null ? (pct / 100) * row.emp / nDiv : null;
     }
     case "wages_aff": {
-      const pct = pctMap?.get(row.name);
-      return (pct != null && row.wage != null) ? (pct / 100) * row.emp * row.wage / 1e9 : null;
+      const pct = pctMap?.get(pctKey);
+      return (pct != null && row.wage != null) ? (pct / 100) * row.emp * row.wage / nDiv / 1e9 : null;
     }
     default:             return null;
   }
@@ -233,7 +262,14 @@ function renderCell(
   pctMap: Map<string, number> | null,
 ): React.ReactNode {
   const muted = { color: "var(--text-muted)" } as React.CSSProperties;
+  // For task-level rows, pct lookup uses occupation name
+  const pctKey = row.title_current ?? row.name;
+  const nDiv = row.n_tasks_per_occ ?? 1;
   switch (col) {
+    case "occ":          return row.title_current ?? <span style={muted}>—</span>;
+    case "major_cat":    return row.major_occ_category ?? <span style={muted}>—</span>;
+    case "minor_cat":    return row.minor_occ_category ?? <span style={muted}>—</span>;
+    case "broad_cat":    return row.broad_occ ?? <span style={muted}>—</span>;
     case "emp":          return fmtEmp(row.emp);
     case "wage":         return fmtWage(row.wage);
     case "n_occs":       return row.isOcc ? <span style={muted}>—</span> : row.n_occs;
@@ -250,21 +286,21 @@ function renderCell(
     case "sum_pct_avg":  return fmtPctNorm(row.sum_pct_avg);
     case "sum_pct_max":  return fmtPctNorm(row.sum_pct_max);
     case "pct_affected": {
-      const v = pctMap?.get(row.name) ?? null;
+      const v = pctMap?.get(pctKey) ?? null;
       return v != null
         ? <span style={{ color: "var(--brand)", fontWeight: 500 }}>{v.toFixed(2)}%</span>
         : <span style={muted}>—</span>;
     }
     case "workers_aff": {
-      const pct = pctMap?.get(row.name);
+      const pct = pctMap?.get(pctKey);
       if (pct == null) return <span style={muted}>—</span>;
-      const v = (pct / 100) * row.emp;
+      const v = (pct / 100) * row.emp / nDiv;
       return <span style={{ color: "var(--brand)", fontWeight: 500 }}>{fmtEmp(v)}</span>;
     }
     case "wages_aff": {
-      const pct = pctMap?.get(row.name);
+      const pct = pctMap?.get(pctKey);
       if (pct == null || row.wage == null) return <span style={muted}>—</span>;
-      const rawDollars = (pct / 100) * row.emp * row.wage;
+      const rawDollars = (pct / 100) * row.emp * row.wage / nDiv;
       const fmtWagesAff = rawDollars >= 1e9 ? `$${(rawDollars / 1e9).toFixed(2)}B`
         : rawDollars >= 1e6 ? `$${(rawDollars / 1e6).toFixed(2)}M`
         : rawDollars >= 1e3 ? `$${(rawDollars / 1e3).toFixed(0)}K`
@@ -868,7 +904,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
   const [physicalMode, setPhysicalMode] = useState<"all" | "exclude" | "only">("all");
   const [pctAffectedMap, setPctAffectedMap] = useState<Map<string, number> | null>(null);
   const [minPctAffected, setMinPctAffected] = useState(0);
-  const [taskData, setTaskData] = useState<AllTaskRow[] | null>(null);
+  const [taskData, setTaskData] = useState<EcoTaskRow[] | null>(null);
   const [taskLoading, setTaskLoading] = useState(false);
   const [rowLimit, setRowLimit] = useState(100);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
@@ -881,12 +917,26 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
   const debouncedMinEmp   = useDebounce(minEmp,   300);
   const debouncedMinWage  = useDebounce(minWage,  300);
 
+  // ── Column selector state (persisted to localStorage) ──────────────────
+  const TASK_ONLY_COLS = new Set(["occ", "major_cat", "minor_cat", "broad_cat"]);
+  const [hiddenCols, setHiddenCols] = useState<Set<string>>(() => {
+    if (typeof window === "undefined") return new Set<string>();
+    try {
+      const saved = localStorage.getItem("aea_explorer_hidden_cols");
+      return saved ? new Set(JSON.parse(saved) as string[]) : new Set<string>();
+    } catch { return new Set<string>(); }
+  });
+  const [colSelectorOpen, setColSelectorOpen] = useState(false);
+  useEffect(() => {
+    try { localStorage.setItem("aea_explorer_hidden_cols", JSON.stringify(Array.from(hiddenCols))); } catch { /* silent */ }
+  }, [hiddenCols]);
+
   // ── Load task data when task level selected ──────────────────────────────
   useEffect(() => {
     if (tableLevel === "task" && taskData === null && !taskLoading) {
       setTaskLoading(true);
-      fetchAllTasks()
-        .then((res) => setTaskData(res.tasks))
+      fetchAllEcoTasks()
+        .then((res: { tasks: EcoTaskRow[] }) => setTaskData(res.tasks))
         .catch(() => setTaskData([]))
         .finally(() => setTaskLoading(false));
     }
@@ -958,8 +1008,12 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
     let rows: FlatRow[] = [];
 
     if (tableLevel === "task") {
-      const data = taskData ?? [];
-      rows = data.map((t) => taskToRow(t, geo));
+      let data = taskData ?? [];
+      // Filter by major pills
+      if (selectedMajors.size > 0) {
+        data = data.filter((t) => t.major_occ_category != null && selectedMajors.has(t.major_occ_category));
+      }
+      rows = data.map((t, i) => ecoTaskToRow(t, i, geo));
     } else if (tableLevel === "occupation") {
       let occs = occupations;
       if (selectedMajors.size > 0) {
@@ -1019,14 +1073,32 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
     // Search
     if (searchQ) {
       if (effectiveLevel === tableLevel || searchLevel === "all") {
-        rows = rows.filter((r) => r.name.toLowerCase().includes(searchQ));
+        rows = rows.filter((r) => {
+          if (r.name.toLowerCase().includes(searchQ)) return true;
+          // At task level also search occupation, major, minor, broad
+          if (r.title_current?.toLowerCase().includes(searchQ)) return true;
+          if (r.major_occ_category?.toLowerCase().includes(searchQ)) return true;
+          if (r.minor_occ_category?.toLowerCase().includes(searchQ)) return true;
+          if (r.broad_occ?.toLowerCase().includes(searchQ)) return true;
+          return false;
+        });
       }
     }
 
     // Sort
     rows = [...rows].sort((a, b) => {
-      if (sortCol === "name") {
-        const cmp = a.name.localeCompare(b.name);
+      // Text column sorts
+      const textColMap: Record<string, (r: FlatRow) => string | null | undefined> = {
+        name: (r) => r.name,
+        occ: (r) => r.title_current,
+        major_cat: (r) => r.major_occ_category,
+        minor_cat: (r) => r.minor_occ_category,
+        broad_cat: (r) => r.broad_occ,
+      };
+      if (textColMap[sortCol]) {
+        const aStr = textColMap[sortCol](a) ?? "";
+        const bStr = textColMap[sortCol](b) ?? "";
+        const cmp = aStr.localeCompare(bStr);
         return sortDir === "asc" ? cmp : -cmp;
       }
       const av = getVal(a, sortCol, pctAffectedMap);
@@ -1090,14 +1162,20 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
     setRowLimit(100);
   };
 
-  // ── Visible columns (hide pct_affected when no map; simple mode filters) ──
+  // ── Visible columns (hide pct_affected when no map; simple mode filters; column selector) ──
   const visibleCols = useMemo(() => {
     return COLUMNS.filter((c) => {
+      // Hide compute columns when no data
       if ((c.key === "pct_affected" || c.key === "workers_aff" || c.key === "wages_aff") && !pctAffectedMap) return false;
+      // Simple mode column filter
       if (isSimple && !SIMPLE_COLS.has(c.key)) return false;
+      // Task-only columns hidden when not at task level
+      if (TASK_ONLY_COLS.has(c.key) && tableLevel !== "task") return false;
+      // User column selector
+      if (hiddenCols.has(c.key)) return false;
       return true;
     });
-  }, [pctAffectedMap, isSimple]);
+  }, [pctAffectedMap, isSimple, tableLevel, hiddenCols]);
 
   // ── Total count for header ────────────────────────────────────────────────
   const totalOccs = occupations.length;
@@ -1142,11 +1220,10 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
 
   // ── Render a single table row (recursive) ────────────────────────────────
   function renderRow(row: FlatRow, level: TableLevel, indent: number): React.ReactNode {
-    const rowKey = `${level}:${row.name}`;
+    const rowKey = row.rowId ? `${level}:${row.rowId}` : `${level}:${row.name}`;
     const isExpanded = expandedRows.has(rowKey);
     const isOcc = level === "occupation" || row.isOcc === true;
     const isTask = level === "task";
-    const canExpand = !isTask;
     const indentPx = indent * 20;
 
     const taskState = isOcc ? rowTasks[row.name] : undefined;
@@ -1159,16 +1236,17 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
     return (
       <React.Fragment key={rowKey}>
         <tr
-          onClick={canExpand ? () => toggleRow(rowKey, isOcc, row.name) : undefined}
+          onClick={() => toggleRow(rowKey, isOcc, row.name)}
           style={{
-            cursor: canExpand ? "pointer" : "default",
+            cursor: "pointer",
             borderBottom: "1px solid var(--border-light)",
           }}
-          onMouseEnter={(e) => { if (canExpand) e.currentTarget.style.background = "#f9f9f7"; }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = "#f9f9f7"; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
         >
           {visibleCols.map((col, ci) => {
             const isName = col.key === "name";
+            const isTextCol = !col.numeric;
             const isNum = col.numeric;
             return (
               <td
@@ -1178,7 +1256,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                   paddingLeft: isName ? 8 + indentPx : 8,
                   fontSize: 13,
                   color: "var(--text-primary)",
-                  textAlign: isName ? "left" : "right",
+                  textAlign: isTextCol ? "left" : "right",
                   whiteSpace: isName ? "normal" : "nowrap",
                   verticalAlign: "top",
                   minWidth: ci === 0 ? col.width + indentPx : undefined,
@@ -1188,12 +1266,15 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
               >
                 {isName ? (
                   <div style={{ display: "flex", alignItems: "flex-start", gap: 5 }}>
-                    {canExpand && <span style={{ marginTop: 1, flexShrink: 0 }}><ChevronIcon open={isExpanded} /></span>}
-                    {!canExpand && <span style={{ width: 11, flexShrink: 0 }} />}
+                    <span style={{ marginTop: 1, flexShrink: 0 }}><ChevronIcon open={isExpanded} /></span>
                     <span style={{ lineHeight: 1.4 }}>
                       {search.trim() ? highlightText(row.name, search.trim()) : row.name}
                     </span>
                   </div>
+                ) : isTextCol ? (
+                  <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>
+                    {renderCell(col.key, row, pctAffectedMap)}
+                  </span>
                 ) : (
                   <span style={{ color: isNum && getVal(row, col.key, pctAffectedMap) == null ? "var(--text-muted)" : undefined }}>
                     {renderCell(col.key, row, pctAffectedMap)}
@@ -1245,6 +1326,88 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
           </tr>
         )}
 
+        {/* Task-level expansion: show occupation + activity classification + sources */}
+        {isExpanded && isTask && (
+          <tr style={{ background: "#f7f7f5", borderBottom: "1px solid var(--border)" }}>
+            <td colSpan={visibleCols.length} style={{ padding: "10px 20px 14px 28px" }}>
+              <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+                {/* Occupation Classification */}
+                {(row.title_current || row.broad_occ || row.minor_occ_category || row.major_occ_category) && (
+                  <div style={{ minWidth: 200 }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Occupation Classification</p>
+                    {row.title_current && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Occupation:</b> {row.title_current}</p>}
+                    {row.broad_occ && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Broad:</b> {row.broad_occ}</p>}
+                    {row.minor_occ_category && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Minor:</b> {row.minor_occ_category}</p>}
+                    {row.major_occ_category && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>Major:</b> {row.major_occ_category}</p>}
+                  </div>
+                )}
+                {/* Activity Classification */}
+                {(row.gwa_title || row.iwa_title || row.dwa_title) && (
+                  <div style={{ minWidth: 200 }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Activity Classification</p>
+                    {row.gwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>GWA:</b> {row.gwa_title}</p>}
+                    {row.iwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>IWA:</b> {row.iwa_title}</p>}
+                    {row.dwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>DWA:</b> {row.dwa_title}</p>}
+                  </div>
+                )}
+                {/* Source Breakdown */}
+                {row.sources && Object.keys(row.sources).length > 0 && (() => {
+                  const sources = Object.entries(row.sources);
+                  const autoVals = sources.map(([, s]) => s.auto_aug).filter((v): v is number => v != null);
+                  const pctVals = sources.map(([, s]) => s.pct_norm).filter((v): v is number => v != null);
+                  const avgAuto = autoVals.length > 0 ? autoVals.reduce((a, b) => a + b, 0) / autoVals.length : null;
+                  const maxAuto = autoVals.length > 0 ? Math.max(...autoVals) : null;
+                  const avgPct = pctVals.length > 0 ? pctVals.reduce((a, b) => a + b, 0) / pctVals.length : null;
+                  const maxPct = pctVals.length > 0 ? Math.max(...pctVals) : null;
+                  return (
+                    <div>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Source Breakdown</p>
+                      <table style={{ fontSize: 11, borderCollapse: "collapse" }}>
+                        <thead>
+                          <tr>
+                            <th style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600, textAlign: "left" }}>Source</th>
+                            <th style={{ padding: "2px 8px", color: "var(--text-muted)", fontWeight: 600, textAlign: "right" }}>Auto-aug</th>
+                            <th style={{ padding: "2px 8px", color: "var(--text-muted)", fontWeight: 600, textAlign: "right" }}>Pct</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {sources.map(([src, stats]) => (
+                            <tr key={src}>
+                              <td style={{ padding: "2px 10px 2px 0" }}>
+                                <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--bg-sidebar)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>{src}</span>
+                              </td>
+                              <td style={{ padding: "2px 8px", textAlign: "right" }}>
+                                {stats.auto_aug != null ? stats.auto_aug.toFixed(3) : <span style={{ color: "var(--text-muted)" }}>—</span>}
+                              </td>
+                              <td style={{ padding: "2px 8px", textAlign: "right" }}>
+                                {stats.pct_norm != null ? fmtPctNorm(stats.pct_norm) : <span style={{ color: "var(--text-muted)" }}>—</span>}
+                              </td>
+                            </tr>
+                          ))}
+                          <tr style={{ borderTop: "1px solid var(--border-light)" }}>
+                            <td style={{ padding: "4px 10px 2px 0", fontWeight: 700 }}>
+                              <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--brand-light)", border: "1px solid var(--brand)", color: "var(--brand)", fontWeight: 700 }}>AVG</span>
+                            </td>
+                            <td style={{ padding: "4px 8px 2px", textAlign: "right", fontWeight: 700 }}>{avgAuto != null ? avgAuto.toFixed(3) : "—"}</td>
+                            <td style={{ padding: "4px 8px 2px", textAlign: "right", fontWeight: 700 }}>{avgPct != null ? fmtPctNorm(avgPct) : "—"}</td>
+                          </tr>
+                          <tr>
+                            <td style={{ padding: "2px 10px 4px 0", fontWeight: 700 }}>
+                              <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "#fffbeb", border: "1px solid #d97706", color: "#d97706", fontWeight: 700 }}>MAX</span>
+                            </td>
+                            <td style={{ padding: "2px 8px 4px", textAlign: "right", fontWeight: 700 }}>{maxAuto != null ? maxAuto.toFixed(3) : "—"}</td>
+                            <td style={{ padding: "2px 8px 4px", textAlign: "right", fontWeight: 700 }}>{maxPct != null ? fmtPctNorm(maxPct) : "—"}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  );
+                })()}
+              </div>
+            </td>
+          </tr>
+        )}
+
         {/* Recursive child rows */}
         {isExpanded && !isOcc && !isTask && childRowsData.map((child) =>
           renderRow(child, nextLvl, indent + 1)
@@ -1272,6 +1435,70 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
           </p>
         </div>
         <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
+          {/* Column selector */}
+          <div style={{ position: "relative" }}>
+            <button
+              onClick={() => setColSelectorOpen((p) => !p)}
+              title="Select columns"
+              style={{
+                fontSize: 11, padding: "4px 8px", border: "1px solid var(--border)",
+                borderRadius: 5, background: colSelectorOpen ? "var(--brand-light)" : "transparent",
+                cursor: "pointer", color: colSelectorOpen ? "var(--brand)" : "var(--text-secondary)",
+                display: "inline-flex", alignItems: "center", gap: 4,
+              }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" />
+              </svg>
+              Columns
+            </button>
+            {colSelectorOpen && (
+              <div
+                style={{
+                  position: "absolute", right: 0, top: "100%", marginTop: 4,
+                  background: "var(--bg-surface)", border: "1px solid var(--border)",
+                  borderRadius: 8, padding: "8px 0", zIndex: 100,
+                  boxShadow: "0 4px 16px rgba(0,0,0,0.12)", width: 220,
+                  maxHeight: 400, overflowY: "auto",
+                }}
+              >
+                {COLUMNS.filter((c) => {
+                  if (c.key === "name") return false; // name is always shown
+                  if (TASK_ONLY_COLS.has(c.key) && tableLevel !== "task") return false;
+                  return true;
+                }).map((c) => {
+                  const checked = !hiddenCols.has(c.key);
+                  return (
+                    <label
+                      key={c.key}
+                      style={{
+                        display: "flex", alignItems: "center", gap: 8,
+                        padding: "4px 12px", fontSize: 11, cursor: "pointer",
+                        color: checked ? "var(--text-primary)" : "var(--text-muted)",
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = "#f5f5f3"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => {
+                          setHiddenCols((prev) => {
+                            const next = new Set(prev);
+                            if (next.has(c.key)) next.delete(c.key); else next.add(c.key);
+                            return next;
+                          });
+                        }}
+                        style={{ margin: 0 }}
+                      />
+                      {c.label}
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+          </div>
           {/* Reset */}
           <button
             onClick={handleReset}

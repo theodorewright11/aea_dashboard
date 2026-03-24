@@ -212,6 +212,31 @@ export interface AllTaskRow {
   max_pct_norm?: number | null;
 }
 
+// ── Explorer — All Eco Task Rows (one per task×occ) ──────────────────────────
+
+export interface EcoTaskRow {
+  task: string;
+  task_normalized: string;
+  title_current: string;
+  broad_occ?: string | null;
+  minor_occ_category?: string | null;
+  major_occ_category?: string | null;
+  dwa_title?: string | null;
+  iwa_title?: string | null;
+  gwa_title?: string | null;
+  physical?: boolean | null;
+  emp_nat?: number | null;
+  emp_ut?: number | null;
+  wage_nat?: number | null;
+  wage_ut?: number | null;
+  n_tasks_per_occ: number;
+  sources: Record<string, TaskSourceStats>;
+  avg_auto_aug?: number | null;
+  max_auto_aug?: number | null;
+  avg_pct_norm?: number | null;
+  max_pct_norm?: number | null;
+}
+
 // ── WA Explorer ───────────────────────────────────────────────────────────────
 
 export interface WAExplorerRow extends ExplorerMetrics {

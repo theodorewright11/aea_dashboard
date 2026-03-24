@@ -8,8 +8,8 @@ import React, {
   useRef,
 } from "react";
 import { createPortal } from "react-dom";
-import type { WAExplorerRow, WATaskDetail, ConfigResponse, AllTaskRow, ActivityRow } from "@/lib/types";
-import { fetchWAActivityTasks, fetchWorkActivities, fetchAllTasks } from "@/lib/api";
+import type { WAExplorerRow, WATaskDetail, ConfigResponse, EcoTaskRow, TaskSourceStats, ActivityRow } from "@/lib/types";
+import { fetchWAActivityTasks, fetchWorkActivities, fetchAllEcoTasks } from "@/lib/api";
 import { useSimpleMode } from "@/lib/SimpleModeContext";
 
 // ── Debounce hook ──────────────────────────────────────────────────────────────
@@ -71,8 +71,14 @@ interface ColDef {
   numeric: boolean;
 }
 
+const TASK_ONLY_COLS = new Set(["occ", "major_cat", "minor_cat", "broad_cat"]);
+
 const COLUMNS: ColDef[] = [
   { key: "name",         label: "Name",            width: 300, numeric: false },
+  { key: "occ",          label: "Occupation",       width: 200, numeric: false, tooltip: "Occupation this task belongs to" },
+  { key: "major_cat",    label: "Major",            width: 180, numeric: false, tooltip: "Major occupation category" },
+  { key: "minor_cat",    label: "Minor",            width: 180, numeric: false, tooltip: "Minor occupation category" },
+  { key: "broad_cat",    label: "Broad",            width: 180, numeric: false, tooltip: "Broad occupation" },
   { key: "emp",          label: "Emp",              width: 90,  numeric: true,  tooltip: "Total employment (BLS OEWS 2024) across occupations in this activity" },
   { key: "wage",         label: "Med Wage",         width: 90,  numeric: true,  tooltip: "Employment-weighted median annual wage" },
   { key: "n_occs",       label: "# Occs",           width: 65,  numeric: true,  tooltip: "Number of unique occupations that include tasks in this activity" },
@@ -97,6 +103,7 @@ const COLUMNS: ColDef[] = [
 
 interface DisplayRow {
   name: string;
+  rowId?: string;
   level: "gwa" | "iwa" | "dwa";
   gwa: string | null;
   parent: string | null;
@@ -119,6 +126,13 @@ interface DisplayRow {
   sum_pct_avg: number | null;
   sum_pct_max: number | null;
   pct_affected?: number | null;
+  // Task-level fields
+  title_current?: string | null;
+  major_occ_category?: string | null;
+  minor_occ_category?: string | null;
+  broad_occ?: string | null;
+  n_tasks_per_occ?: number;
+  sources?: Record<string, TaskSourceStats>;
 }
 
 function waRowToDisplay(row: WAExplorerRow, geo: "nat" | "ut"): DisplayRow {
@@ -148,6 +162,7 @@ function waRowToDisplay(row: WAExplorerRow, geo: "nat" | "ut"): DisplayRow {
 // ── Column value getter ────────────────────────────────────────────────────────
 
 function getVal(row: DisplayRow, col: string): number | null {
+  const nDiv = row.n_tasks_per_occ ?? 1;
   switch (col) {
     case "emp":          return row.emp;
     case "wage":         return row.wage;
@@ -167,11 +182,11 @@ function getVal(row: DisplayRow, col: string): number | null {
     case "pct_affected": return row.pct_affected ?? null;
     case "workers_aff": {
       const pct = row.pct_affected;
-      return pct != null ? (pct / 100) * row.emp : null;
+      return pct != null ? (pct / 100) * row.emp / nDiv : null;
     }
     case "wages_aff": {
       const pct = row.pct_affected;
-      return (pct != null && row.wage != null) ? (pct / 100) * row.emp * row.wage / 1e9 : null;
+      return (pct != null && row.wage != null) ? (pct / 100) * row.emp * row.wage / nDiv / 1e9 : null;
     }
     default:             return null;
   }
@@ -190,7 +205,12 @@ function AutoCell({ v }: { v: number | null | undefined }) {
 
 function renderCell(col: string, row: DisplayRow): React.ReactNode {
   const muted = { color: "var(--text-muted)" } as React.CSSProperties;
+  const nDiv = row.n_tasks_per_occ ?? 1;
   switch (col) {
+    case "occ":          return row.title_current ?? <span style={muted}>—</span>;
+    case "major_cat":    return row.major_occ_category ?? <span style={muted}>—</span>;
+    case "minor_cat":    return row.minor_occ_category ?? <span style={muted}>—</span>;
+    case "broad_cat":    return row.broad_occ ?? <span style={muted}>—</span>;
     case "emp":          return fmtEmp(row.emp);
     case "wage":         return fmtWage(row.wage);
     case "n_occs":       return row.n_occs;
@@ -215,12 +235,12 @@ function renderCell(col: string, row: DisplayRow): React.ReactNode {
     case "workers_aff": {
       const pct = row.pct_affected;
       if (pct == null) return <span style={muted}>—</span>;
-      return <span style={{ color: "var(--brand)", fontWeight: 500 }}>{fmtEmp((pct / 100) * row.emp)}</span>;
+      return <span style={{ color: "var(--brand)", fontWeight: 500 }}>{fmtEmp((pct / 100) * row.emp / nDiv)}</span>;
     }
     case "wages_aff": {
       const pct = row.pct_affected;
       if (pct == null || row.wage == null) return <span style={muted}>—</span>;
-      const rawDollars = (pct / 100) * row.emp * row.wage;
+      const rawDollars = (pct / 100) * row.emp * row.wage / nDiv;
       const fmtWagesAff = rawDollars >= 1e9 ? `$${(rawDollars / 1e9).toFixed(2)}B`
         : rawDollars >= 1e6 ? `$${(rawDollars / 1e6).toFixed(2)}M`
         : rawDollars >= 1e3 ? `$${(rawDollars / 1e3).toFixed(0)}K`
@@ -849,12 +869,25 @@ export default function WAExplorerView({ rows, config }: Props) {
   const [rowTasks, setRowTasks]     = useState<Record<string, WATaskDetail[] | "loading" | "error">>({});
   const [pctAffectedMap, setPctAffectedMap] = useState<Map<string, number> | null>(null);
   const [minPctAffected, setMinPctAffected] = useState(0);
-  const [taskData, setTaskData]     = useState<AllTaskRow[] | null>(null);
+  const [taskData, setTaskData]     = useState<EcoTaskRow[] | null>(null);
   const [taskLoading, setTaskLoading] = useState(false);
   const [rowLimit, setRowLimit]     = useState(100);
 
   // ── Debounced search ──────────────────────────────────────────────────────
   const debouncedSearch = useDebounce(search, 250);
+
+  // ── Column selector state (persisted to localStorage) ──────────────────
+  const [hiddenCols, setHiddenCols] = useState<Set<string>>(() => {
+    if (typeof window === "undefined") return new Set<string>();
+    try {
+      const saved = localStorage.getItem("aea_wa_explorer_hidden_cols");
+      return saved ? new Set(JSON.parse(saved) as string[]) : new Set<string>();
+    } catch { return new Set<string>(); }
+  });
+  const [colSelectorOpen, setColSelectorOpen] = useState(false);
+  useEffect(() => {
+    try { localStorage.setItem("aea_wa_explorer_hidden_cols", JSON.stringify(Array.from(hiddenCols))); } catch { /* silent */ }
+  }, [hiddenCols]);
 
   // ── Simple mode: auto-compute pct with AEI datasets ─────────────────────
   useEffect(() => {
@@ -897,8 +930,8 @@ export default function WAExplorerView({ rows, config }: Props) {
   useEffect(() => {
     if (viewLevel === "task" && taskData === null && !taskLoading) {
       setTaskLoading(true);
-      fetchAllTasks()
-        .then((res) => setTaskData(res.tasks))
+      fetchAllEcoTasks()
+        .then((res: { tasks: EcoTaskRow[] }) => setTaskData(res.tasks))
         .catch(() => setTaskData([]))
         .finally(() => setTaskLoading(false));
     }
@@ -916,7 +949,7 @@ export default function WAExplorerView({ rows, config }: Props) {
     let displayRows: DisplayRow[] = [];
 
     if (viewLevel === "task") {
-      // Task level: use all-tasks data filtered by selected GWAs
+      // Task level: use all eco rows, filtered by selected GWAs
       const data = taskData ?? [];
       displayRows = data
         .filter((t) => {
@@ -928,17 +961,18 @@ export default function WAExplorerView({ rows, config }: Props) {
           if (physicalMode === "only") return t.physical === true;
           return true;
         })
-        .map((t) => ({
+        .map((t, i) => ({
           name: t.task,
-          level: "dwa" as const, // placeholder level badge
+          rowId: `eco:${i}`,
+          level: "dwa" as const,
           gwa: t.gwa_title ?? null,
           parent: t.iwa_title ?? null,
           gwa_title: t.gwa_title ?? null,
           iwa_title: t.iwa_title ?? null,
           dwa_title: t.dwa_title ?? null,
-          emp: 0,
-          wage: null,
-          n_occs: t.n_occs,
+          emp: (geo === "nat" ? t.emp_nat : t.emp_ut) ?? 0,
+          wage: (geo === "nat" ? t.wage_nat : t.wage_ut) ?? null,
+          n_occs: 1,
           n_tasks: 1,
           auto_avg_with_vals: t.avg_auto_aug ?? null,
           auto_max_with_vals: t.max_auto_aug ?? null,
@@ -951,6 +985,12 @@ export default function WAExplorerView({ rows, config }: Props) {
           pct_max_all: null,
           sum_pct_avg: null,
           sum_pct_max: null,
+          title_current: t.title_current,
+          major_occ_category: t.major_occ_category ?? null,
+          minor_occ_category: t.minor_occ_category ?? null,
+          broad_occ: t.broad_occ ?? null,
+          n_tasks_per_occ: t.n_tasks_per_occ,
+          sources: t.sources,
         }));
     } else {
       let filtered = rows.filter((r) => r.level === viewLevel);
@@ -989,7 +1029,14 @@ export default function WAExplorerView({ rows, config }: Props) {
 
     // Search filter
     if (searchQ) {
-      displayRows = displayRows.filter((r) => r.name.toLowerCase().includes(searchQ));
+      displayRows = displayRows.filter((r) => {
+        if (r.name.toLowerCase().includes(searchQ)) return true;
+        if (r.title_current?.toLowerCase().includes(searchQ)) return true;
+        if (r.major_occ_category?.toLowerCase().includes(searchQ)) return true;
+        if (r.minor_occ_category?.toLowerCase().includes(searchQ)) return true;
+        if (r.broad_occ?.toLowerCase().includes(searchQ)) return true;
+        return false;
+      });
     }
 
     // Column filters
@@ -1008,8 +1055,17 @@ export default function WAExplorerView({ rows, config }: Props) {
 
     // Sort
     displayRows = [...displayRows].sort((a, b) => {
-      if (sortCol === "name") {
-        const cmp = a.name.localeCompare(b.name);
+      const textColMap: Record<string, (r: DisplayRow) => string | null | undefined> = {
+        name: (r) => r.name,
+        occ: (r) => r.title_current,
+        major_cat: (r) => r.major_occ_category,
+        minor_cat: (r) => r.minor_occ_category,
+        broad_cat: (r) => r.broad_occ,
+      };
+      if (textColMap[sortCol]) {
+        const aStr = textColMap[sortCol](a) ?? "";
+        const bStr = textColMap[sortCol](b) ?? "";
+        const cmp = aStr.localeCompare(bStr);
         return sortDir === "asc" ? cmp : -cmp;
       }
       const av = getVal(a, sortCol);
@@ -1028,9 +1084,11 @@ export default function WAExplorerView({ rows, config }: Props) {
     return COLUMNS.filter((c) => {
       if ((c.key === "pct_affected" || c.key === "workers_aff" || c.key === "wages_aff") && !pctAffectedMap) return false;
       if (isSimple && !WA_SIMPLE_COLS.has(c.key)) return false;
+      if (TASK_ONLY_COLS.has(c.key) && viewLevel !== "task") return false;
+      if (hiddenCols.has(c.key)) return false;
       return true;
     });
-  }, [pctAffectedMap, isSimple]);
+  }, [pctAffectedMap, isSimple, viewLevel, hiddenCols]);
 
   // ── Pre-built child row cache (avoids O(n) filtering on every render) ─────
   const childRowCache = useMemo(() => {
@@ -1171,16 +1229,11 @@ export default function WAExplorerView({ rows, config }: Props) {
                     display: "flex", alignItems: "center",
                     gap: 5, paddingLeft: indent * 20,
                   }}>
-                    {!isTaskLevel && <ChevronIcon open={isExpanded} />}
+                    <ChevronIcon open={isExpanded} />
                     {!isTaskLevel && <LevelBadge level={row.level} />}
                     <span style={{ lineHeight: 1.3 }}>
                       {highlightText(row.name, searchQ)}
                     </span>
-                    {isTaskLevel && row.gwa && (
-                      <span style={{ fontSize: 10, color: "var(--text-muted)", marginLeft: 4 }}>
-                        ({row.gwa})
-                      </span>
-                    )}
                   </div>
                 ) : (
                   renderCell(col.key, row)
@@ -1223,22 +1276,80 @@ export default function WAExplorerView({ rows, config }: Props) {
           </tr>
         )}
 
-        {/* Task-level expansion: show GWA/IWA/DWA classification */}
+        {/* Task-level expansion: show occupation + activity + sources */}
         {isTaskLevel && isExpanded && (
-          <tr style={{ background: "#fafaf8", borderBottom: "1px solid var(--border-light)" }}>
-            <td colSpan={visibleCols.length} style={{ padding: "8px 16px 10px 28px" }}>
-              {(row.gwa_title || row.iwa_title || row.dwa_title) ? (
-                <div>
-                  <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>
-                    Activity Classification
-                  </p>
-                  {row.gwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>GWA:</b> {row.gwa_title}</p>}
-                  {row.iwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>IWA:</b> {row.iwa_title}</p>}
-                  {row.dwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>DWA:</b> {row.dwa_title}</p>}
-                </div>
-              ) : (
-                <p style={{ fontSize: 11, color: "var(--text-muted)" }}>No activity classification available.</p>
-              )}
+          <tr style={{ background: "#f7f7f5", borderBottom: "1px solid var(--border)" }}>
+            <td colSpan={visibleCols.length} style={{ padding: "10px 20px 14px 28px" }}>
+              <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+                {/* Occupation Classification */}
+                {(row.title_current || row.broad_occ || row.minor_occ_category || row.major_occ_category) && (
+                  <div style={{ minWidth: 200 }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Occupation Classification</p>
+                    {row.title_current && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Occupation:</b> {row.title_current}</p>}
+                    {row.broad_occ && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Broad:</b> {row.broad_occ}</p>}
+                    {row.minor_occ_category && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Minor:</b> {row.minor_occ_category}</p>}
+                    {row.major_occ_category && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>Major:</b> {row.major_occ_category}</p>}
+                  </div>
+                )}
+                {/* Activity Classification */}
+                {(row.gwa_title || row.iwa_title || row.dwa_title) && (
+                  <div style={{ minWidth: 200 }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Activity Classification</p>
+                    {row.gwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>GWA:</b> {row.gwa_title}</p>}
+                    {row.iwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>IWA:</b> {row.iwa_title}</p>}
+                    {row.dwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>DWA:</b> {row.dwa_title}</p>}
+                  </div>
+                )}
+                {/* Source Breakdown */}
+                {row.sources && Object.keys(row.sources).length > 0 && (() => {
+                  const sources = Object.entries(row.sources);
+                  const autoVals = sources.map(([, s]) => s.auto_aug).filter((v): v is number => v != null);
+                  const pctVals = sources.map(([, s]) => s.pct_norm).filter((v): v is number => v != null);
+                  const avgAuto = autoVals.length > 0 ? autoVals.reduce((a, b) => a + b, 0) / autoVals.length : null;
+                  const maxAuto = autoVals.length > 0 ? Math.max(...autoVals) : null;
+                  const avgPct = pctVals.length > 0 ? pctVals.reduce((a, b) => a + b, 0) / pctVals.length : null;
+                  const maxPct = pctVals.length > 0 ? Math.max(...pctVals) : null;
+                  return (
+                    <div>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Source Breakdown</p>
+                      <table style={{ fontSize: 11, borderCollapse: "collapse" }}>
+                        <thead>
+                          <tr>
+                            <th style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600, textAlign: "left" }}>Source</th>
+                            <th style={{ padding: "2px 8px", color: "var(--text-muted)", fontWeight: 600, textAlign: "right" }}>Auto-aug</th>
+                            <th style={{ padding: "2px 8px", color: "var(--text-muted)", fontWeight: 600, textAlign: "right" }}>Pct</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {sources.map(([src, stats]) => (
+                            <tr key={src}>
+                              <td style={{ padding: "2px 10px 2px 0" }}>
+                                <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--bg-sidebar)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>{src}</span>
+                              </td>
+                              <td style={{ padding: "2px 8px", textAlign: "right" }}>{stats.auto_aug != null ? stats.auto_aug.toFixed(3) : <span style={{ color: "var(--text-muted)" }}>—</span>}</td>
+                              <td style={{ padding: "2px 8px", textAlign: "right" }}>{stats.pct_norm != null ? fmtPctNorm(stats.pct_norm) : <span style={{ color: "var(--text-muted)" }}>—</span>}</td>
+                            </tr>
+                          ))}
+                          <tr style={{ borderTop: "1px solid var(--border-light)" }}>
+                            <td style={{ padding: "4px 10px 2px 0", fontWeight: 700 }}>
+                              <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--brand-light)", border: "1px solid var(--brand)", color: "var(--brand)", fontWeight: 700 }}>AVG</span>
+                            </td>
+                            <td style={{ padding: "4px 8px 2px", textAlign: "right", fontWeight: 700 }}>{avgAuto != null ? avgAuto.toFixed(3) : "—"}</td>
+                            <td style={{ padding: "4px 8px 2px", textAlign: "right", fontWeight: 700 }}>{avgPct != null ? fmtPctNorm(avgPct) : "—"}</td>
+                          </tr>
+                          <tr>
+                            <td style={{ padding: "2px 10px 4px 0", fontWeight: 700 }}>
+                              <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "#fffbeb", border: "1px solid #d97706", color: "#d97706", fontWeight: 700 }}>MAX</span>
+                            </td>
+                            <td style={{ padding: "2px 8px 4px", textAlign: "right", fontWeight: 700 }}>{maxAuto != null ? maxAuto.toFixed(3) : "—"}</td>
+                            <td style={{ padding: "2px 8px 4px", textAlign: "right", fontWeight: 700 }}>{maxPct != null ? fmtPctNorm(maxPct) : "—"}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  );
+                })()}
+              </div>
             </td>
           </tr>
         )}
@@ -1282,9 +1393,8 @@ export default function WAExplorerView({ rows, config }: Props) {
         {!isSimple && (
         <div style={{
           display: "flex", flexWrap: "nowrap", gap: 5,
-          overflowX: "auto", paddingBottom: 2,
-          scrollbarWidth: "none", msOverflowStyle: "none",
-        } as React.CSSProperties}>
+          overflowX: "auto", paddingBottom: 4,
+        }}>
           <button
             onClick={() => setSelectedGwas(new Set())}
             style={{
@@ -1363,6 +1473,71 @@ export default function WAExplorerView({ rows, config }: Props) {
             />
           </div>
           )}
+
+          {/* Column selector */}
+          <div style={{ position: "relative" }}>
+            <button
+              onClick={() => setColSelectorOpen((p) => !p)}
+              title="Select columns"
+              style={{
+                fontSize: 11, padding: "4px 8px", border: "1px solid var(--border)",
+                borderRadius: 5, background: colSelectorOpen ? "var(--brand-light)" : "transparent",
+                cursor: "pointer", color: colSelectorOpen ? "var(--brand)" : "var(--text-secondary)",
+                display: "inline-flex", alignItems: "center", gap: 4,
+              }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" />
+              </svg>
+              Columns
+            </button>
+            {colSelectorOpen && (
+              <div
+                style={{
+                  position: "absolute", right: 0, top: "100%", marginTop: 4,
+                  background: "var(--bg-surface)", border: "1px solid var(--border)",
+                  borderRadius: 8, padding: "8px 0", zIndex: 100,
+                  boxShadow: "0 4px 16px rgba(0,0,0,0.12)", width: 220,
+                  maxHeight: 400, overflowY: "auto",
+                }}
+              >
+                {COLUMNS.filter((c) => {
+                  if (c.key === "name") return false;
+                  if (TASK_ONLY_COLS.has(c.key) && viewLevel !== "task") return false;
+                  return true;
+                }).map((c) => {
+                  const checked = !hiddenCols.has(c.key);
+                  return (
+                    <label
+                      key={c.key}
+                      style={{
+                        display: "flex", alignItems: "center", gap: 8,
+                        padding: "4px 12px", fontSize: 11, cursor: "pointer",
+                        color: checked ? "var(--text-primary)" : "var(--text-muted)",
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = "#f5f5f3"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => {
+                          setHiddenCols((prev) => {
+                            const next = new Set(prev);
+                            if (next.has(c.key)) next.delete(c.key); else next.add(c.key);
+                            return next;
+                          });
+                        }}
+                        style={{ margin: 0 }}
+                      />
+                      {c.label}
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+          </div>
 
           <button
             onClick={handleReset}
@@ -1492,7 +1667,7 @@ export default function WAExplorerView({ rows, config }: Props) {
                 </td>
               </tr>
             )}
-            {!taskLoading && topRows.slice(0, rowLimit).map((row, i) => renderDataRow(row, 0, `${viewLevel}__${row.name}__${i}`))}
+            {!taskLoading && topRows.slice(0, rowLimit).map((row, i) => renderDataRow(row, 0, row.rowId ? `${viewLevel}__${row.rowId}` : `${viewLevel}__${row.name}__${i}`))}
           </tbody>
         </table>
 

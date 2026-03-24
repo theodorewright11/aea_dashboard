@@ -1781,3 +1781,110 @@ def get_all_tasks() -> list:
 
     _all_tasks_cache = result
     return result
+
+
+# ── All eco task rows (one row per task×occ in eco_2025) ────────────────────
+
+_all_eco_task_rows_cache: list | None = None
+
+
+def get_all_eco_task_rows() -> list:
+    """
+    Returns every row from eco_2025 (~23,850 rows), each being a unique
+    (task, occupation, DWA/IWA/GWA) combination. Includes the occupation
+    hierarchy columns and raw (undivided) emp/wage numbers, plus AI metrics
+    from the explorer task lookup.
+    Results are cached.
+    """
+    global _all_eco_task_rows_cache
+    if _all_eco_task_rows_cache is not None:
+        return _all_eco_task_rows_cache
+
+    eco = load_eco_raw()
+    if eco is None:
+        return []
+
+    lookup = _build_explorer_task_lookup()
+
+    # Pre-compute n_tasks_per_occ (unique task_normalized per occupation)
+    n_tasks_per_occ = (
+        eco.drop_duplicates(subset=["title_current", "task_normalized"])
+        .groupby("title_current")["task_normalized"]
+        .count()
+        .to_dict()
+    )
+
+    # Pre-compute AI metrics per task_normalized to avoid repeated dict lookups
+    task_metrics: dict[str, dict] = {}
+    for tn, sources in lookup.items():
+        auto_vals = [v["auto_aug"] for v in sources.values() if v.get("auto_aug") is not None]
+        pct_vals = [v["pct_norm"] for v in sources.values() if v.get("pct_norm") is not None]
+        task_metrics[tn] = {
+            "sources": dict(sources),
+            "avg_auto_aug": round(sum(auto_vals) / len(auto_vals), 3) if auto_vals else None,
+            "max_auto_aug": round(max(auto_vals), 3) if auto_vals else None,
+            "avg_pct_norm": round(sum(pct_vals) / len(pct_vals), 4) if pct_vals else None,
+            "max_pct_norm": round(max(pct_vals), 4) if pct_vals else None,
+        }
+
+    emp_nat_col = "emp_tot_nat_2024"
+    emp_ut_col = "emp_tot_ut_2024"
+    wage_nat_col = "a_med_nat_2024"
+    wage_ut_col = "a_med_ut_2024"
+
+    def _safe_str(v) -> str | None:
+        if v is None:
+            return None
+        if isinstance(v, float) and np.isnan(v):
+            return None
+        return str(v)
+
+    def _safe_float(v) -> float | None:
+        if v is None:
+            return None
+        try:
+            f = float(v)
+            if np.isnan(f) or np.isinf(f):
+                return None
+            return f
+        except (ValueError, TypeError):
+            return None
+
+    def _safe_bool(v) -> bool | None:
+        if v is None:
+            return None
+        if isinstance(v, float) and np.isnan(v):
+            return None
+        return bool(v)
+
+    result = []
+    for _, row in eco.iterrows():
+        tn = row.get("task_normalized", "")
+        metrics = task_metrics.get(tn, {})
+        occ = row.get("title_current", "")
+
+        result.append({
+            "task": str(row.get("task", tn)),
+            "task_normalized": str(tn),
+            "title_current": str(occ),
+            "broad_occ": _safe_str(row.get("broad_occ")),
+            "minor_occ_category": _safe_str(row.get("minor_occ_category")),
+            "major_occ_category": _safe_str(row.get("major_occ_category")),
+            "dwa_title": _safe_str(row.get("dwa_title")),
+            "iwa_title": _safe_str(row.get("iwa_title")),
+            "gwa_title": _safe_str(row.get("gwa_title")),
+            "physical": _safe_bool(row.get("physical")),
+            "emp_nat": _safe_float(row.get(emp_nat_col)),
+            "emp_ut": _safe_float(row.get(emp_ut_col)),
+            "wage_nat": _safe_float(row.get(wage_nat_col)),
+            "wage_ut": _safe_float(row.get(wage_ut_col)),
+            "n_tasks_per_occ": n_tasks_per_occ.get(occ, 1),
+            "sources": metrics.get("sources", {}),
+            "avg_auto_aug": metrics.get("avg_auto_aug"),
+            "max_auto_aug": metrics.get("max_auto_aug"),
+            "avg_pct_norm": metrics.get("avg_pct_norm"),
+            "max_pct_norm": metrics.get("max_pct_norm"),
+        })
+
+    _all_eco_task_rows_cache = result
+    return result
