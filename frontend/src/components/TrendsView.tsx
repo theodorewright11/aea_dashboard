@@ -338,7 +338,7 @@ function SectionHead({ label }: { label: string }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
       <p style={{
-        fontSize: 9, fontWeight: 700, color: "var(--text-muted)",
+        fontSize: 12, fontWeight: 700, color: "var(--text-muted)",
         textTransform: "uppercase", letterSpacing: "0.09em",
         margin: 0, whiteSpace: "nowrap",
       }}>{label}</p>
@@ -566,8 +566,10 @@ function ChartPanel({
         borderRadius: 12, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
       }}
       onClick={(e) => {
-        // Click on chart background clears lock
+        // Click on chart background clears lock — but not when clicking lines, dots, or legend
         if ((e.target as HTMLElement).closest(".recharts-line")) return;
+        if ((e.target as HTMLElement).closest(".recharts-dot")) return;
+        if ((e.target as HTMLElement).closest(".recharts-active-dot")) return;
         if ((e.target as HTMLElement).closest("[data-legend-btn]")) return;
         setLockedLine(null); setLockedPos(null); setLockedDate(null);
       }}
@@ -700,13 +702,24 @@ function ChartPanel({
       {/* Frozen tooltip panel — fixed at click position when a dot is locked */}
       {lockedPos && lockedDate && lockedLine && (() => {
         const pt = chartData.find((p) => p.date === lockedDate);
-        const lc = lineConfigs.find((l) => l.key === lockedLine);
-        if (!pt || !lc || typeof pt[lockedLine] !== "number") return null;
-        const fakePayload = [{
-          dataKey: lockedLine, name: lockedLine,
-          value: pt[lockedLine] as number,
-          color: lc.color,
-        }];
+        if (!pt) return null;
+        // Show all lines or just the locked line depending on showAllInTooltip
+        const fakePayload: { dataKey: string; name: string; value: number; color: string }[] = [];
+        if (showAllInTooltip) {
+          // Build payload for all lines that have data at this date, sorted by value desc
+          lineConfigs.forEach((lc2) => {
+            const v = pt[lc2.key];
+            if (typeof v === "number") {
+              fakePayload.push({ dataKey: lc2.key, name: lc2.key, value: v, color: lc2.color });
+            }
+          });
+          fakePayload.sort((a, b) => b.value - a.value);
+        } else {
+          const lc = lineConfigs.find((l) => l.key === lockedLine);
+          if (!lc || typeof pt[lockedLine] !== "number") return null;
+          fakePayload.push({ dataKey: lockedLine, name: lockedLine, value: pt[lockedLine] as number, color: lc.color });
+        }
+        if (!fakePayload.length) return null;
         const winH = typeof window !== "undefined" ? window.innerHeight : 800;
         const winW = typeof window !== "undefined" ? window.innerWidth  : 1200;
         return (
@@ -717,8 +730,10 @@ function ChartPanel({
             zIndex: 9999,
             maxHeight: "60vh",
             overflowY: "auto",
-            pointerEvents: "none",
-          }}>
+            pointerEvents: "auto",
+          }}
+            onClick={(e) => { e.stopPropagation(); setLockedLine(null); setLockedPos(null); setLockedDate(null); }}
+          >
             <TrendsTooltip active={true} payload={fakePayload} label={lockedDate} />
           </div>
         );
@@ -740,12 +755,10 @@ function DatasetSelector({
 }) {
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-        <ControlLabel>Datasets</ControlLabel>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button onClick={onAll}  style={{ fontSize: 10, color: "var(--brand)",      background: "none", border: "none", cursor: "pointer", padding: 0 }}>All</button>
-          <button onClick={onNone} style={{ fontSize: 10, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", padding: 0 }}>None</button>
-        </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+        <ControlLabel>Datasets Trends</ControlLabel>
+        <button onClick={onAll}  style={{ fontSize: 10, color: "var(--brand)",      background: "none", border: "none", cursor: "pointer", padding: "0 2px", fontWeight: 600 }}>All</button>
+        <button onClick={onNone} style={{ fontSize: 10, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", padding: "0 2px" }}>None</button>
       </div>
       <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
         {allDatasets.map((ds) => (
@@ -774,16 +787,14 @@ function DatasetSelectorWA({
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-        <ControlLabel>Datasets</ControlLabel>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button
-            disabled={!canAll}
-            onClick={canAll ? onAll : undefined}
-            style={{ fontSize: 10, color: canAll ? "var(--brand)" : "var(--text-muted)", background: "none", border: "none", cursor: canAll ? "pointer" : "default", padding: 0, opacity: canAll ? 1 : 0.4 }}
-          >All</button>
-          <button onClick={onNone} style={{ fontSize: 10, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", padding: 0 }}>None</button>
-        </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+        <ControlLabel>Datasets Trends</ControlLabel>
+        <button
+          disabled={!canAll}
+          onClick={canAll ? onAll : undefined}
+          style={{ fontSize: 10, color: canAll ? "var(--brand)" : "var(--text-muted)", background: "none", border: "none", cursor: canAll ? "pointer" : "default", padding: "0 2px", fontWeight: 600, opacity: canAll ? 1 : 0.4 }}
+        >All</button>
+        <button onClick={onNone} style={{ fontSize: 10, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", padding: "0 2px" }}>None</button>
       </div>
       <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
         {allDatasets.map((ds) => {
@@ -960,13 +971,13 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
 
         {/* ── Collapsible settings ── */}
         {panelCollapsed ? (
-          <div style={{ display: "flex", gap: 10, alignItems: "center", padding: "7px 12px", background: "var(--bg-sidebar)", border: "1px solid var(--border-light)", borderRadius: 8 }}>
-            <span style={{ fontSize: 11, color: "var(--text-muted)", flex: 1, lineHeight: 1.5 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+            <span style={{ fontSize: 11, color: "var(--text-muted)", flexShrink: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {selectedDatasets.length} dataset{selectedDatasets.length !== 1 ? "s" : ""} · {aggLevel} · {method === "freq" ? "Frequency" : "Importance"} · {geo === "nat" ? "National" : "Utah"}{useAutoAug ? " · Auto-aug" : ""}
             </span>
             <button
               onClick={() => setPanelCollapsed(false)}
-              style={{ fontSize: 11, color: "var(--brand)", background: "none", border: "1px solid var(--border)", borderRadius: 5, padding: "3px 8px", cursor: "pointer", whiteSpace: "nowrap" }}
+              style={{ flexShrink: 0, padding: "3px 10px", fontSize: 11, background: "none", border: "1px solid var(--border)", borderRadius: 5, color: "var(--text-secondary)", cursor: "pointer" }}
             >▼ Settings</button>
           </div>
         ) : (
@@ -1065,12 +1076,10 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
             </div>
 
             {/* Collapse button */}
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <button
-                onClick={() => setPanelCollapsed(true)}
-                style={{ fontSize: 11, color: "var(--text-muted)", background: "none", border: "1px solid var(--border-light)", borderRadius: 5, padding: "3px 8px", cursor: "pointer" }}
-              >▲ Collapse</button>
-            </div>
+            <button
+              onClick={() => setPanelCollapsed(true)}
+              style={{ alignSelf: "flex-start", marginTop: 4, padding: "3px 10px", fontSize: 11, background: "none", border: "1px solid var(--border)", borderRadius: 5, color: "var(--text-muted)", cursor: "pointer" }}
+            >▲ Collapse</button>
           </div>
         )}
 
@@ -1081,70 +1090,66 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
             <input type="range" min={2} max={30} value={topN} onChange={(e) => setTopN(Number(e.target.value))}
               style={{ width: 96, accentColor: "var(--brand)", display: "block" }} />
           </div>
-          {result && (
-            <>
-              <div>
-                <ControlLabel>Sort</ControlLabel>
-                <SegmentedControl
-                  options={[
-                    { value: "value"    as SortMode, label: "By value"    },
-                    { value: "increase" as SortMode, label: "By increase" },
-                  ]}
-                  value={sortMode} onChange={setSortMode}
-                />
-              </div>
-              {sortMode === "value" && (
-                <div>
-                  <ControlLabel>Value ranking</ControlLabel>
-                  <SegmentedControl
-                    options={[{ value: "max" as const, label: "Max" }, { value: "avg" as const, label: "Avg" }]}
-                    value={valueAggMode} onChange={setValueAggMode}
-                  />
-                </div>
-              )}
-              {sortMode === "increase" && (
-                <div>
-                  <ControlLabel>Increase type</ControlLabel>
-                  <SegmentedControl
-                    options={[{ value: "abs" as IncMode, label: "Absolute" }, { value: "pct" as IncMode, label: "% change" }]}
-                    value={incMode} onChange={setIncMode}
-                  />
-                </div>
-              )}
-              <div>
-                <ControlLabel>Search category</ControlLabel>
-                <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-                  <input
-                    type="text" placeholder="Filter categories…" value={trendSearch}
-                    onChange={(e) => setTrendSearch(e.target.value)}
-                    onFocus={() => { searchFocused.current = true; }}
-                    onBlur={() => { searchFocused.current = false; }}
-                    style={{
-                      fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
-                      padding: "5px 26px 5px 8px", background: "var(--bg-surface)",
-                      color: "var(--text-primary)", width: 160, height: 31, outline: "none",
-                      transition: "border-color 0.15s",
-                    }}
-                    onMouseOver={(e) => (e.currentTarget.style.borderColor = "var(--brand)")}
-                    onMouseOut={(e)  => (e.currentTarget.style.borderColor = "var(--border)")}
-                  />
-                  {trendSearch && (
-                    <button onClick={() => setTrendSearch("")}
-                      style={{ position: "absolute", right: 6, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
-                  )}
-                </div>
-              </div>
+          <div>
+            <ControlLabel>Sort</ControlLabel>
+            <SegmentedControl
+              options={[
+                { value: "value"    as SortMode, label: "By value"    },
+                { value: "increase" as SortMode, label: "By increase" },
+              ]}
+              value={sortMode} onChange={setSortMode}
+            />
+          </div>
+          {sortMode === "value" && (
+            <div>
+              <ControlLabel>Value ranking</ControlLabel>
+              <SegmentedControl
+                options={[{ value: "max" as const, label: "Max" }, { value: "avg" as const, label: "Avg" }]}
+                value={valueAggMode} onChange={setValueAggMode}
+              />
+            </div>
+          )}
+          {sortMode === "increase" && (
+            <div>
+              <ControlLabel>Increase type</ControlLabel>
+              <SegmentedControl
+                options={[{ value: "abs" as IncMode, label: "Absolute" }, { value: "pct" as IncMode, label: "% change" }]}
+                value={incMode} onChange={setIncMode}
+              />
+            </div>
+          )}
+          <div>
+            <ControlLabel>Search category</ControlLabel>
+            <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+              <input
+                type="text" placeholder="Filter categories…" value={trendSearch}
+                onChange={(e) => setTrendSearch(e.target.value)}
+                onFocus={() => { searchFocused.current = true; }}
+                onBlur={() => { searchFocused.current = false; }}
+                style={{
+                  fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
+                  padding: "5px 26px 5px 8px", background: "var(--bg-surface)",
+                  color: "var(--text-primary)", width: 160, height: 31, outline: "none",
+                  transition: "border-color 0.15s",
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.borderColor = "var(--brand)")}
+                onMouseOut={(e)  => (e.currentTarget.style.borderColor = "var(--border)")}
+              />
               {trendSearch && (
-                <div>
-                  <ControlLabel>Context ±</ControlLabel>
-                  <SegmentedControl
-                    options={[{ value: "3" as never, label: "3" }, { value: "5" as never, label: "5" }, { value: "10" as never, label: "10" }]}
-                    value={String(ctxSize) as never}
-                    onChange={(v) => setCtxSize(Number(v))}
-                  />
-                </div>
+                <button onClick={() => setTrendSearch("")}
+                  style={{ position: "absolute", right: 6, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
               )}
-            </>
+            </div>
+          </div>
+          {trendSearch && (
+            <div>
+              <ControlLabel>Context ±</ControlLabel>
+              <SegmentedControl
+                options={[{ value: "3" as never, label: "3" }, { value: "5" as never, label: "5" }, { value: "10" as never, label: "10" }]}
+                value={String(ctxSize) as never}
+                onChange={(v) => setCtxSize(Number(v))}
+              />
+            </div>
           )}
         </div>
       </div>
@@ -1312,13 +1317,13 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
 
         {/* ── Collapsible settings ── */}
         {panelCollapsed ? (
-          <div style={{ display: "flex", gap: 10, alignItems: "center", padding: "7px 12px", background: "var(--bg-sidebar)", border: "1px solid var(--border-light)", borderRadius: 8 }}>
-            <span style={{ fontSize: 11, color: "var(--text-muted)", flex: 1, lineHeight: 1.5 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+            <span style={{ fontSize: 11, color: "var(--text-muted)", flexShrink: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {selectedDatasets.length} dataset{selectedDatasets.length !== 1 ? "s" : ""} · {levelLabels[activityLevel]} · {method === "freq" ? "Frequency" : "Importance"} · {geo === "nat" ? "National" : "Utah"}{useAutoAug ? " · Auto-aug" : ""}
             </span>
             <button
               onClick={() => setPanelCollapsed(false)}
-              style={{ fontSize: 11, color: "var(--brand)", background: "none", border: "1px solid var(--border)", borderRadius: 5, padding: "3px 8px", cursor: "pointer", whiteSpace: "nowrap" }}
+              style={{ flexShrink: 0, padding: "3px 10px", fontSize: 11, background: "none", border: "1px solid var(--border)", borderRadius: 5, color: "var(--text-secondary)", cursor: "pointer" }}
             >▼ Settings</button>
           </div>
         ) : (
@@ -1423,12 +1428,10 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
             </div>
 
             {/* Collapse button */}
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <button
-                onClick={() => setPanelCollapsed(true)}
-                style={{ fontSize: 11, color: "var(--text-muted)", background: "none", border: "1px solid var(--border-light)", borderRadius: 5, padding: "3px 8px", cursor: "pointer" }}
-              >▲ Collapse</button>
-            </div>
+            <button
+              onClick={() => setPanelCollapsed(true)}
+              style={{ alignSelf: "flex-start", marginTop: 4, padding: "3px 10px", fontSize: 11, background: "none", border: "1px solid var(--border)", borderRadius: 5, color: "var(--text-muted)", cursor: "pointer" }}
+            >▲ Collapse</button>
           </div>
         )}
 
@@ -1439,65 +1442,61 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
             <input type="range" min={2} max={30} value={topN} onChange={(e) => setTopN(Number(e.target.value))}
               style={{ width: 96, accentColor: "var(--brand)", display: "block" }} />
           </div>
-          {result && (
-            <>
-              <div>
-                <ControlLabel>Sort</ControlLabel>
-                <SegmentedControl
-                  options={[{ value: "value" as SortMode, label: "By value" }, { value: "increase" as SortMode, label: "By increase" }]}
-                  value={sortMode} onChange={setSortMode}
-                />
-              </div>
-              {sortMode === "value" && (
-                <div>
-                  <ControlLabel>Value ranking</ControlLabel>
-                  <SegmentedControl
-                    options={[{ value: "max" as const, label: "Max" }, { value: "avg" as const, label: "Avg" }]}
-                    value={valueAggMode} onChange={setValueAggMode}
-                  />
-                </div>
-              )}
-              {sortMode === "increase" && (
-                <div>
-                  <ControlLabel>Increase type</ControlLabel>
-                  <SegmentedControl
-                    options={[{ value: "abs" as IncMode, label: "Absolute" }, { value: "pct" as IncMode, label: "% change" }]}
-                    value={incMode} onChange={setIncMode}
-                  />
-                </div>
-              )}
-              <div>
-                <ControlLabel>Search category</ControlLabel>
-                <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-                  <input
-                    type="text" placeholder="Filter categories…" value={trendSearch}
-                    onChange={(e) => setTrendSearch(e.target.value)}
-                    style={{
-                      fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
-                      padding: "5px 26px 5px 8px", background: "var(--bg-surface)",
-                      color: "var(--text-primary)", width: 160, height: 31, outline: "none",
-                      transition: "border-color 0.15s",
-                    }}
-                    onMouseOver={(e) => (e.currentTarget.style.borderColor = "var(--brand)")}
-                    onMouseOut={(e)  => (e.currentTarget.style.borderColor = "var(--border)")}
-                  />
-                  {trendSearch && (
-                    <button onClick={() => setTrendSearch("")}
-                      style={{ position: "absolute", right: 6, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
-                  )}
-                </div>
-              </div>
+          <div>
+            <ControlLabel>Sort</ControlLabel>
+            <SegmentedControl
+              options={[{ value: "value" as SortMode, label: "By value" }, { value: "increase" as SortMode, label: "By increase" }]}
+              value={sortMode} onChange={setSortMode}
+            />
+          </div>
+          {sortMode === "value" && (
+            <div>
+              <ControlLabel>Value ranking</ControlLabel>
+              <SegmentedControl
+                options={[{ value: "max" as const, label: "Max" }, { value: "avg" as const, label: "Avg" }]}
+                value={valueAggMode} onChange={setValueAggMode}
+              />
+            </div>
+          )}
+          {sortMode === "increase" && (
+            <div>
+              <ControlLabel>Increase type</ControlLabel>
+              <SegmentedControl
+                options={[{ value: "abs" as IncMode, label: "Absolute" }, { value: "pct" as IncMode, label: "% change" }]}
+                value={incMode} onChange={setIncMode}
+              />
+            </div>
+          )}
+          <div>
+            <ControlLabel>Search category</ControlLabel>
+            <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+              <input
+                type="text" placeholder="Filter categories…" value={trendSearch}
+                onChange={(e) => setTrendSearch(e.target.value)}
+                style={{
+                  fontSize: 12, border: "1px solid var(--border)", borderRadius: 6,
+                  padding: "5px 26px 5px 8px", background: "var(--bg-surface)",
+                  color: "var(--text-primary)", width: 160, height: 31, outline: "none",
+                  transition: "border-color 0.15s",
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.borderColor = "var(--brand)")}
+                onMouseOut={(e)  => (e.currentTarget.style.borderColor = "var(--border)")}
+              />
               {trendSearch && (
-                <div>
-                  <ControlLabel>Context ±</ControlLabel>
-                  <SegmentedControl
-                    options={[{ value: "3" as never, label: "3" }, { value: "5" as never, label: "5" }, { value: "10" as never, label: "10" }]}
-                    value={String(ctxSize) as never}
-                    onChange={(v) => setCtxSize(Number(v))}
-                  />
-                </div>
+                <button onClick={() => setTrendSearch("")}
+                  style={{ position: "absolute", right: 6, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
               )}
-            </>
+            </div>
+          </div>
+          {trendSearch && (
+            <div>
+              <ControlLabel>Context ±</ControlLabel>
+              <SegmentedControl
+                options={[{ value: "3" as never, label: "3" }, { value: "5" as never, label: "5" }, { value: "10" as never, label: "10" }]}
+                value={String(ctxSize) as never}
+                onChange={(v) => setCtxSize(Number(v))}
+              />
+            </div>
           )}
         </div>
       </div>

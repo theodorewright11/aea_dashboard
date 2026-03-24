@@ -276,7 +276,7 @@ export default function InstructionsPage() {
             <li style={liStyle}><strong>Pct Compute</strong> — optional panel to run the full computation pipeline and overlay % tasks affected directly in the table.</li>
           </ul>
 
-          <SubHead>WA Explorer</SubHead>
+          <SubHead>Work Activities Explorer</SubHead>
           <p style={bodyStyle}>
             Same explorer layout for the work activity hierarchy (GWA → IWA → DWA).
             Expand any DWA row to see the tasks assigned to that activity and their AI scores.

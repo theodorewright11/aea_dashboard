@@ -4,13 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const NAV_LINKS = [
-  { href: "/explorer",        label: "Occupation Explorer" },
-  { href: "/wa-explorer",     label: "WA Explorer" },
-  { href: "/",                label: "Occupation Categories" },
-  { href: "/work-activities", label: "Work Activities" },
-  { href: "/trends",          label: "Trends" },
-  { href: "/instructions",    label: "Instructions" },
-  { href: "/about",           label: "About" },
+  { href: "/explorer",               label: "Occupation Explorer" },
+  { href: "/wa-explorer",            label: "Work Activities Explorer" },
+  { href: "/occupation-categories",  label: "Occupation Categories" },
+  { href: "/work-activities",        label: "Work Activities" },
+  { href: "/trends",                 label: "Trends" },
+  { href: "/instructions",           label: "Instructions" },
+  { href: "/about",                  label: "About" },
 ];
 
 /* ── Navigation ──────────────────────────────────────────────────── */
@@ -64,7 +64,7 @@ export default function Navigation() {
           msOverflowStyle: "none",
         }}>
           {NAV_LINKS.map(({ href, label }) => {
-            const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
+            const active = pathname === href || (href !== "/" && pathname.startsWith(href));
             return (
               <Link
                 key={href}

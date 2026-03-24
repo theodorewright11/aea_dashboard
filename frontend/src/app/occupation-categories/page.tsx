@@ -1,61 +1,95 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
-import type { WorkActivitiesResponse, ConfigResponse, ActivityGroup } from "@/lib/types";
-import { fetchConfig, fetchWorkActivities } from "@/lib/api";
-import WorkActivitiesPanel from "@/components/WorkActivitiesPanel";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import type { GroupSettings, ComputeResponse, ConfigResponse, ChartRow } from "@/lib/types";
+import { fetchConfig, fetchCompute } from "@/lib/api";
+import GroupPanel from "@/components/GroupPanel";
 import { GROUP_A_COLOR, GROUP_B_COLOR } from "@/lib/theme";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
-interface WAGroupPending {
-  datasets:      string[];
+interface GroupPending {
+  datasets:     string[];
   combineMethod: "Average" | "Max";
-  method:        "freq" | "imp";
-  geo:           "nat" | "ut";
-  activityLevel: "gwa" | "iwa" | "dwa";
-  topN:          number;
-  sortBy:        string;
-  physicalMode:  "all" | "exclude" | "only";
-  useAutoAug:    boolean;
-  useAdjMean:    boolean;
-  searchQuery:   string;
-  contextSize:   number;
+  method:       "freq" | "imp";
+  geo:          "nat" | "ut";
+  aggLevel:     GroupSettings["aggLevel"];
+  topN:         number;
+  sortBy:       string;
+  physicalMode: "all" | "exclude" | "only";
+  useAutoAug:   boolean;
+  useAdjMean:   boolean;
+  searchQuery:  string;
+  contextSize:  number;
 }
 
-function pendingToConfigSummary(p: WAGroupPending, groupId: "A" | "B"): string[] {
+function pendingToConfigSummary(p: GroupPending, groupId: "A" | "B"): string[] {
   const dsLabel = p.datasets.length === 0 ? "None"
     : p.datasets.length === 1 ? p.datasets[0]
     : `${p.datasets.join(", ")} (${p.combineMethod})`;
   const physLabel = p.physicalMode === "all" ? "All tasks" : p.physicalMode === "exclude" ? "Non-physical only" : "Physical only";
   const augLabel  = p.useAutoAug ? `Auto-aug: On${p.useAdjMean ? " (adj)" : ""}` : "Auto-aug: Off";
-  const line1 = `Group ${groupId}  ·  Datasets: ${dsLabel}  ·  Activity: ${p.activityLevel.toUpperCase()}  ·  Method: ${p.method === "freq" ? "Frequency" : "Importance"}  ·  Geo: ${p.geo === "nat" ? "National" : "Utah"}`;
-  const line2 = `${physLabel}  ·  ${augLabel}  ·  Top ${p.topN}  ·  Sort: ${p.sortBy}${p.searchQuery ? `  ·  Search: "${p.searchQuery}"` : ""}`;
+  const line1 = `Group ${groupId}  ·  Datasets: ${dsLabel}  ·  Method: ${p.method === "freq" ? "Frequency" : "Importance"}  ·  Geo: ${p.geo === "nat" ? "National" : "Utah"}`;
+  const line2 = `Aggregation: ${p.aggLevel}  ·  Top ${p.topN}  ·  Sort: ${p.sortBy}  ·  ${physLabel}  ·  ${augLabel}${p.searchQuery ? `  ·  Search: "${p.searchQuery}"` : ""}`;
   return [line1, line2];
 }
 
-function defaultPending(datasets: string[]): WAGroupPending {
+function pendingToSettings(p: GroupPending): GroupSettings {
   return {
-    datasets, combineMethod: "Average",
-    method: "freq", geo: "nat",
-    activityLevel: "gwa",
-    topN: 20, sortBy: "Workers Affected",
-    physicalMode: "all", useAutoAug: false, useAdjMean: false,
-    searchQuery: "", contextSize: 5,
+    selectedDatasets: p.datasets,
+    combineMethod:    p.combineMethod,
+    method:           p.method,
+    geo:              p.geo,
+    aggLevel:         p.aggLevel,
+    topN:             1000,        // always fetch all; client-side slice
+    sortBy:           p.sortBy,
+    physicalMode:     p.physicalMode,
+    useAutoAug:       p.useAutoAug,
+    useAdjMean:       p.useAdjMean,
+    searchQuery:      "",          // client-side search
+    contextSize:      p.contextSize,
   };
 }
 
-// Family helpers — AEI and MCP/Microsoft cannot be mixed
-function getFamily(datasets: string[]): "aei" | "mcp" | "none" {
-  const hasAEI = datasets.some((d) => d.startsWith("AEI"));
-  const hasMCP = datasets.some((d) => d.startsWith("MCP") || d === "Microsoft");
-  if (hasAEI && !hasMCP) return "aei";
-  if (hasMCP && !hasAEI) return "mcp";
-  return "none";  // empty or mixed (shouldn't happen with UI enforcement)
+// ── Client-side filter (topN or search) ────────────────────────────────────────
+
+function applyClientFilter(
+  full: ComputeResponse,
+  topN: number,
+  searchQuery: string,
+  contextSize: number,
+): ComputeResponse {
+  const q = searchQuery.trim().toLowerCase();
+  if (q) {
+    const idx = full.rows.findIndex((r: ChartRow) => r.category.toLowerCase().includes(q));
+    if (idx >= 0) {
+      const start = Math.max(0, idx - contextSize);
+      const end   = Math.min(full.rows.length, idx + contextSize + 1);
+      return { ...full, rows: full.rows.slice(start, end), matched_category: full.rows[idx].category };
+    }
+    return { ...full, rows: [], matched_category: null };
+  }
+  return { ...full, rows: full.rows.slice(0, topN), matched_category: undefined };
 }
 
-function isAEIFamily(name: string) { return name.startsWith("AEI"); }
-function isMCPFamily(name: string) { return name.startsWith("MCP") || name === "Microsoft"; }
+// ── Defaults ───────────────────────────────────────────────────────────────────
+
+function defaultPending(datasets: string[]): GroupPending {
+  return {
+    datasets,
+    combineMethod: "Average",
+    method:       "freq",
+    geo:          "nat",
+    aggLevel:     "major",
+    topN:         10,
+    sortBy:       "Workers Affected",
+    physicalMode: "all",
+    useAutoAug:   false,
+    useAdjMean:   false,
+    searchQuery:  "",
+    contextSize:  5,
+  };
+}
 
 // ── Shared sub-components ──────────────────────────────────────────────────────
 
@@ -151,9 +185,9 @@ function InfoTooltip({ text }: { text: string }) {
   );
 }
 
-// ── Dataset pills with family mutual exclusivity ───────────────────────────────
+// ── Dataset pills (like Trends) ────────────────────────────────────────────────
 
-function DatasetPillsWA({
+function DatasetPills({
   label, color, datasets, availability, selected, combineMethod,
   onChange, onChangeCombine,
 }: {
@@ -166,33 +200,10 @@ function DatasetPillsWA({
   onChange: (v: string[]) => void;
   onChangeCombine: (v: "Average" | "Max") => void;
 }) {
-  // Determine which family is currently locked in
-  const activeFamily = getFamily(selected);
-
   function toggle(name: string) {
-    if (selected.includes(name)) {
-      onChange(selected.filter((d) => d !== name));
-    } else {
-      // If adding would mix families, clear the other family first
-      const newSelected = [...selected, name];
-      const hasAEI = newSelected.some(isAEIFamily);
-      const hasMCP = newSelected.some(isMCPFamily);
-      if (hasAEI && hasMCP) {
-        // Adding this dataset would mix — keep only same family
-        if (isAEIFamily(name)) onChange(newSelected.filter((d) => !isMCPFamily(d)));
-        else onChange(newSelected.filter((d) => !isAEIFamily(d)));
-      } else {
-        onChange(newSelected);
-      }
-    }
+    if (selected.includes(name)) onChange(selected.filter((d) => d !== name));
+    else onChange([...selected, name]);
   }
-
-  // Show note when a family is active
-  const familyNote = activeFamily === "aei"
-    ? "AEI selected — MCP/Microsoft hidden (different ECO baseline)"
-    : activeFamily === "mcp"
-    ? "MCP/Microsoft selected — AEI hidden (different ECO baseline)"
-    : null;
 
   return (
     <div>
@@ -200,16 +211,8 @@ function DatasetPillsWA({
         <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", margin: 0 }}>
           {label}
         </p>
-        <InfoTooltip text="AEI and MCP/Microsoft cannot be mixed — they use different ECO baselines. Selecting one family hides the other." />
-        <button
-          disabled={activeFamily === "none"}
-          onClick={() => {
-            const avail = datasets.filter((d) => availability[d]);
-            if (activeFamily === "aei") onChange(avail.filter(isAEIFamily));
-            else if (activeFamily === "mcp") onChange(avail.filter(isMCPFamily));
-          }}
-          style={{ fontSize: 10, color: activeFamily !== "none" ? "var(--brand)" : "var(--text-muted)", background: "none", border: "none", cursor: activeFamily !== "none" ? "pointer" : "default", padding: "0 2px", fontWeight: 600, opacity: activeFamily !== "none" ? 1 : 0.4 }}
-        >All</button>
+        <InfoTooltip text="Select one or more datasets to compute automation exposure metrics. When multiple are selected, choose Average or Max to combine them." />
+        <button onClick={() => onChange(datasets.filter((d) => availability[d]))} style={{ fontSize: 10, color: "var(--brand)", background: "none", border: "none", cursor: "pointer", padding: "0 2px", fontWeight: 600 }}>All</button>
         <button onClick={() => onChange([])} style={{ fontSize: 10, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", padding: "0 2px" }}>None</button>
         {selected.length > 1 && (
           <>
@@ -230,19 +233,10 @@ function DatasetPillsWA({
           </>
         )}
       </div>
-      {familyNote && (
-        <p style={{ fontSize: 10, color: "var(--text-muted)", margin: "0 0 5px", fontStyle: "italic" }}>
-          {familyNote}
-        </p>
-      )}
       <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
         {datasets.map((name) => {
           const avail = availability[name];
           const active = selected.includes(name);
-          // Hide datasets from the other family when one family is locked in
-          const hidden = (activeFamily === "aei" && isMCPFamily(name)) ||
-                         (activeFamily === "mcp" && isAEIFamily(name));
-          if (hidden) return null;
           return (
             <button
               key={name}
@@ -286,24 +280,37 @@ const SORT_SHORT: Record<string, string> = {
   "% Tasks Affected": "% Tasks",
 };
 
+const AGG_OPTIONS: { value: GroupPending["aggLevel"]; label: string }[] = [
+  { value: "major",      label: "Major" },
+  { value: "minor",      label: "Minor" },
+  { value: "broad",      label: "Broad" },
+  { value: "occupation", label: "Occ"   },
+];
+
 // ── Group settings panel ───────────────────────────────────────────────────────
 
-function WAGroupSettingsPanel({
-  groupId, color, pending, setPending, config, sortOptions,
-  collapsed, onToggleCollapse,
+function GroupSettingsPanel({
+  groupId,
+  color,
+  pending,
+  setPending,
+  config,
+  sortOptions,
+  collapsed,
+  onToggleCollapse,
 }: {
   groupId: "A" | "B";
   color: string;
-  pending: WAGroupPending;
-  setPending: (p: WAGroupPending) => void;
+  pending: GroupPending;
+  setPending: (p: GroupPending) => void;
   config: ConfigResponse;
   sortOptions: string[];
   collapsed: boolean;
   onToggleCollapse: () => void;
 }) {
-  const hasMCP  = pending.datasets.some((d) => d.startsWith("MCP"));
+  const hasMCP = pending.datasets.some((d) => d.startsWith("MCP"));
 
-  function set<K extends keyof WAGroupPending>(k: K, v: WAGroupPending[K]) {
+  function set<K extends keyof GroupPending>(k: K, v: GroupPending[K]) {
     setPending({ ...pending, [k]: v });
   }
 
@@ -312,9 +319,9 @@ function WAGroupSettingsPanel({
     : `${pending.datasets.length} ds (${pending.combineMethod})`;
   const summary = [
     summaryDs,
-    pending.activityLevel.toUpperCase(),
     pending.method === "freq" ? "Freq" : "Imp",
     pending.geo === "nat" ? "National" : "Utah",
+    pending.aggLevel,
     `Sort: ${SORT_SHORT[pending.sortBy] ?? pending.sortBy}`,
     pending.physicalMode !== "all" ? (pending.physicalMode === "exclude" ? "No Phys" : "Phys only") : null,
     pending.useAutoAug ? `Auto-aug On${pending.useAdjMean ? " (adj)" : ""}` : null,
@@ -323,12 +330,13 @@ function WAGroupSettingsPanel({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
 
+      {/* Collapsible sections */}
       {!collapsed ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
 
           {/* ─ Datasets ─ */}
           <SectionHead label="Datasets" />
-          <DatasetPillsWA
+          <DatasetPills
             label={`Group ${groupId} datasets`}
             color={color}
             datasets={config.datasets}
@@ -342,22 +350,6 @@ function WAGroupSettingsPanel({
           {/* ─ Display ─ */}
           <SectionHead label="Display" />
           <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
-            <div>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <ControlLabel>Activity level</ControlLabel>
-                <InfoTooltip text="GWA: General Work Activities (broadest). IWA: Intermediate Work Activities. DWA: Detailed Work Activities (most granular)." />
-              </div>
-              <SegBtn
-                options={[
-                  { value: "gwa", label: "GWA" },
-                  { value: "iwa", label: "IWA" },
-                  { value: "dwa", label: "DWA" },
-                ]}
-                value={pending.activityLevel}
-                onChange={(v) => set("activityLevel", v)}
-              />
-            </div>
-
             <div>
               <div style={{ display: "flex", alignItems: "center" }}>
                 <ControlLabel>Method</ControlLabel>
@@ -384,8 +376,20 @@ function WAGroupSettingsPanel({
 
             <div>
               <div style={{ display: "flex", alignItems: "center" }}>
+                <ControlLabel>Aggregation</ControlLabel>
+                <InfoTooltip text="Level of occupation grouping: Major (broad categories), Minor, Broad, or individual Occupation." />
+              </div>
+              <SegBtn
+                options={AGG_OPTIONS}
+                value={pending.aggLevel}
+                onChange={(v) => setPending({ ...pending, aggLevel: v, topN: Math.min(pending.topN, 30) })}
+              />
+            </div>
+
+            <div>
+              <div style={{ display: "flex", alignItems: "center" }}>
                 <ControlLabel>Sort by</ControlLabel>
-                <InfoTooltip text="Which metric to sort activities by (descending). Run required to re-sort." />
+                <InfoTooltip text="Which metric to sort categories by (descending). Run required to re-sort." />
               </div>
               <SegBtn
                 options={sortOptions.map((opt) => ({ value: opt, label: SORT_SHORT[opt] ?? opt }))}
@@ -417,7 +421,7 @@ function WAGroupSettingsPanel({
             <div>
               <div style={{ display: "flex", alignItems: "center" }}>
                 <ControlLabel>Auto-aug weight</ControlLabel>
-                <InfoTooltip text="When On, multiplies each task's completion weight by its AI automatability score (auto_aug_mean / 5)." />
+                <InfoTooltip text="When On, multiplies each task's completion weight by its AI automatability score (auto_aug_mean / 5), so highly automatable tasks count more." />
               </div>
               <SegBtn
                 options={[{ value: "false" as never, label: "Off" }, { value: "true" as never, label: "On" }]}
@@ -431,7 +435,7 @@ function WAGroupSettingsPanel({
               <div>
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <ControlLabel>MCP adj mean</ControlLabel>
-                  <InfoTooltip text="Use auto_aug_mean_adj for MCP datasets, which excludes flagged/unreliable ratings." />
+                  <InfoTooltip text="Use auto_aug_mean_adj for MCP datasets, which excludes flagged/unreliable ratings. Only available for MCP datasets." />
                 </div>
                 <SegBtn
                   options={[{ value: "false" as never, label: "Off" }, { value: "true" as never, label: "On" }]}
@@ -473,8 +477,8 @@ function WAGroupSettingsPanel({
       <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end", marginTop: 6 }}>
         <div>
           <div style={{ display: "flex", alignItems: "center" }}>
-            <ControlLabel>Search activity</ControlLabel>
-            <InfoTooltip text="Find a specific activity. Results center around the match ± context rows. Updates chart immediately." />
+            <ControlLabel>Search category</ControlLabel>
+            <InfoTooltip text="Find a specific category. Results center around the match ± context rows. Updates chart immediately without needing Run." />
           </div>
           <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
             <input
@@ -507,7 +511,7 @@ function WAGroupSettingsPanel({
           <div>
             <div style={{ display: "flex", alignItems: "center" }}>
               <ControlLabel>Context ±</ControlLabel>
-              <InfoTooltip text="How many rows above and below the matched activity to show." />
+              <InfoTooltip text="How many rows above and below the matched category to show." />
             </div>
             <SegBtn
               options={[{ value: "5" as never, label: "5" }, { value: "10" as never, label: "10" }]}
@@ -519,10 +523,10 @@ function WAGroupSettingsPanel({
           <div>
             <div style={{ display: "flex", alignItems: "center" }}>
               <ControlLabel>Top {pending.topN}</ControlLabel>
-              <InfoTooltip text="Number of top activities to display. Updates immediately after run." />
+              <InfoTooltip text="Number of top categories to display, sorted by the chosen sort metric. Updates immediately." />
             </div>
             <input
-              type="range" min={5} max={30} step={1} value={Math.min(pending.topN, 30)}
+              type="range" min={5} max={30} step={1} value={pending.topN}
               onChange={(e) => set("topN", Number(e.target.value))}
               style={{ width: 80, accentColor: "var(--brand)", display: "block", marginTop: 4 }}
             />
@@ -535,83 +539,87 @@ function WAGroupSettingsPanel({
 
 // ── Page ───────────────────────────────────────────────────────────────────────
 
-export default function WorkActivitiesPage() {
+export default function HomePage() {
   const [config, setConfig]           = useState<ConfigResponse | null>(null);
   const [configError, setConfigError] = useState<string | null>(null);
 
-  const [pendingA, setPendingA] = useState<WAGroupPending>(defaultPending(["AEI v4"]));
-  const [pendingB, setPendingB] = useState<WAGroupPending>(defaultPending(["MCP v4"]));
+  const [pendingA, setPendingA] = useState<GroupPending>(defaultPending(["AEI v4"]));
+  const [pendingB, setPendingB] = useState<GroupPending>(defaultPending(["MCP v4"]));
   const [activeGroup, setActiveGroup] = useState<"A" | "B">("A");
   const [panelCollapsed, setPanelCollapsed] = useState(false);
 
-  const [responseA, setResponseA] = useState<WorkActivitiesResponse | null>(null);
-  const [responseB, setResponseB] = useState<WorkActivitiesResponse | null>(null);
+  // Full backend responses (high topN, no search)
+  const [fullResponseA, setFullResponseA] = useState<ComputeResponse | null>(null);
+  const [fullResponseB, setFullResponseB] = useState<ComputeResponse | null>(null);
   const [loadingA, setLoadingA]   = useState(false);
   const [loadingB, setLoadingB]   = useState(false);
   const [errorA, setErrorA]       = useState<string | null>(null);
   const [errorB, setErrorB]       = useState<string | null>(null);
-  const [appliedPendingA, setAppliedPendingA] = useState<WAGroupPending | null>(null);
-  const [appliedPendingB, setAppliedPendingB] = useState<WAGroupPending | null>(null);
+
+  // Track applied settings for config summary in downloads
+  const [appliedPendingA, setAppliedPendingA] = useState<GroupPending | null>(null);
+  const [appliedPendingB, setAppliedPendingB] = useState<GroupPending | null>(null);
 
   useEffect(() => {
     fetchConfig()
       .then((cfg) => {
         setConfig(cfg);
         const avail = cfg.datasets.filter((d) => cfg.dataset_availability[d]);
-        setPendingA((p) => ({ ...p, datasets: p.datasets.filter((d) => avail.includes(d)) }));
-        setPendingB((p) => ({ ...p, datasets: p.datasets.filter((d) => avail.includes(d)) }));
+        const filterDs = (ds: string[]) => ds.filter((d) => avail.includes(d));
+        setPendingA((p) => ({ ...p, datasets: filterDs(p.datasets) }));
+        setPendingB((p) => ({ ...p, datasets: filterDs(p.datasets) }));
       })
       .catch((e) => setConfigError(e.message));
   }, []);
 
   const run = useCallback(async () => {
-    const makeSettings = (p: WAGroupPending) => ({
-      selectedDatasets: p.datasets,
-      combineMethod:    p.combineMethod,
-      method:           p.method,
-      geo:              p.geo,
-      aggLevel:         "major" as const,
-      topN:             999,   // fetch all; topN applied client-side in WorkActivitiesPanel
-      sortBy:           p.sortBy,
-      physicalMode:     p.physicalMode,
-      useAutoAug:       p.useAutoAug,
-      useAdjMean:       p.useAdjMean,
-    });
-
-    const fetchGroup = async (
-      p: WAGroupPending,
-      setError: (e: string | null) => void,
-    ): Promise<WorkActivitiesResponse | null> => {
-      if (!p.datasets.length) return null;
-      try {
-        return await fetchWorkActivities(makeSettings(p));
-      } catch (e: unknown) {
-        setError(e instanceof Error ? e.message : "Failed to load work activities");
-        return null;
-      }
-    };
-
+    const settingsA = pendingToSettings(pendingA);
+    const settingsB = pendingToSettings(pendingB);
     setAppliedPendingA(pendingA);
     setAppliedPendingB(pendingB);
+
     setLoadingA(true); setErrorA(null);
     setLoadingB(true); setErrorB(null);
 
     const [resA, resB] = await Promise.all([
-      fetchGroup(pendingA, setErrorA),
-      fetchGroup(pendingB, setErrorB),
+      pendingA.datasets.length > 0
+        ? fetchCompute(settingsA).catch((e: unknown) => { setErrorA(e instanceof Error ? e.message : "Failed"); return null; })
+        : Promise.resolve(null),
+      pendingB.datasets.length > 0
+        ? fetchCompute(settingsB).catch((e: unknown) => { setErrorB(e instanceof Error ? e.message : "Failed"); return null; })
+        : Promise.resolve(null),
     ]);
 
-    setResponseA(resA);
-    setResponseB(resB);
+    setFullResponseA(resA);
+    setFullResponseB(resB);
     setLoadingA(false);
     setLoadingB(false);
     setPanelCollapsed(true);
   }, [pendingA, pendingB]);
 
+  // Apply client-side filter (topN + search) reactively
+  const displayResponseA = useMemo(() =>
+    fullResponseA ? applyClientFilter(fullResponseA, pendingA.topN, pendingA.searchQuery, pendingA.contextSize) : null,
+    [fullResponseA, pendingA.topN, pendingA.searchQuery, pendingA.contextSize]
+  );
+  const displayResponseB = useMemo(() =>
+    fullResponseB ? applyClientFilter(fullResponseB, pendingB.topN, pendingB.searchQuery, pendingB.contextSize) : null,
+    [fullResponseB, pendingB.topN, pendingB.searchQuery, pendingB.contextSize]
+  );
+
   if (configError) {
     return (
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "calc(100vh - var(--nav-height))" }}>
-        <p style={{ color: "#b91c1c", fontSize: 13 }}>Backend error: {configError}</p>
+        <div style={{ textAlign: "center", maxWidth: 400 }}>
+          <p style={{ fontWeight: 600, color: "#b91c1c", marginBottom: 6 }}>Could not connect to backend</p>
+          <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 4 }}>{configError}</p>
+          <p style={{ fontSize: 13, color: "var(--text-muted)" }}>
+            Make sure the FastAPI server is running on{" "}
+            <code style={{ background: "#f1f5f9", padding: "1px 4px", borderRadius: 4 }}>
+              {process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}
+            </code>
+          </p>
+        </div>
       </div>
     );
   }
@@ -619,16 +627,16 @@ export default function WorkActivitiesPage() {
   if (!config) {
     return (
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "calc(100vh - var(--nav-height))" }}>
-        <div style={{ width: 32, height: 32, borderRadius: "50%", border: "3px solid var(--brand)", borderTopColor: "transparent", animation: "spin 0.7s linear infinite" }} />
+        <div style={{ width: 36, height: 36, borderRadius: "50%", border: "3px solid var(--brand)", borderTopColor: "transparent", animation: "spin 0.7s linear infinite" }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
 
-  const activePending    = activeGroup === "A" ? pendingA : pendingB;
+  const activePending = activeGroup === "A" ? pendingA : pendingB;
   const setActivePending = activeGroup === "A" ? setPendingA : setPendingB;
-  const otherPending     = activeGroup === "A" ? pendingB  : pendingA;
-  const activeColor      = activeGroup === "A" ? GROUP_A_COLOR : GROUP_B_COLOR;
+  const otherPending  = activeGroup === "A" ? pendingB : pendingA;
+  const activeColor   = activeGroup === "A" ? GROUP_A_COLOR : GROUP_B_COLOR;
 
   function syncToOther() {
     const copy = { ...activePending };
@@ -662,14 +670,14 @@ export default function WorkActivitiesPage() {
         {/* Page title */}
         <div style={{ marginBottom: 12 }}>
           <h1 style={{ fontSize: 19, fontWeight: 600, color: "var(--text-primary)", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.25 }}>
-            Work Activities
+            Occupation Categories
           </h1>
           <p style={{ fontSize: 12, color: "var(--text-muted)", margin: "3px 0 0", lineHeight: 1.5 }}>
-            AI automation exposure by General, Intermediate, and Detailed Work Activities (O*NET).
+            Compare automation exposure across datasets, geographies, and aggregation levels.
           </p>
         </div>
 
-        {/* Group A/B tab toggle + sync */}
+        {/* Group tab toggle + sync */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
           <div style={{ display: "flex", border: "1px solid var(--border)", borderRadius: 7, overflow: "hidden" }}>
             {(["A", "B"] as const).map((g) => {
@@ -709,10 +717,14 @@ export default function WorkActivitiesPage() {
             title={`Copy Group ${activeGroup} settings to Group ${activeGroup === "A" ? "B" : "A"}`}
             style={{
               display: "flex", alignItems: "center", gap: 5,
-              padding: "5px 11px", fontSize: 11, fontWeight: 500,
-              background: "var(--bg-surface)", border: "1px solid var(--border)",
-              borderRadius: 6, color: "var(--text-secondary)",
-              cursor: "pointer", transition: "border-color 0.12s",
+              padding: "5px 11px",
+              fontSize: 11, fontWeight: 500,
+              background: "var(--bg-surface)",
+              border: "1px solid var(--border)",
+              borderRadius: 6,
+              color: "var(--text-secondary)",
+              cursor: "pointer",
+              transition: "border-color 0.12s",
             }}
             onMouseOver={(e) => (e.currentTarget.style.borderColor = "var(--brand)")}
             onMouseOut={(e)  => (e.currentTarget.style.borderColor = "var(--border)")}
@@ -734,8 +746,8 @@ export default function WorkActivitiesPage() {
           </button>
         </div>
 
-        {/* Active group settings */}
-        <WAGroupSettingsPanel
+        {/* Settings for active group */}
+        <GroupSettingsPanel
           groupId={activeGroup}
           color={activeColor}
           pending={activePending}
@@ -751,15 +763,18 @@ export default function WorkActivitiesPage() {
           <span style={{
             display: "inline-flex", alignItems: "center", gap: 4,
             padding: "3px 10px",
-            background: "var(--bg-surface)", border: "1px solid var(--border-light)", borderRadius: 4,
-            flexWrap: "wrap", rowGap: 2,
+            background: "var(--bg-surface)",
+            border: "1px solid var(--border-light)",
+            borderRadius: 4,
+            flexWrap: "wrap",
+            rowGap: 2,
           }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: activeGroup === "A" ? GROUP_B_COLOR : GROUP_A_COLOR, flexShrink: 0 }} />
             <strong style={{ fontWeight: 600 }}>Group {activeGroup === "A" ? "B" : "A"}:</strong>&nbsp;
             {dsLabelOther}
-            &nbsp;·&nbsp;{otherPending.activityLevel.toUpperCase()}
             &nbsp;·&nbsp;{otherPending.method === "freq" ? "Freq" : "Imp"}
             &nbsp;·&nbsp;{otherPending.geo === "nat" ? "National" : "Utah"}
+            &nbsp;·&nbsp;{otherPending.aggLevel}
             &nbsp;·&nbsp;Top {otherPending.topN}
             &nbsp;·&nbsp;Sort: {otherPending.sortBy}
             &nbsp;·&nbsp;{physLabelOther}
@@ -779,33 +794,25 @@ export default function WorkActivitiesPage() {
           alignContent: "start",
           flex: 1,
         }}>
-          <WorkActivitiesPanel
+          <GroupPanel
             groupId="A"
             color={GROUP_A_COLOR}
-            response={responseA}
+            response={displayResponseA}
+            otherResponse={fullResponseB}
             loading={loadingA}
             error={errorA}
-            activityLevel={pendingA.activityLevel}
-            searchQuery={pendingA.searchQuery}
-            contextSize={pendingA.contextSize}
-            topN={pendingA.topN}
+            matchedCategory={displayResponseA?.matched_category}
             configSummary={appliedPendingA ? pendingToConfigSummary(appliedPendingA, "A") : undefined}
-            otherResponse={responseB}
-            otherActivityLevel={pendingB.activityLevel}
           />
-          <WorkActivitiesPanel
+          <GroupPanel
             groupId="B"
             color={GROUP_B_COLOR}
-            response={responseB}
+            response={displayResponseB}
+            otherResponse={fullResponseA}
             loading={loadingB}
             error={errorB}
-            activityLevel={pendingB.activityLevel}
-            searchQuery={pendingB.searchQuery}
-            contextSize={pendingB.contextSize}
-            topN={pendingB.topN}
+            matchedCategory={displayResponseB?.matched_category}
             configSummary={appliedPendingB ? pendingToConfigSummary(appliedPendingB, "B") : undefined}
-            otherResponse={responseA}
-            otherActivityLevel={pendingA.activityLevel}
           />
         </div>
 

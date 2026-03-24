@@ -25,6 +25,10 @@ interface Props {
   topN?:          number;
   /** Config summary lines shown as footer in downloaded PNGs */
   configSummary?: string[];
+  /** Other group's response — for delta comparison in tooltip */
+  otherResponse?: WorkActivitiesResponse | null;
+  /** Other group's activity level — for looking up other group rows */
+  otherActivityLevel?: ActivityLevel;
 }
 
 const LEVEL_LABELS: Record<ActivityLevel, string> = {
@@ -121,15 +125,43 @@ function ChartCard({
 
 // ── Bar chart ─────────────────────────────────────────────────────────────────
 
+function fmtDelta(delta: number, formatType: string): string {
+  const sign = delta >= 0 ? "+" : "\u2212";
+  const abs  = Math.abs(delta);
+  return `${sign}${fmtChartValue(abs, formatType)}`;
+}
+
+function fmtPctChange(thisV: number, otherV: number): string | null {
+  if (otherV === 0) return null;
+  const pct = ((thisV - otherV) / Math.abs(otherV)) * 100;
+  const sign = pct >= 0 ? "+" : "\u2212";
+  return `${sign}${Math.abs(pct).toFixed(1)}%`;
+}
+
+function ordinal(n: number): string {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
 function ActivityBarChart({
   rows, metric, color, matchedCategory,
+  allRows, otherRows, totalEmp, totalWages, totalCategories,
 }: {
   rows: ActivityRow[];
   metric: MetricKey;
   color: string;
   matchedCategory: string | null;
+  /** Full row set (before topN/search) for rank computation */
+  allRows: ActivityRow[];
+  /** Other group's rows for delta in tooltip */
+  otherRows: ActivityRow[];
+  totalEmp: number;
+  totalWages: number;
+  totalCategories: number;
 }) {
   const cfg = METRIC_CONFIG[metric];
+  const hasOtherGroup = otherRows.length > 0;
 
   if (!rows.length) {
     return (
@@ -142,12 +174,27 @@ function ActivityBarChart({
     );
   }
 
+  // Pre-compute rank maps from the full sorted row set
+  const rankWorkers = new Map<string, number>();
+  const rankWages = new Map<string, number>();
+  const rankPct = new Map<string, number>();
+  [...allRows].sort((a, b) => b.workers_affected - a.workers_affected).forEach((r, i) => rankWorkers.set(r.category, i + 1));
+  [...allRows].sort((a, b) => b.wages_affected - a.wages_affected).forEach((r, i) => rankWages.set(r.category, i + 1));
+  [...allRows].sort((a, b) => b.pct_tasks_affected - a.pct_tasks_affected).forEach((r, i) => rankPct.set(r.category, i + 1));
+
+  // Build a lookup for full row data (all 3 metrics) for tooltip
+  const rowLookup = new Map<string, ActivityRow>();
+  allRows.forEach((r) => rowLookup.set(r.category, r));
+
   const data = rows.map((r) => ({
     category:  r.category,
     plotValue: cfg.unitScale > 1
       ? (r[cfg.col] as number) / cfg.unitScale
       : (r[cfg.col] as number),
     rawValue: r[cfg.col] as number,
+    workers_affected: r.workers_affected,
+    wages_affected: r.wages_affected,
+    pct_tasks_affected: r.pct_tasks_affected,
   }));
 
   const n           = rows.length;
@@ -158,19 +205,104 @@ function ActivityBarChart({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function TooltipContent({ active, payload }: any) {
     if (!active || !payload?.length) return null;
-    const { category, rawValue } = payload[0].payload as { category: string; rawValue: number };
+    const item = payload[0].payload as { category: string; workers_affected: number; wages_affected: number; pct_tasks_affected: number };
+    const other = hasOtherGroup ? otherRows.find((r) => r.category === item.category) : undefined;
+    const notInOther = hasOtherGroup && other === undefined;
+
+    type MetricRow = { label: string; value: string; sub?: string; delta?: string; pctChange?: string | null; absent?: boolean };
+    const metricRows: MetricRow[] = [];
+
+    // Workers
+    {
+      const v = item.workers_affected;
+      const rank = rankWorkers.get(item.category) ?? 0;
+      const share = totalEmp > 0 ? (v / totalEmp * 100) : null;
+      const otherV = other?.workers_affected;
+      metricRows.push({
+        label: "Workers",
+        value: fmtChartValue(v, "number"),
+        sub: [
+          rank > 0 && totalCategories > 0 ? `${ordinal(rank)} of ${totalCategories}` : null,
+          share != null ? `${share.toFixed(1)}% of economy` : null,
+        ].filter(Boolean).join(" \u00b7 "),
+        delta: otherV != null ? fmtDelta(v - otherV, "number") : undefined,
+        pctChange: otherV != null ? fmtPctChange(v, otherV) : undefined,
+        absent: notInOther,
+      });
+    }
+
+    // Wages
+    {
+      const v = item.wages_affected;
+      const rank = rankWages.get(item.category) ?? 0;
+      const share = totalWages > 0 ? (v / totalWages * 100) : null;
+      const otherV = other?.wages_affected;
+      metricRows.push({
+        label: "Wages",
+        value: fmtChartValue(v, "currency_B"),
+        sub: [
+          rank > 0 && totalCategories > 0 ? `${ordinal(rank)} of ${totalCategories}` : null,
+          share != null ? `${share.toFixed(1)}% of economy` : null,
+        ].filter(Boolean).join(" \u00b7 "),
+        delta: otherV != null ? fmtDelta(v - otherV, "currency_B") : undefined,
+        pctChange: otherV != null ? fmtPctChange(v, otherV) : undefined,
+        absent: notInOther,
+      });
+    }
+
+    // % Tasks
+    {
+      const v = item.pct_tasks_affected;
+      const rank = rankPct.get(item.category) ?? 0;
+      const otherV = other?.pct_tasks_affected;
+      metricRows.push({
+        label: "% Tasks",
+        value: fmtChartValue(v, "percent"),
+        sub: rank > 0 && totalCategories > 0 ? `${ordinal(rank)} of ${totalCategories}` : undefined,
+        delta: otherV != null ? fmtDelta(v - otherV, "percent") : undefined,
+        pctChange: otherV != null ? fmtPctChange(v, otherV) : undefined,
+        absent: notInOther,
+      });
+    }
+
     return (
       <div style={{
         background: "var(--bg-surface)", border: "1px solid var(--border)",
         borderRadius: 8, padding: "10px 13px", fontSize: 12,
-        boxShadow: "0 3px 12px rgba(0,0,0,0.11)", maxWidth: 280, minWidth: 180,
+        boxShadow: "0 3px 12px rgba(0,0,0,0.11)", maxWidth: 300, minWidth: 200,
       }}>
-        <p style={{ fontWeight: 700, color: "var(--text-primary)", marginBottom: 6, lineHeight: 1.35 }}>
-          {category}
+        <p style={{ fontWeight: 700, color: "var(--text-primary)", marginBottom: 8, lineHeight: 1.35, fontSize: 12 }}>
+          {item.category}
         </p>
-        <p style={{ fontWeight: 600, color: "var(--text-primary)" }}>
-          {fmtChartValue(rawValue, cfg.formatType)}
-        </p>
+        {metricRows.map((r) => (
+          <div key={r.label} style={{ marginBottom: 5 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8 }}>
+              <span style={{ color: "var(--text-muted)", fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                {r.label}
+              </span>
+              <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>
+                {r.value}
+              </span>
+            </div>
+            {r.sub && (
+              <p style={{ fontSize: 10, color: "var(--text-muted)", margin: "1px 0 0" }}>{r.sub}</p>
+            )}
+            {r.absent && (
+              <p style={{ fontSize: 10, margin: "1px 0 0", color: "var(--text-muted)", fontStyle: "italic" }}>
+                not in other group
+              </p>
+            )}
+            {r.delta !== undefined && (
+              <p style={{
+                fontSize: 10, margin: "1px 0 0",
+                color: r.delta.startsWith("+") ? "#166534" : r.delta.startsWith("\u2212") ? "#991b1b" : "var(--text-muted)",
+                fontWeight: 500,
+              }}>
+                vs other: {r.delta}{r.pctChange ? ` (${r.pctChange})` : ""}
+              </p>
+            )}
+          </div>
+        ))}
       </div>
     );
   }
@@ -250,12 +382,25 @@ function ActivityBarChart({
 export default function WorkActivitiesPanel({
   groupId, color, response, loading, error,
   activityLevel, searchQuery, contextSize, topN, configSummary,
+  otherResponse, otherActivityLevel,
 }: Props) {
   const group    = response?.aei_group ?? response?.mcp_group ?? null;
   const rawRows  = group?.[activityLevel] ?? [];
+  // Full rows for rank/totals (before topN/search)
+  const fullRows = rawRows;
   // Apply topN client-side before search (backend may have returned all rows)
   const allRows  = topN != null ? rawRows.slice(0, topN) : rawRows;
   const { rows, matchedCategory } = applySearch(allRows, searchQuery, contextSize);
+
+  // Other group's rows for delta comparison
+  const otherGroup = otherResponse?.aei_group ?? otherResponse?.mcp_group ?? null;
+  const otherLevel = otherActivityLevel ?? activityLevel;
+  const otherRows  = otherGroup?.[otherLevel] ?? [];
+
+  // Totals across all rows (for economy share %)
+  const totalEmp   = fullRows.reduce((s, r) => s + r.workers_affected, 0);
+  const totalWages = fullRows.reduce((s, r) => s + r.wages_affected, 0);
+  const totalCategories = fullRows.length;
 
   const baselineLabel = response?.aei_group
     ? "ECO 2015 baseline"
@@ -321,6 +466,11 @@ export default function WorkActivitiesPanel({
                 metric={metric}
                 color={color}
                 matchedCategory={matchedCategory}
+                allRows={fullRows}
+                otherRows={otherRows}
+                totalEmp={totalEmp}
+                totalWages={totalWages}
+                totalCategories={totalCategories}
               />
             </ChartCard>
           ))}
