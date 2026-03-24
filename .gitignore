@@ -3,10 +3,7 @@ outputs/
 # scripts/data_merge_copy.ipynb
 dashboard
 scripts
-ARCHITECTURE.md
-PRD.md
 delta/
-CLAUDE.md
 tsconfig.tsbuildinfo
 
 
@@ -20,7 +17,6 @@ data/merged_data_files
 exploratory
 scripts/original_scripts
 scripts/charts_for_executive_summary_oct_2025.ipynb
-CLAUDE.md
 .claude/
 outputs/charts_for_sharing/prelim_report_oct_2025/comparisons
 outputs/charts_for_sharing/executive_summary_oct_2025

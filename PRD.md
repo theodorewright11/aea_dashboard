@@ -1,0 +1,212 @@
+# PRD — Automation Exposure Analysis Dashboard
+
+Product Requirements Document · Single source of truth for what the product is and does.
+
+---
+
+## 1. Product Overview
+
+The Automation Exposure Analysis Dashboard measures how AI capabilities map onto the U.S. occupational task structure. It answers the question: **for a given occupation, work activity, or job category, what share of the work could be affected by current AI systems — and how many workers and wage dollars does that represent?**
+
+Built for Utah's Office of Artificial Intelligence Policy (OAIP) as part of a research project for measuring AI's workforce impact. The intended audience is policymakers, workforce analysts, and informed members of the public. Researchers trying to replicate the data pipeline have other resources they can look at for this information.
+
+The dashboard is a web application with a FastAPI backend and a Next.js frontend, deployed on Railway (backend) and Vercel (frontend).
+
+---
+
+## 2. Data Sources
+
+The dashboard draws on five independent data sources. Using multiple AI scoring sources is a deliberate design choice: no single model or methodology fully captures AI capability, so triangulating across sources gives a more robust and defensible picture.
+
+### AI Scoring Sources
+
+**Anthropic Economic Index (AEI)** — Derived from analysis of real Claude conversations. Each O*NET task has an automatability score (0–5) based on the averages of the collaboration patterns that each task was used for in the given Claude conversation (directive, feedback loop, task iteration, validation, learning). Four snapshot versions (v1–v4) span December 2024 to November 2025, plus two "API" variants (v3–v4) that measure tool-use/API interactions specifically. AEI data uses 2010 SOC occupation codes and must be crosswalked to the current 2019 SOC system before comparison with other sources.
+
+**MCP Server Pipeline** — AI task classifications drawn from Model Context Protocol server logs. These capture what AI systems can do when given access to tools and external resources, rather than conversation-only capability. Four snapshot versions (v1–v4) from April 2025 to February 2026. MCP data includes both a standard automatability score and an adjusted score that excludes flagged or low-confidence ratings. Uses 2019 SOC codes natively.
+
+**Microsoft Occupational AI Analysis** — An assessment of AI exposure across occupations from September 2024 from Microsoft on Copilot usage. Provides a single-point comparison against the other sources. Uses 2019 SOC codes natively. The automation scores here are based on the average of the percent of a work activities work could be automated by the demonstrated use of the AI in a given conversation
+
+### Structural & Economic Sources
+
+**O*NET (2025 and 2015)** — The U.S. Department of Labor's Occupational Information Network provides the task inventory (what work each occupation involves), the work activity hierarchy (GWA → IWA → DWA), and survey-derived measures of task frequency, importance, and relevance. The 2025 edition is the primary task baseline; the 2015 edition is used as the baseline for AEI work-activity analysis (since AEI uses 2010 SOC codes that align with the older task set).
+
+**BLS Occupational Employment and Wage Statistics (OEWS 2024)** — Employment counts and median annual wages by occupation, available at both national and Utah state levels. These figures translate percentage-based exposure into concrete worker and dollar impacts.
+
+---
+
+## 3. Pages & Features
+
+The dashboard has seven pages accessible from the top navigation bar.
+
+### 3.1 Occupation Explorer
+
+A sortable, filterable data table covering all 923 occupations in the O*NET/BLS universe, with pre-computed AI exposure metrics drawn from all eight AI dataset sources (AEI v1–v4, AEI API v3–v4, MCP v4, Microsoft).
+
+**What questions it answers:**
+- Which specific occupations or occupational categories have the highest AI exposure scores?
+- How does exposure vary across the SOC hierarchy (major category → minor → broad → individual occupation → individual task)?
+- For a given occupation, which of its tasks are most exposed and which AI sources agree?
+
+**What the user sees and can do:**
+- A 16-column table with columns for name, employment, median wage, number of occupations (at group levels), number of tasks, four auto-aug score variants (avg/max, with values only or across all tasks), percent physical, four pct_normalized variants, and two sum-of-pct columns.
+- A **level selector** (Major / Minor / Broad / Occupation / Task) that controls the granularity of the table. At the Task level, each row is a unique O*NET task rather than an occupation.
+- **Inline drilldown**: clicking any row expands it to show child rows at the next level down. At the occupation level, expanding shows individual tasks. Expanding a task shows its occupation classification (Broad → Minor → Major), its activity classification (GWA/IWA/DWA), and a per-source breakdown table showing scores from all eight AI sources plus computed averages and maximums.
+- **Multi-select major category pills** to filter to specific SOC major groups.
+- **Click-to-sort** on any column header (toggles ascending/descending).
+- **Per-column threshold filters** via a filter icon on each column header (set ≥ or ≤ cutoffs).
+- **Search** with a level-scope selector (All / Major / Minor / Broad / Occ / Task) and text highlighting on matches.
+- **Nat/Utah toggle** switching employment and wage figures between national and Utah.
+- **Pct Compute Panel** — an optional expandable panel that runs the full computation pipeline (with configurable dataset, combine option, method, physical filter, and auto-aug settings) and overlays "% Tasks Affected", "Workers Affected", and "Wages Affected" columns directly in the table. This lets users see the dashboard's computed metrics alongside the raw pre-computed scores.
+- **Pagination** — rows load 100 at a time with a "Load 100 more" button.
+
+### 3.2 WA Explorer
+
+The same sortable/filterable table interface as the Occupation Explorer, but organized around O*NET's three-level work activity hierarchy instead of occupations.
+
+**What questions it answers:**
+- Which types of work activities (e.g., "Analyzing Data or Information", "Communicating with Supervisors") are most AI-exposed?
+- How does exposure differ between broad activity categories (GWA) and their specific sub-activities (IWA, DWA)?
+
+**What the user sees and can do:**
+- A **level selector** (GWA / IWA / DWA) controlling which tier of the hierarchy is shown as top-level rows.
+- **Inline drilldown**: GWA rows expand to show IWA children; IWA rows expand to show DWA children; DWA rows expand to show individual tasks. Task rows are themselves expandable to show their activity classification.
+- **GWA multi-select pills** for filtering to specific General Work Activity groups.
+- Same column structure, sorting, filtering, search, Avg/Max toggle, Nat/Utah toggle, and pagination as the Occupation Explorer.
+
+### 3.3 Occupation Categories
+
+A side-by-side comparison view with two independently configurable groups (A and B), each rendering three horizontal bar charts: Workers Affected, Wages Affected, and % Tasks Affected.
+
+**What questions it answers:**
+- Which occupation categories have the most workers, wages, and tasks exposed to AI?
+- How do results change when you use different datasets, methods, or filters?
+- How does one dataset's view of AI exposure compare to another's?
+
+**What the user sees and can do:**
+- **Two-group layout** — Group A and Group B side by side. Each group has its own independent control panel.
+- **Dataset selection** — pick one or more AI datasets per group. When multiple are selected, choose Average or Max to combine scores.
+- **Display controls** — method (Frequency or Importance-weighted), geography (National or Utah), aggregation level (Major / Minor / Broad / Occupation), and Top N (up to 30).
+- **Filtering controls** — physical task filter (all / exclude physical / physical only), auto-aug multiplier toggle (Off / On), and MCP adjusted mean toggle.
+- **Run button** — charts only update on Run, not on every control change. After running, control sections collapse to a summary bar.
+- **Search** — type a category name to find it in the ranked list. The matched bar is highlighted orange with surrounding context bars shown (±N configurable).
+- **Sort** — by Workers Affected, Wages Affected, or % Tasks Affected.
+- **Rich tooltips** — hovering a bar shows its rank and pct in the full economy in workers, wages and tasks affected. And for each those it also shows the % change from the other chart group.
+- **Sync B → A** button copies Group A's settings to Group B.
+- **PNG download** per chart, with legend and configuration summary embedded in the image.
+
+### 3.4 Work Activities
+
+Same two-group comparison layout as Occupation Categories, but results are aggregated over work activities (GWA / IWA / DWA) instead of occupation groups.
+
+**What questions it answers:**
+- Which work activities are most affected by AI across the economy?
+- How do AEI-derived activity exposure scores compare to MCP-derived ones?
+
+**Key differences from Occupation Categories:**
+- **Activity level** selector (GWA / IWA / DWA) instead of aggregation level.
+- **Family restriction** — AEI-family datasets and MCP/Microsoft-family datasets cannot be mixed in the same group because they use different task baselines (O*NET 2015 vs. 2025). The UI enforces this and shows a warning if the user tries to mix.
+- **Client-side search** — the backend returns all activity rows; the frontend handles search and context slicing.
+
+### 3.5 Trends
+
+Time-series line charts showing how automation exposure metrics have changed across dataset snapshot dates.
+
+**What questions it answers:**
+- Is AI exposure growing over time for specific occupations or activities?
+- Which categories have seen the biggest increases in exposure?
+- How do different dataset families' trends compare?
+
+**What the user sees and can do:**
+- **Two tabs**: Occupation Categories and Work Activities, each with independent controls.
+- **Dataset pills** — select individual dataset versions (e.g., "AEI v2", "MCP v3") to include. Only selected versions appear as data points on the chart.
+- **Three line modes**: *Individual* (one line per dataset × category), *Average* (averages across selected datasets at each date), and *Max* (cumulative running maximum — the line never decreases).
+- **Display controls** — metric (workers, wages, tasks), method (freq, imp), geography, aggregation level, Top N (up to 30), physical, auto-aug toggle.
+- **Sort modes** — sort categories by current value or by increase (absolute or percentage change from first to last data point).
+- **Search + context** — find a specific category and show ±N surrounding categories.
+- **Hover + lock interaction** — hovering highlights a line; clicking a data point locks the tooltip in place near the click point. The locked tooltip persists until clicked again or clicked elsewhere. Active lines render thicker; others are dimmed.
+- **Tooltip labels toggle** — option to show all lines or only the active line in the hover tooltip.
+- **Custom legend** — clickable colored squares; clicking locks to that line. Shows increase badge per item.
+- **PNG download** with legend captured.
+
+### 3.6 Instructions
+
+A reference page explaining how to use each dashboard page and how all metrics are computed, with an **interactive calculator** that lets users experiment with task completion weight computation.
+
+**The calculator** has sliders for frequency, importance, relevance, and auto-aug score. Users toggle between Frequency and Importance-weighted methods and see the step-by-step computation result update in real time. This makes the methodology tangible rather than abstract.
+
+Also includes documentation of page guides, metric formulas, data source descriptions, auto-aug multiplier mechanics, and the occupation/work-activity aggregation logic.
+
+### 3.7 About
+
+A static page summarizing the project's purpose, methodology, data sources, and technical notes. Identifies the dashboard as built for Utah's OAIP as part of a research project for measuring AI's workforce impact.
+
+---
+
+## 4. Core Metrics
+
+### % Tasks Affected
+The share of an occupation's total weighted task completion that is attributable to AI-exposed tasks.
+
+Computed as the ratio of AI-weighted task completion to baseline (ECO) task completion: `sum of AI task weights / sum of ECO task weights × 100`. This is always a ratio-of-totals, never an average of percentages. The ECO baseline represents the occupation's full task profile without any AI scoring applied.
+
+### Workers Affected
+The number of workers in an occupation whose work is partially AI-exposed. Computed as `(% Tasks Affected / 100) × total employment`. This does not mean these workers will be replaced — it means this fraction of the workforce's aggregate task load overlaps with current AI capability.
+
+### Wages Affected
+The dollar volume of wages associated with AI-exposed task work. Computed as `(% Tasks Affected / 100) × employment × median annual wage`. Expressed in billions or millions for chart display.
+
+### Auto-Aug Score (Automatability / Augmentation)
+A 0–5 scale rating of how automatable or augmentable a specific task is by AI. Scores come from the AI dataset sources (AEI, MCP, Microsoft). When the auto-aug multiplier is enabled, each task's weight is scaled by `auto_aug_mean / 5`, so tasks rated as highly automatable contribute more to the exposure calculation and tasks rated as minimally automatable contribute less.
+
+### Pct (Share of AI Conversations)
+The percentage of AI conversations (from AEI/MCP/Microsoft data) that involved a given task. Values are already in percent form (e.g., 0.4 means 0.4%). This measures how frequently AI systems are actually being used for a task, as opposed to the auto-aug score which measures capability.
+
+---
+
+## 5. Key Configuration Options
+
+| Option | Values | What it controls |
+|--------|--------|-----------------|
+| **Dataset selection** | AEI v1–v4, AEI API v3–v4, MCP v1–v4, Microsoft | Which AI scoring source(s) to use. Different sources capture different AI capabilities. |
+| **Combine method** | Average / Max | When multiple datasets are selected, whether to average their scores or take the maximum per task. Max shows peak capability across sources; Average shows consensus. |
+| **Method** | Frequency / Importance-weighted | How task weights are computed. Frequency uses reported task frequency directly. Importance-weighted uses `relevance × 2^importance`, giving more weight to tasks that are both important and relevant. |
+| **Geography** | National / Utah | Which BLS employment and wage figures to use. Utah figures are relevant for state-level policy. |
+| **Aggregation level** | Major Category / Minor Category / Broad Occupation / Occupation | The SOC hierarchy level at which to group and display results. Major has ~23 groups; Occupation has 923. |
+| **Physical task filter** | All / Exclude physical / Physical only | Whether to include, exclude, or isolate tasks classified as requiring physical presence gotten from Microsoft's data for their AI analysis. Useful for focusing on cognitive/informational work. |
+| **Auto-aug multiplier** | Off / On | When On, scales each task's contribution by its AI automatability score (0–5, normalized to 0–1). Off treats all AI-flagged tasks equally regardless of how automatable they are. |
+| **MCP adjusted mean** | Off / On | For MCP datasets only, uses the adjusted auto-aug score that excludes flagged or low-confidence ratings. Recommended for MCP analysis. |
+| **Top N** | 1–30 | How many categories to display in charts (the top N by the selected sort metric). |
+| **Sort by** | Workers Affected / Wages Affected / % Tasks Affected | Which metric determines the ranking of displayed categories. |
+| **Search + Context** | Text query + ±N context size | Finds a specific category and shows it with N surrounding categories in the ranked list. |
+
+---
+
+## 6. Comparison Model
+
+The Occupation Categories and Work Activities pages use a **two-group (A/B) comparison design**. Each group has its own fully independent configuration — datasets, method, geography, aggregation, filters, and sort.
+
+This exists because the most informative way to use this dashboard is to compare configurations against each other:
+- **Different datasets** — "What does AEI see vs. what MCP sees?"
+- **Different methods** — "How does frequency-based exposure compare to importance-weighted?"
+- **Different filters** — "All tasks vs. non-physical tasks only"
+- **Different geographies** — "National impact vs. Utah-specific impact"
+- **Different aggregation levels** — "Major category view vs. individual occupations"
+
+Tooltips on each bar show the delta versus the same category in the other group, making cross-group comparison immediate. The "Sync B → A" button enables a quick workflow where you set up one configuration, copy it, then change a single variable to isolate its effect.
+
+---
+
+## 7. Known Limitations & Scope Boundaries
+
+**What the dashboard does NOT do:**
+- **Predict job loss or replacement.** The metrics show task-level exposure overlap with AI capability, not employment forecasts. A high % Tasks Affected does not mean those workers will lose their jobs.
+- **Capture all AI capabilities.** The AI scoring sources measure what current systems (Claude, MCP tools, Microsoft Copilot) can do as of their snapshot dates. Capabilities not captured in these datasets are not reflected.
+- **Provide real-time data.** All data is from past snapshots. AEI data spans Dec 2024–Nov 2025; MCP spans Apr 2025–Feb 2026; Microsoft is a single Sep 2024 snapshot. BLS employment/wage data is from 2024 OEWS.
+- **Cover non-U.S. labor markets.** Employment and wage data are U.S. national and Utah state only. The occupational taxonomy (O*NET / SOC) is U.S.-specific.
+
+**Edge cases and caveats:**
+- **AEI and MCP/Microsoft use different task baselines** for work activity analysis (O*NET 2015 vs. 2025), so they cannot be meaningfully combined in the same work activity group. The UI enforces this separation.
+- **AEI data requires a crosswalk** from 2010 SOC to 2019 SOC codes. When an old occupation maps to multiple new ones, task scores are split proportionally. This introduces some approximation.
+- **Explorer scores are pre-computed** across all eight AI sources using a fixed methodology (per-task averages/maximums across sources).
+- **The "Max" line mode in Trends is a cumulative running maximum** — it never decreases. This is by design (it shows the historical peak capability observed), but users should understand it is not a point-in-time measurement.
+- **Physical task classification** is binary (physical or not). Some tasks have ambiguous physicality, and the classification comes from an LLM classification prompt from Microsoft's research.
