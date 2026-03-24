@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback, useRef, useMemo } from "react";
+import { useState, useCallback, useRef, useMemo, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer,
@@ -429,8 +430,6 @@ function ChartPanel({
   const [hoveredLine, setHoveredLine] = useState<string | null>(null);
   const [lockedPos, setLockedPos] = useState<{ x: number; y: number } | null>(null);
   const [lockedDate, setLockedDate] = useState<string | null>(null);
-  // Ref flag: set by activeDot onClick to prevent the parent div onClick from clearing the lock in the same tick
-  const dotClickedRef = useRef(false);
 
   const activeLine = lockedLine ?? hoveredLine;
   const chartHeight = Math.max(380, Math.min(lineConfigs.length, 14) * 22 + 180);
@@ -559,21 +558,45 @@ function ChartPanel({
     );
   }
 
+  // Close the frozen panel (used by dismiss button and outside-click)
+  const dismissFrozen = useCallback(() => {
+    setLockedLine(null); setLockedPos(null); setLockedDate(null);
+  }, [setLockedLine]);
+
+  // Click outside the frozen panel dismisses it
+  useEffect(() => {
+    if (!lockedPos) return;
+    function onDocClick(e: MouseEvent) {
+      const panel = document.getElementById("frozen-tooltip-panel");
+      if (panel && panel.contains(e.target as Node)) return; // click inside panel
+      dismissFrozen();
+    }
+    // Delay adding listener so the click that opened the panel doesn't immediately close it
+    const timer = setTimeout(() => document.addEventListener("mousedown", onDocClick), 50);
+    return () => { clearTimeout(timer); document.removeEventListener("mousedown", onDocClick); };
+  }, [lockedPos, dismissFrozen]);
+
+  // Build frozen tooltip content (memoized so it doesn't change on hover)
+  const frozenContent = useMemo(() => {
+    if (!lockedPos || !lockedDate || !lockedLine) return null;
+    const pt = chartData.find((p) => p.date === lockedDate);
+    if (!pt) return null;
+    const payload: { dataKey: string; name: string; value: number; color: string }[] = [];
+    lineConfigs.forEach((lc2) => {
+      const v = pt[lc2.key];
+      if (typeof v === "number") {
+        payload.push({ dataKey: lc2.key, name: lc2.key, value: v, color: lc2.color });
+      }
+    });
+    payload.sort((a, b) => b.value - a.value);
+    return payload.length > 0 ? { payload, date: lockedDate, pos: lockedPos } : null;
+  }, [lockedPos, lockedDate, lockedLine, chartData, lineConfigs]);
+
   return (
     <div
       style={{
         background: "var(--bg-surface)", border: "1px solid var(--border)",
         borderRadius: 12, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
-      }}
-      onClick={(e) => {
-        // Skip clear if a dot was just clicked (ref flag set by activeDot onClick)
-        if (dotClickedRef.current) { dotClickedRef.current = false; return; }
-        if ((e.target as HTMLElement).closest("[data-legend-btn]")) return;
-        // Defer clear to next tick so activeDot onClick has time to set the ref flag
-        setTimeout(() => {
-          if (dotClickedRef.current) { dotClickedRef.current = false; return; }
-          setLockedLine(null); setLockedPos(null); setLockedDate(null);
-        }, 0);
       }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px 8px" }}>
@@ -621,6 +644,32 @@ function ChartPanel({
               data={chartData}
               margin={{ top: 10, right: 30, bottom: 36, left: 60 }}
               onMouseLeave={() => { if (!lockedLine) setHoveredLine(null); }}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onClick={(state: any, event?: any) => {
+                if (!state?.activeLabel) return;
+                const date = state.activeLabel as string;
+                // Determine which line to lock: use currently hovered/active, or first line with data
+                const lineKey = hoveredLine ?? lineConfigs.find((lc) => {
+                  const pt = chartData.find((p) => p.date === date);
+                  return pt && typeof pt[lc.key] === "number";
+                })?.key ?? null;
+                if (!lineKey) return;
+
+                // If clicking the same locked date+line, toggle off
+                if (lockedLine === lineKey && lockedDate === date) {
+                  dismissFrozen();
+                  return;
+                }
+
+                // Get click position from the native event
+                const nativeEvt = event?.nativeEvent ?? event;
+                const cx = nativeEvt?.clientX ?? nativeEvt?.pageX;
+                const cy = nativeEvt?.clientY ?? nativeEvt?.pageY;
+
+                setLockedLine(lineKey);
+                setLockedDate(date);
+                if (cx != null && cy != null) setLockedPos({ x: cx, y: cy });
+              }}
             >
               <CartesianGrid strokeDasharray="4 4" stroke="rgba(0,0,0,0.05)" vertical={false} />
               <XAxis
@@ -648,7 +697,8 @@ function ChartPanel({
                 tick={{ fontSize: 11, fill: "#888", fontFamily: CHART_FONT }}
                 axisLine={false} tickLine={false} width={56}
               />
-              <Tooltip content={(p) => <TrendsTooltip {...p} />} />
+              {/* Hide Recharts hover tooltip when frozen panel is open */}
+              {!lockedPos && <Tooltip content={(p) => <TrendsTooltip {...p} />} />}
               {lineConfigs.map((lc) => {
                 const isActive = activeLine === lc.key;
                 const isDimmed = activeLine != null && !isActive;
@@ -658,27 +708,7 @@ function ChartPanel({
                     strokeWidth={isDimmed ? 1.5 : isActive ? 4.5 : 3}
                     opacity={isDimmed ? 0.25 : 1}
                     dot={{ r: 4.5, strokeWidth: 0, fill: lc.color }}
-                    activeDot={{
-                      r: 7, strokeWidth: 2, stroke: "#fff",
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      onClick: (dotProps: any, event: any) => {
-                        dotClickedRef.current = true;
-                        // Stop the DOM event from bubbling to the parent clear handler
-                        if (event?.stopPropagation) event.stopPropagation();
-                        if (event?.nativeEvent?.stopImmediatePropagation) event.nativeEvent.stopImmediatePropagation();
-                        const newLock = lockedLine === lc.key ? null : lc.key;
-                        setLockedLine(newLock);
-                        if (newLock) {
-                          const date = dotProps?.payload?.date;
-                          const cx = event?.clientX ?? event?.nativeEvent?.clientX;
-                          const cy = event?.clientY ?? event?.nativeEvent?.clientY;
-                          if (date) setLockedDate(date);
-                          if (cx != null) setLockedPos({ x: cx, y: cy });
-                        } else {
-                          setLockedPos(null); setLockedDate(null);
-                        }
-                      },
-                    }}
+                    activeDot={{ r: 7, strokeWidth: 2, stroke: "#fff" }}
                     connectNulls={false}
                     onMouseEnter={() => { if (!lockedLine) setHoveredLine(lc.key); }}
                     onMouseLeave={() => { if (!lockedLine) setHoveredLine(null); }}
@@ -705,52 +735,42 @@ function ChartPanel({
         </div>
       )}
 
-      {/* Frozen tooltip panel — fixed at click position when a dot is locked */}
-      {lockedPos && lockedDate && lockedLine && (() => {
-        const pt = chartData.find((p) => p.date === lockedDate);
-        if (!pt) return null;
-        // Always show all lines in the frozen tooltip, sorted by value desc
-        const fakePayload: { dataKey: string; name: string; value: number; color: string }[] = [];
-        lineConfigs.forEach((lc2) => {
-          const v = pt[lc2.key];
-          if (typeof v === "number") {
-            fakePayload.push({ dataKey: lc2.key, name: lc2.key, value: v, color: lc2.color });
-          }
-        });
-        fakePayload.sort((a, b) => b.value - a.value);
-        if (!fakePayload.length) return null;
-        const winH = typeof window !== "undefined" ? window.innerHeight : 800;
-        const winW = typeof window !== "undefined" ? window.innerWidth  : 1200;
-        return (
-          <div style={{
+      {/* Frozen tooltip — rendered via portal to document.body so it escapes overflow:hidden */}
+      {frozenContent && typeof document !== "undefined" && createPortal(
+        <div
+          id="frozen-tooltip-panel"
+          style={{
             position: "fixed",
-            top:  Math.min(lockedPos.y + 18, winH - 320),
-            left: Math.min(lockedPos.x + 12, winW - 340),
-            zIndex: 9999,
+            top:  Math.min(frozenContent.pos.y + 18, window.innerHeight - 400),
+            left: Math.min(frozenContent.pos.x + 12, window.innerWidth - 360),
+            zIndex: 99999,
             maxHeight: "60vh",
             overflowY: "auto",
             pointerEvents: "auto",
-            borderRadius: 8,
-            boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+            borderRadius: 10,
+            border: "1px solid var(--border)",
+            boxShadow: "0 8px 30px rgba(0,0,0,0.18)",
+            background: "var(--bg-surface)",
           }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Close button */}
+        >
+          {/* Close button */}
+          <div style={{ display: "flex", justifyContent: "flex-end", padding: "6px 8px 0" }}>
             <button
-              onClick={(e) => { e.stopPropagation(); setLockedLine(null); setLockedPos(null); setLockedDate(null); }}
+              onClick={dismissFrozen}
               style={{
-                position: "sticky", top: 0, float: "right",
                 background: "var(--bg-surface)", border: "1px solid var(--border)",
-                borderRadius: "50%", width: 20, height: 20,
+                borderRadius: "50%", width: 22, height: 22,
                 display: "flex", alignItems: "center", justifyContent: "center",
-                cursor: "pointer", fontSize: 12, color: "var(--text-muted)",
-                zIndex: 1, marginTop: 4, marginRight: 4,
+                cursor: "pointer", fontSize: 13, color: "var(--text-muted)",
               }}
+              onMouseOver={(e) => (e.currentTarget.style.color = "var(--text-primary)")}
+              onMouseOut={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
             >×</button>
-            <TrendsTooltip active={true} payload={fakePayload} label={lockedDate} />
           </div>
-        );
-      })()}
+          <TrendsTooltip active={true} payload={frozenContent.payload} label={frozenContent.date} />
+        </div>,
+        document.body,
+      )}
     </div>
   );
 }
