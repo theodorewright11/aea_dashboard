@@ -36,7 +36,7 @@ The dashboard draws on five independent data sources. Using multiple AI scoring 
 
 ## 3. Pages & Features
 
-The dashboard has seven pages accessible from the top navigation bar.
+The dashboard has seven pages accessible from the top navigation bar. The **default landing page** is the Occupation Explorer (`/explorer`); the root URL (`/`) redirects there.
 
 ### 3.1 Occupation Explorer
 
@@ -59,7 +59,7 @@ A sortable, filterable data table covering all 923 occupations in the O*NET/BLS 
 - **Pct Compute Panel** — an optional expandable panel that runs the full computation pipeline (with configurable dataset, combine option, method, physical filter, and auto-aug settings) and overlays "% Tasks Affected", "Workers Affected", and "Wages Affected" columns directly in the table. This lets users see the dashboard's computed metrics alongside the raw pre-computed scores.
 - **Pagination** — rows load 100 at a time with a "Load 100 more" button.
 
-### 3.2 WA Explorer
+### 3.2 Work Activities Explorer
 
 The same sortable/filterable table interface as the Occupation Explorer, but organized around O*NET's three-level work activity hierarchy instead of occupations.
 
@@ -106,6 +106,7 @@ Same two-group comparison layout as Occupation Categories, but results are aggre
 - **Activity level** selector (GWA / IWA / DWA) instead of aggregation level.
 - **Family restriction** — AEI-family datasets and MCP/Microsoft-family datasets cannot be mixed in the same group because they use different task baselines (O*NET 2015 vs. 2025). The UI enforces this and shows a warning if the user tries to mix.
 - **Client-side search** — the backend returns all activity rows; the frontend handles search and context slicing.
+- **Rich tooltips** — same as Occupation Categories: hovering a bar shows all 3 metrics (workers, wages, % tasks) with rank within the economy, economy share %, and delta vs the other chart group.
 
 ### 3.5 Trends
 
@@ -123,8 +124,8 @@ Time-series line charts showing how automation exposure metrics have changed acr
 - **Display controls** — metric (workers, wages, tasks), method (freq, imp), geography, aggregation level, Top N (up to 30), physical, auto-aug toggle.
 - **Sort modes** — sort categories by current value or by increase (absolute or percentage change from first to last data point).
 - **Search + context** — find a specific category and show ±N surrounding categories.
-- **Hover + lock interaction** — hovering highlights a line; clicking a data point locks the tooltip in place near the click point. The locked tooltip persists until clicked again or clicked elsewhere. Active lines render thicker; others are dimmed.
-- **Tooltip labels toggle** — option to show all lines or only the active line in the hover tooltip.
+- **Hover + lock interaction** — hovering highlights a line; clicking a data point locks the line focus and freezes a tooltip panel near the click point showing all lines' values at that date (sorted by value, scrollable). The locked tooltip persists until clicked again or clicked elsewhere. Active lines render thicker; others are dimmed.
+- **Sort and search controls** — visible on page load (do not require a Run first).
 - **Custom legend** — clickable colored squares; clicking locks to that line. Shows increase badge per item.
 - **PNG download** with legend captured.
 

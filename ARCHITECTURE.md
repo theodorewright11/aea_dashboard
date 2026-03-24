@@ -606,7 +606,9 @@ Response:
 
 ### Navigation & Layout
 
-`Navigation.tsx` — fixed 56px nav bar (`var(--nav-height)`), 7 links: Explorer, WA Explorer, Occupation Categories, Work Activities, Trends, Instructions, About. Active tab highlighted with brand color. All pages render below with `paddingTop: var(--nav-height)`.
+`Navigation.tsx` — fixed 56px nav bar (`var(--nav-height)`), 7 links: Occupation Explorer, Work Activities Explorer, Occupation Categories, Work Activities, Trends, Instructions, About. Active tab highlighted with brand color. All pages render below with `paddingTop: var(--nav-height)`.
+
+Root URL (`/`) redirects to `/explorer` (Occupation Explorer is the default landing page).
 
 `layout.tsx` — root layout mounting `<Navigation />` + `{children}`.
 
@@ -624,7 +626,7 @@ CSS variables in `globals.css`:
 
 Utility classes: `.card`, `.pill`, `.btn-brand`, `.btn-ghost`, `.filter-chip`, `.tag`, `.tag-aei`, `.tag-mcp`, `.tag-ms`, `.tag-avg`, `.tag-max`.
 
-### Page: Occupation Categories (`/` → `app/page.tsx`)
+### Page: Occupation Categories (`/occupation-categories` → `app/occupation-categories/page.tsx`)
 
 **Two-group (A/B) comparison with staged settings.**
 
@@ -659,7 +661,7 @@ Thin wrapper that fetches config and renders `TrendsView`.
 
 Fetches `occupations`, `groups`, and `config` in parallel, passes to `ExplorerView`.
 
-### Page: WA Explorer (`/wa-explorer`)
+### Page: Work Activities Explorer (`/wa-explorer`)
 
 Fetches WA explorer rows + config, passes to `WAExplorerView`.
 
@@ -681,7 +683,9 @@ Props: `rows`, `metric` ("workers"|"wages"|"tasks"), `color`, `totalCategories`,
 
 ### Component: `WorkActivitiesPanel`
 
-Pure renderer for work activity charts. Selects `aei_group` or `mcp_group` from response. Shows baseline note (ECO 2015 vs 2025). Client-side `applySearch()` finds match and slices ±contextSize.
+Pure renderer for work activity charts. Props include `otherResponse` and `otherActivityLevel` for cross-group tooltip comparison. Selects `aei_group` or `mcp_group` from response. Shows baseline note (ECO 2015 vs 2025). Client-side `applySearch()` finds match and slices ±contextSize.
+
+**Rich tooltips** — same as `HorizontalBarChart`: hovering a bar shows all 3 metrics (Workers, Wages, % Tasks) with rank within the full activity set, economy share %, and delta vs the other group. Ranks and totals are computed from the full (pre-topN/search) row set.
 
 ### Component: `TrendsView`
 
@@ -701,10 +705,10 @@ Two tabs: **Occupation Categories** and **Work Activities**, each with independe
 **Hover + lock interaction:**
 - `hoveredLine` + `lockedLine` states; `activeLine = lockedLine ?? hoveredLine`
 - Active line: strokeWidth 3.5; dimmed: 1.5; normal: 2.5
-- Clicking an activeDot toggles `lockedLine`
-- **Frozen tooltip panel:** captures `lockedPos` (screen x/y) and `lockedDate`; renders a fixed `<div>` with synthetic tooltip payload; clamped to window bounds
+- Clicking an activeDot toggles `lockedLine`; a `dotClickedRef` flag prevents the parent div's onClick from clearing the lock in the same tick
+- **Frozen tooltip panel:** captures `lockedPos` (screen x/y) and `lockedDate`; renders a fixed `<div>` showing **all lines'** values at the locked date (sorted by value desc, scrollable via `maxHeight: 60vh; overflowY: auto`); clamped to window bounds. Clicking the frozen panel dismisses it.
 
-**Controls:** Collapsible sections (Datasets / Display / Filtering); TopN always visible. Sort/Search appear after first run.
+**Controls:** Collapsible sections (Datasets / Display / Filtering); TopN, Sort, Search, Value ranking, and Context controls always visible (do not require a Run first).
 
 **Custom `ChartLegend`:** Grid of colored squares, clickable (click = lock). Shows increase badge per item. Passed to `downloadChartAsPng()` as `legendItems`.
 
@@ -830,7 +834,7 @@ The explorer endpoints are **cold-start heavy** (~2–5s on first `/api/explorer
 
 19. **Overview/WA pages use staged settings.** `pending*` is form state; `fullResponse*` is backend results (topN=1000); `displayResponse*` is client-filtered. Charts only update on "Run" click.
 
-20. **Trends frozen tooltip:** `lockedPos` is screen-space; the fixed `<div>` must be clamped to `window.innerHeight/innerWidth` to stay on-screen.
+20. **Trends frozen tooltip:** `lockedPos` is screen-space; the fixed `<div>` must be clamped to `window.innerHeight/innerWidth` to stay on-screen. Always shows all lines at the locked date (sorted by value desc, scrollable). A `dotClickedRef` flag prevents the parent div click handler from clearing the lock when clicking a dot.
 
 21. **DWA emp allocation in WA Explorer** deduplicates on `(title_current, task_normalized)` within each activity — not globally. Each activity level (GWA/IWA/DWA) deduplicates independently.
 
