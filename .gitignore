@@ -3,7 +3,11 @@ outputs/
 # scripts/data_merge_copy.ipynb
 dashboard
 scripts
-
+ARCHITECTURE.md
+PRD.md
+delta/
+CLAUDE.md
+tsconfig.tsbuildinfo
 
 
 venv/
@@ -248,3 +252,7 @@ frontend/.next/
 frontend/.env.local
 frontend/out/
 !frontend/src/lib/
+
+# Analysis scripts and results
+analysis/scripts/
+analysis/results/
