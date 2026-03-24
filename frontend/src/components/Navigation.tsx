@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSimpleMode } from "@/lib/SimpleModeContext";
 
 const NAV_LINKS = [
   { href: "/explorer",               label: "Occupation Explorer" },
@@ -17,6 +18,7 @@ const NAV_LINKS = [
 
 export default function Navigation() {
   const pathname = usePathname();
+  const { isSimple, toggle } = useSimpleMode();
 
   return (
     <>
@@ -87,6 +89,55 @@ export default function Navigation() {
             );
           })}
         </div>
+
+        {/* Simple / Advanced toggle */}
+        <button
+          onClick={toggle}
+          style={{
+            marginLeft: 12,
+            display: "flex",
+            alignItems: "center",
+            gap: 7,
+            padding: "5px 12px",
+            borderRadius: 7,
+            border: "1px solid var(--border)",
+            background: isSimple ? "var(--brand-light)" : "transparent",
+            cursor: "pointer",
+            transition: "all 0.15s",
+            flexShrink: 0,
+          }}
+        >
+          <span style={{
+            fontSize: 11,
+            fontWeight: 600,
+            color: isSimple ? "var(--brand)" : "var(--text-secondary)",
+            whiteSpace: "nowrap",
+          }}>
+            {isSimple ? "Simple" : "Advanced"}
+          </span>
+          {/* Toggle track */}
+          <span style={{
+            display: "inline-block",
+            width: 28,
+            height: 16,
+            borderRadius: 8,
+            backgroundColor: isSimple ? "var(--brand)" : "#ccc",
+            position: "relative",
+            transition: "background-color 0.15s",
+          }}>
+            <span style={{
+              position: "absolute",
+              top: 2,
+              left: isSimple ? 14 : 2,
+              width: 12,
+              height: 12,
+              borderRadius: "50%",
+              backgroundColor: "#fff",
+              transition: "left 0.15s",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.15)",
+            }} />
+          </span>
+        </button>
 
         {/* Right side */}
         <div style={{ marginLeft: 12, display: "flex", alignItems: "center", flexShrink: 0 }}>

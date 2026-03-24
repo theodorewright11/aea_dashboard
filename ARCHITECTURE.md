@@ -606,11 +606,26 @@ Response:
 
 ### Navigation & Layout
 
-`Navigation.tsx` — fixed 56px nav bar (`var(--nav-height)`), 7 links: Occupation Explorer, Work Activities Explorer, Occupation Categories, Work Activities, Trends, Instructions, About. Active tab highlighted with brand color. All pages render below with `paddingTop: var(--nav-height)`.
+`Navigation.tsx` — fixed 56px nav bar (`var(--nav-height)`), 7 links: Occupation Explorer, Work Activities Explorer, Occupation Categories, Work Activities, Trends, Instructions, About. Active tab highlighted with brand color. Includes a **Simple/Advanced toggle** button (right side of nav). All pages render below with `paddingTop: var(--nav-height)`.
 
 Root URL (`/`) redirects to `/explorer` (Occupation Explorer is the default landing page).
 
-`layout.tsx` — root layout mounting `<Navigation />` + `{children}`.
+`layout.tsx` — root layout mounting `<SimpleModeProvider>` → `<Navigation />` + `{children}`.
+
+### Simple/Advanced Mode (`lib/SimpleModeContext.tsx`)
+
+React context + provider with localStorage persistence (key: `aea_simple_mode`). Exposes `{ isSimple: boolean, toggle: () => void }` via `useSimpleMode()` hook.
+
+**Hydration safety:** initial render always uses `isSimple = false`; stored value loads on mount to avoid SSR mismatch.
+
+Each page imports `useSimpleMode()` and conditionally:
+- Hides/shows controls based on `isSimple`
+- Overrides computation settings (datasets, method, physical, auto-aug) at run time
+- Explorer pages auto-compute pct_tasks_affected via a `useEffect` when `isSimple` is true
+- Occupation Categories / Work Activities chart pages show single group (A only) in simple mode
+- Trends pages remove "Individual" line mode option and auto-match value ranking to line mode
+
+Advanced settings are preserved in state — toggling back to Advanced restores them.
 
 ### Design System
 
@@ -841,3 +856,7 @@ The explorer endpoints are **cold-start heavy** (~2–5s on first `/api/explorer
 22. **All 8 sources are shown in explorer task breakdowns** (AEI v1–v4, AEI API v3–v4, MCP v4, Microsoft) — not just latest versions.
 
 23. **Explorer `PctComputePanel`** calls `/api/compute` with `aggLevel: "occupation"`, `topN: 1000`. Physical filter affects numerator only, consistent with the rest of the app.
+
+24. **Currency formatting is adaptive.** `fmtChartValue` (HorizontalBarChart) and `fmtVal` (TrendsView) display wages in billions ($B) when ≥ $1B, millions ($M) when ≥ $1M, thousands ($K) when ≥ $1K, otherwise raw dollars. TrendsView values are already divided by 1e9 before reaching `fmtVal`, so thresholds are 1 / 0.001 / 0.000001. Explorer `wages_aff` cells use the same adaptive logic.
+
+25. **Simple mode auto-computes explorer pct.** In simple mode, `ExplorerView` and `WAExplorerView` run a `useEffect` that calls `fetchCompute` / `fetchWorkActivities` with preset settings (all datasets / all AEI, freq, all phys, auto-aug on) on mount and when `geo` / `tableLevel` changes. The `PctComputePanel` UI is hidden.

@@ -10,6 +10,7 @@ import React, {
 import { createPortal } from "react-dom";
 import type { WAExplorerRow, WATaskDetail, ConfigResponse, AllTaskRow, ActivityRow } from "@/lib/types";
 import { fetchWAActivityTasks, fetchWorkActivities, fetchAllTasks } from "@/lib/api";
+import { useSimpleMode } from "@/lib/SimpleModeContext";
 
 // ── Debounce hook ──────────────────────────────────────────────────────────────
 
@@ -219,8 +220,12 @@ function renderCell(col: string, row: DisplayRow): React.ReactNode {
     case "wages_aff": {
       const pct = row.pct_affected;
       if (pct == null || row.wage == null) return <span style={muted}>—</span>;
-      const v = (pct / 100) * row.emp * row.wage / 1e9;
-      return <span style={{ color: "var(--brand)", fontWeight: 500 }}>${v.toFixed(2)}B</span>;
+      const rawDollars = (pct / 100) * row.emp * row.wage;
+      const fmtWagesAff = rawDollars >= 1e9 ? `$${(rawDollars / 1e9).toFixed(2)}B`
+        : rawDollars >= 1e6 ? `$${(rawDollars / 1e6).toFixed(2)}M`
+        : rawDollars >= 1e3 ? `$${(rawDollars / 1e3).toFixed(0)}K`
+        : `$${rawDollars.toFixed(0)}`;
+      return <span style={{ color: "var(--brand)", fontWeight: 500 }}>{fmtWagesAff}</span>;
     }
     default: return <span style={muted}>—</span>;
   }
@@ -819,7 +824,17 @@ function WaPctComputePanel({
 
 // ── Main WAExplorerView ────────────────────────────────────────────────────────
 
+// Columns visible in simple mode
+const WA_SIMPLE_COLS = new Set([
+  "name", "emp", "wage", "n_occs", "n_tasks",
+  "auto_avg_all",
+  "pct_avg_all", "sum_pct_avg",
+  "pct_affected", "workers_aff", "wages_aff",
+]);
+
 export default function WAExplorerView({ rows, config }: Props) {
+  const { isSimple } = useSimpleMode();
+
   // ── State ──────────────────────────────────────────────────────────────────
   const [viewLevel, setViewLevel]   = useState<WALevel>("gwa");
   const [selectedGwas, setSelectedGwas] = useState<Set<string>>(new Set());
@@ -840,6 +855,40 @@ export default function WAExplorerView({ rows, config }: Props) {
 
   // ── Debounced search ──────────────────────────────────────────────────────
   const debouncedSearch = useDebounce(search, 250);
+
+  // ── Simple mode: auto-compute pct with AEI datasets ─────────────────────
+  useEffect(() => {
+    if (!isSimple) return;
+    const aeiDatasets = config.datasets.filter(
+      (d) => d.startsWith("AEI") && config.dataset_availability[d],
+    );
+    if (aeiDatasets.length === 0) return;
+    const actLevel = (viewLevel === "task" ? "dwa" : viewLevel) as "gwa" | "iwa" | "dwa";
+    let cancelled = false;
+    fetchWorkActivities({
+      selectedDatasets: aeiDatasets,
+      combineMethod: "Average",
+      method: "freq",
+      useAutoAug: true,
+      useAdjMean: true,
+      physicalMode: "all",
+      geo,
+      aggLevel: "major",
+      sortBy: "Workers Affected",
+      topN: 5000,
+      searchQuery: "",
+      contextSize: 5,
+    }).then((resp) => {
+      if (cancelled) return;
+      const group = resp.aei_group ?? resp.mcp_group;
+      if (!group) return;
+      const actRows: ActivityRow[] = group[actLevel] ?? [];
+      const map = new Map<string, number>();
+      actRows.forEach((r) => map.set(r.category, r.pct_tasks_affected));
+      setPctAffectedMap(map);
+    }).catch(() => { /* silent */ });
+    return () => { cancelled = true; };
+  }, [isSimple, geo, viewLevel, config.datasets, config.dataset_availability]);
 
   // ── Reset row limit when filters/level change ────────────────────────────
   useEffect(() => { setRowLimit(100); }, [viewLevel, selectedGwas, debouncedSearch, colFilters, physicalMode, pctAffectedMap, minPctAffected, sortCol, sortDir]);
@@ -978,9 +1027,10 @@ export default function WAExplorerView({ rows, config }: Props) {
   const visibleCols = useMemo(() => {
     return COLUMNS.filter((c) => {
       if ((c.key === "pct_affected" || c.key === "workers_aff" || c.key === "wages_aff") && !pctAffectedMap) return false;
+      if (isSimple && !WA_SIMPLE_COLS.has(c.key)) return false;
       return true;
     });
-  }, [pctAffectedMap]);
+  }, [pctAffectedMap, isSimple]);
 
   // ── Pre-built child row cache (avoids O(n) filtering on every render) ─────
   const childRowCache = useMemo(() => {
@@ -1228,7 +1278,8 @@ export default function WAExplorerView({ rows, config }: Props) {
           </span>
         </div>
 
-        {/* Row 2: GWA pills */}
+        {/* Row 2: GWA pills (hidden in simple mode) */}
+        {!isSimple && (
         <div style={{
           display: "flex", flexWrap: "nowrap", gap: 5,
           overflowX: "auto", paddingBottom: 2,
@@ -1264,6 +1315,7 @@ export default function WAExplorerView({ rows, config }: Props) {
             );
           })}
         </div>
+        )}
 
         {/* Row 3: controls */}
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
@@ -1301,6 +1353,7 @@ export default function WAExplorerView({ rows, config }: Props) {
             />
           </div>
 
+          {!isSimple && (
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <span style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 600 }}>Phys:</span>
             <BtnSeg<"all" | "exclude" | "only">
@@ -1309,6 +1362,7 @@ export default function WAExplorerView({ rows, config }: Props) {
               onChange={setPhysicalMode}
             />
           </div>
+          )}
 
           <button
             onClick={handleReset}
@@ -1320,11 +1374,13 @@ export default function WAExplorerView({ rows, config }: Props) {
           >Reset</button>
         </div>
 
-        {/* Row 4: % Tasks Affected panel */}
-        <WaPctComputePanel config={config} geo={geo} viewLevel={viewLevel} onResult={setPctAffectedMap} />
+        {/* Row 4: % Tasks Affected panel (hidden in simple mode — auto-computed) */}
+        {!isSimple && (
+          <WaPctComputePanel config={config} geo={geo} viewLevel={viewLevel} onResult={setPctAffectedMap} />
+        )}
 
-        {/* % Tasks Affected slider (shown when map computed) */}
-        {pctAffectedMap && (
+        {/* % Tasks Affected slider (shown when map computed, hidden in simple mode) */}
+        {pctAffectedMap && !isSimple && (
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <span style={{ fontSize: 11, color: "var(--text-secondary)", whiteSpace: "nowrap" }}>
               % Tasks Aff. &ge; {minPctAffected.toFixed(0)}%

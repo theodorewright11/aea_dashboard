@@ -18,6 +18,8 @@ interface Props {
   matchedCategory?: string | null;
   /** Config summary lines shown as footer in downloaded PNGs */
   configSummary?: string[];
+  /** When true, shows "Simple mode" label instead of "Group X" */
+  simpleMode?: boolean;
 }
 
 const METRIC_TITLES = {
@@ -109,6 +111,7 @@ export default function GroupPanel({
   error,
   matchedCategory,
   configSummary,
+  simpleMode = false,
 }: Props) {
   const rows      = response?.rows      ?? [];
   const otherRows = otherResponse?.rows ?? [];
@@ -122,12 +125,14 @@ export default function GroupPanel({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20, width: "100%", minWidth: 0 }}>
       {/* Group label */}
+      {!simpleMode && (
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <span style={{ width: 3, height: 18, borderRadius: 2, background: color, flexShrink: 0 }} />
         <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text-secondary)", letterSpacing: "-0.01em" }}>
           Group {groupId}{datasetLabel}
         </span>
       </div>
+      )}
 
       {loading && (
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "48px 0" }}>

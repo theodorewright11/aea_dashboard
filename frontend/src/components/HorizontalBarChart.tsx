@@ -33,7 +33,7 @@ const METRIC_CONFIG = {
   },
   wages: {
     col:        "wages_affected" as keyof ChartRow,
-    xLabel:     "Annual Wages ($B)",
+    xLabel:     "Annual Wages",
     unitScale:  1e9,
     formatType: "currency_B",
   },
@@ -51,7 +51,12 @@ export function fmtChartValue(value: number, formatType: string): string {
     if (value >= 1e3) return `${(value / 1e3).toFixed(0)}K`;
     return value.toLocaleString("en-US", { maximumFractionDigits: 0 });
   }
-  if (formatType === "currency_B") return `$${(value / 1e9).toFixed(2)}B`;
+  if (formatType === "currency_B") {
+    if (value >= 1e9) return `$${(value / 1e9).toFixed(2)}B`;
+    if (value >= 1e6) return `$${(value / 1e6).toFixed(2)}M`;
+    if (value >= 1e3) return `$${(value / 1e3).toFixed(0)}K`;
+    return `$${value.toFixed(0)}`;
+  }
   if (formatType === "percent")    return `${value.toFixed(1)}%`;
   return String(value);
 }

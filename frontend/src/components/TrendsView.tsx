@@ -13,6 +13,7 @@ import type {
 import { fetchTrends, fetchWATrends } from "@/lib/api";
 import { downloadChartAsPng } from "@/lib/downloadChart";
 import type { LegendItem } from "@/lib/downloadChart";
+import { useSimpleMode } from "@/lib/SimpleModeContext";
 
 interface Props { config: ConfigResponse }
 
@@ -58,7 +59,7 @@ type IncMode   = "abs" | "pct";
 
 const METRIC_OPTIONS: { key: MetricKey; label: string }[] = [
   { key: "workers_affected",   label: "Workers Affected"    },
-  { key: "wages_affected",     label: "Wages Affected ($B)" },
+  { key: "wages_affected",     label: "Wages Affected" },
   { key: "pct_tasks_affected", label: "% Tasks Affected"    },
 ];
 
@@ -71,7 +72,13 @@ const AGG_OPTIONS = [
 
 function fmtVal(v: number, metric: MetricKey): string {
   if (metric === "workers_affected")   return v >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : `${(v / 1e3).toFixed(0)}K`;
-  if (metric === "wages_affected")     return `$${v.toFixed(2)}B`;
+  if (metric === "wages_affected") {
+    // v is already in billions
+    if (v >= 1)     return `$${v.toFixed(2)}B`;
+    if (v >= 0.001) return `$${(v * 1000).toFixed(2)}M`;
+    if (v >= 0.000001) return `$${(v * 1e6).toFixed(0)}K`;
+    return `$${(v * 1e9).toFixed(0)}`;
+  }
   if (metric === "pct_tasks_affected") return `${v.toFixed(1)}%`;
   return String(v);
 }
@@ -869,6 +876,7 @@ function DatasetSelectorWA({
 // ── Occupation Trends tab ─────────────────────────────────────────────────────
 
 function OccupationTrends({ config }: { config: ConfigResponse }) {
+  const { isSimple } = useSimpleMode();
   const allDatasets = config.datasets ?? [];
 
   const [selectedDatasets, setSelectedDatasets] = useState<string[]>(allDatasets);
@@ -903,39 +911,48 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
 
   const hasMCP = selectedDatasets.some((d) => d.startsWith("MCP") || d === "Microsoft");
 
+  // Effective values for simple mode overrides
+  const effectiveDatasets    = isSimple ? allDatasets : selectedDatasets;
+  const effectiveMethod      = isSimple ? "freq" as const : method;
+  const effectivePhysical    = isSimple ? "all"  as const : physicalMode;
+  const effectiveAutoAug     = isSimple ? true : useAutoAug;
+  const effectiveAdjMean     = isSimple ? true : useAdjMean;
+  const effectiveLineMode    = isSimple && lineMode === "individual" ? "average" as LineMode : lineMode;
+  // In simple mode, auto-match value ranking to line mode
+  const effectiveValueAgg    = isSimple ? (effectiveLineMode === "max" ? "max" as const : "avg" as const) : valueAggMode;
+
   const run = useCallback(async () => {
-    if (!selectedDatasets.length) return;
+    if (!effectiveDatasets.length) return;
     setLoading(true); setError(null); setLockedLine(null);
     try {
-      const seriesToFetch = getSeriesToFetch(selectedDatasets, config.dataset_series ?? {});
+      const seriesToFetch = getSeriesToFetch(effectiveDatasets, config.dataset_series ?? {});
       if (!seriesToFetch.length) { setError("No valid series for selected datasets."); return; }
-      // Fetch a larger pool so sort-by-increase can pick the true top N
       const fetchTopN = Math.max(topN, 50);
       const settings: TrendsSettings = {
-        series: seriesToFetch, method, useAutoAug,
-        useAdjMean: useAutoAug && useAdjMean,
-        physicalMode, geo, aggLevel, topN: fetchTopN, sortBy: "Workers Affected",
+        series: seriesToFetch, method: effectiveMethod, useAutoAug: effectiveAutoAug,
+        useAdjMean: effectiveAutoAug && effectiveAdjMean,
+        physicalMode: effectivePhysical, geo, aggLevel, topN: fetchTopN, sortBy: "Workers Affected",
       };
       const data = await fetchTrends(settings);
       setResult(data); setPanelCollapsed(true);
       const cats = new Set<string>();
       data.series.forEach((s: TrendSeries) => {
         s.data_points
-          .filter((dp) => selectedDatasets.includes(dp.dataset))
+          .filter((dp) => effectiveDatasets.includes(dp.dataset))
           .forEach((dp) => dp.rows.forEach((r) => cats.add(r.category)));
       });
-      setAllCats(Array.from(cats)); // store full pool; topN slice happens after sorting
+      setAllCats(Array.from(cats));
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Failed to fetch trends");
     } finally { setLoading(false); }
-  }, [selectedDatasets, aggLevel, method, geo, topN, useAutoAug, useAdjMean, physicalMode, config]);
+  }, [effectiveDatasets, aggLevel, effectiveMethod, geo, topN, effectiveAutoAug, effectiveAdjMean, effectivePhysical, config]);
 
   const metaLabel = METRIC_OPTIONS.find((m) => m.key === metric)?.label ?? "";
 
   const { chartData: rawChartData, lineConfigs: rawLineConfigs } = result
-    ? lineMode === "individual"
-      ? buildIndividualData(result, selectedDatasets, allCats, metric)
-      : buildAggregatedData(result, selectedDatasets, allCats, metric, lineMode)
+    ? effectiveLineMode === "individual"
+      ? buildIndividualData(result, effectiveDatasets, allCats, metric)
+      : buildAggregatedData(result, effectiveDatasets, allCats, metric, effectiveLineMode)
     : { chartData: [], lineConfigs: [] };
 
   // Compute increases for all lines
@@ -946,8 +963,8 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
 
   // Value scores per category (max or avg across all data) — for sort-by-value
   const catValueScores = useMemo(
-    () => rawLineConfigs.length > 0 ? computeCatValueScores(rawChartData, rawLineConfigs, valueAggMode) : new Map<string, number>(),
-    [rawChartData, rawLineConfigs, valueAggMode],
+    () => rawLineConfigs.length > 0 ? computeCatValueScores(rawChartData, rawLineConfigs, effectiveValueAgg) : new Map<string, number>(),
+    [rawChartData, rawLineConfigs, effectiveValueAgg],
   );
 
   // Full sorted pool (no topN slice) — used for search so categories beyond topN are reachable
@@ -989,9 +1006,9 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
 
   // Re-build chart data from shownCats
   const { chartData, lineConfigs } = result
-    ? lineMode === "individual"
-      ? buildIndividualData(result, selectedDatasets, shownCats, metric)
-      : buildAggregatedData(result, selectedDatasets, shownCats, metric, lineMode)
+    ? effectiveLineMode === "individual"
+      ? buildIndividualData(result, effectiveDatasets, shownCats, metric)
+      : buildAggregatedData(result, effectiveDatasets, shownCats, metric, effectiveLineMode)
     : { chartData: [], lineConfigs: [] };
 
   const increases = useMemo(
@@ -1032,7 +1049,8 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
 
-            {/* Datasets */}
+            {/* Datasets (hidden in simple mode) */}
+            {!isSimple && (
             <div>
               <SectionHead label="Datasets" />
               <DatasetSelector
@@ -1042,6 +1060,7 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
                 onNone={() => setSelectedDatasets([])}
               />
             </div>
+            )}
 
             {/* Display */}
             <div>
@@ -1050,12 +1069,17 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
                 <div>
                   <ControlLabel>Lines</ControlLabel>
                   <SegmentedControl
-                    options={[
-                      { value: "individual" as LineMode, label: "Individual" },
-                      { value: "average"    as LineMode, label: "Average"    },
-                      { value: "max"        as LineMode, label: "Max"        },
-                    ]}
-                    value={lineMode} onChange={setLineMode}
+                    options={isSimple
+                      ? [
+                          { value: "average" as LineMode, label: "Average" },
+                          { value: "max"     as LineMode, label: "Max"     },
+                        ]
+                      : [
+                          { value: "individual" as LineMode, label: "Individual" },
+                          { value: "average"    as LineMode, label: "Average"    },
+                          { value: "max"        as LineMode, label: "Max"        },
+                        ]}
+                    value={effectiveLineMode} onChange={setLineMode}
                   />
                 </div>
                 <div>
@@ -1078,7 +1102,8 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
               </div>
             </div>
 
-            {/* Filtering */}
+            {/* Filtering (hidden in simple mode) */}
+            {!isSimple && (
             <div>
               <SectionHead label="Filtering" />
               <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
@@ -1115,6 +1140,7 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
                 )}
               </div>
             </div>
+            )}
 
             {/* Collapse button */}
             <button
@@ -1141,7 +1167,7 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
               value={sortMode} onChange={setSortMode}
             />
           </div>
-          {sortMode === "value" && (
+          {sortMode === "value" && !isSimple && (
             <div>
               <ControlLabel>Value ranking</ControlLabel>
               <SegmentedControl
@@ -1214,7 +1240,9 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
 // ── Work Activity Trends tab ──────────────────────────────────────────────────
 
 function WorkActivityTrends({ config }: { config: ConfigResponse }) {
+  const { isSimple } = useSimpleMode();
   const allDatasets = config.datasets ?? [];
+  const aeiDatasets = allDatasets.filter((d) => d.startsWith("AEI"));
 
   const [selectedDatasets, setSelectedDatasets] = useState<string[]>(allDatasets);
   const [lineMode,      setLineMode]      = useState<LineMode>("individual");
@@ -1242,38 +1270,47 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
 
   const hasMCP = selectedDatasets.some((d) => d.startsWith("MCP") || d === "Microsoft");
 
+  // Simple mode overrides — WA defaults to AEI datasets
+  const effectiveDatasets    = isSimple ? aeiDatasets : selectedDatasets;
+  const effectiveMethod      = isSimple ? "freq" as const : method;
+  const effectivePhysical    = isSimple ? "all"  as const : physicalMode;
+  const effectiveAutoAug     = isSimple ? true : useAutoAug;
+  const effectiveAdjMean     = isSimple ? true : useAdjMean;
+  const effectiveLineMode    = isSimple && lineMode === "individual" ? "average" as LineMode : lineMode;
+  const effectiveValueAgg    = isSimple ? (effectiveLineMode === "max" ? "max" as const : "avg" as const) : valueAggMode;
+
   const run = useCallback(async () => {
-    if (!selectedDatasets.length) return;
+    if (!effectiveDatasets.length) return;
     setLoading(true); setError(null); setLockedLine(null);
     try {
-      const seriesToFetch = getSeriesToFetch(selectedDatasets, config.dataset_series ?? {});
+      const seriesToFetch = getSeriesToFetch(effectiveDatasets, config.dataset_series ?? {});
       if (!seriesToFetch.length) { setError("No valid series for selected datasets."); return; }
       const fetchTopN = Math.max(topN, 50);
       const settings: WATrendsSettings = {
-        series: seriesToFetch, method, useAutoAug,
-        useAdjMean: useAutoAug && useAdjMean,
-        physicalMode, geo, topN: fetchTopN, sortBy: "Workers Affected", activityLevel,
+        series: seriesToFetch, method: effectiveMethod, useAutoAug: effectiveAutoAug,
+        useAdjMean: effectiveAutoAug && effectiveAdjMean,
+        physicalMode: effectivePhysical, geo, topN: fetchTopN, sortBy: "Workers Affected", activityLevel,
       };
       const data = await fetchWATrends(settings);
       setResult(data); setPanelCollapsed(true);
       const cats = new Set<string>();
       data.series.forEach((s: TrendSeries) => {
         s.data_points
-          .filter((dp) => selectedDatasets.includes(dp.dataset))
+          .filter((dp) => effectiveDatasets.includes(dp.dataset))
           .forEach((dp) => dp.rows.forEach((r) => cats.add(r.category)));
       });
       setAllCats(Array.from(cats));
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Failed to fetch WA trends");
     } finally { setLoading(false); }
-  }, [selectedDatasets, activityLevel, method, geo, topN, useAutoAug, useAdjMean, physicalMode, config]);
+  }, [effectiveDatasets, activityLevel, effectiveMethod, geo, topN, effectiveAutoAug, effectiveAdjMean, effectivePhysical, config]);
 
   const metaLabel = METRIC_OPTIONS.find((m) => m.key === metric)?.label ?? "";
 
   const { chartData: rawChartData, lineConfigs: rawLineConfigs } = result
-    ? lineMode === "individual"
-      ? buildIndividualData(result, selectedDatasets, allCats, metric)
-      : buildAggregatedData(result, selectedDatasets, allCats, metric, lineMode)
+    ? effectiveLineMode === "individual"
+      ? buildIndividualData(result, effectiveDatasets, allCats, metric)
+      : buildAggregatedData(result, effectiveDatasets, allCats, metric, effectiveLineMode)
     : { chartData: [], lineConfigs: [] };
 
   const allIncreases = useMemo(
@@ -1283,8 +1320,8 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
 
   // Value scores per category for sort-by-value
   const catValueScores = useMemo(
-    () => rawLineConfigs.length > 0 ? computeCatValueScores(rawChartData, rawLineConfigs, valueAggMode) : new Map<string, number>(),
-    [rawChartData, rawLineConfigs, valueAggMode],
+    () => rawLineConfigs.length > 0 ? computeCatValueScores(rawChartData, rawLineConfigs, effectiveValueAgg) : new Map<string, number>(),
+    [rawChartData, rawLineConfigs, effectiveValueAgg],
   );
 
   // Full sorted pool (no topN) — so search can find categories beyond topN
@@ -1321,9 +1358,9 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
   }, [sortedCats, sortedAllCats, trendSearch, ctxSize]);
 
   const { chartData, lineConfigs } = result
-    ? lineMode === "individual"
-      ? buildIndividualData(result, selectedDatasets, shownCats, metric)
-      : buildAggregatedData(result, selectedDatasets, shownCats, metric, lineMode)
+    ? effectiveLineMode === "individual"
+      ? buildIndividualData(result, effectiveDatasets, shownCats, metric)
+      : buildAggregatedData(result, effectiveDatasets, shownCats, metric, effectiveLineMode)
     : { chartData: [], lineConfigs: [] };
 
   const increases = useMemo(
@@ -1368,7 +1405,8 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
 
-            {/* Datasets */}
+            {/* Datasets (hidden in simple mode) */}
+            {!isSimple && (
             <div>
               <SectionHead label="Datasets" />
               <DatasetSelectorWA
@@ -1381,6 +1419,7 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
                 onNone={() => setSelectedDatasets([])}
               />
             </div>
+            )}
 
             {/* Display */}
             <div>
@@ -1389,12 +1428,17 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
                 <div>
                   <ControlLabel>Lines</ControlLabel>
                   <SegmentedControl
-                    options={[
-                      { value: "individual" as LineMode, label: "Individual" },
-                      { value: "average"    as LineMode, label: "Average"    },
-                      { value: "max"        as LineMode, label: "Max"        },
-                    ]}
-                    value={lineMode} onChange={setLineMode}
+                    options={isSimple
+                      ? [
+                          { value: "average" as LineMode, label: "Average" },
+                          { value: "max"     as LineMode, label: "Max"     },
+                        ]
+                      : [
+                          { value: "individual" as LineMode, label: "Individual" },
+                          { value: "average"    as LineMode, label: "Average"    },
+                          { value: "max"        as LineMode, label: "Max"        },
+                        ]}
+                    value={effectiveLineMode} onChange={setLineMode}
                   />
                 </div>
                 <div>
@@ -1420,7 +1464,8 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
               </div>
             </div>
 
-            {/* Filtering */}
+            {/* Filtering (hidden in simple mode) */}
+            {!isSimple && (
             <div>
               <SectionHead label="Filtering" />
               <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
@@ -1457,6 +1502,7 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
                 )}
               </div>
             </div>
+            )}
 
             {/* Collapse button */}
             <button
@@ -1480,7 +1526,7 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
               value={sortMode} onChange={setSortMode}
             />
           </div>
-          {sortMode === "value" && (
+          {sortMode === "value" && !isSimple && (
             <div>
               <ControlLabel>Value ranking</ControlLabel>
               <SegmentedControl

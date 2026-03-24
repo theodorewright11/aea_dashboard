@@ -5,6 +5,7 @@ import type { WorkActivitiesResponse, ConfigResponse, ActivityGroup } from "@/li
 import { fetchConfig, fetchWorkActivities } from "@/lib/api";
 import WorkActivitiesPanel from "@/components/WorkActivitiesPanel";
 import { GROUP_A_COLOR, GROUP_B_COLOR } from "@/lib/theme";
+import { useSimpleMode } from "@/lib/SimpleModeContext";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -42,6 +43,22 @@ function defaultPending(datasets: string[]): WAGroupPending {
     topN: 20, sortBy: "Workers Affected",
     physicalMode: "all", useAutoAug: false, useAdjMean: false,
     searchQuery: "", contextSize: 5,
+  };
+}
+
+/** In simple mode, override fixed fields — WA defaults to all AEI datasets */
+function applyWASimpleDefaults(p: WAGroupPending, config: ConfigResponse): WAGroupPending {
+  const aeiDatasets = config.datasets.filter(
+    (d) => d.startsWith("AEI") && config.dataset_availability[d],
+  );
+  return {
+    ...p,
+    datasets: aeiDatasets,
+    combineMethod: "Average",
+    method: "freq",
+    physicalMode: "all",
+    useAutoAug: true,
+    useAdjMean: true,
   };
 }
 
@@ -290,7 +307,7 @@ const SORT_SHORT: Record<string, string> = {
 
 function WAGroupSettingsPanel({
   groupId, color, pending, setPending, config, sortOptions,
-  collapsed, onToggleCollapse,
+  collapsed, onToggleCollapse, simpleMode = false,
 }: {
   groupId: "A" | "B";
   color: string;
@@ -300,6 +317,7 @@ function WAGroupSettingsPanel({
   sortOptions: string[];
   collapsed: boolean;
   onToggleCollapse: () => void;
+  simpleMode?: boolean;
 }) {
   const hasMCP  = pending.datasets.some((d) => d.startsWith("MCP"));
 
@@ -323,7 +341,35 @@ function WAGroupSettingsPanel({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
 
-      {!collapsed ? (
+      {simpleMode ? (
+        /* Simple mode: only show activity level, geo, sort */
+        <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
+          <div>
+            <ControlLabel>Activity level</ControlLabel>
+            <SegBtn
+              options={[{ value: "gwa", label: "GWA" }, { value: "iwa", label: "IWA" }, { value: "dwa", label: "DWA" }]}
+              value={pending.activityLevel}
+              onChange={(v) => set("activityLevel", v)}
+            />
+          </div>
+          <div>
+            <ControlLabel>Geography</ControlLabel>
+            <SegBtn
+              options={[{ value: "nat", label: "National" }, { value: "ut", label: "Utah" }]}
+              value={pending.geo}
+              onChange={(v) => set("geo", v)}
+            />
+          </div>
+          <div>
+            <ControlLabel>Sort by</ControlLabel>
+            <SegBtn
+              options={sortOptions.map((opt) => ({ value: opt, label: SORT_SHORT[opt] ?? opt }))}
+              value={pending.sortBy}
+              onChange={(v) => set("sortBy", v)}
+            />
+          </div>
+        </div>
+      ) : !collapsed ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
 
           {/* ─ Datasets ─ */}
@@ -536,6 +582,7 @@ function WAGroupSettingsPanel({
 // ── Page ───────────────────────────────────────────────────────────────────────
 
 export default function WorkActivitiesPage() {
+  const { isSimple } = useSimpleMode();
   const [config, setConfig]           = useState<ConfigResponse | null>(null);
   const [configError, setConfigError] = useState<string | null>(null);
 
@@ -565,13 +612,16 @@ export default function WorkActivitiesPage() {
   }, []);
 
   const run = useCallback(async () => {
+    const effectiveA = isSimple && config ? applyWASimpleDefaults(pendingA, config) : pendingA;
+    const effectiveB = pendingB;
+
     const makeSettings = (p: WAGroupPending) => ({
       selectedDatasets: p.datasets,
       combineMethod:    p.combineMethod,
       method:           p.method,
       geo:              p.geo,
       aggLevel:         "major" as const,
-      topN:             999,   // fetch all; topN applied client-side in WorkActivitiesPanel
+      topN:             999,
       sortBy:           p.sortBy,
       physicalMode:     p.physicalMode,
       useAutoAug:       p.useAutoAug,
@@ -591,22 +641,28 @@ export default function WorkActivitiesPage() {
       }
     };
 
-    setAppliedPendingA(pendingA);
-    setAppliedPendingB(pendingB);
+    setAppliedPendingA(effectiveA);
+    setAppliedPendingB(effectiveB);
     setLoadingA(true); setErrorA(null);
-    setLoadingB(true); setErrorB(null);
 
-    const [resA, resB] = await Promise.all([
-      fetchGroup(pendingA, setErrorA),
-      fetchGroup(pendingB, setErrorB),
-    ]);
-
-    setResponseA(resA);
-    setResponseB(resB);
-    setLoadingA(false);
-    setLoadingB(false);
+    if (isSimple) {
+      const resA = await fetchGroup(effectiveA, setErrorA);
+      setResponseA(resA);
+      setResponseB(null);
+      setLoadingA(false);
+    } else {
+      setLoadingB(true); setErrorB(null);
+      const [resA, resB] = await Promise.all([
+        fetchGroup(effectiveA, setErrorA),
+        fetchGroup(effectiveB, setErrorB),
+      ]);
+      setResponseA(resA);
+      setResponseB(resB);
+      setLoadingA(false);
+      setLoadingB(false);
+    }
     setPanelCollapsed(true);
-  }, [pendingA, pendingB]);
+  }, [pendingA, pendingB, isSimple, config]);
 
   if (configError) {
     return (
@@ -669,7 +725,8 @@ export default function WorkActivitiesPage() {
           </p>
         </div>
 
-        {/* Group A/B tab toggle + sync */}
+        {/* Group A/B tab toggle + sync (hidden in simple mode) */}
+        {!isSimple ? (
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
           <div style={{ display: "flex", border: "1px solid var(--border)", borderRadius: 7, overflow: "hidden" }}>
             {(["A", "B"] as const).map((g) => {
@@ -733,20 +790,36 @@ export default function WorkActivitiesPage() {
             Run
           </button>
         </div>
+        ) : (
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+          <div style={{ flex: 1 }} />
+          <button
+            onClick={run}
+            className="btn-brand"
+            style={{ padding: "7px 24px", fontSize: 13 }}
+            onMouseOver={(e) => (e.currentTarget.style.background = "var(--brand-hover)")}
+            onMouseOut={(e)  => (e.currentTarget.style.background = "var(--brand)")}
+          >
+            Run
+          </button>
+        </div>
+        )}
 
         {/* Active group settings */}
         <WAGroupSettingsPanel
-          groupId={activeGroup}
-          color={activeColor}
-          pending={activePending}
-          setPending={setActivePending}
+          groupId={isSimple ? "A" : activeGroup}
+          color={isSimple ? GROUP_A_COLOR : activeColor}
+          pending={isSimple ? pendingA : activePending}
+          setPending={isSimple ? setPendingA : setActivePending}
           config={config}
           sortOptions={config.sort_options}
           collapsed={panelCollapsed}
           onToggleCollapse={() => setPanelCollapsed((c) => !c)}
+          simpleMode={isSimple}
         />
 
-        {/* Full other group summary */}
+        {/* Full other group summary (hidden in simple mode) */}
+        {!isSimple && (
         <div style={{ marginTop: 8, fontSize: 11, color: "var(--text-muted)" }}>
           <span style={{
             display: "inline-flex", alignItems: "center", gap: 4,
@@ -767,6 +840,7 @@ export default function WorkActivitiesPage() {
             {otherPending.searchQuery && `  ·  Search: "${otherPending.searchQuery}"`}
           </span>
         </div>
+        )}
       </div>
 
       {/* ── Chart area ── */}
@@ -790,9 +864,10 @@ export default function WorkActivitiesPage() {
             contextSize={pendingA.contextSize}
             topN={pendingA.topN}
             configSummary={appliedPendingA ? pendingToConfigSummary(appliedPendingA, "A") : undefined}
-            otherResponse={responseB}
+            otherResponse={isSimple ? null : responseB}
             otherActivityLevel={pendingB.activityLevel}
           />
+          {!isSimple && (
           <WorkActivitiesPanel
             groupId="B"
             color={GROUP_B_COLOR}
@@ -807,6 +882,7 @@ export default function WorkActivitiesPage() {
             otherResponse={responseA}
             otherActivityLevel={pendingA.activityLevel}
           />
+          )}
         </div>
 
         {/* Footer */}

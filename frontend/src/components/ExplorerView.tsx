@@ -13,6 +13,7 @@ import type {
   AllTaskRow,
 } from "@/lib/types";
 import { fetchOccupationTasks, fetchCompute, fetchAllTasks } from "@/lib/api";
+import { useSimpleMode } from "@/lib/SimpleModeContext";
 
 // ── Debounce hook ──────────────────────────────────────────────────────────────
 
@@ -263,8 +264,12 @@ function renderCell(
     case "wages_aff": {
       const pct = pctMap?.get(row.name);
       if (pct == null || row.wage == null) return <span style={muted}>—</span>;
-      const v = (pct / 100) * row.emp * row.wage / 1e9;
-      return <span style={{ color: "var(--brand)", fontWeight: 500 }}>${v.toFixed(2)}B</span>;
+      const rawDollars = (pct / 100) * row.emp * row.wage;
+      const fmtWagesAff = rawDollars >= 1e9 ? `$${(rawDollars / 1e9).toFixed(2)}B`
+        : rawDollars >= 1e6 ? `$${(rawDollars / 1e6).toFixed(2)}M`
+        : rawDollars >= 1e3 ? `$${(rawDollars / 1e3).toFixed(0)}K`
+        : `$${rawDollars.toFixed(0)}`;
+      return <span style={{ color: "var(--brand)", fontWeight: 500 }}>{fmtWagesAff}</span>;
     }
     default: return null;
   }
@@ -839,7 +844,17 @@ const LEVEL_OPTIONS: { v: TableLevel; l: string }[] = [
 
 // ── Main ExplorerView ──────────────────────────────────────────────────────────
 
+// Columns visible in simple mode
+const SIMPLE_COLS = new Set([
+  "name", "emp", "wage", "n_occs", "n_tasks",
+  "auto_avg_all",
+  "pct_avg_all", "sum_pct_avg",
+  "pct_affected", "workers_aff", "wages_aff",
+]);
+
 export default function ExplorerView({ occupations, groups, config }: Props) {
+  const { isSimple } = useSimpleMode();
+
   // ── State ──────────────────────────────────────────────────────────────────
   const [tableLevel, setTableLevel] = useState<TableLevel>("major");
   const [selectedMajors, setSelectedMajors] = useState<Set<string>>(new Set());
@@ -876,6 +891,38 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
         .finally(() => setTaskLoading(false));
     }
   }, [tableLevel, taskData, taskLoading]);
+
+  // ── Simple mode: auto-compute pct with preset settings ───────────────────
+  const simpleComputeRef = useRef(false);
+  useEffect(() => {
+    if (!isSimple) { simpleComputeRef.current = false; return; }
+    // Run once per (isSimple, geo, tableLevel) change
+    const availableDatasets = config.datasets.filter((d) => config.dataset_availability[d]);
+    if (availableDatasets.length === 0) return;
+    const backendAgg = (tableLevel === "task" || tableLevel === "occupation") ? "occupation"
+      : tableLevel as "major" | "minor" | "broad";
+    let cancelled = false;
+    fetchCompute({
+      selectedDatasets: availableDatasets,
+      combineMethod: "Average",
+      method: "freq",
+      useAutoAug: true,
+      useAdjMean: true,
+      physicalMode: "all",
+      geo,
+      aggLevel: backendAgg,
+      sortBy: "Workers Affected",
+      topN: 5000,
+      searchQuery: "",
+      contextSize: 5,
+    }).then((resp) => {
+      if (cancelled) return;
+      const map = new Map<string, number>();
+      resp.rows.forEach((r: ChartRow) => map.set(r.category, r.pct_tasks_affected));
+      setPctAffectedMap(map);
+    }).catch(() => { /* silent */ });
+    return () => { cancelled = true; };
+  }, [isSimple, geo, tableLevel, config.datasets, config.dataset_availability]);
 
   // ── Reset row limit whenever the visible set changes ─────────────────────
   useEffect(() => { setRowLimit(100); }, [tableLevel, selectedMajors, debouncedSearch, searchLevel, colFilters, physicalMode, pctAffectedMap, minPctAffected, debouncedMinEmp, debouncedMinWage, sortCol, sortDir]);
@@ -1043,13 +1090,14 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
     setRowLimit(100);
   };
 
-  // ── Visible columns (hide pct_affected when no map, hide n_occs at occ/task level) ──
+  // ── Visible columns (hide pct_affected when no map; simple mode filters) ──
   const visibleCols = useMemo(() => {
     return COLUMNS.filter((c) => {
       if ((c.key === "pct_affected" || c.key === "workers_aff" || c.key === "wages_aff") && !pctAffectedMap) return false;
+      if (isSimple && !SIMPLE_COLS.has(c.key)) return false;
       return true;
     });
-  }, [pctAffectedMap]);
+  }, [pctAffectedMap, isSimple]);
 
   // ── Total count for header ────────────────────────────────────────────────
   const totalOccs = occupations.length;
@@ -1241,7 +1289,8 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
         background: "var(--bg-surface)", borderBottom: "1px solid var(--border)",
         padding: "10px 20px", flexShrink: 0, display: "flex", flexDirection: "column", gap: 8,
       }}>
-        {/* Row 1: Major pills */}
+        {/* Row 1: Major pills (hidden in simple mode) */}
+        {!isSimple && (
         <div style={{ display: "flex", gap: 5, flexWrap: "nowrap", overflowX: "auto", paddingBottom: 2 }}>
           {/* All pill */}
           <button
@@ -1278,6 +1327,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
             );
           })}
         </div>
+        )}
 
         {/* Row 2: Level + Search + Geo + Phys + Min filters */}
         <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
@@ -1299,12 +1349,14 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
             val={geo}
             onChange={setGeo}
           />
-          {/* Physical */}
+          {/* Physical (hidden in simple mode) */}
+          {!isSimple && (
           <BtnSeg
             opts={[{ v: "all", l: "All" }, { v: "exclude", l: "No Phys" }, { v: "only", l: "Phys only" }]}
             val={physicalMode}
             onChange={setPhysicalMode}
           />
+          )}
 
           {/* Search */}
           <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
@@ -1333,7 +1385,9 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
             )}
           </div>
 
-          {/* Min Emp / Min Wage inputs */}
+          {/* Min Emp / Min Wage inputs (hidden in simple mode) */}
+          {!isSimple && (
+          <>
           <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
             <span style={{ fontSize: 11, color: "var(--text-muted)" }}>Min Emp:</span>
             <input
@@ -1362,6 +1416,8 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
               }}
             />
           </div>
+          </>
+          )}
 
           {/* Showing count */}
           <span style={{ fontSize: 11, color: "var(--text-muted)", marginLeft: "auto" }}>
@@ -1369,11 +1425,13 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
           </span>
         </div>
 
-        {/* Row 3: PctComputePanel */}
-        <PctComputePanel config={config} geo={geo} tableLevel={tableLevel} onResult={setPctAffectedMap} />
+        {/* Row 3: PctComputePanel (hidden in simple mode — auto-computed) */}
+        {!isSimple && (
+          <PctComputePanel config={config} geo={geo} tableLevel={tableLevel} onResult={setPctAffectedMap} />
+        )}
 
-        {/* % Tasks Affected slider (shown when map computed) */}
-        {pctAffectedMap && (
+        {/* % Tasks Affected slider (shown when map computed, hidden in simple mode) */}
+        {pctAffectedMap && !isSimple && (
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <span style={{ fontSize: 11, color: "var(--text-secondary)", whiteSpace: "nowrap" }}>
               % Tasks Aff. &ge; {minPctAffected.toFixed(0)}%

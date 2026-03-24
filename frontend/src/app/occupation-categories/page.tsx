@@ -5,6 +5,7 @@ import type { GroupSettings, ComputeResponse, ConfigResponse, ChartRow } from "@
 import { fetchConfig, fetchCompute } from "@/lib/api";
 import GroupPanel from "@/components/GroupPanel";
 import { GROUP_A_COLOR, GROUP_B_COLOR } from "@/lib/theme";
+import { useSimpleMode } from "@/lib/SimpleModeContext";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -88,6 +89,20 @@ function defaultPending(datasets: string[]): GroupPending {
     useAdjMean:   false,
     searchQuery:  "",
     contextSize:  5,
+  };
+}
+
+/** In simple mode, override computation-fixed fields while keeping user-adjustable ones */
+function applySimpleDefaults(p: GroupPending, config: ConfigResponse): GroupPending {
+  const allDatasets = config.datasets.filter((d) => config.dataset_availability[d]);
+  return {
+    ...p,
+    datasets: allDatasets,
+    combineMethod: "Average",
+    method: "freq",
+    physicalMode: "all",
+    useAutoAug: true,
+    useAdjMean: true,
   };
 }
 
@@ -298,6 +313,7 @@ function GroupSettingsPanel({
   sortOptions,
   collapsed,
   onToggleCollapse,
+  simpleMode = false,
 }: {
   groupId: "A" | "B";
   color: string;
@@ -307,6 +323,7 @@ function GroupSettingsPanel({
   sortOptions: string[];
   collapsed: boolean;
   onToggleCollapse: () => void;
+  simpleMode?: boolean;
 }) {
   const hasMCP = pending.datasets.some((d) => d.startsWith("MCP"));
 
@@ -331,7 +348,41 @@ function GroupSettingsPanel({
     <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
 
       {/* Collapsible sections */}
-      {!collapsed ? (
+      {simpleMode ? (
+        /* Simple mode: only show aggregation, geo, sort */
+        <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
+          <div>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <ControlLabel>Geography</ControlLabel>
+            </div>
+            <SegBtn
+              options={[{ value: "nat", label: "National" }, { value: "ut", label: "Utah" }]}
+              value={pending.geo}
+              onChange={(v) => set("geo", v)}
+            />
+          </div>
+          <div>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <ControlLabel>Aggregation</ControlLabel>
+            </div>
+            <SegBtn
+              options={AGG_OPTIONS}
+              value={pending.aggLevel}
+              onChange={(v) => setPending({ ...pending, aggLevel: v, topN: Math.min(pending.topN, 30) })}
+            />
+          </div>
+          <div>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <ControlLabel>Sort by</ControlLabel>
+            </div>
+            <SegBtn
+              options={sortOptions.map((opt) => ({ value: opt, label: SORT_SHORT[opt] ?? opt }))}
+              value={pending.sortBy}
+              onChange={(v) => set("sortBy", v)}
+            />
+          </div>
+        </div>
+      ) : !collapsed ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
 
           {/* ─ Datasets ─ */}
@@ -540,6 +591,7 @@ function GroupSettingsPanel({
 // ── Page ───────────────────────────────────────────────────────────────────────
 
 export default function HomePage() {
+  const { isSimple } = useSimpleMode();
   const [config, setConfig]           = useState<ConfigResponse | null>(null);
   const [configError, setConfigError] = useState<string | null>(null);
 
@@ -573,29 +625,40 @@ export default function HomePage() {
   }, []);
 
   const run = useCallback(async () => {
-    const settingsA = pendingToSettings(pendingA);
-    const settingsB = pendingToSettings(pendingB);
-    setAppliedPendingA(pendingA);
-    setAppliedPendingB(pendingB);
+    const effectiveA = isSimple && config ? applySimpleDefaults(pendingA, config) : pendingA;
+    const effectiveB = pendingB;
+    const settingsA = pendingToSettings(effectiveA);
+    const settingsB = pendingToSettings(effectiveB);
+    setAppliedPendingA(effectiveA);
+    setAppliedPendingB(effectiveB);
 
     setLoadingA(true); setErrorA(null);
-    setLoadingB(true); setErrorB(null);
 
-    const [resA, resB] = await Promise.all([
-      pendingA.datasets.length > 0
-        ? fetchCompute(settingsA).catch((e: unknown) => { setErrorA(e instanceof Error ? e.message : "Failed"); return null; })
-        : Promise.resolve(null),
-      pendingB.datasets.length > 0
-        ? fetchCompute(settingsB).catch((e: unknown) => { setErrorB(e instanceof Error ? e.message : "Failed"); return null; })
-        : Promise.resolve(null),
-    ]);
-
-    setFullResponseA(resA);
-    setFullResponseB(resB);
-    setLoadingA(false);
-    setLoadingB(false);
+    if (isSimple) {
+      // Simple mode: only compute Group A
+      const resA = effectiveA.datasets.length > 0
+        ? await fetchCompute(settingsA).catch((e: unknown) => { setErrorA(e instanceof Error ? e.message : "Failed"); return null; })
+        : null;
+      setFullResponseA(resA);
+      setFullResponseB(null);
+      setLoadingA(false);
+    } else {
+      setLoadingB(true); setErrorB(null);
+      const [resA, resB] = await Promise.all([
+        effectiveA.datasets.length > 0
+          ? fetchCompute(settingsA).catch((e: unknown) => { setErrorA(e instanceof Error ? e.message : "Failed"); return null; })
+          : Promise.resolve(null),
+        effectiveB.datasets.length > 0
+          ? fetchCompute(settingsB).catch((e: unknown) => { setErrorB(e instanceof Error ? e.message : "Failed"); return null; })
+          : Promise.resolve(null),
+      ]);
+      setFullResponseA(resA);
+      setFullResponseB(resB);
+      setLoadingA(false);
+      setLoadingB(false);
+    }
     setPanelCollapsed(true);
-  }, [pendingA, pendingB]);
+  }, [pendingA, pendingB, isSimple, config]);
 
   // Apply client-side filter (topN + search) reactively
   const displayResponseA = useMemo(() =>
@@ -677,7 +740,8 @@ export default function HomePage() {
           </p>
         </div>
 
-        {/* Group tab toggle + sync */}
+        {/* Group tab toggle + sync (hidden in simple mode) */}
+        {!isSimple && (
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
           <div style={{ display: "flex", border: "1px solid var(--border)", borderRadius: 7, overflow: "hidden" }}>
             {(["A", "B"] as const).map((g) => {
@@ -745,20 +809,39 @@ export default function HomePage() {
             Run
           </button>
         </div>
+        )}
+
+        {/* Simple mode: just a Run button */}
+        {isSimple && (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+            <div style={{ flex: 1 }} />
+            <button
+              onClick={run}
+              className="btn-brand"
+              style={{ padding: "7px 24px", fontSize: 13 }}
+              onMouseOver={(e) => (e.currentTarget.style.background = "var(--brand-hover)")}
+              onMouseOut={(e)  => (e.currentTarget.style.background = "var(--brand)")}
+            >
+              Run
+            </button>
+          </div>
+        )}
 
         {/* Settings for active group */}
         <GroupSettingsPanel
-          groupId={activeGroup}
-          color={activeColor}
-          pending={activePending}
-          setPending={setActivePending}
+          groupId={isSimple ? "A" : activeGroup}
+          color={isSimple ? GROUP_A_COLOR : activeColor}
+          pending={isSimple ? pendingA : activePending}
+          setPending={isSimple ? setPendingA : setActivePending}
           config={config}
           sortOptions={config.sort_options}
           collapsed={panelCollapsed}
           onToggleCollapse={() => setPanelCollapsed((c) => !c)}
+          simpleMode={isSimple}
         />
 
-        {/* Full other group summary */}
+        {/* Full other group summary (hidden in simple mode) */}
+        {!isSimple && (
         <div style={{ marginTop: 8, fontSize: 11, color: "var(--text-muted)" }}>
           <span style={{
             display: "inline-flex", alignItems: "center", gap: 4,
@@ -782,6 +865,7 @@ export default function HomePage() {
             {otherPending.searchQuery && `  ·  Search: "${otherPending.searchQuery}"`}
           </span>
         </div>
+        )}
       </div>
 
       {/* ── Chart area ── */}
@@ -798,12 +882,14 @@ export default function HomePage() {
             groupId="A"
             color={GROUP_A_COLOR}
             response={displayResponseA}
-            otherResponse={fullResponseB}
+            otherResponse={isSimple ? null : fullResponseB}
             loading={loadingA}
             error={errorA}
             matchedCategory={displayResponseA?.matched_category}
             configSummary={appliedPendingA ? pendingToConfigSummary(appliedPendingA, "A") : undefined}
+            simpleMode={isSimple}
           />
+          {!isSimple && (
           <GroupPanel
             groupId="B"
             color={GROUP_B_COLOR}
@@ -814,6 +900,7 @@ export default function HomePage() {
             matchedCategory={displayResponseB?.matched_category}
             configSummary={appliedPendingB ? pendingToConfigSummary(appliedPendingB, "B") : undefined}
           />
+          )}
         </div>
 
         {/* Footer */}

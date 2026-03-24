@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
+import { SimpleModeProvider } from "@/lib/SimpleModeContext";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
@@ -15,11 +16,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={inter.className}>
       <body className="antialiased" style={{ backgroundColor: "var(--bg-base)", color: "var(--text-primary)" }}>
-        <Navigation />
-        {/* Content sits below the fixed nav */}
-        <div style={{ paddingTop: "var(--nav-height)" }}>
-          {children}
-        </div>
+        <SimpleModeProvider>
+          <Navigation />
+          {/* Content sits below the fixed nav */}
+          <div style={{ paddingTop: "var(--nav-height)" }}>
+            {children}
+          </div>
+        </SimpleModeProvider>
       </body>
     </html>
   );

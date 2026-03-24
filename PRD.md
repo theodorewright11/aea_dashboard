@@ -154,7 +154,7 @@ Computed as the ratio of AI-weighted task completion to baseline (ECO) task comp
 The number of workers in an occupation whose work is partially AI-exposed. Computed as `(% Tasks Affected / 100) × total employment`. This does not mean these workers will be replaced — it means this fraction of the workforce's aggregate task load overlaps with current AI capability.
 
 ### Wages Affected
-The dollar volume of wages associated with AI-exposed task work. Computed as `(% Tasks Affected / 100) × employment × median annual wage`. Expressed in billions or millions for chart display.
+The dollar volume of wages associated with AI-exposed task work. Computed as `(% Tasks Affected / 100) × employment × median annual wage`. Displayed with adaptive units: billions ($B) when ≥ $1B, millions ($M) when ≥ $1M, thousands ($K) when ≥ $1K, otherwise raw dollars.
 
 ### Auto-Aug Score (Automatability / Augmentation)
 A 0–5 scale rating of how automatable or augmentable a specific task is by AI. Scores come from the AI dataset sources (AEI, MCP, Microsoft). When the auto-aug multiplier is enabled, each task's weight is scaled by `auto_aug_mean / 5`, so tasks rated as highly automatable contribute more to the exposure calculation and tasks rated as minimally automatable contribute less.
@@ -179,6 +179,24 @@ The percentage of AI conversations (from AEI/MCP/Microsoft data) that involved a
 | **Top N** | 1–30 | How many categories to display in charts (the top N by the selected sort metric). |
 | **Sort by** | Workers Affected / Wages Affected / % Tasks Affected | Which metric determines the ranking of displayed categories. |
 | **Search + Context** | Text query + ±N context size | Finds a specific category and shows it with N surrounding categories in the ranked list. |
+| **Simple / Advanced mode** | Toggle in navigation bar | Switches the entire dashboard between a simplified view (fewer controls, preset defaults) and the full advanced view. See §5.1. |
+
+### 5.1 Simple / Advanced Mode
+
+A global toggle in the navigation bar switches the dashboard between **Simple** and **Advanced** mode. The toggle state is persisted in localStorage so it survives page reloads. Switching modes preserves all advanced settings — toggling back to Advanced restores the user's previous configuration.
+
+**Simple mode effects by page:**
+
+| Page | Fixed settings | Shown controls | Hidden |
+|------|---------------|----------------|--------|
+| **Occupation Explorer** | All datasets, Freq, All phys, Auto-aug On (adj) | Level selector, Search, Nat/Utah | Major pills, Physical toggle, Min filters, PctComputePanel UI (auto-computed) |
+| **WA Explorer** | All AEI datasets, Freq, All phys, Auto-aug On (adj) | Level selector, Search, Nat/Utah | GWA pills, Physical toggle, PctComputePanel UI (auto-computed) |
+| **Occupation Categories** | All datasets, Freq, All phys, Auto-aug On (adj), single group | Aggregation, Geo, Sort, Search, Top N | Group B, Dataset/Method/Physical/Auto-aug controls |
+| **Work Activities** | All AEI datasets, Freq, All phys, Auto-aug On (adj), single group | Activity level, Geo, Sort, Search, Top N | Group B, Dataset/Method/Physical/Auto-aug controls |
+| **Trends (Occ)** | All datasets, Freq, All phys, Auto-aug On (adj) | Lines (Avg/Max only), Metric, Aggregation, Geo, Top N, Sort, Search | Datasets, Filtering, Individual line mode, Value ranking (auto-matches line mode) |
+| **Trends (WA)** | All AEI datasets, Freq, All phys, Auto-aug On (adj) | Lines (Avg/Max only), Metric, Activity level, Geo, Top N, Sort, Search | Datasets, Filtering, Individual line mode, Value ranking |
+
+Explorer pages auto-compute % Tasks Affected, Workers Affected, and Wages Affected columns on page load using the fixed settings, without requiring the user to open the PctComputePanel.
 
 ---
 
