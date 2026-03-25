@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
 import { SimpleModeProvider } from "@/lib/SimpleModeContext";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
@@ -19,9 +20,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SimpleModeProvider>
           <Navigation />
           {/* Content sits below the fixed nav */}
-          <div style={{ paddingTop: "var(--nav-height)" }}>
+          <div style={{ paddingTop: "var(--nav-height)", minHeight: "calc(100vh - 60px)" }}>
             {children}
           </div>
+          <Footer />
         </SimpleModeProvider>
       </body>
     </html>

@@ -188,8 +188,8 @@ Pydantic request/response models + thin endpoint functions that call compute fun
 Two methods for computing a task's weight (`task_comp`):
 
 ```
-Frequency method:   task_comp = freq_mean
-Importance method:  task_comp = relevance × 2^importance
+Time method:        task_comp = freq_mean
+Value method:       task_comp = freq_mean × relevance × importance
 ```
 
 With auto-aug multiplier enabled:
@@ -244,10 +244,16 @@ Work activity computation uses a different pipeline than occupation-level:
 - `n_tasks_per_occ` uses `(title, task_normalized)` dedup — for emp allocation
 - Each activity level uses `(title, task_normalized, act_col)` dedup — preserves all DWA/IWA/GWA associations (a task can map to multiple DWAs)
 
-**Emp allocation:**
+**Emp allocation (weighted):**
+
+Emp is allocated to tasks using a weighted split based on the selected method (previously was an equal split `emp / n_tasks`):
+
 ```
-emp_per_task = emp_occ / n_tasks_per_occ   (n_tasks counted from title×task_normalized dedup)
+Time method (freq):   weight = freq_mean;   emp_per_task = (weight / Σweight_per_occ) × emp_occ
+Value method:         weight = freq_mean × relevance × importance;   emp_per_task = (weight / Σweight_per_occ) × emp_occ
 ```
+
+The backend computes BOTH freq and value weightings simultaneously for the WA explorer endpoints, returning dual field sets (`emp_nat_freq`, `emp_nat_value`, etc.) so the frontend can toggle without re-fetching.
 
 **Per-task workers contribution:**
 ```
@@ -625,10 +631,14 @@ Response:
     name: string;
     parent?: string;
     gwa?: string;
-    emp_nat?: number;                 // emp_occ / n_unique_tasks summed over all occs in activity
-    emp_ut?: number;
-    wage_nat?: number;
-    wage_ut?: number;
+    emp_nat_freq?: number;            // freq-weighted emp allocation
+    emp_ut_freq?: number;
+    emp_nat_value?: number;           // value-weighted emp allocation (freq×rel×imp)
+    emp_ut_value?: number;
+    wage_nat_freq?: number;           // emp-weighted median wage (freq weighting)
+    wage_ut_freq?: number;
+    wage_nat_value?: number;          // emp-weighted median wage (value weighting)
+    wage_ut_value?: number;
     n_occs: number;
     n_tasks: number;
     n_physical_tasks: number;
@@ -652,9 +662,12 @@ Response:
     iwa_title?: string;
     gwa_title?: string;
     physical?: boolean;
-    emp_nat?: number;
-    emp_ut?: number;
-    wage_nat?: number;
+    emp_nat_freq?: number;            // freq-weighted emp allocation
+    emp_ut_freq?: number;
+    emp_nat_value?: number;           // value-weighted emp allocation
+    emp_ut_value?: number;
+    wage_nat_freq?: number;
+    wage_nat_value?: number;
     freq_mean?: number;               // O*NET task frequency (0–10)
     importance?: number;              // O*NET task importance (0–5)
     relevance?: number;               // O*NET task relevance (0–100)
@@ -680,9 +693,11 @@ Response:
 
 `Navigation.tsx` — fixed 56px nav bar (`var(--nav-height)`), 7 links: Occupation Explorer, Work Activities Explorer, Occupation Categories, Work Activities, Trends, Instructions, About. Active tab highlighted with brand color. Includes a **Simple/Advanced toggle** button (right side of nav). All pages render below with `paddingTop: var(--nav-height)`.
 
+`Footer.tsx` — global footer displayed below all page content. Contains source attribution text and labeled links: Dashboard GitHub, MCP Classification GitHub, Data Merging GitHub (placeholder — repo not yet available), Research Paper (placeholder — not yet available), and a contact email link.
+
 Root URL (`/`) redirects to `/explorer` (Occupation Explorer is the default landing page).
 
-`layout.tsx` — root layout mounting `<SimpleModeProvider>` → `<Navigation />` + `{children}`.
+`layout.tsx` — root layout mounting `<SimpleModeProvider>` → `<Navigation />` + `{children}` + `<Footer />`.
 
 ### Simple/Advanced Mode (`lib/SimpleModeContext.tsx`)
 
@@ -693,7 +708,7 @@ React context + provider with localStorage persistence (key: `aea_simple_mode`).
 Each page imports `useSimpleMode()` and conditionally:
 - Hides/shows controls based on `isSimple`
 - Overrides computation settings (datasets, method, physical, auto-aug) at run time
-- Explorer pages auto-compute pct_tasks_affected via a `useEffect` when `isSimple` is true
+- Explorer pages auto-compute pct_tasks_affected via a `useEffect` when `isSimple` is true. Major category pills (occ explorer) and GWA pills (WA explorer) remain visible in simple mode
 - Occupation Categories / Work Activities chart pages show single group (A only) in simple mode
 - Trends pages remove "Individual" line mode option and auto-match value ranking to line mode
 
@@ -825,7 +840,13 @@ Levels: Major / Minor / Broad / Occupation / Task. At "Task" level, data fetched
 
 **Task expansion:** Clicking an occupation row fetches tasks via `fetchOccupationTasks()`. Task detail shows Occupation Classification (Broad → Minor → Major), Activity Classification (GWA/IWA/DWA), per-source breakdown table (AEI v1–v4, API v3–v4, MCP v4, Microsoft, plus AVG and MAX summary rows).
 
-**`PctComputePanel`:** Collapsible panel calling `/api/compute` with `aggLevel: "occupation"`, `topN: 1000`. Returns `Map<string, number>` (title → pct_tasks_affected). Adds a `minPctAffected` slider filter to the table.
+**`PctComputePanel`:** Collapsible panel calling `/api/compute` with `aggLevel: "occupation"`, `topN: 1000`. Returns `Map<string, number>` (title → pct_tasks_affected). Adds a `minPctAffected` slider filter to the table. **Auto-recomputes** when the parent `geo` changes while a previous compute result exists (via `geoChangedRef` + `useEffect`).
+
+**Major category pills** are always visible (including in simple mode).
+
+**Task expansion section order:** Occupation Categories → Work Activities → Task Detail → Source Breakdown → Top MCP Servers. Task-level task view shows physical/freq/imp/rel only (no auto/pct). Accordion task view shows the same plus auto avg/max and pct avg/max in a side table.
+
+**Task-level columns:** `freq_mean`, `importance`, `relevance` are available as table columns at the task level only (`TASK_ONLY_COLS`), hidden in simple mode.
 
 **`InfoTooltip`:** `createPortal(tooltip, document.body)` with `position: fixed` at mouse coords — avoids clipping by `overflow: hidden` ancestors.
 
@@ -866,7 +887,15 @@ Same general table structure as ExplorerView but hierarchy is GWA → IWA → DW
 
 **`WaPctComputePanel`:** Same as ExplorerView `PctComputePanel` but calls `/api/work-activities` with the current WA settings. Injects pct/workers/wages columns. Dataset selection uses `enforceDatasetToggle` from `lib/datasetRules.ts`.
 
-**GWA multi-select pills**, same sort/filter/search/pagination/Avg/Max/Nat/Utah patterns as ExplorerView.
+**Emp weighting toggle:** An "Emp Weight" segmented control (Time / Value) next to other controls. Controls which emp allocation variant is displayed (`emp_nat_freq`/`emp_ut_freq` vs `emp_nat_value`/`emp_ut_value`). Hidden in simple mode (defaults to freq/Time). Affects both activity-level and accordion task sub-rows.
+
+**Section titles in task expansions:** Occupation Categories, Work Activities, Task Detail, Source Breakdown, Top MCP Servers — consistent across both explorers.
+
+**Accordion Task Detail (DWA expansion):** Shows physical, freq, imp, rel, emp, wage, auto avg/max, pct avg/max in a side table.
+
+**Task-level Task Detail:** Shows physical, freq, imp, rel, emp, wage only (no auto/pct — those are already visible as table columns).
+
+**GWA multi-select pills** (always visible, including simple mode), same sort/filter/search/pagination/Avg/Max/Nat/Utah patterns as ExplorerView.
 
 ### Utility: `lib/datasetRules.ts`
 
@@ -977,3 +1006,7 @@ The explorer endpoints are **cold-start heavy** (~2–5s on first `/api/explorer
 27. **Dataset selection enforcement is client-side only.** `enforceDatasetToggle()` in `lib/datasetRules.ts` auto-deselects conflicting datasets in the UI. The backend does not enforce these rules — any combination technically computes, but the results are only meaningful when selection constraints are respected (e.g., cumulative AEI v4 already includes v1–v3, so selecting multiple cumulative versions is redundant).
 
 28. **Cumulative AEI datasets cannot be mixed with snapshot AEI datasets.** `AEI Cumul. v1–v4` and `AEI v1–v4 / AEI API v3–v4` are mutually exclusive. The cumulative versions aggregate all conversations up to their snapshot date, so their scale is not comparable to the per-snapshot versions.
+
+29. **WA emp allocation is method-weighted, not equal-split.** The backend returns both freq-weighted and value-weighted emp variants for WA explorer rows and WA task details. The frontend emp weighting toggle selects which variant to display. The WA charts page's Time/Value method toggle controls both task_comp AND emp weighting simultaneously.
+
+30. **PctComputePanel auto-recomputes on geo change.** Both `PctComputePanel` (occ explorer) and `WaPctComputePanel` (WA explorer) track `geo` changes via a ref and auto-recompute when the panel has already been computed and the geo changes. Simple mode auto-compute already handles this via its useEffect dependency on `geo`.

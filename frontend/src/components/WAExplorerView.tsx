@@ -144,14 +144,20 @@ interface DisplayRow {
   top_mcps?: McpEntry[];
 }
 
-function waRowToDisplay(row: WAExplorerRow, geo: "nat" | "ut"): DisplayRow {
+function waRowToDisplay(row: WAExplorerRow, geo: "nat" | "ut", empW: "freq" | "value" = "freq"): DisplayRow {
+  const emp = empW === "freq"
+    ? (geo === "nat" ? row.emp_nat_freq : row.emp_ut_freq)
+    : (geo === "nat" ? row.emp_nat_value : row.emp_ut_value);
+  const wage = empW === "freq"
+    ? (geo === "nat" ? row.wage_nat_freq : row.wage_ut_freq)
+    : (geo === "nat" ? row.wage_nat_value : row.wage_ut_value);
   return {
     name: row.name,
     level: row.level,
     gwa: row.gwa ?? null,
     parent: row.parent ?? null,
-    emp: (geo === "nat" ? row.emp_nat : row.emp_ut) ?? 0,
-    wage: (geo === "nat" ? row.wage_nat : row.wage_ut) ?? null,
+    emp: emp ?? 0,
+    wage: wage ?? null,
     n_occs: row.n_occs,
     n_tasks: row.n_tasks,
     auto_avg_with_vals: row.auto_avg_with_vals ?? null,
@@ -526,7 +532,7 @@ function BtnSeg<T extends string>({
 
 // ── Task sub-table for expanded DWA rows ───────────────────────────────────────
 
-function WATaskSubRow({ task, geo }: { task: WATaskDetail; geo: "nat" | "ut" }) {
+function WATaskSubRow({ task, geo, empWeighting }: { task: WATaskDetail; geo: "nat" | "ut"; empWeighting: "freq" | "value" }) {
   const [expanded, setExpanded] = useState(false);
 
   const avgAuto = task.avg_auto_aug;
@@ -534,7 +540,10 @@ function WATaskSubRow({ task, geo }: { task: WATaskDetail; geo: "nat" | "ut" }) 
   const avgPct  = task.avg_pct_norm;
   const maxPct  = task.max_pct_norm;
   const barPct  = avgAuto != null ? Math.min(avgAuto / 5, 1) * 100 : null;
-  const emp     = geo === "nat" ? task.emp_nat : task.emp_ut;
+  const emp     = empWeighting === "freq"
+    ? (geo === "nat" ? task.emp_nat_freq : task.emp_ut_freq)
+    : (geo === "nat" ? task.emp_nat_value : task.emp_ut_value);
+  const wage    = empWeighting === "freq" ? task.wage_nat_freq : task.wage_nat_value;
   const sources = Object.entries(task.sources ?? {});
   const muted = { color: "var(--text-muted)" } as React.CSSProperties;
   const topMcps = task.top_mcps ?? [];
@@ -564,7 +573,7 @@ function WATaskSubRow({ task, geo }: { task: WATaskDetail; geo: "nat" | "ut" }) 
           {fmtEmp(emp)}
         </td>
         <td style={{ padding: "6px 6px", fontSize: 11, color: "var(--text-secondary)", textAlign: "right", width: 80, verticalAlign: "top" }}>
-          {fmtWage(task.wage_nat)}
+          {fmtWage(wage)}
         </td>
         <td style={{ padding: "6px 6px", fontSize: 11, color: "var(--text-secondary)", textAlign: "right", width: 64, verticalAlign: "top" }}>
           {task.freq_mean != null ? task.freq_mean.toFixed(2) : <span style={muted}>—</span>}
@@ -603,11 +612,11 @@ function WATaskSubRow({ task, geo }: { task: WATaskDetail; geo: "nat" | "ut" }) 
         <tr style={{ background: "#fafaf8", borderBottom: "1px solid var(--border-light)" }}>
           <td colSpan={11} style={{ padding: "10px 20px 14px 28px" }}>
             <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-              {/* Occupation context */}
+              {/* Occupation Categories */}
               {task.title_current && (
                 <div style={{ minWidth: 200 }}>
                   <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>
-                    Occupation Context
+                    Occupation Categories
                   </p>
                   <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Occ:</b> {task.title_current}</p>
                   {task.broad_occ && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Broad:</b> {task.broad_occ}</p>}
@@ -615,17 +624,67 @@ function WATaskSubRow({ task, geo }: { task: WATaskDetail; geo: "nat" | "ut" }) 
                   {task.major_occ_category && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>Major:</b> {task.major_occ_category}</p>}
                 </div>
               )}
-              {/* Activity Classification */}
+              {/* Work Activities */}
               {(task.gwa_title || task.iwa_title || task.dwa_title) && (
                 <div style={{ minWidth: 200 }}>
                   <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>
-                    Activity Classification
+                    Work Activities
                   </p>
                   {task.gwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>GWA:</b> {task.gwa_title}</p>}
                   {task.iwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>IWA:</b> {task.iwa_title}</p>}
                   {task.dwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>DWA:</b> {task.dwa_title}</p>}
                 </div>
               )}
+              {/* Task Detail (accordion: includes auto/pct + emp/wage) */}
+              <div>
+                <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Task Detail</p>
+                <table style={{ fontSize: 11, borderCollapse: "collapse" }}>
+                  <tbody>
+                    <tr>
+                      <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Physical</td>
+                      <td style={{ padding: "2px 0" }}>
+                        {task.physical === true ? <span style={{ color: "#16a34a" }}>✓ Yes</span> : task.physical === false ? <span style={muted}>✗ No</span> : <span style={muted}>—</span>}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Freq</td>
+                      <td style={{ padding: "2px 0" }}>{task.freq_mean != null ? task.freq_mean.toFixed(2) : <span style={muted}>—</span>}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Importance</td>
+                      <td style={{ padding: "2px 0" }}>{task.importance != null ? task.importance.toFixed(2) : <span style={muted}>—</span>}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Relevance</td>
+                      <td style={{ padding: "2px 0" }}>{task.relevance != null ? task.relevance.toFixed(2) : <span style={muted}>—</span>}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Emp</td>
+                      <td style={{ padding: "2px 0" }}>{fmtEmp(emp)}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Med Wage</td>
+                      <td style={{ padding: "2px 0" }}>{fmtWage(wage)}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Auto Avg</td>
+                      <td style={{ padding: "2px 0" }}>{avgAuto != null ? avgAuto.toFixed(3) : <span style={muted}>—</span>}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Auto Max</td>
+                      <td style={{ padding: "2px 0" }}>{maxAuto != null ? maxAuto.toFixed(3) : <span style={muted}>—</span>}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Pct Avg</td>
+                      <td style={{ padding: "2px 0" }}>{avgPct != null ? fmtPctNorm(avgPct) : <span style={muted}>—</span>}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Pct Max</td>
+                      <td style={{ padding: "2px 0" }}>{maxPct != null ? fmtPctNorm(maxPct) : <span style={muted}>—</span>}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
               {/* Source Breakdown */}
               {sources.length > 0 && (
                 <div>
@@ -654,29 +713,15 @@ function WATaskSubRow({ task, geo }: { task: WATaskDetail; geo: "nat" | "ut" }) 
                           </td>
                         </tr>
                       ))}
-                      <tr style={{ borderTop: "1px solid var(--border-light)" }}>
-                        <td style={{ padding: "4px 10px 2px 0", fontWeight: 700 }}>
-                          <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--brand-light)", border: "1px solid var(--brand)", color: "var(--brand)", fontWeight: 700 }}>AVG</span>
-                        </td>
-                        <td style={{ padding: "4px 8px 2px", textAlign: "right", fontWeight: 700 }}>{avgAuto != null ? avgAuto.toFixed(3) : <span style={muted}>—</span>}</td>
-                        <td style={{ padding: "4px 8px 2px", textAlign: "right", fontWeight: 700 }}>{avgPct != null ? fmtPctNorm(avgPct) : <span style={muted}>—</span>}</td>
-                      </tr>
-                      <tr>
-                        <td style={{ padding: "2px 10px 4px 0", fontWeight: 700 }}>
-                          <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "#fffbeb", border: "1px solid #d97706", color: "#d97706", fontWeight: 700 }}>MAX</span>
-                        </td>
-                        <td style={{ padding: "2px 8px 4px", textAlign: "right", fontWeight: 700 }}>{maxAuto != null ? maxAuto.toFixed(3) : <span style={muted}>—</span>}</td>
-                        <td style={{ padding: "2px 8px 4px", textAlign: "right", fontWeight: 700 }}>{maxPct != null ? fmtPctNorm(maxPct) : <span style={muted}>—</span>}</td>
-                      </tr>
                     </tbody>
                   </table>
                 </div>
               )}
-              {/* Top MCPs */}
+              {/* Top MCP Servers */}
               {topMcps.length > 0 && (
                 <div style={{ minWidth: 200 }}>
                   <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>
-                    Top MCPs
+                    Top MCP Servers
                   </p>
                   <ol style={{ margin: 0, paddingLeft: 16, display: "flex", flexDirection: "column", gap: 3 }}>
                     {topMcps.slice(0, 5).map((mcp, i) => (
@@ -791,7 +836,13 @@ function WaPctComputePanel({
   const [error, setError] = useState<string | null>(null);
   const [computed, setComputed] = useState(false);
 
-  useEffect(() => { setSettings((s) => ({ ...s, geo })); }, [geo]);
+  const geoChangedRef = useRef(false);
+  useEffect(() => {
+    setSettings((s) => {
+      if (s.geo !== geo) geoChangedRef.current = true;
+      return { ...s, geo };
+    });
+  }, [geo]);
 
   function set<K extends keyof WaPctSettings>(k: K, v: WaPctSettings[K]) {
     setSettings((s) => ({ ...s, [k]: v }));
@@ -839,6 +890,14 @@ function WaPctComputePanel({
       setLoading(false);
     }
   }, [settings, onResult, viewLevel, isMixed]);
+
+  // Auto-recompute when geo changes while already computed
+  useEffect(() => {
+    if (geoChangedRef.current && computed && !loading) {
+      geoChangedRef.current = false;
+      compute();
+    }
+  }, [settings.geo, computed, loading, compute]);
 
   return (
     <div style={{ border: "1px solid var(--border)", borderRadius: 8, overflow: "hidden", marginTop: 4 }}>
@@ -905,7 +964,7 @@ function WaPctComputePanel({
               )}
               <div>
                 <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>Method</p>
-                <BtnSeg opts={[{ v: "freq", l: "Freq" }, { v: "imp", l: "Imp" }]} val={settings.method} onChange={(v) => set("method", v)} />
+                <BtnSeg opts={[{ v: "freq", l: "Time" }, { v: "imp", l: "Value" }]} val={settings.method} onChange={(v) => set("method", v)} />
               </div>
               <div>
                 <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>Physical</p>
@@ -980,6 +1039,7 @@ export default function WAExplorerView({ rows, config }: Props) {
   const [taskData, setTaskData]     = useState<EcoTaskRow[] | null>(null);
   const [taskLoading, setTaskLoading] = useState(false);
   const [rowLimit, setRowLimit]     = useState(100);
+  const [empWeighting, setEmpWeighting] = useState<"freq" | "value">("freq");
 
   // ── Debounced search ──────────────────────────────────────────────────────
   const debouncedSearch = useDebounce(search, 250);
@@ -1116,7 +1176,7 @@ export default function WAExplorerView({ rows, config }: Props) {
         }
       }
 
-      displayRows = filtered.map((r) => waRowToDisplay(r, geo));
+      displayRows = filtered.map((r) => waRowToDisplay(r, geo, empWeighting));
 
       // Physical filter on pct_physical
       if (physicalMode === "exclude") {
@@ -1214,7 +1274,7 @@ export default function WAExplorerView({ rows, config }: Props) {
     });
 
     return displayRows;
-  }, [rows, viewLevel, selectedGwas, geo, debouncedSearch, sortCol, sortDir, colFilters, textColFilters, physicalMode, pctAffectedMap, minPctAffected, taskData]);
+  }, [rows, viewLevel, selectedGwas, geo, debouncedSearch, sortCol, sortDir, colFilters, textColFilters, physicalMode, pctAffectedMap, minPctAffected, taskData, empWeighting]);
 
   // ── textColUniqueValues: unique sorted values per text column ─────────────
   const textColUniqueValues = useMemo(() => {
@@ -1267,13 +1327,13 @@ export default function WAExplorerView({ rows, config }: Props) {
       }
     });
     gwaMap.forEach((children, gwaName) => {
-      cache.set(`gwa:${gwaName}`, children.map((r) => waRowToDisplay(r, geo)).sort((a, b) => b.emp - a.emp));
+      cache.set(`gwa:${gwaName}`, children.map((r) => waRowToDisplay(r, geo, empWeighting)).sort((a, b) => b.emp - a.emp));
     });
     iwaMap.forEach((children, iwaName) => {
-      cache.set(`iwa:${iwaName}`, children.map((r) => waRowToDisplay(r, geo)).sort((a, b) => b.emp - a.emp));
+      cache.set(`iwa:${iwaName}`, children.map((r) => waRowToDisplay(r, geo, empWeighting)).sort((a, b) => b.emp - a.emp));
     });
     return cache;
-  }, [rows, geo]);
+  }, [rows, geo, empWeighting]);
 
   // ── Child row helpers ──────────────────────────────────────────────────────
   function getChildRows(parentRow: DisplayRow): DisplayRow[] {
@@ -1326,6 +1386,7 @@ export default function WAExplorerView({ rows, config }: Props) {
     setPctAffectedMap(null);
     setMinPctAffected(0);
     setRowLimit(100);
+    setEmpWeighting("freq");
   };
 
   // ── GWA pill toggle ────────────────────────────────────────────────────────
@@ -1426,7 +1487,7 @@ export default function WAExplorerView({ rows, config }: Props) {
                       </thead>
                       <tbody>
                         {tasks.map((t) => (
-                          <WATaskSubRow key={t.task_normalized} task={t} geo={geo} />
+                          <WATaskSubRow key={t.task_normalized} task={t} geo={geo} empWeighting={empWeighting} />
                         ))}
                       </tbody>
                     </table>
@@ -1452,10 +1513,10 @@ export default function WAExplorerView({ rows, config }: Props) {
             <tr style={{ background: "#f7f7f5", borderBottom: "1px solid var(--border)" }}>
               <td colSpan={visibleCols.length} style={{ padding: "10px 20px 14px 28px" }}>
                 <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-                  {/* Occupation Classification */}
+                  {/* Occupation Categories */}
                   {(row.title_current || row.broad_occ || row.minor_occ_category || row.major_occ_category) && (
                     <div style={{ minWidth: 200 }}>
-                      <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Occupation</p>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Occupation Categories</p>
                       {row.title_current && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Occ:</b> {row.title_current}</p>}
                       {row.broad_occ && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Broad:</b> {row.broad_occ}</p>}
                       {row.minor_occ_category && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Minor:</b> {row.minor_occ_category}</p>}
@@ -1465,15 +1526,15 @@ export default function WAExplorerView({ rows, config }: Props) {
                   {/* Activity Classification */}
                   {(row.gwa_title || row.iwa_title || row.dwa_title) && (
                     <div style={{ minWidth: 200 }}>
-                      <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Activity</p>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Work Activities</p>
                       {row.gwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>GWA:</b> {row.gwa_title}</p>}
                       {row.iwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>IWA:</b> {row.iwa_title}</p>}
                       {row.dwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>DWA:</b> {row.dwa_title}</p>}
                     </div>
                   )}
-                  {/* Task Details */}
+                  {/* Task Detail */}
                   <div>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Task Details</p>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Task Detail</p>
                     <table style={{ fontSize: 11, borderCollapse: "collapse" }}>
                       <tbody>
                         <tr>
@@ -1495,20 +1556,12 @@ export default function WAExplorerView({ rows, config }: Props) {
                           <td style={{ padding: "2px 0" }}>{row.relevance != null ? row.relevance.toFixed(2) : <span style={muted}>—</span>}</td>
                         </tr>
                         <tr>
-                          <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Auto Avg</td>
-                          <td style={{ padding: "2px 0" }}>{avgAuto != null ? avgAuto.toFixed(3) : <span style={muted}>—</span>}</td>
+                          <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Emp</td>
+                          <td style={{ padding: "2px 0" }}>{fmtEmp(row.emp)}</td>
                         </tr>
                         <tr>
-                          <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Auto Max</td>
-                          <td style={{ padding: "2px 0" }}>{maxAuto != null ? maxAuto.toFixed(3) : <span style={muted}>—</span>}</td>
-                        </tr>
-                        <tr>
-                          <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Pct Avg</td>
-                          <td style={{ padding: "2px 0" }}>{avgPct != null ? fmtPctNorm(avgPct) : <span style={muted}>—</span>}</td>
-                        </tr>
-                        <tr>
-                          <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Pct Max</td>
-                          <td style={{ padding: "2px 0" }}>{maxPct != null ? fmtPctNorm(maxPct) : <span style={muted}>—</span>}</td>
+                          <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Med Wage</td>
+                          <td style={{ padding: "2px 0" }}>{fmtWage(row.wage)}</td>
                         </tr>
                       </tbody>
                     </table>
@@ -1539,10 +1592,10 @@ export default function WAExplorerView({ rows, config }: Props) {
                       </table>
                     </div>
                   )}
-                  {/* Top MCPs */}
+                  {/* Top MCP Servers */}
                   {topMcps.length > 0 && (
                     <div style={{ minWidth: 200 }}>
-                      <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Top MCPs</p>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Top MCP Servers</p>
                       <ol style={{ margin: 0, paddingLeft: 16, display: "flex", flexDirection: "column", gap: 3 }}>
                         {topMcps.slice(0, 5).map((mcp, i) => (
                           <li key={i} style={{ fontSize: 11, color: "var(--text-secondary)" }}>
@@ -1596,8 +1649,7 @@ export default function WAExplorerView({ rows, config }: Props) {
           </span>
         </div>
 
-        {/* Row 2: GWA pills (hidden in simple mode) */}
-        {!isSimple && (
+        {/* Row 2: GWA pills */}
         <div style={{
           display: "flex", flexWrap: "nowrap", gap: 5,
           overflowX: "auto", paddingBottom: 4,
@@ -1632,7 +1684,6 @@ export default function WAExplorerView({ rows, config }: Props) {
             );
           })}
         </div>
-        )}
 
         {/* Row 3: controls */}
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
@@ -1677,6 +1728,17 @@ export default function WAExplorerView({ rows, config }: Props) {
               opts={[{ v: "all", l: "All" }, { v: "exclude", l: "No Phys" }, { v: "only", l: "Phys Only" }]}
               val={physicalMode}
               onChange={setPhysicalMode}
+            />
+          </div>
+          )}
+
+          {!isSimple && (
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 600 }}>Emp Weight:</span>
+            <BtnSeg<"freq" | "value">
+              opts={[{ v: "freq", l: "Time" }, { v: "value", l: "Value" }]}
+              val={empWeighting}
+              onChange={setEmpWeighting}
             />
           </div>
           )}
@@ -1809,6 +1871,7 @@ export default function WAExplorerView({ rows, config }: Props) {
                       color: isSorted ? "var(--brand)" : "var(--text-muted)",
                       textTransform: "uppercase", letterSpacing: "0.06em",
                       whiteSpace: "nowrap",
+                      overflow: "hidden",
                       width: col.width, minWidth: col.width,
                       cursor: "pointer",
                       userSelect: "none",

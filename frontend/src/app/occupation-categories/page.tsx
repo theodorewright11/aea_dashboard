@@ -31,7 +31,7 @@ function pendingToConfigSummary(p: GroupPending, groupId: "A" | "B"): string[] {
     : `${p.datasets.join(", ")} (${p.combineMethod})`;
   const physLabel = p.physicalMode === "all" ? "All tasks" : p.physicalMode === "exclude" ? "Non-physical only" : "Physical only";
   const augLabel  = p.useAutoAug ? `Auto-aug: On${p.useAdjMean ? " (adj)" : ""}` : "Auto-aug: Off";
-  const line1 = `Group ${groupId}  ·  Datasets: ${dsLabel}  ·  Method: ${p.method === "freq" ? "Frequency" : "Importance"}  ·  Geo: ${p.geo === "nat" ? "National" : "Utah"}`;
+  const line1 = `Group ${groupId}  ·  Datasets: ${dsLabel}  ·  Method: ${p.method === "freq" ? "Time" : "Value"}  ·  Geo: ${p.geo === "nat" ? "National" : "Utah"}`;
   const line2 = `Aggregation: ${p.aggLevel}  ·  Top ${p.topN}  ·  Sort: ${p.sortBy}  ·  ${physLabel}  ·  ${augLabel}${p.searchQuery ? `  ·  Search: "${p.searchQuery}"` : ""}`;
   return [line1, line2];
 }
@@ -340,7 +340,7 @@ function GroupSettingsPanel({
     : `${pending.datasets.length} ds (${pending.combineMethod})`;
   const summary = [
     summaryDs,
-    pending.method === "freq" ? "Freq" : "Imp",
+    pending.method === "freq" ? "Time" : "Value",
     pending.geo === "nat" ? "National" : "Utah",
     pending.aggLevel,
     `Sort: ${SORT_SHORT[pending.sortBy] ?? pending.sortBy}`,
@@ -411,10 +411,10 @@ function GroupSettingsPanel({
             <div>
               <div style={{ display: "flex", alignItems: "center" }}>
                 <ControlLabel>Method</ControlLabel>
-                <InfoTooltip text="Frequency: weights tasks by how often they're done (freq_mean). Importance: weights by relevance × 2^importance." />
+                <InfoTooltip text="Time: weights tasks by how often they're done (freq_mean). Value: weights by freq × relevance × importance." />
               </div>
               <SegBtn
-                options={[{ value: "freq", label: "Freq" }, { value: "imp", label: "Imp" }]}
+                options={[{ value: "freq", label: "Time" }, { value: "imp", label: "Value" }]}
                 value={pending.method}
                 onChange={(v) => set("method", v)}
               />
@@ -862,7 +862,7 @@ export default function HomePage() {
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: activeGroup === "A" ? GROUP_B_COLOR : GROUP_A_COLOR, flexShrink: 0 }} />
             <strong style={{ fontWeight: 600 }}>Group {activeGroup === "A" ? "B" : "A"}:</strong>&nbsp;
             {dsLabelOther}
-            &nbsp;·&nbsp;{otherPending.method === "freq" ? "Freq" : "Imp"}
+            &nbsp;·&nbsp;{otherPending.method === "freq" ? "Time" : "Value"}
             &nbsp;·&nbsp;{otherPending.geo === "nat" ? "National" : "Utah"}
             &nbsp;·&nbsp;{otherPending.aggLevel}
             &nbsp;·&nbsp;Top {otherPending.topN}
@@ -910,12 +910,8 @@ export default function HomePage() {
           )}
         </div>
 
-        {/* Footer */}
-        <div style={{ padding: "12px 28px 20px", borderTop: "1px solid var(--border)", marginTop: "auto" }}>
-          <p style={{ fontSize: 11, color: "var(--text-muted)", margin: 0 }}>
-            Source: 2025 O*NET task data · 2024 BLS OEWS · AEI conversation data · MCP server classification pipeline
-          </p>
-        </div>
+        {/* Footer spacer */}
+        <div style={{ height: 20, marginTop: "auto" }} />
       </div>
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>

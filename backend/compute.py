@@ -106,7 +106,7 @@ def compute_task_comp(
     if method == "freq":
         tc = df["freq_mean"].copy().fillna(0.0)
     else:
-        tc = df["relevance"].fillna(0.0) * (2.0 ** df["importance"].fillna(0.0))
+        tc = df["freq_mean"].fillna(0.0) * df["relevance"].fillna(0.0) * df["importance"].fillna(0.0)
 
     if use_auto_aug:
         if use_adj_mean and "auto_aug_mean_adj" in df.columns:
@@ -592,17 +592,29 @@ def _compute_wa_for_group(
         "dwa": "dwa_title",
     }
 
-    # -- n_tasks per occ: (title, task_normalized) dedup only — for emp allocation
+    # -- Emp weighting per occ: freq-based or freq×rel×imp-based instead of equal split
     eco_task_dedup = (
         eco.groupby([title_col, "task_normalized"], sort=False)
         .first()
         .reset_index()
     )
-    n_tasks_per_occ = (
-        eco_task_dedup.groupby(title_col)["task_normalized"]
-        .count()
-        .reset_index(name="n_tasks")
-    )
+
+    # Compute per-task weight for emp allocation
+    if method == "freq":
+        eco_task_dedup["_emp_weight"] = eco_task_dedup["freq_mean"].fillna(0.0)
+    else:
+        eco_task_dedup["_emp_weight"] = (
+            eco_task_dedup["freq_mean"].fillna(0.0)
+            * eco_task_dedup["relevance"].fillna(0.0)
+            * eco_task_dedup["importance"].fillna(0.0)
+        )
+    # Normalised weight per occ: weight / sum(weight in occ)
+    eco_task_dedup["_emp_weight_sum"] = eco_task_dedup.groupby(title_col)["_emp_weight"].transform("sum")
+    eco_task_dedup["_emp_frac"] = (
+        eco_task_dedup["_emp_weight"] / eco_task_dedup["_emp_weight_sum"].replace(0, np.nan)
+    ).fillna(0.0)
+
+    emp_frac_lookup = eco_task_dedup[[title_col, "task_normalized", "_emp_frac"]].copy()
 
     # Employment / wage per occupation (from raw, first occurrence)
     occ_emp_wage = (
@@ -623,14 +635,14 @@ def _compute_wa_for_group(
             .reset_index()
         )
         eco_for_act["eco_tc"] = compute_task_comp(eco_for_act, method, False, False)
-        eco_for_act = eco_for_act.merge(n_tasks_per_occ, on=title_col, how="left")
+        eco_for_act = eco_for_act.merge(emp_frac_lookup, on=[title_col, "task_normalized"], how="left")
         eco_for_act = eco_for_act.merge(occ_emp_wage, on=title_col, how="left", suffixes=("", "_ow"))
         for col in [emp_col, wage_col]:
             ow = f"{col}_ow"
             if ow in eco_for_act.columns:
                 eco_for_act[col] = eco_for_act[ow].fillna(eco_for_act[col])
                 eco_for_act.drop(columns=[ow], inplace=True)
-        eco_for_act["emp_per_task"] = (eco_for_act[emp_col] / eco_for_act["n_tasks"]).fillna(0.0)
+        eco_for_act["emp_per_task"] = (eco_for_act["_emp_frac"] * eco_for_act[emp_col]).fillna(0.0)
         eco_for_acts[act_key] = eco_for_act
 
     # -- Process each AI dataset
@@ -1496,20 +1508,31 @@ def get_wa_explorer_data() -> list:
     avail_cols = [c for c in needed_cols if c in eco.columns]
     df = eco[avail_cols].copy()
 
-    # n_unique_tasks_per_occ
-    n_tasks_per_occ = (
-        df.groupby("title_current")["task_normalized"]
-        .nunique()
-        .reset_index()
-        .rename(columns={"task_normalized": "n_tasks_occ"})
-    )
-    df = df.merge(n_tasks_per_occ, on="title_current", how="left")
+    # Compute emp weights with both methods (freq and value) so frontend can toggle
+    task_dedup = df.drop_duplicates(subset=["title_current", "task_normalized"]).copy()
+    task_dedup["_freq_w"] = task_dedup["freq_mean"].fillna(0.0) if "freq_mean" in task_dedup.columns else 0.0
+    task_dedup["_value_w"] = (
+        task_dedup["freq_mean"].fillna(0.0)
+        * task_dedup["relevance"].fillna(0.0)
+        * task_dedup["importance"].fillna(0.0)
+    ) if all(c in task_dedup.columns for c in ["freq_mean", "relevance", "importance"]) else 0.0
+    task_dedup["_freq_sum"] = task_dedup.groupby("title_current")["_freq_w"].transform("sum")
+    task_dedup["_value_sum"] = task_dedup.groupby("title_current")["_value_w"].transform("sum")
+    task_dedup["_freq_frac"] = (task_dedup["_freq_w"] / task_dedup["_freq_sum"].replace(0, np.nan)).fillna(0.0)
+    task_dedup["_value_frac"] = (task_dedup["_value_w"] / task_dedup["_value_sum"].replace(0, np.nan)).fillna(0.0)
+    frac_lookup = task_dedup[["title_current", "task_normalized", "_freq_frac", "_value_frac"]].copy()
+    df = df.merge(frac_lookup, on=["title_current", "task_normalized"], how="left")
 
-    for geo_col, emp_col in [("emp_per_task_nat", "emp_tot_nat_2024"), ("emp_per_task_ut", "emp_tot_ut_2024")]:
+    for emp_col, freq_col, val_col in [
+        ("emp_tot_nat_2024", "emp_per_task_nat_freq", "emp_per_task_nat_value"),
+        ("emp_tot_ut_2024",  "emp_per_task_ut_freq",  "emp_per_task_ut_value"),
+    ]:
         if emp_col in df.columns:
-            df[geo_col] = df[emp_col].fillna(0) / df["n_tasks_occ"].replace(0, np.nan)
+            df[freq_col] = (df["_freq_frac"] * df[emp_col].fillna(0)).fillna(0.0)
+            df[val_col]  = (df["_value_frac"] * df[emp_col].fillna(0)).fillna(0.0)
         else:
-            df[geo_col] = 0.0
+            df[freq_col] = 0.0
+            df[val_col]  = 0.0
 
     def _phys_bool(v):
         if v is None:
@@ -1540,23 +1563,31 @@ def get_wa_explorer_data() -> list:
         unique_pairs = level_df[[act_col, "task_normalized"]].drop_duplicates()
 
         for act_name, act_df in sorted(level_df.groupby(act_col), key=lambda x: x[0]):
-            # emp: sum emp_per_task across unique (occ, task_norm) combos
+            # emp: sum emp_per_task across unique (occ, task_norm) combos for BOTH methods
             occ_task_dedup = act_df.drop_duplicates(subset=["title_current", "task_normalized"])
-            total_emp_nat = occ_task_dedup["emp_per_task_nat"].fillna(0).sum()
-            total_emp_ut  = occ_task_dedup["emp_per_task_ut"].fillna(0).sum()
+            total_emp_nat_freq  = occ_task_dedup["emp_per_task_nat_freq"].fillna(0).sum()
+            total_emp_ut_freq   = occ_task_dedup["emp_per_task_ut_freq"].fillna(0).sum()
+            total_emp_nat_value = occ_task_dedup["emp_per_task_nat_value"].fillna(0).sum()
+            total_emp_ut_value  = occ_task_dedup["emp_per_task_ut_value"].fillna(0).sum()
 
-            # wage: emp-weighted avg
-            wage_sum_nat = 0.0; wage_emp_nat = 0.0
-            wage_sum_ut  = 0.0; wage_emp_ut  = 0.0
+            # wage: emp-weighted avg for BOTH methods
+            wage_sum_nat_f = 0.0; wage_emp_nat_f = 0.0
+            wage_sum_ut_f  = 0.0; wage_emp_ut_f  = 0.0
+            wage_sum_nat_v = 0.0; wage_emp_nat_v = 0.0
+            wage_sum_ut_v  = 0.0; wage_emp_ut_v  = 0.0
             for _, r in occ_task_dedup.iterrows():
-                en = _safe_num(r.get("emp_per_task_nat")) or 0
-                eu = _safe_num(r.get("emp_per_task_ut"))  or 0
+                enf = _safe_num(r.get("emp_per_task_nat_freq")) or 0
+                euf = _safe_num(r.get("emp_per_task_ut_freq"))  or 0
+                env = _safe_num(r.get("emp_per_task_nat_value")) or 0
+                euv = _safe_num(r.get("emp_per_task_ut_value"))  or 0
                 wn = _safe_num(r.get("a_med_nat_2024"))
                 wu = _safe_num(r.get("a_med_ut_2024"))
-                if wn is not None and en > 0:
-                    wage_sum_nat += wn * en; wage_emp_nat += en
-                if wu is not None and eu > 0:
-                    wage_sum_ut  += wu * eu; wage_emp_ut  += eu
+                if wn is not None:
+                    if enf > 0: wage_sum_nat_f += wn * enf; wage_emp_nat_f += enf
+                    if env > 0: wage_sum_nat_v += wn * env; wage_emp_nat_v += env
+                if wu is not None:
+                    if euf > 0: wage_sum_ut_f += wu * euf; wage_emp_ut_f += euf
+                    if euv > 0: wage_sum_ut_v += wu * euv; wage_emp_ut_v += euv
 
             n_occs = int(act_df["title_current"].nunique())
 
@@ -1589,10 +1620,14 @@ def get_wa_explorer_data() -> list:
                 "name":    str(act_name),
                 "parent":  parent_name,
                 "gwa":     gwa_name,
-                "emp_nat": round(float(total_emp_nat), 1) if total_emp_nat else None,
-                "emp_ut":  round(float(total_emp_ut),  1) if total_emp_ut  else None,
-                "wage_nat": round(wage_sum_nat / wage_emp_nat, 0) if wage_emp_nat else None,
-                "wage_ut":  round(wage_sum_ut  / wage_emp_ut,  0) if wage_emp_ut  else None,
+                "emp_nat_freq":  round(float(total_emp_nat_freq), 1) if total_emp_nat_freq else None,
+                "emp_ut_freq":   round(float(total_emp_ut_freq),  1) if total_emp_ut_freq  else None,
+                "emp_nat_value": round(float(total_emp_nat_value), 1) if total_emp_nat_value else None,
+                "emp_ut_value":  round(float(total_emp_ut_value),  1) if total_emp_ut_value  else None,
+                "wage_nat_freq":  round(wage_sum_nat_f / wage_emp_nat_f, 0) if wage_emp_nat_f else None,
+                "wage_ut_freq":   round(wage_sum_ut_f  / wage_emp_ut_f,  0) if wage_emp_ut_f  else None,
+                "wage_nat_value": round(wage_sum_nat_v / wage_emp_nat_v, 0) if wage_emp_nat_v else None,
+                "wage_ut_value":  round(wage_sum_ut_v  / wage_emp_ut_v,  0) if wage_emp_ut_v  else None,
                 "n_occs":  n_occs,
                 "n_tasks": n_tasks,
                 "n_physical_tasks": n_phys,
@@ -1626,22 +1661,30 @@ def get_wa_tasks_for_activity(level: str, name: str) -> list:
     if act_df.empty:
         return []
 
-    # emp allocation
-    n_tasks_per_occ = (
-        eco.groupby("title_current")["task_normalized"]
-        .nunique()
-        .reset_index()
-        .rename(columns={"task_normalized": "n_tasks_occ"})
-    )
-    act_df = act_df.merge(n_tasks_per_occ, on="title_current", how="left")
-    if "emp_tot_nat_2024" in act_df.columns:
-        act_df["emp_per_task_nat"] = act_df["emp_tot_nat_2024"].fillna(0) / act_df["n_tasks_occ"].replace(0, np.nan)
-    else:
-        act_df["emp_per_task_nat"] = 0.0
-    if "emp_tot_ut_2024" in act_df.columns:
-        act_df["emp_per_task_ut"] = act_df["emp_tot_ut_2024"].fillna(0) / act_df["n_tasks_occ"].replace(0, np.nan)
-    else:
-        act_df["emp_per_task_ut"] = 0.0
+    # emp allocation — weighted by freq or freq×rel×imp
+    task_dd = eco.drop_duplicates(subset=["title_current", "task_normalized"]).copy()
+    task_dd["_freq_w"] = task_dd["freq_mean"].fillna(0.0) if "freq_mean" in task_dd.columns else 0.0
+    task_dd["_value_w"] = (
+        task_dd["freq_mean"].fillna(0.0)
+        * task_dd["relevance"].fillna(0.0)
+        * task_dd["importance"].fillna(0.0)
+    ) if all(c in task_dd.columns for c in ["freq_mean", "relevance", "importance"]) else 0.0
+    task_dd["_freq_sum"]  = task_dd.groupby("title_current")["_freq_w"].transform("sum")
+    task_dd["_value_sum"] = task_dd.groupby("title_current")["_value_w"].transform("sum")
+    task_dd["_freq_frac"]  = (task_dd["_freq_w"]  / task_dd["_freq_sum"].replace(0, np.nan)).fillna(0.0)
+    task_dd["_value_frac"] = (task_dd["_value_w"] / task_dd["_value_sum"].replace(0, np.nan)).fillna(0.0)
+    frac_lkp = task_dd[["title_current", "task_normalized", "_freq_frac", "_value_frac"]].copy()
+    act_df = act_df.merge(frac_lkp, on=["title_current", "task_normalized"], how="left")
+    for emp_col, fc, vc in [
+        ("emp_tot_nat_2024", "emp_per_task_nat_freq", "emp_per_task_nat_value"),
+        ("emp_tot_ut_2024",  "emp_per_task_ut_freq",  "emp_per_task_ut_value"),
+    ]:
+        if emp_col in act_df.columns:
+            act_df[fc] = (act_df["_freq_frac"]  * act_df[emp_col].fillna(0)).fillna(0.0)
+            act_df[vc] = (act_df["_value_frac"] * act_df[emp_col].fillna(0)).fillna(0.0)
+        else:
+            act_df[fc] = 0.0
+            act_df[vc] = 0.0
 
     def _phys_bool(v):
         if v is None: return False
@@ -1658,16 +1701,22 @@ def get_wa_tasks_for_activity(level: str, name: str) -> list:
 
         # Use first row for task text, hierarchy, physical
         first = grp.iloc[0]
-        emp_nat = float(grp.drop_duplicates(subset=["title_current"])["emp_per_task_nat"].fillna(0).sum())
-        emp_ut  = float(grp.drop_duplicates(subset=["title_current"])["emp_per_task_ut"].fillna(0).sum())
+        deduped = grp.drop_duplicates(subset=["title_current"])
+        emp_nat_freq  = float(deduped["emp_per_task_nat_freq"].fillna(0).sum())
+        emp_ut_freq   = float(deduped["emp_per_task_ut_freq"].fillna(0).sum())
+        emp_nat_value = float(deduped["emp_per_task_nat_value"].fillna(0).sum())
+        emp_ut_value  = float(deduped["emp_per_task_ut_value"].fillna(0).sum())
 
-        # wage: emp-weighted avg
-        wage_sum_nat = 0.0; wage_emp_nat = 0.0
-        for _, r in grp.drop_duplicates(subset=["title_current"]).iterrows():
-            en = _safe_num(r.get("emp_per_task_nat")) or 0
+        # wage: emp-weighted avg for both methods
+        wage_sum_nat_f = 0.0; wage_emp_nat_f = 0.0
+        wage_sum_nat_v = 0.0; wage_emp_nat_v = 0.0
+        for _, r in deduped.iterrows():
+            enf = _safe_num(r.get("emp_per_task_nat_freq")) or 0
+            env = _safe_num(r.get("emp_per_task_nat_value")) or 0
             wn = _safe_num(r.get("a_med_nat_2024"))
-            if wn is not None and en > 0:
-                wage_sum_nat += wn * en; wage_emp_nat += en
+            if wn is not None:
+                if enf > 0: wage_sum_nat_f += wn * enf; wage_emp_nat_f += enf
+                if env > 0: wage_sum_nat_v += wn * env; wage_emp_nat_v += env
 
         sources = lookup.get(tn, {})
         auto_vals = [v["auto_aug"] for v in sources.values() if v.get("auto_aug") is not None]
@@ -1685,9 +1734,12 @@ def get_wa_tasks_for_activity(level: str, name: str) -> list:
             "iwa_title":           first.get("iwa_title"),
             "gwa_title":           first.get("gwa_title"),
             "physical":            is_physical,
-            "emp_nat":             round(emp_nat, 2) if emp_nat else None,
-            "emp_ut":              round(emp_ut,  2) if emp_ut  else None,
-            "wage_nat":            round(wage_sum_nat / wage_emp_nat, 0) if wage_emp_nat else None,
+            "emp_nat_freq":        round(emp_nat_freq, 2) if emp_nat_freq else None,
+            "emp_ut_freq":         round(emp_ut_freq,  2) if emp_ut_freq  else None,
+            "emp_nat_value":       round(emp_nat_value, 2) if emp_nat_value else None,
+            "emp_ut_value":        round(emp_ut_value,  2) if emp_ut_value  else None,
+            "wage_nat_freq":       round(wage_sum_nat_f / wage_emp_nat_f, 0) if wage_emp_nat_f else None,
+            "wage_nat_value":      round(wage_sum_nat_v / wage_emp_nat_v, 0) if wage_emp_nat_v else None,
             "freq_mean":           _safe_num(first.get("freq_mean")),
             "importance":          _safe_num(first.get("importance")),
             "relevance":           _safe_num(first.get("relevance")),

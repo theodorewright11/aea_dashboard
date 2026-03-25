@@ -116,9 +116,9 @@ export default function GroupSettings({ groupId, color, settings, config, onChan
           onChange={(v) => update({ combineMethod: v as "Average" | "Max" })} horizontal />
       )}
 
-      <RadioGroup label="Task completion method" options={["Frequency", "Importance-weighted"]}
-        value={settings.method === "freq" ? "Frequency" : "Importance-weighted"}
-        onChange={(v) => update({ method: v === "Frequency" ? "freq" : "imp" })} horizontal />
+      <RadioGroup label="Task completion method" options={["Time", "Value"]}
+        value={settings.method === "freq" ? "Time" : "Value"}
+        onChange={(v) => update({ method: v === "Time" ? "freq" : "imp" })} horizontal />
 
       <RadioGroup label="Geography" options={["National", "Utah"]}
         value={settings.geo === "nat" ? "National" : "Utah"}

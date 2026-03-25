@@ -489,10 +489,14 @@ class WAExplorerRow(BaseModel):
     name:               str
     parent:             Optional[str]   = None
     gwa:                Optional[str]   = None
-    emp_nat:            Optional[float] = None
-    emp_ut:             Optional[float] = None
-    wage_nat:           Optional[float] = None
-    wage_ut:            Optional[float] = None
+    emp_nat_freq:       Optional[float] = None
+    emp_ut_freq:        Optional[float] = None
+    emp_nat_value:      Optional[float] = None
+    emp_ut_value:       Optional[float] = None
+    wage_nat_freq:      Optional[float] = None
+    wage_ut_freq:       Optional[float] = None
+    wage_nat_value:     Optional[float] = None
+    wage_ut_value:      Optional[float] = None
     n_occs:             int             = 0
     n_tasks:            int             = 0
     n_physical_tasks:   int             = 0
@@ -528,9 +532,12 @@ class WATaskDetail(BaseModel):
     iwa_title:          Optional[str]   = None
     gwa_title:          Optional[str]   = None
     physical:           Optional[bool]  = None
-    emp_nat:            Optional[float] = None
-    emp_ut:             Optional[float] = None
-    wage_nat:           Optional[float] = None
+    emp_nat_freq:       Optional[float] = None
+    emp_ut_freq:        Optional[float] = None
+    emp_nat_value:      Optional[float] = None
+    emp_ut_value:       Optional[float] = None
+    wage_nat_freq:      Optional[float] = None
+    wage_nat_value:     Optional[float] = None
     freq_mean:          Optional[float] = None
     importance:         Optional[float] = None
     relevance:          Optional[float] = None

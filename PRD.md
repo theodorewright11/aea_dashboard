@@ -36,7 +36,7 @@ The dashboard draws on five independent data sources. Using multiple AI scoring 
 
 ## 3. Pages & Features
 
-The dashboard has seven pages accessible from the top navigation bar. The **default landing page** is the Occupation Explorer (`/explorer`); the root URL (`/`) redirects there.
+The dashboard has seven pages accessible from the top navigation bar. The **default landing page** is the Occupation Explorer (`/explorer`); the root URL (`/`) redirects there. A global **footer** below all page content shows source attribution and links to the project's GitHub repositories, the research paper (placeholder), and a contact email.
 
 ### 3.1 Occupation Explorer
 
@@ -51,13 +51,13 @@ A sortable, filterable data table covering all 923 occupations in the O*NET/BLS 
 - A table with columns for name, employment, median wage, number of occupations (at group levels), number of tasks, four auto-aug score variants (avg/max, with values only or across all tasks), percent physical, four pct_normalized variants, and two sum-of-pct columns. At the Task level, additional columns are available: Occupation, Major, Minor, Broad occupation category, and DWA/IWA/GWA work activity classifications.
 - A **column selector** (gear icon in the header bar) that lets users toggle which columns are visible. Persisted to localStorage. In Simple mode, only a curated subset of columns is selectable.
 - A **level selector** (Major / Minor / Broad / Occupation / Task) that controls the granularity of the table. At the Task level, each row is one task × occupation combination from the full ECO 2025 dataset (~23,850 rows). Tasks can repeat across occupations but each row has a unique combination of task, occupation, and work activity classification. Employment and wage columns show the raw occupation-level numbers (not divided).
-- **Inline drilldown**: clicking any row expands it to show child rows at the next level down. At the occupation level, expanding shows individual tasks. At the task level, expanding a row shows its occupation classification (Occupation → Broad → Minor → Major), its activity classification (GWA/IWA/DWA), a Task Details panel (physical flag, frequency, importance, relevance, auto-aug score, % conversations), and a per-source breakdown table showing scores from all eight AI sources plus computed averages and maximums.
+- **Inline drilldown**: clicking any row expands it to show child rows at the next level down. At the occupation level, expanding shows individual tasks. At the task level, expanding a row shows five sections: **Occupation Categories** (Occupation → Broad → Minor → Major), **Work Activities** (GWA / IWA / DWA), **Task Detail** (physical flag, frequency, importance, relevance), **Source Breakdown** (per-source scores from all eight AI sources plus computed averages and maximums), and **Top MCP Servers** (if available).
 - **Multi-select major category pills** to filter to specific SOC major groups. At the task level, filtering applies to the task's `major_occ_category`.
 - **Click-to-sort** on any column header (toggles ascending/descending).
 - **Per-column threshold filters** via a filter icon on each column header (set ≥ or ≤ cutoffs).
 - **Search** with a level-scope selector (All / Major / Minor / Broad / Occ / Task) and text highlighting on matches. At the task level, search also matches against occupation name and occupation classification columns.
 - **Nat/Utah toggle** switching employment and wage figures between national and Utah.
-- **Pct Compute Panel** — an optional expandable panel that runs the full computation pipeline (with configurable dataset, combine option, method, physical filter, and auto-aug settings) and overlays "% Tasks Affected", "Workers Affected", and "Wages Affected" columns directly in the table. This lets users see the dashboard's computed metrics alongside the raw pre-computed scores.
+- **Pct Compute Panel** — an optional expandable panel that runs the full computation pipeline (with configurable dataset, combine option, method, physical filter, and auto-aug settings) and overlays "% Tasks Affected", "Workers Affected", and "Wages Affected" columns directly in the table. This lets users see the dashboard's computed metrics alongside the raw pre-computed scores. If the user changes the Nat/Utah toggle while results are already computed, the panel auto-recomputes with the new geography.
 - **Pagination** — rows load 100 at a time with a "Load 100 more" button.
 
 ### 3.2 Work Activities Explorer
@@ -70,7 +70,8 @@ The same sortable/filterable table interface as the Occupation Explorer, but org
 
 **What the user sees and can do:**
 - A **level selector** (GWA / IWA / DWA / Task) controlling which tier of the hierarchy is shown as top-level rows. The Task level shows all ~23,850 eco rows (same data as the Occupation Explorer task level).
-- **Inline drilldown**: GWA rows expand to show IWA children; IWA rows expand to show DWA children; DWA rows expand to show individual tasks with a sub-table showing Physical, Frequency, Importance, Relevance, auto-aug score, % conversations, % Tasks Affected, and workers/wages affected per task. Task rows are expandable to show a Task Details panel (physical flag, frequency, importance, relevance, auto-aug score, % conversations), Top MCPs panel, occupation classification, and activity classification.
+- **Inline drilldown**: GWA rows expand to show IWA children; IWA rows expand to show DWA children; DWA rows expand to show individual tasks with a sub-table showing Physical, Emp, Wage, Frequency, Importance, Relevance, auto-aug score, and % conversations. Each task sub-row is expandable to show Occupation Categories, Work Activities, Task Detail (with physical/freq/imp/rel/emp/wage + auto avg/max + pct avg/max), Source Breakdown, and Top MCP Servers. Task-level rows expand to show Occupation Categories, Work Activities, Task Detail (physical/freq/imp/rel/emp/wage only — auto/pct are already table columns), Source Breakdown, and Top MCP Servers.
+- **Emp weighting toggle** ("Emp Weight: Time / Value") — controls how employment is allocated to tasks within work activities (freq-weighted or freq×rel×imp-weighted). Hidden in simple mode (defaults to Time/freq). Affects both activity-level rows and accordion task sub-rows.
 - **GWA multi-select pills** for filtering to specific General Work Activity groups. Scrollbar is visible for horizontal overflow.
 - **Column selector** (gear icon) — same as Occupation Explorer: toggles column visibility, persisted to localStorage. In Simple mode, only a curated subset of columns is selectable (different sets at the WA level vs. task level).
 - **Text column filters** (multi-select dropdown) on the Occupation, Major, Minor, Broad, DWA, IWA, and GWA columns at the task level — lets users filter to specific occupational or activity categories by clicking a funnel icon in the column header.
@@ -88,7 +89,7 @@ A side-by-side comparison view with two independently configurable groups (A and
 **What the user sees and can do:**
 - **Two-group layout** — Group A and Group B side by side. Each group has its own independent control panel.
 - **Dataset selection** — pick one or more AI datasets per group. When multiple are selected, choose Average or Max to combine scores.
-- **Display controls** — method (Frequency or Importance-weighted), geography (National or Utah), aggregation level (Major / Minor / Broad / Occupation), and Top N (up to 30).
+- **Display controls** — method (Time or Value), geography (National or Utah), aggregation level (Major / Minor / Broad / Occupation), and Top N (up to 30).
 - **Filtering controls** — physical task filter (all / exclude physical / physical only), auto-aug multiplier toggle (Off / On), and MCP adjusted mean toggle.
 - **Run button** — charts only update on Run, not on every control change. After running, control sections collapse to a summary bar.
 - **Search** — type a category name to find it in the ranked list. The matched bar is highlighted orange with surrounding context bars shown (±N configurable).
@@ -136,7 +137,7 @@ Time-series line charts showing how automation exposure metrics have changed acr
 
 A reference page explaining how to use each dashboard page and how all metrics are computed, with an **interactive calculator** that lets users experiment with task completion weight computation.
 
-**The calculator** has sliders for frequency, importance, relevance, and auto-aug score. Users toggle between Frequency and Importance-weighted methods and see the step-by-step computation result update in real time. This makes the methodology tangible rather than abstract.
+**The calculator** has sliders for frequency, importance, relevance, and auto-aug score. Users toggle between Time and Value methods and see the step-by-step computation result update in real time. This makes the methodology tangible rather than abstract.
 
 Also includes documentation of page guides, metric formulas, data source descriptions, auto-aug multiplier mechanics, and the occupation/work-activity aggregation logic.
 
@@ -173,7 +174,7 @@ The percentage of AI conversations (from AEI/MCP/Microsoft data) that involved a
 |--------|--------|-----------------|
 | **Dataset selection** | AEI v1–v4, AEI API v3–v4, AEI Cumul. v1–v4, MCP v1–v4, Microsoft | Which AI scoring source(s) to use. Different sources capture different AI capabilities. Dataset selection enforces three rules: (1) only one cumulative AEI version at a time (v4 already includes all prior data); (2) cumulative and snapshot AEI cannot be mixed; (3) only one MCP version at a time. The UI auto-deselects conflicting choices when a new dataset is added. |
 | **Combine method** | Average / Max | When multiple datasets are selected, whether to average their scores or take the maximum per task. Max shows peak capability across sources; Average shows consensus. |
-| **Method** | Frequency / Importance-weighted | How task weights are computed. Frequency uses reported task frequency directly. Importance-weighted uses `relevance × 2^importance`, giving more weight to tasks that are both important and relevant. |
+| **Method** | Time / Value | How task weights are computed. Time uses reported task frequency directly (`freq_mean`). Value uses `freq_mean × relevance × importance`, giving more weight to tasks that are frequently performed and are both important and relevant. On Work Activities pages, the method toggle also controls how employment is allocated to tasks (freq-weighted or freq×rel×imp-weighted). |
 | **Geography** | National / Utah | Which BLS employment and wage figures to use. Utah figures are relevant for state-level policy. |
 | **Aggregation level** | Major Category / Minor Category / Broad Occupation / Occupation | The SOC hierarchy level at which to group and display results. Major has ~23 groups; Occupation has 923. |
 | **Physical task filter** | All / Exclude physical / Physical only | Whether to include, exclude, or isolate tasks classified as requiring physical presence gotten from Microsoft's data for their AI analysis. Useful for focusing on cognitive/informational work. |
@@ -192,12 +193,12 @@ A global toggle in the navigation bar switches the dashboard between **Simple** 
 
 | Page | Fixed settings | Shown controls | Hidden |
 |------|---------------|----------------|--------|
-| **Occupation Explorer** | All datasets, Freq, All phys, Auto-aug On (adj) | Level selector, Search, Nat/Utah | Major pills, Physical toggle, Min filters, PctComputePanel UI (auto-computed) |
-| **WA Explorer** | All AEI datasets, Freq, All phys, Auto-aug On (adj) | Level selector, Search, Nat/Utah | GWA pills, Physical toggle, PctComputePanel UI (auto-computed) |
-| **Occupation Categories** | All datasets, Freq, All phys, Auto-aug On (adj), single group | Aggregation, Geo, Sort, Search, Top N | Group B, Dataset/Method/Physical/Auto-aug controls |
-| **Work Activities** | All AEI datasets, Freq, All phys, Auto-aug On (adj), single group | Activity level, Geo, Sort, Search, Top N | Group B, Dataset/Method/Physical/Auto-aug controls |
-| **Trends (Occ)** | All datasets, Freq, All phys, Auto-aug On (adj) | Lines (Avg/Max only), Metric, Aggregation, Geo, Top N, Sort, Search | Datasets, Filtering, Individual line mode, Value ranking (auto-matches line mode) |
-| **Trends (WA)** | All AEI datasets, Freq, All phys, Auto-aug On (adj) | Lines (Avg/Max only), Metric, Activity level, Geo, Top N, Sort, Search | Datasets, Filtering, Individual line mode, Value ranking |
+| **Occupation Explorer** | All datasets, Time, All phys, Auto-aug On (adj) | Level selector, Major pills, Search, Nat/Utah | Physical toggle, Min filters, PctComputePanel UI (auto-computed) |
+| **WA Explorer** | All AEI datasets, Time, All phys, Auto-aug On (adj), Emp Weight: Time | Level selector, GWA pills, Search, Nat/Utah | Physical toggle, Emp Weight toggle, PctComputePanel UI (auto-computed) |
+| **Occupation Categories** | All datasets, Time, All phys, Auto-aug On (adj), single group | Aggregation, Geo, Sort, Search, Top N | Group B, Dataset/Method/Physical/Auto-aug controls |
+| **Work Activities** | All AEI datasets, Time, All phys, Auto-aug On (adj), single group | Activity level, Geo, Sort, Search, Top N | Group B, Dataset/Method/Physical/Auto-aug controls |
+| **Trends (Occ)** | All datasets, Time, All phys, Auto-aug On (adj) | Lines (Avg/Max only), Metric, Aggregation, Geo, Top N, Sort, Search | Datasets, Filtering, Individual line mode, Value ranking (auto-matches line mode) |
+| **Trends (WA)** | All AEI datasets, Time, All phys, Auto-aug On (adj) | Lines (Avg/Max only), Metric, Activity level, Geo, Top N, Sort, Search | Datasets, Filtering, Individual line mode, Value ranking |
 
 Explorer pages auto-compute % Tasks Affected, Workers Affected, and Wages Affected columns on page load using the fixed settings, without requiring the user to open the PctComputePanel.
 

@@ -102,6 +102,9 @@ const COLUMNS: ColDef[] = [
   { key: "pct_max_all",  label: "Pct Max (all)",    width: 100, numeric: true,  tooltip: "Max pct averaged across ALL tasks (0 for no value)." },
   { key: "sum_pct_avg",  label: "\u03A3 Pct Avg",   width: 90,  numeric: true,  tooltip: "Sum of per-task avg pct across all tasks with a value." },
   { key: "sum_pct_max",  label: "\u03A3 Pct Max",   width: 90,  numeric: true,  tooltip: "Sum of per-task max pct across all tasks with a value." },
+  { key: "freq_col",      label: "Freq",              width: 70,  numeric: true,  tooltip: "O*NET task frequency (0\u201310)" },
+  { key: "imp_col",       label: "Imp",               width: 70,  numeric: true,  tooltip: "O*NET task importance (0\u20135)" },
+  { key: "rel_col",       label: "Rel",               width: 70,  numeric: true,  tooltip: "O*NET task relevance (0\u2013100)" },
   { key: "pct_affected",  label: "% Tasks Aff.",     width: 100, numeric: true,  tooltip: "% Tasks Affected from the compute panel. Uses the selected datasets and method." },
   { key: "workers_aff",   label: "Workers Aff.",     width: 110, numeric: true,  tooltip: "Workers affected = % Tasks Affected × employment. Requires compute panel result." },
   { key: "wages_aff",     label: "Wages Aff. ($B)",  width: 120, numeric: true,  tooltip: "Wages affected (billions) = % Tasks Affected × employment × median wage. Requires compute panel result." },
@@ -140,6 +143,9 @@ interface FlatRow {
   iwa_title?: string | null;
   gwa_title?: string | null;
   n_tasks_per_occ?: number;
+  freq_mean?: number | null;
+  importance?: number | null;
+  relevance?: number | null;
   sources?: Record<string, TaskSourceStats>;
   top_mcps?: McpEntry[];
 }
@@ -221,6 +227,9 @@ function ecoTaskToRow(t: EcoTaskRow, idx: number, geo: "nat" | "ut" = "nat"): Fl
     iwa_title: t.iwa_title ?? null,
     gwa_title: t.gwa_title ?? null,
     n_tasks_per_occ: t.n_tasks_per_occ,
+    freq_mean: t.freq_mean ?? null,
+    importance: t.importance ?? null,
+    relevance: t.relevance ?? null,
     sources: t.sources,
     top_mcps: t.top_mcps ?? [],
   };
@@ -248,6 +257,9 @@ function getVal(row: FlatRow, col: string, pctMap: Map<string, number> | null): 
     case "pct_max_all":  return row.pct_max_all;
     case "sum_pct_avg":  return row.sum_pct_avg;
     case "sum_pct_max":  return row.sum_pct_max;
+    case "freq_col":     return row.freq_mean ?? null;
+    case "imp_col":      return row.importance ?? null;
+    case "rel_col":      return row.relevance ?? null;
     case "pct_affected": return pctMap?.get(pctKey) ?? null;
     case "workers_aff": {
       const pct = pctMap?.get(pctKey);
@@ -295,6 +307,9 @@ function renderCell(
     case "pct_max_all":  return fmtPctNorm(row.pct_max_all);
     case "sum_pct_avg":  return fmtPctNorm(row.sum_pct_avg);
     case "sum_pct_max":  return fmtPctNorm(row.sum_pct_max);
+    case "freq_col":     return row.freq_mean != null ? row.freq_mean.toFixed(1) : <span style={muted}>—</span>;
+    case "imp_col":      return row.importance != null ? row.importance.toFixed(1) : <span style={muted}>—</span>;
+    case "rel_col":      return row.relevance != null ? row.relevance.toFixed(0) : <span style={muted}>—</span>;
     case "pct_affected": {
       const v = pctMap?.get(pctKey) ?? null;
       return v != null
@@ -743,7 +758,7 @@ function TaskSubRow({
             <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
               {occHierarchy && (occHierarchy.broad || occHierarchy.minor || occHierarchy.major) && (
                 <div style={{ minWidth: 200 }}>
-                  <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Occupation Classification</p>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Occupation Categories</p>
                   {occHierarchy.broad && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Broad:</b> {occHierarchy.broad}</p>}
                   {occHierarchy.minor && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Minor:</b> {occHierarchy.minor}</p>}
                   {occHierarchy.major && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>Major:</b> {occHierarchy.major}</p>}
@@ -751,15 +766,15 @@ function TaskSubRow({
               )}
               {(task.gwa_title || task.iwa_title || task.dwa_title) && (
                 <div style={{ minWidth: 200 }}>
-                  <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Activity Classification</p>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Work Activities</p>
                   {task.gwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>GWA:</b> {task.gwa_title}</p>}
                   {task.iwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>IWA:</b> {task.iwa_title}</p>}
                   {task.dwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>DWA:</b> {task.dwa_title}</p>}
                 </div>
               )}
-              {/* Task Details side table */}
+              {/* Task Detail side table */}
               <div style={{ minWidth: 140 }}>
-                <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Task Details</p>
+                <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Task Detail</p>
                 <table style={{ fontSize: 11, borderCollapse: "collapse" }}>
                   <tbody>
                     <tr>
@@ -783,6 +798,22 @@ function TaskSubRow({
                     <tr>
                       <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Relevance</td>
                       <td style={{ padding: "2px 0" }}>{task.relevance?.toFixed(0) ?? "—"}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Auto Avg</td>
+                      <td style={{ padding: "2px 0" }}>{task.avg_auto_aug != null ? task.avg_auto_aug.toFixed(3) : "—"}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Auto Max</td>
+                      <td style={{ padding: "2px 0" }}>{task.max_auto_aug != null ? task.max_auto_aug.toFixed(3) : "—"}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Pct Avg</td>
+                      <td style={{ padding: "2px 0" }}>{task.avg_pct_norm != null ? fmtPctNorm(task.avg_pct_norm) : "—"}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Pct Max</td>
+                      <td style={{ padding: "2px 0" }}>{task.max_pct_norm != null ? fmtPctNorm(task.max_pct_norm) : "—"}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -932,7 +963,13 @@ function PctComputePanel({
   const [error, setError] = useState<string | null>(null);
   const [computed, setComputed] = useState(false);
 
-  useEffect(() => { setSettings((s) => ({ ...s, geo })); }, [geo]);
+  const geoChangedRef = useRef(false);
+  useEffect(() => {
+    setSettings((s) => {
+      if (s.geo !== geo) geoChangedRef.current = true;
+      return { ...s, geo };
+    });
+  }, [geo]);
 
   function set<K extends keyof PctSettings>(k: K, v: PctSettings[K]) {
     setSettings((s) => ({ ...s, [k]: v }));
@@ -973,6 +1010,14 @@ function PctComputePanel({
       setLoading(false);
     }
   }, [settings, onResult, backendAggLevel]);
+
+  // Auto-recompute when geo changes while already computed
+  useEffect(() => {
+    if (geoChangedRef.current && computed && !loading) {
+      geoChangedRef.current = false;
+      compute();
+    }
+  }, [settings.geo, computed, loading, compute]);
 
   return (
     <div style={{ border: "1px solid var(--border)", borderRadius: 8, overflow: "hidden" }}>
@@ -1034,7 +1079,7 @@ function PctComputePanel({
               )}
               <div>
                 <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>Method</p>
-                <BtnSeg opts={[{ v: "freq", l: "Freq" }, { v: "imp", l: "Imp" }]} val={settings.method} onChange={(v) => set("method", v)} />
+                <BtnSeg opts={[{ v: "freq", l: "Time" }, { v: "imp", l: "Value" }]} val={settings.method} onChange={(v) => set("method", v)} />
               </div>
               <div>
                 <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>Physical</p>
@@ -1137,7 +1182,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
   const debouncedSearch   = useDebounce(search,   250);
 
   // ── Column selector state (persisted to localStorage) ──────────────────
-  const TASK_ONLY_COLS = new Set(["occ", "major_cat", "minor_cat", "broad_cat", "dwa_col", "iwa_col", "gwa_col"]);
+  const TASK_ONLY_COLS = new Set(["occ", "major_cat", "minor_cat", "broad_cat", "dwa_col", "iwa_col", "gwa_col", "freq_col", "imp_col", "rel_col"]);
   const [hiddenCols, setHiddenCols] = useState<Set<string>>(() => {
     if (typeof window === "undefined") return new Set<string>();
     try {
@@ -1605,9 +1650,28 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
           <tr style={{ background: "#f7f7f5", borderBottom: "1px solid var(--border)" }}>
             <td colSpan={visibleCols.length} style={{ padding: "10px 20px 14px 28px" }}>
               <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-                {/* Task Details */}
+                {/* Occupation Categories */}
+                {(row.title_current || row.broad_occ || row.minor_occ_category || row.major_occ_category) && (
+                  <div style={{ minWidth: 200 }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Occupation Categories</p>
+                    {row.title_current && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Occupation:</b> {row.title_current}</p>}
+                    {row.broad_occ && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Broad:</b> {row.broad_occ}</p>}
+                    {row.minor_occ_category && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Minor:</b> {row.minor_occ_category}</p>}
+                    {row.major_occ_category && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>Major:</b> {row.major_occ_category}</p>}
+                  </div>
+                )}
+                {/* Work Activities */}
+                {(row.gwa_title || row.iwa_title || row.dwa_title) && (
+                  <div style={{ minWidth: 200 }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Work Activities</p>
+                    {row.gwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>GWA:</b> {row.gwa_title}</p>}
+                    {row.iwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>IWA:</b> {row.iwa_title}</p>}
+                    {row.dwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>DWA:</b> {row.dwa_title}</p>}
+                  </div>
+                )}
+                {/* Task Detail (phys, freq, imp, rel only — auto/pct are table columns) */}
                 <div style={{ minWidth: 140 }}>
-                  <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Task Details</p>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Task Detail</p>
                   <table style={{ fontSize: 11, borderCollapse: "collapse" }}>
                     <tbody>
                       <tr>
@@ -1621,43 +1685,20 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                         </td>
                       </tr>
                       <tr>
-                        <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Auto Avg</td>
-                        <td style={{ padding: "2px 0" }}>{fmtAutoAug(row.auto_avg_with_vals)}</td>
+                        <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Frequency</td>
+                        <td style={{ padding: "2px 0" }}>{row.freq_mean?.toFixed(1) ?? "—"}</td>
                       </tr>
                       <tr>
-                        <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Auto Max</td>
-                        <td style={{ padding: "2px 0" }}>{fmtAutoAug(row.auto_max_with_vals)}</td>
+                        <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Importance</td>
+                        <td style={{ padding: "2px 0" }}>{row.importance?.toFixed(1) ?? "—"}</td>
                       </tr>
                       <tr>
-                        <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Pct Avg</td>
-                        <td style={{ padding: "2px 0" }}>{fmtPctNorm(row.pct_avg_with_vals)}</td>
-                      </tr>
-                      <tr>
-                        <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Pct Max</td>
-                        <td style={{ padding: "2px 0" }}>{fmtPctNorm(row.pct_max_with_vals)}</td>
+                        <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Relevance</td>
+                        <td style={{ padding: "2px 0" }}>{row.relevance?.toFixed(0) ?? "—"}</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
-                {/* Occupation Classification */}
-                {(row.title_current || row.broad_occ || row.minor_occ_category || row.major_occ_category) && (
-                  <div style={{ minWidth: 200 }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Occupation Classification</p>
-                    {row.title_current && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Occupation:</b> {row.title_current}</p>}
-                    {row.broad_occ && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Broad:</b> {row.broad_occ}</p>}
-                    {row.minor_occ_category && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>Minor:</b> {row.minor_occ_category}</p>}
-                    {row.major_occ_category && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>Major:</b> {row.major_occ_category}</p>}
-                  </div>
-                )}
-                {/* Activity Classification */}
-                {(row.gwa_title || row.iwa_title || row.dwa_title) && (
-                  <div style={{ minWidth: 200 }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Activity Classification</p>
-                    {row.gwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>GWA:</b> {row.gwa_title}</p>}
-                    {row.iwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 2 }}><b>IWA:</b> {row.iwa_title}</p>}
-                    {row.dwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>DWA:</b> {row.dwa_title}</p>}
-                  </div>
-                )}
                 {/* Source Breakdown */}
                 {row.sources && Object.keys(row.sources).length > 0 && (() => {
                   const sources = Object.entries(row.sources);
@@ -1767,8 +1808,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
         background: "var(--bg-surface)", borderBottom: "1px solid var(--border)",
         padding: "10px 20px", flexShrink: 0, display: "flex", flexDirection: "column", gap: 8,
       }}>
-        {/* Row 1: Major pills (hidden in simple mode) */}
-        {!isSimple && (
+        {/* Row 1: Major pills */}
         <div style={{ display: "flex", gap: 5, flexWrap: "nowrap", overflowX: "auto", paddingBottom: 2 }}>
           {/* All pill */}
           <button
@@ -1805,7 +1845,6 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
             );
           })}
         </div>
-        )}
 
         {/* Row 2: Level + Search + Geo + Phys + Min filters */}
         <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
@@ -1994,6 +2033,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                       textTransform: "uppercase",
                       letterSpacing: "0.06em",
                       whiteSpace: "nowrap",
+                      overflow: "hidden",
                       width: col.width,
                       cursor: "pointer",
                       userSelect: "none",

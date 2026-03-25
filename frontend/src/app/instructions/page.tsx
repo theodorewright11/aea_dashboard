@@ -77,11 +77,11 @@ function Calculator() {
 
   const taskComp = method === "freq"
     ? freqMean * (autoAug / 5)
-    : (relevance * Math.pow(2, importance)) * (autoAug / 5);
+    : (freqMean * relevance * importance) * (autoAug / 5);
 
   const taskCompBase = method === "freq"
     ? freqMean
-    : relevance * Math.pow(2, importance);
+    : freqMean * relevance * importance;
 
   const augMultiplier = autoAug / 5;
   const fmt = (v: number, d = 3) => v.toFixed(d);
@@ -116,23 +116,21 @@ function Calculator() {
               cursor: "pointer",
             }}
           >
-            {m === "freq" ? "Frequency" : "Importance-weighted"}
+            {m === "freq" ? "Time" : "Value"}
           </button>
         ))}
       </div>
 
       {/* Sliders */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 28px" }}>
-        {method === "freq" && (
-          <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
-              freq_mean: <strong style={{ color: "var(--text-primary)" }}>{fmt(freqMean, 1)}</strong>
-              <span style={{ color: "var(--text-muted)", fontWeight: 400 }}> (0–10)</span>
-            </span>
-            <input type="range" min={0} max={10} step={0.1} value={freqMean}
-              onChange={(e) => setFreqMean(+e.target.value)} style={sliderStyle} />
-          </label>
-        )}
+        <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
+            freq_mean: <strong style={{ color: "var(--text-primary)" }}>{fmt(freqMean, 1)}</strong>
+            <span style={{ color: "var(--text-muted)", fontWeight: 400 }}> (0–10)</span>
+          </span>
+          <input type="range" min={0} max={10} step={0.1} value={freqMean}
+            onChange={(e) => setFreqMean(+e.target.value)} style={sliderStyle} />
+        </label>
         {method === "imp" && (
           <>
             <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
@@ -182,7 +180,7 @@ function Calculator() {
           </div>
         ) : (
           <div style={{ fontSize: 13, color: "var(--text-secondary)", fontFamily: "monospace" }}>
-            <div>base = relevance × 2^importance = {fmt(relevance, 0)} × 2^{fmt(importance, 1)} = <strong style={{ color: "var(--text-primary)" }}>{fmt(taskCompBase, 2)}</strong></div>
+            <div>base = freq × relevance × importance = {fmt(freqMean, 1)} × {fmt(relevance, 0)} × {fmt(importance, 1)} = <strong style={{ color: "var(--text-primary)" }}>{fmt(taskCompBase, 2)}</strong></div>
             <div>multiplier = auto_aug / 5 = {fmt(autoAug, 1)} / 5 = <strong style={{ color: "var(--text-primary)" }}>{fmt(augMultiplier, 3)}</strong></div>
           </div>
         )}
@@ -237,7 +235,7 @@ export default function InstructionsPage() {
             <li style={liStyle}><strong>Datasets</strong> — select one or more AI scoring datasets. When multiple are selected, choose <em>Average</em> or <em>Max</em> to combine scores.</li>
             <li style={liStyle}><strong>Aggregation</strong> — roll up results to Major Category, Minor Category, Broad Occupation, or individual Occupation.</li>
             <li style={liStyle}><strong>Geography</strong> — National or Utah employment/wage figures from BLS OEWS 2024.</li>
-            <li style={liStyle}><strong>Method</strong> — Frequency or Importance-weighted task completion (see Metrics section below).</li>
+            <li style={liStyle}><strong>Method</strong> — Time or Value task completion weighting (see Metrics section below).</li>
             <li style={liStyle}><strong>Physical filter</strong> — excludes tasks flagged as truly physical; useful for isolating cognitive/informational tasks.</li>
             <li style={liStyle}><strong>Auto-aug multiplier</strong> — when On, scales task weight by the AI automatability score (0–5 scale, divided by 5).</li>
             <li style={liStyle}><strong>Top N / Search</strong> — show the top N categories by the selected sort metric, or search for a specific category with ±context window.</li>
@@ -294,8 +292,8 @@ export default function InstructionsPage() {
             to an occupation&apos;s total work.
           </p>
           <div style={formulaBoxStyle}>
-            Frequency method:  task_comp = freq_mean<br />
-            Importance method: task_comp = relevance × 2^importance
+            Time method:  task_comp = freq_mean<br />
+            Value method: task_comp = freq_mean × relevance × importance
           </div>
           <p style={bodyStyle}>
             When the Auto-aug multiplier is On, both methods scale by the AI automatability

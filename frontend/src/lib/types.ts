@@ -258,10 +258,14 @@ export interface WAExplorerRow extends ExplorerMetrics {
   name: string;
   parent?: string | null;
   gwa?: string | null;
-  emp_nat?: number | null;
-  emp_ut?: number | null;
-  wage_nat?: number | null;
-  wage_ut?: number | null;
+  emp_nat_freq?: number | null;
+  emp_ut_freq?: number | null;
+  emp_nat_value?: number | null;
+  emp_ut_value?: number | null;
+  wage_nat_freq?: number | null;
+  wage_ut_freq?: number | null;
+  wage_nat_value?: number | null;
+  wage_ut_value?: number | null;
   n_occs: number;
 }
 
@@ -276,9 +280,12 @@ export interface WATaskDetail {
   iwa_title?: string | null;
   gwa_title?: string | null;
   physical?: boolean | null;
-  emp_nat?: number | null;
-  emp_ut?: number | null;
-  wage_nat?: number | null;
+  emp_nat_freq?: number | null;
+  emp_ut_freq?: number | null;
+  emp_nat_value?: number | null;
+  emp_ut_value?: number | null;
+  wage_nat_freq?: number | null;
+  wage_nat_value?: number | null;
   freq_mean?: number | null;
   importance?: number | null;
   relevance?: number | null;

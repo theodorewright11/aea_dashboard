@@ -1039,7 +1039,7 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
         {panelCollapsed ? (
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
             <span style={{ fontSize: 11, color: "var(--text-muted)", flexShrink: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {selectedDatasets.length} dataset{selectedDatasets.length !== 1 ? "s" : ""} · {aggLevel} · {method === "freq" ? "Frequency" : "Importance"} · {geo === "nat" ? "National" : "Utah"}{useAutoAug ? " · Auto-aug" : ""}
+              {selectedDatasets.length} dataset{selectedDatasets.length !== 1 ? "s" : ""} · {aggLevel} · {method === "freq" ? "Time" : "Value"} · {geo === "nat" ? "National" : "Utah"}{useAutoAug ? " · Auto-aug" : ""}
             </span>
             <button
               onClick={() => setPanelCollapsed(false)}
@@ -1109,7 +1109,7 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
               <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
                 <div>
                   <ControlLabel>Method</ControlLabel>
-                  <SegmentedControl options={[{ value: "freq" as const, label: "Frequency" }, { value: "imp" as const, label: "Importance" }]} value={method} onChange={setMethod} />
+                  <SegmentedControl options={[{ value: "freq" as const, label: "Time" }, { value: "imp" as const, label: "Value" }]} value={method} onChange={setMethod} />
                 </div>
                 <div>
                   <ControlLabel>Physical tasks</ControlLabel>
@@ -1395,7 +1395,7 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
         {panelCollapsed ? (
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
             <span style={{ fontSize: 11, color: "var(--text-muted)", flexShrink: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {selectedDatasets.length} dataset{selectedDatasets.length !== 1 ? "s" : ""} · {levelLabels[activityLevel]} · {method === "freq" ? "Frequency" : "Importance"} · {geo === "nat" ? "National" : "Utah"}{useAutoAug ? " · Auto-aug" : ""}
+              {selectedDatasets.length} dataset{selectedDatasets.length !== 1 ? "s" : ""} · {levelLabels[activityLevel]} · {method === "freq" ? "Time" : "Value"} · {geo === "nat" ? "National" : "Utah"}{useAutoAug ? " · Auto-aug" : ""}
             </span>
             <button
               onClick={() => setPanelCollapsed(false)}
@@ -1471,7 +1471,7 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
               <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
                 <div>
                   <ControlLabel>Method</ControlLabel>
-                  <SegmentedControl options={[{ value: "freq" as const, label: "Frequency" }, { value: "imp" as const, label: "Importance" }]} value={method} onChange={setMethod} />
+                  <SegmentedControl options={[{ value: "freq" as const, label: "Time" }, { value: "imp" as const, label: "Value" }]} value={method} onChange={setMethod} />
                 </div>
                 <div>
                   <ControlLabel>Physical tasks</ControlLabel>

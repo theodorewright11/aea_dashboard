@@ -90,7 +90,7 @@ export default function AboutPage() {
           <p style={bodyStyle}>Task weights are computed using one of two methods:</p>
           <ul style={{ margin: "6px 0 12px", paddingLeft: 22 }}>
             <li style={liStyle}>
-              <strong style={{ fontWeight: 600 }}>Frequency</strong> — proportional to
+              <strong style={{ fontWeight: 600 }}>Time</strong> — proportional to
               reported task frequency (
               <code style={{ fontSize: 12, background: "var(--bg-surface)", border: "1px solid var(--border)", padding: "1px 5px", borderRadius: 3 }}>
                 freq_mean
@@ -98,10 +98,10 @@ export default function AboutPage() {
               )
             </li>
             <li style={liStyle}>
-              <strong style={{ fontWeight: 600 }}>Importance-weighted</strong> — proportional
+              <strong style={{ fontWeight: 600 }}>Value</strong> — proportional
               to{" "}
               <code style={{ fontSize: 12, background: "var(--bg-surface)", border: "1px solid var(--border)", padding: "1px 5px", borderRadius: 3 }}>
-                relevance × 2<sup>importance</sup>
+                freq_mean × relevance × importance
               </code>
             </li>
           </ul>
