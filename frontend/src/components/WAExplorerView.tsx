@@ -1844,12 +1844,7 @@ export default function WAExplorerView({ rows, config }: Props) {
 
       {/* ── Table ──────────────────────────────────────────────────────────── */}
       <div style={{ flex: 1, overflowX: "auto", overflowY: "auto" }}>
-        <table style={{
-          borderCollapse: "collapse",
-          tableLayout: "fixed",
-          minWidth: visibleCols.reduce((s, c) => s + c.width, 0),
-          width: "100%",
-        }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
           <thead>
             <tr style={{
               position: "sticky", top: 0,
@@ -1872,7 +1867,7 @@ export default function WAExplorerView({ rows, config }: Props) {
                       textTransform: "uppercase", letterSpacing: "0.06em",
                       whiteSpace: "nowrap",
                       overflow: "hidden",
-                      width: col.width, minWidth: col.width,
+                      width: col.width,
                       cursor: "pointer",
                       userSelect: "none",
                       position: "relative",
