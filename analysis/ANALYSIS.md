@@ -222,13 +222,24 @@ The TOC controls the order questions appear in the report. Questions can be reor
 
 ## 7. Style Guidelines
 
-### For figures going into presentations (OAIP audience)
+Charts should look professional, clean, and consistent with the dashboard. The goal is polished and readable, not flashy.
+
+### Chart styling rules (enforced through `analysis/utils.py`)
+- **Colors, fonts, palette**: must match the dashboard frontend. Use `COLORS`, `FONT_FAMILY`, and `CATEGORY_PALETTE` from utils — never hardcode custom values in question scripts.
+- **Bar labels**: use smart abbreviations (11M, 7.1M, 450K) not raw numbers (10,802,514). The `make_horizontal_bar()` helper does this automatically. For custom charts, use `_format_bar_label()` from utils.
+- **Label position**: outside the bar, not crammed inside. Consistent positioning across all bars.
+- **No gridline clutter**: bar charts should not show x-axis gridlines or tick labels — the labels on the bars are the data. Line/scatter charts can use subtle gridlines where they help readability.
+- **Bar spacing**: generous gaps between bars (bargap ~0.25). Grouped bars should have small intra-group gaps.
+- **Grouped/comparison charts**: color-code each bar's label to match its series color so the reader can tell which is which at a glance.
+- **Titles**: include a clear descriptive title and a subtitle with the config used.
+- **Source attribution**: bottom-right, small muted text. Handled by `style_figure()`.
+
+### For presentations (OAIP audience)
 - Large, readable fonts
-- Minimal clutter — no gridlines unless they help
 - Clear takeaway in the title (not just "Workers Affected by Major Category" but "Management Occupations Have the Most AI-Exposed Workers")
 - Color-code meaningfully (e.g., Utah vs National, different dataset families)
 
-### For figures going into the paper
+### For the paper
 - Grayscale-friendly (or use patterns alongside color)
 - Include figure numbers and captions
 - Source attribution in small text below
