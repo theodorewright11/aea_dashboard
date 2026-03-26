@@ -668,6 +668,17 @@ def main() -> None:
         save_csv(stable_out, results / "stable_high_risk_both_methods.csv")
         print(f"  Saved stable_high_risk_both_methods.csv ({len(stable_out)} occupations)")
 
+    # -- Generate PDF ----------------------------------------------------------
+    print("\n== Generating PDF ==")
+    from analysis.utils import generate_pdf
+    md_path = HERE / "job_elimination_risk.md"
+    pdf_path = results / "job_elimination_risk.pdf"
+    if md_path.exists():
+        generate_pdf(md_path, pdf_path)
+        print(f"  Saved {pdf_path.name}")
+    else:
+        print(f"  SKIP - {md_path.name} not found")
+
     print("\nDone.")
 
 

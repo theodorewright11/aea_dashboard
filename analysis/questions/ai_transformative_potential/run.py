@@ -428,6 +428,17 @@ def main() -> None:
         else:
             print(f"  SKIP (not found): {fname}")
 
+    # -- Generate PDF ----------------------------------------------------------
+    print("\n== Generating PDF ==")
+    from analysis.utils import generate_pdf
+    md_path = HERE / "ai_transformative_potential.md"
+    pdf_path = results / "ai_transformative_potential.pdf"
+    if md_path.exists():
+        generate_pdf(md_path, pdf_path)
+        print(f"  Saved {pdf_path.name}")
+    else:
+        print(f"  SKIP - {md_path.name} not found")
+
     print("\nDone.")
 
 

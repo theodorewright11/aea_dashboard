@@ -13,29 +13,38 @@ import plotly.graph_objects as go
 import plotly.io as pio
 
 # ── Color palette ─────────────────────────────────────────────────────────────
-# Consistent colors across all analysis outputs.
+# Matches the dashboard frontend exactly (see frontend/src/app/globals.css
+# and frontend/src/components/TrendsView.tsx).
+
+FONT_FAMILY = "Inter, -apple-system, BlinkMacSystemFont, sans-serif"
 
 COLORS = {
-    "primary": "#2563EB",       # Blue — main data series
-    "secondary": "#7C3AED",     # Purple — comparison series
-    "accent": "#F59E0B",        # Amber — highlights / callouts
-    "positive": "#10B981",      # Green — increases / gains
-    "negative": "#EF4444",      # Red — decreases / losses
-    "neutral": "#6B7280",       # Gray — baselines / context
-    "utah": "#DC2626",          # Red — Utah-specific
-    "national": "#2563EB",      # Blue — National
-    "aei": "#2563EB",           # Blue — AEI family
-    "mcp": "#7C3AED",           # Purple — MCP family
-    "microsoft": "#F59E0B",     # Amber — Microsoft
-    "bg": "#FFFFFF",            # White background
-    "text": "#1F2937",          # Dark gray text
-    "grid": "#E5E7EB",          # Light gray gridlines
+    "primary": "#3a5f83",       # Slate blue — Group A / main data series
+    "secondary": "#4a7c6f",     # Teal green — Group B / comparison series
+    "accent": "#c05621",        # Orange-brown — highlights / search match
+    "positive": "#166534",      # Green — increases / gains
+    "negative": "#991b1b",      # Red — decreases / losses
+    "neutral": "#5a5a5a",       # Secondary text gray
+    "muted": "#9b9b9b",         # Muted text gray
+    "brand": "#1a6b5a",         # Brand teal
+    "utah": "#c05621",          # Orange — Utah-specific
+    "national": "#3a5f83",      # Slate blue — National
+    "aei": "#3a5f83",           # Slate blue — AEI family (Group A color)
+    "mcp": "#4a7c6f",           # Teal green — MCP family (Group B color)
+    "microsoft": "#c05621",     # Orange — Microsoft
+    "bg": "#ffffff",            # White surface background
+    "bg_page": "#f7f7f4",       # Cream off-white page background
+    "text": "#1a1a1a",          # Primary text
+    "grid": "#e4e4de",          # Border / gridline color
+    "border": "#e4e4de",        # Standard border
 }
 
-# Categorical palette for multi-series charts (up to 10 items)
+# Categorical palette for multi-series charts — matches TrendsView.tsx PALETTE
 CATEGORY_PALETTE = [
-    "#2563EB", "#7C3AED", "#F59E0B", "#10B981", "#EF4444",
-    "#8B5CF6", "#06B6D4", "#F97316", "#EC4899", "#6366F1",
+    "#3a5f83", "#4a7c6f", "#c05621", "#7b5ea7",
+    "#2d7d9a", "#6b8e23", "#b8860b", "#8b4513",
+    "#4682b4", "#2e8b57", "#cd853f", "#708090",
+    "#5b4e99", "#2d7a55", "#c45c29", "#3d6b9e",
 ]
 
 
@@ -60,18 +69,18 @@ def style_figure(
     """
     title_text = title
     if subtitle:
-        title_text += f"<br><span style='font-size:14px;color:{COLORS['neutral']}'>{subtitle}</span>"
+        title_text += f"<br><span style='font-size:13px;color:{COLORS['neutral']}'>{subtitle}</span>"
 
     fig.update_layout(
         title=dict(
             text=title_text,
-            font=dict(size=20, color=COLORS["text"], family="Arial, sans-serif"),
+            font=dict(size=18, color=COLORS["text"], family=FONT_FAMILY),
             x=0.01,
             xanchor="left",
         ),
         font=dict(
-            family="Arial, sans-serif",
-            size=13,
+            family=FONT_FAMILY,
+            size=12,
             color=COLORS["text"],
         ),
         plot_bgcolor=COLORS["bg"],
@@ -85,21 +94,23 @@ def style_figure(
             y=-0.12,
             xanchor="center",
             x=0.5,
-            font=dict(size=12),
+            font=dict(size=11, color=COLORS["neutral"]),
         ) if show_legend else dict(visible=False),
         xaxis=dict(
-            title=x_title,
+            title=dict(text=x_title, font=dict(size=12, color=COLORS["neutral"])) if x_title else None,
             gridcolor=COLORS["grid"],
             showline=True,
             linewidth=1,
             linecolor=COLORS["grid"],
+            tickfont=dict(size=11, color=COLORS["neutral"]),
         ),
         yaxis=dict(
-            title=y_title,
+            title=dict(text=y_title, font=dict(size=12, color=COLORS["neutral"])) if y_title else None,
             gridcolor=COLORS["grid"],
             showline=True,
             linewidth=1,
             linecolor=COLORS["grid"],
+            tickfont=dict(size=11, color=COLORS["neutral"]),
         ),
     )
 
@@ -109,7 +120,7 @@ def style_figure(
         xref="paper", yref="paper",
         x=1.0, y=-0.18,
         showarrow=False,
-        font=dict(size=10, color=COLORS["neutral"]),
+        font=dict(size=10, color=COLORS["muted"], family=FONT_FAMILY),
         xanchor="right",
     )
 
@@ -212,8 +223,8 @@ def make_line_chart(
             y=cat_df[y_col],
             mode="lines+markers",
             name=str(cat),
-            line=dict(color=palette[i % len(palette)], width=2),
-            marker=dict(size=6),
+            line=dict(color=palette[i % len(palette)], width=3),
+            marker=dict(size=5),
         ))
 
     style_figure(
@@ -309,3 +320,120 @@ def describe_config(config: dict) -> str:
 
     parts = [datasets, combine, method, geo, phys, aug]
     return " | ".join(parts)
+
+
+# ── PDF generation ───────────────────────────────────────────────────────────
+
+def generate_pdf(md_path: Path, pdf_path: Path) -> None:
+    """Convert a markdown report (with inline images) to a styled PDF.
+
+    Uses markdown + xhtml2pdf (pure Python, no native dependencies).
+    Image paths in the markdown are resolved relative to the markdown file.
+
+    Args:
+        md_path: Path to the source markdown file.
+        pdf_path: Path for the output PDF file.
+    """
+    import re
+
+    import markdown
+    from xhtml2pdf import pisa
+
+    md_text = md_path.read_text(encoding="utf-8")
+    md_dir = md_path.parent
+
+    # Convert relative image paths to absolute file paths for xhtml2pdf
+    def _resolve_img(match: re.Match) -> str:
+        alt = match.group(1)
+        src = match.group(2)
+        abs_src = (md_dir / src).resolve()
+        # xhtml2pdf needs plain file paths, not file:// URIs
+        return f"![{alt}]({abs_src})"
+
+    md_text = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", _resolve_img, md_text)
+
+    # Convert markdown to HTML
+    html_body = markdown.markdown(
+        md_text,
+        extensions=["tables", "fenced_code", "toc"],
+    )
+
+    # Wrap in styled HTML matching the dashboard theme
+    html_doc = f"""<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+    body {{
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 10pt;
+        line-height: 1.5;
+        color: {COLORS['text']};
+        padding: 24px;
+    }}
+    h1 {{
+        font-size: 20pt;
+        font-weight: bold;
+        color: {COLORS['text']};
+        border-bottom: 2px solid {COLORS['border']};
+        padding-bottom: 6px;
+        margin-top: 24px;
+    }}
+    h2 {{
+        font-size: 15pt;
+        font-weight: bold;
+        color: {COLORS['primary']};
+        border-bottom: 1px solid {COLORS['border']};
+        padding-bottom: 4px;
+        margin-top: 20px;
+    }}
+    h3 {{
+        font-size: 12pt;
+        font-weight: bold;
+        color: {COLORS['secondary']};
+        margin-top: 16px;
+    }}
+    table {{
+        border-collapse: collapse;
+        width: 100%;
+        margin: 12px 0;
+        font-size: 9pt;
+    }}
+    th {{
+        background-color: {COLORS['bg_page']};
+        border: 1px solid {COLORS['border']};
+        padding: 6px 8px;
+        text-align: left;
+        font-weight: bold;
+    }}
+    td {{
+        border: 1px solid {COLORS['border']};
+        padding: 4px 8px;
+    }}
+    img {{
+        max-width: 100%;
+        margin: 12px 0;
+    }}
+    code {{
+        background-color: {COLORS['bg_page']};
+        padding: 1px 4px;
+        font-size: 9pt;
+    }}
+    hr {{
+        border: none;
+        border-top: 1px solid {COLORS['border']};
+        margin: 16px 0;
+    }}
+    strong {{
+        font-weight: bold;
+    }}
+</style>
+</head>
+<body>
+{html_body}
+</body>
+</html>"""
+
+    pdf_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(str(pdf_path), "wb") as f:
+        pisa.CreatePDF(html_doc, dest=f)
