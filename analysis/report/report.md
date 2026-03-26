@@ -8,21 +8,56 @@ Built for Utah's Office of Artificial Intelligence Policy (OAIP).
 
 ## Executive Summary
 
-*Key takeaways across all analysis questions — to be written as findings accumulate.*
+The gap between AI tool capability and actual AI usage reveals where AI has the greatest unrealized transformative potential. Transportation and Material Moving occupations have the largest absolute worker gap (2.5M), driven by a massive workforce where AI tools can reach 18% of tasks but real adoption covers only 5.5%. Office/Admin and Sales follow with 2.4M and 2.1M worker gaps respectively. At the occupation level, Cashiers (1.2M gap), Sales Reps of Services (842K, zero current usage), and General/Operations Managers (805K) top the list. Education is the notable exception: AI is already used more than tools can automate, suggesting conversational AI (tutoring, writing help) has outpaced structured tool capability.
 
 ---
 
 ## Table of Contents
 
-*Each entry links to a section below. Reorder entries here to change report presentation order.*
-
-<!-- Add entries as questions are completed:
-- [Section Title](#section-anchor) — one-line summary
--->
+- [AI Transformative Potential](#ai-transformative-potential) — Where the gap between AI capability and adoption is largest
 
 ---
 
-<!-- Question sections will be added here as they are completed -->
+## AI Transformative Potential
+
+**Question:** Where are the jobs and sectors with the greatest potential for AI to be transformative?
+
+**Method:** Compare MCP v4 (AI tool capability ceiling) against AEI Cumul. v4 (current real-world AI usage from Claude conversations). The gap represents unrealized potential. Tested across 4 config variants: Time/Value method x auto-aug ON/OFF.
+
+### Key findings
+
+**1. Transportation and Material Moving has the largest unrealized potential by workers.**
+
+MCP v4 rates 18.0% of tasks as AI-capable, but AEI shows only 5.5% current usage. With 18.8M workers in this sector, that 12.5 percentage-point gap translates to 2.5M workers worth of untapped potential. These are warehouse, shipping, and logistics roles where AI scheduling, routing, and inventory tools exist but haven't been broadly adopted.
+
+**2. Office/Admin and Sales have the most potential in absolute terms after accounting for their already-high adoption.**
+
+Office/Admin: 54.4% MCP capability vs 32.8% current usage = 21.6pp gap, 2.4M workers.
+Sales: 54.2% MCP vs 43.2% current = 11.0pp gap, 2.1M workers.
+
+These sectors are already the most AI-affected by raw worker count, and there's still substantial room to grow.
+
+**3. Education is the inverse — AI usage exceeds tool capability.**
+
+AEI shows 45.2% of educational tasks involved in real AI conversations, but MCP tools only cover 22.9%. This is the largest negative gap (-22.3pp, -1.76M workers). Education's AI usage is happening through conversational interaction (tutoring, writing feedback, explanation) rather than through structured tool automation. This is the only major category where adoption has clearly outpaced measured capability.
+
+**4. Several specific occupations have zero current AI usage but significant tool capability.**
+
+Sales Reps of Services (70.8% MCP, 0% AEI), Project Management Specialists (49.3% MCP, 0% AEI), Industrial Truck Operators (29.3% MCP, 0% AEI), Substitute Teachers (29.7% MCP, 0% AEI). These represent completely untapped potential.
+
+**5. The auto-aug toggle reveals a second layer of potential.**
+
+When auto-aug is turned off (treating all AI-flagged tasks as maximally automatable), the gaps expand dramatically. Management jumps from +886K to +5.3M workers gap. This means many Management tasks are flagged as AI-capable but currently have moderate automation quality scores. If AI tools improve for these tasks, Management could see the single largest increase in AI impact.
+
+**6. The Time vs Value method toggle barely changes the story.**
+
+Rankings are nearly identical between Time (frequency-only weighting) and Value (frequency x relevance x importance). The unrealized potential exists in tasks that are both frequent and important, not just in routine high-frequency work.
+
+**7. The findings are highly stable: 8 of 10 top major categories appear in the top-10 gap ranking across all 4 config variants.**
+
+The stable top-10 at the major level: Transportation, Office/Admin, Sales, Computer/Math, Management, Production, Food Prep, Architecture/Engineering. At the occupation level, 7 of 10 are stable: Cashiers, Sales Reps, General Managers, Stockers, Laborers/Freight, Bookkeeping, Waiters.
+
+*Config: MCP v4 vs AEI Cumul. v4 | Time | Auto-aug ON | National | All tasks. Full data and sensitivity analysis in [questions/ai_transformative_potential/](../questions/ai_transformative_potential/README.md).*
 
 ---
 
