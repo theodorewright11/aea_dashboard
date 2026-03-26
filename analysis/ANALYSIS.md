@@ -122,7 +122,7 @@ The `get_group_data()`, `compute_work_activities()`, and `run_occ_query()` funct
 
 ```python
 settings = {
-    "selected_datasets": ["AEI v4", "MCP v4", "Microsoft"],
+    "selected_datasets": ["AEI Cumul. v4", "MCP v4", "Microsoft"],
     "combine_method": "Average",     # "Average" | "Max"
     "method": "freq",                # "freq" | "imp"
     "use_auto_aug": True,
@@ -154,21 +154,15 @@ settings = {
 - Save as PNG
 
 ### README.md (per question)
-Structure:
+Keep it tight. The research paper has full methodology and caveats — the README just needs enough for someone to understand the finding and trace it back to the data.
 ```markdown
-# Question: <clear statement of what we're investigating>
-
-## Why This Matters
-<1-2 paragraphs: policy relevance, what decisions this informs>
-
-## Methodology
-<What data, configs, and computations were used. Enough to reproduce.>
+# Question: <clear statement>
 
 ## Key Findings
 <Numbered findings with supporting data references>
 
-## Caveats
-<What this analysis does NOT show, limitations, things to be careful about>
+## Config
+<One-liner: which datasets, method, geo — just enough to reproduce>
 
 ## Files
 <List of output CSVs and figures with one-line descriptions>
@@ -197,23 +191,18 @@ Structure:
 # AEA Dashboard Analysis Report
 
 ## Executive Summary
-<Key takeaways across all questions — written for the policy audience>
+<Key takeaways — written for the policy audience>
 
 ## Table of Contents
 <Links to each section; this defines presentation order>
 
 ## [Section per question]
 ### <Question title>
-<Narrative incorporating findings, figures, and data references>
-
-## Methodology Notes
-<Shared methodology context that applies across questions>
-
-## Appendix
-<Additional tables, extended data, technical notes>
+<Findings and figures. Minimal methodology — just state the config used.
+Full methodology lives in the research paper, not here.>
 ```
 
-The TOC controls the order questions appear in the report. Questions can be reordered by editing the TOC without renaming folders.
+The TOC controls the order questions appear in the report. Questions can be reordered by editing the TOC without renaming folders. Keep methodology and caveats minimal — the research paper covers those in depth.
 
 ---
 

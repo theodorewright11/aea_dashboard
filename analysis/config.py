@@ -29,19 +29,15 @@ if str(BACKEND_DIR) not in sys.path:
 
 # ── Dataset presets ───────────────────────────────────────────────────────────
 
-# Standard occupation-level analysis: all snapshot sources
+# Standard occupation-level analysis: cumulative AEI + latest MCP + Microsoft
 ALL_DATASETS: list[str] = [
-    "AEI v1", "AEI v2", "AEI v3", "AEI v4",
-    "AEI API v3", "AEI API v4",
+    "AEI Cumul. v4",
     "MCP v4",
     "Microsoft",
 ]
 
 # AEI family only (for WA analysis — uses O*NET 2015 baseline)
-AEI_DATASETS: list[str] = [
-    "AEI v1", "AEI v2", "AEI v3", "AEI v4",
-    "AEI API v3", "AEI API v4",
-]
+AEI_DATASETS: list[str] = ["AEI Cumul. v4"]
 
 # MCP + Microsoft (for WA analysis — uses O*NET 2025 baseline)
 MCP_MS_DATASETS: list[str] = ["MCP v4", "Microsoft"]
