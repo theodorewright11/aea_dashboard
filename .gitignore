@@ -1,9 +1,10 @@
-outputs/
-# scripts/data_merge_copy.ipynb
-# scripts/data_merge_copy.ipynb
-dashboard
-scripts
+# Manual
 delta/
+
+
+
+
+# Template
 tsconfig.tsbuildinfo
 
 
@@ -248,7 +249,3 @@ frontend/.next/
 frontend/.env.local
 frontend/out/
 !frontend/src/lib/
-
-# Analysis scripts and results
-analysis/scripts/
-analysis/results/
