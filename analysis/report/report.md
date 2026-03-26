@@ -60,7 +60,7 @@ Rankings are nearly identical between Time (frequency-only weighting) and Value 
 
 The stable top-10 at the major level: Transportation, Office/Admin, Sales, Computer/Math, Management, Production, Food Prep, Architecture/Engineering. At the occupation level, 7 of 10 are stable: Cashiers, Sales Reps, General Managers, Stockers, Laborers/Freight, Bookkeeping, Waiters.
 
-*Config: MCP v4 vs AEI Cumul. v4 | Time | Auto-aug ON | National | All tasks. Full data and sensitivity analysis in [questions/ai_transformative_potential/](../questions/ai_transformative_potential/README.md).*
+*Config: MCP v4 vs AEI Cumul. v4 | Time | Auto-aug ON | National | All tasks. Full data and sensitivity analysis in [questions/ai_transformative_potential/](../questions/ai_transformative_potential/ai_transformative_potential.md).*
 
 ---
 
@@ -88,6 +88,8 @@ The stable top-10 at the major level: Transportation, Office/Admin, Sales, Compu
 
 The largest by employment are Market Research Analysts and Search Marketing Strategists (both ~431K workers). These are information-processing occupations where AI's core strengths (data analysis, content generation, pattern recognition) directly overlap with the most valuable parts of the job.
 
+![High-Risk Occupations by Employment](../questions/job_elimination_risk/figures/high_risk_by_employment.png)
+
 **2. 7 of 9 high-risk occupations are stable across both Value and Time methods.**
 
 Only Instructional Coordinators and Financial Quantitative Analysts drop below 60% when switching from Value to Time weighting. The other 7 remain high-risk regardless of how you weight task importance, meaning this isn't an artifact of the weighting methodology.
@@ -112,11 +114,13 @@ MCP v4 (what AI CAN do) puts 59 occupations above 60%. The 54 that are high-risk
 
 These major categories have the largest shares of occupations in the moderate and high-risk tiers. Farming, Construction, and Building Maintenance are almost entirely in the low-exposure tier.
 
+![Risk Tier Distribution by Major Category](../questions/job_elimination_risk/figures/tier_distribution_by_major.png)
+
 **6. Important framing: High task exposure does not equal job loss.**
 
 It means the occupation's task bundle heavily overlaps with demonstrated AI capability and usage. Whether this leads to job elimination, restructuring, fewer new hires, or productivity gains depends on deployment economics, regulation, and organizational inertia — none of which this data measures. The data identifies WHERE the pressure exists, not what happens next.
 
-*Config: AEI Cumul. v4 + Microsoft | Average | Value | Auto-aug ON | National | Occupation level. Sensitivity checks: Time method, MCP v4 capability comparison. Full data in [questions/job_elimination_risk/](../questions/job_elimination_risk/README.md).*
+*Config: AEI Cumul. v4 + Microsoft | Average | Value | Auto-aug ON | National | Occupation level. Sensitivity checks: Time method, MCP v4 capability comparison. Full data in [questions/job_elimination_risk/](../questions/job_elimination_risk/job_elimination_risk.md).*
 
 ---
 

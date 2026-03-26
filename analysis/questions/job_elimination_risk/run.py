@@ -61,10 +61,10 @@ TIER_LABELS = {
 }
 TIER_ORDER = ["high_risk", "moderate_risk", "restructuring", "low_exposure"]
 TIER_COLORS = {
-    "high_risk": "#DC2626",       # Red
-    "moderate_risk": "#F59E0B",   # Amber
-    "restructuring": "#3B82F6",   # Blue
-    "low_exposure": "#6B7280",    # Gray
+    "high_risk": COLORS["negative"],      # Dark red
+    "moderate_risk": COLORS["accent"],     # Orange-brown
+    "restructuring": COLORS["primary"],    # Slate blue
+    "low_exposure": COLORS["muted"],       # Muted gray
 }
 
 # -- Dataset configs -----------------------------------------------------------
@@ -201,9 +201,9 @@ def _make_scatter(
         (RESTRUCTURING, "20% — Restructuring"),
     ]:
         fig.add_vline(
-            x=thresh, line_dash="dash", line_color="#9CA3AF", line_width=1,
+            x=thresh, line_dash="dash", line_color=COLORS["muted"], line_width=1,
             annotation_text=label, annotation_position="top",
-            annotation_font_size=10, annotation_font_color="#9CA3AF",
+            annotation_font_size=10, annotation_font_color=COLORS["muted"],
         )
 
     style_figure(
@@ -561,7 +561,7 @@ def main() -> None:
             y=comparison["capability_pct"],
             mode="markers",
             marker=dict(
-                color=[TIER_COLORS.get(t, "#6B7280") for t in comparison["usage_tier"]],
+                color=[TIER_COLORS.get(t, COLORS["muted"]) for t in comparison["usage_tier"]],
                 size=6,
                 opacity=0.6,
             ),
@@ -577,7 +577,7 @@ def main() -> None:
         max_val = max(comparison["usage_pct"].max(), comparison["capability_pct"].max())
         fig.add_trace(go.Scatter(
             x=[0, max_val], y=[0, max_val],
-            mode="lines", line=dict(dash="dash", color="#D1D5DB", width=1),
+            mode="lines", line=dict(dash="dash", color=COLORS["grid"], width=1),
             showlegend=False, hoverinfo="skip",
         ))
         style_figure(
@@ -667,6 +667,29 @@ def main() -> None:
         })
         save_csv(stable_out, results / "stable_high_risk_both_methods.csv")
         print(f"  Saved stable_high_risk_both_methods.csv ({len(stable_out)} occupations)")
+
+    # -- Copy key figures to committed figures/ dir ----------------------------
+    print("\n== Copying key figures for report ==")
+    committed_figs = HERE / "figures"
+    committed_figs.mkdir(exist_ok=True)
+
+    import shutil
+    key_figures = [
+        "scatter_risk_vs_employment.png",
+        "high_risk_by_employment.png",
+        "high_risk_by_pct.png",
+        "tier_distribution_by_major.png",
+        "employment_by_tier_major.png",
+        "usage_vs_capability_scatter.png",
+    ]
+    fig_src = results / "figures"
+    for fname in key_figures:
+        src = fig_src / fname
+        if src.exists():
+            shutil.copy2(src, committed_figs / fname)
+            print(f"  Copied {fname}")
+        else:
+            print(f"  SKIP (not found): {fname}")
 
     # -- Generate PDF ----------------------------------------------------------
     print("\n== Generating PDF ==")
