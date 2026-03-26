@@ -80,7 +80,7 @@ export default function AboutPage() {
             About This Dashboard
           </h1>
           <p style={{ fontSize: 13, color: "var(--text-muted)", margin: 0 }}>
-            Automation Exposure Analysis &middot; AEI Project
+            Automation Exposure Analysis
           </p>
         </div>
 
@@ -109,11 +109,8 @@ export default function AboutPage() {
           <strong style={{ color: "var(--text-primary)", fontWeight: 600 }}>
             Office of Artificial Intelligence Policy (OAIP)
           </strong>{" "}
-          as part of the{" "}
-          <strong style={{ color: "var(--text-primary)", fontWeight: 600 }}>
-            Anthropic Economic Index (AEI)
-          </strong>{" "}
-          project. Visualizes AI automation exposure across U.S. occupations, work
+          as part of research to explore how AI is impacting the economy.
+          Visualizes AI automation exposure across U.S. occupations, work
           activities, and time using multiple independent AI scoring datasets.
         </p>
 
