@@ -23,6 +23,8 @@ The gap = MCP v4 score minus AEI Cumul. v4 score. A large positive gap means AI 
 
 Computer and Mathematical has the highest % tasks affected (65.3%) but ranks 6th in workers because the sector is smaller. The top 3 by worker impact are large, broad categories — office work, sales, and business/financial ops.
 
+![MCP v4 Workers Affected by Major Category](figures/mcp_workers_affected_major.png)
+
 ### Top Occupations (by workers affected)
 
 | Rank | Occupation | % Tasks | Workers |
@@ -50,6 +52,8 @@ Computer and Mathematical has the highest % tasks affected (65.3%) but ranks 6th
 | 6 | Computer and Mathematical | 48.0% | 2.4M |
 
 Notable: **Education ranks #4 in current usage** (3.5M workers, 45.2% of tasks) but drops to #8 in MCP capability. AI is already being heavily used in education — in fact, more than MCP tools can currently reach. This is one of the few sectors where adoption exceeds measured tool capability.
+
+![AEI Cumul. v4 Workers Affected by Major Category](figures/aei_workers_affected_major.png)
 
 ### Top Occupations (by workers affected)
 
@@ -82,6 +86,8 @@ This is the core finding. A large positive gap means AI tools can do this work b
 **Transportation is #1 by workers gap** despite a modest overall AI exposure rate (18% MCP). The huge workforce (18.8M) means even a small percentage gap translates into 2.5M workers worth of untapped potential. This sector has the most room for AI adoption to grow.
 
 **Office and Admin is #2** — already the most AI-affected sector by raw workers, and there's still a 21.6 percentage-point gap. MCP tools can reach 54% of tasks but Claude conversations only cover 33%.
+
+![Gap by Workers Affected — Major Category](figures/gap_workers_affected_major.png)
 
 ### Major Categories Where AEI > MCP (Negative Gap)
 
@@ -131,6 +137,8 @@ Several occupations have **0% AEI** (no real Claude conversation usage detected)
 
 **Software QA Testers** stand out in tech: MCP tools can reach 72.4% of their tasks, but only 21.2% shows up in real conversations. That's a 51 percentage-point gap. This is an area where AI tool capability is far ahead of adoption.
 
+![Gap by Workers Affected — Occupation Level](figures/gap_workers_affected_occupation.png)
+
 ---
 
 ## 4. Does the Method Toggle Matter? (Time vs Value)
@@ -169,6 +177,8 @@ When auto-aug is OFF, every AI-flagged task counts equally (as if all had maximu
 
 **Categories that stay negative even with auto-aug OFF** are truly adoption-heavy: Education is the only one.
 
+![Gap with Auto-aug OFF — Major Category](figures/gap_workers_major_time_autoaug_off.png)
+
 ### What this means:
 
 The auto-aug OFF results represent the **theoretical maximum** if every AI-flagged task were fully automatable. The difference between ON and OFF shows **how much additional potential exists** if automation quality improves. The fact that Management and Office Admin see the biggest increases means their tasks are flagged as AI-capable but with currently moderate automation scores — there's a second layer of unrealized potential beyond just adoption.
@@ -184,6 +194,8 @@ The auto-aug OFF results represent the **theoretical maximum** if every AI-flagg
 | Occupation | 7 of 10 | Bookkeeping/Accounting, Cashiers, General/Ops Managers, Laborers/Freight, Sales Reps of Services, Stockers/Order Fillers, Waiters/Waitresses |
 
 The story is highly robust. 7-8 of the top 10 appear regardless of method or auto-aug setting.
+
+![Summary — % Tasks Gap by Major Category](figures/summary_gap_major.png)
 
 ---
 

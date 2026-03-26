@@ -405,6 +405,29 @@ def main() -> None:
         )
         save_figure(fig, results / "figures" / "summary_gap_major.png")
 
+    # -- Copy key figures to committed figures/ dir ----------------------------
+    print("\n== Copying key figures for README ==")
+    committed_figs = HERE / "figures"
+    committed_figs.mkdir(exist_ok=True)
+
+    import shutil
+    key_figures = [
+        "gap_workers_affected_major.png",
+        "gap_workers_affected_occupation.png",
+        "mcp_workers_affected_major.png",
+        "aei_workers_affected_major.png",
+        "summary_gap_major.png",
+        "gap_workers_major_time_autoaug_off.png",
+    ]
+    fig_src = results / "figures"
+    for fname in key_figures:
+        src = fig_src / fname
+        if src.exists():
+            shutil.copy2(src, committed_figs / fname)
+            print(f"  Copied {fname}")
+        else:
+            print(f"  SKIP (not found): {fname}")
+
     print("\nDone.")
 
 
