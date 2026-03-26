@@ -38,6 +38,7 @@ from analysis.utils import (
     format_wages,
     format_pct,
     COLORS,
+    FONT_FAMILY,
     CATEGORY_PALETTE,
 )
 
@@ -121,6 +122,20 @@ def _compute_gap(mcp_df: pd.DataFrame, aei_df: pd.DataFrame) -> pd.DataFrame:
     return merged
 
 
+def _fmt(val: float) -> str:
+    """Abbreviated label for bar values."""
+    abs_val = abs(val)
+    if abs_val >= 1_000_000_000:
+        return f"${val / 1e9:.1f}B"
+    if abs_val >= 1_000_000:
+        return f"{val / 1e6:.1f}M" if abs_val < 10_000_000 else f"{val / 1e6:.0f}M"
+    if abs_val >= 1_000:
+        return f"{val / 1e3:.0f}K"
+    if abs_val >= 1:
+        return f"{val:.0f}"
+    return f"{val:.1f}"
+
+
 def _make_gap_bar_chart(
     gap_df: pd.DataFrame,
     metric: str,
@@ -128,13 +143,16 @@ def _make_gap_bar_chart(
     variant_label: str,
     top_n: int = TOP_N,
 ) -> go.Figure:
-    """Grouped horizontal bar chart: MCP vs AEI with gap annotation."""
+    """Grouped horizontal bar chart: MCP vs AEI side by side."""
     col_mcp = f"{metric}_mcp"
     col_aei = f"{metric}_aei"
     col_gap = f"{metric}_gap"
 
     plot_df = gap_df.sort_values(col_gap, ascending=False).head(top_n).copy()
     plot_df = plot_df.sort_values(col_gap, ascending=True)  # reverse for horiz bars
+
+    aei_labels = [_fmt(v) for v in plot_df[col_aei]]
+    mcp_labels = [_fmt(v) for v in plot_df[col_mcp]]
 
     fig = go.Figure()
 
@@ -144,8 +162,12 @@ def _make_gap_bar_chart(
         x=plot_df[col_aei],
         orientation="h",
         name="AEI Cumul. v4 (Current)",
-        marker_color=COLORS["aei"],
-        opacity=0.7,
+        marker=dict(color=COLORS["aei"], line=dict(width=0)),
+        text=aei_labels,
+        textposition="outside",
+        textfont=dict(size=10, color=COLORS["aei"], family=FONT_FAMILY),
+        cliponaxis=False,
+        opacity=0.85,
     ))
 
     # MCP bars (capability)
@@ -154,19 +176,35 @@ def _make_gap_bar_chart(
         x=plot_df[col_mcp],
         orientation="h",
         name="MCP v4 (Capability)",
-        marker_color=COLORS["mcp"],
-        opacity=0.7,
+        marker=dict(color=COLORS["mcp"], line=dict(width=0)),
+        text=mcp_labels,
+        textposition="outside",
+        textfont=dict(size=10, color=COLORS["mcp"], family=FONT_FAMILY),
+        cliponaxis=False,
+        opacity=0.85,
     ))
 
     metric_label = METRIC_LABELS[metric]
+    chart_height = max(550, top_n * 38 + 160)
     style_figure(
         fig,
         f"Largest Unrealized AI Potential — {AGG_LABELS[agg_level]}",
         subtitle=f"Top {top_n} by {metric_label} gap | {variant_label}",
-        x_title=metric_label,
-        height=max(500, top_n * 30 + 150),
+        x_title=None,
+        height=chart_height,
     )
-    fig.update_layout(barmode="group")
+    fig.update_layout(
+        barmode="group",
+        bargap=0.2,
+        bargroupgap=0.06,
+        margin=dict(l=20, r=100),
+        xaxis=dict(showgrid=False, showticklabels=False, showline=False, zeroline=False),
+        yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=11)),
+        legend=dict(
+            orientation="h", yanchor="top", y=-0.06, xanchor="center", x=0.5,
+            font=dict(size=11, color=COLORS["neutral"]),
+        ),
+    )
 
     return fig
 

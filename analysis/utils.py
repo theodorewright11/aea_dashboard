@@ -127,6 +127,20 @@ def style_figure(
     return fig
 
 
+def _format_bar_label(val: float) -> str:
+    """Format a number for bar labels — clean, abbreviated, no clutter."""
+    abs_val = abs(val)
+    if abs_val >= 1_000_000_000:
+        return f"${val / 1_000_000_000:.1f}B" if abs_val < 10_000_000_000 else f"${val / 1_000_000_000:.0f}B"
+    if abs_val >= 1_000_000:
+        return f"{val / 1_000_000:.1f}M" if abs_val < 10_000_000 else f"{val / 1_000_000:.0f}M"
+    if abs_val >= 1_000:
+        return f"{val / 1_000:.0f}K"
+    if abs_val >= 1:
+        return f"{val:.0f}"
+    return f"{val:.1f}"
+
+
 def make_horizontal_bar(
     df: pd.DataFrame,
     category_col: str,
@@ -139,9 +153,10 @@ def make_horizontal_bar(
     highlight_categories: Optional[list[str]] = None,
     highlight_color: str = COLORS["accent"],
     top_n: Optional[int] = None,
+    value_format: Optional[str] = None,
     **style_kwargs,
 ) -> go.Figure:
-    """Create a styled horizontal bar chart (the dashboard's signature chart type).
+    """Create a styled horizontal bar chart.
 
     Args:
         df: DataFrame with category and value columns.
@@ -154,6 +169,8 @@ def make_horizontal_bar(
         highlight_categories: Categories to highlight in a different color.
         highlight_color: Color for highlighted categories.
         top_n: If set, take only the top N rows (assumes df is pre-sorted).
+        value_format: Optional format string override (e.g., "%.1f%%"). If None,
+            uses smart abbreviation (1.2M, 450K, etc.).
     """
     plot_df = df.head(top_n) if top_n else df
 
@@ -165,14 +182,24 @@ def make_horizontal_bar(
         else:
             colors.append(color)
 
+    # Format bar labels
+    if value_format:
+        text_labels = [value_format % v for v in plot_df[value_col]]
+    else:
+        text_labels = [_format_bar_label(v) for v in plot_df[value_col]]
+
     fig = go.Figure(go.Bar(
         x=plot_df[value_col],
         y=plot_df[category_col],
         orientation="h",
-        marker_color=colors,
-        text=plot_df[value_col],
-        textposition="auto",
-        texttemplate="%{text:,.0f}",
+        marker=dict(
+            color=colors,
+            line=dict(width=0),
+        ),
+        text=text_labels,
+        textposition="outside",
+        textfont=dict(size=11, color=COLORS["neutral"], family=FONT_FAMILY),
+        cliponaxis=False,
     ))
 
     # Reverse y-axis so rank 1 is on top
@@ -185,6 +212,14 @@ def make_horizontal_bar(
         y_title=None,
         show_legend=False,
         **style_kwargs,
+    )
+
+    # Extra polish: more left margin for long labels, hide x-axis gridlines
+    fig.update_layout(
+        margin=dict(l=20, r=80),
+        xaxis=dict(showgrid=False, showticklabels=False, showline=False, zeroline=False),
+        yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=11)),
+        bargap=0.25,
     )
 
     return fig
