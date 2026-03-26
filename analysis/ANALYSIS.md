@@ -157,19 +157,33 @@ settings = {
 - High resolution (300 DPI) for paper/print use
 - Include clear titles, axis labels, and source attribution
 - Save as PNG
-- **Two locations**: all figures go to `results/figures/` (gitignored, full set). Key figures referenced in the README are also copied to `figures/` at the question level (committed to git). The `run.py` script handles this copy step.
+- **Two locations**: all figures go to `results/figures/` (gitignored, full set). Key figures referenced in the report markdown are also copied to `figures/` at the question level (committed to git). The `run.py` script handles this copy step.
+- **Create unique, eye-catching, informative charts.** Don't limit yourself to the chart types the dashboard uses (horizontal bars). Scatter plots, stacked bars, heatmaps, dot plots, slope charts, etc. are all appropriate. Choose the chart type that best reveals the insight — the analysis is the place to explore visualizations that the dashboard can't produce interactively.
 
-### README.md (per question)
-The README is the primary deliverable — it should be a full analytical narrative that tells the complete story so the reader doesn't need to open any CSVs. Include inline figures at key points in the narrative using `![alt](figures/filename.png)`. Charts and tables should appear next to the text they support, not relegated to an appendix.
+### Report markdown (per question)
+Each question's primary deliverable is a markdown report file named after the question (e.g., `job_elimination_risk.md`, NOT `README.md`). This file is converted to PDF by `run.py` using `analysis.utils.generate_pdf()`.
 
-**Every README must include inline figures.** The `run.py` script should copy its key charts to a committed `figures/` directory (outside the gitignored `results/`). Pick the charts that best illustrate each major finding — typically 4-8 figures per question.
+**The report must be substantive.** This is not a summary — it's a full analytical narrative that tells the complete story so the reader doesn't need to open any CSVs or run any code. Each section should explain the finding, provide context, include supporting data tables, and embed the relevant chart inline. Aim for the depth and length of a research report section: introduce the framework, walk through each tier or result set with commentary, explain what's surprising, call out notable cases, compare across configs, and state caveats explicitly.
+
+**Every report must include inline figures.** The `run.py` script should copy its key charts to a committed `figures/` directory (outside the gitignored `results/`). Pick the charts that best illustrate each major finding — typically 4-8 figures per question. Embed them inline next to the text they support using `![alt](figures/filename.png)`.
+
+**PDF generation**: `run.py` should call `analysis.utils.generate_pdf(md_path, pdf_path)` at the end to produce a styled PDF in `results/`. The PDF is gitignored (regenerated on demand).
 
 ```markdown
 # Question: <clear statement>
 
-<Narrative with inline figures and tables — tell the full story>
+<Introductory framing — what this question is, why it matters, how we approach it>
+
+## 1. <First major section>
+<Narrative with inline figures and tables — walk through findings in detail>
 
 ![Chart Title](figures/chart_name.png)
+
+## 2. <Next section>
+...
+
+## N. Key Takeaways
+<Numbered summary of findings>
 
 ## Config
 <One-liner: which datasets, method, geo — just enough to reproduce>
