@@ -983,7 +983,7 @@ WA Explorer task view uses weighted emp (freq or value based on Time/Value toggl
 
 ### Component: `TaskChangesView`
 
-`TaskChangesView.tsx` — Task-level dataset comparison table. Props: `config` (`ConfigResponse`). Dataset pickers, status filter pills, major category pills, search, column selector, pagination. Row expansion shows occupation categories, work activities, source breakdown, and top MCP servers. Simple mode defaults to AEI Cumul v1 → v4.
+`TaskChangesView.tsx` — Task-level dataset comparison table (titled "Task Changes Explorer"). Props: `config` (`ConfigResponse`). Dataset pickers, status filter pills (with dynamic counts that update based on active filters), major category pills, search, per-column numeric threshold filters (funnel icon → min/max dropdown), per-column text filters (funnel icon → multi-select checkbox dropdown for Occupation, Major, Minor, Broad, GWA, IWA, DWA), column selector, pagination. Task column uses word-wrap (no truncation); lowercase task names are auto-capitalized via `titleCaseTask()`. Column labels use "Auto" instead of "auto_aug". Source breakdown in expanded rows uses colored AVG/MAX badges matching explorer style. Table container has `maxHeight` with `overflowY: auto` so horizontal scroll is accessible from any vertical position. Row expansion shows occupation categories, work activities, source breakdown, and top MCP servers. Simple mode defaults to AEI Cumul v1 → v4.
 
 ### Utility: `lib/datasetRules.ts`
 
@@ -1074,6 +1074,10 @@ The explorer endpoints are **cold-start heavy** (~2–5s on first `/api/explorer
 17. **`pct_physical` is stored as a 0–1 fraction.** `fmtPctPhys(v)` multiplies by 100 for display.
 
 18. **Overview/WA pages use staged settings.** `pending*` is form state; `fullResponse*` is backend results (topN=1000); `displayResponse*` is client-filtered. Charts only update on "Run" click.
+
+19. **Explorer column filter dropdowns require `overflow: visible` on `<th>`.** The `ColumnFilterDropdown` and `TextColumnFilterDropdown` use `position: absolute` with `top: 100%` inside header cells. If the `<th>` has `overflow: hidden`, the dropdown is clipped and invisible. Additionally, add `onClick` and `onMouseDown` `stopPropagation()` on dropdown root divs to prevent click-through to the `<th>` sort handler.
+
+20. **`ColumnFilterDropdown` must use functional updater form properly.** The `setMinMax` callback must read `prev[colKey]` (not a stale closure `cur`) to prevent one field overwriting the other during batched React updates.
 
 19. **Trends frozen tooltip:** `lockedPos` is screen-space; the fixed `<div>` must be clamped to `window.innerHeight/innerWidth` to stay on-screen. Always shows all lines at the locked date (sorted by value desc, scrollable). A `dotClickedRef` flag prevents the parent div click handler from clearing the lock when clicking a dot.
 

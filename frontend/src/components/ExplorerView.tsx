@@ -459,13 +459,16 @@ function ColumnFilterDropdown({
   }, [onClose]);
 
   const setMinMax = (field: "min" | "max", val: string) => {
-    setFilters((prev) => ({ ...prev, [colKey]: { ...cur, [field]: val } }));
+    setFilters((prev) => {
+      const prevCur = prev[colKey] ?? { min: "", max: "" };
+      return { ...prev, [colKey]: { ...prevCur, [field]: val } };
+    });
   };
 
   const hasFilter = cur.min !== "" || cur.max !== "";
 
   return (
-    <div ref={ref} style={{
+    <div ref={ref} onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} style={{
       position: "absolute", top: "100%", right: 0, zIndex: 500,
       background: "var(--bg-surface)", border: "1px solid var(--border)",
       borderRadius: 7, padding: "10px 12px", boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
@@ -551,7 +554,7 @@ function TextColumnFilterDropdown({
       background: "var(--bg-surface)", border: "1px solid var(--border)",
       borderRadius: 7, padding: "8px 0", boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
       minWidth: 220, maxWidth: 320, display: "flex", flexDirection: "column",
-    }} onClick={(e) => e.stopPropagation()}>
+    }} onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
       {/* Search box */}
       <div style={{ padding: "0 8px 6px" }}>
         <input
@@ -2102,7 +2105,6 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                       textTransform: "uppercase",
                       letterSpacing: "0.06em",
                       whiteSpace: "nowrap",
-                      overflow: "hidden",
                       width: col.width,
                       cursor: "pointer",
                       userSelect: "none",

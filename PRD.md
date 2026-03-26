@@ -133,7 +133,7 @@ Time-series line charts showing how automation exposure metrics have changed acr
 - **Custom legend** — clickable colored squares; clicking locks to that line. Shows increase badge per item.
 - **PNG download** with legend captured.
 
-### 3.6 Task Changes
+### 3.6 Task Changes Explorer
 
 A task-level comparison view that shows what changed between two dataset versions — which tasks were added, removed, or had score changes.
 
@@ -144,12 +144,15 @@ A task-level comparison view that shows what changed between two dataset version
 
 **What the user sees and can do:**
 - **Dataset pickers** — select any two datasets from the full registry (including cumulative AEI) as "From" and "To", then click Run to compare.
-- **Status summary** — colored pills showing counts for each status: New (green), Changed (orange), Removed (red), Unchanged (grey), Not in baseline (muted/italic). Each pill toggles visibility of that status. Default: New + Changed + Removed visible.
-- **Table** with default visible columns: Task, Occupation, Status, From auto_aug, To auto_aug, Δ auto_aug. Available via column selector: Major, Minor, Broad, GWA, IWA, DWA, Physical, Freq, Importance, Relevance, Emp, Wage, From pct, To pct, Δ pct.
-- **Row expansion** — clicking a row shows occupation categories, work activities, source breakdown (all 8 AI sources), and top MCP servers.
+- **Status summary** — colored pills showing counts for each status: New (green), Changed (orange), Removed (red), Unchanged (grey), Not in baseline (muted/italic). Each pill toggles visibility of that status. Default: New + Changed + Removed visible. **Counts are dynamic** — they update based on active filters (major pills, search, physical filter, column filters), excluding the status filter itself.
+- **Table** with default visible columns: Task, Occupation, Status, From Auto, To Auto, Δ Auto. Available via column selector: Major, Minor, Broad, GWA, IWA, DWA, Physical, Freq, Importance, Relevance, Emp, Wage, From pct, To pct, Δ pct. Task column displays full text (word-wrapping enabled, no truncation). Lowercase task names (from AEI data) are auto-capitalized.
+- **Row expansion** — clicking a row shows occupation categories, work activities, source breakdown (all 8 AI sources with colored AVG/MAX badges matching explorer style), and top MCP servers.
 - **When GWA/IWA/DWA columns are toggled on**, rows expand to unique (task, occupation, activity) combinations using eco_2025 data.
 - **Δ columns** — green if positive, red if negative, "—" if either side is null.
-- **Filters** — status pills, major category pills, search across task/occupation/activity text, physical filter (advanced only).
+- **Per-column threshold filters** — funnel icon on numeric column headers opens a min/max filter dropdown (same pattern as Occupation and WA Explorers).
+- **Text column filters** — funnel icon on text columns (Occupation, Major, Minor, Broad, GWA, IWA, DWA) opens a multi-select checkbox dropdown to filter to specific values.
+- **Filters** — status pills, major category pills, search across task/occupation/activity text, per-column numeric/text filters, physical filter (advanced only).
+- **Scrollable table** — horizontal and vertical scroll available from any position (max-height container), not just at the bottom.
 - **Pagination** — same 100-row pattern as other explorers.
 - **Cross-family comparisons** — AEI data is crosswalked to 2019 SOC before comparison. "Not in baseline" status identifies tasks that couldn't have been rated by the other dataset family.
 
@@ -162,15 +165,11 @@ A task-level comparison view that shows what changed between two dataset version
 
 ### 3.7 Instructions
 
-A reference page explaining how to use each dashboard page and how all metrics are computed, with an **interactive calculator** that lets users experiment with task completion weight computation.
-
-**The calculator** has sliders for frequency, importance, relevance, and auto-aug score. Users toggle between Time and Value methods and see the step-by-step computation result update in real time. This makes the methodology tangible rather than abstract.
-
-Also includes documentation of page guides, metric formulas, data source descriptions, auto-aug multiplier mechanics, and the occupation/work-activity aggregation logic.
+A concise reference page with brief descriptions of each dashboard page and what it's for. Includes an AI-generated content disclaimer at the top linking to the GitHub repository for deeper technical detail. No formulas, calculators, or detailed methodology — those live on the About page.
 
 ### 3.8 About
 
-A static page summarizing the project's purpose, methodology, data sources, and technical notes. Identifies the dashboard as built for Utah's OAIP as part of a research project for measuring AI's workforce impact.
+A page summarizing the project's purpose, full computation methodology with equations for every derived metric (task_comp, auto-aug multiplier, % tasks affected, workers affected, wages affected, multi-dataset combination, explorer metrics, group-level aggregation, work activity employment allocation), and data source descriptions. Includes an AI-generated content disclaimer at the top linking to the GitHub repository. Identifies the dashboard as built for Utah's OAIP as part of a research project for measuring AI's workforce impact.
 
 ---
 
@@ -225,7 +224,7 @@ A global toggle in the navigation bar switches the dashboard between **Simple** 
 | **Work Activities** | All AEI datasets, Time, All phys, Auto-aug On, single group | Activity level, Geo, Sort, Search, Top N | Group B, Dataset/Method/Physical/Auto-aug controls |
 | **Trends (Occ)** | All datasets, Time, All phys, Auto-aug On | Lines (Avg/Max only), Metric, Aggregation, Geo, Top N, Sort, Search | Datasets, Filtering, Individual line mode, Value ranking (auto-matches line mode) |
 | **Trends (WA)** | All AEI datasets, Time, All phys, Auto-aug On | Lines (Avg/Max only), Metric, Activity level, Geo, Top N, Sort, Search | Datasets, Filtering, Individual line mode, Value ranking |
-| **Task Changes** | AEI Cumul. v1 → v4 | Status filter, Major pills, Search, Core columns | Dataset pickers, Physical filter, Minor/Broad/IWA/DWA columns |
+| **Task Changes Explorer** | AEI Cumul. v1 → v4 | Status filter, Major pills, Search, Core columns | Dataset pickers, Physical filter, Minor/Broad/IWA/DWA columns |
 
 Explorer pages auto-compute % Tasks Affected, Workers Affected, and Wages Affected columns on page load in **both** simple and advanced modes using the default settings (all datasets, freq, all phys, auto-aug on, Average). The pct columns are always visible in the table (showing "---" while loading). In advanced mode, users can still open the PctComputePanel to re-run with custom settings. The Reset button restores all controls to defaults (including geo→nat, physical→all, hidden columns→defaults) and re-runs auto-compute. The WA Explorer auto-compute populates pctAffectedMap from all three levels (GWA + IWA + DWA) so results persist across level switches.
 

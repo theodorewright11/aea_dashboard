@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useSimpleMode } from "@/lib/SimpleModeContext";
 import { fetchTaskChanges, fetchAllEcoTasks } from "@/lib/api";
@@ -46,6 +46,15 @@ function ChevronIcon({ open }: { open: boolean }) {
   );
 }
 
+function FunnelIcon() {
+  return (
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+    </svg>
+  );
+}
+
 function BtnSeg<T extends string>({ opts, val, onChange }: { opts: { v: T; l: string }[]; val: T; onChange: (v: T) => void }) {
   return (
     <div style={{ display: "inline-flex", border: "1px solid var(--border)", borderRadius: 5, overflow: "hidden" }}>
@@ -60,6 +69,16 @@ function BtnSeg<T extends string>({ opts, val, onChange }: { opts: { v: T; l: st
       ))}
     </div>
   );
+}
+
+/** Title-case a string: capitalize first letter of each sentence. */
+function titleCaseTask(s: string): string {
+  if (!s) return s;
+  // If all lowercase, capitalize first letter
+  if (s === s.toLowerCase()) {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+  return s;
 }
 
 /* ── Status config ────────────────────────────────────────────────────────── */
@@ -86,7 +105,7 @@ interface ColDef {
 }
 
 const COLUMNS: ColDef[] = [
-  { key: "task",       label: "Task",         width: 260, numeric: false },
+  { key: "task",       label: "Task",         width: 300, numeric: false },
   { key: "occ",        label: "Occupation",   width: 220, numeric: false, textFilter: true },
   { key: "major",      label: "Major",        width: 180, numeric: false, textFilter: true },
   { key: "minor",      label: "Minor",        width: 180, numeric: false, textFilter: true },
@@ -94,10 +113,10 @@ const COLUMNS: ColDef[] = [
   { key: "gwa",        label: "GWA",          width: 200, numeric: false, textFilter: true },
   { key: "iwa",        label: "IWA",          width: 200, numeric: false, textFilter: true },
   { key: "dwa",        label: "DWA",          width: 200, numeric: false, textFilter: true },
-  { key: "status",     label: "Status",       width: 110, numeric: false },
-  { key: "from_aug",   label: "From auto_aug", width: 110, numeric: true },
-  { key: "to_aug",     label: "To auto_aug",   width: 110, numeric: true },
-  { key: "delta_aug",  label: "\u0394 auto_aug", width: 100, numeric: true, tooltip: "To minus From. Green = increase, red = decrease." },
+  { key: "status",     label: "Status",       width: 90,  numeric: false },
+  { key: "from_aug",   label: "From Auto",    width: 90,  numeric: true },
+  { key: "to_aug",     label: "To Auto",      width: 90,  numeric: true },
+  { key: "delta_aug",  label: "\u0394 Auto",  width: 80,  numeric: true, tooltip: "To minus From. Green = increase, red = decrease." },
   { key: "physical",   label: "Physical",     width: 70,  numeric: false },
   { key: "freq",       label: "Freq",         width: 70,  numeric: true },
   { key: "imp",        label: "Importance",   width: 90,  numeric: true },
@@ -112,6 +131,7 @@ const COLUMNS: ColDef[] = [
 const DEFAULT_HIDDEN = new Set(["minor", "broad", "gwa", "iwa", "dwa", "physical", "freq", "imp", "rel", "emp", "wage", "from_pct", "to_pct", "delta_pct"]);
 const SIMPLE_COLS = new Set(["task", "occ", "major", "status", "from_aug", "to_aug", "delta_aug"]);
 const ACTIVITY_COLS = new Set(["gwa", "iwa", "dwa"]);
+const TEXT_FILTER_COLS = new Set(COLUMNS.filter((c) => c.textFilter).map((c) => c.key));
 
 /* ── Value helpers ────────────────────────────────────────────────────────── */
 
@@ -140,6 +160,12 @@ function getColValue(row: TaskChangeRow, key: string, geo: "nat" | "ut"): string
     case "delta_pct": return row.delta_pct;
     default:          return null;
   }
+}
+
+function getNumericValue(row: TaskChangeRow, key: string, geo: "nat" | "ut"): number | null {
+  const v = getColValue(row, key, geo);
+  if (v == null || typeof v === "string" || typeof v === "boolean") return null;
+  return v;
 }
 
 function fmtNum(v: number | null | undefined, decimals = 2): string {
@@ -176,6 +202,138 @@ function highlightText(text: string, query: string): React.ReactNode {
   return <>{text.slice(0, idx)}<mark style={{ background: "#fde68a", borderRadius: 2 }}>{text.slice(idx, idx + query.length)}</mark>{text.slice(idx + query.length)}</>;
 }
 
+/* ── Numeric filter dropdown ──────────────────────────────────────────────── */
+
+function NumericFilterDropdown({
+  colKey,
+  filters,
+  setFilters,
+  onClose,
+}: {
+  colKey: string;
+  filters: Record<string, { min: string; max: string }>;
+  setFilters: React.Dispatch<React.SetStateAction<Record<string, { min: string; max: string }>>>;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const cur = filters[colKey] ?? { min: "", max: "" };
+
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) onClose();
+    }
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [onClose]);
+
+  const setMinMax = (field: "min" | "max", val: string) => {
+    setFilters((prev) => {
+      const prevCur = prev[colKey] ?? { min: "", max: "" };
+      return { ...prev, [colKey]: { ...prevCur, [field]: val } };
+    });
+  };
+
+  const hasFilter = cur.min !== "" || cur.max !== "";
+
+  return (
+    <div ref={ref} onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} style={{
+      position: "absolute", top: "100%", right: 0, zIndex: 500,
+      background: "var(--bg-surface)", border: "1px solid var(--border)",
+      borderRadius: 7, padding: "10px 12px", boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+      minWidth: 140, display: "flex", flexDirection: "column", gap: 7,
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <span style={{ fontSize: 10, color: "var(--text-muted)", width: 14 }}>&ge;</span>
+        <input type="number" value={cur.min} onChange={(e) => setMinMax("min", e.target.value)} placeholder="min"
+          style={{ width: "100%", fontSize: 11, padding: "4px 6px", border: "1px solid var(--border)", borderRadius: 4, outline: "none", color: "var(--text-primary)", background: "var(--bg-surface)" }} />
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <span style={{ fontSize: 10, color: "var(--text-muted)", width: 14 }}>&le;</span>
+        <input type="number" value={cur.max} onChange={(e) => setMinMax("max", e.target.value)} placeholder="max"
+          style={{ width: "100%", fontSize: 11, padding: "4px 6px", border: "1px solid var(--border)", borderRadius: 4, outline: "none", color: "var(--text-primary)", background: "var(--bg-surface)" }} />
+      </div>
+      {hasFilter && (
+        <button onClick={() => setFilters((prev) => ({ ...prev, [colKey]: { min: "", max: "" } }))}
+          style={{ fontSize: 10, color: "var(--brand)", background: "none", border: "none", cursor: "pointer", padding: 0, textAlign: "left" }}>
+          Clear
+        </button>
+      )}
+    </div>
+  );
+}
+
+/* ── Text filter dropdown ─────────────────────────────────────────────────── */
+
+function TextFilterDropdown({
+  colKey,
+  uniqueValues,
+  selectedValues,
+  onSelectionChange,
+  onClose,
+}: {
+  colKey: string;
+  uniqueValues: string[];
+  selectedValues: Set<string> | null;
+  onSelectionChange: (colKey: string, values: Set<string> | null) => void;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [filterSearch, setFilterSearch] = useState("");
+
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) onClose();
+    }
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [onClose]);
+
+  const isAll = selectedValues === null;
+  const filtered = filterSearch
+    ? uniqueValues.filter((v) => v.toLowerCase().includes(filterSearch.toLowerCase()))
+    : uniqueValues;
+
+  return (
+    <div ref={ref} onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} style={{
+      position: "absolute", top: "100%", left: 0, zIndex: 500,
+      background: "var(--bg-surface)", border: "1px solid var(--border)",
+      borderRadius: 7, padding: "8px 0", boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+      minWidth: 220, maxWidth: 320, display: "flex", flexDirection: "column",
+    }}>
+      <div style={{ padding: "0 8px 6px" }}>
+        <input type="text" placeholder="Search..." value={filterSearch} onChange={(e) => setFilterSearch(e.target.value)}
+          style={{ width: "100%", fontSize: 11, padding: "4px 6px", border: "1px solid var(--border)", borderRadius: 4, outline: "none", color: "var(--text-primary)", background: "var(--bg-surface)", boxSizing: "border-box" }} />
+      </div>
+      <label style={{ display: "flex", alignItems: "center", gap: 8, padding: "3px 10px", fontSize: 11, cursor: "pointer", color: "var(--text-primary)", fontWeight: 600, borderBottom: "1px solid var(--border-light)" }}>
+        <input type="checkbox" checked={isAll} onChange={() => { onSelectionChange(colKey, isAll ? new Set() : null); }} style={{ margin: 0 }} />
+        All ({uniqueValues.length})
+      </label>
+      <div style={{ maxHeight: 250, overflowY: "auto" }}>
+        {filtered.map((val) => {
+          const checked = isAll || (selectedValues?.has(val) ?? false);
+          return (
+            <label key={val} style={{ display: "flex", alignItems: "center", gap: 8, padding: "3px 10px", fontSize: 11, cursor: "pointer", color: checked ? "var(--text-primary)" : "var(--text-muted)" }}>
+              <input type="checkbox" checked={checked} onChange={() => {
+                if (isAll) {
+                  const all = new Set(uniqueValues);
+                  all.delete(val);
+                  onSelectionChange(colKey, all);
+                } else {
+                  const next = new Set(selectedValues);
+                  if (next.has(val)) next.delete(val); else next.add(val);
+                  if (next.size === uniqueValues.length) onSelectionChange(colKey, null);
+                  else onSelectionChange(colKey, next);
+                }
+              }} style={{ margin: 0 }} />
+              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{val}</span>
+            </label>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 /* ── Component ────────────────────────────────────────────────────────────── */
 
 interface Props {
@@ -204,6 +362,10 @@ export default function TaskChangesView({ config }: Props) {
   const debouncedSearch = useDebounce(search, 250);
   const [physicalMode, setPhysicalMode] = useState<"all" | "exclude" | "only">("all");
   const [geo, setGeo] = useState<"nat" | "ut">("nat");
+  const [colFilters, setColFilters] = useState<Record<string, { min: string; max: string }>>({});
+  const [openFilter, setOpenFilter] = useState<string | null>(null);
+  const [textColFilters, setTextColFilters] = useState<Record<string, Set<string> | null>>({});
+  const [openTextFilter, setOpenTextFilter] = useState<string | null>(null);
 
   // ── Column visibility ──
   const [hiddenCols, setHiddenCols] = useState<Set<string>>(() => {
@@ -237,7 +399,7 @@ export default function TaskChangesView({ config }: Props) {
 
   // ── Pagination ──
   const [rowLimit, setRowLimit] = useState(100);
-  useEffect(() => { setRowLimit(100); }, [debouncedSearch, selectedMajors, visibleStatuses, physicalMode, sortCol, sortDir]);
+  useEffect(() => { setRowLimit(100); }, [debouncedSearch, selectedMajors, visibleStatuses, physicalMode, sortCol, sortDir, colFilters, textColFilters]);
 
   // ── Expansion ──
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
@@ -302,7 +464,6 @@ export default function TaskChangesView({ config }: Props) {
         result.push(row);
         continue;
       }
-      // Expand to one row per activity combination
       const seen = new Set<string>();
       for (const eco of activityRows) {
         const dedup = `${eco.dwa_title}\0${eco.iwa_title}\0${eco.gwa_title}`;
@@ -329,12 +490,35 @@ export default function TaskChangesView({ config }: Props) {
   // ── Visible columns ──
   const visibleCols = useMemo(() => {
     return COLUMNS.filter((c) => {
-      if (c.key === "task") return true; // always visible
+      if (c.key === "task") return true;
       if (isSimple && !SIMPLE_COLS.has(c.key)) return false;
       if (hiddenCols.has(c.key)) return false;
       return true;
     });
   }, [hiddenCols, isSimple]);
+
+  // ── Text column unique values (for text filter dropdowns) ──
+  const textColUniqueValues = useMemo(() => {
+    const getters: Record<string, (r: TaskChangeRow) => string | null | undefined> = {
+      occ: (r) => r.title_current,
+      major: (r) => r.major_occ_category,
+      minor: (r) => r.minor_occ_category,
+      broad: (r) => r.broad_occ,
+      gwa: (r) => r.gwa_title,
+      iwa: (r) => r.iwa_title,
+      dwa: (r) => r.dwa_title,
+    };
+    const result: Record<string, string[]> = {};
+    for (const [key, getter] of Object.entries(getters)) {
+      const vals = new Set<string>();
+      for (const r of expandedData) {
+        const v = getter(r);
+        if (v) vals.add(v);
+      }
+      result[key] = Array.from(vals).sort();
+    }
+    return result;
+  }, [expandedData]);
 
   // ── Filter + sort ──
   const processedRows = useMemo(() => {
@@ -361,6 +545,42 @@ export default function TaskChangesView({ config }: Props) {
       });
     }
 
+    // Numeric column filters
+    Object.entries(colFilters).forEach(([key, { min, max }]) => {
+      const minN = min !== "" ? parseFloat(min) : null;
+      const maxN = max !== "" ? parseFloat(max) : null;
+      if (minN !== null || maxN !== null) {
+        data = data.filter((r) => {
+          const v = getNumericValue(r, key, geo);
+          if (minN !== null && (v == null || v < minN)) return false;
+          if (maxN !== null && (v == null || v > maxN)) return false;
+          return true;
+        });
+      }
+    });
+
+    // Text column filters
+    const textGetters: Record<string, (r: TaskChangeRow) => string | null | undefined> = {
+      occ: (r) => r.title_current,
+      major: (r) => r.major_occ_category,
+      minor: (r) => r.minor_occ_category,
+      broad: (r) => r.broad_occ,
+      gwa: (r) => r.gwa_title,
+      iwa: (r) => r.iwa_title,
+      dwa: (r) => r.dwa_title,
+    };
+    for (const [colKey, selected] of Object.entries(textColFilters)) {
+      if (selected === null || selected === undefined) continue;
+      if (selected.size === 0) { data = []; break; }
+      const getter = textGetters[colKey];
+      if (getter) {
+        data = data.filter((r) => {
+          const v = getter(r);
+          return v != null && selected.has(v);
+        });
+      }
+    }
+
     // Sort
     const statusOrder: Record<TaskChangeStatus, number> = { new: 0, changed: 1, removed: 2, unchanged: 3, not_in_baseline: 4 };
     data = [...data].sort((a, b) => {
@@ -383,17 +603,53 @@ export default function TaskChangesView({ config }: Props) {
     });
 
     return data;
-  }, [expandedData, visibleStatuses, selectedMajors, physicalMode, debouncedSearch, sortCol, sortDir, geo]);
+  }, [expandedData, visibleStatuses, selectedMajors, physicalMode, debouncedSearch, sortCol, sortDir, geo, colFilters, textColFilters]);
 
-  // ── Status summary counts ──
+  // ── Status summary counts — computed from processedRows (post-filter) ──
   const statusCounts = useMemo(() => {
-    if (!rows) return {} as Record<TaskChangeStatus, number>;
-    const counts: Record<string, number> = {};
-    for (const r of rows) {
-      counts[r.status] = (counts[r.status] ?? 0) + 1;
+    // Count from rows that pass major/search/physical/column filters but ignore status filter
+    let data = expandedData;
+    if (selectedMajors.size > 0) {
+      data = data.filter((r) => selectedMajors.has(r.major_occ_category ?? "Unknown"));
     }
+    if (physicalMode === "exclude") data = data.filter((r) => r.physical !== true);
+    else if (physicalMode === "only") data = data.filter((r) => r.physical === true);
+    if (debouncedSearch) {
+      const q = debouncedSearch.toLowerCase();
+      data = data.filter((r) => {
+        const fields = [r.task, r.title_current, r.major_occ_category, r.minor_occ_category, r.broad_occ, r.gwa_title, r.iwa_title, r.dwa_title];
+        return fields.some((f) => f?.toLowerCase().includes(q));
+      });
+    }
+    // Apply numeric column filters
+    Object.entries(colFilters).forEach(([key, { min, max }]) => {
+      const minN = min !== "" ? parseFloat(min) : null;
+      const maxN = max !== "" ? parseFloat(max) : null;
+      if (minN !== null || maxN !== null) {
+        data = data.filter((r) => {
+          const v = getNumericValue(r, key, geo);
+          if (minN !== null && (v == null || v < minN)) return false;
+          if (maxN !== null && (v == null || v > maxN)) return false;
+          return true;
+        });
+      }
+    });
+    // Apply text column filters
+    const textGetters: Record<string, (r: TaskChangeRow) => string | null | undefined> = {
+      occ: (r) => r.title_current, major: (r) => r.major_occ_category,
+      minor: (r) => r.minor_occ_category, broad: (r) => r.broad_occ,
+      gwa: (r) => r.gwa_title, iwa: (r) => r.iwa_title, dwa: (r) => r.dwa_title,
+    };
+    for (const [colKey, selected] of Object.entries(textColFilters)) {
+      if (selected === null || selected === undefined) continue;
+      if (selected.size === 0) { data = []; break; }
+      const getter = textGetters[colKey];
+      if (getter) data = data.filter((r) => { const v = getter(r); return v != null && selected.has(v); });
+    }
+    const counts: Record<string, number> = {};
+    for (const r of data) counts[r.status] = (counts[r.status] ?? 0) + 1;
     return counts as Record<TaskChangeStatus, number>;
-  }, [rows]);
+  }, [expandedData, selectedMajors, physicalMode, debouncedSearch, colFilters, textColFilters, geo]);
 
   const shownRows = processedRows.slice(0, rowLimit);
 
@@ -411,9 +667,9 @@ export default function TaskChangesView({ config }: Props) {
   /* ═══════════════════════════════════════════════════════════════════════════ */
 
   return (
-    <div style={{ padding: "20px 24px 40px", maxWidth: 1600, margin: "0 auto" }}>
+    <div style={{ padding: "20px 24px 40px", maxWidth: 1800, margin: "0 auto" }}>
       {/* ── Title ── */}
-      <h1 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4, color: "var(--text-primary)" }}>Task Changes</h1>
+      <h1 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4, color: "var(--text-primary)" }}>Task Changes Explorer</h1>
       <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 16 }}>
         Compare two dataset versions at the task level to see which tasks were added, removed, or changed.
       </p>
@@ -465,7 +721,7 @@ export default function TaskChangesView({ config }: Props) {
 
       {hasRun && !loading && rows && (
         <>
-          {/* ── Status summary ── */}
+          {/* ── Status summary (dynamic counts) ── */}
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
             {(Object.entries(STATUS_CONFIG) as [TaskChangeStatus, typeof STATUS_CONFIG[TaskChangeStatus]][]).map(([status, cfg]) => {
               const count = statusCounts[status] ?? 0;
@@ -565,23 +821,58 @@ export default function TaskChangesView({ config }: Props) {
 
           {/* ── Table ── */}
           <div style={{ border: "1px solid var(--border)", borderRadius: 8, overflow: "hidden" }}>
-            <div style={{ overflowX: "auto" }}>
+            <div style={{ overflowX: "auto", overflowY: "auto", maxHeight: "calc(100vh - 320px)" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, tableLayout: "fixed", minWidth: visibleCols.reduce((s, c) => s + c.width, 0) }}>
                 <colgroup>
                   {visibleCols.map((c) => <col key={c.key} style={{ width: c.width }} />)}
                 </colgroup>
                 <thead>
-                  <tr style={{ background: "var(--bg-surface)", borderBottom: "2px solid var(--border)" }}>
-                    {visibleCols.map((col) => (
-                      <th key={col.key} onClick={() => handleSort(col.key)}
-                        style={{ padding: "7px 8px", textAlign: col.numeric ? "right" : "left", fontSize: 11, fontWeight: 700, color: sortCol === col.key ? "var(--brand)" : "var(--text-muted)", cursor: "pointer", userSelect: "none", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                        <div style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>
-                          {col.label}
-                          {col.tooltip && <InfoTooltip text={col.tooltip} />}
-                          {sortCol === col.key && <span style={{ color: "var(--brand)", fontSize: 10 }}>{sortDir === "desc" ? "\u2193" : "\u2191"}</span>}
-                        </div>
-                      </th>
-                    ))}
+                  <tr style={{ background: "var(--bg-surface)", borderBottom: "2px solid var(--border)", position: "sticky", top: 0, zIndex: 10 }}>
+                    {visibleCols.map((col) => {
+                      const hasNumFilter = col.numeric && !!(colFilters[col.key]?.min || colFilters[col.key]?.max);
+                      const isTextFilterCol = TEXT_FILTER_COLS.has(col.key);
+                      const hasTextFilter = isTextFilterCol && textColFilters[col.key] !== null && textColFilters[col.key] !== undefined;
+                      return (
+                        <th key={col.key} onClick={() => handleSort(col.key)}
+                          style={{ padding: "7px 8px", textAlign: col.numeric ? "right" : "left", fontSize: 11, fontWeight: 700, color: sortCol === col.key ? "var(--brand)" : "var(--text-muted)", cursor: "pointer", userSelect: "none", whiteSpace: "nowrap", position: "relative" }}>
+                          <div style={{ display: "inline-flex", alignItems: "center", gap: 3, paddingRight: (col.numeric || isTextFilterCol) ? 14 : 0 }}>
+                            {col.label}
+                            {col.tooltip && <InfoTooltip text={col.tooltip} />}
+                            {sortCol === col.key && <span style={{ color: "var(--brand)", fontSize: 10 }}>{sortDir === "desc" ? "\u2193" : "\u2191"}</span>}
+                          </div>
+                          {col.numeric && (
+                            <span
+                              onClick={(e) => { e.stopPropagation(); setOpenFilter((prev) => prev === col.key ? null : col.key); setOpenTextFilter(null); }}
+                              style={{ position: "absolute", right: 4, top: "50%", transform: "translateY(-50%)", cursor: "pointer", color: hasNumFilter ? "var(--brand)" : "var(--text-muted)", opacity: hasNumFilter ? 1 : 0.5, display: "inline-flex" }}
+                              title="Filter">
+                              <FunnelIcon />
+                            </span>
+                          )}
+                          {openFilter === col.key && (
+                            <NumericFilterDropdown colKey={col.key} filters={colFilters} setFilters={setColFilters} onClose={() => setOpenFilter(null)} />
+                          )}
+                          {isTextFilterCol && (
+                            <>
+                              <span
+                                onClick={(e) => { e.stopPropagation(); setOpenTextFilter((prev) => prev === col.key ? null : col.key); setOpenFilter(null); }}
+                                style={{ position: "absolute", right: 4, top: "50%", transform: "translateY(-50%)", cursor: "pointer", color: hasTextFilter ? "var(--brand)" : "var(--text-muted)", opacity: hasTextFilter ? 1 : 0.5, display: "inline-flex" }}
+                                title="Filter values">
+                                <FunnelIcon />
+                              </span>
+                              {openTextFilter === col.key && (
+                                <TextFilterDropdown
+                                  colKey={col.key}
+                                  uniqueValues={textColUniqueValues[col.key] ?? []}
+                                  selectedValues={textColFilters[col.key] ?? null}
+                                  onSelectionChange={(ck, vals) => setTextColFilters((prev) => ({ ...prev, [ck]: vals }))}
+                                  onClose={() => setOpenTextFilter(null)}
+                                />
+                              )}
+                            </>
+                          )}
+                        </th>
+                      );
+                    })}
                   </tr>
                 </thead>
                 <tbody>
@@ -596,7 +887,8 @@ export default function TaskChangesView({ config }: Props) {
                           onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#f9f9f7"; }}
                           onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
                           {visibleCols.map((col) => {
-                            const val = getColValue(row, col.key, geo);
+                            const rawVal = getColValue(row, col.key, geo);
+                            const val = col.key === "task" && typeof rawVal === "string" ? titleCaseTask(rawVal) : rawVal;
                             const isDelta = col.key === "delta_aug" || col.key === "delta_pct";
                             let cellColor = "var(--text-primary)";
                             if (isDelta && typeof val === "number") {
@@ -615,11 +907,18 @@ export default function TaskChangesView({ config }: Props) {
                                 </td>
                               );
                             }
-                            if (col.key === "task" || col.key === "occ") {
+                            if (col.key === "task") {
+                              return (
+                                <td key={col.key} style={{ padding: "6px 8px", color: "var(--text-primary)", wordBreak: "break-word", whiteSpace: "normal", lineHeight: 1.35 }} title={String(val ?? "")}>
+                                  <ChevronIcon open={isExpanded} />
+                                  {" "}{highlightText(String(val ?? ""), debouncedSearch)}
+                                </td>
+                              );
+                            }
+                            if (col.key === "occ") {
                               return (
                                 <td key={col.key} style={{ padding: "6px 8px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", color: "var(--text-primary)" }} title={String(val ?? "")}>
-                                  {col.key === "task" && <ChevronIcon open={isExpanded} />}
-                                  {" "}{highlightText(String(val ?? ""), debouncedSearch)}
+                                  {highlightText(String(val ?? ""), debouncedSearch)}
                                 </td>
                               );
                             }
@@ -667,7 +966,10 @@ export default function TaskChangesView({ config }: Props) {
 
 /* ── Expanded detail panel ────────────────────────────────────────────────── */
 
-import React from "react";
+function fmtPctNorm(v: number | null | undefined): string {
+  if (v == null) return "\u2014";
+  return v.toFixed(4) + "%";
+}
 
 function ExpandedDetail({ row }: { row: TaskChangeRow }) {
   const sectionHead: React.CSSProperties = { fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 };
@@ -707,7 +1009,7 @@ function ExpandedDetail({ row }: { row: TaskChangeRow }) {
         ))}
       </div>
 
-      {/* Source Breakdown */}
+      {/* Source Breakdown — styled to match explorers (colored AVG/MAX badges) */}
       {row.sources && Object.keys(row.sources).length > 0 && (
         <div style={{ minWidth: 220 }}>
           <p style={sectionHead}>Source Breakdown</p>
@@ -724,10 +1026,10 @@ function ExpandedDetail({ row }: { row: TaskChangeRow }) {
                 <tr key={src}>
                   <td style={{ padding: "2px 10px 2px 0", color: "var(--text-secondary)" }}>{src}</td>
                   <td style={{ padding: "2px 10px 2px 0", color: "var(--text-secondary)", textAlign: "right" }}>{stats.auto_aug?.toFixed(2) ?? "\u2014"}</td>
-                  <td style={{ padding: "2px 10px 2px 0", color: "var(--text-secondary)", textAlign: "right" }}>{stats.pct_norm != null ? stats.pct_norm.toFixed(4) + "%" : "\u2014"}</td>
+                  <td style={{ padding: "2px 10px 2px 0", color: "var(--text-secondary)", textAlign: "right" }}>{stats.pct_norm != null ? fmtPctNorm(stats.pct_norm) : "\u2014"}</td>
                 </tr>
               ))}
-              {/* AVG / MAX footer */}
+              {/* AVG / MAX footer with colored badges matching explorer style */}
               {(() => {
                 const autos = Object.values(row.sources).map((s) => s.auto_aug).filter((v): v is number => v != null);
                 const pcts = Object.values(row.sources).map((s) => s.pct_norm).filter((v): v is number => v != null);
@@ -739,14 +1041,18 @@ function ExpandedDetail({ row }: { row: TaskChangeRow }) {
                 return (
                   <>
                     <tr style={{ borderTop: "1px solid var(--border-light)" }}>
-                      <td style={{ padding: "2px 10px 2px 0", fontWeight: 600, color: "var(--text-muted)", fontSize: 10 }}>AVG</td>
-                      <td style={{ padding: "2px 10px 2px 0", textAlign: "right", fontWeight: 600, fontSize: 10, color: "var(--text-muted)" }}>{avgAuto?.toFixed(2) ?? "\u2014"}</td>
-                      <td style={{ padding: "2px 10px 2px 0", textAlign: "right", fontWeight: 600, fontSize: 10, color: "var(--text-muted)" }}>{avgPct != null ? avgPct.toFixed(4) + "%" : "\u2014"}</td>
+                      <td style={{ padding: "4px 10px 2px 0", fontWeight: 700 }}>
+                        <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--brand-light)", border: "1px solid var(--brand)", color: "var(--brand)", fontWeight: 700 }}>AVG</span>
+                      </td>
+                      <td style={{ padding: "4px 10px 2px 0", textAlign: "right", fontWeight: 700 }}>{avgAuto != null ? avgAuto.toFixed(3) : "\u2014"}</td>
+                      <td style={{ padding: "4px 10px 2px 0", textAlign: "right", fontWeight: 700 }}>{avgPct != null ? fmtPctNorm(avgPct) : "\u2014"}</td>
                     </tr>
                     <tr>
-                      <td style={{ padding: "2px 10px 2px 0", fontWeight: 600, color: "var(--text-muted)", fontSize: 10 }}>MAX</td>
-                      <td style={{ padding: "2px 10px 2px 0", textAlign: "right", fontWeight: 600, fontSize: 10, color: "var(--text-muted)" }}>{maxAuto?.toFixed(2) ?? "\u2014"}</td>
-                      <td style={{ padding: "2px 10px 2px 0", textAlign: "right", fontWeight: 600, fontSize: 10, color: "var(--text-muted)" }}>{maxPct != null ? maxPct.toFixed(4) + "%" : "\u2014"}</td>
+                      <td style={{ padding: "2px 10px 4px 0", fontWeight: 700 }}>
+                        <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "#fffbeb", border: "1px solid #d97706", color: "#d97706", fontWeight: 700 }}>MAX</span>
+                      </td>
+                      <td style={{ padding: "2px 10px 4px 0", textAlign: "right", fontWeight: 700 }}>{maxAuto != null ? maxAuto.toFixed(3) : "\u2014"}</td>
+                      <td style={{ padding: "2px 10px 4px 0", textAlign: "right", fontWeight: 700 }}>{maxPct != null ? fmtPctNorm(maxPct) : "\u2014"}</td>
                     </tr>
                   </>
                 );
