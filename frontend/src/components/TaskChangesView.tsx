@@ -667,161 +667,155 @@ export default function TaskChangesView({ config }: Props) {
   /* ═══════════════════════════════════════════════════════════════════════════ */
 
   return (
-    <div style={{ padding: "20px 24px 40px", maxWidth: 1800, margin: "0 auto" }}>
-      {/* ── Title ── */}
-      <h1 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4, color: "var(--text-primary)" }}>Task Changes Explorer</h1>
-      <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 16 }}>
-        Compare two dataset versions at the task level to see which tasks were added, removed, or changed.
-      </p>
+    <div style={{ height: "calc(100vh - var(--nav-height, 56px))", display: "flex", flexDirection: "column", background: "var(--bg-base)", overflow: "hidden" }}>
+      {/* ── Header section (non-growing) ── */}
+      <div style={{ padding: "20px 24px 0", maxWidth: 1800, margin: "0 auto", width: "100%", flexShrink: 0 }}>
+        <h1 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4, color: "var(--text-primary)" }}>Task Changes Explorer</h1>
+        <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 16 }}>
+          Compare two dataset versions at the task level to see which tasks were added, removed, or changed.
+        </p>
 
-      {/* ── Dataset pickers + Run ── */}
-      {!isSimple ? (
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <label style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)" }}>From:</label>
-            <select value={fromDataset} onChange={(e) => setFromDataset(e.target.value)}
-              style={{ fontSize: 12, padding: "4px 8px", border: "1px solid var(--border)", borderRadius: 5, background: "var(--bg-surface)", color: "var(--text-primary)" }}>
-              {datasets.map((d) => <option key={d} value={d}>{d}</option>)}
-            </select>
-          </div>
-          <span style={{ fontSize: 14, color: "var(--text-muted)" }}>&rarr;</span>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <label style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)" }}>To:</label>
-            <select value={toDataset} onChange={(e) => setToDataset(e.target.value)}
-              style={{ fontSize: 12, padding: "4px 8px", border: "1px solid var(--border)", borderRadius: 5, background: "var(--bg-surface)", color: "var(--text-primary)" }}>
-              {datasets.map((d) => <option key={d} value={d}>{d}</option>)}
-            </select>
-          </div>
-          <button onClick={runComparison} disabled={loading}
-            style={{ padding: "5px 16px", fontSize: 12, fontWeight: 600, borderRadius: 6, border: "none", background: "var(--brand)", color: "#fff", cursor: loading ? "wait" : "pointer", opacity: loading ? 0.7 : 1 }}>
-            {loading ? "Running..." : "Run"}
-          </button>
-        </div>
-      ) : (
-        <div style={{ fontSize: 12, color: "var(--text-secondary)", marginBottom: 16, padding: "6px 12px", background: "var(--brand-light)", borderRadius: 6, display: "inline-block" }}>
-          Comparing <strong>AEI Cumul. v1</strong> &rarr; <strong>AEI Cumul. v4</strong>
-        </div>
-      )}
-
-      {error && <p style={{ color: "#b91c1c", fontSize: 12, marginBottom: 12 }}>Error: {error}</p>}
-
-      {!hasRun && !loading && (
-        <div style={{ textAlign: "center", padding: "60px 0", color: "var(--text-muted)", fontSize: 13 }}>
-          Select two datasets and click Run to compare.
-        </div>
-      )}
-
-      {loading && (
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "60px 0", gap: 12 }}>
-          <div style={{ width: 32, height: 32, borderRadius: "50%", border: "3px solid var(--brand)", borderTopColor: "transparent", animation: "spin 0.7s linear infinite" }} />
-          <p style={{ fontSize: 12, color: "var(--text-muted)" }}>Computing task changes...</p>
-          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-        </div>
-      )}
-
-      {hasRun && !loading && rows && (
-        <>
-          {/* ── Status summary (dynamic counts) ── */}
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
-            {(Object.entries(STATUS_CONFIG) as [TaskChangeStatus, typeof STATUS_CONFIG[TaskChangeStatus]][]).map(([status, cfg]) => {
-              const count = statusCounts[status] ?? 0;
-              const active = visibleStatuses.has(status);
-              return (
-                <button key={status} onClick={() => {
-                  setVisibleStatuses((prev) => {
-                    const next = new Set(prev);
-                    if (next.has(status)) next.delete(status); else next.add(status);
-                    return next;
-                  });
-                }}
-                  style={{
-                    fontSize: 11, padding: "4px 10px", borderRadius: 12,
-                    border: `1.5px solid ${active ? cfg.color : "var(--border)"}`,
-                    background: active ? cfg.bg : "transparent",
-                    color: active ? cfg.color : "var(--text-muted)",
-                    cursor: "pointer", fontWeight: active ? 600 : 400,
-                    opacity: active ? 1 : 0.6,
-                    fontStyle: status === "not_in_baseline" ? "italic" : "normal",
-                  }}>
-                  {cfg.label}: {count}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* ── Controls bar ── */}
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8, flexWrap: "wrap" }}>
-            {/* Search */}
-            <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-              <span style={{ position: "absolute", left: 8, color: "var(--text-muted)", pointerEvents: "none" }}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
-              </span>
-              <input type="text" placeholder="Search tasks, occupations..." value={search} onChange={(e) => setSearch(e.target.value)}
-                style={{ paddingLeft: 28, paddingRight: 24, paddingTop: 5, paddingBottom: 5, fontSize: 12, border: "1px solid var(--border)", borderRadius: 6, outline: "none", background: "var(--bg-surface)", color: "var(--text-primary)", width: 240 }} />
-              {search && <button onClick={() => setSearch("")} style={{ position: "absolute", right: 6, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: 14, lineHeight: 1, padding: 0 }}>&times;</button>}
+        {/* Dataset pickers + Run */}
+        {!isSimple ? (
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <label style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)" }}>From:</label>
+              <select value={fromDataset} onChange={(e) => setFromDataset(e.target.value)}
+                style={{ fontSize: 12, padding: "4px 8px", border: "1px solid var(--border)", borderRadius: 5, background: "var(--bg-surface)", color: "var(--text-primary)" }}>
+                {datasets.map((d) => <option key={d} value={d}>{d}</option>)}
+              </select>
             </div>
-
-            {/* Geo toggle */}
-            <BtnSeg opts={[{ v: "nat" as const, l: "Nat" }, { v: "ut" as const, l: "Utah" }]} val={geo} onChange={setGeo} />
-
-            {/* Physical filter (advanced only) */}
-            {!isSimple && (
-              <BtnSeg
-                opts={[{ v: "all" as const, l: "All" }, { v: "exclude" as const, l: "No Phys" }, { v: "only" as const, l: "Phys only" }]}
-                val={physicalMode} onChange={setPhysicalMode}
-              />
-            )}
-
-            {/* Spacer + column selector */}
-            <div style={{ marginLeft: "auto", position: "relative" }} ref={colSelectorRef}>
-              <button onClick={() => setColSelectorOpen((o) => !o)}
-                style={{ background: "none", border: "1px solid var(--border)", borderRadius: 5, padding: "4px 8px", cursor: "pointer", fontSize: 11, color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 4 }}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" /></svg>
-                Columns
-              </button>
-              {colSelectorOpen && (
-                <div style={{ position: "absolute", right: 0, top: "100%", marginTop: 4, background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 8, padding: "8px 0", zIndex: 100, boxShadow: "0 4px 16px rgba(0,0,0,0.12)", width: 200, maxHeight: 400, overflowY: "auto" }}>
-                  {COLUMNS.filter((c) => c.key !== "task").map((c) => {
-                    if (isSimple && !SIMPLE_COLS.has(c.key)) return null;
-                    const checked = !hiddenCols.has(c.key);
-                    return (
-                      <label key={c.key} style={{ display: "flex", alignItems: "center", gap: 8, padding: "4px 12px", fontSize: 11, cursor: "pointer", color: checked ? "var(--text-primary)" : "var(--text-muted)" }}
-                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#f5f5f3"; }}
-                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
-                        <input type="checkbox" checked={checked} onChange={() => {
-                          setHiddenCols((prev) => { const next = new Set(prev); if (next.has(c.key)) next.delete(c.key); else next.add(c.key); return next; });
-                        }} style={{ margin: 0 }} />
-                        {c.label}
-                      </label>
-                    );
-                  })}
-                </div>
-              )}
+            <span style={{ fontSize: 14, color: "var(--text-muted)" }}>&rarr;</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <label style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)" }}>To:</label>
+              <select value={toDataset} onChange={(e) => setToDataset(e.target.value)}
+                style={{ fontSize: 12, padding: "4px 8px", border: "1px solid var(--border)", borderRadius: 5, background: "var(--bg-surface)", color: "var(--text-primary)" }}>
+                {datasets.map((d) => <option key={d} value={d}>{d}</option>)}
+              </select>
             </div>
+            <button onClick={runComparison} disabled={loading}
+              style={{ padding: "5px 16px", fontSize: 12, fontWeight: 600, borderRadius: 6, border: "none", background: "var(--brand)", color: "#fff", cursor: loading ? "wait" : "pointer", opacity: loading ? 0.7 : 1 }}>
+              {loading ? "Running..." : "Run"}
+            </button>
           </div>
+        ) : (
+          <div style={{ fontSize: 12, color: "var(--text-secondary)", marginBottom: 16, padding: "6px 12px", background: "var(--brand-light)", borderRadius: 6, display: "inline-block" }}>
+            Comparing <strong>AEI Cumul. v1</strong> &rarr; <strong>AEI Cumul. v4</strong>
+          </div>
+        )}
 
-          {/* ── Major pills ── */}
-          {allMajors.length > 0 && (
-            <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 10, maxHeight: 64, overflowY: "auto" }}>
-              {allMajors.map((maj) => {
-                const sel = selectedMajors.has(maj);
+        {error && <p style={{ color: "#b91c1c", fontSize: 12, marginBottom: 12 }}>Error: {error}</p>}
+
+        {!hasRun && !loading && (
+          <div style={{ textAlign: "center", padding: "60px 0", color: "var(--text-muted)", fontSize: 13 }}>
+            Select two datasets and click Run to compare.
+          </div>
+        )}
+
+        {loading && (
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "60px 0", gap: 12 }}>
+            <div style={{ width: 32, height: 32, borderRadius: "50%", border: "3px solid var(--brand)", borderTopColor: "transparent", animation: "spin 0.7s linear infinite" }} />
+            <p style={{ fontSize: 12, color: "var(--text-muted)" }}>Computing task changes...</p>
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          </div>
+        )}
+
+        {/* Status pills, controls, major pills (only when data loaded) */}
+        {hasRun && !loading && rows && (
+          <>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
+              {(Object.entries(STATUS_CONFIG) as [TaskChangeStatus, typeof STATUS_CONFIG[TaskChangeStatus]][]).map(([status, cfg]) => {
+                const count = statusCounts[status] ?? 0;
+                const active = visibleStatuses.has(status);
                 return (
-                  <button key={maj} onClick={() => {
-                    setSelectedMajors((prev) => { const next = new Set(prev); if (next.has(maj)) next.delete(maj); else next.add(maj); return next; });
+                  <button key={status} onClick={() => {
+                    setVisibleStatuses((prev) => {
+                      const next = new Set(prev);
+                      if (next.has(status)) next.delete(status); else next.add(status);
+                      return next;
+                    });
                   }}
-                    style={{ flexShrink: 0, fontSize: 10, padding: "2px 8px", borderRadius: 10, border: `1.5px solid ${sel ? "var(--brand)" : "var(--border)"}`, background: sel ? "var(--brand-light)" : "transparent", color: sel ? "var(--brand)" : "var(--text-secondary)", cursor: "pointer", fontWeight: sel ? 600 : 400, whiteSpace: "nowrap" }}>
-                    {maj}
+                    style={{
+                      fontSize: 11, padding: "4px 10px", borderRadius: 12,
+                      border: `1.5px solid ${active ? cfg.color : "var(--border)"}`,
+                      background: active ? cfg.bg : "transparent",
+                      color: active ? cfg.color : "var(--text-muted)",
+                      cursor: "pointer", fontWeight: active ? 600 : 400,
+                      opacity: active ? 1 : 0.6,
+                      fontStyle: status === "not_in_baseline" ? "italic" : "normal",
+                    }}>
+                    {cfg.label}: {count}
                   </button>
                 );
               })}
             </div>
-          )}
 
-          {/* ── Table ── */}
-          <div style={{ border: "1px solid var(--border)", borderRadius: 8, overflow: "hidden" }}>
-            <div style={{ overflowX: "auto", overflowY: "auto", maxHeight: "calc(100vh - 320px)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8, flexWrap: "wrap" }}>
+              <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                <span style={{ position: "absolute", left: 8, color: "var(--text-muted)", pointerEvents: "none" }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                </span>
+                <input type="text" placeholder="Search tasks, occupations..." value={search} onChange={(e) => setSearch(e.target.value)}
+                  style={{ paddingLeft: 28, paddingRight: 24, paddingTop: 5, paddingBottom: 5, fontSize: 12, border: "1px solid var(--border)", borderRadius: 6, outline: "none", background: "var(--bg-surface)", color: "var(--text-primary)", width: 240 }} />
+                {search && <button onClick={() => setSearch("")} style={{ position: "absolute", right: 6, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: 14, lineHeight: 1, padding: 0 }}>&times;</button>}
+              </div>
+              <BtnSeg opts={[{ v: "nat" as const, l: "Nat" }, { v: "ut" as const, l: "Utah" }]} val={geo} onChange={setGeo} />
+              {!isSimple && (
+                <BtnSeg opts={[{ v: "all" as const, l: "All" }, { v: "exclude" as const, l: "No Phys" }, { v: "only" as const, l: "Phys only" }]} val={physicalMode} onChange={setPhysicalMode} />
+              )}
+              <div style={{ marginLeft: "auto", position: "relative" }} ref={colSelectorRef}>
+                <button onClick={() => setColSelectorOpen((o) => !o)}
+                  style={{ background: "none", border: "1px solid var(--border)", borderRadius: 5, padding: "4px 8px", cursor: "pointer", fontSize: 11, color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 4 }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" /></svg>
+                  Columns
+                </button>
+                {colSelectorOpen && (
+                  <div style={{ position: "absolute", right: 0, top: "100%", marginTop: 4, background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 8, padding: "8px 0", zIndex: 100, boxShadow: "0 4px 16px rgba(0,0,0,0.12)", width: 200, maxHeight: 400, overflowY: "auto" }}>
+                    {COLUMNS.filter((c) => c.key !== "task").map((c) => {
+                      if (isSimple && !SIMPLE_COLS.has(c.key)) return null;
+                      const checked = !hiddenCols.has(c.key);
+                      return (
+                        <label key={c.key} style={{ display: "flex", alignItems: "center", gap: 8, padding: "4px 12px", fontSize: 11, cursor: "pointer", color: checked ? "var(--text-primary)" : "var(--text-muted)" }}
+                          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#f5f5f3"; }}
+                          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+                          <input type="checkbox" checked={checked} onChange={() => {
+                            setHiddenCols((prev) => { const next = new Set(prev); if (next.has(c.key)) next.delete(c.key); else next.add(c.key); return next; });
+                          }} style={{ margin: 0 }} />
+                          {c.label}
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {allMajors.length > 0 && (
+              <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 10, maxHeight: 64, overflowY: "auto" }}>
+                {allMajors.map((maj) => {
+                  const sel = selectedMajors.has(maj);
+                  return (
+                    <button key={maj} onClick={() => {
+                      setSelectedMajors((prev) => { const next = new Set(prev); if (next.has(maj)) next.delete(maj); else next.add(maj); return next; });
+                    }}
+                      style={{ flexShrink: 0, fontSize: 10, padding: "2px 8px", borderRadius: 10, border: `1.5px solid ${sel ? "var(--brand)" : "var(--border)"}`, background: sel ? "var(--brand-light)" : "transparent", color: sel ? "var(--brand)" : "var(--text-secondary)", cursor: "pointer", fontWeight: sel ? 600 : 400, whiteSpace: "nowrap" }}>
+                      {maj}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* ── Table section (fills remaining height) ── */}
+      {hasRun && !loading && rows && (
+        <div style={{ flex: 1, minHeight: 0, padding: "0 24px 20px", maxWidth: 1800, margin: "0 auto", width: "100%", display: "flex", flexDirection: "column" }}>
+          <div style={{ border: "1px solid var(--border)", borderRadius: 8, overflow: "hidden", flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+            <div style={{ overflowX: "auto", overflowY: "auto", flex: 1, minHeight: 0 }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, tableLayout: "fixed", minWidth: visibleCols.reduce((s, c) => s + c.width, 0) }}>
                 <colgroup>
                   {visibleCols.map((c) => <col key={c.key} style={{ width: c.width }} />)}
@@ -841,10 +835,8 @@ export default function TaskChangesView({ config }: Props) {
                             {sortCol === col.key && <span style={{ color: "var(--brand)", fontSize: 10 }}>{sortDir === "desc" ? "\u2193" : "\u2191"}</span>}
                           </div>
                           {col.numeric && (
-                            <span
-                              onClick={(e) => { e.stopPropagation(); setOpenFilter((prev) => prev === col.key ? null : col.key); setOpenTextFilter(null); }}
-                              style={{ position: "absolute", right: 4, top: "50%", transform: "translateY(-50%)", cursor: "pointer", color: hasNumFilter ? "var(--brand)" : "var(--text-muted)", opacity: hasNumFilter ? 1 : 0.5, display: "inline-flex" }}
-                              title="Filter">
+                            <span onClick={(e) => { e.stopPropagation(); setOpenFilter((prev) => prev === col.key ? null : col.key); setOpenTextFilter(null); }}
+                              style={{ position: "absolute", right: 4, top: "50%", transform: "translateY(-50%)", cursor: "pointer", color: hasNumFilter ? "var(--brand)" : "var(--text-muted)", opacity: hasNumFilter ? 1 : 0.5, display: "inline-flex" }} title="Filter">
                               <FunnelIcon />
                             </span>
                           )}
@@ -853,20 +845,13 @@ export default function TaskChangesView({ config }: Props) {
                           )}
                           {isTextFilterCol && (
                             <>
-                              <span
-                                onClick={(e) => { e.stopPropagation(); setOpenTextFilter((prev) => prev === col.key ? null : col.key); setOpenFilter(null); }}
-                                style={{ position: "absolute", right: 4, top: "50%", transform: "translateY(-50%)", cursor: "pointer", color: hasTextFilter ? "var(--brand)" : "var(--text-muted)", opacity: hasTextFilter ? 1 : 0.5, display: "inline-flex" }}
-                                title="Filter values">
+                              <span onClick={(e) => { e.stopPropagation(); setOpenTextFilter((prev) => prev === col.key ? null : col.key); setOpenFilter(null); }}
+                                style={{ position: "absolute", right: 4, top: "50%", transform: "translateY(-50%)", cursor: "pointer", color: hasTextFilter ? "var(--brand)" : "var(--text-muted)", opacity: hasTextFilter ? 1 : 0.5, display: "inline-flex" }} title="Filter values">
                                 <FunnelIcon />
                               </span>
                               {openTextFilter === col.key && (
-                                <TextFilterDropdown
-                                  colKey={col.key}
-                                  uniqueValues={textColUniqueValues[col.key] ?? []}
-                                  selectedValues={textColFilters[col.key] ?? null}
-                                  onSelectionChange={(ck, vals) => setTextColFilters((prev) => ({ ...prev, [ck]: vals }))}
-                                  onClose={() => setOpenTextFilter(null)}
-                                />
+                                <TextFilterDropdown colKey={col.key} uniqueValues={textColUniqueValues[col.key] ?? []} selectedValues={textColFilters[col.key] ?? null}
+                                  onSelectionChange={(ck, vals) => setTextColFilters((prev) => ({ ...prev, [ck]: vals }))} onClose={() => setOpenTextFilter(null)} />
                               )}
                             </>
                           )}
@@ -891,17 +876,11 @@ export default function TaskChangesView({ config }: Props) {
                             const val = col.key === "task" && typeof rawVal === "string" ? titleCaseTask(rawVal) : rawVal;
                             const isDelta = col.key === "delta_aug" || col.key === "delta_pct";
                             let cellColor = "var(--text-primary)";
-                            if (isDelta && typeof val === "number") {
-                              cellColor = val > 0 ? "#15803d" : val < 0 ? "#b91c1c" : "var(--text-muted)";
-                            }
+                            if (isDelta && typeof val === "number") cellColor = val > 0 ? "#15803d" : val < 0 ? "#b91c1c" : "var(--text-muted)";
                             if (col.key === "status") {
                               return (
                                 <td key={col.key} style={{ padding: "6px 8px" }}>
-                                  <span style={{
-                                    display: "inline-block", fontSize: 10, padding: "2px 8px", borderRadius: 10,
-                                    background: sCfg.bg, color: sCfg.color, fontWeight: 600,
-                                    fontStyle: row.status === "not_in_baseline" ? "italic" : "normal",
-                                  }}>
+                                  <span style={{ display: "inline-block", fontSize: 10, padding: "2px 8px", borderRadius: 10, background: sCfg.bg, color: sCfg.color, fontWeight: 600, fontStyle: row.status === "not_in_baseline" ? "italic" : "normal" }}>
                                     {sCfg.label}
                                   </span>
                                 </td>
@@ -910,8 +889,7 @@ export default function TaskChangesView({ config }: Props) {
                             if (col.key === "task") {
                               return (
                                 <td key={col.key} style={{ padding: "6px 8px", color: "var(--text-primary)", wordBreak: "break-word", whiteSpace: "normal", lineHeight: 1.35 }} title={String(val ?? "")}>
-                                  <ChevronIcon open={isExpanded} />
-                                  {" "}{highlightText(String(val ?? ""), debouncedSearch)}
+                                  <ChevronIcon open={isExpanded} /> {highlightText(String(val ?? ""), debouncedSearch)}
                                 </td>
                               );
                             }
@@ -947,7 +925,7 @@ export default function TaskChangesView({ config }: Props) {
               </table>
             </div>
             {processedRows.length > rowLimit && (
-              <div style={{ padding: "12px 20px", textAlign: "center", borderTop: "1px solid var(--border-light)" }}>
+              <div style={{ padding: "12px 20px", textAlign: "center", borderTop: "1px solid var(--border-light)", flexShrink: 0 }}>
                 <span style={{ fontSize: 12, color: "var(--text-muted)", marginRight: 12 }}>
                   Showing {Math.min(rowLimit, processedRows.length).toLocaleString()} of {processedRows.length.toLocaleString()} rows.
                 </span>
@@ -958,7 +936,7 @@ export default function TaskChangesView({ config }: Props) {
               </div>
             )}
           </div>
-        </>
+        </div>
       )}
     </div>
   );
