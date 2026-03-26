@@ -55,6 +55,19 @@ def main() -> None:
     # save_figure(fig, results / "figures" / "workers_by_major.png")
     #
 
+    # ── Copy key figures to committed figures/ dir ──────────────────────────
+    # Figures in results/ are gitignored. Copy the ones referenced in
+    # README.md to a committed figures/ directory so they render in git.
+    #
+    # import shutil
+    # committed_figs = HERE / "figures"
+    # committed_figs.mkdir(exist_ok=True)
+    # for fname in ["workers_by_major.png"]:
+    #     src = results / "figures" / fname
+    #     if src.exists():
+    #         shutil.copy2(src, committed_figs / fname)
+    #
+
     print("  Template question — replace this with your analysis code.")
 
 
