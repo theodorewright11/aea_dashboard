@@ -20,9 +20,7 @@ Usage from project root:
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
 
-import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
@@ -36,13 +34,10 @@ from analysis.utils import (
     style_figure,
     save_figure,
     save_csv,
-    make_horizontal_bar,
-    describe_config,
+    _format_bar_label,
     format_workers,
-    format_wages,
-    format_pct,
     COLORS,
-    CATEGORY_PALETTE,
+    FONT_FAMILY,
 )
 
 HERE = Path(__file__).resolve().parent
@@ -181,9 +176,9 @@ def _make_scatter(
             name=TIER_LABELS[tier],
             marker=dict(
                 color=TIER_COLORS[tier],
-                size=8,
-                opacity=0.7,
-                line=dict(width=0.5, color="white"),
+                size=7,
+                opacity=0.65,
+                line=dict(width=0.5, color=COLORS["bg"]),
             ),
             text=tier_df["category"],
             hovertemplate=(
@@ -194,24 +189,24 @@ def _make_scatter(
             ),
         ))
 
-    # Add threshold lines
+    # Subtle threshold lines
     for thresh, label in [
-        (HIGH_RISK, "60% — High Risk"),
-        (MODERATE_RISK, "40% — Moderate"),
-        (RESTRUCTURING, "20% — Restructuring"),
+        (HIGH_RISK, "60%"),
+        (MODERATE_RISK, "40%"),
+        (RESTRUCTURING, "20%"),
     ]:
         fig.add_vline(
-            x=thresh, line_dash="dash", line_color=COLORS["muted"], line_width=1,
+            x=thresh, line_dash="dot", line_color=COLORS["border"], line_width=1,
             annotation_text=label, annotation_position="top",
-            annotation_font_size=10, annotation_font_color=COLORS["muted"],
+            annotation_font=dict(size=10, color=COLORS["muted"], family=FONT_FAMILY),
         )
 
     style_figure(
         fig,
         title,
         subtitle=subtitle,
-        x_title="% Tasks Affected (usage-confirmed, auto-aug weighted)",
-        y_title="Total Employment (National)",
+        x_title="% Tasks Affected",
+        y_title="Total Employment",
         height=700,
         width=1200,
         show_legend=True,
@@ -219,45 +214,11 @@ def _make_scatter(
     fig.update_yaxes(type="log", dtick=1)
     fig.update_layout(
         legend=dict(
-            orientation="h", yanchor="top", y=-0.15,
+            orientation="h", yanchor="top", y=-0.12,
             xanchor="center", x=0.5,
+            font=dict(size=11, color=COLORS["neutral"], family=FONT_FAMILY),
         ),
     )
-
-    return fig
-
-
-def _make_tier_summary_bar(
-    tier_summary: pd.DataFrame,
-    value_col: str,
-    title: str,
-    subtitle: str,
-    x_title: str,
-) -> go.Figure:
-    """Stacked horizontal bar: major categories broken out by risk tier."""
-    fig = go.Figure()
-
-    for tier in reversed(TIER_ORDER):
-        tier_data = tier_summary[tier_summary["tier"] == tier]
-        if tier_data.empty:
-            continue
-        fig.add_trace(go.Bar(
-            y=tier_data["major"],
-            x=tier_data[value_col],
-            orientation="h",
-            name=TIER_LABELS[tier],
-            marker_color=TIER_COLORS[tier],
-        ))
-
-    style_figure(
-        fig, title,
-        subtitle=subtitle,
-        x_title=x_title,
-        height=max(600, len(tier_summary["major"].unique()) * 30 + 200),
-        width=1200,
-        show_legend=True,
-    )
-    fig.update_layout(barmode="stack")
 
     return fig
 
@@ -337,33 +298,41 @@ def main() -> None:
 
     # ── Figure: High-risk tier bar chart (by employment) ──────────────────
     if not high_risk.empty:
+        n_hr = len(high_risk)
         hr_plot = high_risk.head(TOP_N_CHART).copy()
         hr_plot = hr_plot.sort_values("emp_nat", ascending=True)
+        emp_labels = [
+            f"{_format_bar_label(e)}  ({p:.0f}%)"
+            for e, p in zip(hr_plot["emp_nat"], hr_plot["pct_tasks_affected"])
+        ]
         fig = go.Figure()
         fig.add_trace(go.Bar(
             y=hr_plot["category"],
             x=hr_plot["emp_nat"],
             orientation="h",
-            marker_color=TIER_COLORS["high_risk"],
-            text=[f"{p:.0f}% tasks" for p in hr_plot["pct_tasks_affected"]],
-            textposition="auto",
-            hovertemplate=(
-                "<b>%{y}</b><br>"
-                "Employment: %{x:,.0f}<br>"
-                "%{text}<br>"
-                "<extra></extra>"
-            ),
+            marker=dict(color=TIER_COLORS["high_risk"], line=dict(width=0)),
+            text=emp_labels,
+            textposition="outside",
+            textfont=dict(size=11, color=COLORS["neutral"], family=FONT_FAMILY),
+            cliponaxis=False,
         ))
+        chart_h = max(400, min(TOP_N_CHART, n_hr) * 42 + 150)
         style_figure(
             fig,
-            f"Largest High-Risk Occupations (>={int(HIGH_RISK)}% Tasks Affected)",
+            "Marketing and Data Analysts Lead High-Risk Occupations",
             subtitle=(
-                f"Top {min(TOP_N_CHART, len(hr_plot))} by employment | "
-                "Usage-confirmed | Value | Auto-aug ON"
+                f"All {n_hr} occupations with >={int(HIGH_RISK)}% usage-confirmed task exposure | "
+                "Value | Auto-aug ON"
             ),
-            x_title="Total Employment (National)",
-            height=max(500, min(TOP_N_CHART, len(hr_plot)) * 28 + 150),
+            x_title=None,
+            height=chart_h,
             show_legend=False,
+        )
+        fig.update_layout(
+            margin=dict(l=20, r=100),
+            xaxis=dict(showgrid=False, showticklabels=False, showline=False, zeroline=False),
+            yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=11, family=FONT_FAMILY)),
+            bargap=0.25,
         )
         save_figure(fig, fig_dir / "high_risk_by_employment.png")
         print("  Saved high_risk_by_employment.png")
@@ -374,31 +343,38 @@ def main() -> None:
             "pct_tasks_affected", ascending=False,
         ).head(TOP_N_CHART).copy()
         hr_pct_plot = hr_pct_plot.sort_values("pct_tasks_affected", ascending=True)
+        pct_labels = [
+            f"{p:.1f}%  ({_format_bar_label(e)})"
+            for p, e in zip(hr_pct_plot["pct_tasks_affected"], hr_pct_plot["emp_nat"])
+        ]
         fig = go.Figure()
         fig.add_trace(go.Bar(
             y=hr_pct_plot["category"],
             x=hr_pct_plot["pct_tasks_affected"],
             orientation="h",
-            marker_color=TIER_COLORS["high_risk"],
-            text=[format_workers(e) for e in hr_pct_plot["emp_nat"]],
-            textposition="auto",
-            hovertemplate=(
-                "<b>%{y}</b><br>"
-                "% Tasks Affected: %{x:.1f}%<br>"
-                "Employment: %{text}<br>"
-                "<extra></extra>"
-            ),
+            marker=dict(color=TIER_COLORS["high_risk"], line=dict(width=0)),
+            text=pct_labels,
+            textposition="outside",
+            textfont=dict(size=11, color=COLORS["neutral"], family=FONT_FAMILY),
+            cliponaxis=False,
         ))
+        chart_h = max(400, min(TOP_N_CHART, len(hr_pct_plot)) * 42 + 150)
         style_figure(
             fig,
-            f"Most Exposed High-Risk Occupations (>={int(HIGH_RISK)}% Tasks Affected)",
+            "Creative Writers Have the Highest Task Exposure at 70%",
             subtitle=(
-                f"Top {min(TOP_N_CHART, len(hr_pct_plot))} by % tasks affected | "
+                f"All {len(hr_pct_plot)} high-risk occupations by % tasks affected | "
                 "Usage-confirmed | Value | Auto-aug ON"
             ),
-            x_title="% Tasks Affected",
-            height=max(500, min(TOP_N_CHART, len(hr_pct_plot)) * 28 + 150),
+            x_title=None,
+            height=chart_h,
             show_legend=False,
+        )
+        fig.update_layout(
+            margin=dict(l=20, r=100),
+            xaxis=dict(showgrid=False, showticklabels=False, showline=False, zeroline=False),
+            yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=11, family=FONT_FAMILY)),
+            bargap=0.25,
         )
         save_figure(fig, fig_dir / "high_risk_by_pct.png")
         print("  Saved high_risk_by_pct.png")
@@ -451,17 +427,31 @@ def main() -> None:
             x=vals,
             orientation="h",
             name=TIER_LABELS[tier],
-            marker_color=TIER_COLORS[tier],
+            marker=dict(color=TIER_COLORS[tier], line=dict(width=0)),
         ))
+    chart_h = max(650, len(major_order) * 30 + 200)
     style_figure(
         fig,
-        "Risk Tier Distribution by Major Category",
-        subtitle="% of occupations in each risk tier | Usage-confirmed | Value | Auto-aug ON",
-        x_title="% of Occupations",
-        height=max(600, len(major_order) * 32 + 200),
+        "Computer and Business Occupations Have the Most Risk Exposure",
+        subtitle="% of occupations in each risk tier by major category | Value | Auto-aug ON",
+        x_title=None,
+        height=chart_h,
         show_legend=True,
     )
-    fig.update_layout(barmode="stack")
+    fig.update_layout(
+        barmode="stack",
+        bargap=0.2,
+        margin=dict(l=20, r=40),
+        xaxis=dict(
+            showgrid=False, showticklabels=True, showline=False, zeroline=False,
+            ticksuffix="%", tickfont=dict(size=10, color=COLORS["muted"]),
+        ),
+        yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=10, family=FONT_FAMILY)),
+        legend=dict(
+            orientation="h", yanchor="top", y=-0.08, xanchor="center", x=0.5,
+            font=dict(size=10, color=COLORS["neutral"], family=FONT_FAMILY),
+        ),
+    )
     save_figure(fig, fig_dir / "tier_distribution_by_major.png")
     print("  Saved tier_distribution_by_major.png")
 
@@ -475,17 +465,30 @@ def main() -> None:
             x=vals,
             orientation="h",
             name=TIER_LABELS[tier],
-            marker_color=TIER_COLORS[tier],
+            marker=dict(color=TIER_COLORS[tier], line=dict(width=0)),
         ))
     style_figure(
         fig,
-        "Employment by Risk Tier and Major Category",
-        subtitle="Total workers in each risk tier | Usage-confirmed | Value | Auto-aug ON",
-        x_title="Employment",
-        height=max(600, len(major_order) * 32 + 200),
+        "Office and Sales Workers Dominate the Moderate Risk Tier",
+        subtitle="Total employment by risk tier and major category | Value | Auto-aug ON",
+        x_title=None,
+        height=chart_h,
         show_legend=True,
     )
-    fig.update_layout(barmode="stack")
+    fig.update_layout(
+        barmode="stack",
+        bargap=0.2,
+        margin=dict(l=20, r=40),
+        xaxis=dict(
+            showgrid=False, showticklabels=True, showline=False, zeroline=False,
+            tickfont=dict(size=10, color=COLORS["muted"]),
+        ),
+        yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=10, family=FONT_FAMILY)),
+        legend=dict(
+            orientation="h", yanchor="top", y=-0.08, xanchor="center", x=0.5,
+            font=dict(size=10, color=COLORS["neutral"], family=FONT_FAMILY),
+        ),
+    )
     save_figure(fig, fig_dir / "employment_by_tier_major.png")
     print("  Saved employment_by_tier_major.png")
 
@@ -563,7 +566,8 @@ def main() -> None:
             marker=dict(
                 color=[TIER_COLORS.get(t, COLORS["muted"]) for t in comparison["usage_tier"]],
                 size=6,
-                opacity=0.6,
+                opacity=0.55,
+                line=dict(width=0.5, color=COLORS["bg"]),
             ),
             text=comparison["category"],
             hovertemplate=(
@@ -577,15 +581,15 @@ def main() -> None:
         max_val = max(comparison["usage_pct"].max(), comparison["capability_pct"].max())
         fig.add_trace(go.Scatter(
             x=[0, max_val], y=[0, max_val],
-            mode="lines", line=dict(dash="dash", color=COLORS["grid"], width=1),
+            mode="lines", line=dict(dash="dash", color=COLORS["border"], width=1),
             showlegend=False, hoverinfo="skip",
         ))
         style_figure(
             fig,
-            "Usage-Confirmed vs Capability-Only Exposure",
-            subtitle="Each dot = one occupation | Above diagonal = capability exceeds current usage",
-            x_title="% Tasks Affected (AEI Cumul. v4 + Microsoft)",
-            y_title="% Tasks Affected (MCP v4)",
+            "AI Capability Broadly Exceeds Current Usage",
+            subtitle="Each dot = one occupation | Above diagonal = capability exceeds usage",
+            x_title="Usage-Confirmed % Tasks (AEI + Microsoft)",
+            y_title="Capability % Tasks (MCP v4)",
             height=700, width=800,
             show_legend=False,
         )
