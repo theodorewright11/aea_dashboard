@@ -239,7 +239,10 @@ export interface EcoTaskRow {
   emp_ut?: number | null;
   wage_nat?: number | null;
   wage_ut?: number | null;
-  n_tasks_per_occ: number;
+  emp_nat_freq?: number | null;
+  emp_ut_freq?: number | null;
+  emp_nat_value?: number | null;
+  emp_ut_value?: number | null;
   freq_mean?: number | null;
   importance?: number | null;
   relevance?: number | null;

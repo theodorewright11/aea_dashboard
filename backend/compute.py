@@ -1504,6 +1504,7 @@ def get_wa_explorer_data() -> list:
         "dwa_title", "iwa_title", "gwa_title",
         "physical", "emp_tot_nat_2024", "emp_tot_ut_2024",
         "a_med_nat_2024", "a_med_ut_2024",
+        "freq_mean", "relevance", "importance",
     ]
     avail_cols = [c for c in needed_cols if c in eco.columns]
     df = eco[avail_cols].copy()
@@ -1928,13 +1929,19 @@ def get_all_eco_task_rows() -> list:
     lookup = _build_explorer_task_lookup()
     top_mcps_lookup = _build_top_mcps_lookup()
 
-    # Pre-compute n_tasks_per_occ (unique task_normalized per occupation)
-    n_tasks_per_occ = (
-        eco.drop_duplicates(subset=["title_current", "task_normalized"])
-        .groupby("title_current")["task_normalized"]
-        .count()
-        .to_dict()
-    )
+    # Pre-compute weighted emp allocation (freq and value methods)
+    task_dedup = eco.drop_duplicates(subset=["title_current", "task_normalized"]).copy()
+    task_dedup["_freq_w"] = task_dedup["freq_mean"].fillna(0.0) if "freq_mean" in task_dedup.columns else 0.0
+    task_dedup["_value_w"] = (
+        task_dedup["freq_mean"].fillna(0.0)
+        * task_dedup["relevance"].fillna(0.0)
+        * task_dedup["importance"].fillna(0.0)
+    ) if all(c in task_dedup.columns for c in ["freq_mean", "relevance", "importance"]) else 0.0
+    task_dedup["_freq_sum"] = task_dedup.groupby("title_current")["_freq_w"].transform("sum")
+    task_dedup["_value_sum"] = task_dedup.groupby("title_current")["_value_w"].transform("sum")
+    task_dedup["_freq_frac"] = (task_dedup["_freq_w"] / task_dedup["_freq_sum"].replace(0, np.nan)).fillna(0.0)
+    task_dedup["_value_frac"] = (task_dedup["_value_w"] / task_dedup["_value_sum"].replace(0, np.nan)).fillna(0.0)
+    frac_lookup = task_dedup.set_index(["title_current", "task_normalized"])[["_freq_frac", "_value_frac"]].to_dict("index")
 
     # Pre-compute AI metrics per task_normalized to avoid repeated dict lookups
     task_metrics: dict[str, dict] = {}
@@ -1985,6 +1992,13 @@ def get_all_eco_task_rows() -> list:
         metrics = task_metrics.get(tn, {})
         occ = row.get("title_current", "")
 
+        # Weighted emp allocation for this task×occ
+        fracs = frac_lookup.get((occ, tn), {"_freq_frac": 0.0, "_value_frac": 0.0})
+        ff = fracs["_freq_frac"]
+        vf = fracs["_value_frac"]
+        raw_emp_nat = _safe_float(row.get(emp_nat_col)) or 0.0
+        raw_emp_ut = _safe_float(row.get(emp_ut_col)) or 0.0
+
         result.append({
             "task": str(row.get("task", tn)),
             "task_normalized": str(tn),
@@ -2000,7 +2014,10 @@ def get_all_eco_task_rows() -> list:
             "emp_ut": _safe_float(row.get(emp_ut_col)),
             "wage_nat": _safe_float(row.get(wage_nat_col)),
             "wage_ut": _safe_float(row.get(wage_ut_col)),
-            "n_tasks_per_occ": n_tasks_per_occ.get(occ, 1),
+            "emp_nat_freq": round(ff * raw_emp_nat, 2) if ff and raw_emp_nat else None,
+            "emp_ut_freq": round(ff * raw_emp_ut, 2) if ff and raw_emp_ut else None,
+            "emp_nat_value": round(vf * raw_emp_nat, 2) if vf and raw_emp_nat else None,
+            "emp_ut_value": round(vf * raw_emp_ut, 2) if vf and raw_emp_ut else None,
             "freq_mean":  _safe_float(row.get("freq_mean")),
             "importance": _safe_float(row.get("importance")),
             "relevance":  _safe_float(row.get("relevance")),

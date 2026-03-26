@@ -171,7 +171,7 @@ Organized by pipeline stage:
 - `get_explorer_groups()` — pre-computed major/minor/broad aggregations (unique task_norms per group, not averages of occ-level values). Cached.
 - `get_occupation_tasks(title)` — task details for one occupation (all 8 sources). Cached per title.
 - `get_all_tasks()` — all unique tasks (deduplicated by `task_normalized`) with metrics + allocated emp/wage. Cached.
-- `get_all_eco_task_rows()` — all ~23,850 rows from eco_2025 (each task × occupation combination) with occupation hierarchy, raw emp/wage, `n_tasks_per_occ`, and AI metrics from the task lookup. Cached. Used by both explorer task-level views.
+- `get_all_eco_task_rows()` — all ~23,850 rows from eco_2025 (each task × occupation combination) with occupation hierarchy, raw emp/wage, weighted emp allocation fields (`emp_nat_freq`, `emp_ut_freq`, `emp_nat_value`, `emp_ut_value`), and AI metrics from the task lookup. Cached. Used by both explorer task-level views.
 - `get_wa_explorer_data()` — GWA/IWA/DWA rows with emp allocation + metrics. Cached.
 - `get_wa_tasks_for_activity(level, name)` — task details for one WA activity.
 
@@ -324,11 +324,11 @@ For the Task-level view in both explorers, returns every row from eco_2025 (~23,
 - `dwa_title`, `iwa_title`, `gwa_title` — work activity hierarchy
 - `physical` — physical task flag
 - `emp_nat`, `emp_ut`, `wage_nat`, `wage_ut` — **raw** occupation-level BLS numbers (NOT divided by task count)
-- `n_tasks_per_occ` — count of unique `task_normalized` values for this occupation (used by frontend to divide workers/wages affected)
+- `emp_nat_freq`, `emp_ut_freq`, `emp_nat_value`, `emp_ut_value` — weighted emp allocation per task×occ (freq-weighted and value-weighted, same logic as WA explorer emp allocation)
 - `freq_mean`, `importance`, `relevance` — O*NET survey measures read directly from eco_2025 rows
 - `sources`, `avg_auto_aug`, `max_auto_aug`, `avg_pct_norm`, `max_pct_norm` — AI metrics from the task lookup
 
-The frontend uses `n_tasks_per_occ` to compute per-task workers/wages affected: `workers_aff = (pct/100) × emp / n_tasks_per_occ`.
+Weighted emp allocation uses the same approach as WA explorer (§4.5): for each occupation, tasks are deduplicated on `(title_current, task_normalized)`, freq and value weights are computed per task, and each task receives `(weight / Σweight_per_occ) × emp_occ`. Both freq and value variants are pre-computed so the frontend can switch without re-fetching. The WA Explorer task view selects the appropriate variant based on the Time/Value toggle.
 
 ### 4.9 Trends
 
@@ -608,7 +608,10 @@ Response:
     emp_ut?: number;
     wage_nat?: number;                 // raw occupation wage (NOT divided)
     wage_ut?: number;
-    n_tasks_per_occ: number;           // unique task count for this occupation
+    emp_nat_freq?: number;             // freq-weighted emp allocation for this task×occ
+    emp_ut_freq?: number;
+    emp_nat_value?: number;            // value-weighted emp allocation (freq×rel×imp)
+    emp_ut_value?: number;
     freq_mean?: number;                // O*NET task frequency (0–10)
     importance?: number;               // O*NET task importance (0–5)
     relevance?: number;                // O*NET task relevance (0–100)
@@ -708,7 +711,7 @@ React context + provider with localStorage persistence (key: `aea_simple_mode`).
 Each page imports `useSimpleMode()` and conditionally:
 - Hides/shows controls based on `isSimple`
 - Overrides computation settings (datasets, method, physical, auto-aug) at run time
-- Explorer pages auto-compute pct_tasks_affected via a `useEffect` when `isSimple` is true. Major category pills (occ explorer) and GWA pills (WA explorer) remain visible in simple mode
+- Explorer pages auto-compute pct_tasks_affected via a `useEffect` on mount (both simple and advanced modes). Major category pills (occ explorer) and GWA pills (WA explorer) remain visible in simple mode
 - Occupation Categories / Work Activities chart pages show single group (A only) in simple mode
 - Trends pages remove "Individual" line mode option and auto-match value ranking to line mode
 
@@ -818,9 +821,15 @@ Two tabs: **Occupation Categories** and **Work Activities**, each with independe
 
 Props: `occupations: OccupationSummary[]`, `groups: ExplorerGroupsResponse`, `config: ConfigResponse`.
 
-**16-column flat table** with inline drilldown. No accordion.
+**Flat table** with inline drilldown. No accordion.
 
-Levels: Major / Minor / Broad / Occupation / Task. At "Task" level, data fetched from `/api/explorer/all-tasks` on first switch and cached.
+**Column order at task level:** name, occ, broad, minor, major, dwa, iwa, gwa, emp, wage, phys (checkmark), freq, imp, rel, auto avg, auto max, auto avg (all), auto max (all), % phys, pct avg, pct max, pct avg (all), pct max (all), sum pct avg, sum pct max, % tasks aff, workers aff, wages aff. At non-task levels: name, emp, wage, # occs, # tasks, auto avg/max (with vals), auto avg/max (all), % phys, pct avg/max (with vals), pct avg/max (all), sum pct avg/max, % tasks aff, workers aff, wages aff.
+
+**Columns hidden at task level:** `n_occs`, `n_tasks`, `auto_avg_all`, `auto_max_all`, `pct_phys`, `pct_avg_all`, `pct_max_all`, `sum_pct_avg`, `sum_pct_max` (`NON_TASK_COLS`). Columns hidden at non-task levels: `occ`, `major_cat`, `minor_cat`, `broad_cat`, `dwa_col`, `iwa_col`, `gwa_col`, `phys_col`, `freq_col`, `imp_col`, `rel_col` (`TASK_ONLY_COLS`).
+
+**Simple mode task columns:** name, occ, major, gwa, emp, wage, auto avg, pct avg, % tasks aff, workers aff, wages aff (`SIMPLE_TASK_COLS`).
+
+Levels: Major / Minor / Broad / Occupation / Task. At "Task" level, data fetched from `/api/explorer/all-eco-tasks` on first switch and cached.
 
 **`FlatRow` interface:** holds all metric fields plus `sourceOccs: OccupationSummary[]` (for lazy drilldown) and `level`.
 
@@ -832,21 +841,27 @@ Levels: Major / Minor / Broad / Occupation / Task. At "Task" level, data fetched
 - Avg/Max toggle (which auto_aug variant to display)
 - Nat/Utah toggle for emp/wage
 - Auto-aug min sliders (with_vals and all_tasks variants)
-- Reset button
+- Reset button (resets level→major, pills→clear, search→clear, sort→emp desc, column filters→clear, expanded→collapse, geo→nat, physical→all, hiddenCols→defaults, minPct→0, pagination→100, and re-runs auto-compute with default settings)
 
-**Pagination:** `rowLimit` state (100 rows), "Load 100 more →" footer. Resets on level/filter/search/sort changes.
+**Column selector (gear icon):** Click-outside to close. At the task level, shows group toggle buttons: All/None (show/hide all columns), Occ +/− (toggle occ/broad/minor/major columns), WA +/− (toggle dwa/iwa/gwa columns). In Simple mode, only the curated subset columns (`SIMPLE_COLS` or `SIMPLE_TASK_COLS`) are selectable. Persisted to localStorage.
+
+**Auto-compute on load:** A `useEffect` on mount runs the full compute pipeline with default settings (all datasets, freq, all phys, auto-aug on adj, Average) and populates `pctAffectedMap`. The pct columns (`pct_affected`, `workers_aff`, `wages_aff`) are always visible (showing "---" while loading). This runs in **both** simple and advanced modes. A `computeVersion` state counter allows the reset handler to force a re-run.
+
+**Pagination:** `rowLimit` state (100 rows), "Load 100 more" footer. Resets on level/filter/search/sort changes.
 
 **Child rows:** `childRowCache` — pre-built `useMemo` Map keyed by `"level:name"` for O(1) lookups. Rebuilt when groups/occupations/geo change.
 
 **Task expansion:** Clicking an occupation row fetches tasks via `fetchOccupationTasks()`. Task detail shows Occupation Classification (Broad → Minor → Major), Activity Classification (GWA/IWA/DWA), per-source breakdown table (AEI v1–v4, API v3–v4, MCP v4, Microsoft, plus AVG and MAX summary rows).
 
+**Occ-level emp:** Occupation Explorer at the occ level shows raw occupation employment (not divided by number of tasks).
+
 **`PctComputePanel`:** Collapsible panel calling `/api/compute` with `aggLevel: "occupation"`, `topN: 1000`. Returns `Map<string, number>` (title → pct_tasks_affected). Adds a `minPctAffected` slider filter to the table. **Auto-recomputes** when the parent `geo` changes while a previous compute result exists (via `geoChangedRef` + `useEffect`).
 
 **Major category pills** are always visible (including in simple mode).
 
-**Task expansion section order:** Occupation Categories → Work Activities → Task Detail → Source Breakdown → Top MCP Servers. Task-level task view shows physical/freq/imp/rel only (no auto/pct). Accordion task view shows the same plus auto avg/max and pct avg/max in a side table.
+**Task expansion section order:** Occupation Categories → Work Activities → Task Detail → Source Breakdown → Top MCP Servers. Task Detail shows: Emp, Wage, Physical, Freq, Imp, Rel (no auto/pct). Accordion task view (DWA expansion in WA explorer) shows the same plus auto avg/max and pct avg/max.
 
-**Task-level columns:** `freq_mean`, `importance`, `relevance` are available as table columns at the task level only (`TASK_ONLY_COLS`), hidden in simple mode.
+**Task-level columns:** `occ`, `broad_cat`, `minor_cat`, `major_cat`, `dwa_col`, `iwa_col`, `gwa_col`, `phys_col`, `freq_col`, `imp_col`, `rel_col` are available as table columns at the task level only (`TASK_ONLY_COLS`).
 
 **`InfoTooltip`:** `createPortal(tooltip, document.body)` with `position: fixed` at mouse coords — avoids clipping by `overflow: hidden` ancestors.
 
@@ -863,9 +878,11 @@ Same general table structure as ExplorerView but hierarchy is GWA → IWA → DW
 
 **Level selector:** GWA / IWA / DWA / Task. Task level uses the same all-eco-tasks dataset as ExplorerView (fetched once from `/api/explorer/all-eco-tasks`).
 
-**Columns:** name, occ, broad_cat, minor_cat, major_cat, dwa_col, iwa_col, gwa_col, emp, wage, n_tasks, pct_phys, auto_avg/max (with_vals/all), pct_avg/max, sum_pct. At task level, "name" is the task text and occ/broad/minor/major/dwa/iwa/gwa columns are populated.
+**Column order at task level:** name, occ, broad, minor, major, dwa, iwa, gwa, emp, wage, phys (checkmark), freq, imp, rel, auto avg, auto max, pct avg, pct max, % tasks aff, workers aff, wages aff. At non-task levels: name, emp, wage, # occs, # tasks, auto avg/max (with vals/all), % phys, pct avg/max (with vals/all), sum pct avg/max, % tasks aff, workers aff, wages aff. **Columns hidden at task level:** `n_occs`, `n_tasks`, `auto_avg_all`, `auto_max_all`, `pct_phys`, `pct_avg_all`, `pct_max_all`, `sum_pct_avg`, `sum_pct_max` (`NON_TASK_COLS`). **Simple mode task columns:** name, occ, major, gwa, emp, wage, auto avg, pct avg, % tasks aff, workers aff, wages aff (`WA_SIMPLE_TASK_COLS`).
 
-**Column selector (gear icon):**
+WA Explorer task view uses weighted emp (freq or value based on Time/Value toggle). At task level, "name" is the task text and occ/broad/minor/major/dwa/iwa/gwa columns are populated.
+
+**Column selector (gear icon):** Click-outside to close. At the task level, shows group toggle buttons: All/None, Occ +/−, WA +/− (same pattern as ExplorerView).
 - Simple mode (non-task level): only `WA_SIMPLE_COLS` are selectable
 - Simple mode (task level): only `WA_SIMPLE_TASK_COLS` are selectable
 - Advanced mode: all columns selectable; selection persisted to localStorage
@@ -877,23 +894,24 @@ Same general table structure as ExplorerView but hierarchy is GWA → IWA → DW
 
 **DWA row expansion (accordion):**
 - Fetches task list via `/api/explorer/wa/tasks` (cached)
-- Renders a `WATaskSubHeader` + `WATaskSubRow` per task (11 columns: Task, Physical, Freq, Imp, Rel, auto_aug, pct_norm, avg_auto_aug, max_auto_aug, pct_aff, workers_aff/wages_aff)
-- Each sub-row is itself expandable to show an inline Task Details panel (physical/freq/imp/rel/auto/pct) and a Top MCPs panel (if applicable)
+- Renders a `WATaskSubHeader` + `WATaskSubRow` per task (11 columns: Task, Emp, Wage, Phys, Freq, Imp, Rel, Auto Avg, Auto Max, Pct Avg, Pct Max)
+- Uses weighted emp: freq-weighted or value-weighted based on the parent's Time/Value toggle (`empWeighting`)
+- Each sub-row is itself expandable to show a Source Breakdown table (per-source auto-aug + pct with AVG/MAX footer rows) and a Top MCPs panel (if applicable)
 - pct_affected is injected from `pctAffectedMap` — keyed by **DWA activity name** (not task text)
 
 **Task-level expansion:**
-- Expands to show Occupation Classification (occ → broad → minor → major), Activity Classification (GWA/IWA/DWA), Task Details panel (physical/freq/imp/rel/auto/pct), and Top MCPs panel
+- Expands to show Occupation Classification (occ → broad → minor → major), Activity Classification (GWA/IWA/DWA), Task Details panel (physical/freq/imp/rel/emp/wage only — auto/pct are already table columns), Source Breakdown (with AVG/MAX footer rows), and Top MCPs panel
 - pct_affected injected via `pctAffectedMap.get(r.dwa_title ?? "")` — uses DWA title as key (not task text)
 
-**`WaPctComputePanel`:** Same as ExplorerView `PctComputePanel` but calls `/api/work-activities` with the current WA settings. Injects pct/workers/wages columns. Dataset selection uses `enforceDatasetToggle` from `lib/datasetRules.ts`.
+**`WaPctComputePanel`:** Same as ExplorerView `PctComputePanel` but calls `/api/work-activities` with the current WA settings. Injects pct/workers/wages columns. Dataset selection uses `enforceDatasetToggle` from `lib/datasetRules.ts`. Accepts an `empWeighting` prop — the panel's internal method is synced to the parent's empWeighting toggle ("freq" maps to "freq", "value" maps to "imp"). When the toggle changes and results already exist, the panel auto-recomputes. The `pctAffectedMap` is populated from **all three levels** (gwa + iwa + dwa) in the API response, so accordion children at any level can look up their pct values. Auto-compute on load uses the same approach — fetching all three levels and merging into the map.
 
-**Emp weighting toggle:** An "Emp Weight" segmented control (Time / Value) next to other controls. Controls which emp allocation variant is displayed (`emp_nat_freq`/`emp_ut_freq` vs `emp_nat_value`/`emp_ut_value`). Hidden in simple mode (defaults to freq/Time). Affects both activity-level and accordion task sub-rows.
+**Emp weighting toggle:** An "Emp Weight" segmented control (Time / Value) next to other controls. Controls which emp allocation variant is displayed (`emp_nat_freq`/`emp_ut_freq` vs `emp_nat_value`/`emp_ut_value`). Hidden in simple mode (defaults to freq/Time). Affects both activity-level and accordion task sub-rows. Also syncs the `WaPctComputePanel` method (freq/imp) and triggers auto-recompute of % Tasks Affected when results exist.
 
 **Section titles in task expansions:** Occupation Categories, Work Activities, Task Detail, Source Breakdown, Top MCP Servers — consistent across both explorers.
 
-**Accordion Task Detail (DWA expansion):** Shows physical, freq, imp, rel, emp, wage, auto avg/max, pct avg/max in a side table.
+**Accordion Task Detail (DWA expansion):** Shows Source Breakdown table (per-source auto-aug + pct with AVG/MAX footer rows) and Top MCPs. The sub-table row itself shows Task, Emp, Wage, Phys, Freq, Imp, Rel, Auto Avg, Auto Max, Pct Avg, Pct Max.
 
-**Task-level Task Detail:** Shows physical, freq, imp, rel, emp, wage only (no auto/pct — those are already visible as table columns).
+**Task-level Task Detail:** Shows Emp, Wage, Physical, Freq, Imp, Rel only (no auto/pct — those are already visible as table columns).
 
 **GWA multi-select pills** (always visible, including simple mode), same sort/filter/search/pagination/Avg/Max/Nat/Utah patterns as ExplorerView.
 
@@ -999,7 +1017,7 @@ The explorer endpoints are **cold-start heavy** (~2–5s on first `/api/explorer
 
 24. **Currency formatting is adaptive.** `fmtChartValue` (HorizontalBarChart) and `fmtVal` (TrendsView) display wages in billions ($B) when ≥ $1B, millions ($M) when ≥ $1M, thousands ($K) when ≥ $1K, otherwise raw dollars. TrendsView values are already divided by 1e9 before reaching `fmtVal`, so thresholds are 1 / 0.001 / 0.000001. Explorer `wages_aff` cells use the same adaptive logic.
 
-25. **Simple mode auto-computes explorer pct.** In simple mode, `ExplorerView` and `WAExplorerView` run a `useEffect` that calls `fetchCompute` / `fetchWorkActivities` with preset settings (all datasets / all AEI, freq, all phys, auto-aug on) on mount and when `geo` / `tableLevel` changes. The `PctComputePanel` UI is hidden.
+25. **Auto-compute explorer pct on load (both modes).** `ExplorerView` runs a `useEffect` on mount (regardless of simple/advanced mode) that calls `fetchCompute` with preset settings (all datasets, freq, all phys, auto-aug on adj, Average) to populate `pctAffectedMap`. The pct columns (`pct_affected`, `workers_aff`, `wages_aff`) are always visible (showing "---" while loading). A `computeVersion` state counter in the dependency array allows the reset handler to force a re-run. `WAExplorerView` similarly auto-computes on mount, fetching all three levels (gwa/iwa/dwa) into `pctAffectedMap` so results persist across level switches. The `PctComputePanel` UI is hidden in simple mode.
 
 26. **`pctAffectedMap` in WAExplorerView is keyed by DWA activity name, not task text.** At the DWA level the map key is `r.name` (the DWA name). At the Task level each row's `r.name` is the task text — use `r.dwa_title ?? ""` as the lookup key to find the parent DWA's pct_affected. Using `r.name` at task level produces no matches.
 
@@ -1009,4 +1027,6 @@ The explorer endpoints are **cold-start heavy** (~2–5s on first `/api/explorer
 
 29. **WA emp allocation is method-weighted, not equal-split.** The backend returns both freq-weighted and value-weighted emp variants for WA explorer rows and WA task details. The frontend emp weighting toggle selects which variant to display. The WA charts page's Time/Value method toggle controls both task_comp AND emp weighting simultaneously.
 
-30. **PctComputePanel auto-recomputes on geo change.** Both `PctComputePanel` (occ explorer) and `WaPctComputePanel` (WA explorer) track `geo` changes via a ref and auto-recompute when the panel has already been computed and the geo changes. Simple mode auto-compute already handles this via its useEffect dependency on `geo`.
+30. **PctComputePanel auto-recomputes on geo and empWeighting changes.** Both `PctComputePanel` (occ explorer) and `WaPctComputePanel` (WA explorer) track `geo` changes via a ref and auto-recompute when the panel has already been computed and the geo changes. `WaPctComputePanel` additionally auto-recomputes when the parent's `empWeighting` toggle changes (syncing "freq"/"value" to the panel's "freq"/"imp" method). Simple mode auto-compute handles geo via its useEffect dependency.
+
+31. **All-eco-tasks uses weighted emp, not n_tasks_per_occ.** `get_all_eco_task_rows()` returns weighted emp allocation fields (`emp_nat_freq`, `emp_ut_freq`, `emp_nat_value`, `emp_ut_value`) instead of `n_tasks_per_occ`. The WA Explorer task view selects freq or value variant based on Time/Value toggle. The `get_wa_explorer_data()` `needed_cols` includes `freq_mean`, `relevance`, `importance` — all three are required for correct emp allocation and to avoid emp=0 bugs for WA activity rows.

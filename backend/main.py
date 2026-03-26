@@ -621,7 +621,10 @@ class EcoTaskRow(BaseModel):
     emp_ut:             Optional[float] = None
     wage_nat:           Optional[float] = None
     wage_ut:            Optional[float] = None
-    n_tasks_per_occ:    int             = 1
+    emp_nat_freq:       Optional[float] = None
+    emp_ut_freq:        Optional[float] = None
+    emp_nat_value:      Optional[float] = None
+    emp_ut_value:       Optional[float] = None
     freq_mean:          Optional[float] = None
     importance:         Optional[float] = None
     relevance:          Optional[float] = None

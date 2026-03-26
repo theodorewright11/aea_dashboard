@@ -89,6 +89,10 @@ const COLUMNS: ColDef[] = [
   { key: "gwa_col",      label: "GWA",              width: 200, numeric: false, tooltip: "General Work Activity" },
   { key: "emp",          label: "Emp",              width: 90,  numeric: true,  tooltip: "Total employment (BLS OEWS 2024)" },
   { key: "wage",         label: "Med Wage",         width: 90,  numeric: true,  tooltip: "Median annual wage (BLS OEWS 2024)" },
+  { key: "phys_col",     label: "Phys",             width: 52,  numeric: false, tooltip: "Physical task (requires physical presence)" },
+  { key: "freq_col",     label: "Freq",             width: 70,  numeric: true,  tooltip: "O*NET task frequency (0\u201310)" },
+  { key: "imp_col",      label: "Imp",              width: 70,  numeric: true,  tooltip: "O*NET task importance (0\u20135)" },
+  { key: "rel_col",      label: "Rel",              width: 70,  numeric: true,  tooltip: "O*NET task relevance (0\u2013100)" },
   { key: "n_occs",       label: "# Occs",           width: 65,  numeric: true,  tooltip: "Number of unique occupations" },
   { key: "n_tasks",      label: "# Tasks",          width: 65,  numeric: true,  tooltip: "Number of unique tasks" },
   { key: "auto_avg_w",   label: "Auto Avg\u2191",   width: 90,  numeric: true,  tooltip: "Avg of per-task avg auto-aug score across sources (0\u20135). Only tasks with at least one source value." },
@@ -102,12 +106,9 @@ const COLUMNS: ColDef[] = [
   { key: "pct_max_all",  label: "Pct Max (all)",    width: 100, numeric: true,  tooltip: "Max pct averaged across ALL tasks (0 for no value)." },
   { key: "sum_pct_avg",  label: "\u03A3 Pct Avg",   width: 90,  numeric: true,  tooltip: "Sum of per-task avg pct across all tasks with a value." },
   { key: "sum_pct_max",  label: "\u03A3 Pct Max",   width: 90,  numeric: true,  tooltip: "Sum of per-task max pct across all tasks with a value." },
-  { key: "freq_col",      label: "Freq",              width: 70,  numeric: true,  tooltip: "O*NET task frequency (0\u201310)" },
-  { key: "imp_col",       label: "Imp",               width: 70,  numeric: true,  tooltip: "O*NET task importance (0\u20135)" },
-  { key: "rel_col",       label: "Rel",               width: 70,  numeric: true,  tooltip: "O*NET task relevance (0\u2013100)" },
-  { key: "pct_affected",  label: "% Tasks Aff.",     width: 100, numeric: true,  tooltip: "% Tasks Affected from the compute panel. Uses the selected datasets and method." },
-  { key: "workers_aff",   label: "Workers Aff.",     width: 110, numeric: true,  tooltip: "Workers affected = % Tasks Affected × employment. Requires compute panel result." },
-  { key: "wages_aff",     label: "Wages Aff. ($B)",  width: 120, numeric: true,  tooltip: "Wages affected (billions) = % Tasks Affected × employment × median wage. Requires compute panel result." },
+  { key: "pct_affected", label: "% Tasks Aff.",     width: 100, numeric: true,  tooltip: "% Tasks Affected from the compute panel. Uses the selected datasets and method." },
+  { key: "workers_aff",  label: "Workers Aff.",     width: 110, numeric: true,  tooltip: "Workers affected = % Tasks Affected \u00d7 employment. Requires compute panel result." },
+  { key: "wages_aff",    label: "Wages Aff. ($B)",  width: 120, numeric: true,  tooltip: "Wages affected (billions) = % Tasks Affected \u00d7 employment \u00d7 median wage. Requires compute panel result." },
 ];
 
 // ── FlatRow model ──────────────────────────────────────────────────────────────
@@ -142,7 +143,7 @@ interface FlatRow {
   dwa_title?: string | null;
   iwa_title?: string | null;
   gwa_title?: string | null;
-  n_tasks_per_occ?: number;
+  physical?: boolean | null;
   freq_mean?: number | null;
   importance?: number | null;
   relevance?: number | null;
@@ -226,7 +227,7 @@ function ecoTaskToRow(t: EcoTaskRow, idx: number, geo: "nat" | "ut" = "nat"): Fl
     dwa_title: t.dwa_title ?? null,
     iwa_title: t.iwa_title ?? null,
     gwa_title: t.gwa_title ?? null,
-    n_tasks_per_occ: t.n_tasks_per_occ,
+    physical: t.physical ?? null,
     freq_mean: t.freq_mean ?? null,
     importance: t.importance ?? null,
     relevance: t.relevance ?? null,
@@ -240,10 +241,10 @@ function ecoTaskToRow(t: EcoTaskRow, idx: number, geo: "nat" | "ut" = "nat"): Fl
 function getVal(row: FlatRow, col: string, pctMap: Map<string, number> | null): number | null {
   // For task-level rows, pct is looked up by occupation name
   const pctKey = row.title_current ?? row.name;
-  const nDiv = row.n_tasks_per_occ ?? 1;
   switch (col) {
     case "emp":          return row.emp;
     case "wage":         return row.wage;
+    case "phys_col":     return row.physical === true ? 1 : row.physical === false ? 0 : null;
     case "n_occs":       return row.n_occs;
     case "n_tasks":      return row.n_tasks;
     case "auto_avg_w":   return row.auto_avg_with_vals;
@@ -263,11 +264,11 @@ function getVal(row: FlatRow, col: string, pctMap: Map<string, number> | null): 
     case "pct_affected": return pctMap?.get(pctKey) ?? null;
     case "workers_aff": {
       const pct = pctMap?.get(pctKey);
-      return pct != null ? (pct / 100) * row.emp / nDiv : null;
+      return pct != null ? (pct / 100) * row.emp : null;
     }
     case "wages_aff": {
       const pct = pctMap?.get(pctKey);
-      return (pct != null && row.wage != null) ? (pct / 100) * row.emp * row.wage / nDiv / 1e9 : null;
+      return (pct != null && row.wage != null) ? (pct / 100) * row.emp * row.wage / 1e9 : null;
     }
     default:             return null;
   }
@@ -283,7 +284,6 @@ function renderCell(
   const muted = { color: "var(--text-muted)" } as React.CSSProperties;
   // For task-level rows, pct lookup uses occupation name
   const pctKey = row.title_current ?? row.name;
-  const nDiv = row.n_tasks_per_occ ?? 1;
   switch (col) {
     case "occ":          return row.title_current ?? <span style={muted}>—</span>;
     case "major_cat":    return row.major_occ_category ?? <span style={muted}>—</span>;
@@ -292,6 +292,11 @@ function renderCell(
     case "dwa_col":      return row.dwa_title ?? <span style={muted}>—</span>;
     case "iwa_col":      return row.iwa_title ?? <span style={muted}>—</span>;
     case "gwa_col":      return row.gwa_title ?? <span style={muted}>—</span>;
+    case "phys_col": {
+      if (row.physical === true) return <span style={{ color: "#16a34a" }}>✓</span>;
+      if (row.physical === false) return <span style={{ color: "var(--text-muted)" }}>✗</span>;
+      return <span style={{ color: "var(--text-muted)" }}>—</span>;
+    }
     case "emp":          return fmtEmp(row.emp);
     case "wage":         return fmtWage(row.wage);
     case "n_occs":       return row.isOcc ? <span style={muted}>—</span> : row.n_occs;
@@ -319,13 +324,13 @@ function renderCell(
     case "workers_aff": {
       const pct = pctMap?.get(pctKey);
       if (pct == null) return <span style={muted}>—</span>;
-      const v = (pct / 100) * row.emp / nDiv;
+      const v = (pct / 100) * row.emp;
       return <span style={{ color: "var(--brand)", fontWeight: 500 }}>{fmtEmp(v)}</span>;
     }
     case "wages_aff": {
       const pct = pctMap?.get(pctKey);
       if (pct == null || row.wage == null) return <span style={muted}>—</span>;
-      const rawDollars = (pct / 100) * row.emp * row.wage / nDiv;
+      const rawDollars = (pct / 100) * row.emp * row.wage;
       const fmtWagesAff = rawDollars >= 1e9 ? `$${(rawDollars / 1e9).toFixed(2)}B`
         : rawDollars >= 1e6 ? `$${(rawDollars / 1e6).toFixed(2)}M`
         : rawDollars >= 1e3 ? `$${(rawDollars / 1e3).toFixed(0)}K`
@@ -680,10 +685,14 @@ function TaskSubRow({
   task,
   physicalMode,
   occHierarchy,
+  emp,
+  wage,
 }: {
   task: TaskDetail;
   physicalMode: "all" | "exclude" | "only";
   occHierarchy?: { broad?: string | null; minor?: string | null; major?: string | null };
+  emp?: number;
+  wage?: number | null;
 }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -778,6 +787,14 @@ function TaskSubRow({
                 <table style={{ fontSize: 11, borderCollapse: "collapse" }}>
                   <tbody>
                     <tr>
+                      <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Emp</td>
+                      <td style={{ padding: "2px 0" }}>{fmtEmp(emp)}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Wage</td>
+                      <td style={{ padding: "2px 0" }}>{fmtWage(wage)}</td>
+                    </tr>
+                    <tr>
                       <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Physical</td>
                       <td style={{ padding: "2px 0" }}>
                         {task.physical === true
@@ -788,32 +805,16 @@ function TaskSubRow({
                       </td>
                     </tr>
                     <tr>
-                      <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Freq Mean</td>
-                      <td style={{ padding: "2px 0" }}>{task.freq_mean?.toFixed(1) ?? "—"}</td>
+                      <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Freq</td>
+                      <td style={{ padding: "2px 0" }}>{task.freq_mean?.toFixed(2) ?? "—"}</td>
                     </tr>
                     <tr>
-                      <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Importance</td>
-                      <td style={{ padding: "2px 0" }}>{task.importance?.toFixed(1) ?? "—"}</td>
+                      <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Imp</td>
+                      <td style={{ padding: "2px 0" }}>{task.importance?.toFixed(2) ?? "—"}</td>
                     </tr>
                     <tr>
-                      <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Relevance</td>
+                      <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Rel</td>
                       <td style={{ padding: "2px 0" }}>{task.relevance?.toFixed(0) ?? "—"}</td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Auto Avg</td>
-                      <td style={{ padding: "2px 0" }}>{task.avg_auto_aug != null ? task.avg_auto_aug.toFixed(3) : "—"}</td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Auto Max</td>
-                      <td style={{ padding: "2px 0" }}>{task.max_auto_aug != null ? task.max_auto_aug.toFixed(3) : "—"}</td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Pct Avg</td>
-                      <td style={{ padding: "2px 0" }}>{task.avg_pct_norm != null ? fmtPctNorm(task.avg_pct_norm) : "—"}</td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Pct Max</td>
-                      <td style={{ padding: "2px 0" }}>{task.max_pct_norm != null ? fmtPctNorm(task.max_pct_norm) : "—"}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -1138,11 +1139,9 @@ const SIMPLE_COLS = new Set([
 
 // Columns visible in simple mode at task level (replaces SIMPLE_COLS for task view)
 const SIMPLE_TASK_COLS = new Set([
-  "name", "occ", "broad_cat", "minor_cat", "major_cat",
-  "dwa_col", "iwa_col", "gwa_col",
-  "emp", "wage", "n_tasks",
-  "auto_avg_w", "auto_max_w",
-  "pct_avg_w", "pct_max_w",
+  "name", "occ", "major_cat", "gwa_col",
+  "emp", "wage",
+  "auto_avg_w", "pct_avg_w",
   "pct_affected", "workers_aff", "wages_aff",
 ]);
 
@@ -1182,7 +1181,8 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
   const debouncedSearch   = useDebounce(search,   250);
 
   // ── Column selector state (persisted to localStorage) ──────────────────
-  const TASK_ONLY_COLS = new Set(["occ", "major_cat", "minor_cat", "broad_cat", "dwa_col", "iwa_col", "gwa_col", "freq_col", "imp_col", "rel_col"]);
+  const TASK_ONLY_COLS = new Set(["occ", "major_cat", "minor_cat", "broad_cat", "dwa_col", "iwa_col", "gwa_col", "phys_col", "freq_col", "imp_col", "rel_col"]);
+  const NON_TASK_COLS = new Set(["n_occs", "n_tasks", "auto_avg_all", "auto_max_all", "pct_phys", "pct_avg_all", "pct_max_all", "sum_pct_avg", "sum_pct_max"]);
   const [hiddenCols, setHiddenCols] = useState<Set<string>>(() => {
     if (typeof window === "undefined") return new Set<string>();
     try {
@@ -1191,6 +1191,17 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
     } catch { return new Set<string>(); }
   });
   const [colSelectorOpen, setColSelectorOpen] = useState(false);
+  const colSelectorRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!colSelectorOpen) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (colSelectorRef.current && !colSelectorRef.current.contains(e.target as Node)) {
+        setColSelectorOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [colSelectorOpen]);
   useEffect(() => {
     try { localStorage.setItem("aea_explorer_hidden_cols", JSON.stringify(Array.from(hiddenCols))); } catch { /* silent */ }
   }, [hiddenCols]);
@@ -1206,11 +1217,9 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
     }
   }, [tableLevel, taskData, taskLoading]);
 
-  // ── Simple mode: auto-compute pct with preset settings ───────────────────
-  const simpleComputeRef = useRef(false);
+  // ── Auto-compute pct with preset settings (runs on load for both modes) ──
+  const [computeVersion, setComputeVersion] = useState(0);
   useEffect(() => {
-    if (!isSimple) { simpleComputeRef.current = false; return; }
-    // Run once per (isSimple, geo, tableLevel) change
     const availableDatasets = config.datasets.filter((d) => config.dataset_availability[d]);
     if (availableDatasets.length === 0) return;
     const backendAgg = (tableLevel === "task" || tableLevel === "occupation") ? "occupation"
@@ -1236,7 +1245,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
       setPctAffectedMap(map);
     }).catch(() => { /* silent */ });
     return () => { cancelled = true; };
-  }, [isSimple, geo, tableLevel, config.datasets, config.dataset_availability]);
+  }, [geo, tableLevel, config.datasets, config.dataset_availability, computeVersion]);
 
   // ── Reset row limit whenever the visible set changes ─────────────────────
   useEffect(() => { setRowLimit(100); }, [tableLevel, selectedMajors, debouncedSearch, searchLevel, colFilters, textColFilters, physicalMode, pctAffectedMap, minPctAffected, sortCol, sortDir]);
@@ -1429,6 +1438,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
 
   // ── Reset ────────────────────────────────────────────────────────────────
   const handleReset = () => {
+    setTableLevel("major");
     setSelectedMajors(new Set());
     setSearch("");
     setSearchLevel("all");
@@ -1436,36 +1446,39 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
     setSortDir("desc");
     setColFilters({});
     setTextColFilters({});
-    setPhysicalMode("all");
-    setPctAffectedMap(null);
-    setMinPctAffected(0);
-    setTableLevel("major");
     setExpandedRows(new Set());
+    setGeo("nat");
+    setPhysicalMode("all");
+    setHiddenCols(new Set());
+    setMinPctAffected(0);
     setRowLimit(100);
+    // Re-run auto-compute with default settings
+    setPctAffectedMap(null);
+    setComputeVersion((v) => v + 1);
   };
 
-  // ── Visible columns (hide pct_affected when no map; simple mode filters; column selector) ──
+  // ── Visible columns (simple mode filters; column selector) ──
   const isSimpleTask = isSimple && tableLevel === "task";
   const visibleCols = useMemo(() => {
     return COLUMNS.filter((c) => {
-      // Hide compute columns when no data
-      if ((c.key === "pct_affected" || c.key === "workers_aff" || c.key === "wages_aff") && !pctAffectedMap) return false;
+      // pct_affected, workers_aff, wages_aff are always visible (show "—" when no data)
       // Simple mode column filter (task level uses different set)
       if (isSimpleTask && !SIMPLE_TASK_COLS.has(c.key)) return false;
       if (isSimple && !isSimpleTask && !SIMPLE_COLS.has(c.key)) return false;
       // Task-only columns hidden when not at task level
       if (TASK_ONLY_COLS.has(c.key) && tableLevel !== "task") return false;
+      if (NON_TASK_COLS.has(c.key) && tableLevel === "task") return false;
       // User column selector
       if (hiddenCols.has(c.key)) return false;
       return true;
     }).map((c) => {
-      // Relabel columns in simple task mode
-      if (isSimpleTask && SIMPLE_TASK_LABELS[c.key]) {
+      // Relabel columns at task level
+      if (tableLevel === "task" && SIMPLE_TASK_LABELS[c.key]) {
         return { ...c, label: SIMPLE_TASK_LABELS[c.key] };
       }
       return c;
     });
-  }, [pctAffectedMap, isSimple, isSimpleTask, tableLevel, hiddenCols]);
+  }, [isSimple, isSimpleTask, tableLevel, hiddenCols]);
 
   // ── Total count for header ────────────────────────────────────────────────
   const totalOccs = occupations.length;
@@ -1632,6 +1645,8 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                             minor: row.grandparent ?? null,
                             major: row.sourceOccs?.[0]?.major ?? null,
                           }}
+                          emp={row.emp}
+                          wage={row.wage}
                         />
                       ))}
                     </tbody>
@@ -1669,11 +1684,19 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                     {row.dwa_title && <p style={{ fontSize: 11, color: "var(--text-secondary)" }}><b>DWA:</b> {row.dwa_title}</p>}
                   </div>
                 )}
-                {/* Task Detail (phys, freq, imp, rel only — auto/pct are table columns) */}
+                {/* Task Detail */}
                 <div style={{ minWidth: 140 }}>
                   <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Task Detail</p>
                   <table style={{ fontSize: 11, borderCollapse: "collapse" }}>
                     <tbody>
+                      <tr>
+                        <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Emp</td>
+                        <td style={{ padding: "2px 0" }}>{fmtEmp(row.emp)}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Wage</td>
+                        <td style={{ padding: "2px 0" }}>{fmtWage(row.wage)}</td>
+                      </tr>
                       <tr>
                         <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Physical</td>
                         <td style={{ padding: "2px 0" }}>
@@ -1685,15 +1708,15 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                         </td>
                       </tr>
                       <tr>
-                        <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Frequency</td>
-                        <td style={{ padding: "2px 0" }}>{row.freq_mean?.toFixed(1) ?? "—"}</td>
+                        <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Freq</td>
+                        <td style={{ padding: "2px 0" }}>{row.freq_mean?.toFixed(2) ?? "—"}</td>
                       </tr>
                       <tr>
-                        <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Importance</td>
-                        <td style={{ padding: "2px 0" }}>{row.importance?.toFixed(1) ?? "—"}</td>
+                        <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Imp</td>
+                        <td style={{ padding: "2px 0" }}>{row.importance?.toFixed(2) ?? "—"}</td>
                       </tr>
                       <tr>
-                        <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Relevance</td>
+                        <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Rel</td>
                         <td style={{ padding: "2px 0" }}>{row.relevance?.toFixed(0) ?? "—"}</td>
                       </tr>
                     </tbody>
@@ -1903,7 +1926,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
           </div>
 
           {/* Column selector */}
-          <div style={{ position: "relative" }}>
+          <div ref={colSelectorRef} style={{ position: "relative" }}>
             <button
               onClick={() => setColSelectorOpen((p) => !p)}
               title="Select columns"
@@ -1920,53 +1943,111 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
               </svg>
               Columns
             </button>
-            {colSelectorOpen && (
-              <div
-                style={{
-                  position: "absolute", right: 0, top: "100%", marginTop: 4,
-                  background: "var(--bg-surface)", border: "1px solid var(--border)",
-                  borderRadius: 8, padding: "8px 0", zIndex: 100,
-                  boxShadow: "0 4px 16px rgba(0,0,0,0.12)", width: 220,
-                  maxHeight: 400, overflowY: "auto",
-                }}
-              >
-                {COLUMNS.filter((c) => {
-                  if (c.key === "name") return false;
-                  if (TASK_ONLY_COLS.has(c.key) && tableLevel !== "task") return false;
-                  if (isSimpleTask && !SIMPLE_TASK_COLS.has(c.key)) return false;
-                  if (isSimple && !isSimpleTask && !SIMPLE_COLS.has(c.key)) return false;
-                  return true;
-                }).map((c) => {
-                  const checked = !hiddenCols.has(c.key);
-                  return (
-                    <label
-                      key={c.key}
-                      style={{
-                        display: "flex", alignItems: "center", gap: 8,
-                        padding: "4px 12px", fontSize: 11, cursor: "pointer",
-                        color: checked ? "var(--text-primary)" : "var(--text-muted)",
-                      }}
-                      onMouseEnter={(e) => { e.currentTarget.style.background = "#f5f5f3"; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        onChange={() => {
+            {colSelectorOpen && (() => {
+              const selectableCols = COLUMNS.filter((c) => {
+                if (c.key === "name") return false;
+                if (TASK_ONLY_COLS.has(c.key) && tableLevel !== "task") return false;
+                if (NON_TASK_COLS.has(c.key) && tableLevel === "task") return false;
+                if (isSimpleTask && !SIMPLE_TASK_COLS.has(c.key)) return false;
+                if (isSimple && !isSimpleTask && !SIMPLE_COLS.has(c.key)) return false;
+                return true;
+              });
+              const OCC_GROUP = new Set(["occ", "broad_cat", "minor_cat", "major_cat"]);
+              const WA_GROUP = new Set(["dwa_col", "iwa_col", "gwa_col"]);
+              const allChecked = selectableCols.every((c) => !hiddenCols.has(c.key));
+              const occCols = selectableCols.filter((c) => OCC_GROUP.has(c.key));
+              const occAllChecked = occCols.length > 0 && occCols.every((c) => !hiddenCols.has(c.key));
+              const waCols = selectableCols.filter((c) => WA_GROUP.has(c.key));
+              const waAllChecked = waCols.length > 0 && waCols.every((c) => !hiddenCols.has(c.key));
+              const pillStyle: React.CSSProperties = {
+                fontSize: 10, padding: "2px 7px", border: "1px solid var(--border)",
+                borderRadius: 10, background: "var(--bg-surface)", cursor: "pointer",
+                color: "var(--text-secondary)", lineHeight: "16px",
+              };
+              return (
+                <div
+                  style={{
+                    position: "absolute", right: 0, top: "100%", marginTop: 4,
+                    background: "var(--bg-surface)", border: "1px solid var(--border)",
+                    borderRadius: 8, padding: "8px 0", zIndex: 100,
+                    boxShadow: "0 4px 16px rgba(0,0,0,0.12)", width: 220,
+                    maxHeight: 400, overflowY: "auto",
+                  }}
+                >
+                  {tableLevel === "task" && (
+                    <div style={{ display: "flex", gap: 4, marginBottom: 6, flexWrap: "wrap", padding: "0 10px" }}>
+                      <button
+                        onClick={() => {
                           setHiddenCols((prev) => {
                             const next = new Set(prev);
-                            if (next.has(c.key)) next.delete(c.key); else next.add(c.key);
+                            if (allChecked) { selectableCols.forEach((c) => next.add(c.key)); }
+                            else { selectableCols.forEach((c) => next.delete(c.key)); }
                             return next;
                           });
                         }}
-                        style={{ margin: 0 }}
-                      />
-                      {c.label}
-                    </label>
-                  );
-                })}
-              </div>
-            )}
+                        style={pillStyle}
+                      >{allChecked ? "None" : "All"}</button>
+                      {occCols.length > 0 && (
+                        <button
+                          onClick={() => {
+                            setHiddenCols((prev) => {
+                              const next = new Set(prev);
+                              if (occAllChecked) { occCols.forEach((c) => next.add(c.key)); }
+                              else { occCols.forEach((c) => next.delete(c.key)); }
+                              return next;
+                            });
+                          }}
+                          style={pillStyle}
+                        >Occ {occAllChecked ? "\u2212" : "+"}</button>
+                      )}
+                      {waCols.length > 0 && (
+                        <button
+                          onClick={() => {
+                            setHiddenCols((prev) => {
+                              const next = new Set(prev);
+                              if (waAllChecked) { waCols.forEach((c) => next.add(c.key)); }
+                              else { waCols.forEach((c) => next.delete(c.key)); }
+                              return next;
+                            });
+                          }}
+                          style={pillStyle}
+                        >WA {waAllChecked ? "\u2212" : "+"}</button>
+                      )}
+                    </div>
+                  )}
+                  {selectableCols.map((c) => {
+                    const checked = !hiddenCols.has(c.key);
+                    const displayLabel = tableLevel === "task" && SIMPLE_TASK_LABELS[c.key] ? SIMPLE_TASK_LABELS[c.key] : c.label;
+                    return (
+                      <label
+                        key={c.key}
+                        style={{
+                          display: "flex", alignItems: "center", gap: 8,
+                          padding: "4px 12px", fontSize: 11, cursor: "pointer",
+                          color: checked ? "var(--text-primary)" : "var(--text-muted)",
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = "#f5f5f3"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => {
+                            setHiddenCols((prev) => {
+                              const next = new Set(prev);
+                              if (next.has(c.key)) next.delete(c.key); else next.add(c.key);
+                              return next;
+                            });
+                          }}
+                          style={{ margin: 0 }}
+                        />
+                        {displayLabel}
+                      </label>
+                    );
+                  })}
+                </div>
+              );
+            })()}
           </div>
 
           {/* Reset */}
