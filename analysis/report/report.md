@@ -8,6 +8,8 @@ Built for Utah's Office of Artificial Intelligence Policy (OAIP).
 
 ## Executive Summary
 
+AI currently touches between 26% and 30% of the US workforce — 39 to 47 million workers — depending on the data source, representing $2.6 to $3.0 trillion in annual wages. Our best combined estimate is 41.7M workers (27.2%) and $2.7T in wages (28.7%). Three sectors alone — Management, Office/Admin, and Business/Financial — account for 42% of all AI-exposed wages. Conversational AI (copilots, chatbots) reaches more workers than agentic AI (tool-use, APIs) at 39.3M vs 32.6M, but agentic AI is closer to parity in technical sectors. Non-physical work is 1.7× more AI-exposed than physical work. The auto-aug quality toggle is the biggest methodological lever, nearly doubling exposure from 27% to 46%, but the top 10 major categories remain perfectly stable across all methodology variations.
+
 The gap between AI tool capability and actual AI usage reveals where AI has the greatest unrealized transformative potential. Transportation and Material Moving occupations have the largest absolute worker gap (2.5M), driven by a massive workforce where AI tools can reach 18% of tasks but real adoption covers only 5.5%. Office/Admin and Sales follow with 2.4M and 2.1M worker gaps respectively. At the occupation level, Cashiers (1.2M gap), Sales Reps of Services (842K, zero current usage), and General/Operations Managers (805K) top the list. Education is the notable exception: AI is already used more than tools can automate, suggesting conversational AI (tutoring, writing help) has outpaced structured tool capability.
 
 When we narrow the lens to job elimination risk — occupations where AI is already being used for most of the job's task value — 9 occupations cross the 60% usage-confirmed threshold, representing 1.5M workers. The largest are Market Research Analysts (431K workers, 63%), Search Marketing Strategists (431K, 66%), and Instructional Coordinators (211K, 61%). Another 146 occupations (35.9M workers) sit in the moderate risk tier (40-60%), where restructuring is more likely than elimination. Capability data (MCP v4) shows 59 occupations would be high-risk if AI were fully deployed — the gap of 54 "emerging risk" occupations, including Cashiers (3.1M), Customer Service Reps (2.7M), and Office Clerks (2.5M), represents the next wave of risk as AI adoption spreads. These findings are stable across both Time and Value weighting methods.
@@ -16,8 +18,65 @@ When we narrow the lens to job elimination risk — occupations where AI is alre
 
 ## Table of Contents
 
+- [AI Economic Footprint](#ai-economic-footprint) — Total workforce and wage exposure to AI across the US economy
 - [AI Transformative Potential](#ai-transformative-potential) — Where the gap between AI capability and adoption is largest
 - [Job Elimination Risk](#job-elimination-risk) — Which occupations are most at risk of being lost to AI
+
+---
+
+## AI Economic Footprint
+
+**Question:** What is AI's total economic footprint across the US economy — how many workers, how many wage dollars, and what share of the total does it represent?
+
+**Method:** Run the pipeline across three source perspectives — current usage (AEI Cumul. v4 + Microsoft), capability ceiling (MCP v4), and combined (all three) — plus agentic (AEI API v3+v4 + MCP v4) and conversational (AEI Cumul. v4 + Microsoft) splits. Test sensitivity across auto-aug ON/OFF, Time/Value method, physical/non-physical, and National/Utah.
+
+### Key findings
+
+**1. Between 26% and 30% of the US workforce is AI-exposed, representing $2.6T to $3.0T in wages.**
+
+Current usage data (floor) shows 39.3M workers (25.7%), capability data (ceiling) shows 46.5M (30.4%). Our combined best estimate: 41.7M workers (27.2%) and $2.7T in wages (28.7% of the total wage bill). The 7.2M-worker gap between floor and ceiling represents unrealized AI adoption.
+
+![Economy Overview](../questions/economic_footprint/figures/economy_overview.png)
+
+**2. Three sectors account for 42% of all AI-exposed wages.**
+
+Management ($407B), Office/Admin ($405B), and Business/Financial ($327B) dominate the wage picture. Computer/Math has the highest intensity (52.2% of tasks) but a smaller workforce. Office/Admin has the most exposed workers (8.6M).
+
+![Treemap of Wages](../questions/economic_footprint/figures/treemap_wages.png)
+
+**3. The range of estimates varies dramatically by sector.**
+
+Office/Admin has the widest absolute gap (4.4M workers between floor and ceiling). Computer/Math shows a narrow range — sources agree it's heavily exposed. Education is inverted: usage exceeds capability, driven by conversational AI tutoring.
+
+![Dumbbell Range](../questions/economic_footprint/figures/range_workers_major.png)
+
+**4. Conversational AI reaches more workers than agentic AI (39.3M vs 32.6M).**
+
+Conversational AI (copilots, chatbots, writing assistants) dominates in every sector, but agentic AI (tool-use, API-calling) reaches 93% as many workers in Computer/Math and is relatively stronger in technical sectors like Architecture/Engineering and Healthcare.
+
+![Agentic vs Conversational](../questions/economic_footprint/figures/agentic_vs_conversational.png)
+
+**5. Non-physical work is 1.7× more AI-exposed than physical work (33.2% vs 19.7%).**
+
+When physical tasks are excluded, AI exposure jumps from 27.2% to 33.2% — one in three workers. This distinction matters for policy targeting.
+
+![Physical Comparison](../questions/economic_footprint/figures/physical_comparison.png)
+
+**6. Auto-aug is the biggest methodological lever — turning it off nearly doubles exposure from 27% to 46%.**
+
+This separates "quality-adjusted" exposure (27.2%, how much work AI can do well) from "raw coverage" (45.5%, every task AI has touched regardless of quality). Time vs Value method barely matters (0.7pp difference). **All 10 top major categories are perfectly stable** across all four toggle combinations.
+
+![Toggle Sensitivity](../questions/economic_footprint/figures/toggle_sensitivity.png)
+
+**7. The average American worker scores 2.08/5 on automatability. 70% of all O*NET tasks have been rated by AI.**
+
+56% of workers are in occupations scoring >= 2.0. The distribution peaks at 2.0–2.5 (34.8M workers) — the largest group sits squarely in the moderate automatability zone.
+
+![Auto-aug Distribution](../questions/economic_footprint/figures/autoaug_distribution.png)
+
+**8. Utah (27.4%) ≈ National (27.2%) — exposure profiles are nearly identical.**
+
+*Config: AEI Cumul. v4 + MCP v4 + Microsoft | Average | Time | Auto-aug ON | National | All tasks | Major category. Sensitivity: Auto-aug OFF, Value method, Physical split, Utah geography. Full data in [questions/economic_footprint/](../questions/economic_footprint/economic_footprint.md).*
 
 ---
 
