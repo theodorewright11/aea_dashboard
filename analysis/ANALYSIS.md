@@ -192,7 +192,9 @@ The README is the primary deliverable — it should be a full analytical narrati
 
 ## 6. Report
 
-`report/report.md` is the rolling narrative that combines all question findings. Structure:
+`report/report.md` is the rolling narrative that combines all question findings. **Every question section must include inline figures** — reference them from the question's committed `figures/` directory using relative paths (e.g., `![alt](../questions/topic_name/figures/chart.png)`). The report should be readable on its own without opening any other files.
+
+Structure:
 
 ```markdown
 # AEA Dashboard Analysis Report
@@ -205,8 +207,10 @@ The README is the primary deliverable — it should be a full analytical narrati
 
 ## [Section per question]
 ### <Question title>
-<Findings and figures. Minimal methodology — just state the config used.
+<Findings with inline figures. Minimal methodology — just state the config used.
 Full methodology lives in the research paper, not here.>
+
+![Chart Title](../questions/topic_name/figures/chart.png)
 ```
 
 The TOC controls the order questions appear in the report. Questions can be reordered by editing the TOC without renaming folders. Keep methodology and caveats minimal — the research paper covers those in depth.
