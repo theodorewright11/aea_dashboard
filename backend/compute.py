@@ -159,7 +159,7 @@ def load_eco_baseline(method: str, physical_mode: str, geo: str) -> Optional[pd.
 
     emp_col  = f"emp_tot_{geo}_2024"
     wage_col = f"a_med_{geo}_2024"
-    result = dedup_and_compute(eco, "title_current", emp_col, wage_col, method, False, False)
+    result = dedup_and_compute(eco, "title_current", emp_col, wage_col, method, False)
     _eco_baseline_cache[key] = result
     return result
 
@@ -625,7 +625,7 @@ def _compute_wa_for_group(
             .first()
             .reset_index()
         )
-        eco_for_act["eco_tc"] = compute_task_comp(eco_for_act, method, False, False)
+        eco_for_act["eco_tc"] = compute_task_comp(eco_for_act, method, False)
         eco_for_act = eco_for_act.merge(emp_frac_lookup, on=[title_col, "task_normalized"], how="left")
         eco_for_act = eco_for_act.merge(occ_emp_wage, on=title_col, how="left", suffixes=("", "_ow"))
         for col in [emp_col, wage_col]:
