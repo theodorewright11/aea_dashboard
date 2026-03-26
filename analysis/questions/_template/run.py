@@ -1,0 +1,62 @@
+"""
+run.py — Generate outputs for this question.
+
+Usage from project root:
+    venv/Scripts/python -m analysis.questions.<folder_name>.run
+"""
+from __future__ import annotations
+
+from pathlib import Path
+
+from analysis.config import (
+    DEFAULT_OCC_CONFIG,
+    make_config,
+    run_occ_query,
+    ensure_results_dir,
+)
+from analysis.utils import (
+    style_figure,
+    save_figure,
+    save_csv,
+    describe_config,
+)
+
+# Directory for this question
+HERE = Path(__file__).resolve().parent
+
+
+def main() -> None:
+    results = ensure_results_dir(HERE)
+
+    # ── Example: run a computation ────────────────────────────────────────
+    #
+    # config = make_config(DEFAULT_OCC_CONFIG, geo="nat", agg_level="major")
+    # result = run_occ_query(config)
+    #
+    # if result is None:
+    #     print("  No data returned")
+    #     return
+    #
+    # df, group_col = result
+    # # df has columns: category, pct_tasks_affected, workers_affected,
+    # #                 wages_affected, rank_workers, rank_wages, rank_pct
+    #
+    # # Save CSV
+    # save_csv(df, results / "top_major_categories.csv")
+    #
+    # # Create and save figure
+    # from analysis.utils import make_horizontal_bar
+    # fig = make_horizontal_bar(
+    #     df, "category", "workers_affected",
+    #     title="Most AI-Exposed Major Occupation Categories",
+    #     subtitle=describe_config(config),
+    #     x_title="Workers Affected",
+    # )
+    # save_figure(fig, results / "figures" / "workers_by_major.png")
+    #
+
+    print("  Template question — replace this with your analysis code.")
+
+
+if __name__ == "__main__":
+    main()

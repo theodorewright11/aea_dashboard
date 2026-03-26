@@ -24,7 +24,7 @@ aea_dashboard/
 │   ├── tailwind.config.ts
 │   └── package.json
 ├── data/                — CSV data files (see §2)
-├── analysis/            — Offline CSV generation scripts
+├── analysis/            — Research analysis system (see analysis/ANALYSIS.md)
 ├── Dockerfile           — Backend: python:3.12-slim, copies backend/ + data/, runs uvicorn
 ├── railway.json         — {"build": {"builder": "DOCKERFILE"}}
 └── requirements.txt     — fastapi, uvicorn, pandas, numpy
