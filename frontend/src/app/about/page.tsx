@@ -151,14 +151,6 @@ export default function AboutPage() {
               Work Activities analysis uses the O*NET 2015 task baseline for AEI datasets
               and the 2025 baseline for MCP / Microsoft datasets.
             </li>
-            <li style={liStyle}>
-              MCP datasets include an adjusted auto-aug score (
-              <code style={{ fontSize: 12, background: "var(--bg-surface)", border: "1px solid var(--border)", padding: "1px 5px", borderRadius: 3 }}>
-                auto_aug_mean_adj
-              </code>
-              ) that excludes flagged or low-confidence ratings; this is the recommended
-              setting for MCP analysis.
-            </li>
           </ul>
         </Section>
 

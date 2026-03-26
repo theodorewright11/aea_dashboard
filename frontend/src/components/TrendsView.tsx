@@ -888,7 +888,6 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
   const [physicalMode, setPhysicalMode] = useState<"all" | "exclude" | "only">("all");
   const [topN,         setTopN]         = useState(8);
   const [useAutoAug,   setUseAutoAug]   = useState(false);
-  const [useAdjMean,   setUseAdjMean]   = useState(false);
   const [loading,      setLoading]      = useState(false);
   const [error,        setError]        = useState<string | null>(null);
   const [result,       setResult]       = useState<TrendsResponse | null>(null);
@@ -909,14 +908,11 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
 
   const [panelCollapsed,    setPanelCollapsed]    = useState(false);
 
-  const hasMCP = selectedDatasets.some((d) => d.startsWith("MCP") || d === "Microsoft");
-
   // Effective values for simple mode overrides
   const effectiveDatasets    = isSimple ? allDatasets : selectedDatasets;
   const effectiveMethod      = isSimple ? "freq" as const : method;
   const effectivePhysical    = isSimple ? "all"  as const : physicalMode;
   const effectiveAutoAug     = isSimple ? true : useAutoAug;
-  const effectiveAdjMean     = isSimple ? true : useAdjMean;
   const effectiveLineMode    = isSimple && lineMode === "individual" ? "average" as LineMode : lineMode;
   // In simple mode, auto-match value ranking to line mode
   const effectiveValueAgg    = isSimple ? (effectiveLineMode === "max" ? "max" as const : "avg" as const) : valueAggMode;
@@ -930,7 +926,6 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
       const fetchTopN = Math.max(topN, 50);
       const settings: TrendsSettings = {
         series: seriesToFetch, method: effectiveMethod, useAutoAug: effectiveAutoAug,
-        useAdjMean: effectiveAutoAug && effectiveAdjMean,
         physicalMode: effectivePhysical, geo, aggLevel, topN: fetchTopN, sortBy: "Workers Affected",
       };
       const data = await fetchTrends(settings);
@@ -945,7 +940,7 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Failed to fetch trends");
     } finally { setLoading(false); }
-  }, [effectiveDatasets, aggLevel, effectiveMethod, geo, topN, effectiveAutoAug, effectiveAdjMean, effectivePhysical, config]);
+  }, [effectiveDatasets, aggLevel, effectiveMethod, geo, topN, effectiveAutoAug, effectivePhysical, config]);
 
   const metaLabel = METRIC_OPTIONS.find((m) => m.key === metric)?.label ?? "";
 
@@ -1127,17 +1122,6 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
                     padding="5px 7px"
                   />
                 </div>
-                {useAutoAug && hasMCP && (
-                  <div>
-                    <ControlLabel>Adj mean (MCP)</ControlLabel>
-                    <SegmentedControl
-                      options={[{ value: "off" as const, label: "Off" }, { value: "on" as const, label: "On" }]}
-                      value={useAdjMean ? "on" : "off"}
-                      onChange={(v) => setUseAdjMean(v === "on")}
-                      padding="5px 7px"
-                    />
-                  </div>
-                )}
               </div>
             </div>
             )}
@@ -1253,7 +1237,6 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
   const [physicalMode,  setPhysicalMode]  = useState<"all" | "exclude" | "only">("all");
   const [topN,          setTopN]          = useState(8);
   const [useAutoAug,    setUseAutoAug]    = useState(false);
-  const [useAdjMean,    setUseAdjMean]    = useState(false);
   const [loading,       setLoading]       = useState(false);
   const [error,         setError]         = useState<string | null>(null);
   const [result,        setResult]        = useState<TrendsResponse | null>(null);
@@ -1268,14 +1251,11 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
 
   const [panelCollapsed,    setPanelCollapsed]    = useState(false);
 
-  const hasMCP = selectedDatasets.some((d) => d.startsWith("MCP") || d === "Microsoft");
-
   // Simple mode overrides — WA defaults to AEI datasets
   const effectiveDatasets    = isSimple ? aeiDatasets : selectedDatasets;
   const effectiveMethod      = isSimple ? "freq" as const : method;
   const effectivePhysical    = isSimple ? "all"  as const : physicalMode;
   const effectiveAutoAug     = isSimple ? true : useAutoAug;
-  const effectiveAdjMean     = isSimple ? true : useAdjMean;
   const effectiveLineMode    = isSimple && lineMode === "individual" ? "average" as LineMode : lineMode;
   const effectiveValueAgg    = isSimple ? (effectiveLineMode === "max" ? "max" as const : "avg" as const) : valueAggMode;
 
@@ -1288,7 +1268,6 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
       const fetchTopN = Math.max(topN, 50);
       const settings: WATrendsSettings = {
         series: seriesToFetch, method: effectiveMethod, useAutoAug: effectiveAutoAug,
-        useAdjMean: effectiveAutoAug && effectiveAdjMean,
         physicalMode: effectivePhysical, geo, topN: fetchTopN, sortBy: "Workers Affected", activityLevel,
       };
       const data = await fetchWATrends(settings);
@@ -1303,7 +1282,7 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Failed to fetch WA trends");
     } finally { setLoading(false); }
-  }, [effectiveDatasets, activityLevel, effectiveMethod, geo, topN, effectiveAutoAug, effectiveAdjMean, effectivePhysical, config]);
+  }, [effectiveDatasets, activityLevel, effectiveMethod, geo, topN, effectiveAutoAug, effectivePhysical, config]);
 
   const metaLabel = METRIC_OPTIONS.find((m) => m.key === metric)?.label ?? "";
 
@@ -1489,17 +1468,6 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
                     padding="5px 7px"
                   />
                 </div>
-                {useAutoAug && hasMCP && (
-                  <div>
-                    <ControlLabel>Adj mean (MCP)</ControlLabel>
-                    <SegmentedControl
-                      options={[{ value: "off" as const, label: "Off" }, { value: "on" as const, label: "On" }]}
-                      value={useAdjMean ? "on" : "off"}
-                      onChange={(v) => setUseAdjMean(v === "on")}
-                      padding="5px 7px"
-                    />
-                  </div>
-                )}
               </div>
             </div>
             )}

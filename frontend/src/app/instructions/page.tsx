@@ -303,8 +303,7 @@ export default function InstructionsPage() {
             task_comp (with auto-aug) = task_comp × (auto_aug_mean / 5)
           </div>
           <p style={{ ...bodyStyle, fontSize: 12, color: "var(--text-muted)" }}>
-            MCP datasets use <code style={codeStyle}>auto_aug_mean_adj</code> (adjusted score
-            excluding low-confidence ratings) instead of <code style={codeStyle}>auto_aug_mean</code>.
+            All datasets use <code style={codeStyle}>auto_aug_mean</code> (0–5 scale) as the automatability score.
           </p>
 
           <SubHead>% Tasks Affected</SubHead>

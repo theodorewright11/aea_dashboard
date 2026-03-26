@@ -35,6 +35,7 @@ from compute import (
     get_wa_tasks_for_activity,
     get_all_tasks,
     get_all_eco_task_rows,
+    compute_task_changes,
     crosswalk_available,
     dataset_exists,
     eco2015_available,
@@ -73,7 +74,6 @@ class GroupSettingsModel(BaseModel):
     combine_method:    str  = "Average"
     method:            str  = "freq"
     use_auto_aug:      bool = False
-    use_adj_mean:      bool = False
     physical_mode:     str  = "all"
     geo:               str  = "nat"
     agg_level:         str  = "major"
@@ -265,7 +265,6 @@ class TrendsRequest(BaseModel):
     series:        list[str] = ["AEI", "MCP"]
     method:        str       = "freq"
     use_auto_aug:  bool      = False
-    use_adj_mean:  bool      = False
     physical_mode: str       = "all"
     geo:           str       = "nat"
     agg_level:     str       = "major"
@@ -312,7 +311,6 @@ class WATrendsRequest(BaseModel):
     series:         list[str] = ["AEI", "MCP"]
     method:         str       = "freq"
     use_auto_aug:   bool      = False
-    use_adj_mean:   bool      = False
     physical_mode:  str       = "all"
     geo:            str       = "nat"
     top_n:          int       = 10
@@ -644,3 +642,64 @@ class EcoTasksResponse(BaseModel):
 def explorer_all_eco_tasks():
     rows = get_all_eco_task_rows()
     return EcoTasksResponse(tasks=[EcoTaskRow(**r) for r in rows])
+
+
+# ── /api/task-changes ─────────────────────────────────────────────────────────
+
+class TaskChangeRow(BaseModel):
+    task:               str
+    task_normalized:    str
+    title_current:      str
+    broad_occ:          Optional[str]   = None
+    minor_occ_category: Optional[str]   = None
+    major_occ_category: Optional[str]   = None
+    dwa_title:          Optional[str]   = None
+    iwa_title:          Optional[str]   = None
+    gwa_title:          Optional[str]   = None
+    physical:           Optional[bool]  = None
+    freq_mean:          Optional[float] = None
+    importance:         Optional[float] = None
+    relevance:          Optional[float] = None
+    emp_nat:            Optional[float] = None
+    emp_ut:             Optional[float] = None
+    wage_nat:           Optional[float] = None
+    wage_ut:            Optional[float] = None
+    status:             str             = ""
+    from_auto_aug:      Optional[float] = None
+    to_auto_aug:        Optional[float] = None
+    delta_auto_aug:     Optional[float] = None
+    from_pct:           Optional[float] = None
+    to_pct:             Optional[float] = None
+    delta_pct:          Optional[float] = None
+    sources:            dict            = {}
+    avg_auto_aug:       Optional[float] = None
+    max_auto_aug:       Optional[float] = None
+    avg_pct_norm:       Optional[float] = None
+    max_pct_norm:       Optional[float] = None
+    top_mcps:           list[McpEntry]  = []
+
+
+class TaskChangesRequest(BaseModel):
+    from_dataset: str
+    to_dataset:   str
+
+
+class TaskChangesResponse(BaseModel):
+    rows:         list[TaskChangeRow]
+    from_dataset: str
+    to_dataset:   str
+
+
+@app.post("/api/task-changes", response_model=TaskChangesResponse)
+def task_changes(req: TaskChangesRequest):
+    if req.from_dataset not in DATASETS:
+        raise HTTPException(status_code=400, detail=f"Unknown dataset: {req.from_dataset}")
+    if req.to_dataset not in DATASETS:
+        raise HTTPException(status_code=400, detail=f"Unknown dataset: {req.to_dataset}")
+
+    rows = compute_task_changes(req.from_dataset, req.to_dataset)
+    return TaskChangesResponse(
+        rows=[TaskChangeRow(**r) for r in rows],
+        from_dataset=req.from_dataset,
+        to_dataset=req.to_dataset,
+    )

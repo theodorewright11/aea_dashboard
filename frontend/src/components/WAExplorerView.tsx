@@ -834,7 +834,6 @@ interface WaPctSettings {
   geo: "nat" | "ut";
   physicalMode: "all" | "exclude" | "only";
   useAutoAug: boolean;
-  useAdjMean: boolean;
 }
 
 function WaPctComputePanel({
@@ -858,7 +857,6 @@ function WaPctComputePanel({
     geo,
     physicalMode: "all",
     useAutoAug: false,
-    useAdjMean: false,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -886,8 +884,6 @@ function WaPctComputePanel({
     setSettings((s) => ({ ...s, [k]: v }));
   }
 
-  const hasMCP = settings.datasets.some((d) => d.startsWith("MCP"));
-
   // Check if datasets are AEI-family (cannot mix)
   const hasAEI = settings.datasets.some((d) => d.startsWith("AEI"));
   const hasMCPorMS = settings.datasets.some((d) => d.startsWith("MCP") || d === "Microsoft");
@@ -903,7 +899,6 @@ function WaPctComputePanel({
         combineMethod: settings.combineMethod,
         method: settings.method,
         useAutoAug: settings.useAutoAug,
-        useAdjMean: settings.useAutoAug && settings.useAdjMean,
         physicalMode: settings.physicalMode,
         geo: settings.geo,
         aggLevel: "major", // not used by WA endpoint but required
@@ -1020,12 +1015,6 @@ function WaPctComputePanel({
                 <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>Auto-aug</p>
                 <BtnSeg opts={[{ v: "false", l: "Off" }, { v: "true", l: "On" }]} val={String(settings.useAutoAug)} onChange={(v) => set("useAutoAug", v === "true")} />
               </div>
-              {hasMCP && settings.useAutoAug && (
-                <div>
-                  <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>MCP adj mean</p>
-                  <BtnSeg opts={[{ v: "false", l: "Off" }, { v: "true", l: "On" }]} val={String(settings.useAdjMean)} onChange={(v) => set("useAdjMean", v === "true")} />
-                </div>
-              )}
               <button
                 onClick={compute}
                 disabled={loading || !settings.datasets.length || isMixed}
@@ -1127,7 +1116,6 @@ export default function WAExplorerView({ rows, config }: Props) {
       combineMethod: "Average",
       method: "freq",
       useAutoAug: true,
-      useAdjMean: true,
       physicalMode: "all",
       geo,
       aggLevel: "major",

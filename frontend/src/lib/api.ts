@@ -11,6 +11,7 @@ import type {
   ExplorerGroupsResponse,
   WAExplorerResponse,
   WATasksResponse,
+  TaskChangesResponse,
 } from "./types";
 
 const API_BASE =
@@ -31,7 +32,7 @@ export async function fetchCompute(settings: GroupSettings): Promise<ComputeResp
       combine_method:    settings.combineMethod,
       method:            settings.method,
       use_auto_aug:      settings.useAutoAug,
-      use_adj_mean:      settings.useAdjMean,
+
       physical_mode:     settings.physicalMode,
       geo:               settings.geo,
       agg_level:         settings.aggLevel,
@@ -54,7 +55,7 @@ export async function fetchWorkActivities(settings: GroupSettings): Promise<Work
       combine_method:    settings.combineMethod,
       method:            settings.method,
       use_auto_aug:      settings.useAutoAug,
-      use_adj_mean:      settings.useAdjMean,
+
       physical_mode:     settings.physicalMode,
       geo:               settings.geo,
       agg_level:         settings.aggLevel,
@@ -76,7 +77,7 @@ export async function fetchTrends(settings: TrendsSettings): Promise<TrendsRespo
       series:        settings.series,
       method:        settings.method,
       use_auto_aug:  settings.useAutoAug,
-      use_adj_mean:  settings.useAdjMean,
+
       physical_mode: settings.physicalMode,
       geo:           settings.geo,
       agg_level:     settings.aggLevel,
@@ -96,7 +97,7 @@ export async function fetchWATrends(settings: WATrendsSettings): Promise<TrendsR
       series:         settings.series,
       method:         settings.method,
       use_auto_aug:   settings.useAutoAug,
-      use_adj_mean:   settings.useAdjMean,
+
       physical_mode:  settings.physicalMode,
       geo:            settings.geo,
       top_n:          settings.topN,
@@ -152,5 +153,15 @@ export async function fetchWAActivityTasks(level: string, name: string): Promise
     `${API_BASE}/api/explorer/wa/tasks?level=${encodeURIComponent(level)}&name=${encodeURIComponent(name)}`
   );
   if (!res.ok) throw new Error(`WA tasks request failed for ${level}/${name}`);
+  return res.json();
+}
+
+export async function fetchTaskChanges(fromDataset: string, toDataset: string): Promise<TaskChangesResponse> {
+  const res = await fetch(`${API_BASE}/api/task-changes`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ from_dataset: fromDataset, to_dataset: toDataset }),
+  });
+  if (!res.ok) throw new Error("Task changes request failed");
   return res.json();
 }

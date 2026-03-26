@@ -33,6 +33,8 @@ _explorer_groups_cache: Optional[dict] = None
 _wa_explorer_cache: Optional[list] = None
 _all_tasks_cache: Optional[list] = None
 _top_mcps_cache: Optional[dict] = None
+_task_changes_cache: dict = {}
+_eco2015_baseline_set_cache: Optional[set] = None
 
 
 def _find_crosswalk() -> Optional[Path]:
@@ -101,7 +103,6 @@ def compute_task_comp(
     df: pd.DataFrame,
     method: str,
     use_auto_aug: bool,
-    use_adj_mean: bool,
 ) -> pd.Series:
     if method == "freq":
         tc = df["freq_mean"].copy().fillna(0.0)
@@ -109,9 +110,7 @@ def compute_task_comp(
         tc = df["freq_mean"].fillna(0.0) * df["relevance"].fillna(0.0) * df["importance"].fillna(0.0)
 
     if use_auto_aug:
-        if use_adj_mean and "auto_aug_mean_adj" in df.columns:
-            aug = df["auto_aug_mean_adj"].fillna(0.0)
-        elif "auto_aug_mean" in df.columns:
+        if "auto_aug_mean" in df.columns:
             aug = df["auto_aug_mean"].fillna(0.0)
         else:
             aug = pd.Series(1.0, index=df.index)
@@ -127,15 +126,12 @@ def dedup_and_compute(
     wage_col: str,
     method: str,
     use_auto_aug: bool,
-    use_adj_mean: bool,
 ) -> pd.DataFrame:
     keep = [
         emp_col, wage_col,
         "broad_occ", "minor_occ_category", "major_occ_category",
         "freq_mean", "importance", "relevance", "auto_aug_mean",
     ]
-    if "auto_aug_mean_adj" in df.columns:
-        keep.append("auto_aug_mean_adj")
 
     agg_dict = {c: "first" for c in keep if c in df.columns}
     deduped = (
@@ -143,7 +139,7 @@ def dedup_and_compute(
         .agg(agg_dict)
         .reset_index()
     )
-    deduped["task_comp"] = compute_task_comp(deduped, method, use_auto_aug, use_adj_mean)
+    deduped["task_comp"] = compute_task_comp(deduped, method, use_auto_aug)
     return deduped
 
 
@@ -260,12 +256,11 @@ def compute_single_dataset(
     is_aei:        bool,
     method:        str,
     use_auto_aug:  bool,
-    use_adj_mean:  bool,
     physical_mode: str,
     geo:           str,
     agg_level:     str,
 ) -> Optional[pd.DataFrame]:
-    key = (file_path, is_aei, method, use_auto_aug, use_adj_mean, physical_mode, geo, agg_level)
+    key = (file_path, is_aei, method, use_auto_aug, physical_mode, geo, agg_level)
     if key in _dataset_cache:
         return _dataset_cache[key]
 
@@ -290,7 +285,7 @@ def compute_single_dataset(
             return None
 
         ai_deduped = dedup_and_compute(
-            df, "title", emp_col, wage_col, method, use_auto_aug, use_adj_mean
+            df, "title", emp_col, wage_col, method, use_auto_aug
         )
 
         soc_lookup = df[["title", "soc_code_2010"]].drop_duplicates("title")
@@ -362,7 +357,7 @@ def compute_single_dataset(
 
     else:
         ai_final = dedup_and_compute(
-            df, "title_current", emp_col, wage_col, method, use_auto_aug, use_adj_mean
+            df, "title_current", emp_col, wage_col, method, use_auto_aug
         )
         title_col_for_agg = "title_current"
 
@@ -426,7 +421,6 @@ def get_group_data(settings: dict) -> Optional[dict]:
 
     method        = settings["method"]
     use_auto_aug  = settings["use_auto_aug"]
-    use_adj_mean  = settings["use_adj_mean"]
     physical_mode = settings["physical_mode"]
     geo           = settings["geo"]
     agg_level     = settings["agg_level"]
@@ -441,13 +435,11 @@ def get_group_data(settings: dict) -> Optional[dict]:
         meta = DATASETS.get(name)
         if meta is None:
             continue
-        effective_adj_mean = use_adj_mean and meta["is_mcp"]
         r = compute_single_dataset(
             file_path     = meta["file"],
             is_aei        = meta["is_aei"],
             method        = method,
             use_auto_aug  = use_auto_aug,
-            use_adj_mean  = effective_adj_mean,
             physical_mode = physical_mode,
             geo           = geo,
             agg_level     = agg_level,
@@ -565,7 +557,6 @@ def _compute_wa_for_group(
     """
     method        = settings["method"]
     use_auto_aug  = settings["use_auto_aug"]
-    use_adj_mean  = settings.get("use_adj_mean", False)
     physical_mode = settings["physical_mode"]
     geo           = settings["geo"]
     combine       = settings.get("combine_method", "Average")
@@ -659,7 +650,6 @@ def _compute_wa_for_group(
             continue
 
         ai_title_col  = "title" if meta["is_aei"] else "title_current"
-        effective_adj = use_adj_mean and meta["is_mcp"]
 
         for act_key, act_col in activity_cols.items():
             if act_key not in eco_for_acts:
@@ -675,7 +665,7 @@ def _compute_wa_for_group(
                 .first()
                 .reset_index()
             )
-            ai_for_act["ai_tc"] = compute_task_comp(ai_for_act, method, use_auto_aug, effective_adj)
+            ai_for_act["ai_tc"] = compute_task_comp(ai_for_act, method, use_auto_aug)
 
             merged = eco_for_act.merge(
                 ai_for_act[[ai_title_col, "task_normalized", act_col, "ai_tc"]].rename(
@@ -802,7 +792,6 @@ def compute_trends(settings: dict) -> dict:
     series_names  = settings.get("series", ["AEI", "MCP"])
     method        = settings["method"]
     use_auto_aug  = settings["use_auto_aug"]
-    use_adj_mean  = settings.get("use_adj_mean", False)
     physical_mode = settings["physical_mode"]
     geo           = settings["geo"]
     agg_level     = settings["agg_level"]
@@ -824,7 +813,6 @@ def compute_trends(settings: dict) -> dict:
             if meta is None or not Path(meta["file"]).exists():
                 continue
 
-            effective_adj = use_adj_mean and meta["is_mcp"]
             date = _get_dataset_date(meta["file"])
 
             df = compute_single_dataset(
@@ -832,7 +820,6 @@ def compute_trends(settings: dict) -> dict:
                 is_aei        = meta["is_aei"],
                 method        = method,
                 use_auto_aug  = use_auto_aug,
-                use_adj_mean  = effective_adj,
                 physical_mode = physical_mode,
                 geo           = geo,
                 agg_level     = agg_level,
@@ -887,7 +874,6 @@ def compute_wa_trends(settings: dict) -> dict:
     series_names  = settings.get("series", ["AEI", "MCP"])
     method        = settings["method"]
     use_auto_aug  = settings["use_auto_aug"]
-    use_adj_mean  = settings.get("use_adj_mean", False)
     physical_mode = settings["physical_mode"]
     geo           = settings["geo"]
     top_n         = int(settings.get("top_n", 10))
@@ -922,12 +908,10 @@ def compute_wa_trends(settings: dict) -> dict:
                 continue
 
             date = _get_dataset_date(meta["file"])
-            effective_adj = use_adj_mean and meta["is_mcp"]
 
             wa_settings = {
                 "method":        method,
                 "use_auto_aug":  use_auto_aug,
-                "use_adj_mean":  effective_adj,
                 "physical_mode": physical_mode,
                 "geo":           geo,
                 "combine_method": "Average",
@@ -1137,7 +1121,7 @@ def get_occupation_tasks(title: str) -> Optional[dict]:
 def _build_explorer_task_lookup() -> dict:
     """
     Builds and caches a dict: task_normalized -> {source_name: {"auto_aug": float|None, "pct_norm": float|None}}
-    Sources: all AEI versions (using auto_aug_mean), MCP v4 (auto_aug_mean_adj), Microsoft (auto_aug_mean).
+    Sources: all AEI versions (using auto_aug_mean), MCP v4 (auto_aug_mean), Microsoft (auto_aug_mean).
     """
     global _explorer_task_lookup_cache
     if _explorer_task_lookup_cache is not None:
@@ -1177,15 +1161,15 @@ def _build_explorer_task_lookup() -> dict:
     mcp_file = mcp_meta.get("file", "")
     if Path(mcp_file).exists():
         mcp = pd.read_csv(mcp_file)
-        if "auto_aug_mean_adj" not in mcp.columns:
-            mcp["auto_aug_mean_adj"] = np.nan
+        if "auto_aug_mean" not in mcp.columns:
+            mcp["auto_aug_mean"] = np.nan
         if "pct_normalized" not in mcp.columns:
             mcp["pct_normalized"] = np.nan
-        mcp["auto_aug_mean_adj"] = pd.to_numeric(mcp["auto_aug_mean_adj"], errors="coerce")
+        mcp["auto_aug_mean"] = pd.to_numeric(mcp["auto_aug_mean"], errors="coerce")
         mcp["pct_normalized"] = pd.to_numeric(mcp["pct_normalized"], errors="coerce")
         if "task_normalized" in mcp.columns:
             agg = mcp.groupby("task_normalized", sort=False).agg(
-                auto_aug=("auto_aug_mean_adj", "mean"),
+                auto_aug=("auto_aug_mean", "mean"),
                 pct_norm=("pct_normalized", "mean"),
             ).reset_index()
             for _, row in agg.iterrows():
@@ -2030,4 +2014,270 @@ def get_all_eco_task_rows() -> list:
         })
 
     _all_eco_task_rows_cache = result
+    return result
+
+
+# ── Task Changes (dataset comparison) ─────────────────────────────────────────
+
+def _build_eco2015_baseline_set() -> set:
+    """
+    Build set of (task_normalized, title_current) from eco_2015 crosswalked to 2019 SOC.
+    Used to determine "not_in_baseline" status for cross-family comparisons.
+    """
+    global _eco2015_baseline_set_cache
+    if _eco2015_baseline_set_cache is not None:
+        return _eco2015_baseline_set_cache
+
+    eco15 = load_eco2015_raw()
+    crosswalk = load_crosswalk()
+    if eco15 is None or crosswalk is None:
+        _eco2015_baseline_set_cache = set()
+        return _eco2015_baseline_set_cache
+
+    # eco_2015 has soc_code_2010 — join with crosswalk to get title_current
+    merged = eco15[["task_normalized", "soc_code_2010"]].drop_duplicates().merge(
+        crosswalk[["O*NET-SOC 2010 Code", "O*NET-SOC 2019 Title"]],
+        left_on="soc_code_2010", right_on="O*NET-SOC 2010 Code",
+        how="inner",
+    )
+    result = set(zip(merged["task_normalized"], merged["O*NET-SOC 2019 Title"]))
+    _eco2015_baseline_set_cache = result
+    return result
+
+
+def _prepare_dataset_for_comparison(ds_name: str) -> Optional[pd.DataFrame]:
+    """
+    Load a dataset and normalize to (task_normalized, title_current) pairs
+    with auto_aug_mean and pct_normalized values (averaged across duplicates).
+    AEI datasets are crosswalked to 2019 SOC.
+    """
+    meta = DATASETS.get(ds_name)
+    if meta is None or not Path(meta["file"]).exists():
+        return None
+
+    df = pd.read_csv(meta["file"])
+    if "task_normalized" not in df.columns:
+        return None
+
+    for col in ("auto_aug_mean", "pct_normalized"):
+        if col not in df.columns:
+            df[col] = np.nan
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    is_aei = meta["is_aei"]
+
+    if is_aei:
+        # Crosswalk AEI data (2010 SOC) to title_current (2019 SOC)
+        crosswalk = load_crosswalk()
+        if crosswalk is None:
+            return None
+
+        # Add soc_code_2010 if not present
+        if "soc_code_2010" not in df.columns:
+            return None
+
+        # Join with crosswalk
+        df = df.merge(
+            crosswalk[["O*NET-SOC 2010 Code", "O*NET-SOC 2019 Title"]],
+            left_on="soc_code_2010", right_on="O*NET-SOC 2010 Code",
+            how="inner",
+        )
+        title_col = "O*NET-SOC 2019 Title"
+    else:
+        if "title_current" not in df.columns:
+            return None
+        title_col = "title_current"
+
+    # Group by (title_current, task_normalized), average the scores
+    agg = (
+        df.groupby([title_col, "task_normalized"], sort=False)
+        .agg(auto_aug_mean=("auto_aug_mean", "mean"), pct_normalized=("pct_normalized", "mean"))
+        .reset_index()
+    )
+    if title_col != "title_current":
+        agg = agg.rename(columns={title_col: "title_current"})
+
+    return agg
+
+
+def compute_task_changes(from_dataset: str, to_dataset: str) -> list[dict]:
+    """
+    Compare two datasets at the task level.
+    Returns list of dicts with status, deltas, and metadata for each task-occ pair.
+    """
+    cache_key = (from_dataset, to_dataset)
+    if cache_key in _task_changes_cache:
+        return _task_changes_cache[cache_key]
+
+    from_df = _prepare_dataset_for_comparison(from_dataset)
+    to_df = _prepare_dataset_for_comparison(to_dataset)
+
+    if from_df is None and to_df is None:
+        return []
+
+    # Build eco baseline sets for "not_in_baseline" checks
+    eco25 = load_eco_raw()
+    eco25_set: set = set()
+    if eco25 is not None:
+        eco25_set = set(zip(eco25["task_normalized"], eco25["title_current"]))
+
+    eco15_set = _build_eco2015_baseline_set()
+
+    # Determine which baseline each dataset uses
+    from_meta = DATASETS.get(from_dataset, {})
+    to_meta = DATASETS.get(to_dataset, {})
+    from_is_aei = from_meta.get("is_aei", False)
+    to_is_aei = to_meta.get("is_aei", False)
+    from_baseline_set = eco15_set if from_is_aei else eco25_set
+    to_baseline_set = eco15_set if to_is_aei else eco25_set
+
+    # Full outer join
+    if from_df is not None and to_df is not None:
+        merged = from_df.merge(
+            to_df,
+            on=["task_normalized", "title_current"],
+            how="outer",
+            suffixes=("_from", "_to"),
+        )
+    elif from_df is not None:
+        merged = from_df.rename(columns={"auto_aug_mean": "auto_aug_mean_from", "pct_normalized": "pct_normalized_from"})
+        merged["auto_aug_mean_to"] = np.nan
+        merged["pct_normalized_to"] = np.nan
+    else:
+        assert to_df is not None
+        merged = to_df.rename(columns={"auto_aug_mean": "auto_aug_mean_to", "pct_normalized": "pct_normalized_to"})
+        merged["auto_aug_mean_from"] = np.nan
+        merged["pct_normalized_from"] = np.nan
+
+    # Enrich with eco_2025 metadata (one row per (task_normalized, title_current))
+    eco_meta: Optional[pd.DataFrame] = None
+    if eco25 is not None:
+        eco_meta = (
+            eco25.groupby(["task_normalized", "title_current"], sort=False)
+            .agg({
+                "task": "first",
+                "broad_occ": "first",
+                "minor_occ_category": "first",
+                "major_occ_category": "first",
+                "dwa_title": "first",
+                "iwa_title": "first",
+                "gwa_title": "first",
+                "physical": "first",
+                "freq_mean": "first",
+                "importance": "first",
+                "relevance": "first",
+                "emp_tot_nat_2024": "first",
+                "emp_tot_ut_2024": "first",
+                "a_med_nat_2024": "first",
+                "a_med_ut_2024": "first",
+            })
+            .reset_index()
+        )
+        merged = merged.merge(eco_meta, on=["task_normalized", "title_current"], how="left")
+
+    # Get explorer lookups for source breakdown and top MCPs
+    task_lookup = _build_explorer_task_lookup()
+    top_mcps_lookup = _build_top_mcps_lookup()
+
+    # Build result rows
+    result: list[dict] = []
+    for _, row in merged.iterrows():
+        tn = row["task_normalized"]
+        tc = row["title_current"]
+        from_aug = _safe_num(row.get("auto_aug_mean_from"))
+        to_aug = _safe_num(row.get("auto_aug_mean_to"))
+        from_pct = _safe_num(row.get("pct_normalized_from"))
+        to_pct = _safe_num(row.get("pct_normalized_to"))
+
+        has_from = from_aug is not None or from_pct is not None
+        has_to = to_aug is not None or to_pct is not None
+
+        # More robust presence check: was this task-occ in the from/to dataset?
+        # A row has "from" data if auto_aug_mean_from or pct_normalized_from is not NaN
+        from_val = row.get("auto_aug_mean_from")
+        to_val = row.get("auto_aug_mean_to")
+        has_from = pd.notna(from_val) if from_val is not None else False
+        has_to = pd.notna(to_val) if to_val is not None else False
+        # Also check pct as fallback (a dataset might have pct but not auto_aug)
+        if not has_from:
+            fpct = row.get("pct_normalized_from")
+            has_from = pd.notna(fpct) if fpct is not None else False
+        if not has_to:
+            tpct = row.get("pct_normalized_to")
+            has_to = pd.notna(tpct) if tpct is not None else False
+
+        pair = (tn, tc)
+
+        if has_from and has_to:
+            # Both datasets rated this task-occ — compare auto_aug values
+            if from_aug is None and to_aug is None:
+                status = "unchanged"
+            elif from_aug is None or to_aug is None:
+                status = "changed"  # one has score, other doesn't
+            elif abs(to_aug - from_aug) > 1e-6:
+                status = "changed"
+            else:
+                status = "unchanged"
+        elif has_to and not has_from:
+            # Only in "to" — check against "from" baseline
+            if pair in from_baseline_set:
+                status = "new"
+            else:
+                status = "not_in_baseline"
+        elif has_from and not has_to:
+            # Only in "from" — check against "to" baseline
+            if pair in to_baseline_set:
+                status = "removed"
+            else:
+                status = "not_in_baseline"
+        else:
+            continue  # no data on either side (shouldn't happen)
+
+        # Compute deltas
+        delta_aug = None
+        if from_aug is not None and to_aug is not None:
+            delta_aug = round(to_aug - from_aug, 4)
+        delta_pct = None
+        if from_pct is not None and to_pct is not None:
+            delta_pct = round(to_pct - from_pct, 4)
+
+        # Source breakdown from explorer lookup
+        task_sources = task_lookup.get(tn, {})
+        source_autos = [v["auto_aug"] for v in task_sources.values() if v.get("auto_aug") is not None]
+        source_pcts = [v["pct_norm"] for v in task_sources.values() if v.get("pct_norm") is not None]
+
+        result.append({
+            "task": row.get("task") if pd.notna(row.get("task")) else tn,
+            "task_normalized": tn,
+            "title_current": tc,
+            "broad_occ": row.get("broad_occ") if pd.notna(row.get("broad_occ", np.nan)) else None,
+            "minor_occ_category": row.get("minor_occ_category") if pd.notna(row.get("minor_occ_category", np.nan)) else None,
+            "major_occ_category": row.get("major_occ_category") if pd.notna(row.get("major_occ_category", np.nan)) else None,
+            "dwa_title": row.get("dwa_title") if pd.notna(row.get("dwa_title", np.nan)) else None,
+            "iwa_title": row.get("iwa_title") if pd.notna(row.get("iwa_title", np.nan)) else None,
+            "gwa_title": row.get("gwa_title") if pd.notna(row.get("gwa_title", np.nan)) else None,
+            "physical": bool(row.get("physical")) if pd.notna(row.get("physical", np.nan)) else None,
+            "freq_mean": _safe_num(row.get("freq_mean")),
+            "importance": _safe_num(row.get("importance")),
+            "relevance": _safe_num(row.get("relevance")),
+            "emp_nat": _safe_num(row.get("emp_tot_nat_2024")),
+            "emp_ut": _safe_num(row.get("emp_tot_ut_2024")),
+            "wage_nat": _safe_num(row.get("a_med_nat_2024")),
+            "wage_ut": _safe_num(row.get("a_med_ut_2024")),
+            "status": status,
+            "from_auto_aug": from_aug,
+            "to_auto_aug": to_aug,
+            "delta_auto_aug": delta_aug,
+            "from_pct": from_pct,
+            "to_pct": to_pct,
+            "delta_pct": delta_pct,
+            "sources": task_sources,
+            "avg_auto_aug": round(sum(source_autos) / len(source_autos), 4) if source_autos else None,
+            "max_auto_aug": round(max(source_autos), 4) if source_autos else None,
+            "avg_pct_norm": round(sum(source_pcts) / len(source_pcts), 4) if source_pcts else None,
+            "max_pct_norm": round(max(source_pcts), 4) if source_pcts else None,
+            "top_mcps": top_mcps_lookup.get(tn, []),
+        })
+
+    _task_changes_cache[cache_key] = result
     return result

@@ -22,7 +22,7 @@ The dashboard draws on five independent data sources. Using multiple AI scoring 
 
 **Anthropic Economic Index (AEI)** — Derived from analysis of real Claude conversations. Each O*NET task has an automatability score (0–5) based on the averages of the collaboration patterns that each task was used for in the given Claude conversation (directive, feedback loop, task iteration, validation, learning). Four **snapshot** versions (v1–v4) span December 2024 to November 2025, plus two "API" variants (v3–v4) that measure tool-use/API interactions specifically. Additionally, four **cumulative** versions (Cumul. v1–v4) each aggregate all conversations up to their snapshot date — v4 already contains v1–v3's data, so only one cumulative version should be selected at a time. AEI data uses 2010 SOC occupation codes and must be crosswalked to the current 2019 SOC system before comparison with other sources.
 
-**MCP Server Pipeline** — AI task classifications drawn from Model Context Protocol server logs. These capture what AI systems can do when given access to tools and external resources, rather than conversation-only capability. Four snapshot versions (v1–v4) from April 2025 to February 2026. MCP data includes both a standard automatability score and an adjusted score that excludes flagged or low-confidence ratings. Uses 2019 SOC codes natively.
+**MCP Server Pipeline** — AI task classifications drawn from Model Context Protocol server logs. These capture what AI systems can do when given access to tools and external resources, rather than conversation-only capability. Four snapshot versions (v1–v4) from April 2025 to February 2026. Uses 2019 SOC codes natively.
 
 **Microsoft Occupational AI Analysis** — An assessment of AI exposure across occupations from September 2024 from Microsoft on Copilot usage. Provides a single-point comparison against the other sources. Uses 2019 SOC codes natively. The automation scores here are based on the average of the percent of a work activities work could be automated by the demonstrated use of the AI in a given conversation
 
@@ -36,7 +36,7 @@ The dashboard draws on five independent data sources. Using multiple AI scoring 
 
 ## 3. Pages & Features
 
-The dashboard has seven pages accessible from the top navigation bar. The **default landing page** is the Occupation Explorer (`/explorer`); the root URL (`/`) redirects there. A global **footer** below all page content shows source attribution and links to the project's GitHub repositories, the research paper (placeholder), and a contact email.
+The dashboard has eight pages accessible from the top navigation bar. The **default landing page** is the Occupation Explorer (`/explorer`); the root URL (`/`) redirects there. A global **footer** below all page content shows source attribution and links to the project's GitHub repositories, the research paper (placeholder), and a contact email.
 
 ### 3.1 Occupation Explorer
 
@@ -90,7 +90,7 @@ A side-by-side comparison view with two independently configurable groups (A and
 - **Two-group layout** — Group A and Group B side by side. Each group has its own independent control panel.
 - **Dataset selection** — pick one or more AI datasets per group. When multiple are selected, choose Average or Max to combine scores.
 - **Display controls** — method (Time or Value), geography (National or Utah), aggregation level (Major / Minor / Broad / Occupation), and Top N (up to 30).
-- **Filtering controls** — physical task filter (all / exclude physical / physical only), auto-aug multiplier toggle (Off / On), and MCP adjusted mean toggle.
+- **Filtering controls** — physical task filter (all / exclude physical / physical only), auto-aug multiplier toggle (Off / On).
 - **Run button** — charts only update on Run, not on every control change. After running, control sections collapse to a summary bar.
 - **Search** — type a category name to find it in the ranked list. The matched bar is highlighted orange with surrounding context bars shown (±N configurable).
 - **Sort** — by Workers Affected, Wages Affected, or % Tasks Affected.
@@ -133,7 +133,34 @@ Time-series line charts showing how automation exposure metrics have changed acr
 - **Custom legend** — clickable colored squares; clicking locks to that line. Shows increase badge per item.
 - **PNG download** with legend captured.
 
-### 3.6 Instructions
+### 3.6 Task Changes
+
+A task-level comparison view that shows what changed between two dataset versions — which tasks were added, removed, or had score changes.
+
+**What questions it answers:**
+- What specific tasks drove changes between two dataset versions?
+- Which tasks were newly rated, removed, or had score changes?
+- For cross-family comparisons (e.g., AEI vs MCP), which tasks exist only in one family's baseline?
+
+**What the user sees and can do:**
+- **Dataset pickers** — select any two datasets from the full registry (including cumulative AEI) as "From" and "To", then click Run to compare.
+- **Status summary** — colored pills showing counts for each status: New (green), Changed (orange), Removed (red), Unchanged (grey), Not in baseline (muted/italic). Each pill toggles visibility of that status. Default: New + Changed + Removed visible.
+- **Table** with default visible columns: Task, Occupation, Status, From auto_aug, To auto_aug, Δ auto_aug. Available via column selector: Major, Minor, Broad, GWA, IWA, DWA, Physical, Freq, Importance, Relevance, Emp, Wage, From pct, To pct, Δ pct.
+- **Row expansion** — clicking a row shows occupation categories, work activities, source breakdown (all 8 AI sources), and top MCP servers.
+- **When GWA/IWA/DWA columns are toggled on**, rows expand to unique (task, occupation, activity) combinations using eco_2025 data.
+- **Δ columns** — green if positive, red if negative, "—" if either side is null.
+- **Filters** — status pills, major category pills, search across task/occupation/activity text, physical filter (advanced only).
+- **Pagination** — same 100-row pattern as other explorers.
+- **Cross-family comparisons** — AEI data is crosswalked to 2019 SOC before comparison. "Not in baseline" status identifies tasks that couldn't have been rated by the other dataset family.
+
+**Status logic:**
+- **New** — task-occ exists in "to" dataset and in "from" dataset's eco baseline, but "from" didn't rate it.
+- **Removed** — task-occ exists in "from" dataset and in "to" dataset's eco baseline, but "to" didn't rate it.
+- **Changed** — both datasets rated it, auto_aug scores differ.
+- **Unchanged** — both datasets rated it, same auto_aug score.
+- **Not in baseline** — task-occ doesn't exist in the other dataset's eco baseline (cross-family only).
+
+### 3.7 Instructions
 
 A reference page explaining how to use each dashboard page and how all metrics are computed, with an **interactive calculator** that lets users experiment with task completion weight computation.
 
@@ -141,7 +168,7 @@ A reference page explaining how to use each dashboard page and how all metrics a
 
 Also includes documentation of page guides, metric formulas, data source descriptions, auto-aug multiplier mechanics, and the occupation/work-activity aggregation logic.
 
-### 3.7 About
+### 3.8 About
 
 A static page summarizing the project's purpose, methodology, data sources, and technical notes. Identifies the dashboard as built for Utah's OAIP as part of a research project for measuring AI's workforce impact.
 
@@ -179,7 +206,6 @@ The percentage of AI conversations (from AEI/MCP/Microsoft data) that involved a
 | **Aggregation level** | Major Category / Minor Category / Broad Occupation / Occupation | The SOC hierarchy level at which to group and display results. Major has ~23 groups; Occupation has 923. |
 | **Physical task filter** | All / Exclude physical / Physical only | Whether to include, exclude, or isolate tasks classified as requiring physical presence gotten from Microsoft's data for their AI analysis. Useful for focusing on cognitive/informational work. |
 | **Auto-aug multiplier** | Off / On | When On, scales each task's contribution by its AI automatability score (0–5, normalized to 0–1). Off treats all AI-flagged tasks equally regardless of how automatable they are. |
-| **MCP adjusted mean** | Off / On | For MCP datasets only, uses the adjusted auto-aug score that excludes flagged or low-confidence ratings. Recommended for MCP analysis. |
 | **Top N** | 1–30 | How many categories to display in charts (the top N by the selected sort metric). |
 | **Sort by** | Workers Affected / Wages Affected / % Tasks Affected | Which metric determines the ranking of displayed categories. |
 | **Search + Context** | Text query + ±N context size | Finds a specific category and shows it with N surrounding categories in the ranked list. |
@@ -193,14 +219,15 @@ A global toggle in the navigation bar switches the dashboard between **Simple** 
 
 | Page | Fixed settings | Shown controls | Hidden |
 |------|---------------|----------------|--------|
-| **Occupation Explorer** | All datasets, Time, All phys, Auto-aug On (adj) | Level selector, Major pills, Search, Nat/Utah | Physical toggle, Min filters, PctComputePanel UI (auto-computed) |
-| **WA Explorer** | All AEI datasets, Time, All phys, Auto-aug On (adj), Emp Weight: Time | Level selector, GWA pills, Search, Nat/Utah | Physical toggle, Emp Weight toggle, PctComputePanel UI (auto-computed) |
-| **Occupation Categories** | All datasets, Time, All phys, Auto-aug On (adj), single group | Aggregation, Geo, Sort, Search, Top N | Group B, Dataset/Method/Physical/Auto-aug controls |
-| **Work Activities** | All AEI datasets, Time, All phys, Auto-aug On (adj), single group | Activity level, Geo, Sort, Search, Top N | Group B, Dataset/Method/Physical/Auto-aug controls |
-| **Trends (Occ)** | All datasets, Time, All phys, Auto-aug On (adj) | Lines (Avg/Max only), Metric, Aggregation, Geo, Top N, Sort, Search | Datasets, Filtering, Individual line mode, Value ranking (auto-matches line mode) |
-| **Trends (WA)** | All AEI datasets, Time, All phys, Auto-aug On (adj) | Lines (Avg/Max only), Metric, Activity level, Geo, Top N, Sort, Search | Datasets, Filtering, Individual line mode, Value ranking |
+| **Occupation Explorer** | All datasets, Time, All phys, Auto-aug On | Level selector, Major pills, Search, Nat/Utah | Physical toggle, Min filters, PctComputePanel UI (auto-computed) |
+| **WA Explorer** | All AEI datasets, Time, All phys, Auto-aug On, Emp Weight: Time | Level selector, GWA pills, Search, Nat/Utah | Physical toggle, Emp Weight toggle, PctComputePanel UI (auto-computed) |
+| **Occupation Categories** | All datasets, Time, All phys, Auto-aug On, single group | Aggregation, Geo, Sort, Search, Top N | Group B, Dataset/Method/Physical/Auto-aug controls |
+| **Work Activities** | All AEI datasets, Time, All phys, Auto-aug On, single group | Activity level, Geo, Sort, Search, Top N | Group B, Dataset/Method/Physical/Auto-aug controls |
+| **Trends (Occ)** | All datasets, Time, All phys, Auto-aug On | Lines (Avg/Max only), Metric, Aggregation, Geo, Top N, Sort, Search | Datasets, Filtering, Individual line mode, Value ranking (auto-matches line mode) |
+| **Trends (WA)** | All AEI datasets, Time, All phys, Auto-aug On | Lines (Avg/Max only), Metric, Activity level, Geo, Top N, Sort, Search | Datasets, Filtering, Individual line mode, Value ranking |
+| **Task Changes** | AEI Cumul. v1 → v4 | Status filter, Major pills, Search, Core columns | Dataset pickers, Physical filter, Minor/Broad/IWA/DWA columns |
 
-Explorer pages auto-compute % Tasks Affected, Workers Affected, and Wages Affected columns on page load in **both** simple and advanced modes using the default settings (all datasets, freq, all phys, auto-aug on adj, Average). The pct columns are always visible in the table (showing "---" while loading). In advanced mode, users can still open the PctComputePanel to re-run with custom settings. The Reset button restores all controls to defaults (including geo→nat, physical→all, hidden columns→defaults) and re-runs auto-compute. The WA Explorer auto-compute populates pctAffectedMap from all three levels (GWA + IWA + DWA) so results persist across level switches.
+Explorer pages auto-compute % Tasks Affected, Workers Affected, and Wages Affected columns on page load in **both** simple and advanced modes using the default settings (all datasets, freq, all phys, auto-aug on, Average). The pct columns are always visible in the table (showing "---" while loading). In advanced mode, users can still open the PctComputePanel to re-run with custom settings. The Reset button restores all controls to defaults (including geo→nat, physical→all, hidden columns→defaults) and re-runs auto-compute. The WA Explorer auto-compute populates pctAffectedMap from all three levels (GWA + IWA + DWA) so results persist across level switches.
 
 ---
 

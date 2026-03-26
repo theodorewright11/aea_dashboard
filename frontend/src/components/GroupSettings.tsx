@@ -71,8 +71,6 @@ export default function GroupSettings({ groupId, color, settings, config, onChan
   const hasAei = settings.selectedDatasets.some((n) =>
     ["AEI v1","AEI v2","AEI v3","AEI v4","AEI API v3","AEI API v4"].includes(n)
   );
-  const hasMcp = settings.selectedDatasets.some((n) => n.startsWith("MCP"));
-
   const update = (patch: Partial<GroupSettings>) => onChange({ ...settings, ...patch });
   const maxN = settings.aggLevel === "occupation" ? 50 : 30;
 
@@ -166,13 +164,8 @@ export default function GroupSettings({ groupId, color, settings, config, onChan
               onChange={(v) => update({ physicalMode: v === "Include all" ? "all" : v === "Exclude physical" ? "exclude" : "only" })} />
             <div style={{ borderTop: "1px solid var(--border-light)", margin: "4px 0 8px" }} />
             <CheckboxRow label="Apply auto-aug multiplier" checked={settings.useAutoAug}
-              onChange={(v) => update({ useAutoAug: v, useAdjMean: v ? settings.useAdjMean : false })}
+              onChange={(v) => update({ useAutoAug: v })}
               help="Multiply task completion by auto_aug_mean / 5." />
-            {hasMcp && settings.useAutoAug && (
-              <CheckboxRow label="Use adjusted auto-aug for MCP" checked={settings.useAdjMean}
-                onChange={(v) => update({ useAdjMean: v })}
-                help="Uses auto_aug_mean_adj (excludes flagged ratings)." />
-            )}
             {hasAei && !config.crosswalk_available && (
               <div style={{ marginTop: 8, fontSize: 11, background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 6, padding: "6px 8px", color: "#92400e" }}>
                 AEI datasets require <code>2010_to_2019_soc_crosswalk.csv</code> in <code>data/</code>.

@@ -57,7 +57,7 @@ All CSVs live in `data/`. There are two SOC taxonomies in play:
 | AEI v1–v4 | `final_aei_v{1..4}.csv` | 2010 | true | false | Snapshot; needs crosswalk to 2019 |
 | AEI API v3–v4 | `final_aei_api_v{3,4}.csv` | 2010 | true | false | Snapshot; needs crosswalk to 2019 |
 | AEI Cumul. v1–v4 | `final_aei_cumulative_v{1..4}.csv` | 2010 | true | false | Cumulative (each version accumulates all prior); needs crosswalk. Only one at a time; cannot mix with snapshot AEI. |
-| MCP v1–v4 | `final_mcp_v{1..4}.csv` | 2019 | false | true | Has `auto_aug_mean_adj`; only one version at a time |
+| MCP v1–v4 | `final_mcp_v{1..4}.csv` | 2019 | false | true | Only one version at a time |
 | Microsoft | `final_microsoft.csv` | 2019 | false | false | Single snapshot |
 
 **Dataset families in `config.py`:**
@@ -85,7 +85,6 @@ These sets are exposed via `GET /api/config` as `aei_snapshot_datasets`, `aei_cu
 | `importance` | 0–5 | Task importance (O*NET survey) |
 | `relevance` | 0–100 | Task relevance (O*NET survey) |
 | `auto_aug_mean` | 0–5 | AI automatability score |
-| `auto_aug_mean_adj` | 0–5 | MCP only — excludes flagged ratings |
 | `pct_normalized` | float | Share of AI conversations involving this task. **Already in percent form** (0.4 = 0.4%, NOT 40%) |
 | `physical` | bool | Truly physical task |
 | `date` | str | Dataset snapshot date |
@@ -143,14 +142,14 @@ Organized by pipeline stage:
 
 #### Stage 2: Task-Level Transformations
 - `apply_physical_filter(df, mode)` — filters rows by `physical` column (`"all"` / `"exclude"` / `"only"`)
-- `compute_task_comp(df, method, use_auto_aug, use_adj_mean)` → `pd.Series` of task completion weights
+- `compute_task_comp(df, method, use_auto_aug)` → `pd.Series` of task completion weights
 - `dedup_and_compute(df, title_col, emp_col, wage_col, method, ...)` — deduplicates on `(title, task_normalized)`, computes `task_comp`
 
 #### Stage 3: ECO Baseline
 - `load_eco_baseline(method, physical_mode, geo)` — deduped eco_2025 with task_comp computed (no auto_aug). Cached by `(method, physical_mode, geo)`.
 
 #### Stage 4: Single-Dataset Compute
-- `compute_single_dataset(file_path, is_aei, method, use_auto_aug, use_adj_mean, physical_mode, geo, agg_level)` — full pipeline for one AI dataset. If AEI: runs crosswalk pipeline (§4.3). If MCP/MS: dedup + compute directly. Calls `aggregate_results()` at the end. Cached by full parameter tuple.
+- `compute_single_dataset(file_path, is_aei, method, use_auto_aug, physical_mode, geo, agg_level)` — full pipeline for one AI dataset. If AEI: runs crosswalk pipeline (§4.3). If MCP/MS: dedup + compute directly. Calls `aggregate_results()` at the end. Cached by full parameter tuple.
 
 #### Stage 5: Aggregation
 - `aggregate_results(ai_df, eco_df, title_col, agg_level, emp_col, wage_col)` — computes pct/workers/wages at occupation level, then rolls up to requested agg_level. Also computes rank columns.
@@ -165,7 +164,7 @@ Organized by pipeline stage:
 - `compute_wa_trends(settings)` — same but for work activities, using `_compute_wa_for_group()` per dataset version.
 
 #### Stage 8: Explorer
-- `_build_explorer_task_lookup()` — builds `task_normalized → {source_name: {auto_aug, pct_norm}}` across all 8 sources. AEI values averaged across 2010 SOC titles. MCP uses `auto_aug_mean_adj`. Cached.
+- `_build_explorer_task_lookup()` — builds `task_normalized → {source_name: {auto_aug, pct_norm}}` across all 8 sources. AEI values averaged across 2010 SOC titles. Cached.
 - `_compute_task_metrics(task_norms, lookup)` — given task list + lookup, returns 10 metric fields (§4.6).
 - `get_explorer_occupations()` — 923 occupation summaries with hierarchy, emp, wages, 10 metrics. Cached.
 - `get_explorer_groups()` — pre-computed major/minor/broad aggregations (unique task_norms per group, not averages of occ-level values). Cached.
@@ -174,6 +173,11 @@ Organized by pipeline stage:
 - `get_all_eco_task_rows()` — all ~23,850 rows from eco_2025 (each task × occupation combination) with occupation hierarchy, raw emp/wage, weighted emp allocation fields (`emp_nat_freq`, `emp_ut_freq`, `emp_nat_value`, `emp_ut_value`), and AI metrics from the task lookup. Cached. Used by both explorer task-level views.
 - `get_wa_explorer_data()` — GWA/IWA/DWA rows with emp allocation + metrics. Cached.
 - `get_wa_tasks_for_activity(level, name)` — task details for one WA activity.
+
+#### Stage 9: Task Changes
+- `_build_eco2015_baseline_set()` — builds set of (task_normalized, title_current) from crosswalked eco_2015. Cached.
+- `_prepare_dataset_for_comparison(ds_name)` — loads a dataset, crosswalks AEI to 2019 SOC, deduplicates to (task_normalized, title_current) level with averaged auto_aug_mean and pct_normalized. Returns DataFrame.
+- `compute_task_changes(from_dataset, to_dataset)` — compares two datasets at task level. Returns list of dicts with status, deltas, and metadata. Cached by (from_dataset, to_dataset).
 
 ### `main.py` — API Layer
 
@@ -196,8 +200,6 @@ With auto-aug multiplier enabled:
 ```
 task_comp = task_comp × (auto_aug_mean / 5)
 ```
-For MCP datasets with `use_adj_mean=true`: uses `auto_aug_mean_adj` instead of `auto_aug_mean`.
-
 The ECO baseline is always computed **without** auto-aug (it represents the total task profile).
 
 ### 4.2 Occupation-Level Metrics
@@ -298,7 +300,7 @@ sum_pct_max = sum(per_task_max pct) over tasks with values
 
 `_build_explorer_task_lookup()` reads all 8 AI sources:
 - **AEI v1–v4 + AEI API v3–v4**: groups by `task_normalized`, takes mean of `auto_aug_mean` and `pct_normalized` across all 2010 SOC titles sharing that task
-- **MCP v4**: uses `auto_aug_mean_adj` (not `auto_aug_mean`)
+- **MCP v4**: uses `auto_aug_mean`
 - **Microsoft**: uses `auto_aug_mean`
 
 Result: `dict[task_normalized → dict[source_name → {auto_aug: float|None, pct_norm: float|None}]]`
@@ -352,6 +354,23 @@ Weighted emp allocation uses the same approach as WA explorer (§4.5): for each 
 
 Backend sorts all categories descending by the selected metric, finds the first case-insensitive `contains` match, slices `[idx - contextSize : idx + contextSize + 1]`, and returns `matched_category` in the response. The matched bar is highlighted orange in the chart.
 
+### 4.12 Task Changes Comparison
+
+Compares two datasets at the task level to identify what changed between versions.
+
+**Pipeline:**
+1. Load both datasets via `_prepare_dataset_for_comparison()` — crosswalks AEI to 2019 SOC, groups by (task_normalized, title_current), averages auto_aug_mean and pct_normalized
+2. Full outer join on (task_normalized, title_current)
+3. Build eco baseline sets: eco_2025 set for MCP/Microsoft, crosswalked eco_2015 set for AEI
+4. Assign status per row:
+   - **New** — in "to" only, and (task, occ) exists in "from" dataset's eco baseline
+   - **Removed** — in "from" only, and (task, occ) exists in "to" dataset's eco baseline
+   - **Changed** — in both, auto_aug scores differ (including null-vs-value)
+   - **Unchanged** — in both, same auto_aug scores
+   - **Not in baseline** — task-occ pair doesn't exist in the other dataset's eco baseline (cross-family only)
+5. Enrich with eco_2025 metadata (occupation hierarchy, work activities, emp, wage, physical)
+6. Attach source breakdown and top MCPs from explorer task lookup
+
 ---
 
 ## 5. API Contracts
@@ -386,7 +405,6 @@ Request body (`GroupSettingsModel`):
   combine_method: string;             // "Average" | "Max"
   method: string;                     // "freq" | "imp"
   use_auto_aug: boolean;
-  use_adj_mean: boolean;
   physical_mode: string;              // "all" | "exclude" | "only"
   geo: string;                        // "nat" | "ut"
   agg_level: string;                  // "major" | "minor" | "broad" | "occupation"
@@ -448,7 +466,6 @@ Request body (`TrendsRequest`):
   series: string[];                   // ["AEI", "MCP", "Microsoft"]
   method: string;
   use_auto_aug: boolean;
-  use_adj_mean: boolean;
   physical_mode: string;
   geo: string;
   agg_level: string;
@@ -481,7 +498,6 @@ Request body (`WATrendsRequest`):
   series: string[];
   method: string;
   use_auto_aug: boolean;
-  use_adj_mean: boolean;
   physical_mode: string;
   geo: string;
   top_n: number;
@@ -688,6 +704,56 @@ Response:
 }
 ```
 
+### `POST /api/task-changes`
+
+Request body (`TaskChangesRequest`):
+```ts
+{
+  from_dataset: string;   // e.g., "AEI Cumul. v1"
+  to_dataset:   string;   // e.g., "AEI Cumul. v4"
+}
+```
+
+Response (`TaskChangesResponse`):
+```ts
+{
+  rows: Array<{
+    task: string;
+    task_normalized: string;
+    title_current: string;
+    broad_occ?: string;
+    minor_occ_category?: string;
+    major_occ_category?: string;
+    dwa_title?: string;
+    iwa_title?: string;
+    gwa_title?: string;
+    physical?: boolean;
+    freq_mean?: number;
+    importance?: number;
+    relevance?: number;
+    emp_nat?: number;
+    emp_ut?: number;
+    wage_nat?: number;
+    wage_ut?: number;
+    status: "new" | "removed" | "changed" | "unchanged" | "not_in_baseline";
+    from_auto_aug?: number;
+    to_auto_aug?: number;
+    delta_auto_aug?: number;
+    from_pct?: number;
+    to_pct?: number;
+    delta_pct?: number;
+    sources: Record<string, { auto_aug?: number; pct_norm?: number }>;
+    avg_auto_aug?: number;
+    max_auto_aug?: number;
+    avg_pct_norm?: number;
+    max_pct_norm?: number;
+    top_mcps: Array<{ title: string; rating?: number; url?: string }>;
+  }>;
+  from_dataset: string;
+  to_dataset: string;
+}
+```
+
 ---
 
 ## 6. Frontend Architecture
@@ -736,7 +802,7 @@ Utility classes: `.card`, `.pill`, `.btn-brand`, `.btn-ghost`, `.filter-chip`, `
 **Two-group (A/B) comparison with staged settings.**
 
 State model:
-- `pendingA/B` — form state (`GroupPending` interface: datasets, method, geo, aggLevel, topN, sortBy, physicalMode, useAutoAug, useAdjMean, searchQuery, contextSize)
+- `pendingA/B` — form state (`GroupPending` interface: datasets, method, geo, aggLevel, topN, sortBy, physicalMode, useAutoAug, searchQuery, contextSize)
 - `fullResponseA/B` — backend results (fetched with topN=1000)
 - `displayResponseA/B` — client-side filtered (applied topN or search window via `applyClientFilter()`)
 - `appliedPendingA/B` — snapshot at run time (for config summary in PNG downloads)
@@ -845,7 +911,7 @@ Levels: Major / Minor / Broad / Occupation / Task. At "Task" level, data fetched
 
 **Column selector (gear icon):** Click-outside to close. At the task level, shows group toggle buttons: All/None (show/hide all columns), Occ +/− (toggle occ/broad/minor/major columns), WA +/− (toggle dwa/iwa/gwa columns). In Simple mode, only the curated subset columns (`SIMPLE_COLS` or `SIMPLE_TASK_COLS`) are selectable. Persisted to localStorage.
 
-**Auto-compute on load:** A `useEffect` on mount runs the full compute pipeline with default settings (all datasets, freq, all phys, auto-aug on adj, Average) and populates `pctAffectedMap`. The pct columns (`pct_affected`, `workers_aff`, `wages_aff`) are always visible (showing "---" while loading). This runs in **both** simple and advanced modes. A `computeVersion` state counter allows the reset handler to force a re-run.
+**Auto-compute on load:** A `useEffect` on mount runs the full compute pipeline with default settings (all datasets, freq, all phys, auto-aug on, Average) and populates `pctAffectedMap`. The pct columns (`pct_affected`, `workers_aff`, `wages_aff`) are always visible (showing "---" while loading). This runs in **both** simple and advanced modes. A `computeVersion` state counter allows the reset handler to force a re-run.
 
 **Pagination:** `rowLimit` state (100 rows), "Load 100 more" footer. Resets on level/filter/search/sort changes.
 
@@ -915,6 +981,10 @@ WA Explorer task view uses weighted emp (freq or value based on Time/Value toggl
 
 **GWA multi-select pills** (always visible, including simple mode), same sort/filter/search/pagination/Avg/Max/Nat/Utah patterns as ExplorerView.
 
+### Component: `TaskChangesView`
+
+`TaskChangesView.tsx` — Task-level dataset comparison table. Props: `config` (`ConfigResponse`). Dataset pickers, status filter pills, major category pills, search, column selector, pagination. Row expansion shows occupation categories, work activities, source breakdown, and top MCP servers. Simple mode defaults to AEI Cumul v1 → v4.
+
 ### Utility: `lib/datasetRules.ts`
 
 Shared dataset selection enforcement. Exports:
@@ -951,7 +1021,7 @@ All caching is in-module Python dicts. **Nothing invalidates caches except serve
 | `_eco_raw_cache` | singleton | Raw eco_2025 DataFrame |
 | `_eco2015_raw_cache` | singleton | Raw eco_2015 DataFrame |
 | `_eco_baseline_cache` | `(method, physical_mode, geo)` | Deduped eco with task_comp |
-| `_dataset_cache` | `(file_path, is_aei, method, use_auto_aug, use_adj_mean, physical_mode, geo, agg_level)` | Single-dataset compute result |
+| `_dataset_cache` | `(file_path, is_aei, method, use_auto_aug, physical_mode, geo, agg_level)` | Single-dataset compute result |
 | `_explorer_occ_cache` | singleton | 923 occupation summaries |
 | `_explorer_task_cache` | `title` string | Task details per occupation |
 | `_explorer_task_lookup_cache` | singleton | task_normalized → sources lookup |
@@ -1003,30 +1073,28 @@ The explorer endpoints are **cold-start heavy** (~2–5s on first `/api/explorer
 
 17. **`pct_physical` is stored as a 0–1 fraction.** `fmtPctPhys(v)` multiplies by 100 for display.
 
-18. **`use_adj_mean` only applies to MCP datasets.** Backend applies it as `effective_adj = use_adj_mean and meta["is_mcp"]`.
+18. **Overview/WA pages use staged settings.** `pending*` is form state; `fullResponse*` is backend results (topN=1000); `displayResponse*` is client-filtered. Charts only update on "Run" click.
 
-19. **Overview/WA pages use staged settings.** `pending*` is form state; `fullResponse*` is backend results (topN=1000); `displayResponse*` is client-filtered. Charts only update on "Run" click.
+19. **Trends frozen tooltip:** `lockedPos` is screen-space; the fixed `<div>` must be clamped to `window.innerHeight/innerWidth` to stay on-screen. Always shows all lines at the locked date (sorted by value desc, scrollable). A `dotClickedRef` flag prevents the parent div click handler from clearing the lock when clicking a dot.
 
-20. **Trends frozen tooltip:** `lockedPos` is screen-space; the fixed `<div>` must be clamped to `window.innerHeight/innerWidth` to stay on-screen. Always shows all lines at the locked date (sorted by value desc, scrollable). A `dotClickedRef` flag prevents the parent div click handler from clearing the lock when clicking a dot.
+20. **DWA emp allocation in WA Explorer** deduplicates on `(title_current, task_normalized)` within each activity — not globally. Each activity level (GWA/IWA/DWA) deduplicates independently.
 
-21. **DWA emp allocation in WA Explorer** deduplicates on `(title_current, task_normalized)` within each activity — not globally. Each activity level (GWA/IWA/DWA) deduplicates independently.
+21. **All 8 sources are shown in explorer task breakdowns** (AEI v1–v4, AEI API v3–v4, MCP v4, Microsoft) — not just latest versions.
 
-22. **All 8 sources are shown in explorer task breakdowns** (AEI v1–v4, AEI API v3–v4, MCP v4, Microsoft) — not just latest versions.
+22. **Explorer `PctComputePanel`** calls `/api/compute` with `aggLevel: "occupation"`, `topN: 1000`. Physical filter affects numerator only, consistent with the rest of the app.
 
-23. **Explorer `PctComputePanel`** calls `/api/compute` with `aggLevel: "occupation"`, `topN: 1000`. Physical filter affects numerator only, consistent with the rest of the app.
+23. **Currency formatting is adaptive.** `fmtChartValue` (HorizontalBarChart) and `fmtVal` (TrendsView) display wages in billions ($B) when ≥ $1B, millions ($M) when ≥ $1M, thousands ($K) when ≥ $1K, otherwise raw dollars. TrendsView values are already divided by 1e9 before reaching `fmtVal`, so thresholds are 1 / 0.001 / 0.000001. Explorer `wages_aff` cells use the same adaptive logic.
 
-24. **Currency formatting is adaptive.** `fmtChartValue` (HorizontalBarChart) and `fmtVal` (TrendsView) display wages in billions ($B) when ≥ $1B, millions ($M) when ≥ $1M, thousands ($K) when ≥ $1K, otherwise raw dollars. TrendsView values are already divided by 1e9 before reaching `fmtVal`, so thresholds are 1 / 0.001 / 0.000001. Explorer `wages_aff` cells use the same adaptive logic.
+24. **Auto-compute explorer pct on load (both modes).** `ExplorerView` runs a `useEffect` on mount (regardless of simple/advanced mode) that calls `fetchCompute` with preset settings (all datasets, freq, all phys, auto-aug on, Average) to populate `pctAffectedMap`. The pct columns (`pct_affected`, `workers_aff`, `wages_aff`) are always visible (showing "---" while loading). A `computeVersion` state counter in the dependency array allows the reset handler to force a re-run. `WAExplorerView` similarly auto-computes on mount, fetching all three levels (gwa/iwa/dwa) into `pctAffectedMap` so results persist across level switches. The `PctComputePanel` UI is hidden in simple mode.
 
-25. **Auto-compute explorer pct on load (both modes).** `ExplorerView` runs a `useEffect` on mount (regardless of simple/advanced mode) that calls `fetchCompute` with preset settings (all datasets, freq, all phys, auto-aug on adj, Average) to populate `pctAffectedMap`. The pct columns (`pct_affected`, `workers_aff`, `wages_aff`) are always visible (showing "---" while loading). A `computeVersion` state counter in the dependency array allows the reset handler to force a re-run. `WAExplorerView` similarly auto-computes on mount, fetching all three levels (gwa/iwa/dwa) into `pctAffectedMap` so results persist across level switches. The `PctComputePanel` UI is hidden in simple mode.
+25. **`pctAffectedMap` in WAExplorerView is keyed by DWA activity name, not task text.** At the DWA level the map key is `r.name` (the DWA name). At the Task level each row's `r.name` is the task text — use `r.dwa_title ?? ""` as the lookup key to find the parent DWA's pct_affected. Using `r.name` at task level produces no matches.
 
-26. **`pctAffectedMap` in WAExplorerView is keyed by DWA activity name, not task text.** At the DWA level the map key is `r.name` (the DWA name). At the Task level each row's `r.name` is the task text — use `r.dwa_title ?? ""` as the lookup key to find the parent DWA's pct_affected. Using `r.name` at task level produces no matches.
+26. **Dataset selection enforcement is client-side only.** `enforceDatasetToggle()` in `lib/datasetRules.ts` auto-deselects conflicting datasets in the UI. The backend does not enforce these rules — any combination technically computes, but the results are only meaningful when selection constraints are respected (e.g., cumulative AEI v4 already includes v1–v3, so selecting multiple cumulative versions is redundant).
 
-27. **Dataset selection enforcement is client-side only.** `enforceDatasetToggle()` in `lib/datasetRules.ts` auto-deselects conflicting datasets in the UI. The backend does not enforce these rules — any combination technically computes, but the results are only meaningful when selection constraints are respected (e.g., cumulative AEI v4 already includes v1–v3, so selecting multiple cumulative versions is redundant).
+27. **Cumulative AEI datasets cannot be mixed with snapshot AEI datasets.** `AEI Cumul. v1–v4` and `AEI v1–v4 / AEI API v3–v4` are mutually exclusive. The cumulative versions aggregate all conversations up to their snapshot date, so their scale is not comparable to the per-snapshot versions.
 
-28. **Cumulative AEI datasets cannot be mixed with snapshot AEI datasets.** `AEI Cumul. v1–v4` and `AEI v1–v4 / AEI API v3–v4` are mutually exclusive. The cumulative versions aggregate all conversations up to their snapshot date, so their scale is not comparable to the per-snapshot versions.
+28. **WA emp allocation is method-weighted, not equal-split.** The backend returns both freq-weighted and value-weighted emp variants for WA explorer rows and WA task details. The frontend emp weighting toggle selects which variant to display. The WA charts page's Time/Value method toggle controls both task_comp AND emp weighting simultaneously.
 
-29. **WA emp allocation is method-weighted, not equal-split.** The backend returns both freq-weighted and value-weighted emp variants for WA explorer rows and WA task details. The frontend emp weighting toggle selects which variant to display. The WA charts page's Time/Value method toggle controls both task_comp AND emp weighting simultaneously.
+29. **PctComputePanel auto-recomputes on geo and empWeighting changes.** Both `PctComputePanel` (occ explorer) and `WaPctComputePanel` (WA explorer) track `geo` changes via a ref and auto-recompute when the panel has already been computed and the geo changes. `WaPctComputePanel` additionally auto-recomputes when the parent's `empWeighting` toggle changes (syncing "freq"/"value" to the panel's "freq"/"imp" method). Simple mode auto-compute handles geo via its useEffect dependency.
 
-30. **PctComputePanel auto-recomputes on geo and empWeighting changes.** Both `PctComputePanel` (occ explorer) and `WaPctComputePanel` (WA explorer) track `geo` changes via a ref and auto-recompute when the panel has already been computed and the geo changes. `WaPctComputePanel` additionally auto-recomputes when the parent's `empWeighting` toggle changes (syncing "freq"/"value" to the panel's "freq"/"imp" method). Simple mode auto-compute handles geo via its useEffect dependency.
-
-31. **All-eco-tasks uses weighted emp, not n_tasks_per_occ.** `get_all_eco_task_rows()` returns weighted emp allocation fields (`emp_nat_freq`, `emp_ut_freq`, `emp_nat_value`, `emp_ut_value`) instead of `n_tasks_per_occ`. The WA Explorer task view selects freq or value variant based on Time/Value toggle. The `get_wa_explorer_data()` `needed_cols` includes `freq_mean`, `relevance`, `importance` — all three are required for correct emp allocation and to avoid emp=0 bugs for WA activity rows.
+30. **All-eco-tasks uses weighted emp, not n_tasks_per_occ.** `get_all_eco_task_rows()` returns weighted emp allocation fields (`emp_nat_freq`, `emp_ut_freq`, `emp_nat_value`, `emp_ut_value`) instead of `n_tasks_per_occ`. The WA Explorer task view selects freq or value variant based on Time/Value toggle. The `get_wa_explorer_data()` `needed_cols` includes `freq_mean`, `relevance`, `importance` — all three are required for correct emp allocation and to avoid emp=0 bugs for WA activity rows.

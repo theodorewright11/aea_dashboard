@@ -936,7 +936,6 @@ interface PctSettings {
   geo: "nat" | "ut";
   physicalMode: "all" | "exclude" | "only";
   useAutoAug: boolean;
-  useAdjMean: boolean;
 }
 
 function PctComputePanel({
@@ -958,7 +957,6 @@ function PctComputePanel({
     geo,
     physicalMode: "all",
     useAutoAug: false,
-    useAdjMean: false,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -976,8 +974,6 @@ function PctComputePanel({
     setSettings((s) => ({ ...s, [k]: v }));
   }
 
-  const hasMCP = settings.datasets.some((d) => d.startsWith("MCP"));
-
   // Map task/occupation level → "occupation" for backend; task level treated as occupation
   const backendAggLevel = (tableLevel === "task" || tableLevel === "occupation") ? "occupation"
     : tableLevel as "major" | "minor" | "broad";
@@ -992,7 +988,6 @@ function PctComputePanel({
         combineMethod: settings.combineMethod,
         method: settings.method,
         useAutoAug: settings.useAutoAug,
-        useAdjMean: settings.useAutoAug && settings.useAdjMean,
         physicalMode: settings.physicalMode,
         geo: settings.geo,
         aggLevel: backendAggLevel,
@@ -1090,12 +1085,6 @@ function PctComputePanel({
                 <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>Auto-aug</p>
                 <BtnSeg opts={[{ v: "false", l: "Off" }, { v: "true", l: "On" }]} val={String(settings.useAutoAug)} onChange={(v) => set("useAutoAug", v === "true")} />
               </div>
-              {hasMCP && settings.useAutoAug && (
-                <div>
-                  <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>MCP adj mean</p>
-                  <BtnSeg opts={[{ v: "false", l: "Off" }, { v: "true", l: "On" }]} val={String(settings.useAdjMean)} onChange={(v) => set("useAdjMean", v === "true")} />
-                </div>
-              )}
               <button
                 onClick={compute}
                 disabled={loading || !settings.datasets.length}
@@ -1230,7 +1219,6 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
       combineMethod: "Average",
       method: "freq",
       useAutoAug: true,
-      useAdjMean: true,
       physicalMode: "all",
       geo,
       aggLevel: backendAgg,

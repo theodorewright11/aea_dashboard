@@ -20,7 +20,6 @@ interface GroupPending {
   sortBy:       string;
   physicalMode: "all" | "exclude" | "only";
   useAutoAug:   boolean;
-  useAdjMean:   boolean;
   searchQuery:  string;
   contextSize:  number;
 }
@@ -30,7 +29,7 @@ function pendingToConfigSummary(p: GroupPending, groupId: "A" | "B"): string[] {
     : p.datasets.length === 1 ? p.datasets[0]
     : `${p.datasets.join(", ")} (${p.combineMethod})`;
   const physLabel = p.physicalMode === "all" ? "All tasks" : p.physicalMode === "exclude" ? "Non-physical only" : "Physical only";
-  const augLabel  = p.useAutoAug ? `Auto-aug: On${p.useAdjMean ? " (adj)" : ""}` : "Auto-aug: Off";
+  const augLabel  = p.useAutoAug ? "Auto-aug: On" : "Auto-aug: Off";
   const line1 = `Group ${groupId}  ·  Datasets: ${dsLabel}  ·  Method: ${p.method === "freq" ? "Time" : "Value"}  ·  Geo: ${p.geo === "nat" ? "National" : "Utah"}`;
   const line2 = `Aggregation: ${p.aggLevel}  ·  Top ${p.topN}  ·  Sort: ${p.sortBy}  ·  ${physLabel}  ·  ${augLabel}${p.searchQuery ? `  ·  Search: "${p.searchQuery}"` : ""}`;
   return [line1, line2];
@@ -47,7 +46,6 @@ function pendingToSettings(p: GroupPending): GroupSettings {
     sortBy:           p.sortBy,
     physicalMode:     p.physicalMode,
     useAutoAug:       p.useAutoAug,
-    useAdjMean:       p.useAdjMean,
     searchQuery:      "",          // client-side search
     contextSize:      p.contextSize,
   };
@@ -87,7 +85,6 @@ function defaultPending(datasets: string[]): GroupPending {
     sortBy:       "Workers Affected",
     physicalMode: "all",
     useAutoAug:   false,
-    useAdjMean:   false,
     searchQuery:  "",
     contextSize:  5,
   };
@@ -103,7 +100,6 @@ function applySimpleDefaults(p: GroupPending, config: ConfigResponse): GroupPend
     method: "freq",
     physicalMode: "all",
     useAutoAug: true,
-    useAdjMean: true,
   };
 }
 
@@ -329,8 +325,6 @@ function GroupSettingsPanel({
   onToggleCollapse: () => void;
   simpleMode?: boolean;
 }) {
-  const hasMCP = pending.datasets.some((d) => d.startsWith("MCP"));
-
   function set<K extends keyof GroupPending>(k: K, v: GroupPending[K]) {
     setPending({ ...pending, [k]: v });
   }
@@ -345,7 +339,7 @@ function GroupSettingsPanel({
     pending.aggLevel,
     `Sort: ${SORT_SHORT[pending.sortBy] ?? pending.sortBy}`,
     pending.physicalMode !== "all" ? (pending.physicalMode === "exclude" ? "No Phys" : "Phys only") : null,
-    pending.useAutoAug ? `Auto-aug On${pending.useAdjMean ? " (adj)" : ""}` : null,
+    pending.useAutoAug ? "Auto-aug On" : null,
   ].filter(Boolean).join(" · ");
 
   return (
@@ -489,20 +483,6 @@ function GroupSettingsPanel({
               />
             </div>
 
-            {hasMCP && pending.useAutoAug && (
-              <div>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <ControlLabel>MCP adj mean</ControlLabel>
-                  <InfoTooltip text="Use auto_aug_mean_adj for MCP datasets, which excludes flagged/unreliable ratings. Only available for MCP datasets." />
-                </div>
-                <SegBtn
-                  options={[{ value: "false" as never, label: "Off" }, { value: "true" as never, label: "On" }]}
-                  value={String(pending.useAdjMean) as never}
-                  onChange={(v) => set("useAdjMean", v === "true")}
-                  padding="5px 7px"
-                />
-              </div>
-            )}
           </div>
 
           <button
@@ -717,8 +697,7 @@ export default function HomePage() {
   // Full other-group summary
   const physLabelOther = otherPending.physicalMode === "all" ? "All tasks"
     : otherPending.physicalMode === "exclude" ? "No Phys" : "Phys only";
-  const augLabelOther = otherPending.useAutoAug
-    ? `Auto-aug On${otherPending.useAdjMean ? " (adj)" : ""}` : "Auto-aug Off";
+  const augLabelOther = otherPending.useAutoAug ? "Auto-aug On" : "Auto-aug Off";
   const dsLabelOther = otherPending.datasets.length === 0 ? "none"
     : otherPending.datasets.length === 1 ? otherPending.datasets[0]
     : `${otherPending.datasets.length} datasets (${otherPending.combineMethod})`;

@@ -5,7 +5,6 @@ export interface GroupSettings {
   combineMethod: "Average" | "Max";
   method: "freq" | "imp";
   useAutoAug: boolean;
-  useAdjMean: boolean;
   physicalMode: "all" | "exclude" | "only";
   geo: "nat" | "ut";
   aggLevel: "major" | "minor" | "broad" | "occupation";
@@ -98,7 +97,6 @@ export interface TrendsSettings {
   series: string[];
   method: "freq" | "imp";
   useAutoAug: boolean;
-  useAdjMean: boolean;
   physicalMode: "all" | "exclude" | "only";
   geo: "nat" | "ut";
   aggLevel: "major" | "minor" | "broad" | "occupation";
@@ -110,7 +108,6 @@ export interface WATrendsSettings {
   series: string[];
   method: "freq" | "imp";
   useAutoAug: boolean;
-  useAdjMean: boolean;
   physicalMode: "all" | "exclude" | "only";
   geo: "nat" | "ut";
   topN: number;
@@ -308,4 +305,47 @@ export interface WATasksResponse {
   level: string;
   name: string;
   tasks: WATaskDetail[];
+}
+
+// ── Task Changes ─────────────────────────────────────────────────────────────
+
+export type TaskChangeStatus = "new" | "removed" | "changed" | "unchanged" | "not_in_baseline";
+
+export interface TaskChangeRow {
+  task: string;
+  task_normalized: string;
+  title_current: string;
+  broad_occ?: string | null;
+  minor_occ_category?: string | null;
+  major_occ_category?: string | null;
+  dwa_title?: string | null;
+  iwa_title?: string | null;
+  gwa_title?: string | null;
+  physical?: boolean | null;
+  freq_mean?: number | null;
+  importance?: number | null;
+  relevance?: number | null;
+  emp_nat?: number | null;
+  emp_ut?: number | null;
+  wage_nat?: number | null;
+  wage_ut?: number | null;
+  status: TaskChangeStatus;
+  from_auto_aug?: number | null;
+  to_auto_aug?: number | null;
+  delta_auto_aug?: number | null;
+  from_pct?: number | null;
+  to_pct?: number | null;
+  delta_pct?: number | null;
+  sources: Record<string, TaskSourceStats>;
+  avg_auto_aug?: number | null;
+  max_auto_aug?: number | null;
+  avg_pct_norm?: number | null;
+  max_pct_norm?: number | null;
+  top_mcps?: McpEntry[];
+}
+
+export interface TaskChangesResponse {
+  rows: TaskChangeRow[];
+  from_dataset: string;
+  to_dataset: string;
 }
