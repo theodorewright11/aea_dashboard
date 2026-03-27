@@ -1,7 +1,7 @@
 "use client";
 
 const sectionHeadStyle: React.CSSProperties = {
-  fontSize: 11,
+  fontSize: 12,
   fontWeight: 700,
   color: "var(--text-muted)",
   textTransform: "uppercase",
@@ -76,7 +76,7 @@ export default function AboutPage() {
 
         {/* Header */}
         <div style={{ marginBottom: 24 }}>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: "var(--text-primary)", margin: "0 0 6px", letterSpacing: "-0.02em" }}>
+          <h1 style={{ fontSize: 26, fontWeight: 700, color: "var(--text-primary)", margin: "0 0 6px", letterSpacing: "-0.02em" }}>
             About This Dashboard
           </h1>
           <p style={{ fontSize: 13, color: "var(--text-muted)", margin: 0 }}>

@@ -1572,7 +1572,7 @@ export default function TrendsView({ config }: Props) {
       {/* Header */}
       <div style={{ background: "var(--bg-header)", borderBottom: "1px solid var(--border)", padding: "18px 24px 16px", flexShrink: 0 }}>
         <div style={{ marginBottom: 14 }}>
-          <h1 style={{ fontSize: 19, fontWeight: 600, color: "var(--text-primary)", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.25 }}>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.25 }}>
             Trends
           </h1>
           <p style={{ fontSize: 12, color: "var(--text-muted)", margin: "3px 0 0", lineHeight: 1.5 }}>

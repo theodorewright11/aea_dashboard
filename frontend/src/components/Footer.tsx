@@ -20,8 +20,8 @@ export default function Footer() {
   return (
     <footer
       style={{
-        borderTop: "1px solid var(--border-light)",
-        padding: "14px 24px",
+        borderTop: "2px solid var(--border)",
+        padding: "18px 24px",
         display: "flex",
         flexWrap: "wrap",
         alignItems: "center",
@@ -29,7 +29,7 @@ export default function Footer() {
         gap: "8px 20px",
         fontSize: 11,
         color: "var(--text-muted)",
-        backgroundColor: "var(--bg-base)",
+        backgroundColor: "#f2f2ef",
       }}
     >
       <span>Source: 2025 O*NET &middot; 2024 BLS OEWS &middot; Anthropic Economic Index &middot; Microsoft Copilot &middot; MCP Server Classification</span>
@@ -50,12 +50,6 @@ export default function Footer() {
         >
           {GITHUB_ICON} MCP Classification GitHub
         </a>
-        <span style={{ ...LINK_STYLE, cursor: "default", opacity: 0.6 }}>
-          {GITHUB_ICON} Data Merging GitHub <span style={{ fontStyle: "italic", fontSize: 10 }}>(repo not yet available)</span>
-        </span>
-        <span style={{ ...LINK_STYLE, cursor: "default", opacity: 0.6 }}>
-          Research Paper <span style={{ fontStyle: "italic", fontSize: 10 }}>(not yet available)</span>
-        </span>
         <a href="mailto:theodorewrightwork@gmail.com" style={LINK_STYLE}>
           <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor">
             <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />

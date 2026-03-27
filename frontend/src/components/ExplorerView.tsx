@@ -1812,7 +1812,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
         padding: "0 20px", height: 52, display: "flex", alignItems: "center", gap: 14, flexShrink: 0,
       }}>
         <div>
-          <h1 style={{ fontSize: 15, fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.01em", margin: 0 }}>Occupation Explorer</h1>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.02em", margin: 0 }}>Occupation Explorer</h1>
           <p style={{ fontSize: 11, color: "var(--text-muted)", margin: 0 }}>
             {totalOccs} occupations{totalTasks != null ? ` · ${totalTasks.toLocaleString()} tasks` : ""}
           </p>

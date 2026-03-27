@@ -670,7 +670,7 @@ export default function TaskChangesView({ config }: Props) {
     <div style={{ height: "calc(100vh - var(--nav-height, 56px))", display: "flex", flexDirection: "column", background: "var(--bg-base)", overflow: "hidden" }}>
       {/* ── Header section (non-growing) ── */}
       <div style={{ padding: "20px 24px 0", maxWidth: 1800, margin: "0 auto", width: "100%", flexShrink: 0 }}>
-        <h1 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4, color: "var(--text-primary)" }}>Task Changes Explorer</h1>
+        <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 4, color: "var(--text-primary)", letterSpacing: "-0.02em" }}>Task Changes Explorer</h1>
         <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 16 }}>
           Compare two dataset versions at the task level to see which tasks were added, removed, or changed.
         </p>

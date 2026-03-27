@@ -5,15 +5,22 @@ import { usePathname } from "next/navigation";
 import { useSimpleMode } from "@/lib/SimpleModeContext";
 import { useState, useRef, useEffect } from "react";
 
-const NAV_LINKS = [
-  { href: "/explorer",               label: "Occupation Explorer" },
-  { href: "/wa-explorer",            label: "Work Activities Explorer" },
-  { href: "/occupation-categories",  label: "Occupation Categories" },
-  { href: "/work-activities",        label: "Work Activities" },
-  { href: "/trends",                 label: "Trends" },
-  { href: "/task-changes",           label: "Task Changes Explorer" },
-  { href: "/instructions",           label: "Instructions" },
-  { href: "/about",                  label: "About" },
+/* Group nav links: Explorers | Charts | Info, with dividers between groups */
+const NAV_GROUPS = [
+  [
+    { href: "/explorer",               label: "Occupation Explorer" },
+    { href: "/wa-explorer",            label: "Work Activities Explorer" },
+  ],
+  [
+    { href: "/occupation-categories",  label: "Occupation Categories" },
+    { href: "/work-activities",        label: "Work Activities" },
+    { href: "/trends",                 label: "Trends" },
+    { href: "/task-changes",           label: "Task Changes Explorer" },
+  ],
+  [
+    { href: "/instructions",           label: "Instructions" },
+    { href: "/about",                  label: "About" },
+  ],
 ];
 
 /* ── Navigation ──────────────────────────────────────────────────── */
@@ -31,7 +38,7 @@ export default function Navigation() {
           top: 0, left: 0, right: 0,
           height: "var(--nav-height)",
           zIndex: 50,
-          backgroundColor: "var(--bg-surface)",
+          background: "linear-gradient(180deg, var(--bg-surface) 0%, #f8faf9 100%)",
           borderTop: "3px solid var(--brand)",
           borderBottom: "1px solid var(--border)",
           display: "flex",
@@ -41,26 +48,30 @@ export default function Navigation() {
         }}
       >
         {/* Brand */}
-        <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", marginRight: 28, flexShrink: 0 }}>
-          <span style={{
-            fontSize: 14, fontWeight: 600,
-            color: "var(--text-primary)",
-            letterSpacing: "-0.02em", lineHeight: 1.25,
-          }}>
-            Automation Exposure
-          </span>
-          <span style={{
-            fontSize: 10, fontWeight: 500,
-            color: "var(--text-muted)",
-            letterSpacing: "0.05em",
-            textTransform: "uppercase",
-            lineHeight: 1.3,
-          }}>
-            Analysis Dashboard
-          </span>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginRight: 28, flexShrink: 0 }}>
+          {/* Accent bar */}
+          <div style={{ width: 3, height: 28, borderRadius: 2, backgroundColor: "var(--brand)", opacity: 0.7 }} />
+          <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+            <span style={{
+              fontSize: 15, fontWeight: 700,
+              color: "var(--text-primary)",
+              letterSpacing: "-0.02em", lineHeight: 1.25,
+            }}>
+              Automation Exposure
+            </span>
+            <span style={{
+              fontSize: 10, fontWeight: 500,
+              color: "var(--text-muted)",
+              letterSpacing: "0.05em",
+              textTransform: "uppercase",
+              lineHeight: 1.3,
+            }}>
+              Analysis Dashboard
+            </span>
+          </div>
         </div>
 
-        {/* Nav links — overflow-x scroll on narrow screens */}
+        {/* Nav links — grouped with dividers, overflow-x scroll on narrow screens */}
         <div style={{
           display: "flex", alignItems: "center", gap: 2,
           overflowX: "auto", flex: 1,
@@ -68,29 +79,40 @@ export default function Navigation() {
           scrollbarWidth: "none",
           msOverflowStyle: "none",
         }}>
-          {NAV_LINKS.map(({ href, label }) => {
-            const active = pathname === href || (href !== "/" && pathname.startsWith(href));
-            return (
-              <Link
-                key={href}
-                href={href}
-                style={{
-                  padding: "6px 13px",
-                  borderRadius: 6,
-                  fontSize: 13,
-                  fontWeight: active ? 600 : 400,
-                  color: active ? "var(--brand)" : "var(--text-secondary)",
-                  backgroundColor: active ? "var(--brand-light)" : "transparent",
-                  textDecoration: "none",
-                  transition: "all 0.13s",
-                  whiteSpace: "nowrap",
-                  flexShrink: 0,
-                }}
-              >
-                {label}
-              </Link>
-            );
-          })}
+          {NAV_GROUPS.map((group, gi) => (
+            <div key={gi} style={{ display: "flex", alignItems: "center", gap: 2 }}>
+              {gi > 0 && (
+                <div style={{
+                  width: 1, height: 20, backgroundColor: "var(--border)",
+                  margin: "0 8px", flexShrink: 0,
+                }} />
+              )}
+              {group.map(({ href, label }) => {
+                const active = pathname === href || (href !== "/" && pathname.startsWith(href));
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    style={{
+                      padding: "6px 13px",
+                      borderRadius: 6,
+                      fontSize: 13,
+                      fontWeight: active ? 600 : 400,
+                      color: active ? "var(--brand)" : "var(--text-secondary)",
+                      backgroundColor: active ? "var(--brand-light)" : "transparent",
+                      textDecoration: "none",
+                      transition: "all 0.13s",
+                      whiteSpace: "nowrap",
+                      flexShrink: 0,
+                      borderBottom: active ? "2px solid var(--brand)" : "2px solid transparent",
+                    }}
+                  >
+                    {label}
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
         </div>
 
         {/* Simple / Advanced toggle with tooltip */}
@@ -103,16 +125,17 @@ export default function Navigation() {
               display: "flex",
               alignItems: "center",
               gap: 7,
-              padding: "5px 12px",
-              borderRadius: 7,
-              border: "1px solid var(--border)",
-              background: isSimple ? "var(--brand-light)" : "transparent",
+              padding: "6px 14px",
+              borderRadius: 8,
+              border: isSimple ? "1px solid var(--brand-border)" : "1px solid var(--border)",
+              background: isSimple ? "var(--brand-light)" : "var(--bg-sidebar)",
               cursor: "pointer",
               transition: "all 0.15s",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
             }}
           >
             <span style={{
-              fontSize: 11,
+              fontSize: 12,
               fontWeight: 600,
               color: isSimple ? "var(--brand)" : "var(--text-secondary)",
               whiteSpace: "nowrap",

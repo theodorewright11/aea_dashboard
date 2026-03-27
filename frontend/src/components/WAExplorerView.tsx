@@ -1724,7 +1724,7 @@ export default function WAExplorerView({ rows, config }: Props) {
       }}>
         {/* Row 1: title + count */}
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <h1 style={{ fontSize: 15, fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.02em", margin: 0 }}>
             Work Activities Explorer
           </h1>
           <span style={{ fontSize: 12, color: "var(--text-muted)" }}>

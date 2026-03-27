@@ -64,7 +64,7 @@ body {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.04);
 }
 
 /* ── Pill / badge ── */
@@ -185,6 +185,15 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: 8px;
+}
+
+/* ── Gradient divider ── */
+.gradient-divider {
+  height: 1px;
+  border: none;
+  background: linear-gradient(to right, var(--brand), transparent);
+  margin: 24px 0;
+  opacity: 0.35;
 }
 
 /* ── Input base ── */
