@@ -31,16 +31,16 @@ if str(BACKEND_DIR) not in sys.path:
 
 # Standard occupation-level analysis: cumulative AEI + latest MCP + Microsoft
 ALL_DATASETS: list[str] = [
-    "AEI Cumul. v4",
-    "MCP v4",
+    "AEI Cumul. (Both) v4",
+    "MCP Cumul. v4",
     "Microsoft",
 ]
 
 # AEI family only (for WA analysis — uses O*NET 2015 baseline)
-AEI_DATASETS: list[str] = ["AEI Cumul. v4"]
+AEI_DATASETS: list[str] = ["AEI Cumul. (Both) v4"]
 
 # MCP + Microsoft (for WA analysis — uses O*NET 2025 baseline)
-MCP_MS_DATASETS: list[str] = ["MCP v4", "Microsoft"]
+MCP_MS_DATASETS: list[str] = ["MCP Cumul. v4", "Microsoft"]
 
 # WA analysis presets (same as above, explicit aliases for clarity)
 WA_AEI_DATASETS: list[str] = AEI_DATASETS

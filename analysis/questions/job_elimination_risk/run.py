@@ -2,8 +2,10 @@
 run.py -- Job Elimination Risk: Which occupations are most at risk?
 
 Identifies occupations where AI can do most of the work AND is already being
-used for it.  Uses AEI Cumul. v4 + Microsoft (actual usage data) as the
-primary "usage-confirmed" signal, with MCP v4 as a capability-only comparison.
+used for it.  Uses AEI Cumul. (Both) v4 + Microsoft (actual usage data) as the
+primary "usage-confirmed" signal.  The "ceiling on capability" comparison uses
+all three sources (AEI Cumul. (Both) v4 + MCP Cumul. v4 + Microsoft) combined
+with Max — representing the upper bound of AI exposure from any source.
 
 Primary method: Value (importance-weighted) with auto-aug ON.
 Sensitivity check: Time (frequency) method.
@@ -64,8 +66,8 @@ TIER_COLORS = {
 
 # -- Dataset configs -----------------------------------------------------------
 
-USAGE_DATASETS = ["AEI Cumul. v4", "Microsoft"]
-CAPABILITY_DATASETS = ["MCP v4"]
+USAGE_DATASETS = ["AEI Cumul. (Both) v4", "Microsoft"]
+CAPABILITY_DATASETS = ["AEI Cumul. (Both) v4", "MCP Cumul. v4", "Microsoft"]
 
 TOP_N_CSV = 50       # rows in CSVs
 TOP_N_CHART = 30     # bars in charts
@@ -108,12 +110,13 @@ def _run_occ_level(
     datasets: list[str],
     method: str,
     use_auto_aug: bool,
+    combine_method: str = "Average",
 ) -> pd.DataFrame | None:
     """Run the compute pipeline at occupation level, return all occupations."""
     cfg = make_config(
         DEFAULT_OCC_CONFIG,
         selected_datasets=datasets,
-        combine_method="Average",
+        combine_method=combine_method,
         method=method,
         use_auto_aug=use_auto_aug,
         physical_mode="all",
@@ -239,7 +242,7 @@ def main() -> None:
     # ══════════════════════════════════════════════════════════════════════
     # 1. PRIMARY ANALYSIS: Usage-confirmed, Value method, auto-aug ON
     # ══════════════════════════════════════════════════════════════════════
-    print("== Primary: Usage-confirmed (AEI Cumul. v4 + Microsoft), Value, Auto-aug ON ==")
+    print("== Primary: Usage-confirmed (AEI Cumul. (Both) v4 + Microsoft), Value, Auto-aug ON ==")
 
     usage_df = _run_occ_level(USAGE_DATASETS, method="imp", use_auto_aug=True)
     if usage_df is None:
@@ -291,7 +294,7 @@ def main() -> None:
     fig = _make_scatter(
         tiered,
         "Job Elimination Risk: AI Task Exposure vs Employment",
-        "Usage-confirmed (AEI Cumul. v4 + Microsoft) | Value method | Auto-aug ON | National",
+        "Usage-confirmed (AEI Cumul. (Both) v4 + Microsoft) | Value method | Auto-aug ON | National",
     )
     save_figure(fig, fig_dir / "scatter_risk_vs_employment.png")
     print("  Saved scatter_risk_vs_employment.png")
@@ -495,11 +498,11 @@ def main() -> None:
     # ══════════════════════════════════════════════════════════════════════
     # 2. CAPABILITY COMPARISON: MCP v4 alone
     # ══════════════════════════════════════════════════════════════════════
-    print("\n== Capability comparison: MCP v4, Value, Auto-aug ON ==")
+    print("\n== Ceiling on capability: All sources (AEI Both v4 + MCP v4 + Microsoft), Max, Value, Auto-aug ON ==")
 
-    cap_df = _run_occ_level(CAPABILITY_DATASETS, method="imp", use_auto_aug=True)
+    cap_df = _run_occ_level(CAPABILITY_DATASETS, method="imp", use_auto_aug=True, combine_method="Max")
     if cap_df is None:
-        print("  ERROR: No data for MCP v4")
+        print("  ERROR: No data for ceiling config")
     else:
         cap_tiered = _build_tiered_df(cap_df, emp_df)
 
@@ -548,7 +551,7 @@ def main() -> None:
                 "usage_tier", "emp_nat", "major",
             ]].rename(columns={
                 "category": "occupation",
-                "capability_pct": "mcp_pct_tasks",
+                "capability_pct": "ceiling_pct_tasks",
                 "usage_pct": "usage_pct_tasks",
                 "pct_gap": "capability_usage_gap",
                 "emp_nat": "total_employment",
@@ -587,9 +590,9 @@ def main() -> None:
         style_figure(
             fig,
             "AI Capability Broadly Exceeds Current Usage",
-            subtitle="Each dot = one occupation | Above diagonal = capability exceeds usage",
-            x_title="Usage-Confirmed % Tasks (AEI + Microsoft)",
-            y_title="Capability % Tasks (MCP v4)",
+            subtitle="Each dot = one occupation | Above diagonal = ceiling exceeds usage",
+            x_title="Usage-Confirmed % Tasks (AEI Both v4 + Microsoft, Avg)",
+            y_title="Ceiling % Tasks (All Sources, Max)",
             height=700, width=800,
             show_legend=False,
         )

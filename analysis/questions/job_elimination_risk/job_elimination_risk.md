@@ -4,7 +4,7 @@ The previous analysis ("AI Transformative Potential") identified where AI *could
 
 Job elimination risk requires a specific combination: the AI has to be able to do *most* of the job (high task coverage), it has to do it *well* (high auto-aug scores), and there has to be evidence that people are *already using* AI for it (not just that it's theoretically capable). A job with 30% task exposure gets restructured — the remaining 70% still needs a human. A job with 65%+ task exposure is where you start asking whether the job needs to exist in its current form.
 
-We use **AEI Cumul. v4 + Microsoft** as the data sources because these capture actual AI usage: real Claude conversations and real Copilot sessions. MCP data (what AI tools *can* do) is used as a comparison to identify emerging risk — jobs where the capability exists but adoption hasn't caught up yet.
+We use **AEI Cumul. (Both) v4 + Microsoft** as the data sources because these capture actual AI usage: real Claude conversations (including API tool-use) and real Copilot sessions. The **ceiling on capability** comparison uses all three sources — AEI Cumul. (Both) v4, MCP Cumul. v4, and Microsoft — combined with the **Max** method, representing the upper bound of AI exposure from any single source. This ceiling identifies emerging risk: jobs where the technology exists to automate most of the work, regardless of which source detects it.
 
 The **Value method** (importance-weighted) is the primary method because it captures whether the *valuable* parts of the job are AI-exposed, not just the frequent tasks. A sensitivity check with the Time (frequency) method confirms stability.
 
@@ -125,45 +125,49 @@ The employment view tells a different story than the occupation count. **Office 
 
 ---
 
-## 5. Usage-Confirmed vs Capability Risk: The Emerging Threat
+## 5. Usage-Confirmed vs Ceiling on Capability: The Emerging Threat
 
-The analysis above uses usage-confirmed data (AEI + Microsoft) — what AI is *actually being used for*. But what if we also look at what AI *can* do? MCP v4 measures tool capability regardless of current adoption.
+The analysis above uses usage-confirmed data (AEI Both v4 + Microsoft, averaged) — what AI is *actually being used for*. But what if we look at the **ceiling** — the maximum exposure from any single source across all three datasets (AEI Both v4, MCP Cumul. v4, Microsoft)? The ceiling uses the **Max** combine method: for each task, take whichever source gives the highest score. This represents the upper bound of what AI can demonstrably do, regardless of whether it's conversation-based, tool-based, or copilot-based capability.
 
 The difference is dramatic:
 
-| Metric | Usage-Confirmed | Capability (MCP v4) |
+| Metric | Usage-Confirmed (Avg) | Ceiling (All Sources, Max) |
 |--------|----------------|-------------------|
-| High-risk occupations | 9 | 59 |
-| Moderate-risk occupations | 146 | 233 |
-| Restructuring | 311 | 286 |
-| Low exposure | 457 | 345 |
+| High-risk occupations | 9 | 124 |
+| Moderate-risk occupations | 146 | 198 |
+| Restructuring | 311 | 350 |
+| Low exposure | 457 | 251 |
 
-MCP v4 puts **59 occupations** at >=60% task exposure, compared to just 9 with usage data. That gap of **54 "emerging risk" occupations** represents the next wave — jobs where the technology exists to automate most of the work, but widespread adoption hasn't happened yet.
+The ceiling puts **124 occupations** at >=60% task exposure, compared to just 9 with usage-averaged data. That gap of **115 "emerging risk" occupations** represents the next wave — jobs where at least one AI source demonstrates it can handle the majority of the work, but the average across sources is still below the threshold.
 
-![Usage-Confirmed vs Capability-Only Exposure](figures/usage_vs_capability_scatter.png)
+![Usage-Confirmed vs Ceiling Exposure](figures/usage_vs_capability_scatter.png)
 
-The scatter plot above maps each occupation's usage-confirmed exposure (X-axis) against capability exposure (Y-axis). Points above the diagonal line have higher capability than current usage — meaning AI could do more than it's currently being used for. Almost every occupation falls above the line, confirming that capability broadly exceeds adoption.
+The scatter plot above maps each occupation's usage-confirmed exposure (X-axis) against ceiling exposure (Y-axis). Points above the diagonal line have higher ceiling than current usage average — meaning the peak AI capability exceeds the consensus. Almost every occupation falls above the line, confirming that the ceiling broadly exceeds the average.
 
 ### The largest emerging-risk occupations
 
-These are high-risk under MCP capability but NOT yet high-risk under usage-confirmed data — the occupations where AI *can* do 60%+ of the work but isn't being widely used for it yet:
+These are high-risk under the ceiling but NOT yet high-risk under usage-confirmed data — the occupations where at least one AI source shows 60%+ task exposure but the average doesn't:
 
-| Occupation | MCP % Tasks | Usage % Tasks | Gap | Employment |
+| Occupation | Ceiling % Tasks | Usage % Tasks | Gap | Employment |
 |-----------|-------------|--------------|-----|------------|
 | Cashiers | 63.8% | 36.6% | 27.3pp | 3,148,030 |
 | Customer Service Reps | 65.7% | 54.6% | 11.1pp | 2,725,930 |
 | Office Clerks, General | 72.5% | 53.4% | 19.1pp | 2,510,550 |
 | Secretaries/Admin Assistants | 78.3% | 50.5% | 27.9pp | 1,737,820 |
 | Bookkeeping/Auditing Clerks | 67.9% | 43.4% | 24.4pp | 1,455,770 |
+| Sales Reps, Wholesale/Mfg | 72.2% | 59.2% | 13.0pp | 1,266,860 |
 | Sales Reps of Services | 70.8% | 19.4% | 51.4pp | 1,189,330 |
+| First-Line Supervisors of Retail Sales | 60.4% | 42.4% | 18.0pp | 1,113,160 |
 | Receptionists and Information Clerks | 69.1% | 47.6% | 21.5pp | 964,530 |
-| Human Resources Specialists | 60.5% | 45.4% | 15.2pp | 917,460 |
+| Human Resources Specialists | 68.9% | 45.4% | 23.6pp | 917,460 |
 | Medical Secretaries/Admin Assistants | 70.7% | 43.0% | 27.8pp | 830,760 |
+| Software QA Analysts and Testers | 72.9% | 33.6% | 39.3pp | 725,946 |
 | Software Developers | 60.9% | 35.0% | 25.9pp | 725,946 |
+| Computer User Support Specialists | 71.7% | 58.5% | 13.2pp | 697,210 |
 
-These are some of the largest occupations in the U.S. economy. **Cashiers** (3.1M workers) have 64% MCP capability but only 37% usage. **Secretaries** (1.7M) have 78% capability — the highest of any large occupation — but only 51% usage. **Sales Reps of Services** (1.2M) has the largest absolute gap: 71% capability vs only 19% usage, a 51 percentage-point gulf.
+These are some of the largest occupations in the U.S. economy. **Cashiers** (3.1M workers) have a 64% ceiling but only 37% usage average. **Secretaries** (1.7M) have a 78% ceiling — the highest of any large occupation — but only 51% usage. **Sales Reps of Services** (1.2M) has the largest absolute gap: 71% ceiling vs only 19% usage, a 51 percentage-point gulf. **Software QA Analysts** (726K) show a striking 39pp gap, suggesting tool-based capability far outpaces average adoption.
 
-The policy implication: if AI adoption catches up to capability in these occupations, the number of high-risk workers jumps from 1.5 million to tens of millions. The technology already exists; the question is how fast deployment follows.
+The policy implication: the ceiling represents what's technically possible today. With 124 occupations above 60% task exposure at the ceiling — vs just 9 at the usage average — the scope of potential disruption is an order of magnitude larger than what current adoption patterns show. The technology already exists; the question is how fast deployment follows.
 
 ---
 
@@ -202,7 +206,7 @@ The two that drop out under Time are **Instructional Coordinators** (61.2% Value
 
 2. **The real scale is in the moderate tier: 146 occupations, 35.9M workers at 40–60% exposure.** These include Customer Service Reps (2.7M), Office Clerks (2.5M), Secretaries (1.7M), and Bookkeeping Clerks (1.5M). This is where restructuring, not elimination, is the likely outcome.
 
-3. **Capability data shows 59 occupations at high risk vs only 9 with usage confirmation.** The 54 "emerging risk" occupations — including Cashiers (3.1M), Customer Service Reps (2.7M), Office Clerks (2.5M), and Secretaries (1.7M) — are where AI adoption hasn't caught up to capability. These are the next wave.
+3. **The ceiling on capability shows 124 occupations at high risk vs only 9 with usage-confirmed averages.** The 115 "emerging risk" occupations — including Cashiers (3.1M), Customer Service Reps (2.7M), Office Clerks (2.5M), Secretaries (1.7M), and Sales Reps (1.3M) — are where peak AI capability from at least one source exceeds 60% but the average doesn't. These are the next wave.
 
 4. **Computer/Math, Business/Financial, and Arts/Entertainment have the highest concentration of at-risk occupations.** Farming, Construction, and Building Maintenance are almost entirely unexposed.
 
@@ -214,9 +218,9 @@ The two that drop out under Time are **Instructional Coordinators** (61.2% Value
 
 ## Config
 
-- **Primary**: AEI Cumul. v4 + Microsoft | Average | Value | Auto-aug ON | National | Occupation level
+- **Primary**: AEI Cumul. (Both) v4 + Microsoft | Average | Value | Auto-aug ON | National | Occupation level
 - **Sensitivity**: Time (freq) method comparison
-- **Capability comparison**: MCP v4 alone (same settings)
+- **Ceiling on capability**: AEI Cumul. (Both) v4 + MCP Cumul. v4 + Microsoft | Max | Value | Auto-aug ON | National | Occupation level
 
 ## Files
 
@@ -227,12 +231,12 @@ The two that drop out under Time are **Instructional Coordinators** (61.2% Value
 | `results/high_risk_by_employment.csv` | 9 high-risk occupations ranked by employment |
 | `results/major_category_tier_rollup.csv` | Risk tier distribution by major SOC category |
 
-### Capability Comparison
+### Ceiling on Capability
 | File | Description |
 |------|-------------|
-| `results/usage_vs_capability_comparison.csv` | All occupations: usage vs MCP capability tiers |
-| `results/tier_shift_matrix.csv` | Cross-tabulation of usage vs capability tiers |
-| `results/emerging_risk_capability_only.csv` | 54 occupations high-risk in capability but not usage |
+| `results/usage_vs_capability_comparison.csv` | All occupations: usage avg vs ceiling (all sources, Max) tiers |
+| `results/tier_shift_matrix.csv` | Cross-tabulation of usage vs ceiling tiers |
+| `results/emerging_risk_capability_only.csv` | 115 occupations high-risk at ceiling but not usage-confirmed |
 
 ### Method Sensitivity
 | File | Description |

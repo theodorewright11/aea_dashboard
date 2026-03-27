@@ -1,15 +1,18 @@
 """
 run.py — Where is AI most transformative? Potential vs. current adoption.
 
-Compares AEI Cumul. v4 (where AI IS being used) against MCP v4 (where AI
-CAN be used) to find occupations/sectors with the largest unrealized
-AI potential.
+Compares a "ceiling on capability" (AEI Cumul. (Both) v4 + MCP Cumul. v4 +
+Microsoft, combined with Max) against "current usage" (AEI Cumul. (Both) v4
+alone) to find occupations/sectors with the largest unrealized AI potential.
+
+Also runs a sensitivity test on the current-usage side: does adding Microsoft
+(on Average or Max) significantly change the numbers?
 
 Produces three ranked views at each of 3 aggregation levels (major, minor,
 occupation) under 4 config variants (Time/Value x auto-aug ON/OFF):
-  1. MCP v4 alone  -> capability ceiling
-  2. AEI Cumul. v4 alone -> current adoption
-  3. Gap (MCP - AEI) -> unrealized potential
+  1. Ceiling (all sources, Max) -> capability ceiling
+  2. AEI Cumul. (Both) v4 alone -> current adoption
+  3. Gap (Ceiling - Current) -> unrealized potential
 
 Usage from project root:
     venv/Scripts/python -m analysis.questions.ai_transformative_potential.run
@@ -71,18 +74,25 @@ CONFIG_VARIANTS = [
     {"label": "Value, Auto-aug OFF", "method": "imp",  "use_auto_aug": False},
 ]
 
-# The two datasets we're comparing
-MCP_DATASETS = ["MCP v4"]
-AEI_DATASETS = ["AEI Cumul. v4"]
+# The two sides we're comparing
+CEILING_DATASETS = ["AEI Cumul. (Both) v4", "MCP Cumul. v4", "Microsoft"]
+CEILING_COMBINE = "Max"
+CURRENT_DATASETS = ["AEI Cumul. (Both) v4"]
+
+# Microsoft sensitivity test for current usage
+CURRENT_PLUS_MS_DATASETS = ["AEI Cumul. (Both) v4", "Microsoft"]
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
-def _base_config(agg_level: str, method: str, use_auto_aug: bool) -> dict[str, Any]:
+def _base_config(
+    agg_level: str, method: str, use_auto_aug: bool,
+    combine_method: str = "Average",
+) -> dict[str, Any]:
     """Build a base config with no datasets yet (caller sets selected_datasets)."""
     return make_config(
         DEFAULT_OCC_CONFIG,
-        combine_method="Average",
+        combine_method=combine_method,
         method=method,
         use_auto_aug=use_auto_aug,
         physical_mode="all",
@@ -96,9 +106,10 @@ def _base_config(agg_level: str, method: str, use_auto_aug: bool) -> dict[str, A
 
 def _run_single(
     datasets: list[str], agg_level: str, method: str, use_auto_aug: bool,
+    combine_method: str = "Average",
 ) -> pd.DataFrame | None:
     """Run the pipeline for one dataset selection + config, return full df."""
-    cfg = _base_config(agg_level, method, use_auto_aug)
+    cfg = _base_config(agg_level, method, use_auto_aug, combine_method=combine_method)
     cfg["selected_datasets"] = datasets
     result = run_occ_query(cfg)
     if result is None:
@@ -107,10 +118,10 @@ def _run_single(
     return df
 
 
-def _compute_gap(mcp_df: pd.DataFrame, aei_df: pd.DataFrame) -> pd.DataFrame:
-    """Compute gap = MCP - AEI for each category, preserving both sides."""
-    merged = mcp_df.merge(
-        aei_df,
+def _compute_gap(ceiling_df: pd.DataFrame, current_df: pd.DataFrame) -> pd.DataFrame:
+    """Compute gap = ceiling - current for each category, preserving both sides."""
+    merged = ceiling_df.merge(
+        current_df,
         on="category",
         how="outer",
         suffixes=("_mcp", "_aei"),
@@ -143,7 +154,7 @@ def _make_gap_bar_chart(
     variant_label: str,
     top_n: int = TOP_N,
 ) -> go.Figure:
-    """Grouped horizontal bar chart: MCP vs AEI side by side."""
+    """Grouped horizontal bar chart: ceiling vs current side by side."""
     col_mcp = f"{metric}_mcp"
     col_aei = f"{metric}_aei"
     col_gap = f"{metric}_gap"
@@ -156,12 +167,12 @@ def _make_gap_bar_chart(
 
     fig = go.Figure()
 
-    # AEI bars (current)
+    # Current bars
     fig.add_trace(go.Bar(
         y=plot_df["category"],
         x=plot_df[col_aei],
         orientation="h",
-        name="AEI Cumul. v4 (Current)",
+        name="Current Usage (AEI Cumul. Both v4)",
         marker=dict(color=COLORS["aei"], line=dict(width=0)),
         text=aei_labels,
         textposition="outside",
@@ -170,12 +181,12 @@ def _make_gap_bar_chart(
         opacity=0.85,
     ))
 
-    # MCP bars (capability)
+    # Ceiling bars
     fig.add_trace(go.Bar(
         y=plot_df["category"],
         x=plot_df[col_mcp],
         orientation="h",
-        name="MCP v4 (Capability)",
+        name="Capability Ceiling (All Sources, Max)",
         marker=dict(color=COLORS["mcp"], line=dict(width=0)),
         text=mcp_labels,
         textposition="outside",
@@ -239,7 +250,7 @@ def main() -> None:
     print("AI Transformative Potential - generating outputs...\n")
 
     # Storage for all results (for cross-variant analysis)
-    # Structure: all_results[variant_label][agg_level] = {"mcp": df, "aei": df, "gap": df}
+    # Structure: all_results[variant_label][agg_level] = {"ceiling": df, "current": df, "gap": df}
     all_results: dict[str, dict[str, dict[str, pd.DataFrame]]] = {}
 
     for variant in CONFIG_VARIANTS:
@@ -255,22 +266,27 @@ def main() -> None:
         for agg in AGG_LEVELS:
             print(f"  {AGG_LABELS[agg]}...")
 
-            mcp_df = _run_single(MCP_DATASETS, agg, method, use_auto_aug)
-            aei_df = _run_single(AEI_DATASETS, agg, method, use_auto_aug)
+            ceiling_df = _run_single(
+                CEILING_DATASETS, agg, method, use_auto_aug,
+                combine_method=CEILING_COMBINE,
+            )
+            current_df = _run_single(CURRENT_DATASETS, agg, method, use_auto_aug)
 
-            if mcp_df is None or aei_df is None:
+            if ceiling_df is None or current_df is None:
                 print(f"    SKIP — no data for {agg}")
                 continue
 
-            gap_df = _compute_gap(mcp_df, aei_df)
-            all_results[vlabel][agg] = {"mcp": mcp_df, "aei": aei_df, "gap": gap_df}
+            gap_df = _compute_gap(ceiling_df, current_df)
+            all_results[vlabel][agg] = {
+                "ceiling": ceiling_df, "current": current_df, "gap": gap_df,
+            }
 
             # ── CSVs ──────────────────────────────────────────────────────
-            mcp_sorted = mcp_df.sort_values("workers_affected", ascending=False).head(TOP_N_FULL)
-            save_csv(mcp_sorted, results / f"mcp_v4_{agg}_{vslug}.csv")
+            ceil_sorted = ceiling_df.sort_values("workers_affected", ascending=False).head(TOP_N_FULL)
+            save_csv(ceil_sorted, results / f"ceiling_{agg}_{vslug}.csv")
 
-            aei_sorted = aei_df.sort_values("workers_affected", ascending=False).head(TOP_N_FULL)
-            save_csv(aei_sorted, results / f"aei_cumul_v4_{agg}_{vslug}.csv")
+            cur_sorted = current_df.sort_values("workers_affected", ascending=False).head(TOP_N_FULL)
+            save_csv(cur_sorted, results / f"current_{agg}_{vslug}.csv")
 
             gap_sorted = gap_df.sort_values("workers_affected_gap", ascending=False).head(TOP_N_FULL)
             save_csv(gap_sorted, results / f"gap_{agg}_{vslug}.csv")
@@ -285,25 +301,85 @@ def main() -> None:
                     fig = _make_gap_bar_chart(gap_df, metric, agg, vlabel)
                     save_figure(fig, fig_dir / f"gap_{metric}_{agg}.png")
 
-                    # MCP alone
+                    # Ceiling alone
                     fig = _make_single_ranking_chart(
-                        mcp_df, metric, agg, "MCP v4 (AI Capability Ceiling)",
+                        ceiling_df, metric, agg,
+                        "Capability Ceiling (All Sources, Max)",
                         vlabel, COLORS["mcp"],
                     )
-                    save_figure(fig, fig_dir / f"mcp_{metric}_{agg}.png")
+                    save_figure(fig, fig_dir / f"ceiling_{metric}_{agg}.png")
 
-                    # AEI alone
+                    # Current alone
                     fig = _make_single_ranking_chart(
-                        aei_df, metric, agg, "AEI Cumul. v4 (Current AI Usage)",
+                        current_df, metric, agg,
+                        "Current Usage (AEI Cumul. Both v4)",
                         vlabel, COLORS["aei"],
                     )
-                    save_figure(fig, fig_dir / f"aei_{metric}_{agg}.png")
+                    save_figure(fig, fig_dir / f"current_{metric}_{agg}.png")
             else:
                 # Gap chart only for secondary configs (workers metric)
                 fig = _make_gap_bar_chart(
                     gap_df, "workers_affected", agg, vlabel,
                 )
                 save_figure(fig, fig_dir / f"gap_workers_{agg}_{vslug}.png")
+
+    # -- Microsoft sensitivity test on current usage ----------------------------
+    print("\n== Microsoft sensitivity test (current usage) ==")
+    ms_sensitivity_rows: list[dict[str, Any]] = []
+
+    for combine in ["Average", "Max"]:
+        for agg in AGG_LEVELS:
+            base_df = _run_single(CURRENT_DATASETS, agg, "freq", True)
+            plus_ms_df = _run_single(
+                CURRENT_PLUS_MS_DATASETS, agg, "freq", True,
+                combine_method=combine,
+            )
+            if base_df is None or plus_ms_df is None:
+                continue
+
+            merged = base_df.merge(
+                plus_ms_df, on="category", how="outer", suffixes=("_base", "_ms"),
+            )
+            for _, row in merged.iterrows():
+                for m in METRICS:
+                    base_val = row.get(f"{m}_base", 0) or 0
+                    ms_val = row.get(f"{m}_ms", 0) or 0
+                    diff = ms_val - base_val
+                    pct_change = (diff / base_val * 100) if base_val != 0 else float("nan")
+                    ms_sensitivity_rows.append({
+                        "combine_method": combine,
+                        "agg_level": agg,
+                        "category": row["category"],
+                        "metric": METRIC_LABELS[m],
+                        "aei_only": base_val,
+                        "aei_plus_microsoft": ms_val,
+                        "difference": diff,
+                        "pct_change": pct_change,
+                    })
+
+            # Save per-level CSV
+            cslug = combine.lower()
+            save_csv(
+                merged.sort_values("workers_affected_base", ascending=False).head(TOP_N_FULL),
+                results / f"ms_sensitivity_{cslug}_{agg}.csv",
+            )
+
+    if ms_sensitivity_rows:
+        ms_df = pd.DataFrame(ms_sensitivity_rows)
+        save_csv(ms_df, results / "ms_sensitivity_full.csv", float_format="%.4f")
+        print("  Saved ms_sensitivity_full.csv")
+
+        # Print summary for the report
+        for combine in ["Average", "Max"]:
+            sub = ms_df[
+                (ms_df["combine_method"] == combine)
+                & (ms_df["agg_level"] == "major")
+                & (ms_df["metric"] == "Workers Affected")
+            ].copy()
+            if not sub.empty:
+                mean_pct = sub["pct_change"].abs().mean()
+                max_pct = sub["pct_change"].abs().max()
+                print(f"  {combine}: mean abs % change = {mean_pct:.1f}%, max = {max_pct:.1f}%")
 
     # -- Cross-variant stability analysis ------------------------------------
     print("\n== Stability & toggle comparison analysis ==")
@@ -436,7 +512,7 @@ def main() -> None:
         style_figure(
             fig,
             "Unrealized AI Potential by Major Category",
-            subtitle="Gap = MCP v4 minus AEI Cumul. v4 | Time, Auto-aug ON, National",
+            subtitle="Gap = Ceiling (All Sources, Max) minus Current (AEI Cumul. Both v4) | Time, Auto-aug ON, National",
             x_title="% Tasks Affected Gap (pp)",
             height=max(500, TOP_N * 30 + 150),
             show_legend=True,
@@ -452,8 +528,8 @@ def main() -> None:
     key_figures = [
         "gap_workers_affected_major.png",
         "gap_workers_affected_occupation.png",
-        "mcp_workers_affected_major.png",
-        "aei_workers_affected_major.png",
+        "ceiling_workers_affected_major.png",
+        "current_workers_affected_major.png",
         "summary_gap_major.png",
         "gap_workers_major_time_autoaug_off.png",
     ]
