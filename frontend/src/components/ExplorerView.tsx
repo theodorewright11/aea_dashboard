@@ -16,7 +16,7 @@ import type {
 } from "@/lib/types";
 import { fetchOccupationTasks, fetchCompute, fetchAllEcoTasks } from "@/lib/api";
 import { useSimpleMode } from "@/lib/SimpleModeContext";
-import { enforceDatasetToggle } from "@/lib/datasetRules";
+import { enforceDatasetToggle, classificationFromConfig } from "@/lib/datasetRules";
 
 // ── Debounce hook ──────────────────────────────────────────────────────────────
 
@@ -60,7 +60,7 @@ function fmtPctNorm(v?: number | null): string {
 
 function fmtAutoAug(v?: number | null): string {
   if (v == null) return "—";
-  return v.toFixed(3);
+  return v.toFixed(1);
 }
 
 function fmtPctPhys(v?: number | null): string {
@@ -280,6 +280,7 @@ function renderCell(
   col: string,
   row: FlatRow,
   pctMap: Map<string, number> | null,
+  tableLevel?: TableLevel,
 ): React.ReactNode {
   const muted = { color: "var(--text-muted)" } as React.CSSProperties;
   // For task-level rows, pct lookup uses occupation name
@@ -316,6 +317,7 @@ function renderCell(
     case "imp_col":      return row.importance != null ? row.importance.toFixed(1) : <span style={muted}>—</span>;
     case "rel_col":      return row.relevance != null ? row.relevance.toFixed(0) : <span style={muted}>—</span>;
     case "pct_affected": {
+      if (tableLevel === "task") return <span style={muted}>—</span>;
       const v = pctMap?.get(pctKey) ?? null;
       return v != null
         ? <span style={{ color: "var(--brand)", fontWeight: 500 }}>{v.toFixed(2)}%</span>
@@ -746,7 +748,7 @@ function TaskSubRow({
               <div style={{ width: 48, height: 5, background: "var(--border)", borderRadius: 3, overflow: "hidden", flexShrink: 0 }}>
                 <div style={{ width: `${barPct}%`, height: "100%", background: "var(--brand)", borderRadius: 3 }} />
               </div>
-              <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>{avgAuto?.toFixed(2)}</span>
+              <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>{avgAuto?.toFixed(1)}</span>
             </div>
           ) : <span style={{ fontSize: 11, color: "var(--text-muted)" }}>—</span>}
         </td>
@@ -809,11 +811,11 @@ function TaskSubRow({
                     </tr>
                     <tr>
                       <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Freq</td>
-                      <td style={{ padding: "2px 0" }}>{task.freq_mean?.toFixed(2) ?? "—"}</td>
+                      <td style={{ padding: "2px 0" }}>{task.freq_mean?.toFixed(1) ?? "—"}</td>
                     </tr>
                     <tr>
                       <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Imp</td>
-                      <td style={{ padding: "2px 0" }}>{task.importance?.toFixed(2) ?? "—"}</td>
+                      <td style={{ padding: "2px 0" }}>{task.importance?.toFixed(1) ?? "—"}</td>
                     </tr>
                     <tr>
                       <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Rel</td>
@@ -840,7 +842,7 @@ function TaskSubRow({
                             <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--bg-sidebar)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>{src}</span>
                           </td>
                           <td style={{ padding: "2px 8px", textAlign: "right" }}>
-                            {stats.auto_aug != null ? stats.auto_aug.toFixed(3) : <span style={{ color: "var(--text-muted)" }}>—</span>}
+                            {stats.auto_aug != null ? stats.auto_aug.toFixed(1) : <span style={{ color: "var(--text-muted)" }}>—</span>}
                           </td>
                           <td style={{ padding: "2px 8px", textAlign: "right" }}>
                             {stats.pct_norm != null ? fmtPctNorm(stats.pct_norm) : <span style={{ color: "var(--text-muted)" }}>—</span>}
@@ -852,7 +854,7 @@ function TaskSubRow({
                           <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--brand-light)", border: "1px solid var(--brand)", color: "var(--brand)", fontWeight: 700 }}>AVG</span>
                         </td>
                         <td style={{ padding: "4px 8px 2px", textAlign: "right", fontWeight: 700 }}>
-                          {avgAuto != null ? avgAuto.toFixed(3) : <span style={{ color: "var(--text-muted)" }}>—</span>}
+                          {avgAuto != null ? avgAuto.toFixed(1) : <span style={{ color: "var(--text-muted)" }}>—</span>}
                         </td>
                         <td style={{ padding: "4px 8px 2px", textAlign: "right", fontWeight: 700 }}>
                           {avgPct != null ? fmtPctNorm(avgPct) : <span style={{ color: "var(--text-muted)" }}>—</span>}
@@ -863,7 +865,7 @@ function TaskSubRow({
                           <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "#fffbeb", border: "1px solid #d97706", color: "#d97706", fontWeight: 700 }}>MAX</span>
                         </td>
                         <td style={{ padding: "2px 8px 4px", textAlign: "right", fontWeight: 700 }}>
-                          {maxAuto != null ? maxAuto.toFixed(3) : <span style={{ color: "var(--text-muted)" }}>—</span>}
+                          {maxAuto != null ? maxAuto.toFixed(1) : <span style={{ color: "var(--text-muted)" }}>—</span>}
                         </td>
                         <td style={{ padding: "2px 8px 4px", textAlign: "right", fontWeight: 700 }}>
                           {maxPct != null ? fmtPctNorm(maxPct) : <span style={{ color: "var(--text-muted)" }}>—</span>}
@@ -884,7 +886,7 @@ function TaskSubRow({
                           ? <a href={mcp.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--brand)", textDecoration: "underline" }}>{mcp.title}</a>
                           : mcp.title}
                         {mcp.rating != null && (
-                          <span style={{ marginLeft: 6, fontSize: 10, color: "var(--text-muted)" }}>({mcp.rating.toFixed(2)})</span>
+                          <span style={{ marginLeft: 6, fontSize: 10, color: "var(--text-muted)" }}>({mcp.rating.toFixed(1)})</span>
                         )}
                       </li>
                     ))}
@@ -954,7 +956,7 @@ function PctComputePanel({
 }) {
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState<PctSettings>({
-    datasets: ["AEI v4"],
+    datasets: ["AEI Cumul. (Both) v4", "MCP Cumul. v4", "Microsoft"],
     combineMethod: "Average",
     method: "freq",
     geo,
@@ -1050,11 +1052,7 @@ function PctComputePanel({
                   const sel = settings.datasets.includes(ds);
                   return (
                     <button key={ds} disabled={!avail} onClick={() => {
-                      const next = enforceDatasetToggle(settings.datasets, ds, {
-                        aeiSnapshotDatasets: config.aei_snapshot_datasets ?? [],
-                        aeiCumulativeDatasets: config.aei_cumulative_datasets ?? [],
-                        mcpDatasets: config.mcp_datasets ?? [],
-                      });
+                      const next = enforceDatasetToggle(settings.datasets, ds, classificationFromConfig(config));
                       set("datasets", next);
                     }} style={{
                       fontSize: 10, padding: "3px 7px", borderRadius: 5,
@@ -1212,7 +1210,11 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
   // ── Auto-compute pct with preset settings (runs on load for both modes) ──
   const [computeVersion, setComputeVersion] = useState(0);
   useEffect(() => {
-    const availableDatasets = config.datasets.filter((d) => config.dataset_availability[d]);
+    const simpleDatasets = ["AEI Cumul. (Both) v4", "MCP Cumul. v4", "Microsoft"].filter(
+      (d) => config.dataset_availability[d],
+    );
+    const availableDatasets = simpleDatasets.length > 0 ? simpleDatasets
+      : config.datasets.filter((d) => config.dataset_availability[d]);
     if (availableDatasets.length === 0) return;
     const backendAgg = (tableLevel === "task" || tableLevel === "occupation") ? "occupation"
       : tableLevel as "major" | "minor" | "broad";
@@ -1596,11 +1598,11 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                   </div>
                 ) : isTextCol ? (
                   <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>
-                    {renderCell(col.key, row, pctAffectedMap)}
+                    {renderCell(col.key, row, pctAffectedMap, level)}
                   </span>
                 ) : (
                   <span style={{ color: isNum && getVal(row, col.key, pctAffectedMap) == null ? "var(--text-muted)" : undefined }}>
-                    {renderCell(col.key, row, pctAffectedMap)}
+                    {renderCell(col.key, row, pctAffectedMap, level)}
                   </span>
                 )}
               </td>
@@ -1700,11 +1702,11 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                       </tr>
                       <tr>
                         <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Freq</td>
-                        <td style={{ padding: "2px 0" }}>{row.freq_mean?.toFixed(2) ?? "—"}</td>
+                        <td style={{ padding: "2px 0" }}>{row.freq_mean?.toFixed(1) ?? "—"}</td>
                       </tr>
                       <tr>
                         <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Imp</td>
-                        <td style={{ padding: "2px 0" }}>{row.importance?.toFixed(2) ?? "—"}</td>
+                        <td style={{ padding: "2px 0" }}>{row.importance?.toFixed(1) ?? "—"}</td>
                       </tr>
                       <tr>
                         <td style={{ padding: "2px 10px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Rel</td>
@@ -1740,7 +1742,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                                 <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--bg-sidebar)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>{src}</span>
                               </td>
                               <td style={{ padding: "2px 8px", textAlign: "right" }}>
-                                {stats.auto_aug != null ? stats.auto_aug.toFixed(3) : <span style={{ color: "var(--text-muted)" }}>—</span>}
+                                {stats.auto_aug != null ? stats.auto_aug.toFixed(1) : <span style={{ color: "var(--text-muted)" }}>—</span>}
                               </td>
                               <td style={{ padding: "2px 8px", textAlign: "right" }}>
                                 {stats.pct_norm != null ? fmtPctNorm(stats.pct_norm) : <span style={{ color: "var(--text-muted)" }}>—</span>}
@@ -1751,14 +1753,14 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                             <td style={{ padding: "4px 10px 2px 0", fontWeight: 700 }}>
                               <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--brand-light)", border: "1px solid var(--brand)", color: "var(--brand)", fontWeight: 700 }}>AVG</span>
                             </td>
-                            <td style={{ padding: "4px 8px 2px", textAlign: "right", fontWeight: 700 }}>{avgAuto != null ? avgAuto.toFixed(3) : "—"}</td>
+                            <td style={{ padding: "4px 8px 2px", textAlign: "right", fontWeight: 700 }}>{avgAuto != null ? avgAuto.toFixed(1) : "—"}</td>
                             <td style={{ padding: "4px 8px 2px", textAlign: "right", fontWeight: 700 }}>{avgPct != null ? fmtPctNorm(avgPct) : "—"}</td>
                           </tr>
                           <tr>
                             <td style={{ padding: "2px 10px 4px 0", fontWeight: 700 }}>
                               <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "#fffbeb", border: "1px solid #d97706", color: "#d97706", fontWeight: 700 }}>MAX</span>
                             </td>
-                            <td style={{ padding: "2px 8px 4px", textAlign: "right", fontWeight: 700 }}>{maxAuto != null ? maxAuto.toFixed(3) : "—"}</td>
+                            <td style={{ padding: "2px 8px 4px", textAlign: "right", fontWeight: 700 }}>{maxAuto != null ? maxAuto.toFixed(1) : "—"}</td>
                             <td style={{ padding: "2px 8px 4px", textAlign: "right", fontWeight: 700 }}>{maxPct != null ? fmtPctNorm(maxPct) : "—"}</td>
                           </tr>
                         </tbody>
@@ -1777,7 +1779,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                             ? <a href={mcp.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--brand)", textDecoration: "underline" }}>{mcp.title}</a>
                             : mcp.title}
                           {mcp.rating != null && (
-                            <span style={{ marginLeft: 6, fontSize: 10, color: "var(--text-muted)" }}>({mcp.rating.toFixed(2)})</span>
+                            <span style={{ marginLeft: 6, fontSize: 10, color: "var(--text-muted)" }}>({mcp.rating.toFixed(1)})</span>
                           )}
                         </li>
                       ))}
@@ -1864,10 +1866,10 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
         <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
           {/* Level selector */}
           <div style={{ display: "flex", border: "1px solid var(--border)", borderRadius: 5, overflow: "hidden" }}>
-            {LEVEL_OPTIONS.map(({ v, l }, i) => (
+            {LEVEL_OPTIONS.filter(({ v }) => !(isSimple && v === "task")).map(({ v, l }, i, arr) => (
               <button key={v} onClick={() => setTableLevel(v)} style={{
                 padding: "4px 10px", fontSize: 11, cursor: "pointer", border: "none",
-                borderRight: i < LEVEL_OPTIONS.length - 1 ? "1px solid var(--border)" : "none",
+                borderRight: i < arr.length - 1 ? "1px solid var(--border)" : "none",
                 background: tableLevel === v ? "var(--brand-light)" : "transparent",
                 color: tableLevel === v ? "var(--brand)" : "var(--text-secondary)",
                 fontWeight: tableLevel === v ? 600 : 400,
@@ -2081,6 +2083,14 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
 
       {/* ── Table ── */}
       <div style={{ flex: 1, overflowY: "auto", overflowX: "auto" }}>
+        {/* Row count (top) */}
+        {!taskLoading && topRows.length > 0 && (
+          <div style={{ padding: "6px 20px", fontSize: 12, color: "var(--text-muted)", borderBottom: "1px solid var(--border-light)" }}>
+            {topRows.length > rowLimit
+              ? `Showing ${Math.min(rowLimit, topRows.length).toLocaleString()} of ${topRows.length.toLocaleString()} rows`
+              : `Showing ${topRows.length.toLocaleString()} rows`}
+          </div>
+        )}
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
 
           {/* Sticky header */}

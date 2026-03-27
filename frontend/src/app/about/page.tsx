@@ -179,7 +179,7 @@ export default function AboutPage() {
 
           <SubHead>Explorer Metrics</SubHead>
           <p style={bodyStyle}>
-            Pre-computed across 8 AI sources (AEI v1&ndash;v4, AEI API v3&ndash;v4, MCP v4, Microsoft).
+            Pre-computed across 8 AI sources (AEI Conv. v1&ndash;v4, AEI API v3&ndash;v4, MCP Cumul. v4, Microsoft).
             For each task, up to 8 sources contribute:
           </p>
           <div style={formulaBoxStyle}>

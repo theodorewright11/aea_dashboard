@@ -188,9 +188,9 @@ function fmtCell(key: string, val: string | number | boolean | null | undefined)
   if (key === "physical") return val ? "\u2713" : "";
   if (key === "emp") return fmtEmp(val as number);
   if (key === "wage") return fmtWage(val as number);
-  if (key === "from_aug" || key === "to_aug" || key === "delta_aug") return fmtNum(val as number, 2);
+  if (key === "from_aug" || key === "to_aug" || key === "delta_aug") return fmtNum(val as number, 1);
   if (key === "from_pct" || key === "to_pct" || key === "delta_pct") return fmtNum(val as number, 4);
-  if (key === "freq" || key === "imp" || key === "rel") return fmtNum(val as number, 2);
+  if (key === "freq" || key === "imp" || key === "rel") return fmtNum(val as number, 1);
   if (key === "status") return STATUS_CONFIG[val as TaskChangeStatus]?.label ?? String(val);
   return String(val);
 }
@@ -345,8 +345,8 @@ export default function TaskChangesView({ config }: Props) {
   const datasets = config.datasets;
 
   // ── Dataset pickers ──
-  const [fromDataset, setFromDataset] = useState("AEI Cumul. v1");
-  const [toDataset, setToDataset] = useState("AEI Cumul. v4");
+  const [fromDataset, setFromDataset] = useState("AEI Cumul. Conv. v1");
+  const [toDataset, setToDataset] = useState("AEI Cumul. (Both) v4");
 
   // ── Data state ──
   const [rows, setRows] = useState<TaskChangeRow[] | null>(null);
@@ -676,33 +676,27 @@ export default function TaskChangesView({ config }: Props) {
         </p>
 
         {/* Dataset pickers + Run */}
-        {!isSimple ? (
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <label style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)" }}>From:</label>
-              <select value={fromDataset} onChange={(e) => setFromDataset(e.target.value)}
-                style={{ fontSize: 12, padding: "4px 8px", border: "1px solid var(--border)", borderRadius: 5, background: "var(--bg-surface)", color: "var(--text-primary)" }}>
-                {datasets.map((d) => <option key={d} value={d}>{d}</option>)}
-              </select>
-            </div>
-            <span style={{ fontSize: 14, color: "var(--text-muted)" }}>&rarr;</span>
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <label style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)" }}>To:</label>
-              <select value={toDataset} onChange={(e) => setToDataset(e.target.value)}
-                style={{ fontSize: 12, padding: "4px 8px", border: "1px solid var(--border)", borderRadius: 5, background: "var(--bg-surface)", color: "var(--text-primary)" }}>
-                {datasets.map((d) => <option key={d} value={d}>{d}</option>)}
-              </select>
-            </div>
-            <button onClick={runComparison} disabled={loading}
-              style={{ padding: "5px 16px", fontSize: 12, fontWeight: 600, borderRadius: 6, border: "none", background: "var(--brand)", color: "#fff", cursor: loading ? "wait" : "pointer", opacity: loading ? 0.7 : 1 }}>
-              {loading ? "Running..." : "Run"}
-            </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <label style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)" }}>From:</label>
+            <select value={fromDataset} onChange={(e) => setFromDataset(e.target.value)}
+              style={{ fontSize: 12, padding: "4px 8px", border: "1px solid var(--border)", borderRadius: 5, background: "var(--bg-surface)", color: "var(--text-primary)" }}>
+              {datasets.map((d) => <option key={d} value={d}>{d}</option>)}
+            </select>
           </div>
-        ) : (
-          <div style={{ fontSize: 12, color: "var(--text-secondary)", marginBottom: 16, padding: "6px 12px", background: "var(--brand-light)", borderRadius: 6, display: "inline-block" }}>
-            Comparing <strong>AEI Cumul. v1</strong> &rarr; <strong>AEI Cumul. v4</strong>
+          <span style={{ fontSize: 14, color: "var(--text-muted)" }}>&rarr;</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <label style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)" }}>To:</label>
+            <select value={toDataset} onChange={(e) => setToDataset(e.target.value)}
+              style={{ fontSize: 12, padding: "4px 8px", border: "1px solid var(--border)", borderRadius: 5, background: "var(--bg-surface)", color: "var(--text-primary)" }}>
+              {datasets.map((d) => <option key={d} value={d}>{d}</option>)}
+            </select>
           </div>
-        )}
+          <button onClick={runComparison} disabled={loading}
+            style={{ padding: "5px 16px", fontSize: 12, fontWeight: 600, borderRadius: 6, border: "none", background: "var(--brand)", color: "#fff", cursor: loading ? "wait" : "pointer", opacity: loading ? 0.7 : 1 }}>
+            {loading ? "Running..." : "Run"}
+          </button>
+        </div>
 
         {error && <p style={{ color: "#b91c1c", fontSize: 12, marginBottom: 12 }}>Error: {error}</p>}
 
@@ -1003,7 +997,7 @@ function ExpandedDetail({ row }: { row: TaskChangeRow }) {
               {Object.entries(row.sources).map(([src, stats]) => (
                 <tr key={src}>
                   <td style={{ padding: "2px 10px 2px 0", color: "var(--text-secondary)" }}>{src}</td>
-                  <td style={{ padding: "2px 10px 2px 0", color: "var(--text-secondary)", textAlign: "right" }}>{stats.auto_aug?.toFixed(2) ?? "\u2014"}</td>
+                  <td style={{ padding: "2px 10px 2px 0", color: "var(--text-secondary)", textAlign: "right" }}>{stats.auto_aug?.toFixed(1) ?? "\u2014"}</td>
                   <td style={{ padding: "2px 10px 2px 0", color: "var(--text-secondary)", textAlign: "right" }}>{stats.pct_norm != null ? fmtPctNorm(stats.pct_norm) : "\u2014"}</td>
                 </tr>
               ))}
@@ -1022,14 +1016,14 @@ function ExpandedDetail({ row }: { row: TaskChangeRow }) {
                       <td style={{ padding: "4px 10px 2px 0", fontWeight: 700 }}>
                         <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--brand-light)", border: "1px solid var(--brand)", color: "var(--brand)", fontWeight: 700 }}>AVG</span>
                       </td>
-                      <td style={{ padding: "4px 10px 2px 0", textAlign: "right", fontWeight: 700 }}>{avgAuto != null ? avgAuto.toFixed(3) : "\u2014"}</td>
+                      <td style={{ padding: "4px 10px 2px 0", textAlign: "right", fontWeight: 700 }}>{avgAuto != null ? avgAuto.toFixed(1) : "\u2014"}</td>
                       <td style={{ padding: "4px 10px 2px 0", textAlign: "right", fontWeight: 700 }}>{avgPct != null ? fmtPctNorm(avgPct) : "\u2014"}</td>
                     </tr>
                     <tr>
                       <td style={{ padding: "2px 10px 4px 0", fontWeight: 700 }}>
                         <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "#fffbeb", border: "1px solid #d97706", color: "#d97706", fontWeight: 700 }}>MAX</span>
                       </td>
-                      <td style={{ padding: "2px 10px 4px 0", textAlign: "right", fontWeight: 700 }}>{maxAuto != null ? maxAuto.toFixed(3) : "\u2014"}</td>
+                      <td style={{ padding: "2px 10px 4px 0", textAlign: "right", fontWeight: 700 }}>{maxAuto != null ? maxAuto.toFixed(1) : "\u2014"}</td>
                       <td style={{ padding: "2px 10px 4px 0", textAlign: "right", fontWeight: 700 }}>{maxPct != null ? fmtPctNorm(maxPct) : "\u2014"}</td>
                     </tr>
                   </>

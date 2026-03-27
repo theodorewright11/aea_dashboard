@@ -68,9 +68,7 @@ const AGG_INTERNAL: Record<string, GroupSettings["aggLevel"]> = {
 export default function GroupSettings({ groupId, color, settings, config, onChange }: Props) {
   const [advancedOpen, setAdvancedOpen] = useState(false);
 
-  const hasAei = settings.selectedDatasets.some((n) =>
-    ["AEI v1","AEI v2","AEI v3","AEI v4","AEI API v3","AEI API v4"].includes(n)
-  );
+  const hasAei = settings.selectedDatasets.some((n) => n.startsWith("AEI"));
   const update = (patch: Partial<GroupSettings>) => onChange({ ...settings, ...patch });
   const maxN = settings.aggLevel === "occupation" ? 50 : 30;
 

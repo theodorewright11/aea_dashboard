@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { WorkActivitiesResponse, ConfigResponse, ActivityGroup } from "@/lib/types";
 import { fetchConfig, fetchWorkActivities } from "@/lib/api";
-import { enforceDatasetToggle } from "@/lib/datasetRules";
+import { enforceDatasetToggle, classificationFromConfig, getDatasetSubsections } from "@/lib/datasetRules";
+import type { DatasetClassification } from "@/lib/datasetRules";
 import WorkActivitiesPanel from "@/components/WorkActivitiesPanel";
 import { GROUP_A_COLOR, GROUP_B_COLOR } from "@/lib/theme";
 import { useSimpleMode } from "@/lib/SimpleModeContext";
@@ -46,14 +47,16 @@ function defaultPending(datasets: string[]): WAGroupPending {
   };
 }
 
-/** In simple mode, override fixed fields — WA defaults to all AEI datasets */
+/** In simple mode, override fixed fields — WA defaults to AEI Cumul. (Both) v4 */
 function applyWASimpleDefaults(p: WAGroupPending, config: ConfigResponse): WAGroupPending {
-  const aeiDatasets = config.datasets.filter(
-    (d) => d.startsWith("AEI") && config.dataset_availability[d],
+  const simpleDatasets = ["AEI Cumul. (Both) v4"].filter(
+    (d) => config.dataset_availability[d],
   );
   return {
     ...p,
-    datasets: aeiDatasets,
+    datasets: simpleDatasets.length > 0 ? simpleDatasets : config.datasets.filter(
+      (d) => d.startsWith("AEI") && config.dataset_availability[d],
+    ),
     combineMethod: "Average",
     method: "freq",
     physicalMode: "all",
@@ -170,28 +173,26 @@ function InfoTooltip({ text }: { text: string }) {
 // ── Dataset pills with family mutual exclusivity ───────────────────────────────
 
 function DatasetPillsWA({
-  label, color, datasets, availability, selected, combineMethod,
-  aeiSnapshotDatasets, aeiCumulativeDatasets, mcpDatasets,
+  label, color, availability, selected, combineMethod,
+  classification,
   onChange, onChangeCombine,
 }: {
   label: string;
   color: string;
-  datasets: string[];
   availability: Record<string, boolean>;
   selected: string[];
   combineMethod: "Average" | "Max";
-  aeiSnapshotDatasets: string[];
-  aeiCumulativeDatasets: string[];
-  mcpDatasets: string[];
+  classification: DatasetClassification;
   onChange: (v: string[]) => void;
   onChangeCombine: (v: "Average" | "Max") => void;
 }) {
+  const subsections = getDatasetSubsections(classification);
   // Determine which family is currently locked in
   const activeFamily = getFamily(selected);
 
   function toggle(name: string) {
-    // Apply both family-separation rule and cumulative/MCP enforcement
-    let next = enforceDatasetToggle(selected, name, { aeiSnapshotDatasets, aeiCumulativeDatasets, mcpDatasets });
+    // Apply dataset enforcement rules
+    let next = enforceDatasetToggle(selected, name, classification);
     // Also enforce AEI vs MCP/Microsoft family separation (existing WA rule)
     const hasAEI = next.some(isAEIFamily);
     const hasMCP = next.some(isMCPFamily);
@@ -219,9 +220,9 @@ function DatasetPillsWA({
         <button
           disabled={activeFamily === "none"}
           onClick={() => {
-            const avail = datasets.filter((d) => availability[d]);
-            if (activeFamily === "aei") onChange(avail.filter(isAEIFamily));
-            else if (activeFamily === "mcp") onChange(avail.filter(isMCPFamily));
+            const allInFamily = subsections.flatMap((s) => s.datasets).filter((d) => availability[d]);
+            if (activeFamily === "aei") onChange(allInFamily.filter(isAEIFamily));
+            else if (activeFamily === "mcp") onChange(allInFamily.filter(isMCPFamily));
           }}
           style={{ fontSize: 10, color: activeFamily !== "none" ? "var(--brand)" : "var(--text-muted)", background: "none", border: "none", cursor: activeFamily !== "none" ? "pointer" : "default", padding: "0 2px", fontWeight: 600, opacity: activeFamily !== "none" ? 1 : 0.4 }}
         >All</button>
@@ -250,29 +251,44 @@ function DatasetPillsWA({
           {familyNote}
         </p>
       )}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-        {datasets.map((name) => {
-          const avail = availability[name];
-          const active = selected.includes(name);
-          // Hide datasets from the other family when one family is locked in
-          const hidden = (activeFamily === "aei" && isMCPFamily(name)) ||
-                         (activeFamily === "mcp" && isAEIFamily(name));
-          if (hidden) return null;
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {subsections.map((section) => {
+          // Hide entire sections from the other family
+          const sectionHasAei = section.datasets.some(isAEIFamily);
+          const sectionHasMcp = section.datasets.some(isMCPFamily);
+          if (activeFamily === "aei" && sectionHasMcp && !sectionHasAei) return null;
+          if (activeFamily === "mcp" && sectionHasAei && !sectionHasMcp) return null;
           return (
-            <button
-              key={name}
-              onClick={() => avail && toggle(name)}
-              style={{
-                fontSize: 11, padding: "4px 9px", borderRadius: 6,
-                border: `1.5px solid ${active ? color : "var(--border)"}`,
-                background: active ? color + "18" : "transparent",
-                color: active ? color : avail ? "var(--text-secondary)" : "var(--text-muted)",
-                cursor: avail ? "pointer" : "default",
-                fontWeight: active ? 600 : 400,
-                textDecoration: avail ? "none" : "line-through",
-                transition: "all 0.12s", whiteSpace: "nowrap",
-              }}
-            >{name}</button>
+            <div key={section.label}>
+              <p style={{ fontSize: 9, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 3px 0" }}>
+                {section.label}
+              </p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                {section.datasets.map((name) => {
+                  const avail = availability[name];
+                  const active = selected.includes(name);
+                  const hidden = (activeFamily === "aei" && isMCPFamily(name)) ||
+                                 (activeFamily === "mcp" && isAEIFamily(name));
+                  if (hidden) return null;
+                  return (
+                    <button
+                      key={name}
+                      onClick={() => avail && toggle(name)}
+                      style={{
+                        fontSize: 11, padding: "4px 9px", borderRadius: 6,
+                        border: `1.5px solid ${active ? color : "var(--border)"}`,
+                        background: active ? color + "18" : "transparent",
+                        color: active ? color : avail ? "var(--text-secondary)" : "var(--text-muted)",
+                        cursor: avail ? "pointer" : "default",
+                        fontWeight: active ? 600 : 400,
+                        textDecoration: avail ? "none" : "line-through",
+                        transition: "all 0.12s", whiteSpace: "nowrap",
+                      }}
+                    >{name}</button>
+                  );
+                })}
+              </div>
+            </div>
           );
         })}
       </div>
@@ -373,13 +389,10 @@ function WAGroupSettingsPanel({
           <DatasetPillsWA
             label={`Group ${groupId} datasets`}
             color={color}
-            datasets={config.datasets}
             availability={config.dataset_availability}
             selected={pending.datasets}
             combineMethod={pending.combineMethod}
-            aeiSnapshotDatasets={config.aei_snapshot_datasets ?? []}
-            aeiCumulativeDatasets={config.aei_cumulative_datasets ?? []}
-            mcpDatasets={config.mcp_datasets ?? []}
+            classification={classificationFromConfig(config)}
             onChange={(v) => set("datasets", v)}
             onChangeCombine={(v) => set("combineMethod", v)}
           />
@@ -571,8 +584,8 @@ export default function WorkActivitiesPage() {
   const [config, setConfig]           = useState<ConfigResponse | null>(null);
   const [configError, setConfigError] = useState<string | null>(null);
 
-  const [pendingA, setPendingA] = useState<WAGroupPending>(defaultPending(["AEI v4"]));
-  const [pendingB, setPendingB] = useState<WAGroupPending>(defaultPending(["MCP v4"]));
+  const [pendingA, setPendingA] = useState<WAGroupPending>(defaultPending(["AEI Cumul. (Both) v4"]));
+  const [pendingB, setPendingB] = useState<WAGroupPending>(defaultPending(["MCP Cumul. v4"]));
   const [activeGroup, setActiveGroup] = useState<"A" | "B">("A");
   const [panelCollapsed, setPanelCollapsed] = useState(false);
 

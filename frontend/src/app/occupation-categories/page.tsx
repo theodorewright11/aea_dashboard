@@ -6,7 +6,8 @@ import { fetchConfig, fetchCompute } from "@/lib/api";
 import GroupPanel from "@/components/GroupPanel";
 import { GROUP_A_COLOR, GROUP_B_COLOR } from "@/lib/theme";
 import { useSimpleMode } from "@/lib/SimpleModeContext";
-import { enforceDatasetToggle } from "@/lib/datasetRules";
+import { enforceDatasetToggle, classificationFromConfig, getDatasetSubsections } from "@/lib/datasetRules";
+import type { DatasetClassification } from "@/lib/datasetRules";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -92,10 +93,12 @@ function defaultPending(datasets: string[]): GroupPending {
 
 /** In simple mode, override computation-fixed fields while keeping user-adjustable ones */
 function applySimpleDefaults(p: GroupPending, config: ConfigResponse): GroupPending {
-  const allDatasets = config.datasets.filter((d) => config.dataset_availability[d]);
+  const simpleDatasets = ["AEI Cumul. (Both) v4", "MCP Cumul. v4", "Microsoft"].filter(
+    (d) => config.dataset_availability[d],
+  );
   return {
     ...p,
-    datasets: allDatasets,
+    datasets: simpleDatasets,
     combineMethod: "Average",
     method: "freq",
     physicalMode: "all",
@@ -200,24 +203,24 @@ function InfoTooltip({ text }: { text: string }) {
 // ── Dataset pills (like Trends) ────────────────────────────────────────────────
 
 function DatasetPills({
-  label, color, datasets, availability, selected, combineMethod,
-  aeiSnapshotDatasets, aeiCumulativeDatasets, mcpDatasets,
+  label, color, availability, selected, combineMethod,
+  classification,
   onChange, onChangeCombine,
 }: {
   label: string;
   color: string;
-  datasets: string[];
   availability: Record<string, boolean>;
   selected: string[];
   combineMethod: "Average" | "Max";
-  aeiSnapshotDatasets: string[];
-  aeiCumulativeDatasets: string[];
-  mcpDatasets: string[];
+  classification: DatasetClassification;
   onChange: (v: string[]) => void;
   onChangeCombine: (v: "Average" | "Max") => void;
 }) {
+  const subsections = getDatasetSubsections(classification);
+  const allDatasets = subsections.flatMap((s) => s.datasets);
+
   function toggle(name: string) {
-    onChange(enforceDatasetToggle(selected, name, { aeiSnapshotDatasets, aeiCumulativeDatasets, mcpDatasets }));
+    onChange(enforceDatasetToggle(selected, name, classification));
   }
 
   return (
@@ -227,7 +230,7 @@ function DatasetPills({
           {label}
         </p>
         <InfoTooltip text="Select one or more datasets to compute automation exposure metrics. When multiple are selected, choose Average or Max to combine them." />
-        <button onClick={() => onChange(datasets.filter((d) => availability[d]))} style={{ fontSize: 10, color: "var(--brand)", background: "none", border: "none", cursor: "pointer", padding: "0 2px", fontWeight: 600 }}>All</button>
+        <button onClick={() => onChange(allDatasets.filter((d) => availability[d]))} style={{ fontSize: 10, color: "var(--brand)", background: "none", border: "none", cursor: "pointer", padding: "0 2px", fontWeight: 600 }}>All</button>
         <button onClick={() => onChange([])} style={{ fontSize: 10, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", padding: "0 2px" }}>None</button>
         {selected.length > 1 && (
           <>
@@ -248,27 +251,36 @@ function DatasetPills({
           </>
         )}
       </div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-        {datasets.map((name) => {
-          const avail = availability[name];
-          const active = selected.includes(name);
-          return (
-            <button
-              key={name}
-              onClick={() => avail && toggle(name)}
-              style={{
-                fontSize: 11, padding: "4px 9px", borderRadius: 6,
-                border: `1.5px solid ${active ? color : "var(--border)"}`,
-                background: active ? color + "18" : "transparent",
-                color: active ? color : avail ? "var(--text-secondary)" : "var(--text-muted)",
-                cursor: avail ? "pointer" : "default",
-                fontWeight: active ? 600 : 400,
-                textDecoration: avail ? "none" : "line-through",
-                transition: "all 0.12s", whiteSpace: "nowrap",
-              }}
-            >{name}</button>
-          );
-        })}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {subsections.map((section) => (
+          <div key={section.label}>
+            <p style={{ fontSize: 9, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 3px 0" }}>
+              {section.label}
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+              {section.datasets.map((name) => {
+                const avail = availability[name];
+                const active = selected.includes(name);
+                return (
+                  <button
+                    key={name}
+                    onClick={() => avail && toggle(name)}
+                    style={{
+                      fontSize: 11, padding: "4px 9px", borderRadius: 6,
+                      border: `1.5px solid ${active ? color : "var(--border)"}`,
+                      background: active ? color + "18" : "transparent",
+                      color: active ? color : avail ? "var(--text-secondary)" : "var(--text-muted)",
+                      cursor: avail ? "pointer" : "default",
+                      fontWeight: active ? 600 : 400,
+                      textDecoration: avail ? "none" : "line-through",
+                      transition: "all 0.12s", whiteSpace: "nowrap",
+                    }}
+                  >{name}</button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -388,13 +400,10 @@ function GroupSettingsPanel({
           <DatasetPills
             label={`Group ${groupId} datasets`}
             color={color}
-            datasets={config.datasets}
             availability={config.dataset_availability}
             selected={pending.datasets}
             combineMethod={pending.combineMethod}
-            aeiSnapshotDatasets={config.aei_snapshot_datasets ?? []}
-            aeiCumulativeDatasets={config.aei_cumulative_datasets ?? []}
-            mcpDatasets={config.mcp_datasets ?? []}
+            classification={classificationFromConfig(config)}
             onChange={(v) => set("datasets", v)}
             onChangeCombine={(v) => set("combineMethod", v)}
           />
@@ -582,8 +591,8 @@ export default function HomePage() {
   const [config, setConfig]           = useState<ConfigResponse | null>(null);
   const [configError, setConfigError] = useState<string | null>(null);
 
-  const [pendingA, setPendingA] = useState<GroupPending>(defaultPending(["AEI v4"]));
-  const [pendingB, setPendingB] = useState<GroupPending>(defaultPending(["MCP v4"]));
+  const [pendingA, setPendingA] = useState<GroupPending>(defaultPending(["AEI Cumul. (Both) v4", "MCP Cumul. v4", "Microsoft"]));
+  const [pendingB, setPendingB] = useState<GroupPending>(defaultPending(["MCP Cumul. v4"]));
   const [activeGroup, setActiveGroup] = useState<"A" | "B">("A");
   const [panelCollapsed, setPanelCollapsed] = useState(false);
 

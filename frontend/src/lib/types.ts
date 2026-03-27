@@ -41,8 +41,11 @@ export interface ConfigResponse {
   sort_options: string[];
   crosswalk_available: boolean;
   eco2015_available: boolean;
-  aei_snapshot_datasets: string[];
-  aei_cumulative_datasets: string[];
+  aei_conv_snapshot_datasets: string[];
+  aei_api_snapshot_datasets: string[];
+  aei_conv_cumulative_datasets: string[];
+  aei_api_cumulative_datasets: string[];
+  aei_both_cumulative_datasets: string[];
   mcp_datasets: string[];
 }
 

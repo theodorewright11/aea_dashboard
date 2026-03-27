@@ -11,7 +11,7 @@ import { createPortal } from "react-dom";
 import type { WAExplorerRow, WATaskDetail, ConfigResponse, EcoTaskRow, TaskSourceStats, ActivityRow, McpEntry } from "@/lib/types";
 import { fetchWAActivityTasks, fetchWorkActivities, fetchAllEcoTasks } from "@/lib/api";
 import { useSimpleMode } from "@/lib/SimpleModeContext";
-import { enforceDatasetToggle } from "@/lib/datasetRules";
+import { enforceDatasetToggle, classificationFromConfig } from "@/lib/datasetRules";
 
 // ── Debounce hook ──────────────────────────────────────────────────────────────
 
@@ -54,7 +54,7 @@ function fmtPctNorm(v?: number | null): string {
 
 function fmtAutoAug(v?: number | null): string {
   if (v == null) return "—";
-  return v.toFixed(3);
+  return v.toFixed(1);
 }
 
 function fmtPctPhys(v?: number | null): string {
@@ -231,7 +231,7 @@ function AutoCell({ v }: { v: number | null | undefined }) {
   );
 }
 
-function renderCell(col: string, row: DisplayRow): React.ReactNode {
+function renderCell(col: string, row: DisplayRow, isTaskLevel = false): React.ReactNode {
   const muted = { color: "var(--text-muted)" } as React.CSSProperties;
   switch (col) {
     case "occ":          return row.title_current ?? <span style={muted}>—</span>;
@@ -248,9 +248,9 @@ function renderCell(col: string, row: DisplayRow): React.ReactNode {
       if (row.physical === false) return <span style={{ color: "var(--text-muted)", fontSize: 11 }}>✗</span>;
       return <span style={muted}>—</span>;
     }
-    case "freq_col":     return row.freq_mean != null ? row.freq_mean.toFixed(2) : <span style={muted}>—</span>;
-    case "imp_col":      return row.importance != null ? row.importance.toFixed(2) : <span style={muted}>—</span>;
-    case "rel_col":      return row.relevance != null ? row.relevance.toFixed(2) : <span style={muted}>—</span>;
+    case "freq_col":     return row.freq_mean != null ? row.freq_mean.toFixed(1) : <span style={muted}>—</span>;
+    case "imp_col":      return row.importance != null ? row.importance.toFixed(1) : <span style={muted}>—</span>;
+    case "rel_col":      return row.relevance != null ? row.relevance.toFixed(1) : <span style={muted}>—</span>;
     case "n_occs":       return row.n_occs;
     case "n_tasks":      return row.n_tasks;
     case "auto_avg_w":   return <AutoCell v={row.auto_avg_with_vals} />;
@@ -265,6 +265,7 @@ function renderCell(col: string, row: DisplayRow): React.ReactNode {
     case "sum_pct_avg":  return fmtPctNorm(row.sum_pct_avg);
     case "sum_pct_max":  return fmtPctNorm(row.sum_pct_max);
     case "pct_affected": {
+      if (isTaskLevel) return <span style={muted}>—</span>;
       const v = row.pct_affected;
       return v != null
         ? <span style={{ color: "var(--brand)", fontWeight: 500 }}>{v.toFixed(2)}%</span>
@@ -599,13 +600,13 @@ function WATaskSubRow({ task, geo, empWeighting }: { task: WATaskDetail; geo: "n
             : <span style={{ color: "var(--text-muted)", fontSize: 10 }}>—</span>}
         </td>
         <td style={{ padding: "6px 6px", fontSize: 11, color: "var(--text-secondary)", textAlign: "right", width: 64, verticalAlign: "top" }}>
-          {task.freq_mean != null ? task.freq_mean.toFixed(2) : <span style={muted}>—</span>}
+          {task.freq_mean != null ? task.freq_mean.toFixed(1) : <span style={muted}>—</span>}
         </td>
         <td style={{ padding: "6px 6px", fontSize: 11, color: "var(--text-secondary)", textAlign: "right", width: 56, verticalAlign: "top" }}>
-          {task.importance != null ? task.importance.toFixed(2) : <span style={muted}>—</span>}
+          {task.importance != null ? task.importance.toFixed(1) : <span style={muted}>—</span>}
         </td>
         <td style={{ padding: "6px 6px", fontSize: 11, color: "var(--text-secondary)", textAlign: "right", width: 56, verticalAlign: "top" }}>
-          {task.relevance != null ? task.relevance.toFixed(2) : <span style={muted}>—</span>}
+          {task.relevance != null ? task.relevance.toFixed(1) : <span style={muted}>—</span>}
         </td>
         <td style={{ padding: "6px 6px", verticalAlign: "top", width: 100 }}>
           {barPct != null ? (
@@ -613,7 +614,7 @@ function WATaskSubRow({ task, geo, empWeighting }: { task: WATaskDetail; geo: "n
               <div style={{ width: 48, height: 5, background: "var(--border)", borderRadius: 3, overflow: "hidden", flexShrink: 0 }}>
                 <div style={{ width: `${barPct}%`, height: "100%", background: "var(--brand)", borderRadius: 3 }} />
               </div>
-              <span style={{ fontSize: 10, color: "var(--text-secondary)" }}>{avgAuto?.toFixed(2)}</span>
+              <span style={{ fontSize: 10, color: "var(--text-secondary)" }}>{avgAuto?.toFixed(1)}</span>
             </div>
           ) : <span style={{ fontSize: 10, color: "var(--text-muted)" }}>—</span>}
         </td>
@@ -679,15 +680,15 @@ function WATaskSubRow({ task, geo, empWeighting }: { task: WATaskDetail; geo: "n
                     </tr>
                     <tr>
                       <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Freq</td>
-                      <td style={{ padding: "2px 0" }}>{task.freq_mean != null ? task.freq_mean.toFixed(2) : <span style={muted}>—</span>}</td>
+                      <td style={{ padding: "2px 0" }}>{task.freq_mean != null ? task.freq_mean.toFixed(1) : <span style={muted}>—</span>}</td>
                     </tr>
                     <tr>
                       <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Imp</td>
-                      <td style={{ padding: "2px 0" }}>{task.importance != null ? task.importance.toFixed(2) : <span style={muted}>—</span>}</td>
+                      <td style={{ padding: "2px 0" }}>{task.importance != null ? task.importance.toFixed(1) : <span style={muted}>—</span>}</td>
                     </tr>
                     <tr>
                       <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Rel</td>
-                      <td style={{ padding: "2px 0" }}>{task.relevance != null ? task.relevance.toFixed(2) : <span style={muted}>—</span>}</td>
+                      <td style={{ padding: "2px 0" }}>{task.relevance != null ? task.relevance.toFixed(1) : <span style={muted}>—</span>}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -713,7 +714,7 @@ function WATaskSubRow({ task, geo, empWeighting }: { task: WATaskDetail; geo: "n
                             <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--bg-sidebar)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>{src}</span>
                           </td>
                           <td style={{ padding: "2px 8px", textAlign: "right" }}>
-                            {stats.auto_aug != null ? stats.auto_aug.toFixed(3) : <span style={muted}>—</span>}
+                            {stats.auto_aug != null ? stats.auto_aug.toFixed(1) : <span style={muted}>—</span>}
                           </td>
                           <td style={{ padding: "2px 8px", textAlign: "right" }}>
                             {stats.pct_norm != null ? fmtPctNorm(stats.pct_norm) : <span style={muted}>—</span>}
@@ -725,7 +726,7 @@ function WATaskSubRow({ task, geo, empWeighting }: { task: WATaskDetail; geo: "n
                           <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--brand-light)", border: "1px solid var(--brand)", color: "var(--brand)", fontWeight: 700 }}>AVG</span>
                         </td>
                         <td style={{ padding: "4px 8px 2px", textAlign: "right", fontWeight: 700 }}>
-                          {avgAuto != null ? avgAuto.toFixed(3) : <span style={muted}>—</span>}
+                          {avgAuto != null ? avgAuto.toFixed(1) : <span style={muted}>—</span>}
                         </td>
                         <td style={{ padding: "4px 8px 2px", textAlign: "right", fontWeight: 700 }}>
                           {avgPct != null ? fmtPctNorm(avgPct) : <span style={muted}>—</span>}
@@ -736,7 +737,7 @@ function WATaskSubRow({ task, geo, empWeighting }: { task: WATaskDetail; geo: "n
                           <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "#fffbeb", border: "1px solid #d97706", color: "#d97706", fontWeight: 700 }}>MAX</span>
                         </td>
                         <td style={{ padding: "2px 8px 4px", textAlign: "right", fontWeight: 700 }}>
-                          {maxAuto != null ? maxAuto.toFixed(3) : <span style={muted}>—</span>}
+                          {maxAuto != null ? maxAuto.toFixed(1) : <span style={muted}>—</span>}
                         </td>
                         <td style={{ padding: "2px 8px 4px", textAlign: "right", fontWeight: 700 }}>
                           {maxPct != null ? fmtPctNorm(maxPct) : <span style={muted}>—</span>}
@@ -854,7 +855,7 @@ function WaPctComputePanel({
 }) {
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState<WaPctSettings>({
-    datasets: ["AEI v4"],
+    datasets: ["AEI Cumul. (Both) v4"],
     combineMethod: "Average",
     method: "freq",
     geo,
@@ -980,11 +981,7 @@ function WaPctComputePanel({
                   const sel = settings.datasets.includes(ds);
                   return (
                     <button key={ds} disabled={!avail} onClick={() => {
-                      const next = enforceDatasetToggle(settings.datasets, ds, {
-                        aeiSnapshotDatasets: config.aei_snapshot_datasets ?? [],
-                        aeiCumulativeDatasets: config.aei_cumulative_datasets ?? [],
-                        mcpDatasets: config.mcp_datasets ?? [],
-                      });
+                      const next = enforceDatasetToggle(settings.datasets, ds, classificationFromConfig(config));
                       set("datasets", next);
                     }} style={{
                       fontSize: 10, padding: "3px 7px", borderRadius: 5,
@@ -1106,12 +1103,16 @@ export default function WAExplorerView({ rows, config }: Props) {
     try { localStorage.setItem("aea_wa_explorer_hidden_cols", JSON.stringify(Array.from(hiddenCols))); } catch { /* silent */ }
   }, [hiddenCols]);
 
-  // ── Auto-compute pct with WA simple-mode defaults (all AEI datasets) ────
+  // ── Auto-compute pct with WA defaults (AEI Cumul. (Both) v4) ────────────
   // Runs on mount (both simple and advanced modes), on geo change, and on reset.
   useEffect(() => {
-    const aeiDatasets = config.datasets.filter(
-      (d) => d.startsWith("AEI") && config.dataset_availability[d],
+    const simpleDatasets = ["AEI Cumul. (Both) v4"].filter(
+      (d) => config.dataset_availability[d],
     );
+    const aeiDatasets = simpleDatasets.length > 0 ? simpleDatasets
+      : config.datasets.filter(
+          (d) => d.startsWith("AEI") && config.dataset_availability[d],
+        );
     if (aeiDatasets.length === 0) return;
     let cancelled = false;
     fetchWorkActivities({
@@ -1518,7 +1519,7 @@ export default function WAExplorerView({ rows, config }: Props) {
                     </span>
                   </div>
                 ) : (
-                  renderCell(col.key, row)
+                  renderCell(col.key, row, isTaskLevel)
                 )}
               </td>
             );
@@ -1613,15 +1614,15 @@ export default function WAExplorerView({ rows, config }: Props) {
                         </tr>
                         <tr>
                           <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Freq</td>
-                          <td style={{ padding: "2px 0" }}>{row.freq_mean != null ? row.freq_mean.toFixed(2) : <span style={muted}>—</span>}</td>
+                          <td style={{ padding: "2px 0" }}>{row.freq_mean != null ? row.freq_mean.toFixed(1) : <span style={muted}>—</span>}</td>
                         </tr>
                         <tr>
                           <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Imp</td>
-                          <td style={{ padding: "2px 0" }}>{row.importance != null ? row.importance.toFixed(2) : <span style={muted}>—</span>}</td>
+                          <td style={{ padding: "2px 0" }}>{row.importance != null ? row.importance.toFixed(1) : <span style={muted}>—</span>}</td>
                         </tr>
                         <tr>
                           <td style={{ padding: "2px 8px 2px 0", color: "var(--text-muted)", fontWeight: 600 }}>Rel</td>
-                          <td style={{ padding: "2px 0" }}>{row.relevance != null ? row.relevance.toFixed(2) : <span style={muted}>—</span>}</td>
+                          <td style={{ padding: "2px 0" }}>{row.relevance != null ? row.relevance.toFixed(1) : <span style={muted}>—</span>}</td>
                         </tr>
                       </tbody>
                     </table>
@@ -1644,7 +1645,7 @@ export default function WAExplorerView({ rows, config }: Props) {
                               <td style={{ padding: "2px 10px 2px 0" }}>
                                 <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--bg-sidebar)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>{src}</span>
                               </td>
-                              <td style={{ padding: "2px 8px", textAlign: "right" }}>{stats.auto_aug != null ? stats.auto_aug.toFixed(3) : <span style={muted}>—</span>}</td>
+                              <td style={{ padding: "2px 8px", textAlign: "right" }}>{stats.auto_aug != null ? stats.auto_aug.toFixed(1) : <span style={muted}>—</span>}</td>
                               <td style={{ padding: "2px 8px", textAlign: "right" }}>{stats.pct_norm != null ? fmtPctNorm(stats.pct_norm) : <span style={muted}>—</span>}</td>
                             </tr>
                           ))}
@@ -1653,7 +1654,7 @@ export default function WAExplorerView({ rows, config }: Props) {
                               <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--brand-light)", border: "1px solid var(--brand)", color: "var(--brand)", fontWeight: 700 }}>AVG</span>
                             </td>
                             <td style={{ padding: "4px 8px 2px", textAlign: "right", fontWeight: 700 }}>
-                              {avgAuto != null ? avgAuto.toFixed(3) : <span style={muted}>—</span>}
+                              {avgAuto != null ? avgAuto.toFixed(1) : <span style={muted}>—</span>}
                             </td>
                             <td style={{ padding: "4px 8px 2px", textAlign: "right", fontWeight: 700 }}>
                               {avgPct != null ? fmtPctNorm(avgPct) : <span style={muted}>—</span>}
@@ -1664,7 +1665,7 @@ export default function WAExplorerView({ rows, config }: Props) {
                               <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "#fffbeb", border: "1px solid #d97706", color: "#d97706", fontWeight: 700 }}>MAX</span>
                             </td>
                             <td style={{ padding: "2px 8px 4px", textAlign: "right", fontWeight: 700 }}>
-                              {maxAuto != null ? maxAuto.toFixed(3) : <span style={muted}>—</span>}
+                              {maxAuto != null ? maxAuto.toFixed(1) : <span style={muted}>—</span>}
                             </td>
                             <td style={{ padding: "2px 8px 4px", textAlign: "right", fontWeight: 700 }}>
                               {maxPct != null ? fmtPctNorm(maxPct) : <span style={muted}>—</span>}
@@ -1772,7 +1773,7 @@ export default function WAExplorerView({ rows, config }: Props) {
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <span style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 600 }}>Level:</span>
             <BtnSeg<WALevel>
-              opts={[{ v: "gwa", l: "GWA" }, { v: "iwa", l: "IWA" }, { v: "dwa", l: "DWA" }, { v: "task", l: "Task" }]}
+              opts={([{ v: "gwa" as const, l: "GWA" }, { v: "iwa" as const, l: "IWA" }, { v: "dwa" as const, l: "DWA" }, { v: "task" as const, l: "Task" }] as { v: WALevel; l: string }[]).filter(({ v }) => !(isSimple && v === "task"))}
               val={viewLevel}
               onChange={(v) => {
                 setViewLevel(v);
@@ -1983,6 +1984,14 @@ export default function WAExplorerView({ rows, config }: Props) {
 
       {/* ── Table ──────────────────────────────────────────────────────────── */}
       <div style={{ flex: 1, overflowX: "auto", overflowY: "auto" }}>
+        {/* Row count header */}
+        {!taskLoading && topRows.length > 0 && (
+          <div style={{ padding: "6px 20px", fontSize: 12, color: "var(--text-muted)", borderBottom: "1px solid var(--border-light)" }}>
+            {topRows.length > rowLimit
+              ? `Showing ${Math.min(rowLimit, topRows.length).toLocaleString()} of ${topRows.length.toLocaleString()} rows`
+              : `Showing ${topRows.length.toLocaleString()} rows`}
+          </div>
+        )}
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
           <thead>
             <tr style={{

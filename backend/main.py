@@ -21,7 +21,9 @@ from typing import Optional
 
 from config import (
     DATASETS, DATASET_SERIES, AGG_LEVEL_OPTIONS, SORT_OPTIONS, AGG_LEVEL_COL,
-    AEI_SNAPSHOT_DATASETS, AEI_CUMULATIVE_DATASETS, MCP_DATASETS,
+    AEI_CONV_SNAPSHOT_DATASETS, AEI_API_SNAPSHOT_DATASETS,
+    AEI_CONV_CUMULATIVE_DATASETS, AEI_API_CUMULATIVE_DATASETS,
+    AEI_BOTH_CUMULATIVE_DATASETS, MCP_DATASETS,
 )
 from compute import (
     get_group_data,
@@ -86,16 +88,19 @@ class GroupSettingsModel(BaseModel):
 # ── /api/config ────────────────────────────────────────────────────────────────
 
 class ConfigResponse(BaseModel):
-    datasets:               list[str]
-    dataset_availability:   dict[str, bool]
-    dataset_series:         dict[str, list[str]]
-    agg_levels:             dict[str, str]
-    sort_options:           list[str]
-    crosswalk_available:    bool
-    eco2015_available:      bool
-    aei_snapshot_datasets:  list[str]
-    aei_cumulative_datasets: list[str]
-    mcp_datasets:           list[str]
+    datasets:                    list[str]
+    dataset_availability:        dict[str, bool]
+    dataset_series:              dict[str, list[str]]
+    agg_levels:                  dict[str, str]
+    sort_options:                list[str]
+    crosswalk_available:         bool
+    eco2015_available:           bool
+    aei_conv_snapshot_datasets:  list[str]
+    aei_api_snapshot_datasets:   list[str]
+    aei_conv_cumulative_datasets: list[str]
+    aei_api_cumulative_datasets: list[str]
+    aei_both_cumulative_datasets: list[str]
+    mcp_datasets:                list[str]
 
 
 @app.get("/api/health")
@@ -113,8 +118,11 @@ def config():
         sort_options=SORT_OPTIONS,
         crosswalk_available=crosswalk_available(),
         eco2015_available=eco2015_available(),
-        aei_snapshot_datasets=sorted(AEI_SNAPSHOT_DATASETS),
-        aei_cumulative_datasets=sorted(AEI_CUMULATIVE_DATASETS),
+        aei_conv_snapshot_datasets=sorted(AEI_CONV_SNAPSHOT_DATASETS),
+        aei_api_snapshot_datasets=sorted(AEI_API_SNAPSHOT_DATASETS),
+        aei_conv_cumulative_datasets=sorted(AEI_CONV_CUMULATIVE_DATASETS),
+        aei_api_cumulative_datasets=sorted(AEI_API_CUMULATIVE_DATASETS),
+        aei_both_cumulative_datasets=sorted(AEI_BOTH_CUMULATIVE_DATASETS),
         mcp_datasets=sorted(MCP_DATASETS),
     )
 

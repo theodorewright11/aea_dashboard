@@ -15,41 +15,55 @@ CROSSWALK_PATHS = [
     str(ROOT.parent / "automation_exposure_analysis" / "data" / "2010_to_2019_soc_crosswalk.csv"),
 ]
 
-# All datasets (includes Eco 2015 used internally for work-activity baselines)
+# All datasets
 DATASETS = {
-    "AEI v1":     {"file": str(DATA_DIR / "final_aei_v1.csv"),     "is_aei": True,  "is_mcp": False},
-    "AEI v2":     {"file": str(DATA_DIR / "final_aei_v2.csv"),     "is_aei": True,  "is_mcp": False},
-    "AEI v3":     {"file": str(DATA_DIR / "final_aei_v3.csv"),     "is_aei": True,  "is_mcp": False},
-    "AEI v4":     {"file": str(DATA_DIR / "final_aei_v4.csv"),     "is_aei": True,  "is_mcp": False},
-    "AEI API v3": {"file": str(DATA_DIR / "final_aei_api_v3.csv"), "is_aei": True,  "is_mcp": False},
-    "AEI API v4": {"file": str(DATA_DIR / "final_aei_api_v4.csv"), "is_aei": True,  "is_mcp": False},
-    "MCP v1":     {"file": str(DATA_DIR / "final_mcp_v1.csv"),     "is_aei": False, "is_mcp": True},
-    "MCP v2":     {"file": str(DATA_DIR / "final_mcp_v2.csv"),     "is_aei": False, "is_mcp": True},
-    "MCP v3":     {"file": str(DATA_DIR / "final_mcp_v3.csv"),     "is_aei": False, "is_mcp": True},
-    "MCP v4":     {"file": str(DATA_DIR / "final_mcp_v4.csv"),     "is_aei": False, "is_mcp": True},
-    "Microsoft":  {"file": str(DATA_DIR / "final_microsoft.csv"),  "is_aei": False, "is_mcp": False},
-    # Cumulative AEI — each version accumulates all conversations up to that snapshot date
-    "AEI Cumul. v1": {"file": str(DATA_DIR / "final_aei_cumulative_v1.csv"), "is_aei": True, "is_mcp": False},
-    "AEI Cumul. v2": {"file": str(DATA_DIR / "final_aei_cumulative_v2.csv"), "is_aei": True, "is_mcp": False},
-    "AEI Cumul. v3": {"file": str(DATA_DIR / "final_aei_cumulative_v3.csv"), "is_aei": True, "is_mcp": False},
-    "AEI Cumul. v4": {"file": str(DATA_DIR / "final_aei_cumulative_v4.csv"), "is_aei": True, "is_mcp": False},
+    # AEI Conversation snapshots (2010 SOC, needs crosswalk)
+    "AEI Conv. v1":   {"file": str(DATA_DIR / "final_aei_v1.csv"),     "is_aei": True,  "is_mcp": False},
+    "AEI Conv. v2":   {"file": str(DATA_DIR / "final_aei_v2.csv"),     "is_aei": True,  "is_mcp": False},
+    "AEI Conv. v3":   {"file": str(DATA_DIR / "final_aei_v3.csv"),     "is_aei": True,  "is_mcp": False},
+    "AEI Conv. v4":   {"file": str(DATA_DIR / "final_aei_v4.csv"),     "is_aei": True,  "is_mcp": False},
+    # AEI API snapshots (2010 SOC, needs crosswalk)
+    "AEI API v3":     {"file": str(DATA_DIR / "final_aei_api_v3.csv"), "is_aei": True,  "is_mcp": False},
+    "AEI API v4":     {"file": str(DATA_DIR / "final_aei_api_v4.csv"), "is_aei": True,  "is_mcp": False},
+    # MCP Cumulative (2019 SOC)
+    "MCP Cumul. v1":  {"file": str(DATA_DIR / "final_mcp_v1.csv"),     "is_aei": False, "is_mcp": True},
+    "MCP Cumul. v2":  {"file": str(DATA_DIR / "final_mcp_v2.csv"),     "is_aei": False, "is_mcp": True},
+    "MCP Cumul. v3":  {"file": str(DATA_DIR / "final_mcp_v3.csv"),     "is_aei": False, "is_mcp": True},
+    "MCP Cumul. v4":  {"file": str(DATA_DIR / "final_mcp_v4.csv"),     "is_aei": False, "is_mcp": True},
+    # Microsoft (2019 SOC)
+    "Microsoft":      {"file": str(DATA_DIR / "final_microsoft.csv"),  "is_aei": False, "is_mcp": False},
+    # AEI Cumulative — conversation-only (no API), v1/v2 only have conv data naturally
+    "AEI Cumul. Conv. v1": {"file": str(DATA_DIR / "final_aei_cumulative_v1.csv"),          "is_aei": True, "is_mcp": False},
+    "AEI Cumul. Conv. v2": {"file": str(DATA_DIR / "final_aei_cumulative_v2.csv"),          "is_aei": True, "is_mcp": False},
+    "AEI Cumul. Conv. v3": {"file": str(DATA_DIR / "final_aei_cumulative_aei_only_v3.csv"), "is_aei": True, "is_mcp": False},
+    "AEI Cumul. Conv. v4": {"file": str(DATA_DIR / "final_aei_cumulative_aei_only_v4.csv"), "is_aei": True, "is_mcp": False},
+    # AEI Cumulative — API-only
+    "AEI API Cumul. v4":   {"file": str(DATA_DIR / "final_aei_cumulative_api_only_v4.csv"), "is_aei": True, "is_mcp": False},
+    # AEI Cumulative — both conversation + API
+    "AEI Cumul. (Both) v3": {"file": str(DATA_DIR / "final_aei_cumulative_v3.csv"), "is_aei": True, "is_mcp": False},
+    "AEI Cumul. (Both) v4": {"file": str(DATA_DIR / "final_aei_cumulative_v4.csv"), "is_aei": True, "is_mcp": False},
 }
 
 # Eco 2015 is used internally as the baseline for AEI work-activity analysis (not user-selectable)
 ECO_2015_META = {"file": ECO_2015_FILE, "is_aei": True, "is_mcp": False}
 
-# Which datasets are AEI snapshot vs cumulative (for selection enforcement)
-AEI_SNAPSHOT_DATASETS = {"AEI v1", "AEI v2", "AEI v3", "AEI v4", "AEI API v3", "AEI API v4"}
-AEI_CUMULATIVE_DATASETS = {"AEI Cumul. v1", "AEI Cumul. v2", "AEI Cumul. v3", "AEI Cumul. v4"}
-MCP_DATASETS = {"MCP v1", "MCP v2", "MCP v3", "MCP v4"}
+# Dataset family classification (for selection enforcement)
+AEI_CONV_SNAPSHOT_DATASETS    = {"AEI Conv. v1", "AEI Conv. v2", "AEI Conv. v3", "AEI Conv. v4"}
+AEI_API_SNAPSHOT_DATASETS     = {"AEI API v3", "AEI API v4"}
+AEI_CONV_CUMULATIVE_DATASETS  = {"AEI Cumul. Conv. v1", "AEI Cumul. Conv. v2", "AEI Cumul. Conv. v3", "AEI Cumul. Conv. v4"}
+AEI_API_CUMULATIVE_DATASETS   = {"AEI API Cumul. v4"}
+AEI_BOTH_CUMULATIVE_DATASETS  = {"AEI Cumul. (Both) v3", "AEI Cumul. (Both) v4"}
+MCP_DATASETS                  = {"MCP Cumul. v1", "MCP Cumul. v2", "MCP Cumul. v3", "MCP Cumul. v4"}
 
 # Dataset series for time-trend analysis
 DATASET_SERIES = {
-    "AEI":           ["AEI v1", "AEI v2", "AEI v3", "AEI v4"],
-    "AEI API":       ["AEI API v3", "AEI API v4"],
-    "AEI Cumul.":    ["AEI Cumul. v1", "AEI Cumul. v2", "AEI Cumul. v3", "AEI Cumul. v4"],
-    "MCP":           ["MCP v1", "MCP v2", "MCP v3", "MCP v4"],
-    "Microsoft":     ["Microsoft"],
+    "AEI Conv.":         ["AEI Conv. v1", "AEI Conv. v2", "AEI Conv. v3", "AEI Conv. v4"],
+    "AEI API":           ["AEI API v3", "AEI API v4"],
+    "AEI Cumul. Conv.":  ["AEI Cumul. Conv. v1", "AEI Cumul. Conv. v2", "AEI Cumul. Conv. v3", "AEI Cumul. Conv. v4"],
+    "AEI API Cumul.":    ["AEI API Cumul. v4"],
+    "AEI Cumul. (Both)": ["AEI Cumul. (Both) v3", "AEI Cumul. (Both) v4"],
+    "MCP Cumul.":        ["MCP Cumul. v1", "MCP Cumul. v2", "MCP Cumul. v3", "MCP Cumul. v4"],
+    "Microsoft":         ["Microsoft"],
 }
 
 AGG_LEVEL_COL = {

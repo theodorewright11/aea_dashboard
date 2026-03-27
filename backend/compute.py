@@ -13,10 +13,12 @@ from typing import Optional
 from config import (
     ECO_BASELINE_FILE, ECO_2015_FILE, CROSSWALK_PATHS,
     AGG_LEVEL_COL, DATASETS, DATASET_SERIES, SORT_COL_MAP,
-    AEI_SNAPSHOT_DATASETS, AEI_CUMULATIVE_DATASETS, MCP_DATASETS,
+    AEI_CONV_SNAPSHOT_DATASETS, AEI_API_SNAPSHOT_DATASETS,
+    AEI_CONV_CUMULATIVE_DATASETS, AEI_API_CUMULATIVE_DATASETS,
+    AEI_BOTH_CUMULATIVE_DATASETS, MCP_DATASETS,
 )
 
-AEI_EXPLORER_DATASETS = ["AEI v1", "AEI v2", "AEI v3", "AEI v4", "AEI API v3", "AEI API v4"]
+AEI_EXPLORER_DATASETS = ["AEI Conv. v1", "AEI Conv. v2", "AEI Conv. v3", "AEI Conv. v4", "AEI API v3", "AEI API v4"]
 
 # ── Simple in-process caches ───────────────────────────────────────────────────
 _crosswalk_cache: Optional[pd.DataFrame] = None
@@ -882,9 +884,9 @@ def compute_wa_trends(settings: dict) -> dict:
 
     # Map series name → (dataset family names, use_eco2015)
     SERIES_MAP = {
-        "AEI":       (["AEI", "AEI API"], True),
-        "MCP":       (["MCP"],            False),
-        "Microsoft": (["Microsoft"],      False),
+        "AEI":       (["AEI Conv.", "AEI API", "AEI Cumul. Conv.", "AEI API Cumul.", "AEI Cumul. (Both)"], True),
+        "MCP":       (["MCP Cumul."],   False),
+        "Microsoft": (["Microsoft"],    False),
     }
 
     result_series = []
@@ -1156,8 +1158,8 @@ def _build_explorer_task_lookup() -> dict:
                 "pct_norm": _safe_num(row["pct_norm"]),
             }
 
-    # MCP v4
-    mcp_meta = DATASETS.get("MCP v4", {})
+    # MCP Cumul. v4
+    mcp_meta = DATASETS.get("MCP Cumul. v4", {})
     mcp_file = mcp_meta.get("file", "")
     if Path(mcp_file).exists():
         mcp = pd.read_csv(mcp_file)
@@ -1213,7 +1215,7 @@ def _build_explorer_task_lookup() -> dict:
 def _build_top_mcps_lookup() -> dict:
     """
     Builds and caches a dict: task_normalized -> list of {title, rating, url}.
-    Source: MCP v4 `top_mcps` (pipe-delimited "Name (rating)") and `top_mcp_urls` (pipe-delimited URLs).
+    Source: MCP Cumul. v4 `top_mcps` (pipe-delimited "Name (rating)") and `top_mcp_urls` (pipe-delimited URLs).
     Returns up to 5 entries per task.
     """
     global _top_mcps_cache
@@ -1221,7 +1223,7 @@ def _build_top_mcps_lookup() -> dict:
         return _top_mcps_cache
 
     result: dict = {}
-    mcp_meta = DATASETS.get("MCP v4", {})
+    mcp_meta = DATASETS.get("MCP Cumul. v4", {})
     mcp_file = mcp_meta.get("file", "")
     if not Path(mcp_file).exists():
         _top_mcps_cache = result

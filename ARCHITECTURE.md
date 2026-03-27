@@ -54,18 +54,27 @@ All CSVs live in `data/`. There are two SOC taxonomies in play:
 
 | Dataset | File | SOC | `is_aei` | `is_mcp` | Notes |
 |---------|------|-----|----------|----------|-------|
-| AEI v1–v4 | `final_aei_v{1..4}.csv` | 2010 | true | false | Snapshot; needs crosswalk to 2019 |
+| AEI Conv. v1–v4 | `final_aei_v{1..4}.csv` | 2010 | true | false | Snapshot; needs crosswalk to 2019 |
 | AEI API v3–v4 | `final_aei_api_v{3,4}.csv` | 2010 | true | false | Snapshot; needs crosswalk to 2019 |
-| AEI Cumul. v1–v4 | `final_aei_cumulative_v{1..4}.csv` | 2010 | true | false | Cumulative (each version accumulates all prior); needs crosswalk. Only one at a time; cannot mix with snapshot AEI. |
-| MCP v1–v4 | `final_mcp_v{1..4}.csv` | 2019 | false | true | Only one version at a time |
+| AEI Cumul. Conv. v1/v2 | `final_aei_cumulative_v{1,2}.csv` | 2010 | true | false | Cumulative (each version accumulates all prior); needs crosswalk. |
+| AEI Cumul. Conv. v3 | `final_aei_cumulative_aei_only_v3.csv` | 2010 | true | false | Cumulative AEI-only conv. v3; needs crosswalk. |
+| AEI Cumul. Conv. v4 | `final_aei_cumulative_aei_only_v4.csv` | 2010 | true | false | Cumulative AEI-only conv. v4; needs crosswalk. |
+| AEI Cumul. (Both) v3/v4 | `final_aei_cumulative_v{3,4}.csv` | 2010 | true | false | Cumulative (AEI + API combined) v3/v4; needs crosswalk. |
+| AEI API Cumul. v4 | `final_aei_cumulative_api_only_v4.csv` | 2010 | true | false | Cumulative API-only v4; needs crosswalk. |
+| MCP Cumul. v1–v4 | `final_mcp_v{1..4}.csv` | 2019 | false | true | Only one version at a time |
 | Microsoft | `final_microsoft.csv` | 2019 | false | false | Single snapshot |
 
 **Dataset families in `config.py`:**
-- `AEI_SNAPSHOT_DATASETS` — `{"AEI v1", "AEI v2", "AEI v3", "AEI v4", "AEI API v3", "AEI API v4"}`
-- `AEI_CUMULATIVE_DATASETS` — `{"AEI Cumul. v1", ..., "AEI Cumul. v4"}`
-- `MCP_DATASETS` — `{"MCP v1", ..., "MCP v4"}`
+- `AEI_CONV_SNAPSHOT_DATASETS` — `{"AEI Conv. v1", "AEI Conv. v2", "AEI Conv. v3", "AEI Conv. v4"}`
+- `AEI_API_SNAPSHOT_DATASETS` — `{"AEI API v3", "AEI API v4"}`
+- `AEI_CONV_CUMULATIVE_DATASETS` — `{"AEI Cumul. Conv. v1", "AEI Cumul. Conv. v2", "AEI Cumul. Conv. v3", "AEI Cumul. Conv. v4"}`
+- `AEI_API_CUMULATIVE_DATASETS` — `{"AEI API Cumul. v4"}`
+- `AEI_BOTH_CUMULATIVE_DATASETS` — `{"AEI Cumul. (Both) v3", "AEI Cumul. (Both) v4"}`
+- `MCP_DATASETS` — `{"MCP Cumul. v1", ..., "MCP Cumul. v4"}`
 
-These sets are exposed via `GET /api/config` as `aei_snapshot_datasets`, `aei_cumulative_datasets`, `mcp_datasets` and consumed by `frontend/src/lib/datasetRules.ts` for selection enforcement (see §6).
+Total selectable datasets: 18.
+
+These sets are exposed via `GET /api/config` as `aei_conv_snapshot_datasets`, `aei_api_snapshot_datasets`, `aei_conv_cumulative_datasets`, `aei_api_cumulative_datasets`, `aei_both_cumulative_datasets`, `mcp_datasets` and consumed by `frontend/src/lib/datasetRules.ts` for selection enforcement (see §6).
 
 ### Baseline Files (not user-selectable)
 
@@ -97,16 +106,23 @@ These sets are exposed via `GET /api/config` as `aei_snapshot_datasets`, `aei_cu
 
 | Dataset | Date |
 |---------|------|
-| AEI v1 | 2024-12-23 |
-| AEI v2 | 2025-03-06 |
-| AEI v3 | 2025-08-11 |
-| AEI v4 | 2025-11-13 |
+| AEI Conv. v1 | 2024-12-23 |
+| AEI Conv. v2 | 2025-03-06 |
+| AEI Conv. v3 | 2025-08-11 |
+| AEI Conv. v4 | 2025-11-13 |
 | AEI API v3 | 2025-08-11 |
 | AEI API v4 | 2025-11-13 |
-| MCP v1 | 2025-04-24 |
-| MCP v2 | 2025-05-24 |
-| MCP v3 | 2025-07-23 |
-| MCP v4 | 2026-02-18 |
+| AEI Cumul. Conv. v1 | 2024-12-23 |
+| AEI Cumul. Conv. v2 | 2025-03-06 |
+| AEI Cumul. Conv. v3 | 2025-08-11 |
+| AEI Cumul. Conv. v4 | 2025-11-13 |
+| AEI Cumul. (Both) v3 | 2025-08-11 |
+| AEI Cumul. (Both) v4 | 2025-11-13 |
+| AEI API Cumul. v4 | 2025-11-13 |
+| MCP Cumul. v1 | 2025-04-24 |
+| MCP Cumul. v2 | 2025-05-24 |
+| MCP Cumul. v3 | 2025-07-23 |
+| MCP Cumul. v4 | 2026-02-18 |
 | Microsoft | 2024-09-30 |
 
 **ECO 2015 note:** `auto_aug_mean` and `pct_normalized` are all null/zero in eco files — values must come from AI datasets.
@@ -118,12 +134,15 @@ These sets are exposed via `GET /api/config` as `aei_snapshot_datasets`, `aei_cu
 ### `config.py` — Registry & Constants
 
 ```python
-DATASETS           # dict[str, {file, is_aei, is_mcp}] — 15 selectable datasets (11 original + 4 cumulative AEI)
+DATASETS           # dict[str, {file, is_aei, is_mcp}] — 18 selectable datasets
 ECO_2015_META      # internal-only baseline for AEI work-activity analysis
-AEI_SNAPSHOT_DATASETS    # set of snapshot AEI names: {AEI v1..v4, AEI API v3..v4}
-AEI_CUMULATIVE_DATASETS  # set of cumulative AEI names: {AEI Cumul. v1..v4}
-MCP_DATASETS       # set of MCP names: {MCP v1..v4}
-DATASET_SERIES     # {"AEI": ["AEI v1"..v4], "AEI API": [...], "AEI Cumul.": [...], "MCP": [...], "Microsoft": [...]}
+AEI_CONV_SNAPSHOT_DATASETS    # set of snapshot AEI conv. names: {AEI Conv. v1..v4}
+AEI_API_SNAPSHOT_DATASETS     # set of snapshot AEI API names: {AEI API v3, AEI API v4}
+AEI_CONV_CUMULATIVE_DATASETS  # set of cumulative AEI conv. names: {AEI Cumul. Conv. v1..v4}
+AEI_API_CUMULATIVE_DATASETS   # set of cumulative AEI API names: {AEI API Cumul. v4}
+AEI_BOTH_CUMULATIVE_DATASETS  # set of cumulative AEI both names: {AEI Cumul. (Both) v3, v4}
+MCP_DATASETS       # set of MCP names: {MCP Cumul. v1..v4}
+DATASET_SERIES     # {"AEI Conv.": ["AEI Conv. v1"..v4], "AEI API": [...], "AEI Cumul. Conv.": [...], "AEI API Cumul.": [...], "AEI Cumul. (Both)": [...], "MCP Cumul.": [...], "Microsoft": [...]}
 AGG_LEVEL_COL      # {"major": "major_occ_category", "minor": "minor_occ_category",
                    #  "broad": "broad_occ", "occupation": "title_current"}
 AGG_LEVEL_OPTIONS  # human-readable → key mapping
@@ -299,8 +318,8 @@ sum_pct_max = sum(per_task_max pct) over tasks with values
 ### 4.7 Explorer Task Lookup
 
 `_build_explorer_task_lookup()` reads all 8 AI sources:
-- **AEI v1–v4 + AEI API v3–v4**: groups by `task_normalized`, takes mean of `auto_aug_mean` and `pct_normalized` across all 2010 SOC titles sharing that task
-- **MCP v4**: uses `auto_aug_mean`
+- **AEI Conv. v1–v4 + AEI API v3–v4**: groups by `task_normalized`, takes mean of `auto_aug_mean` and `pct_normalized` across all 2010 SOC titles sharing that task
+- **MCP Cumul. v4**: uses `auto_aug_mean`
 - **Microsoft**: uses `auto_aug_mean`
 
 Result: `dict[task_normalized → dict[source_name → {auto_aug: float|None, pct_norm: float|None}]]`
@@ -383,15 +402,18 @@ Returns `{"status": "ok"}`.
 Response:
 ```ts
 {
-  datasets: string[];                        // all dataset names (15: 11 original + 4 cumulative AEI)
+  datasets: string[];                        // all dataset names (21 selectable)
   dataset_availability: Record<string, boolean>;
-  dataset_series: Record<string, string[]>;  // {"AEI": ["AEI v1"..], "AEI Cumul.": [...], "MCP": [...], ...}
+  dataset_series: Record<string, string[]>;  // {"AEI Conv.": ["AEI Conv. v1"..], "AEI Cumul. Conv.": [...], "AEI Cumul. (Both)": [...], "AEI API Cumul.": [...], "MCP Cumul.": [...], ...}
   agg_levels: Record<string, string>;        // {"Major Category": "major", ...}
   sort_options: string[];                    // ["Workers Affected", ...]
   crosswalk_available: boolean;
   eco2015_available: boolean;
-  aei_snapshot_datasets: string[];          // names of all snapshot AEI datasets
-  aei_cumulative_datasets: string[];        // names of all cumulative AEI datasets
+  aei_conv_snapshot_datasets: string[];     // names of snapshot AEI conv. datasets
+  aei_api_snapshot_datasets: string[];      // names of snapshot AEI API datasets
+  aei_conv_cumulative_datasets: string[];   // names of cumulative AEI conv. datasets
+  aei_api_cumulative_datasets: string[];    // names of cumulative AEI API datasets
+  aei_both_cumulative_datasets: string[];   // names of cumulative AEI (both) datasets
   mcp_datasets: string[];                   // names of all MCP datasets
 }
 ```
@@ -401,7 +423,7 @@ Response:
 Request body (`GroupSettingsModel`):
 ```ts
 {
-  selected_datasets: string[];        // e.g., ["AEI v4", "MCP v4"]
+  selected_datasets: string[];        // e.g., ["AEI Conv. v4", "MCP Cumul. v4"]
   combine_method: string;             // "Average" | "Max"
   method: string;                     // "freq" | "imp"
   use_auto_aug: boolean;
@@ -480,7 +502,7 @@ Response:
   series: Array<{
     name: string;                     // series family name (e.g., "AEI")
     data_points: Array<{
-      dataset: string;                // individual dataset (e.g., "AEI v2")
+      dataset: string;                // individual dataset (e.g., "AEI Conv. v2")
       date: string;                   // from CSV date column
       rows: TrendRow[];               // ALL categories, not just top-N
     }>;
@@ -709,8 +731,8 @@ Response:
 Request body (`TaskChangesRequest`):
 ```ts
 {
-  from_dataset: string;   // e.g., "AEI Cumul. v1"
-  to_dataset:   string;   // e.g., "AEI Cumul. v4"
+  from_dataset: string;   // e.g., "AEI Cumul. Conv. v1"
+  to_dataset:   string;   // e.g., "AEI Cumul. Conv. v4"
 }
 ```
 
@@ -917,7 +939,7 @@ Levels: Major / Minor / Broad / Occupation / Task. At "Task" level, data fetched
 
 **Child rows:** `childRowCache` — pre-built `useMemo` Map keyed by `"level:name"` for O(1) lookups. Rebuilt when groups/occupations/geo change.
 
-**Task expansion:** Clicking an occupation row fetches tasks via `fetchOccupationTasks()`. Task detail shows Occupation Classification (Broad → Minor → Major), Activity Classification (GWA/IWA/DWA), per-source breakdown table (AEI v1–v4, API v3–v4, MCP v4, Microsoft, plus AVG and MAX summary rows).
+**Task expansion:** Clicking an occupation row fetches tasks via `fetchOccupationTasks()`. Task detail shows Occupation Classification (Broad → Minor → Major), Activity Classification (GWA/IWA/DWA), per-source breakdown table (AEI Conv. v1–v4, API v3–v4, MCP Cumul. v4, Microsoft, plus AVG and MAX summary rows).
 
 **Occ-level emp:** Occupation Explorer at the occ level shows raw occupation employment (not divided by number of tasks).
 
@@ -983,22 +1005,22 @@ WA Explorer task view uses weighted emp (freq or value based on Time/Value toggl
 
 ### Component: `TaskChangesView`
 
-`TaskChangesView.tsx` — Task-level dataset comparison table (titled "Task Changes Explorer"). Props: `config` (`ConfigResponse`). Dataset pickers, status filter pills (with dynamic counts that update based on active filters), major category pills, search, per-column numeric threshold filters (funnel icon → min/max dropdown), per-column text filters (funnel icon → multi-select checkbox dropdown for Occupation, Major, Minor, Broad, GWA, IWA, DWA), column selector, pagination. Task column uses word-wrap (no truncation); lowercase task names are auto-capitalized via `titleCaseTask()`. Column labels use "Auto" instead of "auto_aug". Source breakdown in expanded rows uses colored AVG/MAX badges matching explorer style. Table container has `maxHeight` with `overflowY: auto` so horizontal scroll is accessible from any vertical position. Row expansion shows occupation categories, work activities, source breakdown, and top MCP servers. Simple mode defaults to AEI Cumul v1 → v4.
+`TaskChangesView.tsx` — Task-level dataset comparison table (titled "Task Changes Explorer"). Props: `config` (`ConfigResponse`). Dataset pickers, status filter pills (with dynamic counts that update based on active filters), major category pills, search, per-column numeric threshold filters (funnel icon → min/max dropdown), per-column text filters (funnel icon → multi-select checkbox dropdown for Occupation, Major, Minor, Broad, GWA, IWA, DWA), column selector, pagination. Task column uses word-wrap (no truncation); lowercase task names are auto-capitalized via `titleCaseTask()`. Column labels use "Auto" instead of "auto_aug". Source breakdown in expanded rows uses colored AVG/MAX badges matching explorer style. Table container has `maxHeight` with `overflowY: auto` so horizontal scroll is accessible from any vertical position. Row expansion shows occupation categories, work activities, source breakdown, and top MCP servers. Simple mode defaults to AEI Cumul. Conv. v1 → v4.
 
 ### Utility: `lib/datasetRules.ts`
 
 Shared dataset selection enforcement. Exports:
-- `DatasetClassification` interface: `{ aeiSnapshotDatasets, aeiCumulativeDatasets, mcpDatasets }`
-- `enforceDatasetToggle(current, name, cls)` — returns the new selection after toggling `name`, with rules applied:
-  - Selecting a **cumulative AEI** → removes all other cumulative and all snapshot AEI
-  - Selecting a **snapshot AEI** → removes all cumulative AEI
+- `DatasetClassification` interface: `{ aeiConvSnapshotDatasets, aeiApiSnapshotDatasets, aeiConvCumulativeDatasets, aeiApiCumulativeDatasets, aeiBothCumulativeDatasets, mcpDatasets }`
+- `enforceDatasetToggle(current, name, cls)` — returns the new selection after toggling `name`, with family-based rules applied across 4 AEI families + MCP:
+  - Selecting a **cumulative AEI** (from any cumulative family) → removes all other cumulative AEI and all snapshot AEI
+  - Selecting a **snapshot AEI** (from any snapshot family) → removes all cumulative AEI
   - Selecting an **MCP** → removes all other MCP (only one MCP at a time)
   - Deselecting anything → always allowed
 - `getDatasetConflictMessage(current, cls)` — returns a conflict description string or null if valid
 
 Used by: `ExplorerView` `PctComputePanel`, `WAExplorerView` `WaPctComputePanel`, `occupation-categories/page.tsx` `DatasetPills`, `work-activities/page.tsx` `DatasetPillsWA`.
 
-The classification arrays are sourced from `config.aei_snapshot_datasets`, `config.aei_cumulative_datasets`, `config.mcp_datasets` (from `GET /api/config`).
+The classification arrays are sourced from `config.aei_conv_snapshot_datasets`, `config.aei_api_snapshot_datasets`, `config.aei_conv_cumulative_datasets`, `config.aei_api_cumulative_datasets`, `config.aei_both_cumulative_datasets`, `config.mcp_datasets` (from `GET /api/config`). The UI organizes datasets into subsections by family.
 
 ### Utility: `downloadChart.ts`
 
@@ -1029,7 +1051,7 @@ All caching is in-module Python dicts. **Nothing invalidates caches except serve
 | `_wa_explorer_cache` | singleton | WA explorer rows (GWA/IWA/DWA) |
 | `_all_tasks_cache` | singleton | All unique tasks with metrics |
 | `_all_eco_task_rows_cache` | singleton | All ~23,850 eco_2025 task×occ rows with AI metrics |
-| `_top_mcps_cache` | singleton | `task_normalized → [{title, url}]` from MCP v4 top_mcps column |
+| `_top_mcps_cache` | singleton | `task_normalized → [{title, url}]` from MCP Cumul. v4 top_mcps column |
 | `_wa_cache` | (varies) | Work activity computation results |
 | `_trends_cache` | (varies) | Trends computation results |
 
@@ -1083,7 +1105,7 @@ The explorer endpoints are **cold-start heavy** (~2–5s on first `/api/explorer
 
 20. **DWA emp allocation in WA Explorer** deduplicates on `(title_current, task_normalized)` within each activity — not globally. Each activity level (GWA/IWA/DWA) deduplicates independently.
 
-21. **All 8 sources are shown in explorer task breakdowns** (AEI v1–v4, AEI API v3–v4, MCP v4, Microsoft) — not just latest versions.
+21. **All 8 sources are shown in explorer task breakdowns** (AEI Conv. v1–v4, AEI API v3–v4, MCP Cumul. v4, Microsoft) — not just latest versions.
 
 22. **Explorer `PctComputePanel`** calls `/api/compute` with `aggLevel: "occupation"`, `topN: 1000`. Physical filter affects numerator only, consistent with the rest of the app.
 
@@ -1093,9 +1115,9 @@ The explorer endpoints are **cold-start heavy** (~2–5s on first `/api/explorer
 
 25. **`pctAffectedMap` in WAExplorerView is keyed by DWA activity name, not task text.** At the DWA level the map key is `r.name` (the DWA name). At the Task level each row's `r.name` is the task text — use `r.dwa_title ?? ""` as the lookup key to find the parent DWA's pct_affected. Using `r.name` at task level produces no matches.
 
-26. **Dataset selection enforcement is client-side only.** `enforceDatasetToggle()` in `lib/datasetRules.ts` auto-deselects conflicting datasets in the UI. The backend does not enforce these rules — any combination technically computes, but the results are only meaningful when selection constraints are respected (e.g., cumulative AEI v4 already includes v1–v3, so selecting multiple cumulative versions is redundant).
+26. **Dataset selection enforcement is client-side only.** `enforceDatasetToggle()` in `lib/datasetRules.ts` auto-deselects conflicting datasets in the UI. The backend does not enforce these rules — any combination technically computes, but the results are only meaningful when selection constraints are respected (e.g., AEI Cumul. Conv. v4 already includes v1–v3, so selecting multiple cumulative versions from the same family is redundant).
 
-27. **Cumulative AEI datasets cannot be mixed with snapshot AEI datasets.** `AEI Cumul. v1–v4` and `AEI v1–v4 / AEI API v3–v4` are mutually exclusive. The cumulative versions aggregate all conversations up to their snapshot date, so their scale is not comparable to the per-snapshot versions.
+27. **Cumulative AEI datasets cannot be mixed with snapshot AEI datasets.** Cumulative families (`AEI Cumul. Conv.`, `AEI API Cumul.`, `AEI Cumul. (Both)`) and snapshot families (`AEI Conv.`, `AEI API`) are mutually exclusive. The cumulative versions aggregate all conversations up to their snapshot date, so their scale is not comparable to the per-snapshot versions.
 
 28. **WA emp allocation is method-weighted, not equal-split.** The backend returns both freq-weighted and value-weighted emp variants for WA explorer rows and WA task details. The frontend emp weighting toggle selects which variant to display. The WA charts page's Time/Value method toggle controls both task_comp AND emp weighting simultaneously.
 
