@@ -1,8 +1,8 @@
-# Question: How Do the Three AI Data Sources Differ in What They See?
+# Cross-Source Robustness: Do AEI, MCP, and Microsoft Agree on AI Exposure?
 
-The dashboard draws on three independent AI scoring sources: AEI (Anthropic Economic Index, cumulative conversation + API data), MCP (Model Context Protocol server logs capturing tool-use capability), and Microsoft (Copilot usage analysis). Each measures AI exposure differently. This analysis runs each source solo through the same pipeline and asks: **where do they agree, where do they diverge, and what does that tell us about how AI interacts with the economy?**
+Three independent AI scoring sources feed the AEA Dashboard. Each captures a different slice of AI capability: **AEI** (Anthropic Economic Index) measures what Claude is actually used for in real conversations and API calls, **MCP** (Model Context Protocol) captures what AI can do when given tool access and external resources, and **Microsoft** measures Copilot usage patterns across work tasks. If a finding holds across all three, we can trust it. If only one source drives it, we should flag that and ask why.
 
-Understanding source disagreement matters because policy conclusions change depending on which signal you trust. If all three sources converge on the same occupations, the finding is robust. Where they diverge, the divergence itself is informative --- it reveals which kinds of AI capability (conversational, tool-use, copilot) affect which kinds of work.
+This analysis runs each source solo through the dashboard's compute pipeline at four aggregation levels (major category, minor category, broad occupation, and individual occupation), then compares their rankings, scores, and tier assignments to determine which findings are robust and which are source-dependent.
 
 **Primary config:** Time method, Auto-aug ON, National, All tasks.
 
@@ -24,97 +24,169 @@ The similar AEI/Microsoft totals are deceptive --- as we'll see, the two sources
 
 ---
 
-## 2. Major Category Rankings: Same Top, Different Middle
+## 2. The Central Finding: Agreement Degrades with Granularity
 
-All three sources agree that **Computer and Mathematical Occupations** have the highest % tasks affected, and that **Office and Administrative Support** is the largest by workers affected. But the agreement breaks down quickly after the top few.
+The most important finding of this entire analysis: **source agreement is strong at the major category level but weakens systematically as you zoom in.** This has direct implications for which findings should be treated as robust.
 
-![% Tasks Affected by Major Category](figures/major_pct_tasks_affected.png)
+| Level | N Categories | Spearman rho range | High-confidence findings | % High |
+|-------|:-----------:|:------------------:|:------------------------:|:------:|
+| Major (22 groups) | 22 | 0.81 -- 0.85 | 6 of 13 in any top-10 | 46% |
+| Minor (95 groups) | 95 | 0.73 -- 0.78 | 11 of 31 in any top-20 | 35% |
+| Broad (439 groups) | 439 | 0.64 -- 0.71 | 1 of 52 in any top-20 | 2% |
+| Occupation (923) | 923 | 0.56 -- 0.65 | 1 of 78 in any top-30 | 1% |
 
-Key divergences at the major category level:
+"High confidence" means all three sources place the category in their respective top-N. "Moderate" means two of three agree. "Low" means only one source drives the finding.
 
-| Major Category | AEI | MCP | Microsoft | Notable |
-|---------------|----:|----:|----------:|---------|
-| Computer & Mathematical | 48.0% | 65.3% | 43.4% | MCP sees 20pp more than others |
-| Education | 45.2% | 22.9% | 28.8% | AEI sees 2x more than MCP --- conversational AI dominates teaching tasks |
-| Office & Admin | 32.8% | 54.4% | 34.5% | MCP sees admin work as highly tool-automatable |
-| Sales | 43.2% | 54.2% | 36.8% | MCP highest again; MS lowest |
-| Transportation | 5.5% | 18.0% | 15.2% | AEI barely sees it; MCP/MS see 3x more |
-| Food Preparation | 15.2% | 16.6% | 29.3% | Microsoft sees nearly 2x more than AEI/MCP |
-| Production | 4.2% | 13.2% | 15.8% | AEI sees almost nothing; MS sees 4x more |
+![Confidence distribution across levels](figures/confidence_summary.png)
 
-![Workers Affected by Major Category](figures/major_workers_affected.png)
+This pattern is consistent across all three source pairs, and the decline is smooth --- not a cliff between two specific levels. MCP and Microsoft correlate most strongly (highest rho at every level), which makes sense because both measure AI *doing work* (tools and copilot) rather than *conversing about work* (AEI).
 
-**The pattern:** AEI over-indexes on knowledge-intensive conversational work (education, science, legal). MCP over-indexes on technical/tool-amenable work (computing, admin, sales). Microsoft has a more uniform distribution, seeing moderate exposure across categories that AEI and MCP both overlook (food service, production, installation/maintenance).
+**The policy implication:** major-category findings can be cited with confidence. Minor-category findings need a source-agreement caveat. Broad and occupation-level findings should always note which source drives them.
 
 ---
 
-## 3. Occupation-Level Ranking: Moderate Correlation, Minimal Top-20 Overlap
+## 3. Major Category Level: The Robust Core
 
-At the occupation level (923 occupations), the three sources show moderate rank correlation but strikingly low agreement on which occupations are *most* affected.
+At the highest aggregation level, the three sources show strong agreement. Spearman rank correlations range from 0.81 to 0.85 -- high by social science standards, and 8/10 of each source's top-10 categories overlap with each other pair.
 
-| Pair | Spearman rho | Top-20 Overlap |
-|------|:-----------:|:--------------:|
-| AEI vs MCP | 0.584 | 2 / 20 |
-| AEI vs Microsoft | 0.557 | 2 / 20 |
-| MCP vs Microsoft | 0.650 | 2 / 20 |
+Six categories are **high-confidence findings** -- all three sources place them in their top 10 for % Tasks Affected:
 
-The Spearman correlations of 0.55--0.65 mean the sources roughly agree on the overall shape (high-exposure occupations tend to be higher in all sources), but the specifics diverge sharply. Only 2 out of 20 top occupations overlap for *any* pair.
+| Category | AEI | MCP | MS | Confidence |
+|----------|:---:|:---:|:--:|:----------:|
+| Computer and Mathematical | 48.0% (#1) | 65.3% (#1) | 43.4% (#1) | **High** |
+| Sales and Related | 43.2% (#3) | 54.2% (#3) | 36.8% (#2) | **High** |
+| Office and Administrative Support | 32.8% (#6) | 54.4% (#2) | 34.5% (#3) | **High** |
+| Business and Financial Operations | 37.5% (#4) | 40.8% (#4) | 31.4% (#6) | **High** |
+| Arts, Design, Entertainment, Sports, Media | 35.3% (#5) | 36.9% (#5) | 32.5% (#5) | **High** |
+| Life, Physical, and Social Science | 25.6% (#9) | 27.3% (#8) | 27.7% (#10) | **High** |
 
-![AEI vs MCP Scatter](figures/scatter_aei_vs_mcp.png)
+These are the bedrock findings: **regardless of which AI system you look at, these occupational groups have the most AI task overlap.** Computer/Math is unanimous #1, with all sources scoring it above 43%.
 
-The AEI vs MCP scatter plot reveals the characteristic pattern: a cloud of occupations where MCP sees substantial exposure (y-axis > 40%) but AEI sees near-zero (x-axis near 0%), and a separate cluster where AEI sees high exposure but MCP sees much less. The former are tool-use occupations (data scientists, penetration testers, blockchain engineers). The latter are education/teaching roles.
+![Major category comparison](figures/major_pct_tasks_affected.png)
 
-![MCP vs Microsoft Scatter](figures/scatter_mcp_vs_microsoft.png)
+![Source scores side by side](figures/score_dots_major.png)
 
----
+### 3.1 Moderate-Confidence Findings (2 of 3 sources agree)
 
-## 4. Biggest Disagreements: What Each Source Uniquely Captures
+Five categories reach moderate confidence at the major level:
 
-The divergence analysis reveals which occupations each source sees that the others miss. These are the 20 occupations with the largest absolute disagreement in % tasks affected.
+- **Educational Instruction and Library**: AEI ranks it #2 (45.2%), but MCP ranks it #11 (22.9%). AEI captures conversational AI usage -- teaching, tutoring, curriculum work -- which education workers use heavily. MCP's tool-based scoring doesn't see this because educational tasks don't typically involve the kind of tool access MCP measures.
+- **Architecture and Engineering**: MCP ranks it #6 (33.6%), but AEI ranks it #11 (20.7%). The reverse -- engineering work involves tool-heavy AI usage (code execution, CAD, simulation) that MCP captures but conversational usage misses.
+- **Community and Social Service**: AEI and Microsoft agree (both top-10), MCP does not. Social service work involves text-heavy, conversational tasks.
+- **Legal Occupations**: AEI and MCP agree, Microsoft does not. Both Claude and tool-access AI see legal research and drafting; Copilot usage in legal is apparently lower.
+- **Management**: AEI and MCP agree, Microsoft does not. Management involves diverse task types that both conversations and tools touch.
 
-### AEI vs MCP: Conversation vs Tool-Use
+### 3.2 Low-Confidence Findings (single-source)
 
-![AEI vs MCP Divergence](figures/divergence_aei_vs_mcp.png)
+- **Personal Care and Service**: Only MCP sees it in the top 10, driven by tool-based scoring.
+- **Food Preparation and Serving**: Only Microsoft sees it in the top 10 (29.3% vs MCP 16.6%, AEI 15.2%). Microsoft's Copilot data captures more food service task interaction than either Claude or MCP tools.
 
-**MCP sees, AEI doesn't (MCP >> AEI):**
-- Data Scientists: 72% MCP vs 0% AEI
-- Sales Representatives of Services: 71% MCP vs 0% AEI
-- Penetration Testers: 61% MCP vs 0% AEI
-- Blockchain Engineers: 59% MCP vs 0% AEI
-- Software QA Testers: 72% MCP vs 21% AEI
-
-These are occupations that heavily use AI *tools* (APIs, testing frameworks, data pipelines) rather than AI *conversations*. The AEI conversational data simply doesn't capture this kind of work.
-
-**AEI sees, MCP doesn't (AEI >> MCP):**
-- Patient Representatives: 78% AEI vs 22% MCP
-- Physics Teachers (Postsecondary): 79% AEI vs 27% MCP
-- Education Teachers (Postsecondary): 76% AEI vs 27% MCP
-- Political Science Teachers: 76% AEI vs 25% MCP
-- Industrial-Organizational Psychologists: 65% AEI vs 14% MCP
-
-These are conversational/knowledge roles where people are using Claude for drafting, research, and explanation --- work that doesn't require external tools.
-
-### MCP vs Microsoft: Capability vs Observed Use
-
-![MCP vs Microsoft Divergence](figures/divergence_mcp_vs_microsoft.png)
-
-**MCP sees far more than Microsoft:**
-- Telemarketers: 90% MCP vs 35% Microsoft
-- Spa Managers: 61% MCP vs 10% Microsoft
-- Medical Transcriptionists: 59% MCP vs 16% Microsoft
-
-**Microsoft sees more than MCP:**
-- Models: 47% Microsoft vs 5% MCP
-- Meat/Poultry Cutters: 45% Microsoft vs 4% MCP
-- Political Scientists: 45% Microsoft vs 8% MCP
-
-The Microsoft-higher cases tend to involve occupations where Copilot-style assistance (document editing, scheduling, email) contributes broadly even if the work isn't deeply automatable. The MCP-higher cases involve occupations where tool orchestration creates substantial capability that isn't yet reflected in Copilot usage.
+![Rank agreement at major level](figures/rank_heatmap_major.png)
 
 ---
 
-## 5. Risk Tier Analysis: Microsoft Never Reaches "High Risk"
+## 4. Minor Category Level: Still Useful, but Caveats Needed
 
-Using the same tier thresholds as the job elimination risk analysis (High >= 60%, Moderate 40--60%, Restructuring 20--40%, Low < 20%), the three sources produce dramatically different risk profiles.
+At 95 minor categories, Spearman correlations drop to 0.73--0.78. Eleven of the 31 categories appearing in any source's top 20 are high confidence:
+
+| Category | AEI | MCP | MS | Confidence |
+|----------|:---:|:---:|:--:|:----------:|
+| Sales Reps, Wholesale/Manufacturing | 65.8% (#2) | 56.1% (#7) | 40.8% (#5) | **High** |
+| Mathematical Science | 56.3% (#3) | 60.1% (#4) | 42.8% (#4) | **High** |
+| Secretaries and Admin Assistants | 47.5% (#9) | 71.6% (#1) | 37.1% (#10) | **High** |
+| Computer Occupations | 46.2% (#10) | 66.5% (#2) | 43.5% (#2) | **High** |
+| Media and Communication Workers | 49.5% (#7) | 49.9% (#12) | 43.7% (#1) | **High** |
+| Other Sales and Related | 51.7% (#6) | 54.7% (#10) | 36.6% (#14) | **High** |
+| Sales Reps, Services | 48.2% (#8) | 58.4% (#5) | 34.4% (#17) | **High** |
+| Other Office and Admin Support | 38.0% (#13) | 57.2% (#6) | 37.0% (#11) | **High** |
+| Information and Record Clerks | 37.5% (#16) | 55.4% (#8) | 36.9% (#12) | **High** |
+| Financial Specialists | 37.0% (#17) | 42.3% (#15) | 34.3% (#18) | **High** |
+| Librarians, Curators, and Archivists | 33.6% (#20) | 40.3% (#18) | 39.6% (#7) | **High** |
+
+Notice that even among high-confidence categories, the score spreads are large --- Secretaries shows a 34.5pp gap between MCP (71.6%) and Microsoft (37.1%). The sources agree it's a top category but disagree on *how much* exposure it has.
+
+**Notable single-source outlier:** Postsecondary Teachers is AEI's #1 minor category (66.9%) but MCP's #33 (28.5%) and Microsoft's #27 (31.9%). This is a classic AEI signature -- teaching generates enormous conversational AI usage that neither tool-based nor copilot measurement captures.
+
+![Minor category comparison](figures/minor_pct_tasks_affected.png)
+
+![Rank heatmap at minor level](figures/rank_heatmap_minor.png)
+
+![Score dots at minor level](figures/score_dots_minor.png)
+
+---
+
+## 5. Broad and Occupation Level: Source-Dependent Territory
+
+At the broad occupation level (439 categories), only **1 category** (Computer Support Specialists) achieves high confidence across all three sources. At the individual occupation level (923), also just 1. The vast majority of findings at these levels are driven by a single source.
+
+The broad-level results illustrate the pattern clearly:
+
+- **MCP-dominant top occupations**: Telemarketers (90.1% MCP vs 61.2% AEI, 35.4% MS), Office Clerks, Receptionists, Desktop Publishers -- tool-assisted data entry and lookup.
+- **AEI-dominant**: Market Research Analysts (78.8% AEI vs 58.5% MCP, 49.9% MS) -- heavy conversational research usage.
+- **Microsoft-dominant**: Customer Service Representatives, Computer and Information Analysts -- Copilot integration patterns.
+
+Score spreads at this level routinely exceed 25--50 percentage points between highest and lowest source. This isn't noise -- it reflects genuine differences in what each AI system does.
+
+![Rank heatmap at broad level](figures/rank_heatmap_broad.png)
+
+### 5.1 Pairwise Correlation at Each Level
+
+The full correlation matrix shows the degradation pattern:
+
+| Level | AEI vs MCP | AEI vs MS | MCP vs MS |
+|-------|:----------:|:---------:|:---------:|
+| Major | 0.85 | 0.81 | 0.85 |
+| Minor | 0.77 | 0.73 | 0.78 |
+| Broad | 0.67 | 0.64 | 0.71 |
+| Occupation | 0.58 | 0.56 | 0.65 |
+
+MCP vs Microsoft is the strongest pair at every level. Both measure AI *doing work*; AEI measures AI *being consulted*.
+
+![AEI vs MCP scatter (occupation level)](figures/scatter_aei_vs_mcp_occupation.png)
+
+![MCP vs Microsoft scatter (occupation level)](figures/scatter_mcp_vs_microsoft_occupation.png)
+
+---
+
+## 6. Pairwise Divergence: What Each Source Uniquely Captures
+
+### 6.1 AEI vs MCP (Conversation vs Tools)
+
+The largest systematic disagreement. AEI sees more exposure in education, social services, and legal (conversation-heavy). MCP sees more in office/admin, sales, and technical support (tool-heavy).
+
+Biggest major-level gaps:
+- **Education**: AEI 45.2% vs MCP 22.9% (+22.3pp) -- conversational tutoring and curriculum work
+- **Office/Admin**: AEI 32.8% vs MCP 54.4% (-21.6pp) -- tool-based data entry, filing, scheduling
+
+![AEI vs MCP divergence](figures/divergence_aei_vs_mcp_major.png)
+
+### 6.2 MCP vs Microsoft (Capability vs Usage)
+
+These two agree most, but MCP systematically rates Computer/Math, Office/Admin, and Sales higher. MCP captures the full tool-access frontier; Microsoft captures a narrower productivity-assistant pattern.
+
+Biggest gap: Computer/Math at 65.3% MCP vs 43.4% Microsoft (+21.9pp).
+
+![MCP vs Microsoft divergence](figures/divergence_mcp_vs_microsoft_major.png)
+
+### 6.3 Why the Sources Diverge
+
+The three sources measure genuinely different aspects of AI capability:
+
+| Source | What it measures | Overweights | Underweights |
+|--------|-----------------|-------------|--------------|
+| **AEI** | What people ask Claude | Education, legal, psychology, social science | Tool-use occupations, physical work |
+| **MCP** | What AI can do with tools | Office/admin, sales, technical support, data work | Teaching, social services |
+| **Microsoft** | How Copilot is used | Moderate/uniform exposure everywhere | No extreme scores, misses high-risk |
+
+![AEI vs MCP scatter at major level](figures/scatter_aei_vs_mcp_major.png)
+
+![MCP vs Microsoft scatter at major level](figures/scatter_mcp_vs_microsoft_major.png)
+
+---
+
+## 7. Risk Tier Distribution: Microsoft Never Reaches "High Risk"
+
+Using the job elimination risk tiers (High >= 60%, Moderate 40--60%, Restructuring 20--40%, Low < 20%):
 
 | Tier | AEI | MCP | Microsoft |
 |------|----:|----:|----------:|
@@ -123,84 +195,58 @@ Using the same tier thresholds as the job elimination risk analysis (High >= 60%
 | Restructuring (20--40%) | 198 | 304 | 433 |
 | Low Exposure (<20%) | 536 | 445 | 369 |
 
-![Tier Distribution](figures/tier_comparison.png)
+![Tier distribution](figures/tier_comparison.png)
 
-**Microsoft produces zero high-risk occupations.** Its maximum % tasks affected for any occupation caps out below 60%. This is the most striking single finding --- Microsoft's Copilot-based measurement sees broad, moderate exposure across many occupations but never sees any single occupation as overwhelmingly AI-exposed.
+**Microsoft produces zero high-risk occupations.** Its maximum % tasks affected caps below 60%. AEI is the most concentrated (76 high-risk but also 536 low-exposure). MCP falls between, with fewer high-risk but also fewer low-exposure (broad moderate exposure).
 
-AEI is the most "concentrated" --- it sees 76 occupations as high-risk but also has the most occupations (536) in low exposure. MCP falls in between, with fewer high-risk occupations than AEI but far fewer low-exposure ones (445 vs 536), suggesting it sees more widespread moderate-level exposure.
+For policy: using Microsoft alone would never flag any occupation as high-risk. The three-source average produces a more balanced picture.
 
-### Tier Shift: How Occupations Move Between Sources
-
-![Tier Shift: AEI to MCP](figures/tier_shift_aei_vs_mcp.png)
-
-The AEI-to-MCP tier shift heatmap shows substantial movement. Of AEI's 76 high-risk occupations, only 17 remain high-risk under MCP --- **39 drop two tiers to "restructuring."** Conversely, of AEI's 536 low-exposure occupations, MCP promotes 134 to restructuring and 30 to moderate risk. The sources are reshuffling the entire risk landscape.
-
-The AEI-to-Microsoft shift is even more extreme: *every* AEI high-risk occupation moves down, since Microsoft has zero high-risk occupations. 48 of AEI's 76 high-risk occupations fall to restructuring under Microsoft's scoring.
+![Tier shift: AEI to MCP](figures/tier_shift_aei_vs_mcp.png)
 
 ---
 
-## 6. Sensitivity: Auto-Aug Toggle Reveals a Fundamental Measurement Difference
+## 8. Sensitivity Analysis
 
-The auto-aug multiplier toggle exposes the most important methodological difference between the sources.
+### 8.1 Auto-Aug Toggle: The Biggest Lever
 
 | Config | AEI | MCP | Microsoft |
 |--------|----:|----:|----------:|
 | Time + Aug ON (primary) | 25.5% | 30.4% | 25.7% |
 | Time + Aug OFF | 30.7% | **56.5%** | **49.4%** |
-| Value + Aug ON | 26.6% | 30.8% | 26.2% |
-| Value + Aug OFF | 31.8% | **56.8%** | **50.2%** |
 
-![Sensitivity Toggles](figures/sensitivity_toggles.png)
+Turning off auto-aug nearly doubles MCP and Microsoft's footprint but barely changes AEI. This means MCP and Microsoft flag many tasks as AI-relevant but rate them with low automatability scores. AEI's tasks tend to have higher auto-aug scores because its data captures tasks where AI is *actually being used effectively*.
 
-**Turning off auto-aug nearly doubles MCP and Microsoft's footprint** (30% to 57%, 26% to 49%) **but barely changes AEI** (26% to 31%).
+![Sensitivity toggles](figures/sensitivity_toggles.png)
 
-This means:
-- **MCP and Microsoft flag many tasks as AI-relevant but rate them with low automatability scores.** When auto-aug is ON, these low-scored tasks contribute little. When OFF, they all count equally and the footprint explodes.
-- **AEI's tasks tend to have higher auto-aug scores.** The tasks that appear in AEI conversational data are ones where AI is actually being used effectively, so their automatability ratings are naturally higher. Turning off auto-aug doesn't change much because the scores were already pulling their weight.
+### 8.2 Physical Task Filter
 
-This is a meaningful structural insight: AEI captures "what AI is good at" (biased toward high-automatability tasks people actively use), while MCP and Microsoft capture "what AI touches" (including many tasks where AI involvement is minimal or low-quality).
+AEI's physical-task exposure (15.1%) is notably lower than MCP (22.1%) and Microsoft (21.7%). People don't have conversations about physical tasks, but AI tools can still assist with informational components of physical jobs.
 
----
+![Physical split](figures/physical_split.png)
 
-## 7. Physical Task Filter: AEI Underrepresents Physical Work
+### 8.3 Method Toggle
 
-| Filter | AEI | MCP | Microsoft |
-|--------|----:|----:|----------:|
-| All Tasks | 25.5% | 30.4% | 25.7% |
-| Non-Physical Only | 31.6% | 37.9% | 30.0% |
-| Physical Only | **15.1%** | 22.1% | 21.7% |
-
-![Physical Split](figures/physical_split.png)
-
-AEI's physical-task exposure (15.1%) is notably lower than MCP (22.1%) and Microsoft (21.7%). This makes sense: people don't typically have *conversations* with AI about physical tasks (lifting, operating machinery), but AI tools (MCP) and copilot features (Microsoft) can still assist with the informational components of physical jobs (scheduling, documentation, safety protocols).
-
-The non-physical split is where MCP pulls furthest ahead (37.9% vs 31.6% AEI, 30.0% Microsoft), confirming that MCP's advantage comes from tool-use capability on knowledge work.
-
----
-
-## 8. Rank Stability Across Method Toggles
-
-Despite all the source-level differences, one finding is consistent: **top-10 major categories are perfectly stable** across Time and Value methods for all three sources (10/10 overlap). The method toggle changes the magnitudes but not the ordering at the major category level. This is reassuring --- it means the major-level story is robust regardless of whether you weight by frequency or importance.
+Top-10 major categories are perfectly stable across Time/Value methods for all three sources (10/10 overlap). The method toggle changes magnitudes, not rankings.
 
 ---
 
 ## 9. Key Takeaways
 
-1. **MCP sees ~5pp more of the economy as AI-exposed** (30.4% vs ~25.5%), driven by tool-use capability that conversational data misses.
+1. **Major-category findings are robust.** The top 6 most AI-exposed major categories are high-confidence findings supported by all three sources. Policy recommendations at this level are on solid ground.
 
-2. **The three sources agree on the top 1--2 major categories** (Computer/Math and Office/Admin) but diverge sharply after that. Education is 2x higher under AEI than MCP. Transportation is 3x higher under MCP than AEI.
+2. **Agreement degrades with granularity.** Spearman rho drops from 0.81--0.85 at major to 0.56--0.65 at occupation. High-confidence findings drop from 46% to 1%. This is the most important structural finding.
 
-3. **Occupation-level agreement is low** --- Spearman correlations of 0.55--0.65 and only 2/20 top occupations shared between any pair. The sources are measuring fundamentally different things.
+3. **Minor-category findings are mostly usable** (35% high confidence, good correlations), but always note the source context. Broad and occupation-level findings require explicit source attribution.
 
-4. **Microsoft never rates any occupation above 60% tasks affected.** AEI finds 76 high-risk occupations, MCP finds 54, Microsoft finds zero. This makes Microsoft the most conservative source for risk assessment.
+4. **The three sources measure genuinely different things:** AEI = conversational usage (overweights education, legal), MCP = tool-augmented capability (overweights admin, sales, tech), Microsoft = copilot patterns (most conservative, no extreme scores).
 
-5. **The auto-aug toggle is the biggest sensitivity lever**, and it affects sources asymmetrically: MCP and Microsoft nearly double when auto-aug is turned off (they flag many low-automatability tasks), while AEI barely changes (its tasks are already high-automatability).
+5. **MCP sees the most total exposure** (30.4%) because tool access extends AI's reach beyond conversation. Microsoft produces the flattest, most conservative distribution.
 
-6. **AEI underrepresents physical task exposure** (15% vs 22% for MCP/Microsoft) because conversational AI isn't applied to physical work the way tools and copilots are.
+6. **Microsoft never rates any occupation above 60%.** AEI finds 76 high-risk occupations, MCP finds 54, Microsoft finds zero.
 
-7. **Each source has a distinctive "blind spot":** AEI misses tool-use occupations (data science, security, QA testing). MCP underweights teaching and psychology. Microsoft sees moderate exposure everywhere but identifies no truly high-risk occupations.
+7. **The dashboard's three-source average is the right default.** It triangulates across measurement approaches, dampens source-specific biases, and produces defensible numbers. The consensus effect is a feature.
 
-8. **These are complementary signals, not competing ones.** The combined average used as the dashboard default is the right approach --- it triangulates across fundamentally different measurement methodologies.
+8. **When citing specific occupations, always note the source.** "Telemarketers are 90% AI-exposed" is an MCP finding. "Postsecondary Teachers are 67% AI-exposed" is an AEI finding. Neither holds across all three sources.
 
 ---
 
@@ -208,21 +254,28 @@ Despite all the source-level differences, one finding is consistent: **top-10 ma
 
 - **Primary:** Time method | Auto-aug ON | National | All tasks
 - **Sources (solo):** AEI Cumul. (Both) v4, MCP Cumul. v4, Microsoft
-- **Aggregation levels:** Major Category (primary), Occupation (for rank analysis)
-- **Sensitivity:** Time vs Value method, Auto-aug ON vs OFF, Physical toggle (all/exclude/only)
+- **Aggregation levels:** Major, Minor, Broad, Occupation
+- **Sensitivity:** Time vs Value, Auto-aug ON vs OFF, Physical toggle
 
 ## Files
 
-| File | Description |
-|------|-------------|
-| `economy_totals.csv` | Total workers/wages/% by source |
-| `major_aei.csv`, `major_mcp.csv`, `major_microsoft.csv` | Major category rankings per source |
-| `rank_correlations.csv` | Spearman rho for each source pair |
-| `divergence_aei_vs_mcp.csv` | Top 20 biggest pct disagreements: AEI vs MCP |
-| `divergence_aei_vs_microsoft.csv` | Top 20 biggest pct disagreements: AEI vs Microsoft |
-| `divergence_mcp_vs_microsoft.csv` | Top 20 biggest pct disagreements: MCP vs Microsoft |
-| `tier_counts.csv` | Risk tier distribution per source |
-| `tier_shift_*.csv` | Tier shift matrices for each pair |
-| `occupations_tiered_*.csv` | Full occupation lists with tier assignments per source |
-| `sensitivity_toggles.csv` | % workers across 4 method/auto-aug variants |
-| `physical_comparison.csv` | Physical filter comparison across sources |
+**CSVs:**
+- `economy_totals.csv` -- Total workers/wages/pct by source
+- `confidence_major.csv`, `confidence_minor.csv`, `confidence_broad.csv`, `confidence_occupation.csv` -- Side-by-side scores, ranks, and confidence flags at each level
+- `rank_correlations.csv` -- Spearman rho for all 12 level x pair combinations
+- `divergence_*_vs_*_*.csv` -- Top-20 biggest disagreements per pair per level
+- `{level}_{source}.csv` -- Full results per source per level
+- `tier_counts.csv`, `tier_shift_*.csv` -- Risk tier distributions and shift matrices
+- `occupations_tiered_*.csv` -- Full occupation lists with tiers per source
+- `sensitivity_toggles.csv`, `physical_comparison.csv` -- Sensitivity analyses
+
+**Key Figures:**
+- `footprint_comparison.png` -- Economy-wide exposure by source
+- `major/minor/broad_pct_tasks_affected.png` -- Grouped bars at each level
+- `scatter_*_vs_*_*.png` -- Pairwise scatter plots (all levels)
+- `divergence_*_vs_*_major.png` -- Biggest disagreement bars
+- `confidence_summary.png` -- Confidence flag distribution across levels
+- `rank_heatmap_major/minor/broad.png` -- Rank agreement heatmaps
+- `score_dots_major/minor.png` -- Side-by-side score dot plots
+- `tier_comparison.png`, `tier_shift_*.png` -- Risk tier charts
+- `sensitivity_toggles.png`, `physical_split.png` -- Sensitivity charts

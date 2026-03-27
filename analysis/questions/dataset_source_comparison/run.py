@@ -975,7 +975,7 @@ def main() -> None:
             top_a = set(sr[sa]["df"].nlargest(top_n, "pct_tasks_affected")["category"].tolist()) if sr[sa] else set()
             top_b = set(sr[sb]["df"].nlargest(top_n, "pct_tasks_affected")["category"].tolist()) if sr[sb] else set()
             overlap = top_a & top_b
-            print(f"  {AGG_LABELS[agg]} — {sa} vs {sb}: ρ={rho:.3f}, top-{top_n} overlap={len(overlap)}/{top_n}")
+            print(f"  {AGG_LABELS[agg]} - {sa} vs {sb}: rho={rho:.3f}, top-{top_n} overlap={len(overlap)}/{top_n}")
 
             # Biggest disagreements
             valid = valid.copy()
