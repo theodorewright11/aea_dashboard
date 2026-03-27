@@ -7,7 +7,7 @@ How to reproduce the key findings on the AEA Dashboard website.
 ## Chart 1: Combined Source Footprint (Major Categories)
 
 - **Page:** Occupation Categories
-- **Group A:** Datasets = AEI Cumul. v4, MCP v4, Microsoft | Combine = Average | Method = Time | Geo = National | Physical = All | Auto-aug = ON
+- **Group A:** Datasets = AEI Cumul. (Both) v4, MCP Cumul. v4, Microsoft | Combine = Average | Method = Time | Geo = National | Physical = All | Auto-aug = ON
 - **Aggregation:** Major Category
 - **Sort by:** Workers Affected
 - **Top N:** 30
@@ -16,7 +16,7 @@ How to reproduce the key findings on the AEA Dashboard website.
 ## Chart 2: Current Usage Floor
 
 - **Page:** Occupation Categories
-- **Group A:** Datasets = AEI Cumul. v4, Microsoft | Combine = Average | Method = Time | Geo = National | Physical = All | Auto-aug = ON
+- **Group A:** Datasets = AEI Cumul. (Both) v4, Microsoft | Combine = Average | Method = Time | Geo = National | Physical = All | Auto-aug = ON
 - **Aggregation:** Major Category
 - **Sort by:** Workers Affected
 - **Top N:** 30
@@ -24,7 +24,7 @@ How to reproduce the key findings on the AEA Dashboard website.
 ## Chart 3: Capability Ceiling
 
 - **Page:** Occupation Categories
-- **Group A:** Datasets = MCP v4 | Method = Time | Geo = National | Physical = All | Auto-aug = ON
+- **Group A:** Datasets = AEI Cumul. (Both) v4, MCP Cumul. v4, Microsoft | Combine = **Max** | Method = Time | Geo = National | Physical = All | Auto-aug = ON
 - **Aggregation:** Major Category
 - **Sort by:** Workers Affected
 - **Top N:** 30
@@ -32,8 +32,8 @@ How to reproduce the key findings on the AEA Dashboard website.
 ## Chart 4: Floor vs Ceiling Side-by-Side
 
 - **Page:** Occupation Categories
-- **Group A:** Datasets = AEI Cumul. v4, Microsoft | Combine = Average | (rest same as above)
-- **Group B:** Datasets = MCP v4 | (rest same as above)
+- **Group A:** Datasets = AEI Cumul. (Both) v4, Microsoft | Combine = Average | (rest same as above)
+- **Group B:** Datasets = AEI Cumul. (Both) v4, MCP Cumul. v4, Microsoft | Combine = Max | (rest same)
 - **Sort by:** Workers Affected
 - **Top N:** 22
 - **Note:** Use the cross-group delta in tooltips to see the gap per category. The dumbbell chart in the analysis is easier to read than the dashboard's side-by-side bars.
@@ -41,8 +41,8 @@ How to reproduce the key findings on the AEA Dashboard website.
 ## Chart 5: Agentic vs Conversational
 
 - **Page:** Occupation Categories
-- **Group A:** Datasets = AEI API v3, AEI API v4, MCP v4 | Combine = Average | (rest same)
-- **Group B:** Datasets = AEI Cumul. v4, Microsoft | Combine = Average | (rest same)
+- **Group A:** Datasets = AEI API Cumul. v4, MCP Cumul. v4 | Combine = Average | (rest same)
+- **Group B:** Datasets = AEI Cumul. Conv. v4, Microsoft | Combine = Average | (rest same)
 - **Sort by:** Workers Affected
 - **Top N:** 22
 - **Note:** The butterfly chart in the analysis is a better visualization for this comparison. Dashboard shows side-by-side bars.

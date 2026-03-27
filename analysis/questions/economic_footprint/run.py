@@ -6,11 +6,11 @@ data source perspectives, splits by agentic vs conversational AI mode,
 and tests robustness across methodology toggles.
 
 Source groups:
-  - Current Usage (AEI Cumul. v4 + Microsoft) — floor / what AI IS doing
-  - Capability Ceiling (MCP v4) — ceiling / what AI CAN do
-  - Combined (all three averaged) — best overall estimate
-  - Agentic (AEI API v3 + v4 + MCP v4) — tool-use / autonomous AI
-  - Conversational (AEI Cumul. v4 + Microsoft) — chat / copilot AI
+  - Current Usage (AEI Cumul. Both v4 + Microsoft) — floor / what AI IS doing
+  - Capability Ceiling (AEI Cumul. Both v4 + MCP Cumul. v4 + Microsoft, Max) — ceiling
+  - Combined (AEI Cumul. Both v4 + MCP Cumul. v4 + Microsoft, Average) — best estimate
+  - Agentic (AEI API Cumul. v4 + MCP Cumul. v4) — tool-use / autonomous AI
+  - Conversational (AEI Cumul. Conv. v4 + Microsoft) — chat / copilot AI
 
 Usage from project root:
     venv/Scripts/python -m analysis.questions.economic_footprint.run
@@ -52,27 +52,27 @@ HERE = Path(__file__).resolve().parent
 
 SOURCE_GROUPS: dict[str, dict[str, Any]] = {
     "Current Usage": {
-        "datasets": ["AEI Cumul. v4", "Microsoft"],
+        "datasets": ["AEI Cumul. (Both) v4", "Microsoft"],
         "combine": "Average",
         "color": COLORS["aei"],
-        "desc": "AEI Cumul. v4 + Microsoft",
+        "desc": "AEI Cumul. (Both) v4 + Microsoft",
     },
     "Capability Ceiling": {
-        "datasets": ["MCP v4"],
-        "combine": "Average",
+        "datasets": ["AEI Cumul. (Both) v4", "MCP Cumul. v4", "Microsoft"],
+        "combine": "Max",
         "color": COLORS["mcp"],
-        "desc": "MCP v4",
+        "desc": "AEI Cumul. (Both) v4 + MCP Cumul. v4 + Microsoft (Max)",
     },
     "Combined": {
-        "datasets": ["AEI Cumul. v4", "MCP v4", "Microsoft"],
+        "datasets": ["AEI Cumul. (Both) v4", "MCP Cumul. v4", "Microsoft"],
         "combine": "Average",
         "color": COLORS["brand"],
-        "desc": "AEI Cumul. v4 + MCP v4 + Microsoft",
+        "desc": "AEI Cumul. (Both) v4 + MCP Cumul. v4 + Microsoft",
     },
 }
 
-AGENTIC_DATASETS: list[str] = ["AEI API v3", "AEI API v4", "MCP v4"]
-CONVERSATIONAL_DATASETS: list[str] = ["AEI Cumul. v4", "Microsoft"]
+AGENTIC_DATASETS: list[str] = ["AEI API Cumul. v4", "MCP Cumul. v4"]
+CONVERSATIONAL_DATASETS: list[str] = ["AEI Cumul. Conv. v4", "Microsoft"]
 
 TOGGLE_VARIANTS: list[dict[str, Any]] = [
     {"label": "Primary (Time, Aug ON)", "method": "freq", "use_auto_aug": True},
@@ -381,8 +381,8 @@ def _chart_butterfly(
         fig,
         "Two Modes of AI: Agentic vs Conversational Impact",
         subtitle=(
-            f"← Agentic (AEI API v3+v4 + MCP v4)  |  "
-            f"Conversational (AEI Cumul. v4 + Microsoft) →  |  Workers Affected"
+            f"← Agentic (AEI API Cumul. v4 + MCP Cumul. v4)  |  "
+            f"Conversational (AEI Cumul. Conv. v4 + Microsoft) →  |  Workers Affected"
         ),
         width=1400, height=max(650, len(cats) * 32 + 150),
     )
@@ -693,8 +693,8 @@ def main() -> None:
             "% of Wage Bill": r["total_wages"] / eco_nat["total_wages"] * 100,
         })
     for label, r, desc in [
-        ("Agentic", agentic_r, "AEI API v3 + v4 + MCP v4"),
-        ("Conversational", conv_r, "AEI Cumul. v4 + Microsoft"),
+        ("Agentic", agentic_r, "AEI API Cumul. v4 + MCP Cumul. v4"),
+        ("Conversational", conv_r, "AEI Cumul. Conv. v4 + Microsoft"),
     ]:
         summary_rows.append({
             "Source": label,

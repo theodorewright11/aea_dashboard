@@ -6,23 +6,23 @@ This analysis runs the dashboard's compute pipeline across five distinct data so
 
 ---
 
-## 1. The Range of Estimates: Between 26% and 30% of the US Workforce
+## 1. The Range of Estimates: Between 26% and 35% of the US Workforce
 
 The total economic footprint of AI depends on which data you trust. We compute three source perspectives:
 
 | Source | Datasets | Workers Affected | % of Employment | Wages Affected | % of Wage Bill |
 |--------|----------|-----------------|-----------------|---------------|---------------|
-| **Current Usage** (floor) | AEI Cumul. v4 + Microsoft | 39.3M | 25.7% | $2,570B | 27.3% |
-| **Capability Ceiling** | MCP v4 | 46.5M | 30.4% | $2,969B | 31.5% |
-| **Combined** (best estimate) | All three averaged | 41.7M | 27.2% | $2,703B | 28.7% |
+| **Current Usage** (floor) | AEI Cumul. (Both) v4 + Microsoft | 39.3M | 25.7% | $2,570B | 27.3% |
+| **Capability Ceiling** (max) | AEI Cumul. (Both) v4 + MCP Cumul. v4 + Microsoft | 53.3M | 34.8% | $3,398B | 36.0% |
+| **Combined** (best estimate) | Same three sources, averaged | 41.7M | 27.2% | $2,703B | 28.7% |
 
-The floor (what AI is actually being used for today) says one in four workers. The ceiling (what AI could do with full tool access) says nearly one in three. The 4.8 percentage-point gap between floor and ceiling — representing 7.2 million workers and $399 billion in wages — is the **unrealized adoption gap**: AI capability that exists but hasn't yet been deployed.
+The floor (what AI is actually being used for today) says one in four workers. The ceiling (the maximum exposure any single source identifies per task, across all three data sources) says more than one in three. The 9.1 percentage-point gap between floor and ceiling — representing 14.0 million workers and $828 billion in wages — is the **unrealized adoption gap**: the difference between where AI is being used and the maximum exposure any source detects.
 
 Our combined best estimate: **41.7 million workers (27.2% of US employment) perform work that overlaps with current AI capability, representing $2.7 trillion in annual wages (28.7% of the total wage bill).**
 
 ![Economy Overview](figures/economy_overview.png)
 
-Note that the wage-weighted percentages (27.3–31.5%) slightly exceed the worker-weighted percentages (25.7–30.4%) across all sources, indicating that AI-exposed occupations tend to be somewhat higher-paid than average.
+Note that the wage-weighted percentages (27.3–36.0%) slightly exceed the worker-weighted percentages (25.7–34.8%) across all sources, indicating that AI-exposed occupations tend to be somewhat higher-paid than average.
 
 ---
 
@@ -62,33 +62,38 @@ For each major category, the gap between current usage (floor) and capability (c
 
 **Key patterns:**
 
-- **Office/Admin** has the widest absolute range: 7.1M workers (usage) to 11.5M (capability), a gap of 4.4M workers. AI tools can reach deep into this sector but adoption hasn't caught up.
-- **Computer/Math** shows a narrow range — both usage and capability agree this sector is heavily AI-exposed. There's relatively little untapped potential because adoption is already high.
-- **Education** has an unusual pattern where current usage exceeds tool capability (conversational AI tutoring and writing assistance outpace structured tool access).
+- **Office/Admin** has the widest absolute range: 7.1M workers (usage) to over 11M (ceiling), a multi-million-worker gap. AI tools can reach deep into this sector but adoption hasn't caught up.
+- **Sales** also shows a wide range, with the ceiling (max across all sources) extending well beyond current usage.
+- **Computer/Math** shows a narrower range — sources broadly agree this sector is heavily AI-exposed, though the max ceiling still extends meaningfully beyond the combined estimate.
+- **Education** has an unusual pattern where current usage approaches the ceiling more closely than most sectors, driven by strong conversational AI adoption (tutoring, writing assistance).
 - **Construction, Farming, and Building Maintenance** show uniformly low exposure across all sources, with narrow ranges — these sectors are consistently insulated from AI.
 
 ---
 
 ## 4. Two Modes of AI: Agentic vs Conversational
 
-We split the AI footprint by mode:
+We split the AI footprint by mode using cleanly separated data sources:
 
 | AI Mode | Datasets | Workers Affected | % of Employment | Wages Affected | % of Wage Bill |
 |---------|----------|-----------------|-----------------|---------------|---------------|
-| **Agentic / Tool-use** | AEI API v3 + v4 + MCP v4 | 32.6M | 21.3% | $2,181B | 23.1% |
-| **Conversational / Copilot** | AEI Cumul. v4 + Microsoft | 39.3M | 25.6% | $2,570B | 27.3% |
+| **Agentic / Tool-use** | AEI API Cumul. v4 + MCP Cumul. v4 | 37.8M | 24.7% | $2,493B | 26.4% |
+| **Conversational / Copilot** | AEI Cumul. Conv. v4 + Microsoft | 34.6M | 22.6% | $2,241B | 23.8% |
 
-Conversational AI (chatbots, copilots, writing assistants) reaches more workers than agentic AI (tool-using, API-calling, autonomous AI) — 39.3M vs 32.6M, a gap of 6.7M workers. This makes sense: conversational AI is easier to deploy (no integrations needed, just a chat interface) and has had more time in the market.
+Agentic AI (tool-using, API-calling, autonomous AI) now slightly exceeds conversational AI (chatbots, copilots, writing assistants) — 37.8M vs 34.6M workers, a gap of 3.2M. This uses the cleanest possible data separation: the AEI cumulative API-only dataset captures tool-use conversations exclusively, while the AEI cumulative conversation-only dataset captures dialogue-based interactions with no API overlap.
+
+The result is striking: **agentic AI's economic reach is larger than conversational AI's.** This challenges the assumption that chatbots and copilots are the dominant mode of AI impact. Tool-use and API-based AI — systems that take actions, access databases, and manipulate external resources — are touching a larger share of the workforce.
 
 ![Butterfly: Agentic vs Conversational](figures/agentic_vs_conversational.png)
 
-The butterfly chart reveals where each mode dominates:
+The butterfly chart reveals the sector-by-sector picture:
 
-- **Conversational AI dominates** in Office/Admin, Sales, Education, and Management — sectors where AI assists through dialogue (drafting, summarizing, answering questions, tutoring).
-- **Agentic AI is relatively stronger** (closer to conversational) in Computer/Math, Healthcare Practitioners, and Architecture/Engineering — sectors where AI takes actions through APIs and tools.
-- In every major category, conversational AI reaches more workers than agentic AI. But the ratio varies: in Computer/Math, agentic reaches 93% as many workers as conversational; in Education, agentic reaches only 67%.
+- **Agentic AI leads** in Office/Admin, Sales, Computer/Math, Healthcare, Food Preparation, and Transportation — sectors where AI tools automate structured workflows, data processing, and operational tasks.
+- **Conversational AI leads** in Education, Management, and Arts/Design/Entertainment — sectors where AI assists primarily through dialogue (tutoring, writing, creative brainstorming, advisory work).
+- The split is close in Business/Financial Operations, where both modes contribute substantially.
 
-**Caveat:** AEI Cumul. v4 includes some API-based conversations (overlap with the agentic group), so these are not perfectly complementary slices. The agentic + conversational totals do not sum to the combined total.
+The agentic vs conversational distinction matters for policy: agentic AI implies deeper integration into business processes (APIs, tool chains, automated workflows), while conversational AI is more surface-level (a person talking to a chatbot). Agentic adoption may be harder to reverse once embedded.
+
+**Note:** The agentic and conversational datasets are now cleanly separated (API-only vs conversation-only AEI cumulative data), but they do not sum to the combined total because the combined group uses the full AEI Cumul. (Both) v4 dataset alongside MCP and Microsoft.
 
 ---
 
@@ -99,14 +104,14 @@ The heatmap shows where data sources agree and disagree on AI exposure levels:
 ![Heatmap: Source Agreement](figures/heatmap_sources.png)
 
 **Areas of strong agreement (dark across all columns):**
-- **Computer/Math** (46–65% across sources): every data source sees high AI exposure here.
-- **Office/Admin** (34–54%): consistently the most-exposed large sector.
-- **Sales** (40–54%): broad agreement on substantial exposure.
+- **Computer/Math** (39–65% across sources): every data source sees high AI exposure here. Agentic (54%) is especially strong.
+- **Office/Admin** (29–54%): consistently the most-exposed large sector by worker count.
+- **Sales** (33–54%): broad agreement on substantial exposure, with agentic (46%) leading.
 
 **Areas of disagreement:**
-- **Education**: Current Usage shows 37% but Capability Ceiling only 23%. AI is being used for education tasks (tutoring, writing help) more than tool-based capability would predict.
-- **Food Preparation**: Capability (19%) is notably higher than Usage (22%) — these diverge because conversational AI sees moderate use but structured tools have limited application.
-- **Healthcare**: Moderate and consistent across sources (14–18%), but agentic AI exposure (11%) is notably lower — tools haven't penetrated clinical workflows as much.
+- **Education**: Current Usage shows 37% and Conversational reaches 34%, but Agentic only 37% — conversational AI (tutoring, writing help) is the primary driver here, though agentic tools have caught up more than expected.
+- **Food Preparation**: Agentic (12%) is notably lower than conversational (21%) — tool-based AI has limited application in this sector.
+- **Healthcare**: Moderate across sources (13–18%), with agentic (13%) and conversational (15%) both present — tools are slowly penetrating clinical workflows.
 
 ---
 
@@ -186,13 +191,13 @@ The 0.2 percentage-point difference is negligible. Utah's occupational mix is si
 
 ## 11. Key Takeaways
 
-1. **Between 26% and 30% of the US workforce is AI-exposed** depending on whether you measure current usage (floor) or AI tool capability (ceiling). Our best combined estimate is **27.2% — 41.7 million workers and $2.7 trillion in wages.**
+1. **Between 26% and 35% of the US workforce is AI-exposed** depending on whether you measure current usage (floor) or the maximum across all sources (ceiling). Our best combined estimate is **27.2% — 41.7 million workers and $2.7 trillion in wages.**
 
-2. **The $399B gap between floor and ceiling** (7.2M workers) represents unrealized AI adoption — capability that exists but hasn't been deployed.
+2. **The $828B gap between floor and ceiling** (14.0M workers) represents the range between confirmed AI usage and the maximum exposure any source detects.
 
 3. **Three sectors account for 42% of all AI-exposed wages**: Management ($407B), Office/Admin ($405B), and Business/Financial ($327B). Computer/Math has the highest intensity (52% of tasks) but a smaller workforce.
 
-4. **Conversational AI reaches more workers than agentic AI** (39.3M vs 32.6M), but agentic is catching up in technical sectors.
+4. **Agentic AI now slightly exceeds conversational AI** in total reach (37.8M vs 34.6M workers). With cleanly separated data, tool-use and API-based AI touches more of the workforce than chat-based AI — a finding that challenges common assumptions about how AI impacts work.
 
 5. **Non-physical work is 1.7× more AI-exposed** than physical work. The true exposure for cognitive workers is 33.2%, not 27.2%.
 
@@ -210,7 +215,7 @@ The 0.2 percentage-point difference is negligible. Utah's occupational mix is si
 
 ## Config
 
-Primary: AEI Cumul. v4 + MCP v4 + Microsoft | Average | Time | Auto-aug ON | National | All tasks | Major category. Sensitivity: Auto-aug OFF, Value method, Physical split, Utah geography.
+Primary: AEI Cumul. (Both) v4 + MCP Cumul. v4 + Microsoft | Average | Time | Auto-aug ON | National | All tasks | Major category. Ceiling uses Max. Agentic: AEI API Cumul. v4 + MCP Cumul. v4. Conversational: AEI Cumul. Conv. v4 + Microsoft. Sensitivity: Auto-aug OFF, Value method, Physical split, Utah geography.
 
 ## Files
 
