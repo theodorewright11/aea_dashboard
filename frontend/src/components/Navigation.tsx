@@ -14,6 +14,8 @@ const NAV_GROUPS = [
   [
     { href: "/occupation-categories",  label: "Occupation Categories" },
     { href: "/work-activities",        label: "Work Activities" },
+  ],
+  [
     { href: "/trends",                 label: "Trends" },
     { href: "/task-changes",           label: "Task Changes Explorer" },
   ],
