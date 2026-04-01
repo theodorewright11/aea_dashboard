@@ -45,6 +45,7 @@ analysis/
 │   ├── ai_transformative_potential/
 │   ├── job_elimination_risk/
 │   └── ...
+├── question_findings/          — Flat folder with all individual question .md reports (for easy bulk upload/sharing)
 └── report/
     ├── report.md            — Rolling narrative report (all questions)
     └── figures/             — Key figures referenced by the report
@@ -62,7 +63,8 @@ analysis/
 6. Run `run.py` to generate CSVs and figures into `results/`
 7. Have `run.py` copy key figures to a committed `figures/` directory (outside `results/`) and embed them inline in the report markdown
 8. Have `run.py` generate a PDF of the report into `results/` using `analysis.utils.generate_pdf()`
-9. Add the question's findings to `report/report.md`
+9. Copy the question's `.md` report file to `question_findings/` (flat folder for easy bulk upload/sharing with AI tools)
+10. Add the question's findings to `report/report.md`
 
 ### Running a question script
 
