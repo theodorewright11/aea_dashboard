@@ -16,9 +16,9 @@ AI currently touches **27.2% of the US workforce — 41.7 million workers — re
 
 **The gap between what AI *can* do and what it *is* doing reveals where the biggest disruptions are coming.** Transportation and Material Moving has the largest absolute worker gap (2.5M workers), driven by a massive workforce where AI tools reach 18% of tasks but conversational adoption covers only 5.5%. Office/Admin (2.4M gap), Sales (2.1M), and Food Preparation (2.0M) follow. At the occupation level, Cashiers (1.2M gap), Sales Reps of Services (842K, zero current usage), and General/Operations Managers (805K) have the most untapped potential. Education is the sole exception where usage already exceeds measured capability — conversational AI (tutoring, writing help) has outpaced tool-based automation in this sector.
 
-**Nine occupations cross the 60% usage-confirmed threshold today, representing 1.5 million workers.** The largest are Market Research Analysts (431K workers, 63%), Search Marketing Strategists (431K, 66%), and Instructional Coordinators (211K, 61%). These are information-processing jobs where AI's core strengths — data analysis, content generation, pattern recognition — directly overlap with the most valuable parts of the work. Another 146 occupations (35.9M workers) sit in the moderate risk tier (40–60%), where restructuring is more likely than elimination. The capability ceiling paints a far more dramatic picture: 124 occupations would be high-risk if peak AI capability from any source were fully deployed. That gap of 115 "emerging risk" occupations — including Cashiers (3.1M), Customer Service Reps (2.7M), and Office Clerks (2.5M) — represents the next wave as AI adoption spreads.
+**Nine occupations cross the 60% usage-confirmed threshold today, representing 1.5 million workers.** The largest are Market Research Analysts (431K workers, 63%), Search Marketing Strategists (431K, 66%), and Instructional Coordinators (211K, 61%). These are information-processing jobs where AI's core strengths — data analysis, content generation, pattern recognition — directly overlap with the most valuable parts of the work. Another 146 occupations (35.9M workers) sit in the moderate exposure tier (40–60%), where restructuring is more likely than elimination. The capability ceiling paints a far more dramatic picture: 124 occupations would be high-exposure if peak AI capability from any source were fully deployed. That gap of 115 "emerging exposure" occupations — including Cashiers (3.1M), Customer Service Reps (2.7M), and Office Clerks (2.5M) — represents the next wave as AI adoption spreads.
 
-**Utah mirrors the national picture almost exactly at the aggregate level** (27.4% vs 27.2%), but the composition differs. Utah's AI-exposed workforce is more concentrated in tech (+4.1pp in Computer/Math) and business/financial occupations (+2.8pp) and less in retail and traditional office work — reflecting Silicon Slopes. Most notably, **Utah has double the national share of workers in high-risk occupations** (2.0% vs 1.0%), driven by outsized employment in tech and digital marketing roles. Six occupations that appear in Utah's top 20 at-risk list — including Search Marketing Strategists, Computer Systems Engineers, and Web Administrators — don't appear in the national top 20 at all.
+**Utah mirrors the national picture almost exactly at the aggregate level** (27.4% vs 27.2%), but the composition differs. Utah's AI-exposed workforce is more concentrated in tech (+4.1pp in Computer/Math) and business/financial occupations (+2.8pp) and less in retail and traditional office work — reflecting Silicon Slopes. Most notably, **Utah has double the national share of workers in high-exposure occupations** (2.0% vs 1.0%), driven by outsized employment in tech and digital marketing roles. Six occupations that appear in Utah's top 20 most-exposed list — including Search Marketing Strategists, Computer Systems Engineers, and Web Administrators — don't appear in the national top 20 at all.
 
 **Methodological robustness is strong.** The auto-aug quality toggle is the biggest lever (nearly doubling exposure from 27% to 46% when turned off), but the top 10 major categories remain perfectly stable across all methodology variations. Time vs Value weighting barely matters (0.7pp). Rankings hold across all four toggle combinations. The findings are not artifacts of the methodology.
 
@@ -29,7 +29,7 @@ AI currently touches **27.2% of the US workforce — 41.7 million workers — re
 - [AI Economic Footprint](#ai-economic-footprint) — Total workforce and wage exposure to AI across the US economy
 - [Dataset Source Comparison](#dataset-source-comparison) — How the three AI data sources agree and diverge
 - [AI Transformative Potential](#ai-transformative-potential) — Where the gap between AI capability and adoption is largest
-- [Job Elimination Risk](#job-elimination-risk) — Which occupations are most at risk of being lost to AI
+- [Job Exposure](#job-exposure) — Which occupations are most exposed to AI
 - [Utah vs National](#utah-vs-national) — How Utah's AI exposure differs from the national picture
 
 ---
@@ -113,7 +113,7 @@ The employment-weighted average auto-aug score is **2.08/5** — moderate automa
 
 **Question:** How do the three AI data sources — AEI, MCP, and Microsoft — differ in what they see, and what does that tell us about the robustness of the findings?
 
-**Method:** Run each source solo through the same pipeline. Compare totals, rankings, rank correlations, top-20 overlap, risk tier distributions, and sensitivity to methodology toggles.
+**Method:** Run each source solo through the same pipeline. Compare totals, rankings, rank correlations, top-20 overlap, exposure tier distributions, and sensitivity to methodology toggles.
 
 ### Similar totals, different distributions
 
@@ -166,18 +166,18 @@ The Spearman correlations of 0.55–0.65 mean the sources roughly agree on the o
 
 ![AEI vs MCP Divergence](../questions/dataset_source_comparison/figures/divergence_aei_vs_mcp.png)
 
-### Microsoft never reaches "high risk"
+### Microsoft never reaches "high exposure"
 
-The risk tier analysis reveals the most striking single finding about source differences:
+The exposure tier analysis reveals the most striking single finding about source differences:
 
 | Tier | AEI | MCP | Microsoft |
 |---|---:|---:|---:|
-| High Risk (>=60%) | 76 | 54 | **0** |
+| High Exposure (>=60%) | 76 | 54 | **0** |
 | Moderate (40–60%) | 113 | 120 | 121 |
 | Restructuring (20–40%) | 198 | 304 | 433 |
 | Low Exposure (<20%) | 536 | 445 | 369 |
 
-Microsoft's Copilot-based measurement sees broad, moderate exposure across many occupations but never sees any single occupation as overwhelmingly AI-exposed. AEI is the most "concentrated" — it sees 76 high-risk occupations but also has the most (536) in low exposure. MCP falls between, with fewer high-risk but also fewer low-exposure occupations.
+Microsoft's Copilot-based measurement sees broad, moderate exposure across many occupations but never sees any single occupation as overwhelmingly AI-exposed. AEI is the most "concentrated" — it sees 76 high-exposure occupations but also has the most (536) in low exposure. MCP falls between, with fewer high-exposure but also fewer low-exposure occupations.
 
 ![Tier Distribution](../questions/dataset_source_comparison/figures/tier_comparison.png)
 
@@ -193,7 +193,7 @@ AEI also underrepresents physical task exposure (15.1% vs 22% for MCP/Microsoft)
 
 ### Bottom line
 
-Each source has a distinctive blind spot: AEI misses tool-use occupations, MCP underweights teaching and psychology, Microsoft identifies no high-risk occupations. These are complementary signals, not competing ones. The combined average used as the dashboard default is the right approach — it triangulates across fundamentally different measurement methodologies, and the top-10 major categories are stable across all three sources and all methodology toggles.
+Each source has a distinctive blind spot: AEI misses tool-use occupations, MCP underweights teaching and psychology, Microsoft identifies no high-exposure occupations. These are complementary signals, not competing ones. The combined average used as the dashboard default is the right approach — it triangulates across fundamentally different measurement methodologies, and the top-10 major categories are stable across all three sources and all methodology toggles.
 
 *Config: Time | Auto-aug ON | National | All tasks. Sources run solo: AEI Cumul. (Both) v4, MCP Cumul. v4, Microsoft. Sensitivity: Time/Value, Auto-aug ON/OFF, Physical toggle. Full data in [questions/dataset_source_comparison/](../questions/dataset_source_comparison/dataset_source_comparison.md).*
 
@@ -257,26 +257,26 @@ The story is highly robust: 8 of 10 top major categories appear in the top-10 ga
 
 ---
 
-## Job Elimination Risk
+## Job Exposure
 
-**Question:** Which occupations are most at risk of being lost to AI — where most of the job's task value is already being done by AI?
+**Question:** Which occupations are most exposed to AI — where most of the job's task value is already being done by AI?
 
-**Method:** Use AEI Cumul. (Both) v4 + Microsoft (actual usage data from Claude conversations and Copilot sessions), averaged, with auto-aug ON and Value weighting (importance-weighted). Tier occupations by % tasks affected: High Risk (>=60%), Moderate Risk (40–60%), Restructuring (20–40%), Low Exposure (<20%). Compare against a capability ceiling (all three sources, Max) to identify emerging risks.
+**Method:** Use AEI Cumul. (Both) v4 + Microsoft (actual usage data from Claude conversations and Copilot sessions), averaged, with auto-aug ON and Value weighting (importance-weighted). Tier occupations by % tasks affected: High Exposure (>=60%), Moderate Exposure (40–60%), Restructuring (20–40%), Low Exposure (<20%). Compare against a capability ceiling (all three sources, Max) to identify emerging exposure.
 
 ### Tier distribution
 
 | Tier | Occupations | Workers | Share of Economy |
 |---|---:|---:|---:|
-| High Risk (>=60%) | 9 | 1.5M | 1.0% |
-| Moderate Risk (40–60%) | 146 | 35.9M | 23.4% |
+| High Exposure (>=60%) | 9 | 1.5M | 1.0% |
+| Moderate Exposure (40–60%) | 146 | 35.9M | 23.4% |
 | Restructuring (20–40%) | 311 | 53.1M | 34.6% |
 | Low Exposure (<20%) | 457 | 62.7M | 40.9% |
 
 Almost half of occupations (457 of 923) have less than 20% task exposure from current usage. But the moderate tier alone covers 35.9 million workers — nearly a quarter of the national workforce.
 
-![Risk Scatter](../questions/job_elimination_risk/figures/scatter_risk_vs_employment.png)
+![Exposure Scatter](../questions/job_exposure/figures/scatter_exposure_vs_employment.png)
 
-### The 9 high-risk occupations
+### The 9 high-exposure occupations
 
 These are the occupations where usage-confirmed data shows 60%+ of the job's task value is already AI-exposed:
 
@@ -294,11 +294,11 @@ These are the occupations where usage-confirmed data shows 60%+ of the job's tas
 
 These are **information-processing jobs** — data analysis, content generation, pattern recognition, research synthesis. The largest by employment are Market Research Analysts and Search Marketing Strategists (both ~431K workers). 7 of 9 are stable across both Value and Time methods — not artifacts of the weighting.
 
-![High-Risk by Employment](../questions/job_elimination_risk/figures/high_risk_by_employment.png)
+![High-Exposure by Employment](../questions/job_exposure/figures/high_exposure_by_employment.png)
 
 ### The moderate tier: where the real scale is
 
-The 146 moderate-risk occupations (40–60%) include some of the largest occupations in the economy:
+The 146 moderate-exposure occupations (40–60%) include some of the largest occupations in the economy:
 
 | Occupation | % Tasks | Employment |
 |---|---:|---:|
@@ -313,15 +313,15 @@ The 146 moderate-risk occupations (40–60%) include some of the largest occupat
 
 These are more likely to be restructured than eliminated — significant task overlap, but enough of the job remains human-dependent. Software Developers at 47% is notable: nearly half of the task value overlaps with AI, but the remaining 53% (judgment, architecture, communication) still requires humans. Registered Nurses at 40% reflects documentation and care coordination tasks, not clinical care.
 
-### Which sectors concentrate risk
+### Which sectors concentrate exposure
 
-Computer/Math, Business/Financial, and Arts/Entertainment have the highest concentration of at-risk occupations. Farming, Construction, and Building Maintenance are almost entirely in the low-exposure tier.
+Computer/Math, Business/Financial, and Arts/Entertainment have the highest concentration of high-exposure occupations. Farming, Construction, and Building Maintenance are almost entirely in the low-exposure tier.
 
-![Tier Distribution by Major Category](../questions/job_elimination_risk/figures/tier_distribution_by_major.png)
+![Tier Distribution by Major Category](../questions/job_exposure/figures/tier_distribution_by_major.png)
 
 ### Usage-confirmed vs capability ceiling: the emerging threat
 
-The capability ceiling (all three sources, Max) puts **124 occupations** at >=60% task exposure — vs just 9 with usage-confirmed averages. The gap of **115 "emerging risk" occupations** represents jobs where at least one AI source demonstrates it can handle the majority of the work, but the average doesn't yet cross the threshold. The largest:
+The capability ceiling (all three sources, Max) puts **124 occupations** at >=60% task exposure — vs just 9 with usage-confirmed averages. The gap of **115 "emerging exposure" occupations** represents jobs where at least one AI source demonstrates it can handle the majority of the work, but the average doesn't yet cross the threshold. The largest:
 
 | Occupation | Ceiling % | Usage % | Gap | Employment |
 |---|---:|---:|---:|---:|
@@ -336,13 +336,13 @@ The capability ceiling (all three sources, Max) puts **124 occupations** at >=60
 
 The technology already exists to put these occupations above 60%. The question is how fast deployment follows.
 
-![Usage vs Capability Scatter](../questions/job_elimination_risk/figures/usage_vs_capability_scatter.png)
+![Usage vs Capability Scatter](../questions/job_exposure/figures/usage_vs_capability_scatter.png)
 
 ### Important framing
 
 High task exposure does **not** equal job loss. It means the occupation's task bundle heavily overlaps with demonstrated AI capability and usage. Whether this leads to elimination, restructuring, fewer new hires, or productivity gains depends on deployment economics, regulation, and organizational inertia — none of which this data measures. The data identifies *where the pressure exists*, not what happens next.
 
-*Config: AEI Cumul. (Both) v4 + Microsoft | Average | Value | Auto-aug ON | National | Occupation level. Ceiling: all three sources | Max. Sensitivity: Time method. Full data in [questions/job_elimination_risk/](../questions/job_elimination_risk/job_elimination_risk.md).*
+*Config: AEI Cumul. (Both) v4 + Microsoft | Average | Value | Auto-aug ON | National | Occupation level. Ceiling: all three sources | Max. Sensitivity: Time method. Full data in [questions/job_exposure/](../questions/job_exposure/job_exposure.md).*
 
 ---
 
@@ -350,7 +350,7 @@ High task exposure does **not** equal job loss. It means the occupation's task b
 
 **Question:** Do Utah's AI exposure results meaningfully differ from the national picture, and what are the policy implications for Utah specifically?
 
-**Method:** Re-ran all three prior analyses (Economic Footprint, Transformative Potential, Job Elimination Risk) with Utah geography and compared against national results. Since % tasks affected is computed from O*NET task scores and AI auto-aug scores (which don't vary by state), only workers affected and wages affected change — driven entirely by Utah's occupational mix being different from the national average.
+**Method:** Re-ran all three prior analyses (Economic Footprint, Transformative Potential, Job Exposure) with Utah geography and compared against national results. Since % tasks affected is computed from O*NET task scores and AI auto-aug scores (which don't vary by state), only workers affected and wages affected change — driven entirely by Utah's occupational mix being different from the national average.
 
 ### Same headline, different composition
 
@@ -372,22 +372,22 @@ Utah's AI exposure is more concentrated in tech and business/financial occupatio
 
 ![Footprint Share Divergence](../questions/utah_vs_national/figures/footprint_share_divergence_workers.png)
 
-### Utah has double the high-risk workforce share
+### Utah has double the high-exposure workforce share
 
 | Tier | National | Utah |
 |---|---:|---:|
-| High Risk (>=60%) | 1.0% | **2.0%** |
+| High Exposure (>=60%) | 1.0% | **2.0%** |
 | Moderate (40–60%) | 23.4% | 21.7% |
 | Restructuring (20–40%) | 34.7% | 36.6% |
 | Low Exposure (<20%) | 40.9% | 39.7% |
 
-This is driven by tech occupations like Search Marketing Strategists and Market Research Analysts being overrepresented in Utah's workforce — these are among the 9 high-risk occupations nationally, and Utah has proportionally more of them.
+This is driven by tech occupations like Search Marketing Strategists and Market Research Analysts being overrepresented in Utah's workforce — these are among the 9 high-exposure occupations nationally, and Utah has proportionally more of them.
 
-![Risk Tier Comparison](../questions/utah_vs_national/figures/risk_tier_comparison.png)
+![Exposure Tier Comparison](../questions/utah_vs_national/figures/risk_tier_comparison.png)
 
-### Utah's top at-risk occupations
+### Utah's most-exposed occupations
 
-Six occupations appear in Utah's top 20 at-risk but not the national top 20:
+Six occupations appear in Utah's top 20 most-exposed but not the national top 20:
 
 | Occupation | Utah Emp | % Tasks | Tier |
 |---|---:|---:|---|
@@ -400,7 +400,7 @@ Six occupations appear in Utah's top 20 at-risk but not the national top 20:
 
 These are all tech and digital marketing roles — occupations proportionally larger in Utah than nationally.
 
-![Utah's Largest At-Risk Occupations](../questions/utah_vs_national/figures/utah_largest_at_risk.png)
+![Utah's Most-Exposed Occupations](../questions/utah_vs_national/figures/utah_largest_at_risk.png)
 
 ### Transformative potential: more concentrated in tech
 
@@ -408,7 +408,7 @@ Utah's unrealized AI potential is much more concentrated in Computer/Math (+13.3
 
 ![Transformative Gap Share](../questions/utah_vs_national/figures/transformative_gap_share_major.png)
 
-### Sector-level risk concentration differences
+### Sector-level exposure concentration differences
 
 | Major Category | National | Utah | Diff |
 |---|---:|---:|---:|
@@ -417,11 +417,11 @@ Utah's unrealized AI potential is much more concentrated in Computer/Math (+13.3
 | Business and Financial | 49.3% | 42.3% | **-7.0pp** |
 | Computer and Mathematical | 65.9% | 69.6% | +3.7pp |
 
-The Protective Service divergence (+12.6pp more at-risk in Utah) is the largest, likely driven by Utah's specific mix of protective service occupations. Under the capability ceiling (all sources, Max), the tier distribution is much more similar — no tier differs by more than 1pp.
+The Protective Service divergence (+12.6pp more exposed in Utah) is the largest, likely driven by Utah's specific mix of protective service occupations. Under the capability ceiling (all sources, Max), the tier distribution is much more similar — no tier differs by more than 1pp.
 
 ### For Utah OAIP
 
-The national findings are broadly applicable to Utah, but Utah's tech concentration means the state may feel the impact of AI on knowledge-worker occupations more acutely than the national average suggests. The agentic-vs-conversational split and methodology sensitivity are unchanged by geography. The 6 tech/digital occupations uniquely prominent in Utah's at-risk list are worth monitoring specifically.
+The national findings are broadly applicable to Utah, but Utah's tech concentration means the state may feel the impact of AI on knowledge-worker occupations more acutely than the national average suggests. The agentic-vs-conversational split and methodology sensitivity are unchanged by geography. The 6 tech/digital occupations uniquely prominent in Utah's most-exposed list are worth monitoring specifically.
 
 *Config: Same as original analyses with geo="ut". Full data in [questions/utah_vs_national/](../questions/utah_vs_national/utah_vs_national.md).*
 

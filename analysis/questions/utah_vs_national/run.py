@@ -2,7 +2,7 @@
 run.py — Utah vs National: Where do state-level results diverge?
 
 Re-runs the three existing analyses (Economic Footprint, AI Transformative
-Potential, Job Elimination Risk) with geo="ut" and compares against the
+Potential, Job Exposure) with geo="ut" and compares against the
 national results. Only surfaces notable divergences.
 
 Key insight: % tasks affected is geography-independent (computed from O*NET
@@ -67,21 +67,21 @@ AEI_DATASETS = ["AEI Cumul. (Both) v4"]
 AGENTIC_DATASETS = ["AEI API Cumul. v4", "MCP Cumul. v4"]
 CONVERSATIONAL_DATASETS = ["AEI Cumul. Conv. v4", "Microsoft"]
 
-# Tier thresholds (from job_elimination_risk)
-HIGH_RISK = 60.0
-MODERATE_RISK = 40.0
+# Tier thresholds (from job_exposure)
+HIGH_EXPOSURE = 60.0
+MODERATE_EXPOSURE = 40.0
 RESTRUCTURING = 20.0
 
 TIER_LABELS = {
-    "high_risk": "High Risk (>=60%)",
-    "moderate_risk": "Moderate Risk (40-60%)",
+    "high_exposure": "High Exposure (>=60%)",
+    "moderate_exposure": "Moderate Exposure (40-60%)",
     "restructuring": "Restructuring (20-40%)",
     "low_exposure": "Low Exposure (<20%)",
 }
-TIER_ORDER = ["high_risk", "moderate_risk", "restructuring", "low_exposure"]
+TIER_ORDER = ["high_exposure", "moderate_exposure", "restructuring", "low_exposure"]
 TIER_COLORS = {
-    "high_risk": COLORS["negative"],
-    "moderate_risk": COLORS["accent"],
+    "high_exposure": COLORS["negative"],
+    "moderate_exposure": COLORS["accent"],
     "restructuring": COLORS["primary"],
     "low_exposure": COLORS["muted"],
 }
@@ -165,11 +165,11 @@ def _economy_baseline(geo: str) -> dict[str, float]:
 
 
 def _assign_tier(pct: float) -> str:
-    """Assign a risk tier based on pct_tasks_affected."""
-    if pct >= HIGH_RISK:
-        return "high_risk"
-    elif pct >= MODERATE_RISK:
-        return "moderate_risk"
+    """Assign an exposure tier based on pct_tasks_affected."""
+    if pct >= HIGH_EXPOSURE:
+        return "high_exposure"
+    elif pct >= MODERATE_EXPOSURE:
+        return "moderate_exposure"
     elif pct >= RESTRUCTURING:
         return "restructuring"
     else:
@@ -360,7 +360,7 @@ def _chart_tier_employment_comparison(
     nat_total: float,
     ut_total: float,
 ) -> go.Figure:
-    """Grouped bars: share of workforce in each risk tier, nat vs ut."""
+    """Grouped bars: share of workforce in each exposure tier, nat vs ut."""
     tiers = TIER_ORDER
     nat_pcts = [nat_tier_emp.get(t, 0) / nat_total * 100 for t in tiers]
     ut_pcts = [ut_tier_emp.get(t, 0) / ut_total * 100 for t in tiers]
@@ -384,8 +384,8 @@ def _chart_tier_employment_comparison(
 
     style_figure(
         fig,
-        "Risk Tier Distribution: National vs Utah",
-        subtitle="Share of total workforce in each risk tier | Value method | Auto-aug ON",
+        "Exposure Tier Distribution: National vs Utah",
+        subtitle="Share of total workforce in each exposure tier | Value method | Auto-aug ON",
         y_title="% of Workforce",
         width=1000, height=550, show_legend=True,
     )
@@ -608,10 +608,10 @@ def main() -> None:
             save_figure(fig, fig_dir / "transformative_rank_bump_major.png")
 
     # ══════════════════════════════════════════════════════════════════════
-    # 3. JOB ELIMINATION RISK — Utah tier employment
+    # 3. JOB EXPOSURE — Utah tier employment
     # ══════════════════════════════════════════════════════════════════════
     print("\n" + "=" * 70)
-    print("== 3. JOB ELIMINATION RISK — Utah-specific tier analysis ==")
+    print("== 3. JOB EXPOSURE — Utah-specific tier analysis ==")
     print("=" * 70)
 
     # Get employment lookup for both geos
@@ -671,21 +671,21 @@ def main() -> None:
             print(f"  {TIER_LABELS[t]}: National {nat_p:.1f}%, Utah {ut_p:.1f}% ({ut_p - nat_p:+.1f}pp)")
 
         tier_comp_df = pd.DataFrame(tier_comp_rows)
-        save_csv(tier_comp_df, results / "risk_tier_comparison.csv")
+        save_csv(tier_comp_df, results / "exposure_tier_comparison.csv")
 
         # Chart: tier comparison
         fig = _chart_tier_employment_comparison(
             nat_tier_emp, ut_tier_emp, nat_total_emp, ut_total_emp,
         )
-        save_figure(fig, fig_dir / "risk_tier_comparison.png")
+        save_figure(fig, fig_dir / "exposure_tier_comparison.png")
 
-        # Utah's largest at-risk occupations (moderate + high risk)
-        ut_at_risk = ut_tiered[
-            ut_tiered["tier"].isin(["high_risk", "moderate_risk"])
+        # Utah's largest high-exposure occupations (moderate + high exposure)
+        ut_high_exposure = ut_tiered[
+            ut_tiered["tier"].isin(["high_exposure", "moderate_exposure"])
         ].sort_values("emp_ut", ascending=False).head(20)
 
-        if not ut_at_risk.empty:
-            ut_risk_out = ut_at_risk[[
+        if not ut_high_exposure.empty:
+            ut_exposure_out = ut_high_exposure[[
                 "category", "pct_tasks_affected", "emp_ut", "wage_ut",
                 "workers_affected", "tier", "major",
             ]].rename(columns={
@@ -694,35 +694,35 @@ def main() -> None:
                 "wage_ut": "utah_median_wage",
                 "major": "major_category",
             })
-            ut_risk_out["tier_label"] = ut_risk_out["tier"].map(TIER_LABELS)
-            save_csv(ut_risk_out, results / "utah_largest_at_risk.csv")
-            print(f"\n  Utah's largest at-risk occupations saved ({len(ut_risk_out)} rows)")
+            ut_exposure_out["tier_label"] = ut_exposure_out["tier"].map(TIER_LABELS)
+            save_csv(ut_exposure_out, results / "utah_largest_high_exposure.csv")
+            print(f"\n  Utah's largest high-exposure occupations saved ({len(ut_exposure_out)} rows)")
 
-            # Compare Utah's top at-risk vs national's top at-risk
-            nat_at_risk = nat_tiered[
-                nat_tiered["tier"].isin(["high_risk", "moderate_risk"])
+            # Compare Utah's top high-exposure vs national's top high-exposure
+            nat_high_exposure = nat_tiered[
+                nat_tiered["tier"].isin(["high_exposure", "moderate_exposure"])
             ].sort_values("emp_nat", ascending=False).head(20)
 
             # Which occupations are in Utah's top 20 but NOT national's top 20?
-            ut_top_set = set(ut_at_risk["category"].tolist())
-            nat_top_set = set(nat_at_risk["category"].tolist())
+            ut_top_set = set(ut_high_exposure["category"].tolist())
+            nat_top_set = set(nat_high_exposure["category"].tolist())
             ut_unique = ut_top_set - nat_top_set
             nat_unique = nat_top_set - ut_top_set
 
             if ut_unique:
-                print(f"\n  Occupations in Utah's top 20 at-risk but NOT national's:")
+                print(f"\n  Occupations in Utah's top 20 high-exposure but NOT national's:")
                 for occ in sorted(ut_unique):
-                    row = ut_at_risk[ut_at_risk["category"] == occ].iloc[0]
+                    row = ut_high_exposure[ut_high_exposure["category"] == occ].iloc[0]
                     print(f"    {occ}: {row['emp_ut']:,.0f} Utah workers, {row['pct_tasks_affected']:.1f}% tasks")
 
             if nat_unique:
-                print(f"\n  Occupations in National's top 20 at-risk but NOT Utah's:")
+                print(f"\n  Occupations in National's top 20 high-exposure but NOT Utah's:")
                 for occ in sorted(nat_unique):
-                    row = nat_at_risk[nat_at_risk["category"] == occ].iloc[0]
+                    row = nat_high_exposure[nat_high_exposure["category"] == occ].iloc[0]
                     print(f"    {occ}: {row['emp_nat']:,.0f} nat workers, {row['pct_tasks_affected']:.1f}% tasks")
 
-            # Chart: Utah's top at-risk occupations
-            plot_df = ut_at_risk.sort_values("emp_ut", ascending=True).head(15)
+            # Chart: Utah's top high-exposure occupations
+            plot_df = ut_high_exposure.sort_values("emp_ut", ascending=True).head(15)
             labels = [
                 f"{_format_bar_label(e)}  ({p:.0f}%)"
                 for e, p in zip(plot_df["emp_ut"], plot_df["pct_tasks_affected"])
@@ -741,8 +741,8 @@ def main() -> None:
             ))
             style_figure(
                 fig,
-                "Utah's Largest At-Risk Occupations",
-                subtitle="Moderate + High risk occupations by Utah employment | Value | Auto-aug ON",
+                "Utah's Largest High-Exposure Occupations",
+                subtitle="Moderate + High exposure occupations by Utah employment | Value | Auto-aug ON",
                 height=max(450, len(plot_df) * 38 + 150),
                 show_legend=False,
             )
@@ -752,10 +752,10 @@ def main() -> None:
                 yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=11)),
                 bargap=0.25,
             )
-            save_figure(fig, fig_dir / "utah_largest_at_risk.png")
+            save_figure(fig, fig_dir / "utah_largest_high_exposure.png")
 
-        # Risk by major category — share comparison
-        print("\n  Risk concentration by major category...")
+        # Exposure by major category — share comparison
+        print("\n  Exposure concentration by major category...")
         for geo_label, tiered_df, emp_col in [
             ("nat", nat_tiered, "emp_nat"), ("ut", ut_tiered, "emp_ut"),
         ]:
@@ -768,43 +768,43 @@ def main() -> None:
             major_total.columns = ["major", "major_total"]
             tier_major = tier_major.merge(major_total, on="major", how="left")
             tier_major["pct_of_major"] = tier_major["total_emp"] / tier_major["major_total"] * 100
-            save_csv(tier_major, results / f"risk_by_major_{geo_label}.csv")
+            save_csv(tier_major, results / f"exposure_by_major_{geo_label}.csv")
 
         # Compute the difference in moderate+high share per major
-        nat_risk_share = (
-            nat_tiered[nat_tiered["tier"].isin(["high_risk", "moderate_risk"])]
+        nat_exposure_share = (
+            nat_tiered[nat_tiered["tier"].isin(["high_exposure", "moderate_exposure"])]
             .groupby("major")["emp_nat"].sum()
         )
         nat_major_total = nat_tiered.groupby("major")["emp_nat"].sum()
-        nat_risk_pct = (nat_risk_share / nat_major_total * 100).fillna(0)
+        nat_exposure_pct = (nat_exposure_share / nat_major_total * 100).fillna(0)
 
-        ut_risk_share = (
-            ut_tiered[ut_tiered["tier"].isin(["high_risk", "moderate_risk"])]
+        ut_exposure_share = (
+            ut_tiered[ut_tiered["tier"].isin(["high_exposure", "moderate_exposure"])]
             .groupby("major")["emp_ut"].sum()
         )
         ut_major_total = ut_tiered.groupby("major")["emp_ut"].sum()
-        ut_risk_pct = (ut_risk_share / ut_major_total * 100).fillna(0)
+        ut_exposure_pct = (ut_exposure_share / ut_major_total * 100).fillna(0)
 
-        risk_major_comp = pd.DataFrame({
-            "category": nat_risk_pct.index,
-            "nat_moderate_high_pct": nat_risk_pct.values,
+        exposure_major_comp = pd.DataFrame({
+            "category": nat_exposure_pct.index,
+            "nat_moderate_high_pct": nat_exposure_pct.values,
         }).merge(
             pd.DataFrame({
-                "category": ut_risk_pct.index,
-                "ut_moderate_high_pct": ut_risk_pct.values,
+                "category": ut_exposure_pct.index,
+                "ut_moderate_high_pct": ut_exposure_pct.values,
             }),
             on="category", how="outer",
         ).fillna(0)
-        risk_major_comp["diff_pp"] = risk_major_comp["ut_moderate_high_pct"] - risk_major_comp["nat_moderate_high_pct"]
-        risk_major_comp["abs_diff"] = risk_major_comp["diff_pp"].abs()
-        risk_major_comp = risk_major_comp.sort_values("abs_diff", ascending=False)
-        save_csv(risk_major_comp, results / "risk_major_moderate_high_comparison.csv")
+        exposure_major_comp["diff_pp"] = exposure_major_comp["ut_moderate_high_pct"] - exposure_major_comp["nat_moderate_high_pct"]
+        exposure_major_comp["abs_diff"] = exposure_major_comp["diff_pp"].abs()
+        exposure_major_comp = exposure_major_comp.sort_values("abs_diff", ascending=False)
+        save_csv(exposure_major_comp, results / "exposure_major_moderate_high_comparison.csv")
 
-        notable_risk = risk_major_comp[risk_major_comp["abs_diff"] >= 2.0]
-        if not notable_risk.empty:
-            print(f"\n  Notable differences in moderate+high risk share by major (>=2pp):")
-            for _, row in notable_risk.iterrows():
-                direction = "more at-risk in Utah" if row["diff_pp"] > 0 else "less at-risk in Utah"
+        notable_exposure = exposure_major_comp[exposure_major_comp["abs_diff"] >= 2.0]
+        if not notable_exposure.empty:
+            print(f"\n  Notable differences in moderate+high exposure share by major (>=2pp):")
+            for _, row in notable_exposure.iterrows():
+                direction = "more exposed in Utah" if row["diff_pp"] > 0 else "less exposed in Utah"
                 print(f"    {row['category']}: {row['diff_pp']:+.1f}pp ({direction})")
 
     # ── Capability ceiling — Utah tier shift ─────────────────────────────
@@ -846,7 +846,7 @@ def main() -> None:
                 "Utah %": ut_p,
                 "Difference (pp)": ut_p - nat_p,
             })
-        save_csv(pd.DataFrame(cap_tier_rows), results / "risk_tier_comparison_ceiling.csv")
+        save_csv(pd.DataFrame(cap_tier_rows), results / "exposure_tier_comparison_ceiling.csv")
         print("  Saved ceiling tier comparison")
 
     # ══════════════════════════════════════════════════════════════════════
@@ -870,7 +870,7 @@ def main() -> None:
             nat_p = nat_e / nat_total_emp * 100
             ut_p = ut_e / ut_total_emp * 100
             summary_rows.append({
-                "Analysis": "Job Risk",
+                "Analysis": "Job Exposure",
                 "Metric": TIER_LABELS[t],
                 "National": f"{nat_p:.1f}%",
                 "Utah": f"{ut_p:.1f}%",
@@ -887,8 +887,8 @@ def main() -> None:
 
     key_figures = [
         "footprint_share_divergence_workers.png",
-        "risk_tier_comparison.png",
-        "utah_largest_at_risk.png",
+        "exposure_tier_comparison.png",
+        "utah_largest_high_exposure.png",
         "transformative_gap_share_major.png",
     ]
     for fname in key_figures:

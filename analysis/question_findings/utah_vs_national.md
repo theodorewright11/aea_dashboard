@@ -1,6 +1,6 @@
 # Question: Do Utah's AI Exposure Results Meaningfully Differ From National?
 
-We re-ran the three existing analyses — Economic Footprint, AI Transformative Potential, and Job Elimination Risk — with Utah geography and compared against the national results. This report covers only the notable divergences.
+We re-ran the three existing analyses — Economic Footprint, AI Transformative Potential, and Job Exposure — with Utah geography and compared against the national results. This report covers only the notable divergences.
 
 The key structural fact: **% tasks affected is geography-independent.** It's computed from O*NET task scores and AI auto-aug scores, which don't vary by state. Only workers affected and wages affected change, because they depend on BLS employment counts and wage levels. So divergences show up as ranking shifts and different sector shares — driven entirely by Utah's occupational mix being different from the national average.
 
@@ -81,24 +81,24 @@ At the occupation level, rank shifts are widespread (807 of 923 shift by 3+ posi
 
 ---
 
-## 3. Job Elimination Risk: Utah has a slightly different tier profile
+## 3. Job Exposure: Utah has a slightly different tier profile
 
-Since % tasks affected is geography-independent, the same occupations are in the same risk tiers. But the share of Utah's workforce in each tier differs:
+Since % tasks affected is geography-independent, the same occupations are in the same exposure tiers. But the share of Utah's workforce in each tier differs:
 
 | Tier | National | Utah | Difference |
 |------|----------|------|-----------|
-| High Risk (>=60%) | 1.0% | 2.0% | **+1.0pp** |
-| Moderate Risk (40-60%) | 23.4% | 21.7% | -1.7pp |
+| High Exposure (>=60%) | 1.0% | 2.0% | **+1.0pp** |
+| Moderate Exposure (40-60%) | 23.4% | 21.7% | -1.7pp |
 | Restructuring (20-40%) | 34.7% | 36.6% | +1.9pp |
 | Low Exposure (<20%) | 40.9% | 39.7% | -1.3pp |
 
-**Utah has double the share of workers in high-risk occupations** (2.0% vs 1.0%). This is driven by tech occupations like Search Marketing Strategists and Market Research Analysts being overrepresented in Utah's workforce — these are among the 9 high-risk occupations nationally, and Utah has proportionally more of them.
+**Utah has double the share of workers in high-exposure occupations** (2.0% vs 1.0%). This is driven by tech occupations like Search Marketing Strategists and Market Research Analysts being overrepresented in Utah's workforce — these are among the 9 high-exposure occupations nationally, and Utah has proportionally more of them.
 
-![Risk Tier Comparison](figures/risk_tier_comparison.png)
+![Exposure Tier Comparison](figures/risk_tier_comparison.png)
 
-### Utah's largest at-risk occupations
+### Utah's largest most-exposed occupations
 
-The top 20 moderate-and-high-risk occupations by Utah employment:
+The top 20 moderate-and-high-exposure occupations by Utah employment:
 
 | Rank | Occupation | Utah Emp | % Tasks | Tier |
 |------|-----------|----------|---------|------|
@@ -113,24 +113,24 @@ The top 20 moderate-and-high-risk occupations by Utah employment:
 | 9 | Sales Reps, Wholesale/Mfg | 13,930 | 59.2% | Moderate |
 | 10 | Computer Systems Engineers/Architects | 13,276 | 43.8% | Moderate |
 
-![Utah's Largest At-Risk Occupations](figures/utah_largest_at_risk.png)
+![Utah's Largest Most-Exposed Occupations](figures/utah_largest_at_risk.png)
 
 ### What's different about Utah's top 20 vs national
 
-Six occupations appear in Utah's top 20 at-risk but not the national top 20:
+Six occupations appear in Utah's top 20 most-exposed but not the national top 20:
 
-- **Search Marketing Strategists** (15K workers, 66% — high risk)
+- **Search Marketing Strategists** (15K workers, 66% — high exposure)
 - **Computer Systems Engineers/Architects** (13K, 44%)
 - **Web Administrators** (13K, 51%)
-- **Market Research Analysts** (12K, 63% — high risk)
+- **Market Research Analysts** (12K, 63% — high exposure)
 - **Online Merchants** (10K, 57%)
 - **Document Management Specialists** (8K, 46%)
 
 These are all tech and digital marketing roles — occupations that are proportionally larger in Utah than nationally. Conversely, Utah's top 20 misses several large national occupations like Management Analysts (894K nationally), Medical Secretaries (831K), and Middle School Teachers (620K) that simply have smaller Utah footprints.
 
-### Sector-level risk concentration
+### Sector-level exposure concentration
 
-The share of each major category's workforce in moderate-or-high-risk tiers also diverges:
+The share of each major category's workforce in moderate-or-high-exposure tiers also diverges:
 
 | Major Category | National | Utah | Diff |
 |---------------|----------|------|------|
@@ -155,15 +155,15 @@ Under the capability ceiling (all sources, Max), the tier distribution is much m
 
 2. **The composition is different.** Utah's AI-exposed workforce is more concentrated in tech (+4.1pp in Computer/Math) and business/financial (+2.8pp) and less in retail (-3.9pp) and office/admin (-3.0pp). This reflects Silicon Slopes.
 
-3. **Utah has double the high-risk workforce share** (2.0% vs 1.0%), driven by outsized employment in tech and marketing occupations that happen to be in the high-risk tier. This is the most policy-relevant divergence.
+3. **Utah has double the high-exposure workforce share** (2.0% vs 1.0%), driven by outsized employment in tech and marketing occupations that happen to be in the high-exposure tier. This is the most policy-relevant divergence.
 
-4. **Utah's top at-risk occupations include more tech roles** — Search Marketing Strategists, Computer Systems Engineers, Web Administrators, Online Merchants — that don't appear in the national top 20 because they're proportionally smaller nationally.
+4. **Utah's top most-exposed occupations include more tech roles** — Search Marketing Strategists, Computer Systems Engineers, Web Administrators, Online Merchants — that don't appear in the national top 20 because they're proportionally smaller nationally.
 
-5. **Sector-level risk concentration differs** in Protective Service (+12.6pp more at-risk in Utah), Arts/Entertainment (-9.1pp less), and Business/Financial (-7.0pp less). These are driven by Utah's specific occupational composition within each sector.
+5. **Sector-level exposure concentration differs** in Protective Service (+12.6pp more exposed in Utah), Arts/Entertainment (-9.1pp less), and Business/Financial (-7.0pp less). These are driven by Utah's specific occupational composition within each sector.
 
 6. **The agentic-vs-conversational split and methodology sensitivity are unchanged.** These findings are robust to geography.
 
-**For Utah OAIP:** The national findings are broadly applicable, but Utah's tech concentration means the state may feel the impact of AI on knowledge-worker occupations more acutely than the national average suggests. The 6 tech/digital occupations that are uniquely prominent in Utah's at-risk list are worth monitoring specifically.
+**For Utah OAIP:** The national findings are broadly applicable, but Utah's tech concentration means the state may feel the impact of AI on knowledge-worker occupations more acutely than the national average suggests. The 6 tech/digital occupations that are uniquely prominent in Utah's most-exposed list are worth monitoring specifically.
 
 ---
 
@@ -172,7 +172,7 @@ Under the capability ceiling (all sources, Max), the tier distribution is much m
 All analyses use the same configs as the original questions, with `geo="ut"` substituted:
 - **Economic Footprint**: Combined (all sources, Average) | Time | Auto-aug ON
 - **Transformative Potential**: MCP v4 vs AEI Cumul. Both v4 | Time | Auto-aug ON
-- **Job Elimination Risk**: AEI Cumul. (Both) v4 + Microsoft | Average | Value | Auto-aug ON | Occupation level
+- **Job Exposure**: AEI Cumul. (Both) v4 + Microsoft | Average | Value | Auto-aug ON | Occupation level
 
 ## Files
 
@@ -184,8 +184,8 @@ All analyses use the same configs as the original questions, with `geo="ut"` sub
 | `results/footprint_ai_mode_comparison.csv` | Agentic vs Conversational, both geos |
 | `results/transformative_gap_rank_major.csv` | Gap ranking shifts at major level |
 | `results/transformative_gap_share_major.csv` | Gap share divergence at major level |
-| `results/risk_tier_comparison.csv` | Usage-confirmed tier distribution, both geos |
-| `results/risk_tier_comparison_ceiling.csv` | Ceiling tier distribution, both geos |
-| `results/utah_largest_at_risk.csv` | Utah's top 20 moderate+high risk occupations |
-| `results/risk_major_moderate_high_comparison.csv` | Moderate+high risk share by major, both geos |
+| `results/risk_tier_comparison.csv` | Usage-confirmed exposure tier distribution, both geos |
+| `results/risk_tier_comparison_ceiling.csv` | Ceiling exposure tier distribution, both geos |
+| `results/utah_largest_at_risk.csv` | Utah's top 20 moderate+high exposure occupations |
+| `results/risk_major_moderate_high_comparison.csv` | Moderate+high exposure share by major, both geos |
 | `results/summary.csv` | One-line comparison per key metric |

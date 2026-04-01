@@ -1,8 +1,8 @@
-# Dashboard Instructions: Job Elimination Risk
+# Dashboard Instructions: Job Exposure
 
 How to reproduce these results (or approximations) on the live dashboard.
 
-## Chart 1: High-risk occupations by employment
+## Chart 1: High-exposure occupations by employment
 
 - **Page:** Occupation Categories
 - **Group A:** datasets=AEI Cumul. (Both) v4 + Microsoft, method=Value, geo=National, agg=Occupation, auto-aug=On, physical=All
@@ -29,7 +29,7 @@ How to reproduce these results (or approximations) on the live dashboard.
 
 ## Not reproducible on dashboard
 
-- **Risk tier assignments** — the dashboard doesn't tier occupations by threshold. Use the Explorer's threshold filters to approximate (set % Tasks Affected >= 60).
+- **Exposure tier assignments** — the dashboard doesn't tier occupations by threshold. Use the Explorer's threshold filters to approximate (set % Tasks Affected >= 60).
 - **Scatter plots** — the dashboard doesn't produce scatter plots (pct vs employment). These are analysis-only.
 - **Tier shift matrix** — cross-tabulation of usage vs capability tiers is analysis-only.
 - **Method sensitivity comparison** — requires running both Value and Time and comparing. On the dashboard, switch method toggle and compare visually.

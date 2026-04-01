@@ -1,5 +1,5 @@
 """
-run.py -- Job Elimination Risk: Which occupations are most at risk?
+run.py -- Job Exposure: Which occupations are most exposed?
 
 Identifies occupations where AI can do most of the work AND is already being
 used for it.  Uses AEI Cumul. (Both) v4 + Microsoft (actual usage data) as the
@@ -11,13 +11,13 @@ Primary method: Value (importance-weighted) with auto-aug ON.
 Sensitivity check: Time (frequency) method.
 
 Tier thresholds (% tasks affected):
-  High risk:          >= 60%
-  Moderate risk:      40-60%
+  High exposure:      >= 60%
+  Moderate exposure:  40-60%
   Restructuring:      20-40%
   Low exposure:       < 20%
 
 Usage from project root:
-    venv/Scripts/python -m analysis.questions.job_elimination_risk.run
+    venv/Scripts/python -m analysis.questions.job_exposure.run
 """
 from __future__ import annotations
 
@@ -46,20 +46,20 @@ HERE = Path(__file__).resolve().parent
 
 # -- Thresholds ---------------------------------------------------------------
 
-HIGH_RISK = 60.0
-MODERATE_RISK = 40.0
+HIGH_EXPOSURE = 60.0
+MODERATE_EXPOSURE = 40.0
 RESTRUCTURING = 20.0
 
 TIER_LABELS = {
-    "high_risk": "High Risk (>=60%)",
-    "moderate_risk": "Moderate Risk (40-60%)",
+    "high_exposure": "High Exposure (>=60%)",
+    "moderate_exposure": "Moderate Exposure (40-60%)",
     "restructuring": "Restructuring (20-40%)",
     "low_exposure": "Low Exposure (<20%)",
 }
-TIER_ORDER = ["high_risk", "moderate_risk", "restructuring", "low_exposure"]
+TIER_ORDER = ["high_exposure", "moderate_exposure", "restructuring", "low_exposure"]
 TIER_COLORS = {
-    "high_risk": COLORS["negative"],      # Dark red
-    "moderate_risk": COLORS["accent"],     # Orange-brown
+    "high_exposure": COLORS["negative"],      # Dark red
+    "moderate_exposure": COLORS["accent"],     # Orange-brown
     "restructuring": COLORS["primary"],    # Slate blue
     "low_exposure": COLORS["muted"],       # Muted gray
 }
@@ -76,11 +76,11 @@ TOP_N_CHART = 30     # bars in charts
 # -- Helpers -------------------------------------------------------------------
 
 def _assign_tier(pct: float) -> str:
-    """Assign a risk tier based on pct_tasks_affected."""
-    if pct >= HIGH_RISK:
-        return "high_risk"
-    elif pct >= MODERATE_RISK:
-        return "moderate_risk"
+    """Assign an exposure tier based on pct_tasks_affected."""
+    if pct >= HIGH_EXPOSURE:
+        return "high_exposure"
+    elif pct >= MODERATE_EXPOSURE:
+        return "moderate_exposure"
     elif pct >= RESTRUCTURING:
         return "restructuring"
     else:
@@ -137,7 +137,7 @@ def _build_tiered_df(
     compute_df: pd.DataFrame,
     emp_df: pd.DataFrame,
 ) -> pd.DataFrame:
-    """Merge compute results with employment data and assign risk tiers."""
+    """Merge compute results with employment data and assign exposure tiers."""
     merged = compute_df.merge(
         emp_df,
         left_on="category",
@@ -194,8 +194,8 @@ def _make_scatter(
 
     # Subtle threshold lines
     for thresh, label in [
-        (HIGH_RISK, "60%"),
-        (MODERATE_RISK, "40%"),
+        (HIGH_EXPOSURE, "60%"),
+        (MODERATE_EXPOSURE, "40%"),
         (RESTRUCTURING, "20%"),
     ]:
         fig.add_vline(
@@ -231,7 +231,7 @@ def _make_scatter(
 def main() -> None:
     results = ensure_results_dir(HERE)
     fig_dir = results / "figures"
-    print("Job Elimination Risk — generating outputs...\n")
+    print("Job Exposure — generating outputs...\n")
 
     # ── Employment lookup ─────────────────────────────────────────────────
     print("Loading employment data...")
@@ -274,10 +274,10 @@ def main() -> None:
     save_csv(tiered_out, results / "all_occupations_tiered.csv")
     print("  Saved all_occupations_tiered.csv")
 
-    # ── CSV: High-risk tier ranked by employment ──────────────────────────
-    high_risk = tiered[tiered["tier"] == "high_risk"].copy()
-    high_risk = high_risk.sort_values("emp_nat", ascending=False).reset_index(drop=True)
-    high_risk_out = high_risk[[
+    # ── CSV: High-exposure tier ranked by employment ───────────────────────
+    high_exposure = tiered[tiered["tier"] == "high_exposure"].copy()
+    high_exposure = high_exposure.sort_values("emp_nat", ascending=False).reset_index(drop=True)
+    high_exposure_out = high_exposure[[
         "category", "pct_tasks_affected", "workers_affected", "wages_affected",
         "emp_nat", "wage_nat", "major",
     ]].rename(columns={
@@ -286,23 +286,23 @@ def main() -> None:
         "wage_nat": "median_wage",
         "major": "major_category",
     })
-    high_risk_out.insert(0, "risk_rank", range(1, len(high_risk_out) + 1))
-    save_csv(high_risk_out, results / "high_risk_by_employment.csv")
-    print(f"  Saved high_risk_by_employment.csv ({len(high_risk_out)} occupations)")
+    high_exposure_out.insert(0, "exposure_rank", range(1, len(high_exposure_out) + 1))
+    save_csv(high_exposure_out, results / "high_exposure_by_employment.csv")
+    print(f"  Saved high_exposure_by_employment.csv ({len(high_exposure_out)} occupations)")
 
     # ── Figure: Scatter plot ──────────────────────────────────────────────
     fig = _make_scatter(
         tiered,
-        "Job Elimination Risk: AI Task Exposure vs Employment",
+        "Job Exposure: AI Task Exposure vs Employment",
         "Usage-confirmed (AEI Cumul. (Both) v4 + Microsoft) | Value method | Auto-aug ON | National",
     )
-    save_figure(fig, fig_dir / "scatter_risk_vs_employment.png")
-    print("  Saved scatter_risk_vs_employment.png")
+    save_figure(fig, fig_dir / "scatter_exposure_vs_employment.png")
+    print("  Saved scatter_exposure_vs_employment.png")
 
-    # ── Figure: High-risk tier bar chart (by employment) ──────────────────
-    if not high_risk.empty:
-        n_hr = len(high_risk)
-        hr_plot = high_risk.head(TOP_N_CHART).copy()
+    # ── Figure: High-exposure tier bar chart (by employment) ───────────────
+    if not high_exposure.empty:
+        n_hr = len(high_exposure)
+        hr_plot = high_exposure.head(TOP_N_CHART).copy()
         hr_plot = hr_plot.sort_values("emp_nat", ascending=True)
         emp_labels = [
             f"{_format_bar_label(e)}  ({p:.0f}%)"
@@ -313,7 +313,7 @@ def main() -> None:
             y=hr_plot["category"],
             x=hr_plot["emp_nat"],
             orientation="h",
-            marker=dict(color=TIER_COLORS["high_risk"], line=dict(width=0)),
+            marker=dict(color=TIER_COLORS["high_exposure"], line=dict(width=0)),
             text=emp_labels,
             textposition="outside",
             textfont=dict(size=11, color=COLORS["neutral"], family=FONT_FAMILY),
@@ -322,9 +322,9 @@ def main() -> None:
         chart_h = max(400, min(TOP_N_CHART, n_hr) * 42 + 150)
         style_figure(
             fig,
-            "Marketing and Data Analysts Lead High-Risk Occupations",
+            "Marketing and Data Analysts Lead Most-Exposed Occupations",
             subtitle=(
-                f"All {n_hr} occupations with >={int(HIGH_RISK)}% usage-confirmed task exposure | "
+                f"All {n_hr} occupations with >={int(HIGH_EXPOSURE)}% usage-confirmed task exposure | "
                 "Value | Auto-aug ON"
             ),
             x_title=None,
@@ -337,12 +337,12 @@ def main() -> None:
             yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=11, family=FONT_FAMILY)),
             bargap=0.25,
         )
-        save_figure(fig, fig_dir / "high_risk_by_employment.png")
-        print("  Saved high_risk_by_employment.png")
+        save_figure(fig, fig_dir / "high_exposure_by_employment.png")
+        print("  Saved high_exposure_by_employment.png")
 
-    # ── Figure: High-risk tier bar chart (by pct tasks affected) ──────────
-    if not high_risk.empty:
-        hr_pct_plot = high_risk.sort_values(
+    # ── Figure: High-exposure tier bar chart (by pct tasks affected) ───────
+    if not high_exposure.empty:
+        hr_pct_plot = high_exposure.sort_values(
             "pct_tasks_affected", ascending=False,
         ).head(TOP_N_CHART).copy()
         hr_pct_plot = hr_pct_plot.sort_values("pct_tasks_affected", ascending=True)
@@ -355,7 +355,7 @@ def main() -> None:
             y=hr_pct_plot["category"],
             x=hr_pct_plot["pct_tasks_affected"],
             orientation="h",
-            marker=dict(color=TIER_COLORS["high_risk"], line=dict(width=0)),
+            marker=dict(color=TIER_COLORS["high_exposure"], line=dict(width=0)),
             text=pct_labels,
             textposition="outside",
             textfont=dict(size=11, color=COLORS["neutral"], family=FONT_FAMILY),
@@ -366,7 +366,7 @@ def main() -> None:
             fig,
             "Creative Writers Have the Highest Task Exposure at 70%",
             subtitle=(
-                f"All {len(hr_pct_plot)} high-risk occupations by % tasks affected | "
+                f"All {len(hr_pct_plot)} high-exposure occupations by % tasks affected | "
                 "Usage-confirmed | Value | Auto-aug ON"
             ),
             x_title=None,
@@ -379,8 +379,8 @@ def main() -> None:
             yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=11, family=FONT_FAMILY)),
             bargap=0.25,
         )
-        save_figure(fig, fig_dir / "high_risk_by_pct.png")
-        print("  Saved high_risk_by_pct.png")
+        save_figure(fig, fig_dir / "high_exposure_by_pct.png")
+        print("  Saved high_exposure_by_pct.png")
 
     # ── Major category rollup ─────────────────────────────────────────────
     print("\n== Major category rollup ==")
@@ -411,10 +411,10 @@ def main() -> None:
     save_csv(tier_by_major, results / "major_category_tier_rollup.csv")
     print("  Saved major_category_tier_rollup.csv")
 
-    # Sort majors by high-risk share for the chart
-    major_hr_share = tier_by_major[tier_by_major["tier"] == "high_risk"].set_index("major")["pct_of_major_occs"]
+    # Sort majors by high-exposure share for the chart
+    major_hr_share = tier_by_major[tier_by_major["tier"] == "high_exposure"].set_index("major")["pct_of_major_occs"]
     major_order = major_hr_share.sort_values(ascending=True).index.tolist()
-    # Add majors with 0 high-risk at the top
+    # Add majors with 0 high-exposure at the top
     all_majors = tiered["major"].unique().tolist()
     for m in all_majors:
         if m not in major_order:
@@ -435,8 +435,8 @@ def main() -> None:
     chart_h = max(650, len(major_order) * 30 + 200)
     style_figure(
         fig,
-        "Computer and Business Occupations Have the Most Risk Exposure",
-        subtitle="% of occupations in each risk tier by major category | Value | Auto-aug ON",
+        "Computer and Business Occupations Have the Most Exposure",
+        subtitle="% of occupations in each exposure tier by major category | Value | Auto-aug ON",
         x_title=None,
         height=chart_h,
         show_legend=True,
@@ -472,8 +472,8 @@ def main() -> None:
         ))
     style_figure(
         fig,
-        "Office and Sales Workers Dominate the Moderate Risk Tier",
-        subtitle="Total employment by risk tier and major category | Value | Auto-aug ON",
+        "Office and Sales Workers Dominate the Moderate Exposure Tier",
+        subtitle="Total employment by exposure tier and major category | Value | Auto-aug ON",
         x_title=None,
         height=chart_h,
         show_legend=True,
@@ -529,18 +529,18 @@ def main() -> None:
         save_csv(shift_counts, results / "tier_shift_matrix.csv")
         print("  Saved tier_shift_matrix.csv")
 
-        # How many occupations are high-risk under capability but not usage?
+        # How many occupations are high-exposure under capability but not usage?
         cap_only_high = comparison[
-            (comparison["capability_tier"] == "high_risk") &
-            (comparison["usage_tier"] != "high_risk")
+            (comparison["capability_tier"] == "high_exposure") &
+            (comparison["usage_tier"] != "high_exposure")
         ]
-        usage_high_count = (comparison["usage_tier"] == "high_risk").sum()
-        cap_high_count = (comparison["capability_tier"] == "high_risk").sum()
-        print(f"  Usage-confirmed high-risk: {usage_high_count} occupations")
-        print(f"  Capability high-risk: {cap_high_count} occupations")
-        print(f"  High-risk in capability only (not yet usage-confirmed): {len(cap_only_high)}")
+        usage_high_count = (comparison["usage_tier"] == "high_exposure").sum()
+        cap_high_count = (comparison["capability_tier"] == "high_exposure").sum()
+        print(f"  Usage-confirmed high-exposure: {usage_high_count} occupations")
+        print(f"  Capability high-exposure: {cap_high_count} occupations")
+        print(f"  High-exposure in capability only (not yet usage-confirmed): {len(cap_only_high)}")
 
-        # CSV of capability-only high-risk (these are "emerging risk")
+        # CSV of capability-only high-exposure (these are "emerging exposure")
         if not cap_only_high.empty:
             emerging = cap_only_high.merge(
                 emp_df, left_on="category", right_on="title_current", how="left",
@@ -557,8 +557,8 @@ def main() -> None:
                 "emp_nat": "total_employment",
                 "major": "major_category",
             })
-            save_csv(emerging_out, results / "emerging_risk_capability_only.csv")
-            print(f"  Saved emerging_risk_capability_only.csv ({len(emerging_out)} occupations)")
+            save_csv(emerging_out, results / "emerging_exposure_capability_only.csv")
+            print(f"  Saved emerging_exposure_capability_only.csv ({len(emerging_out)} occupations)")
 
         # Scatter comparing usage vs capability pct
         fig = go.Figure()
@@ -631,10 +631,10 @@ def main() -> None:
         # Summary stats
         n_changed = method_comp["tier_changed"].sum()
         n_total = len(method_comp)
-        val_high = (method_comp["value_tier"] == "high_risk").sum()
-        freq_high = (method_comp["freq_tier"] == "high_risk").sum()
-        print(f"  Value method high-risk: {val_high}")
-        print(f"  Freq method high-risk: {freq_high}")
+        val_high = (method_comp["value_tier"] == "high_exposure").sum()
+        freq_high = (method_comp["freq_tier"] == "high_exposure").sum()
+        print(f"  Value method high-exposure: {val_high}")
+        print(f"  Freq method high-exposure: {freq_high}")
         print(f"  Tier changed: {n_changed}/{n_total} ({n_changed/n_total*100:.1f}%)")
 
         # Biggest movers (largest absolute pct difference)
@@ -656,10 +656,10 @@ def main() -> None:
         save_csv(movers_out, results / "method_sensitivity_tier_movers.csv")
         print(f"  Saved method_sensitivity_tier_movers.csv ({len(movers_out)} movers)")
 
-        # Stability: occupations that are high-risk under BOTH methods
+        # Stability: occupations that are high-exposure under BOTH methods
         both_high = method_comp[
-            (method_comp["value_tier"] == "high_risk") &
-            (method_comp["freq_tier"] == "high_risk")
+            (method_comp["value_tier"] == "high_exposure") &
+            (method_comp["freq_tier"] == "high_exposure")
         ]
         both_high_with_emp = both_high.merge(
             emp_df[["title_current", "emp_nat", "major"]],
@@ -672,8 +672,8 @@ def main() -> None:
             "emp_nat": "total_employment",
             "major": "major_category",
         })
-        save_csv(stable_out, results / "stable_high_risk_both_methods.csv")
-        print(f"  Saved stable_high_risk_both_methods.csv ({len(stable_out)} occupations)")
+        save_csv(stable_out, results / "stable_high_exposure_both_methods.csv")
+        print(f"  Saved stable_high_exposure_both_methods.csv ({len(stable_out)} occupations)")
 
     # -- Copy key figures to committed figures/ dir ----------------------------
     print("\n== Copying key figures for report ==")
@@ -682,9 +682,9 @@ def main() -> None:
 
     import shutil
     key_figures = [
-        "scatter_risk_vs_employment.png",
-        "high_risk_by_employment.png",
-        "high_risk_by_pct.png",
+        "scatter_exposure_vs_employment.png",
+        "high_exposure_by_employment.png",
+        "high_exposure_by_pct.png",
         "tier_distribution_by_major.png",
         "employment_by_tier_major.png",
         "usage_vs_capability_scatter.png",
@@ -701,8 +701,8 @@ def main() -> None:
     # -- Generate PDF ----------------------------------------------------------
     print("\n== Generating PDF ==")
     from analysis.utils import generate_pdf
-    md_path = HERE / "job_elimination_risk.md"
-    pdf_path = results / "job_elimination_risk.pdf"
+    md_path = HERE / "job_exposure.md"
+    pdf_path = results / "job_exposure.pdf"
     if md_path.exists():
         generate_pdf(md_path, pdf_path)
         print(f"  Saved {pdf_path.name}")

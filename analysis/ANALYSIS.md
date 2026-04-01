@@ -43,7 +43,7 @@ analysis/
 │   │       ├── figures/*.png
 │   │       └── <question_title>.pdf  — PDF version of the report
 │   ├── ai_transformative_potential/
-│   ├── job_elimination_risk/
+│   ├── job_exposure/
 │   └── ...
 ├── question_findings/          — Flat folder with all individual question .md reports (for easy bulk upload/sharing)
 └── report/
@@ -163,7 +163,7 @@ settings = {
 - **Create unique, eye-catching, informative charts.** Don't limit yourself to the chart types the dashboard uses (horizontal bars). Scatter plots, stacked bars, heatmaps, dot plots, slope charts, etc. are all appropriate. Choose the chart type that best reveals the insight — the analysis is the place to explore visualizations that the dashboard can't produce interactively.
 
 ### Report markdown (per question)
-Each question's primary deliverable is a markdown report file named after the question (e.g., `job_elimination_risk.md`, NOT `README.md`). This file is converted to PDF by `run.py` using `analysis.utils.generate_pdf()`.
+Each question's primary deliverable is a markdown report file named after the question (e.g., `job_exposure.md`, NOT `README.md`). This file is converted to PDF by `run.py` using `analysis.utils.generate_pdf()`.
 
 **The report must be substantive.** This is not a summary — it's a full analytical narrative that tells the complete story so the reader doesn't need to open any CSVs or run any code. Each section should explain the finding, provide context, include supporting data tables, and embed the relevant chart inline. Aim for the depth and length of a research report section: introduce the framework, walk through each tier or result set with commentary, explain what's surprising, call out notable cases, compare across configs, and state caveats explicitly.
 

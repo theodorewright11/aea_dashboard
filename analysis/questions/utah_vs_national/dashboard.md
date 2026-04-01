@@ -29,11 +29,11 @@ This requires two separate runs since the gap is not a native dashboard metric.
 
 The gap itself (MCP minus AEI) is computed in the analysis script and cannot be directly reproduced on a single dashboard view.
 
-## Job Elimination Risk — Tier composition
+## Job Exposure — Tier composition
 
 - **Page:** Occupation Explorer
 - **Level:** Occupation
 - **Nat/Utah toggle:** Switch between National and Utah to see how employment and wage numbers change per occupation
 - **Pct Compute Panel:** datasets = AEI Cumul. (Both) v4 + Microsoft, combine = Average, method = Value, auto-aug = On
-- **Sort by:** % Tasks Affected (descending) to see the high-risk tier first
-- **Note:** The % Tasks Affected column is identical in both geos. Only Workers Affected and Wages Affected change. Filter to major categories like Computer/Math or Business/Financial to see the occupations that are uniquely prominent in Utah's at-risk list.
+- **Sort by:** % Tasks Affected (descending) to see the high-exposure tier first
+- **Note:** The % Tasks Affected column is identical in both geos. Only Workers Affected and Wages Affected change. Filter to major categories like Computer/Math or Business/Financial to see the occupations that are uniquely prominent in Utah's high-exposure list.

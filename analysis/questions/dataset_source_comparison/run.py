@@ -13,7 +13,7 @@ Lenses:
   2. Multi-level ranking analysis (major, minor, broad, occupation)
      with Spearman correlation, top-N overlap, biggest disagreements
   3. Cross-source confidence flags (high/moderate/low agreement)
-  4. Risk tier comparison (how tier assignments shift between sources)
+  4. Exposure tier comparison (how tier assignments shift between sources)
   5. Raw score exploration (auto-aug and pct distributions)
   6. Sensitivity: Time vs Value method, physical toggle
 
@@ -89,21 +89,21 @@ COMBINED = {
     "short": "Combined",
 }
 
-# Risk tier thresholds (same as job_elimination_risk)
-HIGH_RISK = 60.0
-MODERATE_RISK = 40.0
+# Exposure tier thresholds (same as job_exposure)
+HIGH_EXPOSURE = 60.0
+MODERATE_EXPOSURE = 40.0
 RESTRUCTURING = 20.0
 
 TIER_LABELS = {
-    "high_risk": "High Risk (>=60%)",
-    "moderate_risk": "Moderate (40-60%)",
+    "high_exposure": "High Exposure (>=60%)",
+    "moderate_exposure": "Moderate (40-60%)",
     "restructuring": "Restructuring (20-40%)",
     "low_exposure": "Low Exposure (<20%)",
 }
-TIER_ORDER = ["high_risk", "moderate_risk", "restructuring", "low_exposure"]
+TIER_ORDER = ["high_exposure", "moderate_exposure", "restructuring", "low_exposure"]
 TIER_COLORS = {
-    "high_risk": COLORS["negative"],
-    "moderate_risk": COLORS["accent"],
+    "high_exposure": COLORS["negative"],
+    "moderate_exposure": COLORS["accent"],
     "restructuring": COLORS["primary"],
     "low_exposure": COLORS["muted"],
 }
@@ -175,11 +175,11 @@ def _run_source(
 
 
 def _assign_tier(pct: float) -> str:
-    """Assign risk tier from pct_tasks_affected."""
-    if pct >= HIGH_RISK:
-        return "high_risk"
-    elif pct >= MODERATE_RISK:
-        return "moderate_risk"
+    """Assign exposure tier from pct_tasks_affected."""
+    if pct >= HIGH_EXPOSURE:
+        return "high_exposure"
+    elif pct >= MODERATE_EXPOSURE:
+        return "moderate_exposure"
     elif pct >= RESTRUCTURING:
         return "restructuring"
     return "low_exposure"
@@ -693,7 +693,7 @@ def _chart_tier_comparison(
             textfont=dict(size=11, family=FONT_FAMILY),
         ))
 
-    style_figure(fig, "Risk Tier Distribution by Source",
+    style_figure(fig, "Exposure Tier Distribution by Source",
                  subtitle=subtitle, height=500, width=900)
     fig.update_layout(
         barmode="group", bargap=0.2, bargroupgap=0.05,
@@ -1029,8 +1029,8 @@ def main() -> None:
         fig = _chart_confidence_summary(conf_tables, CONFIDENCE_TOP_N, PRIMARY_SUBTITLE)
         save_figure(fig, results_dir / "figures" / "confidence_summary.png")
 
-    # ── 7. Risk tier analysis (occupation level) ─────────────────────────────
-    print("\n[7/10] Risk tier analysis...")
+    # ── 7. Exposure tier analysis (occupation level) ─────────────────────────
+    print("\n[7/10] Exposure tier analysis...")
     tier_dfs: dict[str, pd.DataFrame] = {}
     tier_counts_data: dict[str, dict[str, int]] = {}
 

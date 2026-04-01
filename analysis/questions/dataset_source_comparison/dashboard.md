@@ -29,7 +29,7 @@
 - **Sort by:** % Tasks Affected
 - **Note:** Very low top-30 overlap between sources. The occupation-level scatter plots and confidence tables are analysis-only outputs.
 
-## Chart 5: Risk Tier Difference (AEI vs Microsoft)
+## Chart 5: Exposure Tier Difference (AEI vs Microsoft)
 - **Page:** Occupation Categories
 - **Group A:** Dataset = AEI Cumul. (Both) v4, Agg = Occupation, Top N = 30
 - **Group B:** Dataset = Microsoft, Agg = Occupation, Top N = 30

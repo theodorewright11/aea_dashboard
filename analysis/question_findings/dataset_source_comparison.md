@@ -176,7 +176,7 @@ The three sources measure genuinely different aspects of AI capability:
 |--------|-----------------|-------------|--------------|
 | **AEI** | What people ask Claude | Education, legal, psychology, social science | Tool-use occupations, physical work |
 | **MCP** | What AI can do with tools | Office/admin, sales, technical support, data work | Teaching, social services |
-| **Microsoft** | How Copilot is used | Moderate/uniform exposure everywhere | No extreme scores, misses high-risk |
+| **Microsoft** | How Copilot is used | Moderate/uniform exposure everywhere | No extreme scores, misses high-exposure |
 
 ![AEI vs MCP scatter at major level](figures/scatter_aei_vs_mcp_major.png)
 
@@ -184,22 +184,22 @@ The three sources measure genuinely different aspects of AI capability:
 
 ---
 
-## 7. Risk Tier Distribution: Microsoft Never Reaches "High Risk"
+## 7. Exposure Tier Distribution: Microsoft Never Reaches "High Exposure"
 
-Using the job elimination risk tiers (High >= 60%, Moderate 40--60%, Restructuring 20--40%, Low < 20%):
+Using the job exposure tiers (High >= 60%, Moderate 40--60%, Restructuring 20--40%, Low < 20%):
 
 | Tier | AEI | MCP | Microsoft |
 |------|----:|----:|----------:|
-| High Risk (>=60%) | 76 | 54 | **0** |
+| High Exposure (>=60%) | 76 | 54 | **0** |
 | Moderate (40--60%) | 113 | 120 | 121 |
 | Restructuring (20--40%) | 198 | 304 | 433 |
 | Low Exposure (<20%) | 536 | 445 | 369 |
 
 ![Tier distribution](figures/tier_comparison.png)
 
-**Microsoft produces zero high-risk occupations.** Its maximum % tasks affected caps below 60%. AEI is the most concentrated (76 high-risk but also 536 low-exposure). MCP falls between, with fewer high-risk but also fewer low-exposure (broad moderate exposure).
+**Microsoft produces zero high-exposure occupations.** Its maximum % tasks affected caps below 60%. AEI is the most concentrated (76 high-exposure but also 536 low-exposure). MCP falls between, with fewer high-exposure but also fewer low-exposure (broad moderate exposure).
 
-For policy: using Microsoft alone would never flag any occupation as high-risk. The three-source average produces a more balanced picture.
+For policy: using Microsoft alone would never flag any occupation as high-exposure. The three-source average produces a more balanced picture.
 
 ![Tier shift: AEI to MCP](figures/tier_shift_aei_vs_mcp.png)
 
@@ -242,7 +242,7 @@ Top-10 major categories are perfectly stable across Time/Value methods for all t
 
 5. **MCP sees the most total exposure** (30.4%) because tool access extends AI's reach beyond conversation. Microsoft produces the flattest, most conservative distribution.
 
-6. **Microsoft never rates any occupation above 60%.** AEI finds 76 high-risk occupations, MCP finds 54, Microsoft finds zero.
+6. **Microsoft never rates any occupation above 60%.** AEI finds 76 high-exposure occupations, MCP finds 54, Microsoft finds zero.
 
 7. **The dashboard's three-source average is the right default.** It triangulates across measurement approaches, dampens source-specific biases, and produces defensible numbers. The consensus effect is a feature.
 
@@ -265,7 +265,7 @@ Top-10 major categories are perfectly stable across Time/Value methods for all t
 - `rank_correlations.csv` -- Spearman rho for all 12 level x pair combinations
 - `divergence_*_vs_*_*.csv` -- Top-20 biggest disagreements per pair per level
 - `{level}_{source}.csv` -- Full results per source per level
-- `tier_counts.csv`, `tier_shift_*.csv` -- Risk tier distributions and shift matrices
+- `tier_counts.csv`, `tier_shift_*.csv` -- Exposure tier distributions and shift matrices
 - `occupations_tiered_*.csv` -- Full occupation lists with tiers per source
 - `sensitivity_toggles.csv`, `physical_comparison.csv` -- Sensitivity analyses
 
@@ -277,5 +277,5 @@ Top-10 major categories are perfectly stable across Time/Value methods for all t
 - `confidence_summary.png` -- Confidence flag distribution across levels
 - `rank_heatmap_major/minor/broad.png` -- Rank agreement heatmaps
 - `score_dots_major/minor.png` -- Side-by-side score dot plots
-- `tier_comparison.png`, `tier_shift_*.png` -- Risk tier charts
+- `tier_comparison.png`, `tier_shift_*.png` -- Exposure tier charts
 - `sensitivity_toggles.png`, `physical_split.png` -- Sensitivity charts
