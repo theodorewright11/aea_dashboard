@@ -15,7 +15,7 @@ interface GroupPending {
   datasets:     string[];
   combineMethod: "Average" | "Max";
   method:       "freq" | "imp";
-  geo:          "nat" | "ut";
+  geo:          string;
   aggLevel:     GroupSettings["aggLevel"];
   topN:         number;
   sortBy:       string;
@@ -31,7 +31,7 @@ function pendingToConfigSummary(p: GroupPending, groupId: "A" | "B"): string[] {
     : `${p.datasets.join(", ")} (${p.combineMethod})`;
   const physLabel = p.physicalMode === "all" ? "All tasks" : p.physicalMode === "exclude" ? "Non-physical only" : "Physical only";
   const augLabel  = p.useAutoAug ? "Auto-aug: On" : "Auto-aug: Off";
-  const line1 = `Group ${groupId}  ·  Datasets: ${dsLabel}  ·  Method: ${p.method === "freq" ? "Time" : "Value"}  ·  Geo: ${p.geo === "nat" ? "National" : "Utah"}`;
+  const line1 = `Group ${groupId}  ·  Datasets: ${dsLabel}  ·  Method: ${p.method === "freq" ? "Time" : "Value"}  ·  Geo: ${p.geo}`;
   const line2 = `Aggregation: ${p.aggLevel}  ·  Top ${p.topN}  ·  Sort: ${p.sortBy}  ·  ${physLabel}  ·  ${augLabel}${p.searchQuery ? `  ·  Search: "${p.searchQuery}"` : ""}`;
   return [line1, line2];
 }
@@ -347,7 +347,7 @@ function GroupSettingsPanel({
   const summary = [
     summaryDs,
     pending.method === "freq" ? "Time" : "Value",
-    pending.geo === "nat" ? "National" : "Utah",
+    config.geo_options[pending.geo] ?? pending.geo,
     pending.aggLevel,
     `Sort: ${SORT_SHORT[pending.sortBy] ?? pending.sortBy}`,
     pending.physicalMode !== "all" ? (pending.physicalMode === "exclude" ? "No Phys" : "Phys only") : null,
@@ -851,7 +851,7 @@ export default function HomePage() {
             <strong style={{ fontWeight: 600 }}>Group {activeGroup === "A" ? "B" : "A"}:</strong>&nbsp;
             {dsLabelOther}
             &nbsp;·&nbsp;{otherPending.method === "freq" ? "Time" : "Value"}
-            &nbsp;·&nbsp;{otherPending.geo === "nat" ? "National" : "Utah"}
+            &nbsp;·&nbsp;{config.geo_options[otherPending.geo] ?? otherPending.geo}
             &nbsp;·&nbsp;{otherPending.aggLevel}
             &nbsp;·&nbsp;Top {otherPending.topN}
             &nbsp;·&nbsp;Sort: {otherPending.sortBy}

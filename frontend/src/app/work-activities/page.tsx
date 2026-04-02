@@ -15,7 +15,7 @@ interface WAGroupPending {
   datasets:      string[];
   combineMethod: "Average" | "Max";
   method:        "freq" | "imp";
-  geo:           "nat" | "ut";
+  geo:           string;
   activityLevel: "gwa" | "iwa" | "dwa";
   topN:          number;
   sortBy:        string;
@@ -31,7 +31,7 @@ function pendingToConfigSummary(p: WAGroupPending, groupId: "A" | "B"): string[]
     : `${p.datasets.join(", ")} (${p.combineMethod})`;
   const physLabel = p.physicalMode === "all" ? "All tasks" : p.physicalMode === "exclude" ? "Non-physical only" : "Physical only";
   const augLabel  = p.useAutoAug ? "Auto-aug: On" : "Auto-aug: Off";
-  const line1 = `Group ${groupId}  ·  Datasets: ${dsLabel}  ·  Activity: ${p.activityLevel.toUpperCase()}  ·  Method: ${p.method === "freq" ? "Time" : "Value"}  ·  Geo: ${p.geo === "nat" ? "National" : "Utah"}`;
+  const line1 = `Group ${groupId}  ·  Datasets: ${dsLabel}  ·  Activity: ${p.activityLevel.toUpperCase()}  ·  Method: ${p.method === "freq" ? "Time" : "Value"}  ·  Geo: ${p.geo}`;
   const line2 = `${physLabel}  ·  ${augLabel}  ·  Top ${p.topN}  ·  Sort: ${p.sortBy}${p.searchQuery ? `  ·  Search: "${p.searchQuery}"` : ""}`;
   return [line1, line2];
 }
@@ -344,7 +344,7 @@ function WAGroupSettingsPanel({
     summaryDs,
     pending.activityLevel.toUpperCase(),
     pending.method === "freq" ? "Time" : "Value",
-    pending.geo === "nat" ? "National" : "Utah",
+    config.geo_options[pending.geo] ?? pending.geo,
     `Sort: ${SORT_SHORT[pending.sortBy] ?? pending.sortBy}`,
     pending.physicalMode !== "all" ? (pending.physicalMode === "exclude" ? "No Phys" : "Phys only") : null,
     pending.useAutoAug ? "Auto-aug On" : null,
@@ -828,7 +828,7 @@ export default function WorkActivitiesPage() {
             {dsLabelOther}
             &nbsp;·&nbsp;{otherPending.activityLevel.toUpperCase()}
             &nbsp;·&nbsp;{otherPending.method === "freq" ? "Time" : "Value"}
-            &nbsp;·&nbsp;{otherPending.geo === "nat" ? "National" : "Utah"}
+            &nbsp;·&nbsp;{config.geo_options[otherPending.geo] ?? otherPending.geo}
             &nbsp;·&nbsp;Top {otherPending.topN}
             &nbsp;·&nbsp;Sort: {otherPending.sortBy}
             &nbsp;·&nbsp;{physLabelOther}

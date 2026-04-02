@@ -135,7 +135,7 @@ const TEXT_FILTER_COLS = new Set(COLUMNS.filter((c) => c.textFilter).map((c) => 
 
 /* ── Value helpers ────────────────────────────────────────────────────────── */
 
-function getColValue(row: TaskChangeRow, key: string, geo: "nat" | "ut"): string | number | boolean | null | undefined {
+function getColValue(row: TaskChangeRow, key: string, geo: string): string | number | boolean | null | undefined {
   switch (key) {
     case "task":      return row.task;
     case "occ":       return row.title_current;
@@ -153,8 +153,8 @@ function getColValue(row: TaskChangeRow, key: string, geo: "nat" | "ut"): string
     case "freq":      return row.freq_mean;
     case "imp":       return row.importance;
     case "rel":       return row.relevance;
-    case "emp":       return geo === "nat" ? row.emp_nat : row.emp_ut;
-    case "wage":      return geo === "nat" ? row.wage_nat : row.wage_ut;
+    case "emp":       return row.emp;
+    case "wage":      return row.wage;
     case "from_pct":  return row.from_pct;
     case "to_pct":    return row.to_pct;
     case "delta_pct": return row.delta_pct;
@@ -162,7 +162,7 @@ function getColValue(row: TaskChangeRow, key: string, geo: "nat" | "ut"): string
   }
 }
 
-function getNumericValue(row: TaskChangeRow, key: string, geo: "nat" | "ut"): number | null {
+function getNumericValue(row: TaskChangeRow, key: string, geo: string): number | null {
   const v = getColValue(row, key, geo);
   if (v == null || typeof v === "string" || typeof v === "boolean") return null;
   return v;
@@ -345,8 +345,8 @@ export default function TaskChangesView({ config }: Props) {
   const datasets = config.datasets;
 
   // ── Dataset pickers ──
-  const [fromDataset, setFromDataset] = useState("AEI Cumul. Conv. v1");
-  const [toDataset, setToDataset] = useState("AEI Cumul. (Both) v4");
+  const [fromDataset, setFromDataset] = useState("AEI Cumul. Conv. v2");
+  const [toDataset, setToDataset] = useState("AEI Cumul. (Both) v5");
 
   // ── Data state ──
   const [rows, setRows] = useState<TaskChangeRow[] | null>(null);
@@ -361,7 +361,7 @@ export default function TaskChangesView({ config }: Props) {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 250);
   const [physicalMode, setPhysicalMode] = useState<"all" | "exclude" | "only">("all");
-  const [geo, setGeo] = useState<"nat" | "ut">("nat");
+  const [geo, setGeo] = useState<string>("nat");
   const [colFilters, setColFilters] = useState<Record<string, { min: string; max: string }>>({});
   const [openFilter, setOpenFilter] = useState<string | null>(null);
   const [textColFilters, setTextColFilters] = useState<Record<string, Set<string> | null>>({});
@@ -421,8 +421,8 @@ export default function TaskChangesView({ config }: Props) {
     setExpandedRows(new Set());
     try {
       const [result, eco] = await Promise.all([
-        fetchTaskChanges(fromDataset, toDataset),
-        ecoTasks ? Promise.resolve({ tasks: ecoTasks }) : fetchAllEcoTasks(),
+        fetchTaskChanges(fromDataset, toDataset, geo),
+        ecoTasks ? Promise.resolve({ tasks: ecoTasks }) : fetchAllEcoTasks(geo),
       ]);
       setRows(result.rows);
       if (!ecoTasks) setEcoTasks(eco.tasks);
@@ -432,7 +432,7 @@ export default function TaskChangesView({ config }: Props) {
     } finally {
       setLoading(false);
     }
-  }, [fromDataset, toDataset, ecoTasks]);
+  }, [fromDataset, toDataset, ecoTasks, geo]);
 
   // ── Eco task activity index for row expansion ──
   const ecoActivityIndex = useMemo(() => {
@@ -755,7 +755,12 @@ export default function TaskChangesView({ config }: Props) {
                   style={{ paddingLeft: 28, paddingRight: 24, paddingTop: 5, paddingBottom: 5, fontSize: 12, border: "1px solid var(--border)", borderRadius: 6, outline: "none", background: "var(--bg-surface)", color: "var(--text-primary)", width: 240 }} />
                 {search && <button onClick={() => setSearch("")} style={{ position: "absolute", right: 6, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: 14, lineHeight: 1, padding: 0 }}>&times;</button>}
               </div>
-              <BtnSeg opts={[{ v: "nat" as const, l: "Nat" }, { v: "ut" as const, l: "Utah" }]} val={geo} onChange={setGeo} />
+              <select value={geo} onChange={(e) => setGeo(e.target.value)}
+                style={{ fontSize: 11, padding: "4px 8px", border: "1px solid var(--border)", borderRadius: 5, background: "var(--bg-surface)", color: "var(--text-primary)" }}>
+                {Object.entries(config.geo_options).map(([code, label]) => (
+                  <option key={code} value={code}>{label}</option>
+                ))}
+              </select>
               {!isSimple && (
                 <BtnSeg opts={[{ v: "all" as const, l: "All" }, { v: "exclude" as const, l: "No Phys" }, { v: "only" as const, l: "Phys only" }]} val={physicalMode} onChange={setPhysicalMode} />
               )}
@@ -905,7 +910,7 @@ export default function TaskChangesView({ config }: Props) {
                         {isExpanded && (
                           <tr style={{ background: "#f7f7f5", borderBottom: "1px solid var(--border)" }}>
                             <td colSpan={visibleCols.length} style={{ padding: "10px 20px 14px 28px" }}>
-                              <ExpandedDetail row={row} />
+                              <ExpandedDetail row={row} toDataset={toDataset} />
                             </td>
                           </tr>
                         )}
@@ -943,16 +948,17 @@ function fmtPctNorm(v: number | null | undefined): string {
   return v.toFixed(4) + "%";
 }
 
-function ExpandedDetail({ row }: { row: TaskChangeRow }) {
+function ExpandedDetail({ row, toDataset }: { row: TaskChangeRow; toDataset: string }) {
   const sectionHead: React.CSSProperties = { fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 };
   const detailLabel: React.CSSProperties = { fontSize: 11, color: "var(--text-muted)", minWidth: 90 };
   const detailValue: React.CSSProperties = { fontSize: 11, color: "var(--text-secondary)" };
+  const isAei = toDataset.startsWith("AEI");
 
   return (
     <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
       {/* Occupation Categories */}
       <div style={{ minWidth: 200 }}>
-        <p style={sectionHead}>Occupation Categories</p>
+        <p style={sectionHead}>{isAei ? "2015 Occupation Hierarchy" : "Occupation Categories"}</p>
         {[
           ["Occupation", row.title_current],
           ["Broad", row.broad_occ],
@@ -968,7 +974,7 @@ function ExpandedDetail({ row }: { row: TaskChangeRow }) {
 
       {/* Work Activities */}
       <div style={{ minWidth: 200 }}>
-        <p style={sectionHead}>Work Activities</p>
+        <p style={sectionHead}>{isAei ? "2015 Task Hierarchy" : "Work Activities"}</p>
         {[
           ["GWA", row.gwa_title],
           ["IWA", row.iwa_title],
@@ -982,7 +988,12 @@ function ExpandedDetail({ row }: { row: TaskChangeRow }) {
       </div>
 
       {/* Source Breakdown — styled to match explorers (colored AVG/MAX badges) */}
-      {row.sources && Object.keys(row.sources).length > 0 && (
+      {row.sources && Object.keys(row.sources).length > 0 && (() => {
+        const allSources = Object.entries(row.sources);
+        const aeiSources = allSources.filter(([name]) => name.startsWith("AEI"));
+        const nonAeiSources = allSources.filter(([name]) => !name.startsWith("AEI"));
+        const allAeiNull = aeiSources.length > 0 && aeiSources.every(([, v]) => v.auto_aug == null && v.pct_norm == null);
+        return (
         <div style={{ minWidth: 220 }}>
           <p style={sectionHead}>Source Breakdown</p>
           <table style={{ fontSize: 11, borderCollapse: "collapse" }}>
@@ -994,13 +1005,27 @@ function ExpandedDetail({ row }: { row: TaskChangeRow }) {
               </tr>
             </thead>
             <tbody>
-              {Object.entries(row.sources).map(([src, stats]) => (
+              {nonAeiSources.map(([src, stats]) => (
                 <tr key={src}>
                   <td style={{ padding: "2px 10px 2px 0", color: "var(--text-secondary)" }}>{src}</td>
                   <td style={{ padding: "2px 10px 2px 0", color: "var(--text-secondary)", textAlign: "right" }}>{stats.auto_aug?.toFixed(1) ?? "\u2014"}</td>
                   <td style={{ padding: "2px 10px 2px 0", color: "var(--text-secondary)", textAlign: "right" }}>{stats.pct_norm != null ? fmtPctNorm(stats.pct_norm) : "\u2014"}</td>
                 </tr>
               ))}
+              {allAeiNull ? (
+                <tr>
+                  <td style={{ padding: "2px 10px 2px 0", color: "var(--text-secondary)" }}>AEI</td>
+                  <td colSpan={2} style={{ padding: "2px 10px 2px 0", fontStyle: "italic", color: "var(--text-muted)" }}>Not in task set</td>
+                </tr>
+              ) : (
+                aeiSources.map(([src, stats]) => (
+                  <tr key={src}>
+                    <td style={{ padding: "2px 10px 2px 0", color: "var(--text-secondary)" }}>{src}</td>
+                    <td style={{ padding: "2px 10px 2px 0", color: "var(--text-secondary)", textAlign: "right" }}>{stats.auto_aug?.toFixed(1) ?? "\u2014"}</td>
+                    <td style={{ padding: "2px 10px 2px 0", color: "var(--text-secondary)", textAlign: "right" }}>{stats.pct_norm != null ? fmtPctNorm(stats.pct_norm) : "\u2014"}</td>
+                  </tr>
+                ))
+              )}
               {/* AVG / MAX footer with colored badges matching explorer style */}
               {(() => {
                 const autos = Object.values(row.sources).map((s) => s.auto_aug).filter((v): v is number => v != null);
@@ -1032,7 +1057,8 @@ function ExpandedDetail({ row }: { row: TaskChangeRow }) {
             </tbody>
           </table>
         </div>
-      )}
+        );
+      })()}
 
       {/* Top MCP Servers */}
       {row.top_mcps && row.top_mcps.length > 0 && (

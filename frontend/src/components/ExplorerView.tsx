@@ -14,7 +14,7 @@ import type {
   EcoTaskRow,
   McpEntry,
 } from "@/lib/types";
-import { fetchOccupationTasks, fetchCompute, fetchAllEcoTasks } from "@/lib/api";
+import { fetchOccupationTasks, fetchCompute, fetchAllEcoTasks, fetchExplorerOccupations, fetchExplorerGroups } from "@/lib/api";
 import { useSimpleMode } from "@/lib/SimpleModeContext";
 import { enforceDatasetToggle, classificationFromConfig } from "@/lib/datasetRules";
 
@@ -32,8 +32,6 @@ function useDebounce<T>(value: T, delay: number): T {
 // ── Props ──────────────────────────────────────────────────────────────────────
 
 interface Props {
-  occupations: OccupationSummary[];
-  groups: ExplorerGroupsResponse;
   config: ConfigResponse;
 }
 
@@ -87,6 +85,7 @@ const COLUMNS: ColDef[] = [
   { key: "dwa_col",      label: "DWA",              width: 200, numeric: false, tooltip: "Detailed Work Activity" },
   { key: "iwa_col",      label: "IWA",              width: 200, numeric: false, tooltip: "Intermediate Work Activity" },
   { key: "gwa_col",      label: "GWA",              width: 200, numeric: false, tooltip: "General Work Activity" },
+  { key: "dws_star",     label: "Job Outlook",      width: 90,  numeric: true,  tooltip: "DWS star rating (1\u20135). Group values are averages rounded to 1 decimal." },
   { key: "emp",          label: "Emp",              width: 90,  numeric: true,  tooltip: "Total employment (BLS OEWS 2024)" },
   { key: "wage",         label: "Med Wage",         width: 90,  numeric: true,  tooltip: "Median annual wage (BLS OEWS 2024)" },
   { key: "phys_col",     label: "Phys",             width: 52,  numeric: false, tooltip: "Physical task (requires physical presence)" },
@@ -131,6 +130,7 @@ interface FlatRow {
   pct_max_all: number | null;
   sum_pct_avg: number | null;
   sum_pct_max: number | null;
+  dws_star_rating?: number | null;
   parent?: string | null;
   grandparent?: string | null;
   sourceOccs?: OccupationSummary[];
@@ -153,11 +153,11 @@ interface FlatRow {
 
 // ── Row converters ─────────────────────────────────────────────────────────────
 
-function groupToRow(g: ExplorerGroupRow, geo: "nat" | "ut"): FlatRow {
+function groupToRow(g: ExplorerGroupRow): FlatRow {
   return {
     name: g.name,
-    emp: (geo === "nat" ? g.emp_nat : g.emp_ut) ?? 0,
-    wage: (geo === "nat" ? g.wage_nat : g.wage_ut) ?? null,
+    emp: g.emp ?? 0,
+    wage: g.wage ?? null,
     n_occs: g.n_occs,
     n_tasks: g.n_tasks,
     auto_avg_with_vals: g.auto_avg_with_vals ?? null,
@@ -171,16 +171,17 @@ function groupToRow(g: ExplorerGroupRow, geo: "nat" | "ut"): FlatRow {
     pct_max_all: g.pct_max_all ?? null,
     sum_pct_avg: g.sum_pct_avg ?? null,
     sum_pct_max: g.sum_pct_max ?? null,
+    dws_star_rating: g.dws_star_rating ?? null,
     parent: g.parent ?? null,
     grandparent: g.grandparent ?? null,
   };
 }
 
-function occToRow(occ: OccupationSummary, geo: "nat" | "ut"): FlatRow {
+function occToRow(occ: OccupationSummary): FlatRow {
   return {
     name: occ.title_current,
-    emp: (geo === "nat" ? occ.emp_nat : occ.emp_ut) ?? 0,
-    wage: (geo === "nat" ? occ.wage_nat : occ.wage_ut) ?? null,
+    emp: occ.emp ?? 0,
+    wage: occ.wage ?? null,
     n_occs: 1,
     n_tasks: occ.n_tasks,
     auto_avg_with_vals: occ.auto_avg_with_vals ?? null,
@@ -194,6 +195,7 @@ function occToRow(occ: OccupationSummary, geo: "nat" | "ut"): FlatRow {
     pct_max_all: occ.pct_max_all ?? null,
     sum_pct_avg: occ.sum_pct_avg ?? null,
     sum_pct_max: occ.sum_pct_max ?? null,
+    dws_star_rating: occ.dws_star_rating ?? null,
     parent: occ.broad ?? null,
     grandparent: occ.minor ?? null,
     sourceOccs: [occ],
@@ -201,12 +203,12 @@ function occToRow(occ: OccupationSummary, geo: "nat" | "ut"): FlatRow {
   };
 }
 
-function ecoTaskToRow(t: EcoTaskRow, idx: number, geo: "nat" | "ut" = "nat"): FlatRow {
+function ecoTaskToRow(t: EcoTaskRow, idx: number): FlatRow {
   return {
     name: t.task,
     rowId: `eco:${idx}`,
-    emp: (geo === "nat" ? t.emp_nat : t.emp_ut) ?? 0,
-    wage: (geo === "nat" ? t.wage_nat : t.wage_ut) ?? null,
+    emp: t.emp ?? 0,
+    wage: t.wage ?? null,
     n_occs: 1,
     n_tasks: 1,
     auto_avg_with_vals: t.avg_auto_aug ?? null,
@@ -258,6 +260,7 @@ function getVal(row: FlatRow, col: string, pctMap: Map<string, number> | null): 
     case "pct_max_all":  return row.pct_max_all;
     case "sum_pct_avg":  return row.sum_pct_avg;
     case "sum_pct_max":  return row.sum_pct_max;
+    case "dws_star":     return row.dws_star_rating ?? null;
     case "freq_col":     return row.freq_mean ?? null;
     case "imp_col":      return row.importance ?? null;
     case "rel_col":      return row.relevance ?? null;
@@ -313,6 +316,7 @@ function renderCell(
     case "pct_max_all":  return fmtPctNorm(row.pct_max_all);
     case "sum_pct_avg":  return fmtPctNorm(row.sum_pct_avg);
     case "sum_pct_max":  return fmtPctNorm(row.sum_pct_max);
+    case "dws_star":     return row.dws_star_rating != null ? row.dws_star_rating.toFixed(1) : <span style={muted}>—</span>;
     case "freq_col":     return row.freq_mean != null ? row.freq_mean.toFixed(1) : <span style={muted}>—</span>;
     case "imp_col":      return row.importance != null ? row.importance.toFixed(1) : <span style={muted}>—</span>;
     case "rel_col":      return row.relevance != null ? row.relevance.toFixed(0) : <span style={muted}>—</span>;
@@ -824,7 +828,11 @@ function TaskSubRow({
                   </tbody>
                 </table>
               </div>
-              {sources.length > 0 && (
+              {sources.length > 0 && (() => {
+                const aeiSources = sources.filter(([name]) => name.startsWith("AEI"));
+                const nonAeiSources = sources.filter(([name]) => !name.startsWith("AEI"));
+                const allAeiNull = aeiSources.length > 0 && aeiSources.every(([, v]) => v.auto_aug == null && v.pct_norm == null);
+                return (
                 <div>
                   <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Source Breakdown</p>
                   <table style={{ fontSize: 11, borderCollapse: "collapse" }}>
@@ -836,7 +844,7 @@ function TaskSubRow({
                       </tr>
                     </thead>
                     <tbody>
-                      {sources.map(([src, stats]) => (
+                      {nonAeiSources.map(([src, stats]) => (
                         <tr key={src}>
                           <td style={{ padding: "2px 10px 2px 0" }}>
                             <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--bg-sidebar)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>{src}</span>
@@ -849,6 +857,28 @@ function TaskSubRow({
                           </td>
                         </tr>
                       ))}
+                      {allAeiNull ? (
+                        <tr>
+                          <td style={{ padding: "2px 10px 2px 0" }}>
+                            <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--bg-sidebar)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>AEI</span>
+                          </td>
+                          <td colSpan={2} style={{ padding: "2px 8px", fontStyle: "italic", color: "var(--text-muted)" }}>Not in task set</td>
+                        </tr>
+                      ) : (
+                        aeiSources.map(([src, stats]) => (
+                          <tr key={src}>
+                            <td style={{ padding: "2px 10px 2px 0" }}>
+                              <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--bg-sidebar)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>{src}</span>
+                            </td>
+                            <td style={{ padding: "2px 8px", textAlign: "right" }}>
+                              {stats.auto_aug != null ? stats.auto_aug.toFixed(1) : <span style={{ color: "var(--text-muted)" }}>—</span>}
+                            </td>
+                            <td style={{ padding: "2px 8px", textAlign: "right" }}>
+                              {stats.pct_norm != null ? fmtPctNorm(stats.pct_norm) : <span style={{ color: "var(--text-muted)" }}>—</span>}
+                            </td>
+                          </tr>
+                        ))
+                      )}
                       <tr style={{ borderTop: "1px solid var(--border-light)" }}>
                         <td style={{ padding: "4px 10px 2px 0", fontWeight: 700 }}>
                           <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--brand-light)", border: "1px solid var(--brand)", color: "var(--brand)", fontWeight: 700 }}>AVG</span>
@@ -874,7 +904,8 @@ function TaskSubRow({
                     </tbody>
                   </table>
                 </div>
-              )}
+                );
+              })()}
               {/* Top MCPs */}
               {task.top_mcps && task.top_mcps.length > 0 && (
                 <div style={{ minWidth: 200 }}>
@@ -938,7 +969,7 @@ interface PctSettings {
   datasets: string[];
   combineMethod: "Average" | "Max";
   method: "freq" | "imp";
-  geo: "nat" | "ut";
+  geo: string;
   physicalMode: "all" | "exclude" | "only";
   useAutoAug: boolean;
 }
@@ -950,7 +981,7 @@ function PctComputePanel({
   onResult,
 }: {
   config: ConfigResponse;
-  geo: "nat" | "ut";
+  geo: string;
   tableLevel: TableLevel;
   onResult: (map: Map<string, number> | null) => void;
 }) {
@@ -1143,7 +1174,7 @@ const SIMPLE_TASK_LABELS: Record<string, string> = {
   pct_max_w: "Pct Max",
 };
 
-export default function ExplorerView({ occupations, groups, config }: Props) {
+export default function ExplorerView({ config }: Props) {
   const { isSimple } = useSimpleMode();
 
   // ── State ──────────────────────────────────────────────────────────────────
@@ -1155,7 +1186,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [colFilters, setColFilters] = useState<Record<string, { min: string; max: string }>>({});
   const [openFilter, setOpenFilter] = useState<string | null>(null);
-  const [geo, setGeo] = useState<"nat" | "ut">("nat");
+  const [geo, setGeo] = useState<string>("nat");
   const [physicalMode, setPhysicalMode] = useState<"all" | "exclude" | "only">("all");
   const [pctAffectedMap, setPctAffectedMap] = useState<Map<string, number> | null>(null);
   const [minPctAffected, setMinPctAffected] = useState(0);
@@ -1167,12 +1198,43 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
   const [textColFilters, setTextColFilters] = useState<Record<string, Set<string> | null>>({});
   const [openTextFilter, setOpenTextFilter] = useState<string | null>(null);
 
+  // ── Source selector state ──────────────────────────────────────────────────
+  const [selectedSources, setSelectedSources] = useState<Set<string>>(() => new Set(config.explorer_source_names));
+  const [sourceSelectorOpen, setSourceSelectorOpen] = useState(false);
+  const sourceSelectorRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!sourceSelectorOpen) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (sourceSelectorRef.current && !sourceSelectorRef.current.contains(e.target as Node)) {
+        setSourceSelectorOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [sourceSelectorOpen]);
+
+  const selectedSourcesArray = useMemo(() => Array.from(selectedSources), [selectedSources]);
+
+  // ── Geo-dependent data (fetched inside the component) ─────────────────────
+  const [occupations, setOccupations] = useState<OccupationSummary[]>([]);
+  const [groups, setGroups] = useState<ExplorerGroupsResponse>({ major: [], minor: [], broad: [] });
+  const [dataLoading, setDataLoading] = useState(true);
+
+  useEffect(() => {
+    setDataLoading(true);
+    const ss = isSimple ? undefined : selectedSourcesArray;
+    Promise.all([fetchExplorerOccupations(geo, ss), fetchExplorerGroups(geo, ss)])
+      .then(([o, g]) => { setOccupations(o); setGroups(g); })
+      .catch(() => {})
+      .finally(() => setDataLoading(false));
+  }, [geo, isSimple, selectedSourcesArray]);
+
   // ── Debounced inputs (prevents topRows recompute on every keystroke) ──────
   const debouncedSearch   = useDebounce(search,   250);
 
   // ── Column selector state (persisted to localStorage) ──────────────────
   const TASK_ONLY_COLS = new Set(["occ", "major_cat", "minor_cat", "broad_cat", "dwa_col", "iwa_col", "gwa_col", "phys_col", "freq_col", "imp_col", "rel_col"]);
-  const NON_TASK_COLS = new Set(["n_occs", "n_tasks", "auto_avg_all", "auto_max_all", "pct_phys", "pct_avg_all", "pct_max_all", "sum_pct_avg", "sum_pct_max"]);
+  const NON_TASK_COLS = new Set(["n_occs", "n_tasks", "auto_avg_all", "auto_max_all", "pct_phys", "pct_avg_all", "pct_max_all", "sum_pct_avg", "sum_pct_max", "dws_star"]);
   const [hiddenCols, setHiddenCols] = useState<Set<string>>(() => {
     if (typeof window === "undefined") return new Set<string>();
     try {
@@ -1196,16 +1258,17 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
     try { localStorage.setItem("aea_explorer_hidden_cols", JSON.stringify(Array.from(hiddenCols))); } catch { /* silent */ }
   }, [hiddenCols]);
 
-  // ── Load task data when task level selected ──────────────────────────────
+  // ── Load task data when task level selected or geo changes ──────────────
   useEffect(() => {
-    if (tableLevel === "task" && taskData === null && !taskLoading) {
+    if (tableLevel === "task") {
       setTaskLoading(true);
-      fetchAllEcoTasks()
+      const ss = isSimple ? undefined : selectedSourcesArray;
+      fetchAllEcoTasks(geo, ss)
         .then((res: { tasks: EcoTaskRow[] }) => setTaskData(res.tasks))
         .catch(() => setTaskData([]))
         .finally(() => setTaskLoading(false));
     }
-  }, [tableLevel, taskData, taskLoading]);
+  }, [tableLevel, geo, isSimple, selectedSourcesArray]);
 
   // ── Auto-compute pct with preset settings (runs on load for both modes) ──
   const [computeVersion, setComputeVersion] = useState(0);
@@ -1279,17 +1342,17 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
       if (selectedMajors.size > 0) {
         data = data.filter((t) => t.major_occ_category != null && selectedMajors.has(t.major_occ_category));
       }
-      rows = data.map((t, i) => ecoTaskToRow(t, i, geo));
+      rows = data.map((t, i) => ecoTaskToRow(t, i));
     } else if (tableLevel === "occupation") {
       let occs = occupations;
       if (selectedMajors.size > 0) {
         occs = occs.filter((o) => selectedMajors.has(o.major ?? "Unknown"));
       }
-      rows = occs.map((o) => occToRow(o, geo));
+      rows = occs.map((o) => occToRow(o));
     } else {
       // major / minor / broad
       const srcRows: ExplorerGroupRow[] = groups[tableLevel as "major" | "minor" | "broad"] ?? [];
-      rows = srcRows.map((g) => groupToRow(g, geo));
+      rows = srcRows.map((g) => groupToRow(g));
       if (selectedMajors.size > 0) {
         if (tableLevel === "major") {
           rows = rows.filter((r) => selectedMajors.has(r.name));
@@ -1396,7 +1459,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
 
     return rows;
   }, [
-    tableLevel, groups, occupations, taskData, geo, selectedMajors, debouncedSearch, searchLevel,
+    tableLevel, groups, occupations, taskData, selectedMajors, debouncedSearch, searchLevel,
     sortCol, sortDir, colFilters, textColFilters, physicalMode, pctAffectedMap, minPctAffected,
   ]);
 
@@ -1503,23 +1566,23 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
     (groups.major ?? []).forEach((g) => {
       cache.set(`major:${g.name}`, (groups.minor ?? [])
         .filter((m) => m.parent === g.name)
-        .map((m) => groupToRow(m, geo))
+        .map((m) => groupToRow(m))
         .sort((a, b) => b.emp - a.emp));
     });
     (groups.minor ?? []).forEach((g) => {
       cache.set(`minor:${g.name}`, (groups.broad ?? [])
         .filter((b) => b.parent === g.name)
-        .map((b) => groupToRow(b, geo))
+        .map((b) => groupToRow(b))
         .sort((a, b) => b.emp - a.emp));
     });
     (groups.broad ?? []).forEach((g) => {
       cache.set(`broad:${g.name}`, occupations
         .filter((o) => o.broad === g.name)
-        .map((o) => occToRow(o, geo))
+        .map((o) => occToRow(o))
         .sort((a, b) => b.emp - a.emp));
     });
     return cache;
-  }, [groups, occupations, geo]);
+  }, [groups, occupations]);
 
   // ── Build child rows for drilldown ────────────────────────────────────────
   function buildChildRows(row: FlatRow, currentLevel: TableLevel): FlatRow[] {
@@ -1718,6 +1781,9 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                 {/* Source Breakdown */}
                 {row.sources && Object.keys(row.sources).length > 0 && (() => {
                   const sources = Object.entries(row.sources);
+                  const aeiSources = sources.filter(([name]) => name.startsWith("AEI"));
+                  const nonAeiSources = sources.filter(([name]) => !name.startsWith("AEI"));
+                  const allAeiNull = aeiSources.length > 0 && aeiSources.every(([, v]) => v.auto_aug == null && v.pct_norm == null);
                   const autoVals = sources.map(([, s]) => s.auto_aug).filter((v): v is number => v != null);
                   const pctVals = sources.map(([, s]) => s.pct_norm).filter((v): v is number => v != null);
                   const avgAuto = autoVals.length > 0 ? autoVals.reduce((a, b) => a + b, 0) / autoVals.length : null;
@@ -1736,7 +1802,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                           </tr>
                         </thead>
                         <tbody>
-                          {sources.map(([src, stats]) => (
+                          {nonAeiSources.map(([src, stats]) => (
                             <tr key={src}>
                               <td style={{ padding: "2px 10px 2px 0" }}>
                                 <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--bg-sidebar)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>{src}</span>
@@ -1749,6 +1815,28 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
                               </td>
                             </tr>
                           ))}
+                          {allAeiNull ? (
+                            <tr>
+                              <td style={{ padding: "2px 10px 2px 0" }}>
+                                <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--bg-sidebar)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>AEI</span>
+                              </td>
+                              <td colSpan={2} style={{ padding: "2px 8px", fontStyle: "italic", color: "var(--text-muted)" }}>Not in task set</td>
+                            </tr>
+                          ) : (
+                            aeiSources.map(([src, stats]) => (
+                              <tr key={src}>
+                                <td style={{ padding: "2px 10px 2px 0" }}>
+                                  <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--bg-sidebar)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>{src}</span>
+                                </td>
+                                <td style={{ padding: "2px 8px", textAlign: "right" }}>
+                                  {stats.auto_aug != null ? stats.auto_aug.toFixed(1) : <span style={{ color: "var(--text-muted)" }}>—</span>}
+                                </td>
+                                <td style={{ padding: "2px 8px", textAlign: "right" }}>
+                                  {stats.pct_norm != null ? fmtPctNorm(stats.pct_norm) : <span style={{ color: "var(--text-muted)" }}>—</span>}
+                                </td>
+                              </tr>
+                            ))
+                          )}
                           <tr style={{ borderTop: "1px solid var(--border-light)" }}>
                             <td style={{ padding: "4px 10px 2px 0", fontWeight: 700 }}>
                               <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--brand-light)", border: "1px solid var(--brand)", color: "var(--brand)", fontWeight: 700 }}>AVG</span>
@@ -1877,11 +1965,15 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
             ))}
           </div>
           {/* Geo */}
-          <BtnSeg
-            opts={[{ v: "nat", l: "Nat" }, { v: "ut", l: "Utah" }]}
-            val={geo}
-            onChange={setGeo}
-          />
+          <select
+            value={geo}
+            onChange={(e) => setGeo(e.target.value)}
+            style={{ fontSize: 11, padding: "4px 8px", border: "1px solid var(--border)", borderRadius: 5, background: "var(--bg-surface)", color: "var(--text-primary)" }}
+          >
+            {Object.entries(config.geo_options).map(([code, label]) => (
+              <option key={code} value={code}>{label}</option>
+            ))}
+          </select>
           {/* Physical (hidden in simple mode) */}
           {!isSimple && (
           <BtnSeg
@@ -1917,6 +2009,77 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
               >×</button>
             )}
           </div>
+
+          {/* Source selector (hidden in simple mode) */}
+          {!isSimple && (
+          <div ref={sourceSelectorRef} style={{ position: "relative" }}>
+            <button
+              onClick={() => setSourceSelectorOpen((p) => !p)}
+              title="Select AI sources for metrics"
+              style={{
+                fontSize: 11, padding: "4px 8px", border: "1px solid var(--border)",
+                borderRadius: 5, background: sourceSelectorOpen ? "var(--brand-light)" : "transparent",
+                cursor: "pointer", color: sourceSelectorOpen ? "var(--brand)" : "var(--text-secondary)",
+                display: "inline-flex", alignItems: "center", gap: 4,
+              }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+              </svg>
+              Sources ({selectedSources.size}/{config.explorer_source_names.length})
+            </button>
+            {sourceSelectorOpen && (
+              <div
+                style={{
+                  position: "absolute", right: 0, top: "100%", marginTop: 4,
+                  background: "var(--bg-surface)", border: "1px solid var(--border)",
+                  borderRadius: 8, padding: "8px 0", zIndex: 100,
+                  boxShadow: "0 4px 16px rgba(0,0,0,0.12)", width: 200,
+                  maxHeight: 350, overflowY: "auto",
+                }}
+              >
+                <div style={{ display: "flex", gap: 4, padding: "0 10px", marginBottom: 6 }}>
+                  <button
+                    onClick={() => {
+                      const allSelected = selectedSources.size === config.explorer_source_names.length;
+                      setSelectedSources(allSelected ? new Set<string>() : new Set(config.explorer_source_names));
+                    }}
+                    style={{
+                      fontSize: 10, padding: "2px 7px", border: "1px solid var(--border)",
+                      borderRadius: 10, background: "var(--bg-surface)", cursor: "pointer",
+                      color: "var(--text-secondary)", lineHeight: "16px",
+                    }}
+                  >{selectedSources.size === config.explorer_source_names.length ? "None" : "All"}</button>
+                </div>
+                {config.explorer_source_names.map((name) => (
+                  <label
+                    key={name}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 6,
+                      padding: "3px 10px", fontSize: 12, cursor: "pointer",
+                      color: "var(--text-primary)",
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedSources.has(name)}
+                      onChange={() => {
+                        setSelectedSources((prev) => {
+                          const next = new Set(prev);
+                          if (next.has(name)) next.delete(name);
+                          else next.add(name);
+                          return next;
+                        });
+                      }}
+                      style={{ margin: 0 }}
+                    />
+                    {name}
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+          )}
 
           {/* Column selector */}
           <div ref={colSelectorRef} style={{ position: "relative" }}>
@@ -2196,8 +2359,20 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
           </thead>
 
           <tbody>
+            {/* Data loading (geo change) */}
+            {dataLoading && (
+              <tr>
+                <td colSpan={visibleCols.length} style={{ padding: "40px", textAlign: "center" }}>
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ width: 20, height: 20, borderRadius: "50%", border: "2px solid var(--brand)", borderTopColor: "transparent", animation: "spin 0.7s linear infinite" }} />
+                    <span style={{ fontSize: 13, color: "var(--text-muted)" }}>Loading data…</span>
+                  </div>
+                </td>
+              </tr>
+            )}
+
             {/* Task level loading */}
-            {tableLevel === "task" && taskLoading && (
+            {!dataLoading && tableLevel === "task" && taskLoading && (
               <tr>
                 <td colSpan={visibleCols.length} style={{ padding: "40px", textAlign: "center" }}>
                   <div style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
@@ -2209,7 +2384,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
             )}
 
             {/* No rows */}
-            {!taskLoading && topRows.length === 0 && (
+            {!dataLoading && !taskLoading && topRows.length === 0 && (
               <tr>
                 <td colSpan={visibleCols.length} style={{ padding: "40px", textAlign: "center", color: "var(--text-muted)", fontSize: 13 }}>
                   No rows match the current filters.
@@ -2218,7 +2393,7 @@ export default function ExplorerView({ occupations, groups, config }: Props) {
             )}
 
             {/* Data rows */}
-            {!taskLoading && shownRows.map((row: FlatRow) =>
+            {!dataLoading && !taskLoading && shownRows.map((row: FlatRow) =>
               renderRow(row, tableLevel, 0)
             )}
           </tbody>

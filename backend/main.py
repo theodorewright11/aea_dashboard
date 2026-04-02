@@ -23,7 +23,7 @@ from config import (
     DATASETS, DATASET_SERIES, AGG_LEVEL_OPTIONS, SORT_OPTIONS, AGG_LEVEL_COL,
     AEI_CONV_SNAPSHOT_DATASETS, AEI_API_SNAPSHOT_DATASETS,
     AEI_CONV_CUMULATIVE_DATASETS, AEI_API_CUMULATIVE_DATASETS,
-    AEI_BOTH_CUMULATIVE_DATASETS, MCP_DATASETS,
+    AEI_BOTH_CUMULATIVE_DATASETS, MCP_DATASETS, GEO_OPTIONS,
 )
 from compute import (
     get_group_data,
@@ -41,6 +41,7 @@ from compute import (
     crosswalk_available,
     dataset_exists,
     eco2015_available,
+    get_explorer_source_names,
     _safe_num,
 )
 
@@ -101,6 +102,8 @@ class ConfigResponse(BaseModel):
     aei_api_cumulative_datasets: list[str]
     aei_both_cumulative_datasets: list[str]
     mcp_datasets:                list[str]
+    geo_options:                 dict[str, str]
+    explorer_source_names:       list[str]
 
 
 @app.get("/api/health")
@@ -124,6 +127,8 @@ def config():
         aei_api_cumulative_datasets=sorted(AEI_API_CUMULATIVE_DATASETS),
         aei_both_cumulative_datasets=sorted(AEI_BOTH_CUMULATIVE_DATASETS),
         mcp_datasets=sorted(MCP_DATASETS),
+        geo_options=GEO_OPTIONS,
+        explorer_source_names=get_explorer_source_names(),
     )
 
 
@@ -366,10 +371,9 @@ class OccupationSummary(BaseModel):
     major:              Optional[str]   = None
     minor:              Optional[str]   = None
     broad:              Optional[str]   = None
-    emp_nat:            Optional[float] = None
-    emp_ut:             Optional[float] = None
-    wage_nat:           Optional[float] = None
-    wage_ut:            Optional[float] = None
+    emp:                Optional[float] = None
+    wage:               Optional[float] = None
+    dws_star_rating:    Optional[float] = None
     n_tasks:            int             = 0
     n_physical_tasks:   int             = 0
     pct_physical:       Optional[float] = None
@@ -391,9 +395,18 @@ class ExplorerResponse(BaseModel):
     occupations: list[OccupationSummary]
 
 
+def _parse_selected_sources(raw: Optional[str]) -> Optional[frozenset]:
+    """Parse comma-separated selected_sources query param into a frozenset, or None if empty/absent."""
+    if not raw or not raw.strip():
+        return None
+    names = [s.strip() for s in raw.split(",") if s.strip()]
+    return frozenset(names) if names else None
+
+
 @app.get("/api/explorer", response_model=ExplorerResponse)
-def explorer():
-    occs = get_explorer_occupations()
+def explorer(geo: str = Query("nat"), selected_sources: Optional[str] = Query(None)):
+    ss = _parse_selected_sources(selected_sources)
+    occs = get_explorer_occupations(geo=geo, selected_sources=ss)
     return ExplorerResponse(occupations=[OccupationSummary(**o) for o in occs])
 
 
@@ -450,10 +463,9 @@ class ExplorerGroupRow(BaseModel):
     name:               str
     parent:             Optional[str]   = None
     grandparent:        Optional[str]   = None
-    emp_nat:            Optional[float] = None
-    emp_ut:             Optional[float] = None
-    wage_nat:           Optional[float] = None
-    wage_ut:            Optional[float] = None
+    emp:                Optional[float] = None
+    wage:               Optional[float] = None
+    dws_star_rating:    Optional[float] = None
     n_occs:             int             = 0
     n_tasks:            int             = 0
     n_physical_tasks:   int             = 0
@@ -477,8 +489,9 @@ class ExplorerGroupsResponse(BaseModel):
 
 
 @app.get("/api/explorer/groups", response_model=ExplorerGroupsResponse)
-def explorer_groups():
-    data = get_explorer_groups()
+def explorer_groups(geo: str = Query("nat"), selected_sources: Optional[str] = Query(None)):
+    ss = _parse_selected_sources(selected_sources)
+    data = get_explorer_groups(geo=geo, selected_sources=ss)
     def _parse(rows: list) -> list[ExplorerGroupRow]:
         return [ExplorerGroupRow(**r) for r in rows]
     return ExplorerGroupsResponse(
@@ -495,14 +508,10 @@ class WAExplorerRow(BaseModel):
     name:               str
     parent:             Optional[str]   = None
     gwa:                Optional[str]   = None
-    emp_nat_freq:       Optional[float] = None
-    emp_ut_freq:        Optional[float] = None
-    emp_nat_value:      Optional[float] = None
-    emp_ut_value:       Optional[float] = None
-    wage_nat_freq:      Optional[float] = None
-    wage_ut_freq:       Optional[float] = None
-    wage_nat_value:     Optional[float] = None
-    wage_ut_value:      Optional[float] = None
+    emp_freq:           Optional[float] = None
+    emp_value:          Optional[float] = None
+    wage_freq:          Optional[float] = None
+    wage_value:         Optional[float] = None
     n_occs:             int             = 0
     n_tasks:            int             = 0
     n_physical_tasks:   int             = 0
@@ -524,8 +533,9 @@ class WAExplorerResponse(BaseModel):
 
 
 @app.get("/api/explorer/wa", response_model=WAExplorerResponse)
-def wa_explorer():
-    rows = get_wa_explorer_data()
+def wa_explorer(geo: str = Query("nat"), selected_sources: Optional[str] = Query(None)):
+    ss = _parse_selected_sources(selected_sources)
+    rows = get_wa_explorer_data(geo=geo, selected_sources=ss)
     return WAExplorerResponse(rows=[WAExplorerRow(**r) for r in rows])
 
 
@@ -538,12 +548,10 @@ class WATaskDetail(BaseModel):
     iwa_title:          Optional[str]   = None
     gwa_title:          Optional[str]   = None
     physical:           Optional[bool]  = None
-    emp_nat_freq:       Optional[float] = None
-    emp_ut_freq:        Optional[float] = None
-    emp_nat_value:      Optional[float] = None
-    emp_ut_value:       Optional[float] = None
-    wage_nat_freq:      Optional[float] = None
-    wage_nat_value:     Optional[float] = None
+    emp_freq:           Optional[float] = None
+    emp_value:          Optional[float] = None
+    wage_freq:          Optional[float] = None
+    wage_value:         Optional[float] = None
     freq_mean:          Optional[float] = None
     importance:         Optional[float] = None
     relevance:          Optional[float] = None
@@ -569,10 +577,11 @@ class WATasksResponse(BaseModel):
 def wa_explorer_tasks(
     level: str = Query(..., description="Activity level: gwa, iwa, or dwa"),
     name:  str = Query(..., description="Activity name"),
+    geo:   str = Query("nat"),
 ):
     if level not in ("gwa", "iwa", "dwa"):
         raise HTTPException(status_code=400, detail="level must be gwa, iwa, or dwa")
-    tasks = get_wa_tasks_for_activity(level, name)
+    tasks = get_wa_tasks_for_activity(level, name, geo=geo)
     return WATasksResponse(
         level=level,
         name=name,
@@ -590,9 +599,8 @@ class AllTaskRow(BaseModel):
     gwa_title:         Optional[str]   = None
     physical:          Optional[bool]  = None
     n_occs:            int             = 0
-    emp_nat:           Optional[float] = None
-    emp_ut:            Optional[float] = None
-    wage_nat:          Optional[float] = None
+    emp:               Optional[float] = None
+    wage:              Optional[float] = None
     sources:           dict            = {}
     avg_auto_aug:      Optional[float] = None
     max_auto_aug:      Optional[float] = None
@@ -605,8 +613,8 @@ class AllTasksResponse(BaseModel):
 
 
 @app.get("/api/explorer/all-tasks", response_model=AllTasksResponse)
-def explorer_all_tasks():
-    tasks = get_all_tasks()
+def explorer_all_tasks(geo: str = Query("nat")):
+    tasks = get_all_tasks(geo=geo)
     return AllTasksResponse(tasks=[AllTaskRow(**t) for t in tasks])
 
 
@@ -623,14 +631,10 @@ class EcoTaskRow(BaseModel):
     iwa_title:          Optional[str]   = None
     gwa_title:          Optional[str]   = None
     physical:           Optional[bool]  = None
-    emp_nat:            Optional[float] = None
-    emp_ut:             Optional[float] = None
-    wage_nat:           Optional[float] = None
-    wage_ut:            Optional[float] = None
-    emp_nat_freq:       Optional[float] = None
-    emp_ut_freq:        Optional[float] = None
-    emp_nat_value:      Optional[float] = None
-    emp_ut_value:       Optional[float] = None
+    emp:                Optional[float] = None
+    wage:               Optional[float] = None
+    emp_freq:           Optional[float] = None
+    emp_value:          Optional[float] = None
     freq_mean:          Optional[float] = None
     importance:         Optional[float] = None
     relevance:          Optional[float] = None
@@ -647,8 +651,9 @@ class EcoTasksResponse(BaseModel):
 
 
 @app.get("/api/explorer/all-eco-tasks", response_model=EcoTasksResponse)
-def explorer_all_eco_tasks():
-    rows = get_all_eco_task_rows()
+def explorer_all_eco_tasks(geo: str = Query("nat"), selected_sources: Optional[str] = Query(None)):
+    ss = _parse_selected_sources(selected_sources)
+    rows = get_all_eco_task_rows(geo=geo, selected_sources=ss)
     return EcoTasksResponse(tasks=[EcoTaskRow(**r) for r in rows])
 
 
@@ -668,10 +673,8 @@ class TaskChangeRow(BaseModel):
     freq_mean:          Optional[float] = None
     importance:         Optional[float] = None
     relevance:          Optional[float] = None
-    emp_nat:            Optional[float] = None
-    emp_ut:             Optional[float] = None
-    wage_nat:           Optional[float] = None
-    wage_ut:            Optional[float] = None
+    emp:                Optional[float] = None
+    wage:               Optional[float] = None
     status:             str             = ""
     from_auto_aug:      Optional[float] = None
     to_auto_aug:        Optional[float] = None
@@ -690,6 +693,7 @@ class TaskChangeRow(BaseModel):
 class TaskChangesRequest(BaseModel):
     from_dataset: str
     to_dataset:   str
+    geo:          str = "nat"
 
 
 class TaskChangesResponse(BaseModel):
@@ -705,7 +709,7 @@ def task_changes(req: TaskChangesRequest):
     if req.to_dataset not in DATASETS:
         raise HTTPException(status_code=400, detail=f"Unknown dataset: {req.to_dataset}")
 
-    rows = compute_task_changes(req.from_dataset, req.to_dataset)
+    rows = compute_task_changes(req.from_dataset, req.to_dataset, geo=req.geo)
     return TaskChangesResponse(
         rows=[TaskChangeRow(**r) for r in rows],
         from_dataset=req.from_dataset,

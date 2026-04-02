@@ -116,9 +116,15 @@ export default function GroupSettings({ groupId, color, settings, config, onChan
         value={settings.method === "freq" ? "Time" : "Value"}
         onChange={(v) => update({ method: v === "Time" ? "freq" : "imp" })} horizontal />
 
-      <RadioGroup label="Geography" options={["National", "Utah"]}
-        value={settings.geo === "nat" ? "National" : "Utah"}
-        onChange={(v) => update({ geo: v === "National" ? "nat" : "ut" })} horizontal />
+      <div style={{ marginBottom: 12 }}>
+        <SectionLabel>Geography</SectionLabel>
+        <select value={settings.geo} onChange={(e) => update({ geo: e.target.value })}
+          style={{ width: "100%", fontSize: 12, border: "1px solid var(--border)", borderRadius: 6, padding: "5px 8px", background: "var(--bg-surface)", color: "var(--text-primary)" }}>
+          {Object.entries(config.geo_options).map(([code, label]) => (
+            <option key={code} value={code}>{label}</option>
+          ))}
+        </select>
+      </div>
 
       <RadioGroup label="Aggregation level" options={Object.keys(AGG_INTERNAL)}
         value={AGG_LABELS[settings.aggLevel]}

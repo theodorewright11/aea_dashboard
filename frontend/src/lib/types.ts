@@ -6,7 +6,7 @@ export interface GroupSettings {
   method: "freq" | "imp";
   useAutoAug: boolean;
   physicalMode: "all" | "exclude" | "only";
-  geo: "nat" | "ut";
+  geo: string;
   aggLevel: "major" | "minor" | "broad" | "occupation";
   sortBy: string;
   topN: number;
@@ -47,6 +47,8 @@ export interface ConfigResponse {
   aei_api_cumulative_datasets: string[];
   aei_both_cumulative_datasets: string[];
   mcp_datasets: string[];
+  geo_options: Record<string, string>;
+  explorer_source_names: string[];
 }
 
 // ── Work Activities ───────────────────────────────────────────────────────────
@@ -101,7 +103,7 @@ export interface TrendsSettings {
   method: "freq" | "imp";
   useAutoAug: boolean;
   physicalMode: "all" | "exclude" | "only";
-  geo: "nat" | "ut";
+  geo: string;
   aggLevel: "major" | "minor" | "broad" | "occupation";
   topN: number;
   sortBy: string;
@@ -112,7 +114,7 @@ export interface WATrendsSettings {
   method: "freq" | "imp";
   useAutoAug: boolean;
   physicalMode: "all" | "exclude" | "only";
-  geo: "nat" | "ut";
+  geo: string;
   topN: number;
   sortBy: string;
   activityLevel: "gwa" | "iwa" | "dwa";
@@ -143,10 +145,9 @@ export interface OccupationSummary extends ExplorerMetrics {
   major?: string;
   minor?: string;
   broad?: string;
-  emp_nat?: number;
-  emp_ut?: number;
-  wage_nat?: number;
-  wage_ut?: number;
+  emp?: number | null;
+  wage?: number | null;
+  dws_star_rating?: number | null;
 }
 
 export interface TaskSourceStats {
@@ -189,10 +190,9 @@ export interface ExplorerGroupRow extends ExplorerMetrics {
   name: string;
   parent?: string | null;
   grandparent?: string | null;
-  emp_nat?: number | null;
-  emp_ut?: number | null;
-  wage_nat?: number | null;
-  wage_ut?: number | null;
+  emp?: number | null;
+  wage?: number | null;
+  dws_star_rating?: number | null;
   n_occs: number;
 }
 
@@ -212,9 +212,8 @@ export interface AllTaskRow {
   gwa_title?: string | null;
   physical?: boolean | null;
   n_occs: number;
-  emp_nat?: number | null;
-  emp_ut?: number | null;
-  wage_nat?: number | null;
+  emp?: number | null;
+  wage?: number | null;
   sources: Record<string, TaskSourceStats>;
   avg_auto_aug?: number | null;
   max_auto_aug?: number | null;
@@ -235,14 +234,10 @@ export interface EcoTaskRow {
   iwa_title?: string | null;
   gwa_title?: string | null;
   physical?: boolean | null;
-  emp_nat?: number | null;
-  emp_ut?: number | null;
-  wage_nat?: number | null;
-  wage_ut?: number | null;
-  emp_nat_freq?: number | null;
-  emp_ut_freq?: number | null;
-  emp_nat_value?: number | null;
-  emp_ut_value?: number | null;
+  emp?: number | null;
+  wage?: number | null;
+  emp_freq?: number | null;
+  emp_value?: number | null;
   freq_mean?: number | null;
   importance?: number | null;
   relevance?: number | null;
@@ -261,14 +256,10 @@ export interface WAExplorerRow extends ExplorerMetrics {
   name: string;
   parent?: string | null;
   gwa?: string | null;
-  emp_nat_freq?: number | null;
-  emp_ut_freq?: number | null;
-  emp_nat_value?: number | null;
-  emp_ut_value?: number | null;
-  wage_nat_freq?: number | null;
-  wage_ut_freq?: number | null;
-  wage_nat_value?: number | null;
-  wage_ut_value?: number | null;
+  emp_freq?: number | null;
+  emp_value?: number | null;
+  wage_freq?: number | null;
+  wage_value?: number | null;
   n_occs: number;
 }
 
@@ -283,12 +274,10 @@ export interface WATaskDetail {
   iwa_title?: string | null;
   gwa_title?: string | null;
   physical?: boolean | null;
-  emp_nat_freq?: number | null;
-  emp_ut_freq?: number | null;
-  emp_nat_value?: number | null;
-  emp_ut_value?: number | null;
-  wage_nat_freq?: number | null;
-  wage_nat_value?: number | null;
+  emp_freq?: number | null;
+  emp_value?: number | null;
+  wage_freq?: number | null;
+  wage_value?: number | null;
   freq_mean?: number | null;
   importance?: number | null;
   relevance?: number | null;
@@ -328,10 +317,8 @@ export interface TaskChangeRow {
   freq_mean?: number | null;
   importance?: number | null;
   relevance?: number | null;
-  emp_nat?: number | null;
-  emp_ut?: number | null;
-  wage_nat?: number | null;
-  wage_ut?: number | null;
+  emp?: number | null;
+  wage?: number | null;
   status: TaskChangeStatus;
   from_auto_aug?: number | null;
   to_auto_aug?: number | null;

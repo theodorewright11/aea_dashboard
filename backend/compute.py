@@ -18,7 +18,14 @@ from config import (
     AEI_BOTH_CUMULATIVE_DATASETS, MCP_DATASETS,
 )
 
-AEI_EXPLORER_DATASETS = ["AEI Conv. v1", "AEI Conv. v2", "AEI Conv. v3", "AEI Conv. v4", "AEI API v3", "AEI API v4"]
+AEI_EXPLORER_DATASETS = ["AEI Conv. v1", "AEI Conv. v2", "AEI Conv. v3", "AEI Conv. v4", "AEI Conv. v5", "AEI API v3", "AEI API v4", "AEI API v5"]
+EXPLORER_SOURCE_NAMES: list[str] = AEI_EXPLORER_DATASETS + ["MCP", "Microsoft"]
+
+
+def get_explorer_source_names() -> list[str]:
+    """Return the list of source names used in the explorer task lookup."""
+    return list(EXPLORER_SOURCE_NAMES)
+
 
 # ── Simple in-process caches ───────────────────────────────────────────────────
 _crosswalk_cache: Optional[pd.DataFrame] = None
@@ -26,14 +33,15 @@ _eco_raw_cache:   Optional[pd.DataFrame] = None
 _eco2015_raw_cache: Optional[pd.DataFrame] = None
 _eco_baseline_cache: dict = {}
 _dataset_cache:      dict = {}
-_explorer_occ_cache: Optional[list] = None
+_explorer_occ_base_cache: dict = {}          # keyed by frozenset|None
 _explorer_task_cache: dict = {}
 _wa_cache: dict = {}
 _trends_cache: dict = {}
 _explorer_task_lookup_cache: Optional[dict] = None
-_explorer_groups_cache: Optional[dict] = None
-_wa_explorer_cache: Optional[list] = None
-_all_tasks_cache: Optional[list] = None
+_explorer_groups_base_cache: dict = {}       # keyed by frozenset|None
+_wa_explorer_geo_cache: dict = {}
+_all_tasks_geo_cache: dict = {}
+_all_eco_tasks_geo_cache: dict = {}
 _top_mcps_cache: Optional[dict] = None
 _task_changes_cache: dict = {}
 _eco2015_baseline_set_cache: Optional[set] = None
@@ -968,15 +976,17 @@ def _safe_float(v) -> float:
     return 0.0 if f is None else f
 
 
-def get_explorer_occupations() -> list:
+def _build_explorer_occ_base(selected_sources: Optional[frozenset] = None) -> list:
     """
-    Returns list of all occupations from eco_2025 with hierarchy, employment,
-    wage stats, and AI metrics from all AEI versions, MCP v4, and Microsoft.
-    Results are cached.
+    Build and cache the geo-independent base data for explorer occupations.
+    Returns a list of dicts with hierarchy, dws, task counts, and AI metrics
+    (but NO emp/wage — those are overlaid per geo).
+    Cache is keyed by selected_sources (frozenset or None).
     """
-    global _explorer_occ_cache
-    if _explorer_occ_cache is not None:
-        return _explorer_occ_cache
+    global _explorer_occ_base_cache
+    cache_key = selected_sources
+    if cache_key in _explorer_occ_base_cache:
+        return _explorer_occ_base_cache[cache_key]
 
     eco = load_eco_raw()
     if eco is None:
@@ -1008,20 +1018,15 @@ def get_explorer_occupations() -> list:
         if row["physical_bool"]:
             occ_physical_map[title] += 1
 
-    # Basic occ stats
-    occ_stats = (
-        eco.groupby("title_current")
-        .agg(
-            major   =("major_occ_category", "first"),
-            minor   =("minor_occ_category", "first"),
-            broad   =("broad_occ",           "first"),
-            emp_nat =("emp_tot_nat_2024",    "first"),
-            emp_ut  =("emp_tot_ut_2024",     "first"),
-            wage_nat=("a_med_nat_2024",      "first"),
-            wage_ut =("a_med_ut_2024",       "first"),
-        )
-        .reset_index()
-    )
+    # Basic occ stats (geo-independent)
+    agg_dict = {
+        "major":    ("major_occ_category", "first"),
+        "minor":    ("minor_occ_category", "first"),
+        "broad":    ("broad_occ",           "first"),
+    }
+    if "dws_star_rating" in eco.columns:
+        agg_dict["dws_star_rating"] = ("dws_star_rating", "first")
+    occ_stats = eco.groupby("title_current").agg(**agg_dict).reset_index()
 
     result = []
     for _, row in occ_stats.iterrows():
@@ -1030,17 +1035,16 @@ def get_explorer_occupations() -> list:
         n_tasks = len(task_norms)
         n_phys  = occ_physical_map.get(title, 0)
 
-        metrics = _compute_task_metrics(task_norms, lookup)
+        metrics = _compute_task_metrics(task_norms, lookup, selected_sources)
+
+        dws_val = _safe_num(row.get("dws_star_rating")) if "dws_star_rating" in row.index else None
 
         occ_dict: dict = {
             "title_current": title,
             "major":   row.get("major"),
             "minor":   row.get("minor"),
             "broad":   row.get("broad"),
-            "emp_nat":  _safe_num(row.get("emp_nat")),
-            "emp_ut":   _safe_num(row.get("emp_ut")),
-            "wage_nat": _safe_num(row.get("wage_nat")),
-            "wage_ut":  _safe_num(row.get("wage_ut")),
+            "dws_star_rating": round(dws_val, 1) if dws_val is not None else None,
             "n_tasks":  n_tasks,
             "n_physical_tasks": n_phys,
             "pct_physical": round(n_phys / n_tasks, 4) if n_tasks else None,
@@ -1048,7 +1052,50 @@ def get_explorer_occupations() -> list:
         }
         result.append(occ_dict)
 
-    _explorer_occ_cache = result
+    _explorer_occ_base_cache[cache_key] = result
+    return result
+
+
+def get_explorer_occupations(geo: str = "nat", selected_sources: Optional[frozenset] = None) -> list:
+    """
+    Returns list of all occupations from eco_2025 with hierarchy, employment,
+    wage stats, and AI metrics from all AEI versions, MCP v4, and Microsoft.
+    Base data is cached; emp/wage are overlaid per geo parameter.
+    When selected_sources is provided, only those sources contribute to metrics.
+    """
+    base = _build_explorer_occ_base(selected_sources)
+    if not base:
+        return []
+
+    eco = load_eco_raw()
+    if eco is None:
+        return base
+
+    # Resolve geo columns with fallback to national
+    emp_col = f"emp_tot_{geo}_2024"
+    wage_col = f"a_med_{geo}_2024"
+    if emp_col not in eco.columns:
+        emp_col = "emp_tot_nat_2024"
+    if wage_col not in eco.columns:
+        wage_col = "a_med_nat_2024"
+
+    # Build occ→emp/wage lookup for this geo
+    occ_emp_wage = eco.groupby("title_current").agg(
+        _emp=(emp_col, "first"),
+        _wage=(wage_col, "first"),
+    ).reset_index()
+    occ_to_emp: dict = dict(zip(occ_emp_wage["title_current"], occ_emp_wage["_emp"]))
+    occ_to_wage: dict = dict(zip(occ_emp_wage["title_current"], occ_emp_wage["_wage"]))
+
+    # Overlay emp/wage onto each base row
+    result = []
+    for occ_dict in base:
+        row = dict(occ_dict)
+        title = row["title_current"]
+        row["emp"] = _safe_num(occ_to_emp.get(title))
+        row["wage"] = _safe_num(occ_to_wage.get(title))
+        result.append(row)
+
     return result
 
 
@@ -1267,7 +1314,7 @@ def _build_top_mcps_lookup() -> dict:
     return result
 
 
-def _compute_task_metrics(task_norms: list, lookup: dict) -> dict:
+def _compute_task_metrics(task_norms: list, lookup: dict, selected_sources: Optional[frozenset] = None) -> dict:
     """
     Given a list of unique task_normalized values and the lookup, compute 10 metrics:
     - auto_avg_with_vals: avg of (per-task avg-across-sources), only tasks with >=1 source
@@ -1277,6 +1324,9 @@ def _compute_task_metrics(task_norms: list, lookup: dict) -> dict:
     - pct_avg_with_vals, pct_max_with_vals, pct_avg_all, pct_max_all  (same pattern)
     - sum_pct_avg:        sum of per-task pct_avg (only tasks with pct values)
     - sum_pct_max:        sum of per-task pct_max (only tasks with pct values)
+
+    When selected_sources is provided (a frozenset of source names), only those
+    sources contribute to the metrics. When None, all sources are used.
     """
     total_n = len(task_norms)
     auto_avgs_with: list = []
@@ -1290,7 +1340,11 @@ def _compute_task_metrics(task_norms: list, lookup: dict) -> dict:
     pct_maxs_sum = 0.0
 
     for tn in task_norms:
-        sources = lookup.get(tn, {})
+        all_sources = lookup.get(tn, {})
+        if selected_sources is not None:
+            sources = {k: v for k, v in all_sources.items() if k in selected_sources}
+        else:
+            sources = all_sources
 
         auto_vals = [v["auto_aug"] for v in sources.values() if v.get("auto_aug") is not None]
         if auto_vals:
@@ -1330,17 +1384,18 @@ def _compute_task_metrics(task_norms: list, lookup: dict) -> dict:
     }
 
 
-def get_explorer_groups() -> dict:
+def _build_explorer_groups_base(selected_sources: Optional[frozenset] = None) -> dict:
     """
-    Returns pre-computed aggregations for major/minor/broad levels.
-    Each group's metrics are computed from unique task_norms across all occupations
-    in that group (NOT averaged from occ-level values).
-    Each row also includes parent hierarchy fields.
-    Results are cached.
+    Build and cache the geo-independent base data for explorer groups.
+    Returns dict with 'major', 'minor', 'broad' keys, each a list of dicts
+    containing hierarchy, metrics, task counts, physical counts, parent info, dws, n_occs,
+    and an '_occs' field with the set of occupation titles in each group (for geo overlay).
+    Cache is keyed by selected_sources (frozenset or None).
     """
-    global _explorer_groups_cache
-    if _explorer_groups_cache is not None:
-        return _explorer_groups_cache
+    global _explorer_groups_base_cache
+    cache_key = selected_sources
+    if cache_key in _explorer_groups_base_cache:
+        return _explorer_groups_base_cache[cache_key]
 
     eco = load_eco_raw()
     if eco is None:
@@ -1348,20 +1403,23 @@ def get_explorer_groups() -> dict:
 
     lookup = _build_explorer_task_lookup()
 
-    # Basic occ stats
-    occ_basic = (
-        eco.groupby("title_current")
-        .agg(
-            major   =("major_occ_category", "first"),
-            minor   =("minor_occ_category", "first"),
-            broad   =("broad_occ",          "first"),
-            emp_nat =("emp_tot_nat_2024",    "first"),
-            emp_ut  =("emp_tot_ut_2024",     "first"),
-            wage_nat=("a_med_nat_2024",      "first"),
-            wage_ut =("a_med_ut_2024",       "first"),
-        )
-        .reset_index()
-    )
+    # Basic occ stats (geo-independent)
+    group_agg_dict = {
+        "major":    ("major_occ_category", "first"),
+        "minor":    ("minor_occ_category", "first"),
+        "broad":    ("broad_occ",          "first"),
+    }
+    if "dws_star_rating" in eco.columns:
+        group_agg_dict["dws_star_rating"] = ("dws_star_rating", "first")
+    occ_basic = eco.groupby("title_current").agg(**group_agg_dict).reset_index()
+
+    # Build occ->dws mapping for group averaging
+    occ_to_dws: dict = {}
+    if "dws_star_rating" in occ_basic.columns:
+        for _, r in occ_basic.iterrows():
+            v = _safe_num(r.get("dws_star_rating"))
+            if v is not None:
+                occ_to_dws[r["title_current"]] = v
 
     # Unique (title, task_norm) pairs with physical flag
     task_pairs = eco[["title_current", "task_normalized", "physical"]].drop_duplicates(
@@ -1381,10 +1439,6 @@ def get_explorer_groups() -> dict:
     occ_to_major = dict(zip(occ_basic["title_current"], occ_basic["major"]))
     occ_to_minor = dict(zip(occ_basic["title_current"], occ_basic["minor"]))
     occ_to_broad = dict(zip(occ_basic["title_current"], occ_basic["broad"]))
-    occ_to_emp_nat  = dict(zip(occ_basic["title_current"], occ_basic["emp_nat"]))
-    occ_to_emp_ut   = dict(zip(occ_basic["title_current"], occ_basic["emp_ut"]))
-    occ_to_wage_nat = dict(zip(occ_basic["title_current"], occ_basic["wage_nat"]))
-    occ_to_wage_ut  = dict(zip(occ_basic["title_current"], occ_basic["wage_ut"]))
 
     result: dict = {}
 
@@ -1414,22 +1468,7 @@ def get_explorer_groups() -> dict:
             phys_by_task = group_tasks.groupby("task_normalized")["physical_bool"].any()
             n_phys = int(phys_by_task.sum())
 
-            metrics = _compute_task_metrics(unique_task_norms, lookup)
-
-            # Emp and wage
-            total_emp_nat = sum((_safe_num(occ_to_emp_nat.get(t)) or 0) for t in occs)
-            total_emp_ut  = sum((_safe_num(occ_to_emp_ut.get(t))  or 0) for t in occs)
-            wage_sum_nat = 0.0; wage_emp_nat = 0.0
-            wage_sum_ut  = 0.0; wage_emp_ut  = 0.0
-            for t in occs:
-                en = _safe_num(occ_to_emp_nat.get(t)) or 0
-                eu = _safe_num(occ_to_emp_ut.get(t))  or 0
-                wn = _safe_num(occ_to_wage_nat.get(t))
-                wu = _safe_num(occ_to_wage_ut.get(t))
-                if wn is not None and en > 0:
-                    wage_sum_nat += wn * en; wage_emp_nat += en
-                if wu is not None and eu > 0:
-                    wage_sum_ut  += wu * eu; wage_emp_ut  += eu
+            metrics = _compute_task_metrics(unique_task_norms, lookup, selected_sources)
 
             # Parent info (take mode from occs)
             parent_name = None
@@ -1445,39 +1484,101 @@ def get_explorer_groups() -> dict:
                 if grandparents:
                     grandparent_name = Counter(grandparents).most_common(1)[0][0]
 
+            # DWS star rating: average across occs in this group
+            dws_vals = [occ_to_dws[t] for t in occs if t in occ_to_dws]
+            group_dws = round(sum(dws_vals) / len(dws_vals), 1) if dws_vals else None
+
             row = {
                 "name":    group_name,
                 "parent":  parent_name,
                 "grandparent": grandparent_name,
-                "emp_nat": round(total_emp_nat, 0) if total_emp_nat else None,
-                "emp_ut":  round(total_emp_ut,  0) if total_emp_ut  else None,
-                "wage_nat": round(wage_sum_nat / wage_emp_nat, 0) if wage_emp_nat else None,
-                "wage_ut":  round(wage_sum_ut  / wage_emp_ut,  0) if wage_emp_ut  else None,
+                "dws_star_rating": group_dws,
                 "n_occs":  len(occs),
                 "n_tasks": n_tasks,
                 "n_physical_tasks": n_phys,
                 "pct_physical": round(n_phys / n_tasks, 4) if n_tasks else None,
+                "_occs": occs,   # preserved for geo overlay
                 **metrics,
             }
             groups_data.append(row)
 
         result[level_key] = groups_data
 
-    _explorer_groups_cache = result
+    _explorer_groups_base_cache[cache_key] = result
     return result
 
 
-def get_wa_explorer_data() -> list:
+def get_explorer_groups(geo: str = "nat", selected_sources: Optional[frozenset] = None) -> dict:
+    """
+    Returns pre-computed aggregations for major/minor/broad levels.
+    Each group's metrics are computed from unique task_norms across all occupations
+    in that group (NOT averaged from occ-level values).
+    Each row also includes parent hierarchy fields.
+    Base data is cached; emp/wage are overlaid per geo parameter.
+    When selected_sources is provided, only those sources contribute to metrics.
+    """
+    base = _build_explorer_groups_base(selected_sources)
+    if not base:
+        return {"major": [], "minor": [], "broad": []}
+
+    eco = load_eco_raw()
+    if eco is None:
+        return base
+
+    # Resolve geo columns with fallback to national
+    emp_col = f"emp_tot_{geo}_2024"
+    wage_col = f"a_med_{geo}_2024"
+    if emp_col not in eco.columns:
+        emp_col = "emp_tot_nat_2024"
+    if wage_col not in eco.columns:
+        wage_col = "a_med_nat_2024"
+
+    # Build occ→emp/wage lookup for this geo
+    occ_agg = eco.groupby("title_current").agg(
+        _emp=(emp_col, "first"),
+        _wage=(wage_col, "first"),
+    ).reset_index()
+    occ_to_emp: dict = dict(zip(occ_agg["title_current"], occ_agg["_emp"]))
+    occ_to_wage: dict = dict(zip(occ_agg["title_current"], occ_agg["_wage"]))
+
+    result: dict = {}
+    for level_key in ("major", "minor", "broad"):
+        groups_data = []
+        for base_row in base.get(level_key, []):
+            row = dict(base_row)
+            occs = row.pop("_occs")
+
+            # Compute emp (sum) and wage (emp-weighted avg) for this geo
+            total_emp = sum((_safe_num(occ_to_emp.get(t)) or 0) for t in occs)
+            wage_sum = 0.0
+            wage_emp = 0.0
+            for t in occs:
+                e = _safe_num(occ_to_emp.get(t)) or 0
+                w = _safe_num(occ_to_wage.get(t))
+                if w is not None and e > 0:
+                    wage_sum += w * e
+                    wage_emp += e
+
+            row["emp"] = round(total_emp, 0) if total_emp else None
+            row["wage"] = round(wage_sum / wage_emp, 0) if wage_emp else None
+            groups_data.append(row)
+
+        result[level_key] = groups_data
+
+    return result
+
+
+def get_wa_explorer_data(geo: str = "nat", selected_sources: Optional[frozenset] = None) -> list:
     """
     Returns WA explorer data: list of rows for GWA, IWA, DWA levels.
     Each row includes: level, name, parent, gwa, emp, wage, n_occs, n_tasks, metrics.
     emp uses the same allocation logic as the WA backend (emp_occ / n_unique_tasks_in_occ).
     AI metrics are computed from tasks deduplicated at each level (task_norm x activity).
-    Results are cached.
+    Results are cached per (geo, selected_sources).
     """
-    global _wa_explorer_cache
-    if _wa_explorer_cache is not None:
-        return _wa_explorer_cache
+    wa_cache_key = (geo, selected_sources)
+    if wa_cache_key in _wa_explorer_geo_cache:
+        return _wa_explorer_geo_cache[wa_cache_key]
 
     eco = load_eco_raw()
     if eco is None:
@@ -1485,11 +1586,18 @@ def get_wa_explorer_data() -> list:
 
     lookup = _build_explorer_task_lookup()
 
+    # Resolve geo columns with fallback to national
+    emp_col = f"emp_tot_{geo}_2024"
+    wage_col = f"a_med_{geo}_2024"
+    if emp_col not in eco.columns:
+        emp_col = "emp_tot_nat_2024"
+    if wage_col not in eco.columns:
+        wage_col = "a_med_nat_2024"
+
     needed_cols = [
         "title_current", "task_normalized", "task",
         "dwa_title", "iwa_title", "gwa_title",
-        "physical", "emp_tot_nat_2024", "emp_tot_ut_2024",
-        "a_med_nat_2024", "a_med_ut_2024",
+        "physical", emp_col, wage_col,
         "freq_mean", "relevance", "importance",
     ]
     avail_cols = [c for c in needed_cols if c in eco.columns]
@@ -1510,16 +1618,12 @@ def get_wa_explorer_data() -> list:
     frac_lookup = task_dedup[["title_current", "task_normalized", "_freq_frac", "_value_frac"]].copy()
     df = df.merge(frac_lookup, on=["title_current", "task_normalized"], how="left")
 
-    for emp_col, freq_col, val_col in [
-        ("emp_tot_nat_2024", "emp_per_task_nat_freq", "emp_per_task_nat_value"),
-        ("emp_tot_ut_2024",  "emp_per_task_ut_freq",  "emp_per_task_ut_value"),
-    ]:
-        if emp_col in df.columns:
-            df[freq_col] = (df["_freq_frac"] * df[emp_col].fillna(0)).fillna(0.0)
-            df[val_col]  = (df["_value_frac"] * df[emp_col].fillna(0)).fillna(0.0)
-        else:
-            df[freq_col] = 0.0
-            df[val_col]  = 0.0
+    if emp_col in df.columns:
+        df["emp_per_task_freq"]  = (df["_freq_frac"]  * df[emp_col].fillna(0)).fillna(0.0)
+        df["emp_per_task_value"] = (df["_value_frac"] * df[emp_col].fillna(0)).fillna(0.0)
+    else:
+        df["emp_per_task_freq"]  = 0.0
+        df["emp_per_task_value"] = 0.0
 
     def _phys_bool(v):
         if v is None:
@@ -1552,29 +1656,19 @@ def get_wa_explorer_data() -> list:
         for act_name, act_df in sorted(level_df.groupby(act_col), key=lambda x: x[0]):
             # emp: sum emp_per_task across unique (occ, task_norm) combos for BOTH methods
             occ_task_dedup = act_df.drop_duplicates(subset=["title_current", "task_normalized"])
-            total_emp_nat_freq  = occ_task_dedup["emp_per_task_nat_freq"].fillna(0).sum()
-            total_emp_ut_freq   = occ_task_dedup["emp_per_task_ut_freq"].fillna(0).sum()
-            total_emp_nat_value = occ_task_dedup["emp_per_task_nat_value"].fillna(0).sum()
-            total_emp_ut_value  = occ_task_dedup["emp_per_task_ut_value"].fillna(0).sum()
+            total_emp_freq  = occ_task_dedup["emp_per_task_freq"].fillna(0).sum()
+            total_emp_value = occ_task_dedup["emp_per_task_value"].fillna(0).sum()
 
             # wage: emp-weighted avg for BOTH methods
-            wage_sum_nat_f = 0.0; wage_emp_nat_f = 0.0
-            wage_sum_ut_f  = 0.0; wage_emp_ut_f  = 0.0
-            wage_sum_nat_v = 0.0; wage_emp_nat_v = 0.0
-            wage_sum_ut_v  = 0.0; wage_emp_ut_v  = 0.0
+            wage_sum_f = 0.0; wage_emp_f = 0.0
+            wage_sum_v = 0.0; wage_emp_v = 0.0
             for _, r in occ_task_dedup.iterrows():
-                enf = _safe_num(r.get("emp_per_task_nat_freq")) or 0
-                euf = _safe_num(r.get("emp_per_task_ut_freq"))  or 0
-                env = _safe_num(r.get("emp_per_task_nat_value")) or 0
-                euv = _safe_num(r.get("emp_per_task_ut_value"))  or 0
-                wn = _safe_num(r.get("a_med_nat_2024"))
-                wu = _safe_num(r.get("a_med_ut_2024"))
-                if wn is not None:
-                    if enf > 0: wage_sum_nat_f += wn * enf; wage_emp_nat_f += enf
-                    if env > 0: wage_sum_nat_v += wn * env; wage_emp_nat_v += env
-                if wu is not None:
-                    if euf > 0: wage_sum_ut_f += wu * euf; wage_emp_ut_f += euf
-                    if euv > 0: wage_sum_ut_v += wu * euv; wage_emp_ut_v += euv
+                ef = _safe_num(r.get("emp_per_task_freq")) or 0
+                ev = _safe_num(r.get("emp_per_task_value")) or 0
+                w = _safe_num(r.get(wage_col))
+                if w is not None:
+                    if ef > 0: wage_sum_f += w * ef; wage_emp_f += ef
+                    if ev > 0: wage_sum_v += w * ev; wage_emp_v += ev
 
             n_occs = int(act_df["title_current"].nunique())
 
@@ -1586,7 +1680,7 @@ def get_wa_explorer_data() -> list:
             phys_by_task = act_df.drop_duplicates(subset=["task_normalized"]).set_index("task_normalized")["physical_bool"]
             n_phys = int(phys_by_task.sum())
 
-            metrics = _compute_task_metrics(unique_task_norms, lookup)
+            metrics = _compute_task_metrics(unique_task_norms, lookup, selected_sources)
 
             # Parent / gwa info
             parent_name = None
@@ -1607,14 +1701,10 @@ def get_wa_explorer_data() -> list:
                 "name":    str(act_name),
                 "parent":  parent_name,
                 "gwa":     gwa_name,
-                "emp_nat_freq":  round(float(total_emp_nat_freq), 1) if total_emp_nat_freq else None,
-                "emp_ut_freq":   round(float(total_emp_ut_freq),  1) if total_emp_ut_freq  else None,
-                "emp_nat_value": round(float(total_emp_nat_value), 1) if total_emp_nat_value else None,
-                "emp_ut_value":  round(float(total_emp_ut_value),  1) if total_emp_ut_value  else None,
-                "wage_nat_freq":  round(wage_sum_nat_f / wage_emp_nat_f, 0) if wage_emp_nat_f else None,
-                "wage_ut_freq":   round(wage_sum_ut_f  / wage_emp_ut_f,  0) if wage_emp_ut_f  else None,
-                "wage_nat_value": round(wage_sum_nat_v / wage_emp_nat_v, 0) if wage_emp_nat_v else None,
-                "wage_ut_value":  round(wage_sum_ut_v  / wage_emp_ut_v,  0) if wage_emp_ut_v  else None,
+                "emp_freq":  round(float(total_emp_freq), 1) if total_emp_freq else None,
+                "emp_value": round(float(total_emp_value), 1) if total_emp_value else None,
+                "wage_freq":  round(wage_sum_f / wage_emp_f, 0) if wage_emp_f else None,
+                "wage_value": round(wage_sum_v / wage_emp_v, 0) if wage_emp_v else None,
                 "n_occs":  n_occs,
                 "n_tasks": n_tasks,
                 "n_physical_tasks": n_phys,
@@ -1622,15 +1712,20 @@ def get_wa_explorer_data() -> list:
                 **metrics,
             })
 
-    _wa_explorer_cache = rows_out
+    _wa_explorer_geo_cache[wa_cache_key] = rows_out
     return rows_out
 
 
-def get_wa_tasks_for_activity(level: str, name: str) -> list:
+def get_wa_tasks_for_activity(level: str, name: str, geo: str = "nat") -> list:
     """
     Returns task-level details for a specific WA activity (gwa/iwa/dwa).
     Tasks are deduplicated by task_normalized, with emp summed across all occupations.
+    Accepts a geo parameter for geography-specific emp/wage data.
     """
+    cache_key = (level, name, geo)
+    if cache_key in _wa_cache:
+        return _wa_cache[cache_key]
+
     eco = load_eco_raw()
     if eco is None:
         return []
@@ -1643,12 +1738,20 @@ def get_wa_tasks_for_activity(level: str, name: str) -> list:
     if not act_col or act_col not in eco.columns:
         return []
 
+    # Resolve geo columns with fallback to national
+    emp_col_name = f"emp_tot_{geo}_2024"
+    wage_col_name = f"a_med_{geo}_2024"
+    if emp_col_name not in eco.columns:
+        emp_col_name = "emp_tot_nat_2024"
+    if wage_col_name not in eco.columns:
+        wage_col_name = "a_med_nat_2024"
+
     # Filter to this activity
     act_df = eco[eco[act_col] == name].copy()
     if act_df.empty:
         return []
 
-    # emp allocation — weighted by freq or freq×rel×imp
+    # emp allocation — weighted by freq or freq*rel*imp
     task_dd = eco.drop_duplicates(subset=["title_current", "task_normalized"]).copy()
     task_dd["_freq_w"] = task_dd["freq_mean"].fillna(0.0) if "freq_mean" in task_dd.columns else 0.0
     task_dd["_value_w"] = (
@@ -1662,16 +1765,12 @@ def get_wa_tasks_for_activity(level: str, name: str) -> list:
     task_dd["_value_frac"] = (task_dd["_value_w"] / task_dd["_value_sum"].replace(0, np.nan)).fillna(0.0)
     frac_lkp = task_dd[["title_current", "task_normalized", "_freq_frac", "_value_frac"]].copy()
     act_df = act_df.merge(frac_lkp, on=["title_current", "task_normalized"], how="left")
-    for emp_col, fc, vc in [
-        ("emp_tot_nat_2024", "emp_per_task_nat_freq", "emp_per_task_nat_value"),
-        ("emp_tot_ut_2024",  "emp_per_task_ut_freq",  "emp_per_task_ut_value"),
-    ]:
-        if emp_col in act_df.columns:
-            act_df[fc] = (act_df["_freq_frac"]  * act_df[emp_col].fillna(0)).fillna(0.0)
-            act_df[vc] = (act_df["_value_frac"] * act_df[emp_col].fillna(0)).fillna(0.0)
-        else:
-            act_df[fc] = 0.0
-            act_df[vc] = 0.0
+    if emp_col_name in act_df.columns:
+        act_df["emp_per_task_freq"]  = (act_df["_freq_frac"]  * act_df[emp_col_name].fillna(0)).fillna(0.0)
+        act_df["emp_per_task_value"] = (act_df["_value_frac"] * act_df[emp_col_name].fillna(0)).fillna(0.0)
+    else:
+        act_df["emp_per_task_freq"]  = 0.0
+        act_df["emp_per_task_value"] = 0.0
 
     def _phys_bool(v):
         if v is None: return False
@@ -1689,21 +1788,19 @@ def get_wa_tasks_for_activity(level: str, name: str) -> list:
         # Use first row for task text, hierarchy, physical
         first = grp.iloc[0]
         deduped = grp.drop_duplicates(subset=["title_current"])
-        emp_nat_freq  = float(deduped["emp_per_task_nat_freq"].fillna(0).sum())
-        emp_ut_freq   = float(deduped["emp_per_task_ut_freq"].fillna(0).sum())
-        emp_nat_value = float(deduped["emp_per_task_nat_value"].fillna(0).sum())
-        emp_ut_value  = float(deduped["emp_per_task_ut_value"].fillna(0).sum())
+        emp_freq  = float(deduped["emp_per_task_freq"].fillna(0).sum())
+        emp_value = float(deduped["emp_per_task_value"].fillna(0).sum())
 
         # wage: emp-weighted avg for both methods
-        wage_sum_nat_f = 0.0; wage_emp_nat_f = 0.0
-        wage_sum_nat_v = 0.0; wage_emp_nat_v = 0.0
+        wage_sum_f = 0.0; wage_emp_f = 0.0
+        wage_sum_v = 0.0; wage_emp_v = 0.0
         for _, r in deduped.iterrows():
-            enf = _safe_num(r.get("emp_per_task_nat_freq")) or 0
-            env = _safe_num(r.get("emp_per_task_nat_value")) or 0
-            wn = _safe_num(r.get("a_med_nat_2024"))
-            if wn is not None:
-                if enf > 0: wage_sum_nat_f += wn * enf; wage_emp_nat_f += enf
-                if env > 0: wage_sum_nat_v += wn * env; wage_emp_nat_v += env
+            ef = _safe_num(r.get("emp_per_task_freq")) or 0
+            ev = _safe_num(r.get("emp_per_task_value")) or 0
+            w = _safe_num(r.get(wage_col_name))
+            if w is not None:
+                if ef > 0: wage_sum_f += w * ef; wage_emp_f += ef
+                if ev > 0: wage_sum_v += w * ev; wage_emp_v += ev
 
         sources = lookup.get(tn, {})
         auto_vals = [v["auto_aug"] for v in sources.values() if v.get("auto_aug") is not None]
@@ -1721,12 +1818,10 @@ def get_wa_tasks_for_activity(level: str, name: str) -> list:
             "iwa_title":           first.get("iwa_title"),
             "gwa_title":           first.get("gwa_title"),
             "physical":            is_physical,
-            "emp_nat_freq":        round(emp_nat_freq, 2) if emp_nat_freq else None,
-            "emp_ut_freq":         round(emp_ut_freq,  2) if emp_ut_freq  else None,
-            "emp_nat_value":       round(emp_nat_value, 2) if emp_nat_value else None,
-            "emp_ut_value":        round(emp_ut_value,  2) if emp_ut_value  else None,
-            "wage_nat_freq":       round(wage_sum_nat_f / wage_emp_nat_f, 0) if wage_emp_nat_f else None,
-            "wage_nat_value":      round(wage_sum_nat_v / wage_emp_nat_v, 0) if wage_emp_nat_v else None,
+            "emp_freq":            round(emp_freq, 2) if emp_freq else None,
+            "emp_value":           round(emp_value, 2) if emp_value else None,
+            "wage_freq":           round(wage_sum_f / wage_emp_f, 0) if wage_emp_f else None,
+            "wage_value":          round(wage_sum_v / wage_emp_v, 0) if wage_emp_v else None,
             "freq_mean":           _safe_num(first.get("freq_mean")),
             "importance":          _safe_num(first.get("importance")),
             "relevance":           _safe_num(first.get("relevance")),
@@ -1743,26 +1838,34 @@ def get_wa_tasks_for_activity(level: str, name: str) -> list:
         })
 
     tasks_out.sort(key=lambda t: t["task"])
+    _wa_cache[cache_key] = tasks_out
     return tasks_out
 
 
-def get_all_tasks() -> list:
+def get_all_tasks(geo: str = "nat") -> list:
     """
     Returns all unique tasks from eco_2025 with their AI metrics from the task lookup.
     Each task row includes: task, task_normalized, dwa_title, iwa_title, gwa_title,
     physical, n_occs (unique occ count), avg_auto_aug, max_auto_aug, avg_pct_norm, max_pct_norm,
-    plus the sources dict.
-    Results are cached.
+    plus the sources dict. emp/wage are computed for the given geography.
+    Results are cached per geo.
     """
-    global _all_tasks_cache
-    if _all_tasks_cache is not None:
-        return _all_tasks_cache
+    if geo in _all_tasks_geo_cache:
+        return _all_tasks_geo_cache[geo]
 
     eco = load_eco_raw()
     if eco is None:
         return []
 
     lookup = _build_explorer_task_lookup()
+
+    # Resolve geo columns with fallback to national
+    emp_col_name = f"emp_tot_{geo}_2024"
+    wage_col_name = f"a_med_{geo}_2024"
+    if emp_col_name not in eco.columns:
+        emp_col_name = "emp_tot_nat_2024"
+    if wage_col_name not in eco.columns:
+        wage_col_name = "a_med_nat_2024"
 
     # Get unique tasks with their metadata (use first occurrence for text/hierarchy)
     task_cols = ["task_normalized", "task", "dwa_title", "iwa_title", "gwa_title", "physical"]
@@ -1781,9 +1884,8 @@ def get_all_tasks() -> list:
     # Compute emp/wage allocation per task:
     # For each occ, n_unique_tasks = count of unique task_norms in that occ.
     # Each task gets emp_occ / n_unique_tasks. Sum across all occs sharing the task.
-    emp_nat_col  = "emp_tot_nat_2024" if "emp_tot_nat_2024" in eco.columns else None
-    emp_ut_col   = "emp_tot_ut_2024"  if "emp_tot_ut_2024"  in eco.columns else None
-    wage_nat_col = "a_med_nat_2024"   if "a_med_nat_2024"   in eco.columns else None
+    has_emp  = emp_col_name in eco.columns
+    has_wage = wage_col_name in eco.columns
 
     # Build per-occ n_unique_tasks count
     occ_task_counts = (
@@ -1801,42 +1903,37 @@ def get_all_tasks() -> list:
     occ_task_pairs = occ_task_pairs.join(occ_task_counts, on="title_current")
 
     # Attach emp/wage from occ-level data
-    for col in [c for c in [emp_nat_col, emp_ut_col, wage_nat_col] if c]:
-        occ_task_pairs[col] = occ_task_pairs["title_current"].map(
-            eco_occ[col] if col in eco_occ.columns else {}
-        )
+    for col in [c for c in [emp_col_name, wage_col_name] if c in eco_occ.columns]:
+        occ_task_pairs[col] = occ_task_pairs["title_current"].map(eco_occ[col])
 
-    if emp_nat_col:
-        occ_task_pairs["emp_nat_contrib"] = (
-            occ_task_pairs[emp_nat_col].fillna(0) / occ_task_pairs["n_unique_tasks"].replace(0, 1)
-        )
-    if emp_ut_col:
-        occ_task_pairs["emp_ut_contrib"] = (
-            occ_task_pairs[emp_ut_col].fillna(0) / occ_task_pairs["n_unique_tasks"].replace(0, 1)
+    if has_emp:
+        occ_task_pairs["emp_contrib"] = (
+            occ_task_pairs[emp_col_name].fillna(0) / occ_task_pairs["n_unique_tasks"].replace(0, 1)
         )
 
     # Sum emp contributions by task
-    task_emp = occ_task_pairs.groupby("task_normalized").agg(
-        emp_nat=("emp_nat_contrib", "sum") if emp_nat_col else ("task_normalized", "count"),
-        emp_ut=("emp_ut_contrib", "sum")   if emp_ut_col  else ("task_normalized", "count"),
-    ).reset_index() if (emp_nat_col or emp_ut_col) else None
+    task_emp = None
+    if has_emp:
+        task_emp = occ_task_pairs.groupby("task_normalized").agg(
+            emp=("emp_contrib", "sum"),
+        ).reset_index()
 
-    # Employment-weighted wage: Σ(emp_contrib × wage) / Σ(emp_contrib)
+    # Employment-weighted wage: sum(emp_contrib * wage) / sum(emp_contrib)
     task_wage = None
-    if emp_nat_col and wage_nat_col:
+    if has_emp and has_wage:
         occ_task_pairs["wage_contrib"] = (
-            occ_task_pairs["emp_nat_contrib"] * occ_task_pairs[wage_nat_col].fillna(0)
+            occ_task_pairs["emp_contrib"] * occ_task_pairs[wage_col_name].fillna(0)
         )
         wage_agg = occ_task_pairs.groupby("task_normalized").agg(
             wage_sum=("wage_contrib", "sum"),
-            emp_sum=("emp_nat_contrib", "sum"),
+            emp_sum=("emp_contrib", "sum"),
         )
-        wage_agg["wage_nat"] = np.where(
+        wage_agg["wage"] = np.where(
             wage_agg["emp_sum"] > 0,
             wage_agg["wage_sum"] / wage_agg["emp_sum"],
             np.nan,
         )
-        task_wage = wage_agg[["wage_nat"]].reset_index()
+        task_wage = wage_agg[["wage"]].reset_index()
 
     # Merge emp/wage into task_meta
     if task_emp is not None:
@@ -1877,9 +1974,8 @@ def get_all_tasks() -> list:
             "gwa_title":      row.get("gwa_title"),
             "physical":       is_physical,
             "n_occs":         int(row.get("n_occs", 0)),
-            "emp_nat":        _nan_to_none(row.get("emp_nat")),
-            "emp_ut":         _nan_to_none(row.get("emp_ut")),
-            "wage_nat":       _nan_to_none(row.get("wage_nat")),
+            "emp":            _nan_to_none(row.get("emp")),
+            "wage":           _nan_to_none(row.get("wage")),
             "sources":        sources,
             "avg_auto_aug":   round(sum(auto_vals) / len(auto_vals), 3) if auto_vals else None,
             "max_auto_aug":   round(max(auto_vals), 3)                  if auto_vals else None,
@@ -1887,26 +1983,24 @@ def get_all_tasks() -> list:
             "max_pct_norm":   round(max(pct_vals), 4)                  if pct_vals  else None,
         })
 
-    _all_tasks_cache = result
+    _all_tasks_geo_cache[geo] = result
     return result
 
 
 # ── All eco task rows (one row per task×occ in eco_2025) ────────────────────
 
-_all_eco_task_rows_cache: list | None = None
 
-
-def get_all_eco_task_rows() -> list:
+def get_all_eco_task_rows(geo: str = "nat", selected_sources: Optional[frozenset] = None) -> list:
     """
     Returns every row from eco_2025 (~23,850 rows), each being a unique
     (task, occupation, DWA/IWA/GWA) combination. Includes the occupation
     hierarchy columns and raw (undivided) emp/wage numbers, plus AI metrics
     from the explorer task lookup.
-    Results are cached.
+    Results are cached per (geo, selected_sources).
     """
-    global _all_eco_task_rows_cache
-    if _all_eco_task_rows_cache is not None:
-        return _all_eco_task_rows_cache
+    eco_cache_key = (geo, selected_sources)
+    if eco_cache_key in _all_eco_tasks_geo_cache:
+        return _all_eco_tasks_geo_cache[eco_cache_key]
 
     eco = load_eco_raw()
     if eco is None:
@@ -1914,6 +2008,14 @@ def get_all_eco_task_rows() -> list:
 
     lookup = _build_explorer_task_lookup()
     top_mcps_lookup = _build_top_mcps_lookup()
+
+    # Resolve geo columns with fallback to national
+    emp_col_name = f"emp_tot_{geo}_2024"
+    wage_col_name = f"a_med_{geo}_2024"
+    if emp_col_name not in eco.columns:
+        emp_col_name = "emp_tot_nat_2024"
+    if wage_col_name not in eco.columns:
+        wage_col_name = "a_med_nat_2024"
 
     # Pre-compute weighted emp allocation (freq and value methods)
     task_dedup = eco.drop_duplicates(subset=["title_current", "task_normalized"]).copy()
@@ -1931,7 +2033,11 @@ def get_all_eco_task_rows() -> list:
 
     # Pre-compute AI metrics per task_normalized to avoid repeated dict lookups
     task_metrics: dict[str, dict] = {}
-    for tn, sources in lookup.items():
+    for tn, all_sources in lookup.items():
+        if selected_sources is not None:
+            sources = {k: v for k, v in all_sources.items() if k in selected_sources}
+        else:
+            sources = all_sources
         auto_vals = [v["auto_aug"] for v in sources.values() if v.get("auto_aug") is not None]
         pct_vals = [v["pct_norm"] for v in sources.values() if v.get("pct_norm") is not None]
         task_metrics[tn] = {
@@ -1941,11 +2047,6 @@ def get_all_eco_task_rows() -> list:
             "avg_pct_norm": round(sum(pct_vals) / len(pct_vals), 4) if pct_vals else None,
             "max_pct_norm": round(max(pct_vals), 4) if pct_vals else None,
         }
-
-    emp_nat_col = "emp_tot_nat_2024"
-    emp_ut_col = "emp_tot_ut_2024"
-    wage_nat_col = "a_med_nat_2024"
-    wage_ut_col = "a_med_ut_2024"
 
     def _safe_str(v) -> str | None:
         if v is None:
@@ -1978,12 +2079,11 @@ def get_all_eco_task_rows() -> list:
         metrics = task_metrics.get(tn, {})
         occ = row.get("title_current", "")
 
-        # Weighted emp allocation for this task×occ
+        # Weighted emp allocation for this task*occ
         fracs = frac_lookup.get((occ, tn), {"_freq_frac": 0.0, "_value_frac": 0.0})
         ff = fracs["_freq_frac"]
         vf = fracs["_value_frac"]
-        raw_emp_nat = _safe_float(row.get(emp_nat_col)) or 0.0
-        raw_emp_ut = _safe_float(row.get(emp_ut_col)) or 0.0
+        raw_emp = _safe_float(row.get(emp_col_name)) or 0.0
 
         result.append({
             "task": str(row.get("task", tn)),
@@ -1996,14 +2096,10 @@ def get_all_eco_task_rows() -> list:
             "iwa_title": _safe_str(row.get("iwa_title")),
             "gwa_title": _safe_str(row.get("gwa_title")),
             "physical": _safe_bool(row.get("physical")),
-            "emp_nat": _safe_float(row.get(emp_nat_col)),
-            "emp_ut": _safe_float(row.get(emp_ut_col)),
-            "wage_nat": _safe_float(row.get(wage_nat_col)),
-            "wage_ut": _safe_float(row.get(wage_ut_col)),
-            "emp_nat_freq": round(ff * raw_emp_nat, 2) if ff and raw_emp_nat else None,
-            "emp_ut_freq": round(ff * raw_emp_ut, 2) if ff and raw_emp_ut else None,
-            "emp_nat_value": round(vf * raw_emp_nat, 2) if vf and raw_emp_nat else None,
-            "emp_ut_value": round(vf * raw_emp_ut, 2) if vf and raw_emp_ut else None,
+            "emp": _safe_float(row.get(emp_col_name)),
+            "wage": _safe_float(row.get(wage_col_name)),
+            "emp_freq": round(ff * raw_emp, 2) if ff and raw_emp else None,
+            "emp_value": round(vf * raw_emp, 2) if vf and raw_emp else None,
             "freq_mean":  _safe_float(row.get("freq_mean")),
             "importance": _safe_float(row.get("importance")),
             "relevance":  _safe_float(row.get("relevance")),
@@ -2015,7 +2111,7 @@ def get_all_eco_task_rows() -> list:
             "top_mcps": top_mcps_lookup.get(tn, []),
         })
 
-    _all_eco_task_rows_cache = result
+    _all_eco_tasks_geo_cache[eco_cache_key] = result
     return result
 
 
@@ -2102,12 +2198,13 @@ def _prepare_dataset_for_comparison(ds_name: str) -> Optional[pd.DataFrame]:
     return agg
 
 
-def compute_task_changes(from_dataset: str, to_dataset: str) -> list[dict]:
+def compute_task_changes(from_dataset: str, to_dataset: str, geo: str = "nat") -> list[dict]:
     """
     Compare two datasets at the task level.
     Returns list of dicts with status, deltas, and metadata for each task-occ pair.
+    emp/wage are returned for the requested geography.
     """
-    cache_key = (from_dataset, to_dataset)
+    cache_key = (from_dataset, to_dataset, geo)
     if cache_key in _task_changes_cache:
         return _task_changes_cache[cache_key]
 
@@ -2151,28 +2248,38 @@ def compute_task_changes(from_dataset: str, to_dataset: str) -> list[dict]:
         merged["auto_aug_mean_from"] = np.nan
         merged["pct_normalized_from"] = np.nan
 
+    # Resolve geo columns with fallback to national
+    geo_emp_col = f"emp_tot_{geo}_2024"
+    geo_wage_col = f"a_med_{geo}_2024"
+    if eco25 is not None:
+        if geo_emp_col not in eco25.columns:
+            geo_emp_col = "emp_tot_nat_2024"
+        if geo_wage_col not in eco25.columns:
+            geo_wage_col = "a_med_nat_2024"
+
     # Enrich with eco_2025 metadata (one row per (task_normalized, title_current))
     eco_meta: Optional[pd.DataFrame] = None
     if eco25 is not None:
+        agg_cols = {
+            "task": "first",
+            "broad_occ": "first",
+            "minor_occ_category": "first",
+            "major_occ_category": "first",
+            "dwa_title": "first",
+            "iwa_title": "first",
+            "gwa_title": "first",
+            "physical": "first",
+            "freq_mean": "first",
+            "importance": "first",
+            "relevance": "first",
+        }
+        if geo_emp_col in eco25.columns:
+            agg_cols[geo_emp_col] = "first"
+        if geo_wage_col in eco25.columns:
+            agg_cols[geo_wage_col] = "first"
         eco_meta = (
             eco25.groupby(["task_normalized", "title_current"], sort=False)
-            .agg({
-                "task": "first",
-                "broad_occ": "first",
-                "minor_occ_category": "first",
-                "major_occ_category": "first",
-                "dwa_title": "first",
-                "iwa_title": "first",
-                "gwa_title": "first",
-                "physical": "first",
-                "freq_mean": "first",
-                "importance": "first",
-                "relevance": "first",
-                "emp_tot_nat_2024": "first",
-                "emp_tot_ut_2024": "first",
-                "a_med_nat_2024": "first",
-                "a_med_ut_2024": "first",
-            })
+            .agg(agg_cols)
             .reset_index()
         )
         merged = merged.merge(eco_meta, on=["task_normalized", "title_current"], how="left")
@@ -2262,10 +2369,8 @@ def compute_task_changes(from_dataset: str, to_dataset: str) -> list[dict]:
             "freq_mean": _safe_num(row.get("freq_mean")),
             "importance": _safe_num(row.get("importance")),
             "relevance": _safe_num(row.get("relevance")),
-            "emp_nat": _safe_num(row.get("emp_tot_nat_2024")),
-            "emp_ut": _safe_num(row.get("emp_tot_ut_2024")),
-            "wage_nat": _safe_num(row.get("a_med_nat_2024")),
-            "wage_ut": _safe_num(row.get("a_med_ut_2024")),
+            "emp": _safe_num(row.get(geo_emp_col)),
+            "wage": _safe_num(row.get(geo_wage_col)),
             "status": status,
             "from_auto_aug": from_aug,
             "to_auto_aug": to_aug,

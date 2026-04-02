@@ -50,6 +50,14 @@ export default function Footer() {
         >
           {GITHUB_ICON} MCP Classification GitHub
         </a>
+        <a
+          href="https://github.com/theodorewright11/aea_data_pipeline"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={LINK_STYLE}
+        >
+          {GITHUB_ICON} Data Pipeline GitHub
+        </a>
         <a href="mailto:theodorewrightwork@gmail.com" style={LINK_STYLE}>
           <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor">
             <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />

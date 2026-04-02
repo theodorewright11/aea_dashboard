@@ -884,7 +884,7 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
   const [metric,       setMetric]       = useState<MetricKey>("workers_affected");
   const [aggLevel,     setAggLevel]     = useState<"major" | "minor" | "broad" | "occupation">("major");
   const [method,       setMethod]       = useState<"freq" | "imp">("freq");
-  const [geo,          setGeo]          = useState<"nat" | "ut">("nat");
+  const [geo,          setGeo]          = useState<string>("nat");
   const [physicalMode, setPhysicalMode] = useState<"all" | "exclude" | "only">("all");
   const [topN,         setTopN]         = useState(8);
   const [useAutoAug,   setUseAutoAug]   = useState(false);
@@ -1034,7 +1034,7 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
         {panelCollapsed ? (
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
             <span style={{ fontSize: 11, color: "var(--text-muted)", flexShrink: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {selectedDatasets.length} dataset{selectedDatasets.length !== 1 ? "s" : ""} · {aggLevel} · {method === "freq" ? "Time" : "Value"} · {geo === "nat" ? "National" : "Utah"}{useAutoAug ? " · Auto-aug" : ""}
+              {selectedDatasets.length} dataset{selectedDatasets.length !== 1 ? "s" : ""} · {aggLevel} · {method === "freq" ? "Time" : "Value"} · {config.geo_options[geo] ?? geo}{useAutoAug ? " · Auto-aug" : ""}
             </span>
             <button
               onClick={() => setPanelCollapsed(false)}
@@ -1087,7 +1087,12 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
                 </div>
                 <div>
                   <ControlLabel>Geography</ControlLabel>
-                  <SegmentedControl options={[{ value: "nat" as const, label: "National" }, { value: "ut" as const, label: "Utah" }]} value={geo} onChange={setGeo} />
+                  <select value={geo} onChange={(e) => setGeo(e.target.value)}
+                    style={{ fontSize: 12, padding: "5px 11px", border: "1px solid var(--border)", borderRadius: 7, background: "var(--bg-surface)", color: "var(--text-primary)" }}>
+                    {Object.entries(config.geo_options).map(([code, label]) => (
+                      <option key={code} value={code}>{label}</option>
+                    ))}
+                  </select>
                 </div>
                 <button onClick={run} className="btn-brand" style={{ padding: "9px 24px", fontSize: 13 }}
                   onMouseOver={(e) => (e.currentTarget.style.background = "var(--brand-hover)")}
@@ -1233,7 +1238,7 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
   const [activityLevel, setActivityLevel] = useState<"gwa" | "iwa" | "dwa">("gwa");
   const [metric,        setMetric]        = useState<MetricKey>("workers_affected");
   const [method,        setMethod]        = useState<"freq" | "imp">("freq");
-  const [geo,           setGeo]           = useState<"nat" | "ut">("nat");
+  const [geo,           setGeo]           = useState<string>("nat");
   const [physicalMode,  setPhysicalMode]  = useState<"all" | "exclude" | "only">("all");
   const [topN,          setTopN]          = useState(8);
   const [useAutoAug,    setUseAutoAug]    = useState(false);
@@ -1374,7 +1379,7 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
         {panelCollapsed ? (
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
             <span style={{ fontSize: 11, color: "var(--text-muted)", flexShrink: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {selectedDatasets.length} dataset{selectedDatasets.length !== 1 ? "s" : ""} · {levelLabels[activityLevel]} · {method === "freq" ? "Time" : "Value"} · {geo === "nat" ? "National" : "Utah"}{useAutoAug ? " · Auto-aug" : ""}
+              {selectedDatasets.length} dataset{selectedDatasets.length !== 1 ? "s" : ""} · {levelLabels[activityLevel]} · {method === "freq" ? "Time" : "Value"} · {config.geo_options[geo] ?? geo}{useAutoAug ? " · Auto-aug" : ""}
             </span>
             <button
               onClick={() => setPanelCollapsed(false)}
@@ -1433,7 +1438,12 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
                 </div>
                 <div>
                   <ControlLabel>Geography</ControlLabel>
-                  <SegmentedControl options={[{ value: "nat" as const, label: "National" }, { value: "ut" as const, label: "Utah" }]} value={geo} onChange={setGeo} />
+                  <select value={geo} onChange={(e) => setGeo(e.target.value)}
+                    style={{ fontSize: 12, padding: "5px 11px", border: "1px solid var(--border)", borderRadius: 7, background: "var(--bg-surface)", color: "var(--text-primary)" }}>
+                    {Object.entries(config.geo_options).map(([code, label]) => (
+                      <option key={code} value={code}>{label}</option>
+                    ))}
+                  </select>
                 </div>
                 <button onClick={run} className="btn-brand" style={{ padding: "9px 24px", fontSize: 13 }}
                   onMouseOver={(e) => (e.currentTarget.style.background = "var(--brand-hover)")}

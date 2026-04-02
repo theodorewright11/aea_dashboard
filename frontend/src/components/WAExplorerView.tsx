@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import { createPortal } from "react-dom";
 import type { WAExplorerRow, WATaskDetail, ConfigResponse, EcoTaskRow, TaskSourceStats, ActivityRow, McpEntry } from "@/lib/types";
-import { fetchWAActivityTasks, fetchWorkActivities, fetchAllEcoTasks } from "@/lib/api";
+import { fetchWAExplorer, fetchWAActivityTasks, fetchWorkActivities, fetchAllEcoTasks } from "@/lib/api";
 import { useSimpleMode } from "@/lib/SimpleModeContext";
 import { enforceDatasetToggle, classificationFromConfig } from "@/lib/datasetRules";
 
@@ -27,7 +27,6 @@ function useDebounce<T>(value: T, delay: number): T {
 // ── Props ──────────────────────────────────────────────────────────────────────
 
 interface Props {
-  rows: WAExplorerRow[];
   config: ConfigResponse;
 }
 
@@ -155,13 +154,9 @@ interface DisplayRow {
   top_mcps?: McpEntry[];
 }
 
-function waRowToDisplay(row: WAExplorerRow, geo: "nat" | "ut", empW: "freq" | "value" = "freq"): DisplayRow {
-  const emp = empW === "freq"
-    ? (geo === "nat" ? row.emp_nat_freq : row.emp_ut_freq)
-    : (geo === "nat" ? row.emp_nat_value : row.emp_ut_value);
-  const wage = empW === "freq"
-    ? (geo === "nat" ? row.wage_nat_freq : row.wage_ut_freq)
-    : (geo === "nat" ? row.wage_nat_value : row.wage_ut_value);
+function waRowToDisplay(row: WAExplorerRow, empW: "freq" | "value" = "freq"): DisplayRow {
+  const emp = empW === "freq" ? row.emp_freq : row.emp_value;
+  const wage = empW === "freq" ? row.wage_freq : row.wage_value;
   return {
     name: row.name,
     level: row.level,
@@ -556,7 +551,7 @@ function BtnSeg<T extends string>({
 
 // ── Task sub-table for expanded DWA rows ───────────────────────────────────────
 
-function WATaskSubRow({ task, geo, empWeighting }: { task: WATaskDetail; geo: "nat" | "ut"; empWeighting: "freq" | "value" }) {
+function WATaskSubRow({ task, empWeighting }: { task: WATaskDetail; empWeighting: "freq" | "value" }) {
   const [expanded, setExpanded] = useState(false);
 
   const avgAuto = task.avg_auto_aug;
@@ -564,10 +559,8 @@ function WATaskSubRow({ task, geo, empWeighting }: { task: WATaskDetail; geo: "n
   const avgPct  = task.avg_pct_norm;
   const maxPct  = task.max_pct_norm;
   const barPct  = avgAuto != null ? Math.min(avgAuto / 5, 1) * 100 : null;
-  const emp     = empWeighting === "freq"
-    ? (geo === "nat" ? task.emp_nat_freq : task.emp_ut_freq)
-    : (geo === "nat" ? task.emp_nat_value : task.emp_ut_value);
-  const wage    = empWeighting === "freq" ? task.wage_nat_freq : task.wage_nat_value;
+  const emp     = empWeighting === "freq" ? task.emp_freq : task.emp_value;
+  const wage    = empWeighting === "freq" ? task.wage_freq : task.wage_value;
   const sources = Object.entries(task.sources ?? {});
   const muted = { color: "var(--text-muted)" } as React.CSSProperties;
   const topMcps = task.top_mcps ?? [];
@@ -694,7 +687,11 @@ function WATaskSubRow({ task, geo, empWeighting }: { task: WATaskDetail; geo: "n
                 </table>
               </div>
               {/* Source Breakdown */}
-              {sources.length > 0 && (
+              {sources.length > 0 && (() => {
+                const aeiSources = sources.filter(([name]) => name.startsWith("AEI"));
+                const nonAeiSources = sources.filter(([name]) => !name.startsWith("AEI"));
+                const allAeiNull = aeiSources.length > 0 && aeiSources.every(([, v]) => v.auto_aug == null && v.pct_norm == null);
+                return (
                 <div>
                   <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>
                     Source Breakdown
@@ -708,7 +705,7 @@ function WATaskSubRow({ task, geo, empWeighting }: { task: WATaskDetail; geo: "n
                       </tr>
                     </thead>
                     <tbody>
-                      {sources.map(([src, stats]) => (
+                      {nonAeiSources.map(([src, stats]) => (
                         <tr key={src}>
                           <td style={{ padding: "2px 10px 2px 0" }}>
                             <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--bg-sidebar)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>{src}</span>
@@ -721,6 +718,28 @@ function WATaskSubRow({ task, geo, empWeighting }: { task: WATaskDetail; geo: "n
                           </td>
                         </tr>
                       ))}
+                      {allAeiNull ? (
+                        <tr>
+                          <td style={{ padding: "2px 10px 2px 0" }}>
+                            <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--bg-sidebar)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>AEI</span>
+                          </td>
+                          <td colSpan={2} style={{ padding: "2px 8px", fontStyle: "italic", color: "var(--text-muted)" }}>Not in task set</td>
+                        </tr>
+                      ) : (
+                        aeiSources.map(([src, stats]) => (
+                          <tr key={src}>
+                            <td style={{ padding: "2px 10px 2px 0" }}>
+                              <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--bg-sidebar)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>{src}</span>
+                            </td>
+                            <td style={{ padding: "2px 8px", textAlign: "right" }}>
+                              {stats.auto_aug != null ? stats.auto_aug.toFixed(1) : <span style={muted}>—</span>}
+                            </td>
+                            <td style={{ padding: "2px 8px", textAlign: "right" }}>
+                              {stats.pct_norm != null ? fmtPctNorm(stats.pct_norm) : <span style={muted}>—</span>}
+                            </td>
+                          </tr>
+                        ))
+                      )}
                       <tr style={{ borderTop: "1px solid var(--border-light)" }}>
                         <td style={{ padding: "4px 10px 2px 0", fontWeight: 700 }}>
                           <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--brand-light)", border: "1px solid var(--brand)", color: "var(--brand)", fontWeight: 700 }}>AVG</span>
@@ -746,7 +765,8 @@ function WATaskSubRow({ task, geo, empWeighting }: { task: WATaskDetail; geo: "n
                     </tbody>
                   </table>
                 </div>
-              )}
+                );
+              })()}
               {/* Top MCP Servers */}
               {topMcps.length > 0 && (
                 <div style={{ minWidth: 200 }}>
@@ -773,12 +793,12 @@ function WATaskSubRow({ task, geo, empWeighting }: { task: WATaskDetail; geo: "n
   );
 }
 
-function WATaskSubHeader({ geo }: { geo: "nat" | "ut" }) {
+function WATaskSubHeader() {
   return (
     <tr style={{ borderBottom: "2px solid var(--border)" }}>
       <th style={{ padding: "5px 10px 5px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Task</th>
       <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 80, whiteSpace: "nowrap" }}>
-        Emp {geo === "ut" ? "(UT)" : "(Nat)"}
+        Emp
       </th>
       <th style={{ padding: "5px 6px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", width: 80, whiteSpace: "nowrap" }}>
         Med Wage
@@ -835,7 +855,7 @@ interface WaPctSettings {
   datasets: string[];
   combineMethod: "Average" | "Max";
   method: "freq" | "imp";
-  geo: "nat" | "ut";
+  geo: string;
   physicalMode: "all" | "exclude" | "only";
   useAutoAug: boolean;
 }
@@ -848,7 +868,7 @@ function WaPctComputePanel({
   empWeighting,
 }: {
   config: ConfigResponse;
-  geo: "nat" | "ut";
+  geo: string;
   viewLevel: WALevel;
   onResult: (map: Map<string, number> | null) => void;
   empWeighting: "freq" | "value";
@@ -1051,8 +1071,29 @@ const WA_SIMPLE_TASK_COLS = new Set([
   "pct_affected", "workers_aff", "wages_aff",
 ]);
 
-export default function WAExplorerView({ rows, config }: Props) {
+export default function WAExplorerView({ config }: Props) {
   const { isSimple } = useSimpleMode();
+
+  // ── WA data fetching state ────────────────────────────────────────────────
+  const [waRows, setWaRows] = useState<WAExplorerRow[]>([]);
+  const [dataLoading, setDataLoading] = useState(true);
+
+  // ── Source selector state ──────────────────────────────────────────────────
+  const [selectedSources, setSelectedSources] = useState<Set<string>>(() => new Set(config.explorer_source_names));
+  const [sourceSelectorOpen, setSourceSelectorOpen] = useState(false);
+  const sourceSelectorRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!sourceSelectorOpen) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (sourceSelectorRef.current && !sourceSelectorRef.current.contains(e.target as Node)) {
+        setSourceSelectorOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [sourceSelectorOpen]);
+
+  const selectedSourcesArray = useMemo(() => Array.from(selectedSources), [selectedSources]);
 
   // ── State ──────────────────────────────────────────────────────────────────
   const [viewLevel, setViewLevel]   = useState<WALevel>("gwa");
@@ -1064,7 +1105,7 @@ export default function WAExplorerView({ rows, config }: Props) {
   const [openFilter, setOpenFilter] = useState<string | null>(null);
   const [textColFilters, setTextColFilters] = useState<Record<string, string[]>>({});
   const [openTextFilter, setOpenTextFilter] = useState<string | null>(null);
-  const [geo, setGeo]               = useState<"nat" | "ut">("nat");
+  const [geo, setGeo]               = useState<string>("nat");
   const [physicalMode, setPhysicalMode] = useState<"all" | "exclude" | "only">("all");
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [rowTasks, setRowTasks]     = useState<Record<string, WATaskDetail[] | "loading" | "error">>({});
@@ -1102,6 +1143,16 @@ export default function WAExplorerView({ rows, config }: Props) {
   useEffect(() => {
     try { localStorage.setItem("aea_wa_explorer_hidden_cols", JSON.stringify(Array.from(hiddenCols))); } catch { /* silent */ }
   }, [hiddenCols]);
+
+  // ── Fetch WA data on mount and whenever geo or sources change ───────────────
+  useEffect(() => {
+    setDataLoading(true);
+    const ss = isSimple ? undefined : selectedSourcesArray;
+    fetchWAExplorer(geo, ss)
+      .then((res) => setWaRows(res.rows))
+      .catch(() => setWaRows([]))
+      .finally(() => setDataLoading(false));
+  }, [geo, isSimple, selectedSourcesArray]);
 
   // ── Auto-compute pct with WA defaults (AEI Cumul. (Both) v4) ────────────
   // Runs on mount (both simple and advanced modes), on geo change, and on reset.
@@ -1145,21 +1196,22 @@ export default function WAExplorerView({ rows, config }: Props) {
   // ── Reset row limit when filters/level change ────────────────────────────
   useEffect(() => { setRowLimit(100); }, [viewLevel, selectedGwas, debouncedSearch, colFilters, textColFilters, physicalMode, pctAffectedMap, minPctAffected, sortCol, sortDir]);
 
-  // ── Load task data when task level selected ──────────────────────────────
+  // ── Load task data when task level selected or geo/sources change ─────────
   useEffect(() => {
-    if (viewLevel === "task" && taskData === null && !taskLoading) {
+    if (viewLevel === "task") {
       setTaskLoading(true);
-      fetchAllEcoTasks()
+      const ss = isSimple ? undefined : selectedSourcesArray;
+      fetchAllEcoTasks(geo, ss)
         .then((res: { tasks: EcoTaskRow[] }) => setTaskData(res.tasks))
         .catch(() => setTaskData([]))
         .finally(() => setTaskLoading(false));
     }
-  }, [viewLevel, taskData, taskLoading]);
+  }, [viewLevel, geo, isSimple, selectedSourcesArray]);
 
   // ── Derived: GWA pill names ────────────────────────────────────────────────
   const allGwas = useMemo(() => {
-    return Array.from(new Set(rows.filter((r) => r.level === "gwa").map((r) => r.name))).sort();
-  }, [rows]);
+    return Array.from(new Set(waRows.filter((r) => r.level === "gwa").map((r) => r.name))).sort();
+  }, [waRows]);
 
   // ── Build top-level display rows ───────────────────────────────────────────
   const topRows = useMemo<DisplayRow[]>(() => {
@@ -1181,9 +1233,7 @@ export default function WAExplorerView({ rows, config }: Props) {
           return true;
         })
         .map((t, i) => {
-          const empVal = empWeighting === "freq"
-            ? (geo === "nat" ? t.emp_nat_freq : t.emp_ut_freq)
-            : (geo === "nat" ? t.emp_nat_value : t.emp_ut_value);
+          const empVal = empWeighting === "freq" ? t.emp_freq : t.emp_value;
           return {
             name: t.task,
             rowId: `eco:${i}`,
@@ -1194,7 +1244,7 @@ export default function WAExplorerView({ rows, config }: Props) {
             iwa_title: t.iwa_title ?? null,
             dwa_title: t.dwa_title ?? null,
             emp: empVal ?? 0,
-            wage: (geo === "nat" ? t.wage_nat : t.wage_ut) ?? null,
+            wage: t.wage ?? null,
             n_occs: 1,
             n_tasks: 1,
             auto_avg_with_vals: t.avg_auto_aug ?? null,
@@ -1221,7 +1271,7 @@ export default function WAExplorerView({ rows, config }: Props) {
           };
         });
     } else {
-      let filtered = rows.filter((r) => r.level === viewLevel);
+      let filtered = waRows.filter((r) => r.level === viewLevel);
 
       // GWA pill filter
       if (selectedGwas.size > 0) {
@@ -1232,7 +1282,7 @@ export default function WAExplorerView({ rows, config }: Props) {
         }
       }
 
-      displayRows = filtered.map((r) => waRowToDisplay(r, geo, empWeighting));
+      displayRows = filtered.map((r) => waRowToDisplay(r, empWeighting));
 
       // Physical filter on pct_physical
       if (physicalMode === "exclude") {
@@ -1330,7 +1380,7 @@ export default function WAExplorerView({ rows, config }: Props) {
     });
 
     return displayRows;
-  }, [rows, viewLevel, selectedGwas, geo, debouncedSearch, sortCol, sortDir, colFilters, textColFilters, physicalMode, pctAffectedMap, minPctAffected, taskData, empWeighting]);
+  }, [waRows, viewLevel, selectedGwas, debouncedSearch, sortCol, sortDir, colFilters, textColFilters, physicalMode, pctAffectedMap, minPctAffected, taskData, empWeighting]);
 
   // ── textColUniqueValues: unique sorted values per text column ─────────────
   const textColUniqueValues = useMemo(() => {
@@ -1371,7 +1421,7 @@ export default function WAExplorerView({ rows, config }: Props) {
     const cache = new Map<string, DisplayRow[]>();
     const gwaMap = new Map<string, WAExplorerRow[]>();
     const iwaMap = new Map<string, WAExplorerRow[]>();
-    rows.forEach((r) => {
+    waRows.forEach((r) => {
       if (r.level === "iwa" && r.gwa) {
         const arr = gwaMap.get(r.gwa) ?? [];
         arr.push(r);
@@ -1384,13 +1434,13 @@ export default function WAExplorerView({ rows, config }: Props) {
       }
     });
     gwaMap.forEach((children, gwaName) => {
-      cache.set(`gwa:${gwaName}`, children.map((r) => waRowToDisplay(r, geo, empWeighting)).sort((a, b) => b.emp - a.emp));
+      cache.set(`gwa:${gwaName}`, children.map((r) => waRowToDisplay(r, empWeighting)).sort((a, b) => b.emp - a.emp));
     });
     iwaMap.forEach((children, iwaName) => {
-      cache.set(`iwa:${iwaName}`, children.map((r) => waRowToDisplay(r, geo, empWeighting)).sort((a, b) => b.emp - a.emp));
+      cache.set(`iwa:${iwaName}`, children.map((r) => waRowToDisplay(r, empWeighting)).sort((a, b) => b.emp - a.emp));
     });
     return cache;
-  }, [rows, geo, empWeighting]);
+  }, [waRows, empWeighting]);
 
   // ── Child row helpers ──────────────────────────────────────────────────────
   function getChildRows(parentRow: DisplayRow): DisplayRow[] {
@@ -1407,14 +1457,14 @@ export default function WAExplorerView({ rows, config }: Props) {
         next.add(key);
         if (isDwa && !rowTasks[name]) {
           setRowTasks((rt) => ({ ...rt, [name]: "loading" }));
-          fetchWAActivityTasks("dwa", name)
+          fetchWAActivityTasks("dwa", name, geo)
             .then((data) => setRowTasks((rt) => ({ ...rt, [name]: data.tasks })))
             .catch(() => setRowTasks((rt) => ({ ...rt, [name]: "error" })));
         }
       }
       return next;
     });
-  }, [rowTasks]);
+  }, [rowTasks, geo]);
 
   // ── Column sort ────────────────────────────────────────────────────────────
   const handleSort = (col: string) => {
@@ -1544,11 +1594,11 @@ export default function WAExplorerView({ rows, config }: Props) {
                   <div style={{ overflowX: "auto" }}>
                     <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "auto" }}>
                       <thead>
-                        <WATaskSubHeader geo={geo} />
+                        <WATaskSubHeader />
                       </thead>
                       <tbody>
                         {tasks.map((t) => (
-                          <WATaskSubRow key={t.task_normalized} task={t} geo={geo} empWeighting={empWeighting} />
+                          <WATaskSubRow key={t.task_normalized} task={t} empWeighting={empWeighting} />
                         ))}
                       </tbody>
                     </table>
@@ -1628,7 +1678,11 @@ export default function WAExplorerView({ rows, config }: Props) {
                     </table>
                   </div>
                   {/* Source Breakdown */}
-                  {sources.length > 0 && (
+                  {sources.length > 0 && (() => {
+                    const aeiSources = sources.filter(([name]) => name.startsWith("AEI"));
+                    const nonAeiSources = sources.filter(([name]) => !name.startsWith("AEI"));
+                    const allAeiNull = aeiSources.length > 0 && aeiSources.every(([, v]) => v.auto_aug == null && v.pct_norm == null);
+                    return (
                     <div>
                       <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Source Breakdown</p>
                       <table style={{ fontSize: 11, borderCollapse: "collapse" }}>
@@ -1640,7 +1694,7 @@ export default function WAExplorerView({ rows, config }: Props) {
                           </tr>
                         </thead>
                         <tbody>
-                          {sources.map(([src, stats]) => (
+                          {nonAeiSources.map(([src, stats]) => (
                             <tr key={src}>
                               <td style={{ padding: "2px 10px 2px 0" }}>
                                 <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--bg-sidebar)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>{src}</span>
@@ -1649,6 +1703,24 @@ export default function WAExplorerView({ rows, config }: Props) {
                               <td style={{ padding: "2px 8px", textAlign: "right" }}>{stats.pct_norm != null ? fmtPctNorm(stats.pct_norm) : <span style={muted}>—</span>}</td>
                             </tr>
                           ))}
+                          {allAeiNull ? (
+                            <tr>
+                              <td style={{ padding: "2px 10px 2px 0" }}>
+                                <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--bg-sidebar)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>AEI</span>
+                              </td>
+                              <td colSpan={2} style={{ padding: "2px 8px", fontStyle: "italic", color: "var(--text-muted)" }}>Not in task set</td>
+                            </tr>
+                          ) : (
+                            aeiSources.map(([src, stats]) => (
+                              <tr key={src}>
+                                <td style={{ padding: "2px 10px 2px 0" }}>
+                                  <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--bg-sidebar)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>{src}</span>
+                                </td>
+                                <td style={{ padding: "2px 8px", textAlign: "right" }}>{stats.auto_aug != null ? stats.auto_aug.toFixed(1) : <span style={muted}>—</span>}</td>
+                                <td style={{ padding: "2px 8px", textAlign: "right" }}>{stats.pct_norm != null ? fmtPctNorm(stats.pct_norm) : <span style={muted}>—</span>}</td>
+                              </tr>
+                            ))
+                          )}
                           <tr style={{ borderTop: "1px solid var(--border-light)" }}>
                             <td style={{ padding: "4px 10px 2px 0", fontWeight: 700 }}>
                               <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 4, background: "var(--brand-light)", border: "1px solid var(--brand)", color: "var(--brand)", fontWeight: 700 }}>AVG</span>
@@ -1674,7 +1746,8 @@ export default function WAExplorerView({ rows, config }: Props) {
                         </tbody>
                       </table>
                     </div>
-                  )}
+                    );
+                  })()}
                   {/* Top MCP Servers */}
                   {topMcps.length > 0 && (
                     <div style={{ minWidth: 200 }}>
@@ -1797,11 +1870,15 @@ export default function WAExplorerView({ rows, config }: Props) {
 
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <span style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 600 }}>Geo:</span>
-            <BtnSeg<"nat" | "ut">
-              opts={[{ v: "nat", l: "Nat" }, { v: "ut", l: "Utah" }]}
-              val={geo}
-              onChange={setGeo}
-            />
+            <select
+              value={geo}
+              onChange={(e) => setGeo(e.target.value)}
+              style={{ fontSize: 11, padding: "4px 8px", border: "1px solid var(--border)", borderRadius: 5, background: "var(--bg-surface)", color: "var(--text-primary)" }}
+            >
+              {Object.entries(config.geo_options).map(([code, label]) => (
+                <option key={code} value={code}>{label}</option>
+              ))}
+            </select>
           </div>
 
           {!isSimple && (
@@ -1823,6 +1900,77 @@ export default function WAExplorerView({ rows, config }: Props) {
               val={empWeighting}
               onChange={setEmpWeighting}
             />
+          </div>
+          )}
+
+          {/* Source selector (hidden in simple mode) */}
+          {!isSimple && (
+          <div ref={sourceSelectorRef} style={{ position: "relative" }}>
+            <button
+              onClick={() => setSourceSelectorOpen((p) => !p)}
+              title="Select AI sources for metrics"
+              style={{
+                fontSize: 11, padding: "4px 8px", border: "1px solid var(--border)",
+                borderRadius: 5, background: sourceSelectorOpen ? "var(--brand-light)" : "transparent",
+                cursor: "pointer", color: sourceSelectorOpen ? "var(--brand)" : "var(--text-secondary)",
+                display: "inline-flex", alignItems: "center", gap: 4,
+              }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+              </svg>
+              Sources ({selectedSources.size}/{config.explorer_source_names.length})
+            </button>
+            {sourceSelectorOpen && (
+              <div
+                style={{
+                  position: "absolute", right: 0, top: "100%", marginTop: 4,
+                  background: "var(--bg-surface)", border: "1px solid var(--border)",
+                  borderRadius: 8, padding: "8px 0", zIndex: 100,
+                  boxShadow: "0 4px 16px rgba(0,0,0,0.12)", width: 200,
+                  maxHeight: 350, overflowY: "auto",
+                }}
+              >
+                <div style={{ display: "flex", gap: 4, padding: "0 10px", marginBottom: 6 }}>
+                  <button
+                    onClick={() => {
+                      const allSelected = selectedSources.size === config.explorer_source_names.length;
+                      setSelectedSources(allSelected ? new Set<string>() : new Set(config.explorer_source_names));
+                    }}
+                    style={{
+                      fontSize: 10, padding: "2px 7px", border: "1px solid var(--border)",
+                      borderRadius: 10, background: "var(--bg-surface)", cursor: "pointer",
+                      color: "var(--text-secondary)", lineHeight: "16px",
+                    }}
+                  >{selectedSources.size === config.explorer_source_names.length ? "None" : "All"}</button>
+                </div>
+                {config.explorer_source_names.map((name) => (
+                  <label
+                    key={name}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 6,
+                      padding: "3px 10px", fontSize: 12, cursor: "pointer",
+                      color: "var(--text-primary)",
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedSources.has(name)}
+                      onChange={() => {
+                        setSelectedSources((prev) => {
+                          const next = new Set(prev);
+                          if (next.has(name)) next.delete(name);
+                          else next.add(name);
+                          return next;
+                        });
+                      }}
+                      style={{ margin: 0 }}
+                    />
+                    {name}
+                  </label>
+                ))}
+              </div>
+            )}
           </div>
           )}
 
@@ -1985,7 +2133,7 @@ export default function WAExplorerView({ rows, config }: Props) {
       {/* ── Table ──────────────────────────────────────────────────────────── */}
       <div style={{ flex: 1, overflowX: "auto", overflowY: "auto" }}>
         {/* Row count header */}
-        {!taskLoading && topRows.length > 0 && (
+        {!dataLoading && !taskLoading && topRows.length > 0 && (
           <div style={{ padding: "6px 20px", fontSize: 12, color: "var(--text-muted)", borderBottom: "1px solid var(--border-light)" }}>
             {topRows.length > rowLimit
               ? `Showing ${Math.min(rowLimit, topRows.length).toLocaleString()} of ${topRows.length.toLocaleString()} rows`
@@ -2091,18 +2239,20 @@ export default function WAExplorerView({ rows, config }: Props) {
             </tr>
           </thead>
           <tbody>
-            {/* Task level loading */}
-            {viewLevel === "task" && taskLoading && (
+            {/* Loading indicator for WA data or task data */}
+            {(dataLoading || (viewLevel === "task" && taskLoading)) && (
               <tr>
                 <td colSpan={visibleCols.length} style={{ padding: "40px", textAlign: "center" }}>
                   <div style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
                     <div style={{ width: 20, height: 20, borderRadius: "50%", border: "2px solid var(--brand)", borderTopColor: "transparent", animation: "spin 0.7s linear infinite" }} />
-                    <span style={{ fontSize: 13, color: "var(--text-muted)" }}>Loading tasks…</span>
+                    <span style={{ fontSize: 13, color: "var(--text-muted)" }}>
+                      {viewLevel === "task" ? "Loading tasks…" : "Loading data…"}
+                    </span>
                   </div>
                 </td>
               </tr>
             )}
-            {!taskLoading && topRows.length === 0 && (
+            {!dataLoading && !taskLoading && topRows.length === 0 && (
               <tr>
                 <td colSpan={visibleCols.length} style={{
                   padding: "40px 20px", textAlign: "center",
@@ -2112,12 +2262,12 @@ export default function WAExplorerView({ rows, config }: Props) {
                 </td>
               </tr>
             )}
-            {!taskLoading && topRows.slice(0, rowLimit).map((row, i) => renderDataRow(row, 0, row.rowId ? `${viewLevel}__${row.rowId}` : `${viewLevel}__${row.name}__${i}`))}
+            {!dataLoading && !taskLoading && topRows.slice(0, rowLimit).map((row, i) => renderDataRow(row, 0, row.rowId ? `${viewLevel}__${row.rowId}` : `${viewLevel}__${row.name}__${i}`))}
           </tbody>
         </table>
 
         {/* Pagination footer */}
-        {!taskLoading && topRows.length > rowLimit && (
+        {!dataLoading && !taskLoading && topRows.length > rowLimit && (
           <div style={{ padding: "14px 20px", textAlign: "center", borderTop: "1px solid var(--border-light)" }}>
             <span style={{ fontSize: 12, color: "var(--text-muted)", marginRight: 12 }}>
               Showing {Math.min(rowLimit, topRows.length)} of {topRows.length} rows.

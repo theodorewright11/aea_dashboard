@@ -109,8 +109,12 @@ export async function fetchWATrends(settings: WATrendsSettings): Promise<TrendsR
   return res.json();
 }
 
-export async function fetchExplorerOccupations(): Promise<OccupationSummary[]> {
-  const res = await fetch(`${API_BASE}/api/explorer`);
+export async function fetchExplorerOccupations(geo: string = "nat", selectedSources?: string[]): Promise<OccupationSummary[]> {
+  let url = `${API_BASE}/api/explorer?geo=${encodeURIComponent(geo)}`;
+  if (selectedSources && selectedSources.length > 0) {
+    url += `&selected_sources=${selectedSources.map(encodeURIComponent).join(",")}`;
+  }
+  const res = await fetch(url);
   if (!res.ok) throw new Error("Explorer request failed");
   const data = await res.json();
   return data.occupations;
@@ -124,8 +128,12 @@ export async function fetchOccupationTasks(title: string): Promise<OccupationTas
   return res.json();
 }
 
-export async function fetchExplorerGroups(): Promise<ExplorerGroupsResponse> {
-  const res = await fetch(`${API_BASE}/api/explorer/groups`);
+export async function fetchExplorerGroups(geo: string = "nat", selectedSources?: string[]): Promise<ExplorerGroupsResponse> {
+  let url = `${API_BASE}/api/explorer/groups?geo=${encodeURIComponent(geo)}`;
+  if (selectedSources && selectedSources.length > 0) {
+    url += `&selected_sources=${selectedSources.map(encodeURIComponent).join(",")}`;
+  }
+  const res = await fetch(url);
   if (!res.ok) throw new Error("Explorer groups request failed");
   return res.json();
 }
@@ -136,31 +144,39 @@ export async function fetchAllTasks(): Promise<{ tasks: import("./types").AllTas
   return res.json();
 }
 
-export async function fetchAllEcoTasks(): Promise<{ tasks: import("./types").EcoTaskRow[] }> {
-  const res = await fetch(`${API_BASE}/api/explorer/all-eco-tasks`);
+export async function fetchAllEcoTasks(geo: string = "nat", selectedSources?: string[]): Promise<{ tasks: import("./types").EcoTaskRow[] }> {
+  let url = `${API_BASE}/api/explorer/all-eco-tasks?geo=${encodeURIComponent(geo)}`;
+  if (selectedSources && selectedSources.length > 0) {
+    url += `&selected_sources=${selectedSources.map(encodeURIComponent).join(",")}`;
+  }
+  const res = await fetch(url);
   if (!res.ok) throw new Error("All eco tasks request failed");
   return res.json();
 }
 
-export async function fetchWAExplorer(): Promise<WAExplorerResponse> {
-  const res = await fetch(`${API_BASE}/api/explorer/wa`);
+export async function fetchWAExplorer(geo: string = "nat", selectedSources?: string[]): Promise<WAExplorerResponse> {
+  let url = `${API_BASE}/api/explorer/wa?geo=${encodeURIComponent(geo)}`;
+  if (selectedSources && selectedSources.length > 0) {
+    url += `&selected_sources=${selectedSources.map(encodeURIComponent).join(",")}`;
+  }
+  const res = await fetch(url);
   if (!res.ok) throw new Error("WA Explorer request failed");
   return res.json();
 }
 
-export async function fetchWAActivityTasks(level: string, name: string): Promise<WATasksResponse> {
+export async function fetchWAActivityTasks(level: string, name: string, geo: string = "nat"): Promise<WATasksResponse> {
   const res = await fetch(
-    `${API_BASE}/api/explorer/wa/tasks?level=${encodeURIComponent(level)}&name=${encodeURIComponent(name)}`
+    `${API_BASE}/api/explorer/wa/tasks?level=${encodeURIComponent(level)}&name=${encodeURIComponent(name)}&geo=${encodeURIComponent(geo)}`
   );
   if (!res.ok) throw new Error(`WA tasks request failed for ${level}/${name}`);
   return res.json();
 }
 
-export async function fetchTaskChanges(fromDataset: string, toDataset: string): Promise<TaskChangesResponse> {
+export async function fetchTaskChanges(fromDataset: string, toDataset: string, geo: string = "nat"): Promise<TaskChangesResponse> {
   const res = await fetch(`${API_BASE}/api/task-changes`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ from_dataset: fromDataset, to_dataset: toDataset }),
+    body: JSON.stringify({ from_dataset: fromDataset, to_dataset: toDataset, geo }),
   });
   if (!res.ok) throw new Error("Task changes request failed");
   return res.json();

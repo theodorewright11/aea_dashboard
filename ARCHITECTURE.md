@@ -54,25 +54,24 @@ All CSVs live in `data/`. There are two SOC taxonomies in play:
 
 | Dataset | File | SOC | `is_aei` | `is_mcp` | Notes |
 |---------|------|-----|----------|----------|-------|
-| AEI Conv. v1–v4 | `final_aei_v{1..4}.csv` | 2010 | true | false | Snapshot; needs crosswalk to 2019 |
-| AEI API v3–v4 | `final_aei_api_v{3,4}.csv` | 2010 | true | false | Snapshot; needs crosswalk to 2019 |
+| AEI Conv. v1–v5 | `final_aei_v{1..5}.csv` | 2010 | true | false | Snapshot; needs crosswalk to 2019 |
+| AEI API v3–v5 | `final_aei_api_v{3..5}.csv` | 2010 | true | false | Snapshot; needs crosswalk to 2019 |
 | AEI Cumul. Conv. v1/v2 | `final_aei_cumulative_v{1,2}.csv` | 2010 | true | false | Cumulative (each version accumulates all prior); needs crosswalk. |
-| AEI Cumul. Conv. v3 | `final_aei_cumulative_aei_only_v3.csv` | 2010 | true | false | Cumulative AEI-only conv. v3; needs crosswalk. |
-| AEI Cumul. Conv. v4 | `final_aei_cumulative_aei_only_v4.csv` | 2010 | true | false | Cumulative AEI-only conv. v4; needs crosswalk. |
-| AEI Cumul. (Both) v3/v4 | `final_aei_cumulative_v{3,4}.csv` | 2010 | true | false | Cumulative (AEI + API combined) v3/v4; needs crosswalk. |
-| AEI API Cumul. v4 | `final_aei_cumulative_api_only_v4.csv` | 2010 | true | false | Cumulative API-only v4; needs crosswalk. |
+| AEI Cumul. Conv. v3–v5 | `final_aei_cumulative_aei_only_v{3..5}.csv` | 2010 | true | false | Cumulative AEI-only conv.; needs crosswalk. |
+| AEI Cumul. (Both) v3–v5 | `final_aei_cumulative_v{3..5}.csv` | 2010 | true | false | Cumulative (AEI + API combined); needs crosswalk. |
+| AEI API Cumul. v4–v5 | `final_aei_cumulative_api_only_v{4,5}.csv` | 2010 | true | false | Cumulative API-only; needs crosswalk. |
 | MCP Cumul. v1–v4 | `final_mcp_v{1..4}.csv` | 2019 | false | true | Only one version at a time |
 | Microsoft | `final_microsoft.csv` | 2019 | false | false | Single snapshot |
 
 **Dataset families in `config.py`:**
-- `AEI_CONV_SNAPSHOT_DATASETS` — `{"AEI Conv. v1", "AEI Conv. v2", "AEI Conv. v3", "AEI Conv. v4"}`
-- `AEI_API_SNAPSHOT_DATASETS` — `{"AEI API v3", "AEI API v4"}`
-- `AEI_CONV_CUMULATIVE_DATASETS` — `{"AEI Cumul. Conv. v1", "AEI Cumul. Conv. v2", "AEI Cumul. Conv. v3", "AEI Cumul. Conv. v4"}`
-- `AEI_API_CUMULATIVE_DATASETS` — `{"AEI API Cumul. v4"}`
-- `AEI_BOTH_CUMULATIVE_DATASETS` — `{"AEI Cumul. (Both) v3", "AEI Cumul. (Both) v4"}`
+- `AEI_CONV_SNAPSHOT_DATASETS` — `{"AEI Conv. v1", ..., "AEI Conv. v5"}`
+- `AEI_API_SNAPSHOT_DATASETS` — `{"AEI API v3", "AEI API v4", "AEI API v5"}`
+- `AEI_CONV_CUMULATIVE_DATASETS` — `{"AEI Cumul. Conv. v1", ..., "AEI Cumul. Conv. v5"}`
+- `AEI_API_CUMULATIVE_DATASETS` — `{"AEI API Cumul. v4", "AEI API Cumul. v5"}`
+- `AEI_BOTH_CUMULATIVE_DATASETS` — `{"AEI Cumul. (Both) v3", "AEI Cumul. (Both) v4", "AEI Cumul. (Both) v5"}`
 - `MCP_DATASETS` — `{"MCP Cumul. v1", ..., "MCP Cumul. v4"}`
 
-Total selectable datasets: 18.
+Total selectable datasets: 26.
 
 These sets are exposed via `GET /api/config` as `aei_conv_snapshot_datasets`, `aei_api_snapshot_datasets`, `aei_conv_cumulative_datasets`, `aei_api_cumulative_datasets`, `aei_both_cumulative_datasets`, `mcp_datasets` and consumed by `frontend/src/lib/datasetRules.ts` for selection enforcement (see §6).
 
@@ -97,8 +96,9 @@ These sets are exposed via `GET /api/config` as `aei_conv_snapshot_datasets`, `a
 | `pct_normalized` | float | Share of AI conversations involving this task. **Already in percent form** (0.4 = 0.4%, NOT 40%) |
 | `physical` | bool | Truly physical task |
 | `date` | str | Dataset snapshot date |
-| `emp_tot_nat_2024`, `emp_tot_ut_2024` | float | BLS OEWS 2024 employment |
-| `a_med_nat_2024`, `a_med_ut_2024` | float | BLS OEWS 2024 median annual wage |
+| `emp_tot_{geo}_2024` | float | BLS OEWS 2024 employment per geography (nat, al, ak, ..., wy, gu, pr, vi) |
+| `a_med_{geo}_2024` | float | BLS OEWS 2024 median annual wage per geography |
+| `dws_star_rating` | 1–5 | ECO 2025 only — DWS job outlook star rating |
 | `task_prop` | float | ECO 2025 only — ratio of 2025/2015 tasks per occupation |
 | `soc_code_2010` | str | AEI datasets only — used for crosswalk |
 
@@ -118,7 +118,12 @@ These sets are exposed via `GET /api/config` as `aei_conv_snapshot_datasets`, `a
 | AEI Cumul. Conv. v4 | 2025-11-13 |
 | AEI Cumul. (Both) v3 | 2025-08-11 |
 | AEI Cumul. (Both) v4 | 2025-11-13 |
+| AEI Conv. v5 | 2026-02-12 |
+| AEI API v5 | 2026-02-12 |
+| AEI Cumul. Conv. v5 | 2026-02-12 |
+| AEI Cumul. (Both) v5 | 2026-02-12 |
 | AEI API Cumul. v4 | 2025-11-13 |
+| AEI API Cumul. v5 | 2026-02-12 |
 | MCP Cumul. v1 | 2025-04-24 |
 | MCP Cumul. v2 | 2025-05-24 |
 | MCP Cumul. v3 | 2025-07-23 |
@@ -134,15 +139,16 @@ These sets are exposed via `GET /api/config` as `aei_conv_snapshot_datasets`, `a
 ### `config.py` — Registry & Constants
 
 ```python
-DATASETS           # dict[str, {file, is_aei, is_mcp}] — 18 selectable datasets
+DATASETS           # dict[str, {file, is_aei, is_mcp}] — 26 selectable datasets
 ECO_2015_META      # internal-only baseline for AEI work-activity analysis
-AEI_CONV_SNAPSHOT_DATASETS    # set of snapshot AEI conv. names: {AEI Conv. v1..v4}
-AEI_API_SNAPSHOT_DATASETS     # set of snapshot AEI API names: {AEI API v3, AEI API v4}
-AEI_CONV_CUMULATIVE_DATASETS  # set of cumulative AEI conv. names: {AEI Cumul. Conv. v1..v4}
-AEI_API_CUMULATIVE_DATASETS   # set of cumulative AEI API names: {AEI API Cumul. v4}
-AEI_BOTH_CUMULATIVE_DATASETS  # set of cumulative AEI both names: {AEI Cumul. (Both) v3, v4}
+AEI_CONV_SNAPSHOT_DATASETS    # set of snapshot AEI conv. names: {AEI Conv. v1..v5}
+AEI_API_SNAPSHOT_DATASETS     # set of snapshot AEI API names: {AEI API v3..v5}
+AEI_CONV_CUMULATIVE_DATASETS  # set of cumulative AEI conv. names: {AEI Cumul. Conv. v1..v5}
+AEI_API_CUMULATIVE_DATASETS   # set of cumulative AEI API names: {AEI API Cumul. v4, v5}
+AEI_BOTH_CUMULATIVE_DATASETS  # set of cumulative AEI both names: {AEI Cumul. (Both) v3..v5}
 MCP_DATASETS       # set of MCP names: {MCP Cumul. v1..v4}
-DATASET_SERIES     # {"AEI Conv.": ["AEI Conv. v1"..v4], "AEI API": [...], "AEI Cumul. Conv.": [...], "AEI API Cumul.": [...], "AEI Cumul. (Both)": [...], "MCP Cumul.": [...], "Microsoft": [...]}
+DATASET_SERIES     # {"AEI Conv.": ["AEI Conv. v1"..v5], ...}
+GEO_OPTIONS        # dict[str, str] — geo code → display name (55 entries: nat + 50 states + DC + 3 territories)
 AGG_LEVEL_COL      # {"major": "major_occ_category", "minor": "minor_occ_category",
                    #  "broad": "broad_occ", "occupation": "title_current"}
 AGG_LEVEL_OPTIONS  # human-readable → key mapping
@@ -183,20 +189,23 @@ Organized by pipeline stage:
 - `compute_wa_trends(settings)` — same but for work activities, using `_compute_wa_for_group()` per dataset version.
 
 #### Stage 8: Explorer
-- `_build_explorer_task_lookup()` — builds `task_normalized → {source_name: {auto_aug, pct_norm}}` across all 8 sources. AEI values averaged across 2010 SOC titles. Cached.
-- `_compute_task_metrics(task_norms, lookup)` — given task list + lookup, returns 10 metric fields (§4.6).
-- `get_explorer_occupations()` — 923 occupation summaries with hierarchy, emp, wages, 10 metrics. Cached.
-- `get_explorer_groups()` — pre-computed major/minor/broad aggregations (unique task_norms per group, not averages of occ-level values). Cached.
+- `get_explorer_source_names()` — returns the list of source names used in the explorer task lookup: `AEI_EXPLORER_DATASETS + ["MCP", "Microsoft"]`. Exposed via `/api/config` as `explorer_source_names`.
+- `_build_explorer_task_lookup()` — builds `task_normalized → {source_name: {auto_aug, pct_norm}}` across all 8+ sources. AEI values averaged across 2010 SOC titles. Cached.
+- `_compute_task_metrics(task_norms, lookup, selected_sources=None)` — given task list + lookup, returns 10 metric fields (§4.6). When `selected_sources` (a frozenset of source names) is provided, only those sources contribute to metrics. When None, all sources are used.
+- `_build_explorer_occ_base(selected_sources=None)` — builds geo-independent base for occupations (hierarchy, dws, task counts, metrics). Cached in `_explorer_occ_base_cache` keyed by `frozenset|None`.
+- `get_explorer_occupations(geo="nat", selected_sources=None)` — 923 occupation summaries with hierarchy, single `emp`/`wage` for requested geo, 10 metrics. Base cached; emp/wage overlaid per geo. `selected_sources` filters which AI datasets contribute to metrics.
+- `_build_explorer_groups_base(selected_sources=None)` — builds geo-independent base for groups (hierarchy, metrics, parent info, dws, task counts, `_occs` set). Cached in `_explorer_groups_base_cache` keyed by `frozenset|None`.
+- `get_explorer_groups(geo="nat", selected_sources=None)` — pre-computed major/minor/broad aggregations (unique task_norms per group, not averages of occ-level values). Single `emp`/`wage` per geo. Base cached; emp/wage overlaid per geo. `selected_sources` filters which AI datasets contribute to metrics.
 - `get_occupation_tasks(title)` — task details for one occupation (all 8 sources). Cached per title.
-- `get_all_tasks()` — all unique tasks (deduplicated by `task_normalized`) with metrics + allocated emp/wage. Cached.
-- `get_all_eco_task_rows()` — all ~23,850 rows from eco_2025 (each task × occupation combination) with occupation hierarchy, raw emp/wage, weighted emp allocation fields (`emp_nat_freq`, `emp_ut_freq`, `emp_nat_value`, `emp_ut_value`), and AI metrics from the task lookup. Cached. Used by both explorer task-level views.
-- `get_wa_explorer_data()` — GWA/IWA/DWA rows with emp allocation + metrics. Cached.
-- `get_wa_tasks_for_activity(level, name)` — task details for one WA activity.
+- `get_all_tasks(geo="nat")` — all unique tasks (deduplicated by `task_normalized`) with metrics + allocated `emp`/`wage` for requested geo. Cached per geo in `_all_tasks_geo_cache`.
+- `get_all_eco_task_rows(geo="nat", selected_sources=None)` — all ~23,850 rows from eco_2025 (each task x occupation combination) with occupation hierarchy, raw `emp`/`wage`, weighted emp allocation fields (`emp_freq`, `emp_value`), and AI metrics from the task lookup. Cached per `(geo, selected_sources)` in `_all_eco_tasks_geo_cache`. Used by both explorer task-level views. `selected_sources` filters which AI datasets contribute to metrics.
+- `get_wa_explorer_data(geo="nat", selected_sources=None)` — GWA/IWA/DWA rows with emp allocation (`emp_freq`/`emp_value`/`wage_freq`/`wage_value`) + metrics. Cached per `(geo, selected_sources)` in `_wa_explorer_geo_cache`. `selected_sources` filters which AI datasets contribute to metrics.
+- `get_wa_tasks_for_activity(level, name, geo="nat")` — task details for one WA activity. Cached per `(level, name, geo)` in `_wa_cache`.
 
 #### Stage 9: Task Changes
 - `_build_eco2015_baseline_set()` — builds set of (task_normalized, title_current) from crosswalked eco_2015. Cached.
 - `_prepare_dataset_for_comparison(ds_name)` — loads a dataset, crosswalks AEI to 2019 SOC, deduplicates to (task_normalized, title_current) level with averaged auto_aug_mean and pct_normalized. Returns DataFrame.
-- `compute_task_changes(from_dataset, to_dataset)` — compares two datasets at task level. Returns list of dicts with status, deltas, and metadata. Cached by (from_dataset, to_dataset).
+- `compute_task_changes(from_dataset, to_dataset, geo="nat")` — compares two datasets at task level. Returns list of dicts with status, deltas, `emp`/`wage` for requested geo, and metadata. Cached by (from_dataset, to_dataset, geo).
 
 ### `main.py` — API Layer
 
@@ -274,7 +283,7 @@ Time method (freq):   weight = freq_mean;   emp_per_task = (weight / Σweight_pe
 Value method:         weight = freq_mean × relevance × importance;   emp_per_task = (weight / Σweight_per_occ) × emp_occ
 ```
 
-The backend computes BOTH freq and value weightings simultaneously for the WA explorer endpoints, returning dual field sets (`emp_nat_freq`, `emp_nat_value`, etc.) so the frontend can toggle without re-fetching.
+The backend computes BOTH freq and value weightings simultaneously for the WA explorer endpoints, returning dual field sets (`emp_freq`, `emp_value`, `wage_freq`, `wage_value`) for the requested geography so the frontend can toggle without re-fetching.
 
 **Per-task workers contribution:**
 ```
@@ -331,8 +340,8 @@ For the Task-level flat table (`get_all_tasks()`):
 n_unique_tasks_per_occ = count of unique task_norms in that occ (from eco_2025)
 emp_contrib_per_task   = emp_occ / n_unique_tasks_per_occ
 
-emp_nat for a task = Σ(emp_contrib_per_task) across all occupations sharing that task
-wage_nat           = employment-weighted median: Σ(emp_contrib × wage) / Σ(emp_contrib)
+emp for a task = Σ(emp_contrib_per_task) across all occupations sharing that task
+wage           = employment-weighted median: Σ(emp_contrib × wage) / Σ(emp_contrib)
 ```
 
 Same allocation logic used for WA Explorer rows.
@@ -344,8 +353,8 @@ For the Task-level view in both explorers, returns every row from eco_2025 (~23,
 - `title_current`, `broad_occ`, `minor_occ_category`, `major_occ_category` — occupation hierarchy
 - `dwa_title`, `iwa_title`, `gwa_title` — work activity hierarchy
 - `physical` — physical task flag
-- `emp_nat`, `emp_ut`, `wage_nat`, `wage_ut` — **raw** occupation-level BLS numbers (NOT divided by task count)
-- `emp_nat_freq`, `emp_ut_freq`, `emp_nat_value`, `emp_ut_value` — weighted emp allocation per task×occ (freq-weighted and value-weighted, same logic as WA explorer emp allocation)
+- `emp`, `wage` — **raw** occupation-level BLS numbers for the requested geography (NOT divided by task count)
+- `emp_freq`, `emp_value` — weighted emp allocation per task x occ for the requested geography (freq-weighted and value-weighted, same logic as WA explorer emp allocation)
 - `freq_mean`, `importance`, `relevance` — O*NET survey measures read directly from eco_2025 rows
 - `sources`, `avg_auto_aug`, `max_auto_aug`, `avg_pct_norm`, `max_pct_norm` — AI metrics from the task lookup
 
@@ -415,6 +424,7 @@ Response:
   aei_api_cumulative_datasets: string[];    // names of cumulative AEI API datasets
   aei_both_cumulative_datasets: string[];   // names of cumulative AEI (both) datasets
   mcp_datasets: string[];                   // names of all MCP datasets
+  explorer_source_names: string[];         // AI source names available for explorer metric filtering (e.g. ["AEI Conv. v1", ..., "MCP", "Microsoft"])
 }
 ```
 
@@ -532,6 +542,10 @@ Response: same `TrendsResponse` shape as `/api/trends`.
 
 ### `GET /api/explorer`
 
+Query params:
+- `geo` (string, default `"nat"`) — 2-letter geography code.
+- `selected_sources` (string, optional) — comma-separated list of AI source names to include in metric calculations. When omitted or empty, all sources are used. Example: `selected_sources=AEI+Conv.+v5,MCP,Microsoft`.
+
 Response:
 ```ts
 {
@@ -540,10 +554,8 @@ Response:
     major?: string;
     minor?: string;
     broad?: string;
-    emp_nat?: number;
-    emp_ut?: number;
-    wage_nat?: number;
-    wage_ut?: number;
+    emp?: number;
+    wage?: number;
     n_tasks: number;
     n_physical_tasks: number;
     pct_physical?: number;            // 0–1 fraction (multiply × 100 for display)
@@ -557,6 +569,7 @@ Response:
     pct_max_all?: number;
     sum_pct_avg?: number;
     sum_pct_max?: number;
+    dws_star_rating?: number;         // 1–5 DWS star rating (raw for occs)
   }>;
 }
 ```
@@ -588,6 +601,10 @@ Response:
 
 ### `GET /api/explorer/groups`
 
+Query params:
+- `geo` (string, default `"nat"`) — 2-letter geography code.
+- `selected_sources` (string, optional) — comma-separated list of AI source names (same as `/api/explorer`).
+
 Response:
 ```ts
 {
@@ -595,11 +612,13 @@ Response:
   minor: ExplorerGroupRow[];
   broad: ExplorerGroupRow[];
 }
-// ExplorerGroupRow = { name, parent?, grandparent?, emp_nat/ut, wage_nat/ut, n_occs, n_tasks,
-//                      n_physical_tasks, pct_physical, ...10 metric fields }
+// ExplorerGroupRow = { name, parent?, grandparent?, emp, wage, n_occs, n_tasks,
+//                      n_physical_tasks, pct_physical, dws_star_rating?, ...10 metric fields }
 ```
 
 ### `GET /api/explorer/all-tasks`
+
+Query params: `geo` (string, default `"nat"`) — 2-letter geography code.
 
 Response:
 ```ts
@@ -612,9 +631,8 @@ Response:
     gwa_title?: string;
     physical?: boolean;
     n_occs: number;
-    emp_nat?: number;                 // allocated: Σ(emp_occ / n_unique_tasks) across sharing occs
-    emp_ut?: number;
-    wage_nat?: number;                // employment-weighted median
+    emp?: number;                     // allocated: Σ(emp_occ / n_unique_tasks) across sharing occs
+    wage?: number;                    // employment-weighted median
     sources: Record<string, { auto_aug?: number; pct_norm?: number }>;
     avg_auto_aug?: number;
     max_auto_aug?: number;
@@ -626,7 +644,11 @@ Response:
 
 ### `GET /api/explorer/all-eco-tasks`
 
-Returns all ~23,850 eco_2025 rows (one per task × occupation). Used by both explorer task-level views.
+Query params:
+- `geo` (string, default `"nat"`) — 2-letter geography code.
+- `selected_sources` (string, optional) — comma-separated list of AI source names (same as `/api/explorer`).
+
+Returns all ~23,850 eco_2025 rows (one per task x occupation). Used by both explorer task-level views.
 
 Response:
 ```ts
@@ -642,17 +664,13 @@ Response:
     iwa_title?: string;
     gwa_title?: string;
     physical?: boolean;
-    emp_nat?: number;                  // raw occupation emp (NOT divided)
-    emp_ut?: number;
-    wage_nat?: number;                 // raw occupation wage (NOT divided)
-    wage_ut?: number;
-    emp_nat_freq?: number;             // freq-weighted emp allocation for this task×occ
-    emp_ut_freq?: number;
-    emp_nat_value?: number;            // value-weighted emp allocation (freq×rel×imp)
-    emp_ut_value?: number;
-    freq_mean?: number;                // O*NET task frequency (0–10)
-    importance?: number;               // O*NET task importance (0–5)
-    relevance?: number;                // O*NET task relevance (0–100)
+    emp?: number;                      // raw occupation emp for requested geo (NOT divided)
+    wage?: number;                     // raw occupation wage for requested geo (NOT divided)
+    emp_freq?: number;                 // freq-weighted emp allocation for this task x occ
+    emp_value?: number;                // value-weighted emp allocation (freq x rel x imp)
+    freq_mean?: number;                // O*NET task frequency (0-10)
+    importance?: number;               // O*NET task importance (0-5)
+    relevance?: number;                // O*NET task relevance (0-100)
     sources: Record<string, { auto_aug?: number; pct_norm?: number }>;
     avg_auto_aug?: number;
     max_auto_aug?: number;
@@ -664,6 +682,10 @@ Response:
 
 ### `GET /api/explorer/wa`
 
+Query params:
+- `geo` (string, default `"nat"`) — 2-letter geography code.
+- `selected_sources` (string, optional) — comma-separated list of AI source names (same as `/api/explorer`).
+
 Response:
 ```ts
 {
@@ -672,14 +694,10 @@ Response:
     name: string;
     parent?: string;
     gwa?: string;
-    emp_nat_freq?: number;            // freq-weighted emp allocation
-    emp_ut_freq?: number;
-    emp_nat_value?: number;           // value-weighted emp allocation (freq×rel×imp)
-    emp_ut_value?: number;
-    wage_nat_freq?: number;           // emp-weighted median wage (freq weighting)
-    wage_ut_freq?: number;
-    wage_nat_value?: number;          // emp-weighted median wage (value weighting)
-    wage_ut_value?: number;
+    emp_freq?: number;                // freq-weighted emp allocation for requested geo
+    emp_value?: number;               // value-weighted emp allocation (freq x rel x imp)
+    wage_freq?: number;               // emp-weighted median wage (freq weighting)
+    wage_value?: number;              // emp-weighted median wage (value weighting)
     n_occs: number;
     n_tasks: number;
     n_physical_tasks: number;
@@ -689,7 +707,9 @@ Response:
 }
 ```
 
-### `GET /api/explorer/wa/tasks?level=...&name=...`
+### `GET /api/explorer/wa/tasks?level=...&name=...&geo=...`
+
+Query params: `level`, `name`, `geo` (string, default `"nat"`) — 2-letter geography code.
 
 Response:
 ```ts
@@ -703,15 +723,13 @@ Response:
     iwa_title?: string;
     gwa_title?: string;
     physical?: boolean;
-    emp_nat_freq?: number;            // freq-weighted emp allocation
-    emp_ut_freq?: number;
-    emp_nat_value?: number;           // value-weighted emp allocation
-    emp_ut_value?: number;
-    wage_nat_freq?: number;
-    wage_nat_value?: number;
-    freq_mean?: number;               // O*NET task frequency (0–10)
-    importance?: number;              // O*NET task importance (0–5)
-    relevance?: number;               // O*NET task relevance (0–100)
+    emp_freq?: number;                // freq-weighted emp allocation for requested geo
+    emp_value?: number;               // value-weighted emp allocation
+    wage_freq?: number;               // emp-weighted median wage (freq weighting)
+    wage_value?: number;              // emp-weighted median wage (value weighting)
+    freq_mean?: number;               // O*NET task frequency (0-10)
+    importance?: number;              // O*NET task importance (0-5)
+    relevance?: number;               // O*NET task relevance (0-100)
     title_current?: string;           // occupation name (first occ in group sharing this task)
     broad_occ?: string;
     minor_occ_category?: string;
@@ -733,6 +751,7 @@ Request body (`TaskChangesRequest`):
 {
   from_dataset: string;   // e.g., "AEI Cumul. Conv. v1"
   to_dataset:   string;   // e.g., "AEI Cumul. Conv. v4"
+  geo?:         string;   // 2-letter geography code, default "nat"
 }
 ```
 
@@ -753,10 +772,8 @@ Response (`TaskChangesResponse`):
     freq_mean?: number;
     importance?: number;
     relevance?: number;
-    emp_nat?: number;
-    emp_ut?: number;
-    wage_nat?: number;
-    wage_ut?: number;
+    emp?: number;
+    wage?: number;
     status: "new" | "removed" | "changed" | "unchanged" | "not_in_baseline";
     from_auto_aug?: number;
     to_auto_aug?: number;
@@ -852,11 +869,11 @@ Thin wrapper that fetches config and renders `TrendsView`.
 
 ### Page: Explorer (`/explorer`)
 
-Fetches `occupations`, `groups`, and `config` in parallel, passes to `ExplorerView`.
+Fetches `config` only, passes to `ExplorerView`. Occupation and group data are fetched inside the component (geo-dependent).
 
 ### Page: Work Activities Explorer (`/wa-explorer`)
 
-Fetches WA explorer rows + config, passes to `WAExplorerView`.
+Fetches `config` only, passes to `WAExplorerView`. WA data is fetched inside the component (geo-dependent).
 
 ### Component: `GroupPanel`
 
@@ -901,25 +918,27 @@ Two tabs: **Occupation Categories** and **Work Activities**, each with independe
 - Clicking an activeDot toggles `lockedLine`; a `dotClickedRef` flag prevents the parent div's onClick from clearing the lock in the same tick
 - **Frozen tooltip panel:** captures `lockedPos` (screen x/y) and `lockedDate`; renders a fixed `<div>` showing **all lines'** values at the locked date (sorted by value desc, scrollable via `maxHeight: 60vh; overflowY: auto`); clamped to window bounds. Clicking the frozen panel dismisses it.
 
+**Geography selector:** A `<select>` dropdown populated from `config.geo_options` (same pattern as ExplorerView/WAExplorerView). State is `string` (not a union type). Both OccupationTrends and WorkActivityTrends have independent geo state.
+
 **Controls:** Collapsible sections (Datasets / Display / Filtering); TopN, Sort, Search, Value ranking, and Context controls always visible (do not require a Run first).
 
 **Custom `ChartLegend`:** Grid of colored squares, clickable (click = lock). Shows increase badge per item. Passed to `downloadChartAsPng()` as `legendItems`.
 
 ### Component: `ExplorerView`
 
-Props: `occupations: OccupationSummary[]`, `groups: ExplorerGroupsResponse`, `config: ConfigResponse`.
+Props: `config: ConfigResponse`. Occupations, groups, and task data are fetched internally and re-fetched when `geo` changes.
 
 **Flat table** with inline drilldown. No accordion.
 
-**Column order at task level:** name, occ, broad, minor, major, dwa, iwa, gwa, emp, wage, phys (checkmark), freq, imp, rel, auto avg, auto max, auto avg (all), auto max (all), % phys, pct avg, pct max, pct avg (all), pct max (all), sum pct avg, sum pct max, % tasks aff, workers aff, wages aff. At non-task levels: name, emp, wage, # occs, # tasks, auto avg/max (with vals), auto avg/max (all), % phys, pct avg/max (with vals), pct avg/max (all), sum pct avg/max, % tasks aff, workers aff, wages aff.
+**Column order at task level:** name, occ, broad, minor, major, dwa, iwa, gwa, emp, wage, phys (checkmark), freq, imp, rel, auto avg, auto max, auto avg (all), auto max (all), % phys, pct avg, pct max, pct avg (all), pct max (all), sum pct avg, sum pct max, % tasks aff, workers aff, wages aff. At non-task levels: name, job outlook (DWS star rating), emp, wage, # occs, # tasks, auto avg/max (with vals), auto avg/max (all), % phys, pct avg/max (with vals), pct avg/max (all), sum pct avg/max, % tasks aff, workers aff, wages aff.
 
-**Columns hidden at task level:** `n_occs`, `n_tasks`, `auto_avg_all`, `auto_max_all`, `pct_phys`, `pct_avg_all`, `pct_max_all`, `sum_pct_avg`, `sum_pct_max` (`NON_TASK_COLS`). Columns hidden at non-task levels: `occ`, `major_cat`, `minor_cat`, `broad_cat`, `dwa_col`, `iwa_col`, `gwa_col`, `phys_col`, `freq_col`, `imp_col`, `rel_col` (`TASK_ONLY_COLS`).
+**Columns hidden at task level:** `n_occs`, `n_tasks`, `auto_avg_all`, `auto_max_all`, `pct_phys`, `pct_avg_all`, `pct_max_all`, `sum_pct_avg`, `sum_pct_max`, `dws_star` (`NON_TASK_COLS`). Columns hidden at non-task levels: `occ`, `major_cat`, `minor_cat`, `broad_cat`, `dwa_col`, `iwa_col`, `gwa_col`, `phys_col`, `freq_col`, `imp_col`, `rel_col` (`TASK_ONLY_COLS`).
 
-**Simple mode task columns:** name, occ, major, gwa, emp, wage, auto avg, pct avg, % tasks aff, workers aff, wages aff (`SIMPLE_TASK_COLS`).
+**Simple mode task columns:** name, occ, major, gwa, emp, wage, auto avg, pct avg, % tasks aff, workers aff, wages aff (`SIMPLE_TASK_COLS`). **DWS Star Rating** (`dws_star` / "Job Outlook") is NOT in `SIMPLE_COLS`, so it is hidden in simple mode at non-task levels.
 
 Levels: Major / Minor / Broad / Occupation / Task. At "Task" level, data fetched from `/api/explorer/all-eco-tasks` on first switch and cached.
 
-**`FlatRow` interface:** holds all metric fields plus `sourceOccs: OccupationSummary[]` (for lazy drilldown) and `level`.
+**`FlatRow` interface:** holds all metric fields plus `sourceOccs: OccupationSummary[]` (for lazy drilldown), `level`, and `dws_star_rating?: number | null` (DWS star rating, 1–5 for occupations, averaged for groups).
 
 **Controls:**
 - Multi-select major category pills (empty = all)
@@ -927,7 +946,8 @@ Levels: Major / Minor / Broad / Occupation / Task. At "Task" level, data fetched
 - Per-column ≥/≤ filter dropdowns (`ColumnFilterDropdown`)
 - Search bar with level selector + text highlighting via `highlightText()`
 - Avg/Max toggle (which auto_aug variant to display)
-- Nat/Utah toggle for emp/wage
+- Geography dropdown (populated from `config.geo_options`) for emp/wage
+- **Sources selector** (hidden in simple mode): multi-select dropdown populated from `config.explorer_source_names`. Shows checkboxes for each AI source with an All/None toggle. Changing the selection triggers a refetch of explorer data. Default: all sources selected. When all sources are selected, the API is called without `selected_sources` (backend default = all). The `selectedSources` set is turned into a stable array via `useMemo` for use as an effect dependency.
 - Auto-aug min sliders (with_vals and all_tasks variants)
 - Reset button (resets level→major, pills→clear, search→clear, sort→emp desc, column filters→clear, expanded→collapse, geo→nat, physical→all, hiddenCols→defaults, minPct→0, pagination→100, and re-runs auto-compute with default settings)
 
@@ -937,9 +957,9 @@ Levels: Major / Minor / Broad / Occupation / Task. At "Task" level, data fetched
 
 **Pagination:** `rowLimit` state (100 rows), "Load 100 more" footer. Resets on level/filter/search/sort changes.
 
-**Child rows:** `childRowCache` — pre-built `useMemo` Map keyed by `"level:name"` for O(1) lookups. Rebuilt when groups/occupations/geo change.
+**Child rows:** `childRowCache` — pre-built `useMemo` Map keyed by `"level:name"` for O(1) lookups. Rebuilt when groups/occupations change (data already reflects selected geo).
 
-**Task expansion:** Clicking an occupation row fetches tasks via `fetchOccupationTasks()`. Task detail shows Occupation Classification (Broad → Minor → Major), Activity Classification (GWA/IWA/DWA), per-source breakdown table (AEI Conv. v1–v4, API v3–v4, MCP Cumul. v4, Microsoft, plus AVG and MAX summary rows).
+**Task expansion:** Clicking an occupation row fetches tasks via `fetchOccupationTasks()`. Task detail shows Occupation Classification (Broad → Minor → Major), Activity Classification (GWA/IWA/DWA), per-source breakdown table (AEI Conv. v1–v5, API v3–v5, MCP Cumul. v4, Microsoft, plus AVG and MAX summary rows). **AEI N/A handling:** When all AEI sources have null `auto_aug` and null `pct_norm` (task not in eco 2015 baseline), individual AEI source rows are collapsed into a single "AEI" row displaying "Not in task set" in italic.
 
 **Occ-level emp:** Occupation Explorer at the occ level shows raw occupation employment (not divided by number of tasks).
 
@@ -960,15 +980,21 @@ Levels: Major / Minor / Broad / Occupation / Task. At "Task" level, data fetched
 
 ### Component: `WAExplorerView`
 
-Props: `rows: WAExplorerRow[]`, `config: ConfigResponse`.
+Props: `config: ConfigResponse`.
 
-Same general table structure as ExplorerView but hierarchy is GWA → IWA → DWA → Tasks.
+Fetches WA explorer rows internally via `fetchWAExplorer(geo, selectedSources)` — refetches when `geo` or `selectedSources` changes. Task-level eco data refetched via `fetchAllEcoTasks(geo, selectedSources)` on geo/sources change. DWA expansion tasks fetched via `fetchWAActivityTasks("dwa", name, geo)`.
 
-**Level selector:** GWA / IWA / DWA / Task. Task level uses the same all-eco-tasks dataset as ExplorerView (fetched once from `/api/explorer/all-eco-tasks`).
+Same general table structure as ExplorerView but hierarchy is GWA → IWA → DWA → Tasks. **AEI N/A handling:** Same collapsed "AEI → Not in task set" pattern as ExplorerView in both DWA task accordion and task-level expansion source breakdowns.
+
+**Geo selector:** A `<select>` dropdown populated from `config.geo_options` (a `Record<string, string>` mapping geo code to display name). State is `string` (not a union type). Changing geo triggers refetch of WA rows, eco task rows, and auto-compute pct.
+
+**Level selector:** GWA / IWA / DWA / Task. Task level uses the same all-eco-tasks dataset as ExplorerView (fetched per-geo from `/api/explorer/all-eco-tasks?geo=...`).
 
 **Column order at task level:** name, occ, broad, minor, major, dwa, iwa, gwa, emp, wage, phys (checkmark), freq, imp, rel, auto avg, auto max, pct avg, pct max, % tasks aff, workers aff, wages aff. At non-task levels: name, emp, wage, # occs, # tasks, auto avg/max (with vals/all), % phys, pct avg/max (with vals/all), sum pct avg/max, % tasks aff, workers aff, wages aff. **Columns hidden at task level:** `n_occs`, `n_tasks`, `auto_avg_all`, `auto_max_all`, `pct_phys`, `pct_avg_all`, `pct_max_all`, `sum_pct_avg`, `sum_pct_max` (`NON_TASK_COLS`). **Simple mode task columns:** name, occ, major, gwa, emp, wage, auto avg, pct avg, % tasks aff, workers aff, wages aff (`WA_SIMPLE_TASK_COLS`).
 
 WA Explorer task view uses weighted emp (freq or value based on Time/Value toggle). At task level, "name" is the task text and occ/broad/minor/major/dwa/iwa/gwa columns are populated.
+
+**Sources selector** (hidden in simple mode): same multi-select dropdown as ExplorerView, populated from `config.explorer_source_names`. Changing selection triggers refetch of WA data and task data. Hidden in simple mode (all sources used by default).
 
 **Column selector (gear icon):** Click-outside to close. At the task level, shows group toggle buttons: All/None, Occ +/−, WA +/− (same pattern as ExplorerView).
 - Simple mode (non-task level): only `WA_SIMPLE_COLS` are selectable
@@ -993,7 +1019,7 @@ WA Explorer task view uses weighted emp (freq or value based on Time/Value toggl
 
 **`WaPctComputePanel`:** Same as ExplorerView `PctComputePanel` but calls `/api/work-activities` with the current WA settings. Injects pct/workers/wages columns. Dataset selection uses `enforceDatasetToggle` from `lib/datasetRules.ts`. Accepts an `empWeighting` prop — the panel's internal method is synced to the parent's empWeighting toggle ("freq" maps to "freq", "value" maps to "imp"). When the toggle changes and results already exist, the panel auto-recomputes. The `pctAffectedMap` is populated from **all three levels** (gwa + iwa + dwa) in the API response, so accordion children at any level can look up their pct values. Auto-compute on load uses the same approach — fetching all three levels and merging into the map.
 
-**Emp weighting toggle:** An "Emp Weight" segmented control (Time / Value) next to other controls. Controls which emp allocation variant is displayed (`emp_nat_freq`/`emp_ut_freq` vs `emp_nat_value`/`emp_ut_value`). Hidden in simple mode (defaults to freq/Time). Affects both activity-level and accordion task sub-rows. Also syncs the `WaPctComputePanel` method (freq/imp) and triggers auto-recompute of % Tasks Affected when results exist.
+**Emp weighting toggle:** An "Emp Weight" segmented control (Time / Value) next to other controls. Controls which emp allocation variant is displayed (`emp_freq` vs `emp_value`). Hidden in simple mode (defaults to freq/Time). Affects both activity-level and accordion task sub-rows. Also syncs the `WaPctComputePanel` method (freq/imp) and triggers auto-recompute of % Tasks Affected when results exist.
 
 **Section titles in task expansions:** Occupation Categories, Work Activities, Task Detail, Source Breakdown, Top MCP Servers — consistent across both explorers.
 
@@ -1005,7 +1031,7 @@ WA Explorer task view uses weighted emp (freq or value based on Time/Value toggl
 
 ### Component: `TaskChangesView`
 
-`TaskChangesView.tsx` — Task-level dataset comparison table (titled "Task Changes Explorer"). Props: `config` (`ConfigResponse`). Dataset pickers, status filter pills (with dynamic counts that update based on active filters), major category pills, search, per-column numeric threshold filters (funnel icon → min/max dropdown), per-column text filters (funnel icon → multi-select checkbox dropdown for Occupation, Major, Minor, Broad, GWA, IWA, DWA), column selector, pagination. Task column uses word-wrap (no truncation); lowercase task names are auto-capitalized via `titleCaseTask()`. Column labels use "Auto" instead of "auto_aug". Source breakdown in expanded rows uses colored AVG/MAX badges matching explorer style. Table container has `maxHeight` with `overflowY: auto` so horizontal scroll is accessible from any vertical position. Row expansion shows occupation categories, work activities, source breakdown, and top MCP servers. Simple mode defaults to AEI Cumul. Conv. v1 → v4.
+`TaskChangesView.tsx` — Task-level dataset comparison table (titled "Task Changes Explorer"). Props: `config` (`ConfigResponse`). Dataset pickers, geography dropdown (populated from `config.geo_options`, state is `string`), status filter pills (with dynamic counts that update based on active filters), major category pills, search, per-column numeric threshold filters (funnel icon → min/max dropdown), per-column text filters (funnel icon → multi-select checkbox dropdown for Occupation, Major, Minor, Broad, GWA, IWA, DWA), column selector, pagination. Passes `geo` to `fetchTaskChanges()` and `fetchAllEcoTasks()` API calls. Task column uses word-wrap (no truncation); lowercase task names are auto-capitalized via `titleCaseTask()`. Column labels use "Auto" instead of "auto_aug". Source breakdown in expanded rows uses colored AVG/MAX badges matching explorer style. Table container has `maxHeight` with `overflowY: auto` so horizontal scroll is accessible from any vertical position. Row expansion ALWAYS shows occupation categories and work activities sections (even when values are null/dash), plus source breakdown and top MCP servers. When the "to" dataset starts with "AEI", section headers change to "2015 Occupation Hierarchy" and "2015 Task Hierarchy". Default datasets: AEI Cumul. Conv. v2 → AEI Cumul. (Both) v5. **AEI N/A handling:** Same collapsed "AEI → Not in task set" pattern as ExplorerView (see above).
 
 ### Utility: `lib/datasetRules.ts`
 
@@ -1091,7 +1117,7 @@ The explorer endpoints are **cold-start heavy** (~2–5s on first `/api/explorer
 
 15. **`InfoTooltip` uses `createPortal` into `document.body`** — required to avoid clipping by `overflow: hidden` ancestors. Position is `fixed` at mouse coordinates.
 
-16. **`AllTaskRow.emp_nat/emp_ut/wage_nat` are allocated values** — computed as `Σ(emp_occ / n_unique_tasks_per_occ)` across sharing occupations. Not the same as occupation-level employment totals.
+16. **`AllTaskRow.emp/wage` are allocated values** — computed as `Σ(emp_occ / n_unique_tasks_per_occ)` across sharing occupations for the requested geography. Not the same as occupation-level employment totals.
 
 17. **`pct_physical` is stored as a 0–1 fraction.** `fmtPctPhys(v)` multiplies by 100 for display.
 
@@ -1119,8 +1145,10 @@ The explorer endpoints are **cold-start heavy** (~2–5s on first `/api/explorer
 
 27. **Cumulative AEI datasets cannot be mixed with snapshot AEI datasets.** Cumulative families (`AEI Cumul. Conv.`, `AEI API Cumul.`, `AEI Cumul. (Both)`) and snapshot families (`AEI Conv.`, `AEI API`) are mutually exclusive. The cumulative versions aggregate all conversations up to their snapshot date, so their scale is not comparable to the per-snapshot versions.
 
+28. **Explorer source selection caches are keyed by `frozenset|None`.** `_explorer_occ_base_cache`, `_explorer_groups_base_cache`, `_wa_explorer_geo_cache`, and `_all_eco_tasks_geo_cache` are dict caches keyed by the selected sources parameter (a frozenset of source names, or None for "all"). When adding new parameters that change metric outputs, ensure the cache key includes them.
+
 28. **WA emp allocation is method-weighted, not equal-split.** The backend returns both freq-weighted and value-weighted emp variants for WA explorer rows and WA task details. The frontend emp weighting toggle selects which variant to display. The WA charts page's Time/Value method toggle controls both task_comp AND emp weighting simultaneously.
 
 29. **PctComputePanel auto-recomputes on geo and empWeighting changes.** Both `PctComputePanel` (occ explorer) and `WaPctComputePanel` (WA explorer) track `geo` changes via a ref and auto-recompute when the panel has already been computed and the geo changes. `WaPctComputePanel` additionally auto-recomputes when the parent's `empWeighting` toggle changes (syncing "freq"/"value" to the panel's "freq"/"imp" method). Simple mode auto-compute handles geo via its useEffect dependency.
 
-30. **All-eco-tasks uses weighted emp, not n_tasks_per_occ.** `get_all_eco_task_rows()` returns weighted emp allocation fields (`emp_nat_freq`, `emp_ut_freq`, `emp_nat_value`, `emp_ut_value`) instead of `n_tasks_per_occ`. The WA Explorer task view selects freq or value variant based on Time/Value toggle. The `get_wa_explorer_data()` `needed_cols` includes `freq_mean`, `relevance`, `importance` — all three are required for correct emp allocation and to avoid emp=0 bugs for WA activity rows.
+30. **All-eco-tasks uses weighted emp, not n_tasks_per_occ.** `get_all_eco_task_rows(geo)` returns weighted emp allocation fields (`emp_freq`, `emp_value`) for the requested geography instead of `n_tasks_per_occ`. The WA Explorer task view selects freq or value variant based on Time/Value toggle. The `get_wa_explorer_data(geo)` `needed_cols` includes `freq_mean`, `relevance`, `importance` — all three are required for correct emp allocation and to avoid emp=0 bugs for WA activity rows.
