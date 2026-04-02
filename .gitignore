@@ -3,7 +3,7 @@ delta/
 
 # Analysis generated outputs (regenerate with: venv/Scripts/python -m analysis.run_all)
 analysis/questions/*/results/
-
+analysis/data
 
 
 
