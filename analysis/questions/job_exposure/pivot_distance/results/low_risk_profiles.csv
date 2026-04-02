@@ -1,0 +1,218 @@
+element_name,avg_score,type,job_zone,group
+Active Listening,7.82,skills,1,low_risk
+Complex Problem Solving,8.61,skills,1,low_risk
+Coordination,9.46,skills,1,low_risk
+Critical Thinking,9.20,skills,1,low_risk
+Equipment Maintenance,9.64,skills,1,low_risk
+Judgment and Decision Making,7.35,skills,1,low_risk
+Management of Personnel Resources,10.14,skills,1,low_risk
+Monitoring,9.18,skills,1,low_risk
+Operation and Control,12.58,skills,1,low_risk
+Operations Monitoring,11.93,skills,1,low_risk
+Quality Control Analysis,9.40,skills,1,low_risk
+Repairing,10.62,skills,1,low_risk
+Speaking,8.04,skills,1,low_risk
+Time Management,8.58,skills,1,low_risk
+Troubleshooting,9.64,skills,1,low_risk
+Administration and Management,7.85,knowledge,1,low_risk
+Biology,13.53,knowledge,1,low_risk
+Building and Construction,15.40,knowledge,1,low_risk
+Customer and Personal Service,13.13,knowledge,1,low_risk
+Education and Training,10.17,knowledge,1,low_risk
+English Language,10.01,knowledge,1,low_risk
+Geography,12.42,knowledge,1,low_risk
+Law and Government,11.35,knowledge,1,low_risk
+Mathematics,9.91,knowledge,1,low_risk
+Mechanical,15.19,knowledge,1,low_risk
+Production and Processing,10.42,knowledge,1,low_risk
+Public Safety and Security,9.95,knowledge,1,low_risk
+Sales and Marketing,11.07,knowledge,1,low_risk
+Active Learning,9.13,skills,2,low_risk
+Active Listening,9.72,skills,2,low_risk
+Complex Problem Solving,9.19,skills,2,low_risk
+Coordination,10.65,skills,2,low_risk
+Critical Thinking,10.53,skills,2,low_risk
+Equipment Maintenance,10.76,skills,2,low_risk
+Installation,9.91,skills,2,low_risk
+Judgment and Decision Making,9.05,skills,2,low_risk
+Mathematics,10.50,skills,2,low_risk
+Monitoring,10.45,skills,2,low_risk
+Operation and Control,13.47,skills,2,low_risk
+Operations Monitoring,13.99,skills,2,low_risk
+Quality Control Analysis,10.37,skills,2,low_risk
+Reading Comprehension,9.71,skills,2,low_risk
+Repairing,11.03,skills,2,low_risk
+Service Orientation,7.86,skills,2,low_risk
+Social Perceptiveness,8.25,skills,2,low_risk
+Speaking,8.61,skills,2,low_risk
+Systems Analysis,9.36,skills,2,low_risk
+Time Management,9.01,skills,2,low_risk
+Troubleshooting,10.62,skills,2,low_risk
+Writing,9.00,skills,2,low_risk
+Administration and Management,13.09,knowledge,2,low_risk
+Building and Construction,21.88,knowledge,2,low_risk
+Chemistry,15.90,knowledge,2,low_risk
+Customer and Personal Service,9.84,knowledge,2,low_risk
+Design,13.71,knowledge,2,low_risk
+Education and Training,13.19,knowledge,2,low_risk
+Engineering and Technology,14.63,knowledge,2,low_risk
+English Language,11.31,knowledge,2,low_risk
+Law and Government,11.46,knowledge,2,low_risk
+Mathematics,15.05,knowledge,2,low_risk
+Mechanical,16.41,knowledge,2,low_risk
+Physics,11.85,knowledge,2,low_risk
+Production and Processing,13.22,knowledge,2,low_risk
+Public Safety and Security,10.88,knowledge,2,low_risk
+Transportation,12.24,knowledge,2,low_risk
+Active Learning,10.13,skills,3,low_risk
+Active Listening,10.78,skills,3,low_risk
+Complex Problem Solving,10.19,skills,3,low_risk
+Coordination,10.91,skills,3,low_risk
+Critical Thinking,11.95,skills,3,low_risk
+Equipment Maintenance,13.88,skills,3,low_risk
+Equipment Selection,9.94,skills,3,low_risk
+Installation,11.83,skills,3,low_risk
+Instructing,11.83,skills,3,low_risk
+Judgment and Decision Making,10.04,skills,3,low_risk
+Learning Strategies,11.65,skills,3,low_risk
+Management of Financial Resources,10.14,skills,3,low_risk
+Management of Material Resources,10.14,skills,3,low_risk
+Management of Personnel Resources,14.53,skills,3,low_risk
+Mathematics,10.37,skills,3,low_risk
+Monitoring,11.80,skills,3,low_risk
+Negotiation,11.34,skills,3,low_risk
+Operation and Control,12.01,skills,3,low_risk
+Operations Monitoring,13.50,skills,3,low_risk
+Persuasion,12.25,skills,3,low_risk
+Quality Control Analysis,11.76,skills,3,low_risk
+Reading Comprehension,11.58,skills,3,low_risk
+Repairing,14.77,skills,3,low_risk
+Science,10.56,skills,3,low_risk
+Service Orientation,9.67,skills,3,low_risk
+Social Perceptiveness,13.88,skills,3,low_risk
+Speaking,10.86,skills,3,low_risk
+Systems Analysis,10.17,skills,3,low_risk
+Systems Evaluation,9.81,skills,3,low_risk
+Time Management,9.76,skills,3,low_risk
+Troubleshooting,14.43,skills,3,low_risk
+Writing,10.97,skills,3,low_risk
+Administration and Management,12.65,knowledge,3,low_risk
+Administrative,13.49,knowledge,3,low_risk
+Building and Construction,16.38,knowledge,3,low_risk
+Computers and Electronics,13.28,knowledge,3,low_risk
+Customer and Personal Service,14.01,knowledge,3,low_risk
+Design,12.66,knowledge,3,low_risk
+Education and Training,16.71,knowledge,3,low_risk
+Engineering and Technology,15.47,knowledge,3,low_risk
+English Language,12.11,knowledge,3,low_risk
+Fine Arts,19.15,knowledge,3,low_risk
+Law and Government,14.44,knowledge,3,low_risk
+Mathematics,13.01,knowledge,3,low_risk
+Mechanical,24.59,knowledge,3,low_risk
+Personnel and Human Resources,14.47,knowledge,3,low_risk
+Physics,14.68,knowledge,3,low_risk
+Production and Processing,12.30,knowledge,3,low_risk
+Psychology,15.72,knowledge,3,low_risk
+Public Safety and Security,16.51,knowledge,3,low_risk
+Sociology and Anthropology,11.53,knowledge,3,low_risk
+Telecommunications,10.62,knowledge,3,low_risk
+Therapy and Counseling,12.25,knowledge,3,low_risk
+Transportation,14.47,knowledge,3,low_risk
+Active Learning,13.58,skills,4,low_risk
+Active Listening,15.25,skills,4,low_risk
+Complex Problem Solving,14.15,skills,4,low_risk
+Coordination,13.15,skills,4,low_risk
+Critical Thinking,16.49,skills,4,low_risk
+Instructing,10.91,skills,4,low_risk
+Judgment and Decision Making,14.39,skills,4,low_risk
+Learning Strategies,11.48,skills,4,low_risk
+Management of Financial Resources,10.52,skills,4,low_risk
+Management of Material Resources,10.90,skills,4,low_risk
+Management of Personnel Resources,11.17,skills,4,low_risk
+Mathematics,12.63,skills,4,low_risk
+Monitoring,14.61,skills,4,low_risk
+Negotiation,9.86,skills,4,low_risk
+Operation and Control,9.77,skills,4,low_risk
+Operations Analysis,15.15,skills,4,low_risk
+Operations Monitoring,10.38,skills,4,low_risk
+Persuasion,10.44,skills,4,low_risk
+Quality Control Analysis,10.70,skills,4,low_risk
+Reading Comprehension,17.54,skills,4,low_risk
+Science,12.16,skills,4,low_risk
+Service Orientation,13.27,skills,4,low_risk
+Social Perceptiveness,12.77,skills,4,low_risk
+Speaking,15.30,skills,4,low_risk
+Systems Analysis,12.26,skills,4,low_risk
+Systems Evaluation,12.04,skills,4,low_risk
+Technology Design,12.19,skills,4,low_risk
+Time Management,12.27,skills,4,low_risk
+Troubleshooting,9.00,skills,4,low_risk
+Writing,14.29,skills,4,low_risk
+Administration and Management,16.16,knowledge,4,low_risk
+Administrative,14.63,knowledge,4,low_risk
+Biology,17.36,knowledge,4,low_risk
+Building and Construction,17.33,knowledge,4,low_risk
+Chemistry,16.39,knowledge,4,low_risk
+Computers and Electronics,15.21,knowledge,4,low_risk
+Customer and Personal Service,16.90,knowledge,4,low_risk
+Design,18.95,knowledge,4,low_risk
+Economics and Accounting,11.30,knowledge,4,low_risk
+Education and Training,16.71,knowledge,4,low_risk
+Engineering and Technology,23.34,knowledge,4,low_risk
+English Language,16.26,knowledge,4,low_risk
+Food Production,17.06,knowledge,4,low_risk
+Geography,14.33,knowledge,4,low_risk
+Law and Government,12.51,knowledge,4,low_risk
+Mathematics,17.49,knowledge,4,low_risk
+Mechanical,17.32,knowledge,4,low_risk
+Medicine and Dentistry,25.44,knowledge,4,low_risk
+Personnel and Human Resources,15.23,knowledge,4,low_risk
+Physics,16.95,knowledge,4,low_risk
+Production and Processing,17.60,knowledge,4,low_risk
+Psychology,22.17,knowledge,4,low_risk
+Public Safety and Security,11.91,knowledge,4,low_risk
+Sociology and Anthropology,13.76,knowledge,4,low_risk
+Therapy and Counseling,16.41,knowledge,4,low_risk
+Transportation,10.46,knowledge,4,low_risk
+Active Learning,16.62,skills,5,low_risk
+Active Listening,19.27,skills,5,low_risk
+Complex Problem Solving,16.74,skills,5,low_risk
+Coordination,13.04,skills,5,low_risk
+Critical Thinking,19.67,skills,5,low_risk
+Instructing,12.70,skills,5,low_risk
+Judgment and Decision Making,17.47,skills,5,low_risk
+Learning Strategies,13.28,skills,5,low_risk
+Management of Personnel Resources,9.57,skills,5,low_risk
+Mathematics,10.35,skills,5,low_risk
+Monitoring,15.96,skills,5,low_risk
+Negotiation,10.86,skills,5,low_risk
+Operations Analysis,10.55,skills,5,low_risk
+Operations Monitoring,11.83,skills,5,low_risk
+Persuasion,11.60,skills,5,low_risk
+Quality Control Analysis,9.36,skills,5,low_risk
+Reading Comprehension,19.30,skills,5,low_risk
+Science,13.29,skills,5,low_risk
+Service Orientation,13.72,skills,5,low_risk
+Social Perceptiveness,16.63,skills,5,low_risk
+Speaking,16.81,skills,5,low_risk
+Systems Analysis,9.88,skills,5,low_risk
+Systems Evaluation,10.29,skills,5,low_risk
+Time Management,11.86,skills,5,low_risk
+Writing,15.79,skills,5,low_risk
+Administration and Management,13.50,knowledge,5,low_risk
+Biology,21.30,knowledge,5,low_risk
+Chemistry,16.11,knowledge,5,low_risk
+Computers and Electronics,13.02,knowledge,5,low_risk
+Customer and Personal Service,18.59,knowledge,5,low_risk
+Education and Training,19.93,knowledge,5,low_risk
+Engineering and Technology,10.22,knowledge,5,low_risk
+English Language,20.82,knowledge,5,low_risk
+Law and Government,20.40,knowledge,5,low_risk
+Mathematics,14.11,knowledge,5,low_risk
+Medicine and Dentistry,29.33,knowledge,5,low_risk
+Personnel and Human Resources,11.97,knowledge,5,low_risk
+Physics,15.26,knowledge,5,low_risk
+Psychology,21.89,knowledge,5,low_risk
+Public Safety and Security,10.23,knowledge,5,low_risk
+Sociology and Anthropology,15.53,knowledge,5,low_risk
+Therapy and Counseling,17.35,knowledge,5,low_risk

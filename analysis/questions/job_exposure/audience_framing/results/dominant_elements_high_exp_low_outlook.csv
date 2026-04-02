@@ -1,0 +1,68 @@
+element_name,avg_score,type
+Philosophy and Theology,18.83,knowledge
+Customer and Personal Service,18.39,knowledge
+Foreign Language,18.11,knowledge
+History and Archeology,17.96,knowledge
+Design,17.73,knowledge
+Sociology and Anthropology,17.28,knowledge
+Biology,17.22,knowledge
+Geography,17.14,knowledge
+Fine Arts,17.07,knowledge
+Education and Training,16.73,knowledge
+Building and Construction,16.61,knowledge
+English Language,16.14,knowledge
+Mechanical,15.98,knowledge
+Administrative,15.77,knowledge
+Computers and Electronics,15.43,knowledge
+Engineering and Technology,15.34,knowledge
+Therapy and Counseling,15.18,knowledge
+Sales and Marketing,14.77,knowledge
+Chemistry,14.69,knowledge
+Food Production,14.40,knowledge
+Psychology,14.39,knowledge
+Mathematics,14.15,knowledge
+Medicine and Dentistry,14.13,knowledge
+Reading Comprehension,13.95,skills
+Communications and Media,13.87,knowledge
+Law and Government,13.83,knowledge
+Active Listening,13.81,skills
+Production and Processing,13.76,knowledge
+Transportation,13.74,knowledge
+Science,13.57,skills
+Speaking,13.53,skills
+Personnel and Human Resources,13.36,knowledge
+Critical Thinking,13.19,skills
+Physics,13.09,knowledge
+Administration and Management,12.95,knowledge
+Writing,12.91,skills
+Public Safety and Security,12.52,knowledge
+Economics and Accounting,12.40,knowledge
+Learning Strategies,12.36,skills
+Instructing,12.12,skills
+Programming,12.04,skills
+Telecommunications,12.01,knowledge
+Operations Monitoring,11.92,skills
+Active Learning,11.79,skills
+Management of Personnel Resources,11.62,skills
+Repairing,11.55,skills
+Operation and Control,11.37,skills
+Monitoring,11.22,skills
+Social Perceptiveness,11.20,skills
+Persuasion,11.15,skills
+Mathematics,11.09,skills
+Operations Analysis,10.94,skills
+Service Orientation,10.90,skills
+Complex Problem Solving,10.89,skills
+Judgment and Decision Making,10.82,skills
+Equipment Maintenance,10.72,skills
+Negotiation,10.62,skills
+Coordination,10.60,skills
+Troubleshooting,10.54,skills
+Systems Evaluation,10.39,skills
+Time Management,10.09,skills
+Quality Control Analysis,10.06,skills
+Systems Analysis,10.05,skills
+Management of Material Resources,9.96,skills
+Equipment Selection,9.95,skills
+Management of Financial Resources,9.60,skills
+Installation,8.82,skills

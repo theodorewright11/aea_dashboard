@@ -1,0 +1,924 @@
+title_current,employment,median_wage,major,job_zone,outlook,pct_all_ceiling,tier_all_ceiling,pct_human_conversation,tier_human_conversation,pct_agentic_confirmed,tier_agentic_confirmed,pct_all_confirmed,tier_all_confirmed,pct_agentic_ceiling,tier_agentic_ceiling
+Accountants and Auditors,1448290.00,81680.00,Business and Financial Operations Occupations,4.00,5.00,43.59,moderate,28.09,restructuring,35.32,restructuring,28.09,restructuring,35.32,restructuring
+Actors,38800.00,78000.00,"Arts, Design, Entertainment, Sports, and Media Occupations",2.00,0.00,79.63,high,63.20,high,63.71,high,79.37,high,63.71,high
+Actuaries,28340.00,125770.00,Computer and Mathematical Occupations,4.00,4.00,49.65,moderate,41.57,moderate,31.34,restructuring,45.67,moderate,31.34,restructuring
+Acupuncturists,8440.00,78140.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,24.63,restructuring,19.67,low,9.44,low,21.71,restructuring,10.82,low
+Acute Care Nurses,495221.00,93600.00,Healthcare Practitioners and Technical Occupations,4.00,5.00,34.37,restructuring,29.87,restructuring,22.62,restructuring,32.08,restructuring,22.66,restructuring
+Adapted Physical Education Specialists,39350.00,67430.00,Educational Instruction and Library Occupations,5.00,4.00,38.19,restructuring,33.35,restructuring,8.05,low,33.82,restructuring,8.18,low
+Adhesive Bonding Machine Operators and Tenders,12170.00,45210.00,Production Occupations,2.00,2.00,40.13,moderate,21.57,restructuring,21.12,restructuring,21.57,restructuring,21.12,restructuring
+"Administrative Law Judges, Adjudicators, and Hearing Officers",16230.00,115230.00,Legal Occupations,5.00,4.00,48.50,moderate,36.96,restructuring,23.27,restructuring,40.53,moderate,23.27,restructuring
+Administrative Services Managers,184500.52,106986.55,Management Occupations,3.00,5.00,46.12,moderate,21.21,restructuring,39.25,restructuring,21.21,restructuring,39.54,restructuring
+"Adult Basic Education, Adult Secondary Education, and English as a Second Language Instructors",36260.00,59950.00,Educational Instruction and Library Occupations,4.00,3.00,38.03,restructuring,24.89,restructuring,22.73,restructuring,24.89,restructuring,23.42,restructuring
+Advanced Practice Psychiatric Nurses,1031526.00,93600.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,51.38,moderate,39.46,restructuring,40.57,moderate,47.35,moderate,40.57,moderate
+Advertising Sales Agents,97470.00,61460.00,Sales and Related Occupations,4.00,3.00,83.84,high,65.16,high,72.15,high,83.62,high,73.63,high
+Advertising and Promotions Managers,21100.00,126960.00,Management Occupations,4.00,3.00,68.99,high,41.12,moderate,59.47,moderate,53.17,moderate,59.64,moderate
+Aerospace Engineering and Operations Technologists and Technicians,9060.00,79830.00,Architecture and Engineering Occupations,3.00,3.00,42.44,moderate,36.82,restructuring,27.25,restructuring,36.82,restructuring,27.79,restructuring
+Aerospace Engineers,68440.00,134830.00,Architecture and Engineering Occupations,4.00,5.00,35.39,restructuring,26.61,restructuring,24.29,restructuring,27.46,restructuring,25.32,restructuring
+"Agents and Business Managers of Artists, Performers, and Athletes",14220.00,96310.00,Business and Financial Operations Occupations,4.00,3.00,63.29,high,47.46,moderate,60.68,high,53.06,moderate,60.68,high
+Agricultural Engineers,1680.00,84630.00,Architecture and Engineering Occupations,4.00,5.00,42.13,moderate,38.39,restructuring,22.98,restructuring,38.39,restructuring,22.98,restructuring
+Agricultural Equipment Operators,30940.00,42580.00,"Farming, Fishing, and Forestry Occupations",1.00,1.00,16.24,low,16.24,low,2.25,low,16.24,low,2.25,low
+Agricultural Inspectors,12090.00,50990.00,"Farming, Fishing, and Forestry Occupations",2.00,1.00,31.08,restructuring,25.14,restructuring,17.78,low,28.01,restructuring,17.78,low
+"Agricultural Sciences Teachers, Postsecondary",8700.00,86350.00,Educational Instruction and Library Occupations,5.00,4.00,80.47,high,64.33,high,63.43,high,75.45,high,63.43,high
+Agricultural Technicians,9848.10,47795.71,"Life, Physical, and Social Science Occupations",3.00,1.00,29.16,restructuring,20.85,restructuring,11.93,low,26.56,restructuring,11.93,low
+Air Traffic Controllers,22400.00,144580.00,Transportation and Material Moving Occupations,3.00,3.00,48.88,moderate,30.21,restructuring,31.44,restructuring,31.15,restructuring,31.46,restructuring
+Aircraft Cargo Handling Supervisors,10160.00,63940.00,Transportation and Material Moving Occupations,2.00,2.00,30.24,restructuring,20.85,restructuring,28.74,restructuring,20.85,restructuring,28.74,restructuring
+Aircraft Mechanics and Service Technicians,136390.00,78680.00,"Installation, Maintenance, and Repair Occupations",3.00,4.00,18.25,low,14.03,low,9.01,low,14.03,low,9.01,low
+Aircraft Service Attendants,27310.00,41540.00,Transportation and Material Moving Occupations,2.00,2.00,16.60,low,14.25,low,2.35,low,14.25,low,2.35,low
+"Aircraft Structure, Surfaces, Rigging, and Systems Assemblers",32890.00,61680.00,Production Occupations,2.00,2.00,14.70,low,11.28,low,7.47,low,13.39,low,7.47,low
+Airfield Operations Specialists,16640.00,56750.00,Transportation and Material Moving Occupations,3.00,3.00,42.91,moderate,28.38,restructuring,21.00,restructuring,29.10,restructuring,21.14,restructuring
+"Airline Pilots, Copilots, and Flight Engineers",99300.00,226600.00,Transportation and Material Moving Occupations,4.00,3.00,33.76,restructuring,14.75,low,25.52,restructuring,14.89,low,25.77,restructuring
+Allergists and Immunologists,137310.00,249103.60,Healthcare Practitioners and Technical Occupations,5.00,2.00,37.38,restructuring,22.01,restructuring,33.60,restructuring,30.31,restructuring,33.60,restructuring
+"Ambulance Drivers and Attendants, Except Emergency Medical Technicians",12080.00,34330.00,Transportation and Material Moving Occupations,2.00,3.00,4.38,low,0.54,low,3.84,low,0.54,low,3.84,low
+Amusement and Recreation Attendants,371590.00,30490.00,Personal Care and Service Occupations,1.00,2.00,57.33,moderate,40.93,moderate,39.82,restructuring,40.93,moderate,40.99,moderate
+Anesthesiologist Assistants,34693.00,133260.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,21.01,restructuring,10.49,low,10.64,low,10.49,low,10.64,low
+Anesthesiologists,41890.00,257920.00,Healthcare Practitioners and Technical Occupations,5.00,0.00,10.19,low,5.60,low,5.53,low,5.78,low,5.53,low
+Animal Breeders,1730.00,52000.00,"Farming, Fishing, and Forestry Occupations",2.00,1.00,53.29,moderate,47.23,moderate,13.25,low,47.23,moderate,13.25,low
+Animal Caretakers,277300.00,33470.00,Personal Care and Service Occupations,2.00,2.00,50.19,moderate,39.56,restructuring,22.24,restructuring,39.56,restructuring,22.69,restructuring
+Animal Control Workers,11790.00,45830.00,Protective Service Occupations,2.00,2.00,53.28,moderate,47.12,moderate,26.19,restructuring,47.12,moderate,26.19,restructuring
+Animal Scientists,2470.00,79120.00,"Life, Physical, and Social Science Occupations",5.00,4.00,40.02,moderate,38.75,restructuring,10.00,low,38.75,restructuring,10.00,low
+Animal Trainers,20110.00,38750.00,Personal Care and Service Occupations,2.00,1.00,16.60,low,10.84,low,7.88,low,14.76,low,7.88,low
+Anthropologists and Archeologists,8070.00,64910.00,"Life, Physical, and Social Science Occupations",5.00,3.00,42.60,moderate,33.15,restructuring,16.05,low,33.15,restructuring,16.05,low
+"Anthropology and Archeology Teachers, Postsecondary",5260.00,95770.00,Educational Instruction and Library Occupations,5.00,3.00,77.58,high,60.49,high,65.42,high,70.86,high,65.42,high
+Appraisers and Assessors of Real Estate,29535.00,65420.00,Business and Financial Operations Occupations,4.00,4.00,41.83,moderate,26.63,restructuring,29.84,restructuring,26.63,restructuring,29.84,restructuring
+Appraisers of Personal and Business Property,29535.00,65420.00,Business and Financial Operations Occupations,4.00,4.00,56.38,moderate,41.67,moderate,33.27,restructuring,41.67,moderate,33.56,restructuring
+"Arbitrators, Mediators, and Conciliators",7860.00,67710.00,Legal Occupations,5.00,4.00,44.24,moderate,35.99,restructuring,28.32,restructuring,42.77,moderate,28.32,restructuring
+"Architects, Except Landscape and Naval",111140.00,96690.00,Architecture and Engineering Occupations,5.00,5.00,71.71,high,53.15,moderate,66.53,high,63.87,high,66.57,high
+Architectural and Civil Drafters,109550.00,64280.00,Architecture and Engineering Occupations,3.00,3.00,62.79,high,45.47,moderate,56.14,moderate,45.47,moderate,56.34,moderate
+Architectural and Engineering Managers,172102.00,167740.00,Management Occupations,5.00,5.00,67.44,high,29.00,restructuring,57.13,moderate,57.38,moderate,57.13,moderate
+"Architecture Teachers, Postsecondary",9120.00,101480.00,Educational Instruction and Library Occupations,5.00,4.00,84.28,high,67.16,high,67.45,high,77.55,high,67.45,high
+Archivists,7050.00,61570.00,Educational Instruction and Library Occupations,5.00,2.00,86.87,high,69.98,high,66.13,high,86.73,high,66.13,high
+"Area, Ethnic, and Cultural Studies Teachers, Postsecondary",11430.00,84290.00,Educational Instruction and Library Occupations,5.00,4.00,81.95,high,65.15,high,65.79,high,76.37,high,65.79,high
+Art Directors,50370.00,111040.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,4.00,62.92,high,57.44,moderate,47.48,moderate,62.54,high,47.48,moderate
+Art Therapists,9131.00,65010.00,Healthcare Practitioners and Technical Occupations,5.00,4.00,56.74,moderate,49.14,moderate,18.27,low,52.25,moderate,23.36,restructuring
+"Art, Drama, and Music Teachers, Postsecondary",97890.00,80190.00,Educational Instruction and Library Occupations,5.00,4.00,79.59,high,60.40,high,61.48,high,72.25,high,61.48,high
+Astronomers,1560.00,132170.00,"Life, Physical, and Social Science Occupations",5.00,4.00,72.67,high,50.07,moderate,60.83,high,72.49,high,60.83,high
+Athletes and Sports Competitors,14370.00,62360.00,"Arts, Design, Entertainment, Sports, and Media Occupations",2.00,3.00,46.65,moderate,43.35,moderate,10.60,low,46.65,moderate,10.60,low
+Athletic Trainers,28950.00,60250.00,Healthcare Practitioners and Technical Occupations,5.00,3.00,35.78,restructuring,29.12,restructuring,26.52,restructuring,31.80,restructuring,26.52,restructuring
+Atmospheric and Space Scientists,8780.00,97450.00,"Life, Physical, and Social Science Occupations",4.00,0.00,68.49,high,54.80,moderate,60.68,high,58.78,moderate,60.86,high
+"Atmospheric, Earth, Marine, and Space Sciences Teachers, Postsecondary",11480.00,101390.00,Educational Instruction and Library Occupations,5.00,3.00,74.27,high,54.94,moderate,62.84,high,64.56,high,62.86,high
+Audio and Video Technicians,70080.00,54830.00,"Arts, Design, Entertainment, Sports, and Media Occupations",3.00,3.00,49.73,moderate,24.21,restructuring,38.20,restructuring,24.21,restructuring,38.90,restructuring
+Audiologists,14730.00,92120.00,Healthcare Practitioners and Technical Occupations,5.00,4.00,25.48,restructuring,21.24,restructuring,7.48,low,21.24,restructuring,7.48,low
+Audiovisual Equipment Installers and Repairers,22170.00,50620.00,"Installation, Maintenance, and Repair Occupations",3.00,3.00,32.45,restructuring,21.33,restructuring,20.36,restructuring,21.33,restructuring,20.36,restructuring
+Automotive Body and Related Repairers,155220.00,51680.00,"Installation, Maintenance, and Repair Occupations",2.00,3.00,11.71,low,11.71,low,1.89,low,11.71,low,1.89,low
+Automotive Engineering Technicians,22710.00,68730.00,Architecture and Engineering Occupations,3.00,3.00,63.28,high,46.02,moderate,49.34,moderate,49.03,moderate,49.34,moderate
+Automotive Engineers,141126.00,102320.00,Architecture and Engineering Occupations,4.00,5.00,53.26,moderate,46.10,moderate,36.40,restructuring,49.06,moderate,37.38,restructuring
+Automotive Glass Installers and Repairers,18940.00,47260.00,"Installation, Maintenance, and Repair Occupations",2.00,2.00,4.75,low,4.75,low,0.00,low,4.75,low,0.00,low
+Automotive Service Technicians and Mechanics,688840.00,49670.00,"Installation, Maintenance, and Repair Occupations",3.00,3.00,29.48,restructuring,18.91,low,16.32,low,18.91,low,16.32,low
+Automotive and Watercraft Service Attendants,98270.00,34850.00,Transportation and Material Moving Occupations,2.00,2.00,25.26,restructuring,8.36,low,17.94,low,17.99,low,18.48,low
+Aviation Inspectors,7773.33,85750.00,Transportation and Material Moving Occupations,3.00,3.00,22.75,restructuring,15.13,low,11.70,low,15.13,low,11.70,low
+Avionics Technicians,20900.00,81390.00,"Installation, Maintenance, and Repair Occupations",3.00,3.00,39.85,restructuring,29.42,restructuring,21.48,restructuring,29.42,restructuring,21.48,restructuring
+Baggage Porters and Bellhops,31220.00,36020.00,Personal Care and Service Occupations,2.00,1.00,36.96,restructuring,26.30,restructuring,26.63,restructuring,28.74,restructuring,26.63,restructuring
+Bailiffs,16910.00,57050.00,Protective Service Occupations,3.00,4.00,48.23,moderate,33.16,restructuring,30.25,restructuring,43.53,moderate,30.41,restructuring
+Bakers,231890.00,36650.00,Production Occupations,2.00,2.00,31.70,restructuring,25.05,restructuring,22.57,restructuring,25.05,restructuring,22.57,restructuring
+Barbers,18100.00,38960.00,Personal Care and Service Occupations,3.00,2.00,19.47,low,10.65,low,16.87,low,12.75,low,17.25,low
+Baristas,1976580.00,30480.00,Food Preparation and Serving Related Occupations,1.00,2.00,51.91,moderate,43.44,moderate,34.95,restructuring,47.64,moderate,35.23,restructuring
+Bartenders,745610.00,33530.00,Food Preparation and Serving Related Occupations,2.00,2.00,34.33,restructuring,26.49,restructuring,21.38,restructuring,28.74,restructuring,21.38,restructuring
+Bicycle Repairers,12590.00,40360.00,"Installation, Maintenance, and Repair Occupations",2.00,1.00,30.25,restructuring,25.44,restructuring,7.47,low,25.44,restructuring,9.19,low
+Bill and Account Collectors,165020.00,46040.00,Office and Administrative Support Occupations,2.00,3.00,80.11,high,52.28,moderate,71.60,high,71.85,high,71.60,high
+Billing and Posting Clerks,417500.00,47170.00,Office and Administrative Support Occupations,3.00,3.00,66.60,high,36.77,restructuring,63.23,high,36.77,restructuring,63.66,high
+Biochemists and Biophysicists,34520.00,103650.00,"Life, Physical, and Social Science Occupations",5.00,4.00,54.12,moderate,43.30,moderate,38.29,restructuring,53.57,moderate,38.29,restructuring
+Bioengineers and Biomedical Engineers,21860.00,106950.00,Architecture and Engineering Occupations,4.00,5.00,51.82,moderate,40.11,moderate,36.46,restructuring,40.11,moderate,36.75,restructuring
+Biofuels Processing Technicians,15950.00,61710.00,Production Occupations,2.00,4.00,32.28,restructuring,13.88,low,30.95,restructuring,13.88,low,30.95,restructuring
+Biofuels Production Managers,6633.00,121440.00,Management Occupations,4.00,5.00,22.30,restructuring,4.10,low,18.20,low,4.10,low,18.20,low
+Biofuels/Biodiesel Technology and Product Development Managers,38238.00,167740.00,Management Occupations,4.00,5.00,29.44,restructuring,22.85,restructuring,7.44,low,22.85,restructuring,7.44,low
+Bioinformatics Scientists,27099.00,93330.00,"Life, Physical, and Social Science Occupations",5.00,4.00,78.79,high,59.06,moderate,71.60,high,72.19,high,71.60,high
+Bioinformatics Technicians,4660.00,71490.00,Computer and Mathematical Occupations,4.00,5.00,89.38,high,77.29,high,84.45,high,87.67,high,84.45,high
+"Biological Science Teachers, Postsecondary",53250.00,83460.00,Educational Instruction and Library Occupations,5.00,4.00,81.60,high,66.04,high,58.09,moderate,74.81,high,58.09,moderate
+Biological Technicians,76190.00,52000.00,"Life, Physical, and Social Science Occupations",4.00,2.00,71.71,high,44.99,moderate,60.72,high,50.27,moderate,60.72,high
+Biologists,12266.00,93330.00,"Life, Physical, and Social Science Occupations",5.00,4.00,59.22,moderate,42.12,moderate,46.67,moderate,58.37,moderate,46.67,moderate
+Biomass Plant Technicians,6822.00,99670.00,Production Occupations,2.00,4.00,21.25,restructuring,8.87,low,18.60,low,8.87,low,18.67,low
+Biomass Power Plant Managers,57123.00,121440.00,Management Occupations,4.00,5.00,34.00,restructuring,15.19,low,30.17,restructuring,18.11,low,30.17,restructuring
+Biostatisticians,11132.00,103300.00,Computer and Mathematical Occupations,5.00,5.00,74.85,high,53.31,moderate,68.03,high,59.69,moderate,68.03,high
+Blockchain Engineers,17531.00,108970.00,Computer and Mathematical Occupations,4.00,5.00,64.02,high,48.02,moderate,58.08,moderate,48.02,moderate,58.66,moderate
+Boilermakers,10170.00,73340.00,Construction and Extraction Occupations,2.00,3.00,16.31,low,10.26,low,14.97,low,15.52,low,14.97,low
+"Bookkeeping, Accounting, and Auditing Clerks",1455770.00,49210.00,Office and Administrative Support Occupations,3.00,3.00,82.82,high,59.22,moderate,81.83,high,69.59,high,81.90,high
+Brickmasons and Blockmasons,53520.00,60800.00,Construction and Extraction Occupations,2.00,4.00,18.68,low,15.65,low,13.65,low,18.68,low,13.65,low
+Bridge and Lock Tenders,2720.00,58490.00,Transportation and Material Moving Occupations,2.00,2.00,22.87,restructuring,0.00,low,22.87,restructuring,0.00,low,22.87,restructuring
+Broadcast Announcers and Radio Disc Jockeys,23880.00,45680.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,3.00,55.70,moderate,42.82,moderate,50.39,moderate,42.82,moderate,51.23,moderate
+Broadcast Technicians,21080.00,53920.00,"Arts, Design, Entertainment, Sports, and Media Occupations",3.00,2.00,56.23,moderate,31.60,restructuring,52.59,moderate,32.93,restructuring,53.20,moderate
+Brokerage Clerks,40090.00,62940.00,Office and Administrative Support Occupations,3.00,3.00,83.73,high,64.96,high,74.02,high,71.34,high,74.02,high
+Brownfield Redevelopment Specialists and Site Managers,22567.00,136550.00,Management Occupations,4.00,4.00,35.42,restructuring,15.93,low,19.55,low,15.93,low,22.01,restructuring
+Budget Analysts,47170.00,87930.00,Business and Financial Operations Occupations,4.00,4.00,63.33,high,53.93,moderate,46.46,moderate,53.93,moderate,46.46,moderate
+"Bus Drivers, School",292209.77,40769.77,Transportation and Material Moving Occupations,2.00,3.00,25.01,restructuring,14.64,low,13.35,low,14.64,low,13.35,low
+"Bus Drivers, Transit and Intercity",148980.00,57440.00,Transportation and Material Moving Occupations,2.00,3.00,34.09,restructuring,22.47,restructuring,24.26,restructuring,22.47,restructuring,24.26,restructuring
+Bus and Truck Mechanics and Diesel Engine Specialists,287230.00,60640.00,"Installation, Maintenance, and Repair Occupations",3.00,4.00,34.68,restructuring,28.48,restructuring,9.72,low,28.48,restructuring,9.72,low
+Business Continuity Planners,217277.00,81270.00,Business and Financial Operations Occupations,4.00,4.00,59.83,moderate,48.15,moderate,44.84,moderate,56.03,moderate,44.84,moderate
+Business Intelligence Analysts,122459.00,112590.00,Computer and Mathematical Occupations,4.00,5.00,95.60,high,64.12,high,95.53,high,92.34,high,95.60,high
+"Business Teachers, Postsecondary",81780.00,97270.00,Educational Instruction and Library Occupations,5.00,4.00,81.60,high,71.74,high,59.08,moderate,80.38,high,59.08,moderate
+Butchers and Meat Cutters,140040.00,38960.00,Production Occupations,2.00,2.00,44.81,moderate,40.59,moderate,8.91,low,40.59,moderate,8.91,low
+"Buyers and Purchasing Agents, Farm Products",162300.00,75650.00,Business and Financial Operations Occupations,4.00,4.00,53.87,moderate,29.58,restructuring,50.35,moderate,42.88,moderate,50.35,moderate
+Cabinetmakers and Bench Carpenters,79540.00,46020.00,Production Occupations,2.00,3.00,23.96,restructuring,23.19,restructuring,4.76,low,23.19,restructuring,4.76,low
+Calibration Technologists and Technicians,15320.00,65040.00,Architecture and Engineering Occupations,3.00,3.00,36.30,restructuring,33.22,restructuring,13.57,low,33.22,restructuring,13.57,low
+"Camera Operators, Television, Video, and Film",24460.00,68810.00,"Arts, Design, Entertainment, Sports, and Media Occupations",3.00,2.00,47.13,moderate,27.63,restructuring,29.73,restructuring,27.63,restructuring,29.80,restructuring
+Camera and Photographic Equipment Repairers,2010.00,49300.00,"Installation, Maintenance, and Repair Occupations",3.00,2.00,34.18,restructuring,29.58,restructuring,18.23,low,34.18,restructuring,18.23,low
+"Captains, Mates, and Pilots of Water Vessels",35390.00,85540.00,Transportation and Material Moving Occupations,3.00,2.00,28.57,restructuring,20.14,restructuring,22.70,restructuring,20.14,restructuring,22.70,restructuring
+Cardiologists,24358.57,249103.60,Healthcare Practitioners and Technical Occupations,5.00,2.00,26.81,restructuring,21.34,restructuring,12.49,low,21.34,restructuring,13.82,low
+Cardiovascular Technologists and Technicians,61180.00,67260.00,Healthcare Practitioners and Technical Occupations,3.00,5.00,33.00,restructuring,22.13,restructuring,20.36,restructuring,27.72,restructuring,20.36,restructuring
+"Career/Technical Education Teachers, Middle School",14200.00,63620.00,Educational Instruction and Library Occupations,4.00,4.00,63.27,high,52.33,moderate,43.04,moderate,58.59,moderate,43.14,moderate
+"Career/Technical Education Teachers, Postsecondary",111150.00,61490.00,Educational Instruction and Library Occupations,3.00,4.00,42.84,moderate,32.38,restructuring,25.10,restructuring,32.38,restructuring,25.35,restructuring
+"Career/Technical Education Teachers, Secondary School",104450.00,63910.00,Educational Instruction and Library Occupations,4.00,4.00,57.09,moderate,48.20,moderate,34.70,restructuring,53.33,moderate,34.70,restructuring
+Cargo and Freight Agents,30322.00,49900.00,Office and Administrative Support Occupations,2.00,2.00,66.58,high,27.53,restructuring,58.77,moderate,51.94,moderate,58.82,moderate
+Carpenters,697740.00,59310.00,Construction and Extraction Occupations,2.00,4.00,16.40,low,10.71,low,9.98,low,10.71,low,9.98,low
+Carpet Installers,14980.00,49850.00,Construction and Extraction Occupations,2.00,2.00,15.76,low,15.76,low,11.37,low,15.76,low,11.37,low
+Cartographers and Photogrammetrists,12790.00,78380.00,Architecture and Engineering Occupations,4.00,4.00,60.56,high,39.70,restructuring,52.19,moderate,39.70,restructuring,52.19,moderate
+Cashiers,3148030.00,31190.00,Sales and Related Occupations,2.00,2.00,68.24,high,42.33,moderate,64.62,high,46.94,moderate,65.88,high
+Cement Masons and Concrete Finishers,205230.00,54660.00,Construction and Extraction Occupations,1.00,4.00,16.12,low,12.55,low,9.55,low,16.12,low,9.55,low
+Chefs and Head Cooks,182320.00,60990.00,Food Preparation and Serving Related Occupations,3.00,3.00,48.66,moderate,31.59,restructuring,29.19,restructuring,44.75,moderate,29.27,restructuring
+Chemical Engineers,20330.00,121860.00,Architecture and Engineering Occupations,4.00,5.00,57.92,moderate,45.78,moderate,35.38,restructuring,45.78,moderate,35.38,restructuring
+Chemical Equipment Operators and Tenders,127410.00,57090.00,Production Occupations,2.00,3.00,28.15,restructuring,14.86,low,13.29,low,22.80,restructuring,13.29,low
+Chemical Plant and System Operators,17840.00,73540.00,Production Occupations,2.00,4.00,19.60,low,17.22,low,9.23,low,17.22,low,9.23,low
+Chemical Technicians,55640.00,57790.00,"Life, Physical, and Social Science Occupations",3.00,3.00,56.76,moderate,43.39,moderate,45.08,moderate,52.62,moderate,45.08,moderate
+"Chemistry Teachers, Postsecondary",20390.00,86220.00,Educational Instruction and Library Occupations,5.00,4.00,72.80,high,56.42,moderate,53.82,moderate,65.95,high,53.84,moderate
+Chemists,83250.00,84150.00,"Life, Physical, and Social Science Occupations",4.00,4.00,66.33,high,52.71,moderate,40.87,moderate,59.71,moderate,40.87,moderate
+Chief Executives,172469.00,206420.00,Management Occupations,5.00,5.00,61.10,high,39.22,restructuring,54.66,moderate,50.67,moderate,54.66,moderate
+Chief Sustainability Officers,39381.00,206420.00,Management Occupations,5.00,5.00,34.20,restructuring,32.17,restructuring,15.16,low,32.17,restructuring,15.16,low
+"Child, Family, and School Social Workers",382960.00,58570.00,Community and Social Service Occupations,4.00,3.00,47.14,moderate,39.38,restructuring,25.94,restructuring,40.05,moderate,27.19,restructuring
+Childcare Workers,354051.00,32050.00,Personal Care and Service Occupations,2.00,2.00,40.53,moderate,34.10,restructuring,23.72,restructuring,38.68,restructuring,23.72,restructuring
+Chiropractors,37630.00,79000.00,Healthcare Practitioners and Technical Occupations,5.00,4.00,38.87,restructuring,20.11,restructuring,28.75,restructuring,36.39,restructuring,28.75,restructuring
+Choreographers,3430.00,55600.00,"Arts, Design, Entertainment, Sports, and Media Occupations",3.00,2.00,52.52,moderate,49.37,moderate,15.98,low,52.52,moderate,15.98,low
+Civil Engineering Technologists and Technicians,62130.00,64200.00,Architecture and Engineering Occupations,3.00,3.00,48.00,moderate,32.67,restructuring,38.59,restructuring,32.67,restructuring,38.89,restructuring
+Civil Engineers,118470.00,99590.00,Architecture and Engineering Occupations,4.00,5.00,40.21,moderate,30.64,restructuring,37.41,restructuring,33.59,restructuring,37.41,restructuring
+"Claims Adjusters, Examiners, and Investigators",305020.00,76790.00,Business and Financial Operations Occupations,4.00,4.00,43.66,moderate,33.75,restructuring,25.51,restructuring,33.75,restructuring,25.51,restructuring
+Cleaners of Vehicles and Equipment,373960.00,35270.00,Transportation and Material Moving Occupations,2.00,2.00,8.56,low,4.91,low,3.65,low,4.91,low,3.65,low
+"Cleaning, Washing, and Metal Pickling Equipment Operators and Tenders",13890.00,41460.00,Production Occupations,2.00,3.00,27.28,restructuring,11.82,low,15.46,low,11.82,low,15.46,low
+Clergy,58080.00,60820.00,Community and Social Service Occupations,5.00,1.00,73.75,high,62.64,high,47.96,moderate,72.16,high,48.70,moderate
+Climate Change Policy Analysts,21539.00,80060.00,"Life, Physical, and Social Science Occupations",5.00,4.00,46.66,moderate,43.62,moderate,29.81,restructuring,43.62,moderate,29.81,restructuring
+Clinical Data Managers,104082.00,112590.00,Computer and Mathematical Occupations,4.00,5.00,73.34,high,51.77,moderate,69.68,high,58.62,moderate,69.77,high
+Clinical Neuropsychologists,35580.00,117580.00,"Life, Physical, and Social Science Occupations",5.00,4.00,20.03,restructuring,18.17,low,10.21,low,18.17,low,10.21,low
+Clinical Nurse Specialists,784864.00,93600.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,49.90,moderate,30.64,restructuring,36.23,restructuring,47.25,moderate,36.23,restructuring
+Clinical Research Coordinators,51654.00,161180.00,Management Occupations,4.00,5.00,60.10,high,33.47,restructuring,50.00,moderate,46.49,moderate,50.00,moderate
+Clinical and Counseling Psychologists,72190.00,95830.00,"Life, Physical, and Social Science Occupations",5.00,5.00,40.47,moderate,28.86,restructuring,21.14,restructuring,28.86,restructuring,23.56,restructuring
+Coaches and Scouts,250940.00,45920.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,2.00,63.35,high,45.83,moderate,45.28,moderate,55.07,moderate,45.75,moderate
+"Coating, Painting, and Spraying Machine Setters, Operators, and Tenders",159500.00,47590.00,Production Occupations,2.00,3.00,18.36,low,10.54,low,7.82,low,14.37,low,7.82,low
+"Coil Winders, Tapers, and Finishers",12170.00,47260.00,Production Occupations,2.00,2.00,28.10,restructuring,16.19,low,17.66,low,16.19,low,17.66,low
+"Coin, Vending, and Amusement Machine Servicers and Repairers",28260.00,47350.00,"Installation, Maintenance, and Repair Occupations",2.00,2.00,39.86,restructuring,9.65,low,30.49,restructuring,9.65,low,30.49,restructuring
+Commercial Divers,3430.00,61130.00,"Installation, Maintenance, and Repair Occupations",3.00,2.00,24.28,restructuring,23.55,restructuring,2.10,low,23.55,restructuring,2.10,low
+Commercial Pilots,51830.00,122670.00,Transportation and Material Moving Occupations,3.00,3.00,39.43,restructuring,23.97,restructuring,26.68,restructuring,26.52,restructuring,27.93,restructuring
+Commercial and Industrial Designers,30250.00,79450.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,4.00,62.74,high,58.31,moderate,41.05,moderate,58.71,moderate,41.64,moderate
+"Communications Teachers, Postsecondary",29260.00,77800.00,Educational Instruction and Library Occupations,5.00,4.00,87.16,high,71.62,high,65.30,high,78.83,high,65.30,high
+Community Health Workers,60730.00,51030.00,Community and Social Service Occupations,4.00,3.00,48.37,moderate,30.65,restructuring,29.79,restructuring,41.39,moderate,29.79,restructuring
+Compensation and Benefits Managers,20070.00,140360.00,Management Occupations,4.00,4.00,66.71,high,49.93,moderate,48.25,moderate,55.61,moderate,49.45,moderate
+"Compensation, Benefits, and Job Analysis Specialists",102370.00,77020.00,Business and Financial Operations Occupations,4.00,3.00,53.21,moderate,31.86,restructuring,45.36,moderate,33.65,restructuring,45.36,moderate
+Compliance Managers,116780.00,136550.00,Management Occupations,4.00,4.00,63.43,high,41.31,moderate,52.79,moderate,55.62,moderate,52.79,moderate
+Compliance Officers,18302.00,78420.00,Business and Financial Operations Occupations,4.00,4.00,46.50,moderate,31.35,restructuring,37.30,restructuring,31.35,restructuring,38.04,restructuring
+Computer Hardware Engineers,75710.00,155020.00,Architecture and Engineering Occupations,4.00,4.00,61.46,high,44.27,moderate,57.79,moderate,54.59,moderate,57.79,moderate
+Computer Network Architects,96522.00,130390.00,Computer and Mathematical Occupations,4.00,5.00,79.00,high,57.05,moderate,75.38,high,71.56,high,75.64,high
+Computer Network Support Specialists,146450.00,73340.00,Computer and Mathematical Occupations,4.00,4.00,89.65,high,55.75,moderate,88.60,high,81.36,high,88.93,high
+Computer Numerically Controlled Tool Operators,176950.00,49970.00,Production Occupations,2.00,3.00,46.45,moderate,33.16,restructuring,36.18,restructuring,33.16,restructuring,36.18,restructuring
+Computer Numerically Controlled Tool Programmers,28230.00,65670.00,Production Occupations,2.00,3.00,62.09,high,53.08,moderate,46.43,moderate,53.08,moderate,46.43,moderate
+Computer Programmers,109870.00,98670.00,Computer and Mathematical Occupations,4.00,5.00,83.88,high,63.25,high,83.53,high,78.84,high,83.53,high
+"Computer Science Teachers, Postsecondary",36240.00,96690.00,Educational Instruction and Library Occupations,5.00,4.00,80.92,high,69.59,high,57.81,moderate,79.16,high,57.81,moderate
+Computer Systems Analysts,403416.00,103790.00,Computer and Mathematical Occupations,3.00,5.00,80.71,high,57.53,moderate,79.94,high,70.69,high,79.94,high
+Computer Systems Engineers/Architects,195620.00,108970.00,Computer and Mathematical Occupations,3.00,5.00,78.42,high,54.50,moderate,76.98,high,61.79,high,76.98,high
+Computer User Support Specialists,697210.00,60340.00,Computer and Mathematical Occupations,3.00,5.00,85.45,high,53.79,moderate,83.22,high,81.76,high,83.22,high
+Computer and Information Research Scientists,38480.00,140910.00,Computer and Mathematical Occupations,5.00,5.00,79.64,high,63.59,high,70.11,high,75.93,high,70.11,high
+Computer and Information Systems Managers,645970.00,171200.00,Management Occupations,4.00,5.00,79.70,high,54.73,moderate,72.50,high,77.59,high,72.50,high
+"Computer, Automated Teller, and Office Machine Repairers",73010.00,46860.00,"Installation, Maintenance, and Repair Occupations",3.00,2.00,59.39,moderate,36.57,restructuring,47.47,moderate,48.83,moderate,47.47,moderate
+Concierges,44200.00,37320.00,Personal Care and Service Occupations,2.00,1.00,75.09,high,57.50,moderate,71.05,high,65.83,high,71.05,high
+Conservation Scientists,5444.00,67950.00,"Life, Physical, and Social Science Occupations",4.00,3.00,23.08,restructuring,14.57,low,10.35,low,14.57,low,10.98,low
+Construction Laborers,1057660.00,46730.00,Construction and Extraction Occupations,2.00,3.00,12.60,low,11.24,low,5.04,low,11.96,low,5.04,low
+Construction Managers,348330.00,106980.00,Management Occupations,4.00,5.00,55.65,moderate,36.54,restructuring,44.59,moderate,42.49,moderate,44.59,moderate
+Construction and Building Inspectors,85782.00,72120.00,Construction and Extraction Occupations,3.00,4.00,40.89,moderate,24.32,restructuring,32.43,restructuring,24.32,restructuring,32.43,restructuring
+Continuous Mining Machine Operators,14340.00,63380.00,Construction and Extraction Occupations,2.00,4.00,12.01,low,7.01,low,7.41,low,7.01,low,7.41,low
+"Control and Valve Installers and Repairers, Except Mechanical Door",46920.00,74690.00,"Installation, Maintenance, and Repair Occupations",3.00,4.00,29.17,restructuring,23.67,restructuring,15.09,low,24.17,restructuring,15.09,low
+Conveyor Operators and Tenders,26060.00,41230.00,Transportation and Material Moving Occupations,1.00,2.00,35.52,restructuring,17.23,low,28.56,restructuring,20.08,restructuring,28.56,restructuring
+"Cooks, Fast Food",668230.00,30160.00,Food Preparation and Serving Related Occupations,1.00,2.00,46.76,moderate,40.84,moderate,10.95,low,40.84,moderate,11.27,low
+"Cooks, Institution and Cafeteria",448260.00,36450.00,Food Preparation and Serving Related Occupations,2.00,2.00,28.22,restructuring,16.33,low,14.76,low,16.33,low,14.76,low
+"Cooks, Private Household",900.00,44530.00,Food Preparation and Serving Related Occupations,3.00,2.00,41.72,moderate,41.42,moderate,12.86,low,41.42,moderate,12.90,low
+"Cooks, Restaurant",1452130.00,36830.00,Food Preparation and Serving Related Occupations,2.00,2.00,49.58,moderate,46.23,moderate,10.21,low,46.27,moderate,10.75,low
+"Cooks, Short Order",150420.00,35620.00,Food Preparation and Serving Related Occupations,2.00,2.00,53.26,moderate,49.64,moderate,17.82,low,49.64,moderate,17.82,low
+Cooling and Freezing Equipment Operators and Tenders,6590.00,40160.00,Production Occupations,2.00,2.00,35.58,restructuring,24.18,restructuring,14.51,low,24.18,restructuring,14.51,low
+Coroners,27241.00,78420.00,Business and Financial Operations Occupations,3.00,4.00,34.35,restructuring,32.08,restructuring,9.10,low,32.08,restructuring,9.10,low
+Correctional Officers and Jailers,365380.00,57970.00,Protective Service Occupations,2.00,4.00,27.69,restructuring,16.56,low,16.42,low,18.03,low,17.05,low
+Correspondence Clerks,6260.00,46740.00,Office and Administrative Support Occupations,2.00,1.00,71.06,high,49.42,moderate,66.97,high,50.43,moderate,68.14,high
+Cost Estimators,219530.00,77070.00,Business and Financial Operations Occupations,4.00,4.00,59.14,moderate,54.30,moderate,47.04,moderate,56.37,moderate,47.04,moderate
+Costume Attendants,6290.00,54810.00,Personal Care and Service Occupations,2.00,2.00,39.41,restructuring,30.36,restructuring,18.82,low,30.36,restructuring,18.82,low
+Counter and Rental Clerks,398620.00,38540.00,Sales and Related Occupations,2.00,2.00,83.28,high,60.46,high,77.02,high,70.76,high,77.02,high
+Couriers and Messengers,71920.00,38340.00,Office and Administrative Support Occupations,2.00,2.00,38.11,restructuring,22.38,restructuring,37.24,restructuring,33.87,restructuring,37.24,restructuring
+Court Reporters and Simultaneous Captioners,12630.00,67310.00,"Arts, Design, Entertainment, Sports, and Media Occupations",3.00,3.00,57.07,moderate,19.41,low,55.37,moderate,19.41,low,55.58,moderate
+"Court, Municipal, and License Clerks",170010.00,47700.00,Office and Administrative Support Occupations,2.00,2.00,64.37,high,40.28,moderate,60.55,high,40.28,moderate,60.55,high
+Craft Artists,4370.00,38480.00,"Arts, Design, Entertainment, Sports, and Media Occupations",3.00,1.00,69.94,high,61.19,high,43.06,moderate,65.47,high,43.08,moderate
+Crane and Tower Operators,42000.00,66370.00,Transportation and Material Moving Occupations,3.00,4.00,22.62,restructuring,15.25,low,9.39,low,15.25,low,9.39,low
+Credit Analysts,67370.00,80970.00,Business and Financial Operations Occupations,4.00,4.00,78.00,high,44.65,moderate,76.52,high,54.05,moderate,76.52,high
+"Credit Authorizers, Checkers, and Clerks",11960.00,49130.00,Office and Administrative Support Occupations,2.00,2.00,53.51,moderate,35.11,restructuring,50.64,moderate,35.11,restructuring,52.05,moderate
+Credit Counselors,28110.00,50480.00,Business and Financial Operations Occupations,4.00,3.00,66.54,high,43.61,moderate,59.23,moderate,57.22,moderate,59.82,moderate
+Crematory Operators,2950.00,42880.00,Personal Care and Service Occupations,2.00,2.00,18.71,low,15.67,low,5.55,low,15.67,low,5.55,low
+"Criminal Justice and Law Enforcement Teachers, Postsecondary",13560.00,71470.00,Educational Instruction and Library Occupations,5.00,3.00,80.29,high,60.89,high,66.91,high,71.01,high,66.91,high
+Critical Care Nurses,665841.00,93600.00,Healthcare Practitioners and Technical Occupations,4.00,5.00,26.24,restructuring,20.10,restructuring,15.03,low,24.02,restructuring,15.09,low
+Crossing Guards and Flaggers,90180.00,37700.00,Protective Service Occupations,2.00,2.00,28.91,restructuring,25.46,restructuring,7.55,low,25.46,restructuring,7.55,low
+"Crushing, Grinding, and Polishing Machine Setters, Operators, and Tenders",28550.00,46890.00,Production Occupations,2.00,3.00,30.18,restructuring,18.72,low,15.24,low,18.72,low,15.24,low
+Curators,12280.00,61770.00,Educational Instruction and Library Occupations,5.00,1.00,84.30,high,50.36,moderate,72.95,high,84.17,high,72.95,high
+Customer Service Representatives,2725930.00,42830.00,Office and Administrative Support Occupations,2.00,2.00,85.86,high,71.00,high,81.55,high,84.08,high,82.09,high
+Customs Brokers,85752.00,78420.00,Business and Financial Operations Occupations,3.00,4.00,59.30,moderate,39.60,restructuring,54.69,moderate,43.21,moderate,54.69,moderate
+Customs and Border Protection Officers,528885.00,76290.00,Protective Service Occupations,3.00,5.00,49.67,moderate,44.11,moderate,20.34,restructuring,44.11,moderate,20.34,restructuring
+"Cutters and Trimmers, Hand",7070.00,38800.00,Production Occupations,1.00,2.00,19.59,low,10.93,low,10.83,low,10.93,low,10.83,low
+"Cutting and Slicing Machine Setters, Operators, and Tenders",47540.00,45700.00,Production Occupations,2.00,2.00,33.88,restructuring,16.59,low,25.91,restructuring,16.59,low,26.09,restructuring
+"Cutting, Punching, and Press Machine Setters, Operators, and Tenders, Metal and Plastic",174430.00,45590.00,Production Occupations,2.00,3.00,26.97,restructuring,18.57,low,14.21,low,18.57,low,14.21,low
+Cytogenetic Technologists,42880.00,61890.00,Healthcare Practitioners and Technical Occupations,4.00,4.00,44.76,moderate,28.56,restructuring,24.38,restructuring,38.37,restructuring,24.38,restructuring
+Cytotechnologists,42880.00,61890.00,Healthcare Practitioners and Technical Occupations,5.00,4.00,49.87,moderate,37.32,restructuring,36.71,restructuring,45.93,moderate,36.71,restructuring
+Dancers,9060.00,51020.00,"Arts, Design, Entertainment, Sports, and Media Occupations",3.00,0.00,21.71,restructuring,21.71,restructuring,1.60,low,21.71,restructuring,1.60,low
+Data Entry Keyers,135280.00,39850.00,Office and Administrative Support Occupations,2.00,3.00,79.58,high,52.01,moderate,72.99,high,65.89,high,72.99,high
+Data Scientists,6898.00,112590.00,Computer and Mathematical Occupations,4.00,5.00,76.82,high,46.04,moderate,72.55,high,46.04,moderate,72.55,high
+Data Warehousing Specialists,32385.00,135980.00,Computer and Mathematical Occupations,4.00,5.00,91.95,high,64.77,high,91.40,high,88.71,high,91.40,high
+Database Administrators,49461.98,122852.56,Computer and Mathematical Occupations,4.00,5.00,84.09,high,67.29,high,83.05,high,75.35,high,83.05,high
+Database Architects,49461.98,122852.56,Computer and Mathematical Occupations,4.00,5.00,78.71,high,53.37,moderate,77.52,high,68.69,high,78.11,high
+Demonstrators and Product Promoters,64770.00,37960.00,Sales and Related Occupations,2.00,1.00,69.12,high,53.10,moderate,46.85,moderate,57.43,moderate,55.38,moderate
+Dental Assistants,375430.00,47300.00,Healthcare Support Occupations,3.00,2.00,41.18,moderate,12.50,low,33.83,restructuring,38.05,restructuring,34.15,restructuring
+Dental Hygienists,219070.00,94260.00,Healthcare Practitioners and Technical Occupations,3.00,5.00,20.52,restructuring,6.72,low,20.23,restructuring,9.99,low,20.23,restructuring
+Dental Laboratory Technicians,33920.00,48310.00,Production Occupations,2.00,2.00,14.43,low,10.16,low,10.05,low,14.43,low,10.05,low
+"Dentists, General",113490.00,172790.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,33.43,restructuring,27.23,restructuring,25.35,restructuring,33.43,restructuring,25.35,restructuring
+Dermatologists,10080.00,249103.60,Healthcare Practitioners and Technical Occupations,5.00,2.00,36.84,restructuring,28.56,restructuring,10.32,low,28.56,restructuring,10.32,low
+"Derrick Operators, Oil and Gas",11040.00,62740.00,Construction and Extraction Occupations,1.00,3.00,20.24,restructuring,19.38,low,2.91,low,19.38,low,2.91,low
+Desktop Publishers,4000.00,53620.00,Office and Administrative Support Occupations,3.00,2.00,80.07,high,63.36,high,75.51,high,69.89,high,75.94,high
+Detectives and Criminal Investigators,18772.00,93580.00,Protective Service Occupations,3.00,4.00,44.48,moderate,31.20,restructuring,25.96,restructuring,31.20,restructuring,26.19,restructuring
+Diagnostic Medical Sonographers,86460.00,89340.00,Healthcare Practitioners and Technical Occupations,3.00,5.00,46.38,moderate,35.79,restructuring,29.27,restructuring,37.23,restructuring,29.27,restructuring
+Dietetic Technicians,29950.00,37040.00,Healthcare Practitioners and Technical Occupations,3.00,1.00,61.71,high,44.74,moderate,49.36,moderate,52.44,moderate,49.36,moderate
+Dietitians and Nutritionists,76570.00,73850.00,Healthcare Practitioners and Technical Occupations,5.00,4.00,53.92,moderate,42.31,moderate,44.78,moderate,52.54,moderate,44.78,moderate
+Digital Forensics Analysts,17531.00,108970.00,Computer and Mathematical Occupations,4.00,5.00,64.98,high,45.34,moderate,51.50,moderate,45.34,moderate,52.49,moderate
+Dining Room and Cafeteria Attendants and Bartender Helpers,522010.00,32670.00,Food Preparation and Serving Related Occupations,1.00,2.00,16.11,low,13.34,low,9.62,low,13.34,low,9.62,low
+"Directors, Religious Activities and Education",21460.00,54840.00,Community and Social Service Occupations,4.00,1.00,62.70,high,54.69,moderate,34.65,restructuring,60.18,high,34.65,restructuring
+"Disc Jockeys, Except Radio",8170.00,42827.20,"Arts, Design, Entertainment, Sports, and Media Occupations",2.00,2.00,42.15,moderate,25.07,restructuring,29.17,restructuring,25.07,restructuring,29.81,restructuring
+Dishwashers,471670.00,33670.00,Food Preparation and Serving Related Occupations,1.00,2.00,5.27,low,5.27,low,0.00,low,5.27,low,0.00,low
+"Dispatchers, Except Police, Fire, and Ambulance",211000.00,48880.00,Office and Administrative Support Occupations,2.00,3.00,81.27,high,41.12,moderate,74.21,high,71.51,high,74.21,high
+Document Management Specialists,124166.00,108970.00,Computer and Mathematical Occupations,4.00,5.00,86.01,high,58.59,moderate,84.84,high,76.79,high,85.01,high
+"Door-to-Door Sales Workers, News and Street Vendors, and Related Workers",4590.00,34530.00,Sales and Related Occupations,1.00,2.00,56.92,moderate,40.73,moderate,44.50,moderate,40.73,moderate,54.66,moderate
+Dredge Operators,1030.00,48430.00,Transportation and Material Moving Occupations,2.00,2.00,10.32,low,0.00,low,10.32,low,0.00,low,10.32,low
+"Drilling and Boring Machine Tool Setters, Operators, and Tenders, Metal and Plastic",5310.00,46630.00,Production Occupations,2.00,2.00,21.32,restructuring,16.32,low,6.48,low,16.32,low,6.48,low
+Driver/Sales Workers,417420.00,37130.00,Transportation and Material Moving Occupations,2.00,2.00,50.33,moderate,16.94,low,46.49,moderate,18.31,low,47.82,moderate
+Drywall and Ceiling Tile Installers,82900.00,58140.00,Construction and Extraction Occupations,2.00,4.00,17.32,low,13.34,low,14.34,low,15.59,low,14.34,low
+"Earth Drillers, Except Oil and Gas",11754.46,59363.75,Construction and Extraction Occupations,2.00,3.00,13.75,low,5.49,low,8.49,low,5.49,low,8.49,low
+"Economics Teachers, Postsecondary",12420.00,119980.00,Educational Instruction and Library Occupations,5.00,4.00,85.29,high,69.69,high,68.81,high,81.89,high,68.81,high
+Economists,10255.00,115440.00,"Life, Physical, and Social Science Occupations",5.00,3.00,82.74,high,57.48,moderate,67.88,high,82.53,high,69.00,high
+Editors,95480.00,75260.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,3.00,69.05,high,53.93,moderate,56.68,moderate,63.22,high,56.92,moderate
+"Education Administrators, Kindergarten through Secondary",319630.00,104070.00,Management Occupations,5.00,5.00,38.18,restructuring,22.43,restructuring,24.71,restructuring,22.43,restructuring,24.71,restructuring
+"Education Administrators, Postsecondary",176420.00,103960.00,Management Occupations,5.00,5.00,49.91,moderate,40.79,moderate,30.45,restructuring,42.28,moderate,30.45,restructuring
+"Education Teachers, Postsecondary",59090.00,72090.00,Educational Instruction and Library Occupations,5.00,4.00,88.37,high,70.72,high,75.79,high,83.15,high,75.79,high
+"Education and Childcare Administrators, Preschool and Daycare",71620.00,56270.00,Management Occupations,4.00,4.00,42.53,moderate,27.09,restructuring,24.92,restructuring,27.09,restructuring,24.92,restructuring
+"Educational, Guidance, and Career Counselors and Advisors",342350.00,65140.00,Community and Social Service Occupations,5.00,4.00,43.76,moderate,40.04,moderate,21.21,restructuring,40.04,moderate,22.13,restructuring
+"Electric Motor, Power Tool, and Related Repairers",16570.00,53990.00,"Installation, Maintenance, and Repair Occupations",3.00,2.00,28.31,restructuring,19.94,low,14.00,low,21.61,restructuring,14.00,low
+Electrical Engineers,188790.00,111910.00,Architecture and Engineering Occupations,4.00,5.00,54.63,moderate,42.60,moderate,44.17,moderate,46.76,moderate,44.17,moderate
+Electrical Power-Line Installers and Repairers,123680.00,92560.00,"Installation, Maintenance, and Repair Occupations",2.00,4.00,21.94,restructuring,20.80,restructuring,9.42,low,20.80,restructuring,9.42,low
+Electrical and Electronic Engineering Technologists and Technicians,92710.00,77180.00,Architecture and Engineering Occupations,3.00,4.00,49.89,moderate,42.53,moderate,31.35,restructuring,42.53,moderate,31.35,restructuring
+Electrical and Electronic Equipment Assemblers,91100.00,44210.00,Production Occupations,2.00,2.00,32.54,restructuring,22.51,restructuring,25.97,restructuring,26.38,restructuring,25.97,restructuring
+Electrical and Electronics Drafters,20020.00,73720.00,Architecture and Engineering Occupations,3.00,3.00,57.61,moderate,46.56,moderate,43.59,moderate,46.56,moderate,43.59,moderate
+"Electrical and Electronics Installers and Repairers, Transportation Equipment",7310.00,82730.00,"Installation, Maintenance, and Repair Occupations",3.00,3.00,36.08,restructuring,26.09,restructuring,23.79,restructuring,32.01,restructuring,23.79,restructuring
+"Electrical and Electronics Repairers, Commercial and Industrial Equipment",59990.00,71300.00,"Installation, Maintenance, and Repair Occupations",3.00,4.00,55.17,moderate,38.29,restructuring,35.79,restructuring,43.74,moderate,35.79,restructuring
+"Electrical and Electronics Repairers, Powerhouse, Substation, and Relay",23040.00,100940.00,"Installation, Maintenance, and Repair Occupations",3.00,3.00,53.60,moderate,41.62,moderate,32.48,restructuring,41.62,moderate,32.48,restructuring
+Electricians,742580.00,62350.00,Construction and Extraction Occupations,3.00,4.00,43.47,moderate,38.10,restructuring,22.14,restructuring,43.47,moderate,22.14,restructuring
+Electro-Mechanical and Mechatronics Technologists and Technicians,7340.00,70760.00,Architecture and Engineering Occupations,3.00,3.00,38.87,restructuring,34.65,restructuring,23.97,restructuring,34.65,restructuring,24.14,restructuring
+Electromechanical Equipment Assemblers,91100.00,44210.00,Production Occupations,2.00,2.00,23.67,restructuring,14.80,low,14.07,low,15.62,low,14.07,low
+"Electronic Equipment Installers and Repairers, Motor Vehicles",10140.00,47940.00,"Installation, Maintenance, and Repair Occupations",3.00,3.00,39.28,restructuring,27.41,restructuring,26.68,restructuring,34.64,restructuring,26.68,restructuring
+"Electronics Engineers, Except Computer",66013.00,127590.00,Architecture and Engineering Occupations,4.00,5.00,64.69,high,50.77,moderate,50.66,moderate,59.87,moderate,50.66,moderate
+"Elementary School Teachers, Except Special Education",1393310.00,62340.00,Educational Instruction and Library Occupations,4.00,5.00,67.10,high,56.49,moderate,44.41,moderate,63.21,high,44.52,moderate
+Elevator and Escalator Installers and Repairers,23340.00,106580.00,Construction and Extraction Occupations,3.00,4.00,21.05,restructuring,8.02,low,13.04,low,8.02,low,13.04,low
+"Eligibility Interviewers, Government Programs",156260.00,51500.00,Office and Administrative Support Occupations,3.00,3.00,68.18,high,45.25,moderate,61.24,high,55.87,moderate,61.24,high
+Embalmers,3420.00,56280.00,Personal Care and Service Occupations,3.00,2.00,17.14,low,9.68,low,7.49,low,9.68,low,7.49,low
+Emergency Management Directors,12570.00,86130.00,Management Occupations,4.00,3.00,37.78,restructuring,26.92,restructuring,21.71,restructuring,26.92,restructuring,21.71,restructuring
+Emergency Medical Technicians,137186.00,50216.40,Healthcare Practitioners and Technical Occupations,3.00,2.00,14.49,low,10.44,low,6.41,low,10.44,low,6.41,low
+Emergency Medicine Physicians,24358.57,249103.60,Healthcare Practitioners and Technical Occupations,5.00,0.00,26.91,restructuring,16.51,low,15.40,low,16.51,low,15.40,low
+Endoscopy Technicians,27713.00,46050.00,Healthcare Support Occupations,2.00,2.00,2.95,low,1.46,low,1.49,low,1.46,low,1.49,low
+Energy Auditors,51428.00,72120.00,Construction and Extraction Occupations,3.00,4.00,45.55,moderate,28.20,restructuring,36.75,restructuring,29.04,restructuring,36.75,restructuring
+"Energy Engineers, Except Wind and Solar",25824.00,117750.00,Architecture and Engineering Occupations,4.00,5.00,43.40,moderate,34.01,restructuring,31.54,restructuring,34.01,restructuring,31.54,restructuring
+Engine and Other Machine Assemblers,38420.00,52540.00,Production Occupations,2.00,3.00,18.72,low,18.72,low,9.61,low,18.72,low,9.61,low
+"Engineering Teachers, Postsecondary",39910.00,106120.00,Educational Instruction and Library Occupations,5.00,4.00,85.91,high,71.79,high,61.28,high,82.86,high,61.28,high
+"English Language and Literature Teachers, Postsecondary",59590.00,78270.00,Educational Instruction and Library Occupations,5.00,4.00,81.79,high,61.41,high,70.73,high,71.86,high,70.75,high
+"Entertainment and Recreation Managers, Except Gambling",560732.43,89920.54,Management Occupations,4.00,3.00,54.73,moderate,39.76,restructuring,45.20,moderate,39.76,restructuring,46.22,moderate
+Environmental Compliance Inspectors,33212.00,78420.00,Business and Financial Operations Occupations,4.00,4.00,44.68,moderate,32.75,restructuring,32.84,restructuring,33.29,restructuring,33.25,restructuring
+Environmental Economists,5625.00,115440.00,"Life, Physical, and Social Science Occupations",5.00,3.00,50.36,moderate,42.27,moderate,37.19,restructuring,46.14,moderate,37.21,restructuring
+Environmental Engineering Technologists and Technicians,12500.00,58890.00,Architecture and Engineering Occupations,4.00,2.00,46.85,moderate,31.26,restructuring,36.75,restructuring,31.26,restructuring,36.75,restructuring
+Environmental Engineers,37950.00,104170.00,Architecture and Engineering Occupations,4.00,5.00,40.73,moderate,37.18,restructuring,19.01,low,37.92,restructuring,19.01,low
+Environmental Restoration Planners,7041.00,80060.00,"Life, Physical, and Social Science Occupations",5.00,4.00,32.52,restructuring,28.49,restructuring,6.67,low,28.49,restructuring,6.67,low
+"Environmental Science Teachers, Postsecondary",7130.00,87710.00,Educational Instruction and Library Occupations,5.00,4.00,81.07,high,64.42,high,62.31,high,72.77,high,62.31,high
+"Environmental Science and Protection Technicians, Including Health",39390.00,49490.00,"Life, Physical, and Social Science Occupations",4.00,3.00,37.23,restructuring,29.56,restructuring,22.48,restructuring,29.56,restructuring,22.48,restructuring
+"Environmental Scientists and Specialists, Including Health",30210.00,80060.00,"Life, Physical, and Social Science Occupations",4.00,4.00,52.28,moderate,43.34,moderate,39.81,restructuring,49.68,moderate,40.09,moderate
+Epidemiologists,11460.00,83980.00,"Life, Physical, and Social Science Occupations",5.00,4.00,43.64,moderate,29.35,restructuring,28.29,restructuring,31.54,restructuring,28.29,restructuring
+Equal Opportunity Representatives and Officers,63415.00,78420.00,Business and Financial Operations Occupations,4.00,4.00,36.57,restructuring,31.42,restructuring,26.85,restructuring,31.77,restructuring,26.85,restructuring
+Etchers and Engravers,8390.00,40450.00,Production Occupations,2.00,1.00,31.34,restructuring,17.43,low,18.22,low,17.43,low,18.50,low
+"Excavating and Loading Machine and Dragline Operators, Surface Mining",34210.00,52550.00,Construction and Extraction Occupations,2.00,3.00,11.21,low,11.21,low,0.98,low,11.21,low,0.98,low
+Executive Secretaries and Executive Administrative Assistants,472770.00,74260.00,Office and Administrative Support Occupations,3.00,3.00,87.55,high,58.29,moderate,83.07,high,64.84,high,83.07,high
+Exercise Physiologists,8110.00,58160.00,Healthcare Practitioners and Technical Occupations,4.00,3.00,56.92,moderate,34.42,restructuring,46.13,moderate,50.46,moderate,48.24,moderate
+Exercise Trainers and Group Fitness Instructors,303620.00,46180.00,Personal Care and Service Occupations,3.00,3.00,38.55,restructuring,34.33,restructuring,12.99,low,34.33,restructuring,12.99,low
+"Explosives Workers, Ordnance Handling Experts, and Blasters",11754.46,59363.75,Construction and Extraction Occupations,2.00,3.00,13.67,low,5.05,low,11.02,low,5.05,low,11.02,low
+"Extruding and Drawing Machine Setters, Operators, and Tenders, Metal and Plastic",65700.00,46980.00,Production Occupations,2.00,2.00,26.39,restructuring,20.75,restructuring,8.04,low,20.75,restructuring,8.04,low
+"Extruding and Forming Machine Setters, Operators, and Tenders, Synthetic and Glass Fibers",14900.00,44980.00,Production Occupations,2.00,2.00,30.21,restructuring,12.03,low,18.18,low,19.09,low,18.18,low
+"Extruding, Forming, Pressing, and Compacting Machine Setters, Operators, and Tenders",57310.00,45130.00,Production Occupations,2.00,2.00,31.94,restructuring,18.58,low,15.39,low,18.58,low,15.39,low
+Fabric and Apparel Patternmakers,2860.00,67670.00,Production Occupations,3.00,2.00,34.20,restructuring,23.62,restructuring,32.55,restructuring,23.62,restructuring,32.55,restructuring
+Facilities Managers,184500.52,106986.55,Management Occupations,3.00,5.00,41.14,moderate,7.55,low,37.30,restructuring,7.55,low,37.37,restructuring
+Fallers,4110.00,53900.00,"Farming, Fishing, and Forestry Occupations",1.00,1.00,17.31,low,15.08,low,2.23,low,15.08,low,2.23,low
+Family Medicine Physicians,107950.00,238380.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,23.99,restructuring,21.06,restructuring,11.05,low,21.06,restructuring,11.05,low
+"Family and Consumer Sciences Teachers, Postsecondary",2630.00,77280.00,Educational Instruction and Library Occupations,5.00,3.00,50.12,moderate,31.46,restructuring,31.00,restructuring,31.46,restructuring,31.00,restructuring
+Farm Equipment Mechanics and Service Technicians,36880.00,52080.00,"Installation, Maintenance, and Repair Occupations",3.00,3.00,26.03,restructuring,18.20,low,14.01,low,18.20,low,14.01,low
+Farm Labor Contractors,410.00,48690.00,Business and Financial Operations Occupations,2.00,4.00,28.08,restructuring,19.80,low,21.42,restructuring,19.80,low,21.42,restructuring
+Farm and Home Management Educators,10260.00,58120.00,Educational Instruction and Library Occupations,5.00,2.00,50.40,moderate,36.57,restructuring,33.33,restructuring,36.57,restructuring,33.33,restructuring
+"Farmers, Ranchers, and Other Agricultural Managers",5910.00,87980.00,Management Occupations,4.00,4.00,20.79,restructuring,12.11,low,14.74,low,12.11,low,14.74,low
+"Farmworkers and Laborers, Crop, Nursery, and Greenhouse",261690.00,35690.00,"Farming, Fishing, and Forestry Occupations",1.00,1.00,11.34,low,5.69,low,8.41,low,5.69,low,8.45,low
+"Farmworkers, Farm, Ranch, and Aquacultural Animals",35420.00,36150.00,"Farming, Fishing, and Forestry Occupations",2.00,2.00,28.73,restructuring,26.78,restructuring,3.55,low,26.78,restructuring,3.55,low
+Fashion Designers,20910.00,80690.00,"Arts, Design, Entertainment, Sports, and Media Occupations",3.00,3.00,60.91,high,54.52,moderate,43.58,moderate,55.70,moderate,44.08,moderate
+Fast Food and Counter Workers,1804350.00,30480.00,Food Preparation and Serving Related Occupations,1.00,2.00,35.37,restructuring,29.37,restructuring,14.90,low,29.37,restructuring,15.75,low
+Fence Erectors,22640.00,46940.00,Construction and Extraction Occupations,2.00,3.00,8.90,low,8.90,low,3.06,low,8.90,low,3.06,low
+Fiberglass Laminators and Fabricators,18520.00,45760.00,Production Occupations,2.00,2.00,10.34,low,10.34,low,0.00,low,10.34,low,0.00,low
+File Clerks,78980.00,41270.00,Office and Administrative Support Occupations,2.00,1.00,74.95,high,48.59,moderate,69.15,high,56.14,moderate,69.35,high
+Film and Video Editors,28860.00,70980.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,3.00,79.84,high,54.78,moderate,71.41,high,72.00,high,71.61,high
+Financial Examiners,62830.00,90400.00,Business and Financial Operations Occupations,4.00,4.00,34.02,restructuring,18.28,low,23.46,restructuring,19.16,low,23.46,restructuring
+Financial Managers,18868.00,161700.00,Management Occupations,4.00,5.00,52.40,moderate,25.11,restructuring,49.83,moderate,25.11,restructuring,49.83,moderate
+Financial Quantitative Analysts,93246.00,80190.00,Business and Financial Operations Occupations,5.00,4.00,85.89,high,65.29,high,81.97,high,84.89,high,81.98,high
+Financial Risk Specialists,188297.86,103841.07,Business and Financial Operations Occupations,4.00,5.00,64.82,high,33.64,restructuring,59.45,moderate,33.64,restructuring,59.78,moderate
+Financial and Investment Analysts,188297.86,103841.07,Business and Financial Operations Occupations,4.00,5.00,64.67,high,50.47,moderate,55.19,moderate,50.47,moderate,55.50,moderate
+"Fine Artists, Including Painters, Sculptors, and Illustrators",10000.00,60560.00,"Arts, Design, Entertainment, Sports, and Media Occupations",3.00,3.00,70.70,high,56.57,moderate,62.68,high,67.94,high,63.28,high
+Fire Inspectors and Investigators,14050.00,78060.00,Protective Service Occupations,3.00,3.00,27.90,restructuring,21.51,restructuring,15.76,low,21.51,restructuring,15.76,low
+Fire-Prevention and Protection Engineers,13114.00,109660.00,Architecture and Engineering Occupations,4.00,4.00,34.42,restructuring,33.79,restructuring,16.01,low,33.79,restructuring,16.01,low
+Firefighters,332240.00,59530.00,Protective Service Occupations,3.00,3.00,17.36,low,13.47,low,3.22,low,13.47,low,5.76,low
+First-Line Supervisors of Construction Trades and Extraction Workers,483212.00,78690.00,Construction and Extraction Occupations,3.00,4.00,61.23,high,31.61,restructuring,52.85,moderate,57.06,moderate,52.85,moderate
+First-Line Supervisors of Correctional Officers,53390.00,76310.00,Protective Service Occupations,3.00,4.00,37.29,restructuring,21.42,restructuring,22.29,restructuring,26.39,restructuring,23.01,restructuring
+"First-Line Supervisors of Entertainment and Recreation Workers, Except Gambling Services",107697.71,52137.45,Personal Care and Service Occupations,2.00,2.00,44.86,moderate,25.44,restructuring,29.00,restructuring,25.44,restructuring,29.88,restructuring
+"First-Line Supervisors of Farming, Fishing, and Forestry Workers",29530.00,59330.00,"Farming, Fishing, and Forestry Occupations",3.00,3.00,21.46,restructuring,7.87,low,14.49,low,7.87,low,14.62,low
+First-Line Supervisors of Firefighting and Prevention Workers,93680.00,92430.00,Protective Service Occupations,3.00,5.00,19.81,low,3.73,low,16.15,low,3.73,low,16.15,low
+First-Line Supervisors of Food Preparation and Serving Workers,1187460.00,42010.00,Food Preparation and Serving Related Occupations,2.00,2.00,53.71,moderate,34.28,restructuring,36.60,restructuring,36.45,restructuring,39.90,restructuring
+First-Line Supervisors of Gambling Services Workers,25530.00,61590.00,Personal Care and Service Occupations,2.00,2.00,45.36,moderate,37.61,restructuring,21.89,restructuring,37.61,restructuring,21.89,restructuring
+"First-Line Supervisors of Helpers, Laborers, and Material Movers, Hand",61568.00,61900.00,Transportation and Material Moving Occupations,2.00,2.00,43.41,moderate,29.79,restructuring,33.29,restructuring,34.58,restructuring,33.29,restructuring
+First-Line Supervisors of Housekeeping and Janitorial Workers,174660.00,47520.00,Building and Grounds Cleaning and Maintenance Occupations,2.00,3.00,50.96,moderate,34.55,restructuring,36.21,restructuring,45.60,moderate,37.23,restructuring
+"First-Line Supervisors of Landscaping, Lawn Service, and Groundskeeping Workers",124130.00,56170.00,Building and Grounds Cleaning and Maintenance Occupations,3.00,4.00,42.80,moderate,21.63,restructuring,27.54,restructuring,22.93,restructuring,29.14,restructuring
+First-Line Supervisors of Material-Moving Machine and Vehicle Operators,123136.00,61900.00,Transportation and Material Moving Occupations,3.00,2.00,34.82,restructuring,21.06,restructuring,22.90,restructuring,21.06,restructuring,22.90,restructuring
+"First-Line Supervisors of Mechanics, Installers, and Repairers",600680.00,78300.00,"Installation, Maintenance, and Repair Occupations",3.00,5.00,53.83,moderate,47.44,moderate,33.43,restructuring,48.72,moderate,33.61,restructuring
+First-Line Supervisors of Non-Retail Sales Workers,219010.00,84130.00,Sales and Related Occupations,4.00,4.00,81.86,high,46.04,moderate,69.68,high,67.92,high,70.41,high
+First-Line Supervisors of Office and Administrative Support Workers,1495580.00,66140.00,Office and Administrative Support Occupations,3.00,4.00,75.47,high,54.62,moderate,63.21,high,68.43,high,63.96,high
+First-Line Supervisors of Passenger Attendants,107697.71,52137.45,Transportation and Material Moving Occupations,3.00,2.00,31.50,restructuring,23.83,restructuring,12.64,low,23.83,restructuring,13.51,low
+First-Line Supervisors of Personal Service Workers,107697.71,52137.45,Personal Care and Service Occupations,3.00,2.00,48.69,moderate,25.33,restructuring,34.22,restructuring,27.95,restructuring,34.58,restructuring
+First-Line Supervisors of Police and Detectives,153130.00,105980.00,Protective Service Occupations,2.00,5.00,42.62,moderate,18.41,low,25.56,restructuring,18.41,low,25.92,restructuring
+First-Line Supervisors of Production and Operating Workers,685140.00,71190.00,Production Occupations,3.00,4.00,45.40,moderate,32.25,restructuring,26.86,restructuring,32.67,restructuring,26.86,restructuring
+First-Line Supervisors of Retail Sales Workers,1113160.00,47320.00,Sales and Related Occupations,2.00,3.00,81.60,high,56.92,moderate,68.69,high,67.18,high,69.39,high
+First-Line Supervisors of Security Workers,70310.00,58610.00,Protective Service Occupations,2.00,3.00,44.92,moderate,21.55,restructuring,35.99,restructuring,21.55,restructuring,37.49,restructuring
+Fish and Game Wardens,6420.00,68180.00,Protective Service Occupations,4.00,4.00,38.96,restructuring,37.81,restructuring,3.07,low,37.81,restructuring,3.07,low
+Fishing and Hunting Workers,0.00,31471.20,"Farming, Fishing, and Forestry Occupations",1.00,1.00,9.29,low,5.81,low,0.82,low,5.81,low,4.30,low
+Fitness and Wellness Coordinators,5621.00,61340.00,Management Occupations,4.00,4.00,58.23,moderate,29.60,restructuring,47.46,moderate,38.38,restructuring,47.46,moderate
+Flight Attendants,130110.00,67130.00,Transportation and Material Moving Occupations,2.00,3.00,38.93,restructuring,36.73,restructuring,12.18,low,36.73,restructuring,12.83,low
+"Floor Layers, Except Carpet, Wood, and Hard Tiles",24850.00,54340.00,Construction and Extraction Occupations,2.00,3.00,9.90,low,9.90,low,4.15,low,9.90,low,4.15,low
+Floor Sanders and Finishers,4140.00,49150.00,Construction and Extraction Occupations,1.00,3.00,0.00,low,0.00,low,0.00,low,0.00,low,0.00,low
+Floral Designers,40160.00,36120.00,"Arts, Design, Entertainment, Sports, and Media Occupations",2.00,1.00,43.14,moderate,33.92,restructuring,17.42,low,33.92,restructuring,19.32,low
+Food Batchmakers,171660.00,40790.00,Production Occupations,2.00,2.00,33.14,restructuring,25.16,restructuring,17.23,low,25.16,restructuring,17.23,low
+Food Cooking Machine Operators and Tenders,27660.00,40550.00,Production Occupations,2.00,1.00,35.76,restructuring,18.90,low,22.56,restructuring,18.90,low,22.56,restructuring
+Food Preparation Workers,888770.00,34220.00,Food Preparation and Serving Related Occupations,2.00,2.00,38.18,restructuring,35.77,restructuring,9.19,low,35.77,restructuring,9.19,low
+Food Science Technicians,9848.10,47795.71,"Life, Physical, and Social Science Occupations",3.00,2.00,48.63,moderate,34.36,restructuring,37.74,restructuring,35.68,restructuring,37.74,restructuring
+Food Scientists and Technologists,14370.00,85310.00,"Life, Physical, and Social Science Occupations",4.00,4.00,48.90,moderate,37.30,restructuring,36.76,restructuring,48.90,moderate,36.76,restructuring
+"Food Servers, Nonrestaurant",271780.00,34460.00,Food Preparation and Serving Related Occupations,2.00,2.00,32.27,restructuring,19.93,low,20.94,restructuring,22.31,restructuring,20.94,restructuring
+Food Service Managers,244230.00,65310.00,Management Occupations,2.00,3.00,46.49,moderate,27.32,restructuring,36.47,restructuring,32.93,restructuring,36.47,restructuring
+"Food and Tobacco Roasting, Baking, and Drying Machine Operators and Tenders",19500.00,42730.00,Production Occupations,2.00,1.00,29.58,restructuring,10.59,low,20.76,restructuring,10.59,low,20.76,restructuring
+"Foreign Language and Literature Teachers, Postsecondary",21170.00,77010.00,Educational Instruction and Library Occupations,5.00,4.00,81.98,high,62.64,high,69.54,high,70.20,high,69.54,high
+Forensic Science Technicians,19450.00,67440.00,"Life, Physical, and Social Science Occupations",3.00,2.00,58.06,moderate,44.69,moderate,28.62,restructuring,50.01,moderate,29.15,restructuring
+Forest Fire Inspectors and Prevention Specialists,2780.00,52380.00,Protective Service Occupations,3.00,3.00,39.56,restructuring,12.20,low,35.42,restructuring,12.20,low,36.37,restructuring
+Forest and Conservation Technicians,31080.00,54310.00,"Life, Physical, and Social Science Occupations",3.00,2.00,26.68,restructuring,21.02,restructuring,14.91,low,22.14,restructuring,14.91,low
+Forest and Conservation Workers,5630.00,43680.00,"Farming, Fishing, and Forestry Occupations",2.00,1.00,14.95,low,11.78,low,4.63,low,11.78,low,4.63,low
+Foresters,9650.00,70660.00,"Life, Physical, and Social Science Occupations",4.00,3.00,13.95,low,12.88,low,1.80,low,12.88,low,1.80,low
+"Forestry and Conservation Science Teachers, Postsecondary",1310.00,100830.00,Educational Instruction and Library Occupations,5.00,4.00,80.90,high,63.40,high,63.78,high,73.62,high,63.78,high
+"Forging Machine Setters, Operators, and Tenders, Metal and Plastic",8760.00,49240.00,Production Occupations,2.00,2.00,22.30,restructuring,20.06,restructuring,5.73,low,20.06,restructuring,5.73,low
+Foundry Mold and Coremakers,12720.00,45700.00,Production Occupations,2.00,2.00,1.73,low,0.00,low,1.73,low,0.00,low,1.73,low
+"Fraud Examiners, Investigators and Analysts",34204.00,80190.00,Business and Financial Operations Occupations,4.00,4.00,81.48,high,45.21,moderate,54.26,moderate,68.45,high,54.26,moderate
+Freight Forwarders,67478.00,49900.00,Office and Administrative Support Occupations,2.00,2.00,68.18,high,40.53,moderate,57.71,moderate,51.92,moderate,57.71,moderate
+Fuel Cell Engineers,46219.00,102320.00,Architecture and Engineering Occupations,4.00,5.00,41.52,moderate,37.26,restructuring,27.11,restructuring,37.66,restructuring,27.22,restructuring
+Fundraisers,105930.00,66490.00,Business and Financial Operations Occupations,4.00,3.00,69.00,high,39.65,restructuring,52.93,moderate,56.91,moderate,53.12,moderate
+Fundraising Managers,58664.44,131835.56,Management Occupations,4.00,4.00,42.87,moderate,11.92,low,40.97,moderate,11.92,low,40.98,moderate
+Funeral Attendants,30560.00,34610.00,Personal Care and Service Occupations,2.00,2.00,40.19,moderate,38.87,restructuring,22.68,restructuring,40.19,moderate,23.47,restructuring
+Funeral Home Managers,13120.00,76830.00,Management Occupations,3.00,4.00,38.78,restructuring,19.66,low,28.12,restructuring,19.66,low,28.90,restructuring
+"Furnace, Kiln, Oven, Drier, and Kettle Operators and Tenders",16160.00,47010.00,Production Occupations,2.00,1.00,47.31,moderate,23.19,restructuring,29.74,restructuring,25.77,restructuring,29.74,restructuring
+Furniture Finishers,14230.00,42530.00,Production Occupations,2.00,2.00,16.17,low,16.17,low,0.62,low,16.17,low,0.62,low
+Gambling Cage Workers,13490.00,36990.00,Office and Administrative Support Occupations,2.00,3.00,46.57,moderate,31.39,restructuring,40.31,moderate,31.39,restructuring,40.31,moderate
+Gambling Change Persons and Booth Cashiers,21930.00,34810.00,Sales and Related Occupations,2.00,2.00,51.12,moderate,30.95,restructuring,43.48,moderate,30.95,restructuring,44.06,moderate
+Gambling Dealers,82980.00,33280.00,Personal Care and Service Occupations,2.00,2.00,51.56,moderate,47.20,moderate,44.68,moderate,47.20,moderate,44.68,moderate
+Gambling Managers,4620.00,85580.00,Management Occupations,2.00,3.00,36.14,restructuring,21.88,restructuring,17.17,low,21.88,restructuring,19.47,low
+Gambling Surveillance Officers and Gambling Investigators,10000.00,43900.00,Protective Service Occupations,2.00,2.00,61.84,high,37.15,restructuring,48.07,moderate,37.15,restructuring,48.07,moderate
+Gambling and Sports Book Writers and Runners,7600.00,30460.00,Personal Care and Service Occupations,2.00,2.00,50.78,moderate,41.19,moderate,44.66,moderate,41.19,moderate,45.32,moderate
+Gas Compressor and Gas Pumping Station Operators,5110.00,71510.00,Transportation and Material Moving Occupations,2.00,3.00,51.97,moderate,0.83,low,51.14,moderate,0.83,low,51.14,moderate
+Gas Plant Operators,15910.00,83400.00,Production Occupations,2.00,3.00,32.89,restructuring,19.07,low,23.03,restructuring,21.18,restructuring,23.03,restructuring
+Gem and Diamond Workers,6190.00,49140.00,Production Occupations,3.00,2.00,29.86,restructuring,29.86,restructuring,5.44,low,29.86,restructuring,5.94,low
+General Internal Medicine Physicians,66640.00,236350.00,Healthcare Practitioners and Technical Occupations,5.00,4.00,22.61,restructuring,16.70,low,10.88,low,16.70,low,10.88,low
+General and Operations Managers,3584420.00,102950.00,Management Occupations,4.00,5.00,52.31,moderate,25.56,restructuring,42.36,moderate,27.87,restructuring,42.78,moderate
+Genetic Counselors,3510.00,98910.00,Healthcare Practitioners and Technical Occupations,5.00,0.00,53.84,moderate,42.05,moderate,32.13,restructuring,47.32,moderate,32.13,restructuring
+Geneticists,10170.00,93330.00,"Life, Physical, and Social Science Occupations",5.00,4.00,64.10,high,34.40,restructuring,54.15,moderate,47.63,moderate,54.28,moderate
+Geodetic Surveyors,14417.00,72740.00,Architecture and Engineering Occupations,4.00,4.00,55.84,moderate,19.01,low,48.95,moderate,19.55,low,48.95,moderate
+Geographers,1380.00,97200.00,"Life, Physical, and Social Science Occupations",4.00,2.00,71.84,high,67.38,high,54.80,moderate,67.97,high,55.49,moderate
+Geographic Information Systems Technologists and Technicians,86239.00,108970.00,Computer and Mathematical Occupations,3.00,5.00,71.61,high,47.21,moderate,69.16,high,47.21,moderate,69.16,high
+"Geography Teachers, Postsecondary",3290.00,86730.00,Educational Instruction and Library Occupations,5.00,3.00,80.73,high,63.75,high,65.66,high,73.45,high,65.87,high
+"Geological Technicians, Except Hydrologic Technicians",7302.89,52009.56,"Life, Physical, and Social Science Occupations",4.00,3.00,31.74,restructuring,14.98,low,26.24,restructuring,14.98,low,26.45,restructuring
+"Geoscientists, Except Hydrologists and Geographers",22510.00,99240.00,"Life, Physical, and Social Science Occupations",5.00,4.00,59.55,moderate,30.46,restructuring,50.21,moderate,32.58,restructuring,50.36,moderate
+Geothermal Production Managers,42452.00,121440.00,Management Occupations,3.00,5.00,30.99,restructuring,10.04,low,23.07,restructuring,10.04,low,23.07,restructuring
+Geothermal Technicians,183690.00,48640.00,"Installation, Maintenance, and Repair Occupations",2.00,2.00,40.01,moderate,33.35,restructuring,17.20,low,33.35,restructuring,17.20,low
+"Glass Blowers, Molders, Benders, and Finishers",5037.00,45690.00,Production Occupations,2.00,2.00,19.14,low,14.67,low,5.26,low,14.67,low,5.26,low
+Glaziers,57000.00,55440.00,Construction and Extraction Occupations,2.00,3.00,16.68,low,15.47,low,5.41,low,15.47,low,5.41,low
+Government Property Inspectors and Investigators,68789.00,78420.00,Business and Financial Operations Occupations,3.00,4.00,50.62,moderate,45.47,moderate,38.99,restructuring,50.14,moderate,38.99,restructuring
+"Graders and Sorters, Agricultural Products",26870.00,35430.00,"Farming, Fishing, and Forestry Occupations",1.00,1.00,21.78,restructuring,10.06,low,11.72,low,10.06,low,11.72,low
+Graphic Designers,214260.00,61300.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,4.00,87.30,high,74.28,high,79.92,high,81.02,high,81.00,high
+"Grinding and Polishing Workers, Hand",11850.00,41690.00,Production Occupations,2.00,3.00,26.59,restructuring,14.29,low,12.30,low,14.29,low,12.30,low
+"Grinding, Lapping, Polishing, and Buffing Machine Tool Setters, Operators, and Tenders, Metal and Plastic",70110.00,45190.00,Production Occupations,2.00,2.00,29.36,restructuring,22.17,restructuring,9.47,low,22.17,restructuring,9.47,low
+"Hairdressers, Hairstylists, and Cosmetologists",295460.00,35250.00,Personal Care and Service Occupations,3.00,2.00,48.77,moderate,31.06,restructuring,31.97,restructuring,47.20,moderate,33.01,restructuring
+Hazardous Materials Removal Workers,50570.00,48490.00,Construction and Extraction Occupations,3.00,3.00,17.84,low,9.12,low,15.67,low,9.12,low,15.67,low
+Health Education Specialists,65150.00,63000.00,Community and Social Service Occupations,4.00,3.00,48.06,moderate,25.86,restructuring,24.84,restructuring,25.86,restructuring,24.84,restructuring
+Health Informatics Specialists,94384.00,103790.00,Computer and Mathematical Occupations,5.00,5.00,62.10,high,52.85,moderate,55.73,moderate,52.85,moderate,55.73,moderate
+Health Information Technologists and Medical Registrars,115042.12,58521.52,Healthcare Practitioners and Technical Occupations,3.00,4.00,61.96,high,38.11,restructuring,52.44,moderate,38.11,restructuring,52.44,moderate
+"Health Specialties Teachers, Postsecondary",229720.00,105620.00,Educational Instruction and Library Occupations,5.00,5.00,83.05,high,68.60,high,64.98,high,76.86,high,64.98,high
+"Health and Safety Engineers, Except Mining Safety Engineers and Inspectors",10106.00,109660.00,Architecture and Engineering Occupations,4.00,4.00,45.59,moderate,42.84,moderate,14.99,low,42.84,moderate,17.31,low
+Healthcare Social Workers,185940.00,68090.00,Community and Social Service Occupations,5.00,4.00,44.39,moderate,37.42,restructuring,24.65,restructuring,42.22,moderate,25.74,restructuring
+Hearing Aid Specialists,10580.00,61560.00,Healthcare Practitioners and Technical Occupations,3.00,2.00,14.11,low,14.11,low,4.90,low,14.11,low,4.90,low
+"Heat Treating Equipment Setters, Operators, and Tenders, Metal and Plastic",14590.00,47450.00,Production Occupations,2.00,1.00,33.29,restructuring,20.58,restructuring,15.27,low,20.58,restructuring,15.27,low
+"Heating, Air Conditioning, and Refrigeration Mechanics and Installers",396870.00,59810.00,"Installation, Maintenance, and Repair Occupations",3.00,4.00,40.24,moderate,27.05,restructuring,20.62,restructuring,27.05,restructuring,20.62,restructuring
+Heavy and Tractor-Trailer Truck Drivers,2070480.00,57440.00,Transportation and Material Moving Occupations,2.00,3.00,29.40,restructuring,19.54,low,23.08,restructuring,21.53,restructuring,23.08,restructuring
+"Helpers--Brickmasons, Blockmasons, Stonemasons, and Tile and Marble Setters",15660.00,46480.00,Construction and Extraction Occupations,2.00,2.00,15.36,low,14.28,low,1.08,low,14.28,low,1.08,low
+Helpers--Carpenters,24610.00,41600.00,Construction and Extraction Occupations,2.00,2.00,6.10,low,6.10,low,1.33,low,6.10,low,1.33,low
+Helpers--Electricians,64440.00,39890.00,Construction and Extraction Occupations,2.00,2.00,15.52,low,15.52,low,2.43,low,15.52,low,2.43,low
+Helpers--Extraction Workers,6720.00,48400.00,Construction and Extraction Occupations,2.00,2.00,3.66,low,3.66,low,0.00,low,3.66,low,0.00,low
+"Helpers--Installation, Maintenance, and Repair Workers",97540.00,38860.00,"Installation, Maintenance, and Repair Occupations",2.00,2.00,18.07,low,18.07,low,1.37,low,18.07,low,1.37,low
+"Helpers--Painters, Paperhangers, Plasterers, and Stucco Masons",7220.00,38140.00,Construction and Extraction Occupations,1.00,2.00,9.56,low,7.60,low,1.96,low,7.60,low,1.96,low
+"Helpers--Pipelayers, Plumbers, Pipefitters, and Steamfitters",43640.00,39270.00,Construction and Extraction Occupations,2.00,2.00,22.66,restructuring,22.66,restructuring,2.32,low,22.66,restructuring,2.32,low
+Helpers--Production Workers,167490.00,38220.00,Production Occupations,2.00,1.00,32.12,restructuring,12.12,low,26.56,restructuring,12.12,low,26.56,restructuring
+Helpers--Roofers,5170.00,40590.00,Construction and Extraction Occupations,2.00,2.00,2.34,low,2.34,low,0.00,low,2.34,low,0.00,low
+Highway Maintenance Workers,151750.00,49070.00,Construction and Extraction Occupations,2.00,3.00,3.21,low,3.21,low,0.00,low,3.21,low,0.00,low
+Histology Technicians,57173.33,61890.00,Healthcare Practitioners and Technical Occupations,3.00,4.00,4.99,low,4.99,low,2.02,low,4.99,low,2.02,low
+Historians,3140.00,74050.00,"Life, Physical, and Social Science Occupations",5.00,2.00,78.79,high,63.59,high,63.22,high,76.04,high,63.22,high
+"History Teachers, Postsecondary",19860.00,81500.00,Educational Instruction and Library Occupations,5.00,4.00,86.42,high,68.80,high,69.29,high,79.93,high,69.29,high
+Histotechnologists,57173.33,61890.00,Healthcare Practitioners and Technical Occupations,4.00,4.00,13.99,low,12.02,low,2.79,low,12.02,low,2.79,low
+Hoist and Winch Operators,2480.00,52310.00,Transportation and Material Moving Occupations,2.00,2.00,28.06,restructuring,8.77,low,19.29,low,8.77,low,19.29,low
+Home Appliance Repairers,31940.00,49410.00,"Installation, Maintenance, and Repair Occupations",2.00,2.00,38.87,restructuring,27.39,restructuring,17.86,low,27.39,restructuring,17.86,low
+Home Health Aides,1994070.00,34900.00,Healthcare Support Occupations,2.00,2.00,31.23,restructuring,29.25,restructuring,3.59,low,29.25,restructuring,3.59,low
+Hospitalists,34801.00,249103.60,Healthcare Practitioners and Technical Occupations,5.00,2.00,30.16,restructuring,18.60,low,15.41,low,18.60,low,15.41,low
+"Hosts and Hostesses, Restaurant, Lounge, and Coffee Shop",427150.00,30380.00,Food Preparation and Serving Related Occupations,1.00,2.00,58.31,moderate,45.62,moderate,35.85,restructuring,54.22,moderate,37.68,restructuring
+"Hotel, Motel, and Resort Desk Clerks",261430.00,34270.00,Office and Administrative Support Occupations,2.00,2.00,67.80,high,42.83,moderate,59.67,moderate,55.30,moderate,60.00,moderate
+Human Factors Engineers and Ergonomists,87557.50,101140.00,Architecture and Engineering Occupations,5.00,4.00,50.87,moderate,44.10,moderate,21.38,restructuring,48.44,moderate,21.38,restructuring
+"Human Resources Assistants, Except Payroll and Timekeeping",92580.00,49440.00,Office and Administrative Support Occupations,3.00,2.00,89.79,high,56.21,moderate,89.35,high,82.15,high,89.35,high
+Human Resources Managers,215520.00,140030.00,Management Occupations,4.00,5.00,64.92,high,46.62,moderate,48.41,moderate,52.33,moderate,48.66,moderate
+Human Resources Specialists,917460.00,72910.00,Business and Financial Operations Occupations,4.00,5.00,86.37,high,60.20,high,79.75,high,75.84,high,80.29,high
+Hydroelectric Plant Technicians,2387.00,99670.00,Production Occupations,3.00,4.00,22.03,restructuring,10.99,low,16.28,low,10.99,low,16.28,low
+Hydroelectric Production Managers,31675.00,121440.00,Management Occupations,3.00,5.00,21.25,restructuring,10.08,low,11.17,low,10.08,low,11.17,low
+Hydrologic Technicians,7302.89,52009.56,"Life, Physical, and Social Science Occupations",3.00,3.00,43.88,moderate,34.52,restructuring,34.67,restructuring,34.52,restructuring,34.67,restructuring
+Hydrologists,5720.00,92060.00,"Life, Physical, and Social Science Occupations",5.00,3.00,41.48,moderate,33.27,restructuring,29.76,restructuring,35.11,restructuring,29.81,restructuring
+Industrial Ecologists,26139.00,80060.00,"Life, Physical, and Social Science Occupations",5.00,4.00,37.34,restructuring,22.85,restructuring,21.76,restructuring,23.49,restructuring,21.76,restructuring
+Industrial Engineering Technologists and Technicians,32570.00,64790.00,Architecture and Engineering Occupations,3.00,4.00,39.93,restructuring,30.38,restructuring,25.77,restructuring,30.38,restructuring,25.77,restructuring
+Industrial Engineers,87557.50,101140.00,Architecture and Engineering Occupations,4.00,5.00,59.59,moderate,48.83,moderate,35.84,restructuring,49.94,moderate,36.09,restructuring
+Industrial Machinery Mechanics,421940.00,63760.00,"Installation, Maintenance, and Repair Occupations",3.00,4.00,39.18,restructuring,30.03,restructuring,20.41,restructuring,30.86,restructuring,20.60,restructuring
+Industrial Production Managers,51505.00,121440.00,Management Occupations,4.00,5.00,45.17,moderate,19.54,low,37.26,restructuring,19.54,low,37.26,restructuring
+Industrial Truck and Tractor Operators,805770.00,46390.00,Transportation and Material Moving Occupations,2.00,3.00,39.37,restructuring,5.43,low,36.13,restructuring,5.43,low,36.13,restructuring
+Industrial-Organizational Psychologists,1050.00,109840.00,"Life, Physical, and Social Science Occupations",5.00,4.00,69.78,high,48.73,moderate,53.90,moderate,66.61,high,54.05,moderate
+Information Security Analysts,179430.00,124910.00,Computer and Mathematical Occupations,4.00,5.00,85.91,high,55.47,moderate,85.42,high,83.84,high,85.42,high
+Information Security Engineers,17531.00,108970.00,Computer and Mathematical Occupations,4.00,5.00,59.76,moderate,35.06,restructuring,55.36,moderate,35.06,restructuring,55.63,moderate
+Information Technology Project Managers,46177.00,108970.00,Computer and Mathematical Occupations,4.00,5.00,81.20,high,46.10,moderate,79.26,high,67.85,high,79.26,high
+"Inspectors, Testers, Sorters, Samplers, and Weighers",591180.00,47460.00,Production Occupations,2.00,3.00,33.70,restructuring,20.41,restructuring,22.48,restructuring,24.87,restructuring,22.48,restructuring
+Instructional Coordinators,210850.00,74720.00,Educational Instruction and Library Occupations,5.00,4.00,53.52,moderate,47.73,moderate,45.96,moderate,49.99,moderate,45.96,moderate
+"Insulation Workers, Floor, Ceiling, and Wall",38610.00,48680.00,Construction and Extraction Occupations,2.00,3.00,13.62,low,13.62,low,9.57,low,13.62,low,9.57,low
+"Insulation Workers, Mechanical",25640.00,57250.00,Construction and Extraction Occupations,2.00,2.00,29.44,restructuring,28.47,restructuring,16.10,low,29.44,restructuring,16.10,low
+"Insurance Appraisers, Auto Damage",7790.00,76650.00,Business and Financial Operations Occupations,3.00,4.00,44.79,moderate,44.79,moderate,15.98,low,44.79,moderate,17.47,low
+Insurance Claims and Policy Processing Clerks,229070.00,48450.00,Office and Administrative Support Occupations,2.00,3.00,69.60,high,36.27,restructuring,65.55,high,36.27,restructuring,66.28,high
+Insurance Sales Agents,469480.00,60370.00,Sales and Related Occupations,4.00,4.00,72.66,high,49.96,moderate,64.91,high,64.14,high,66.67,high
+Insurance Underwriters,107820.00,79880.00,Business and Financial Operations Occupations,4.00,4.00,61.44,high,40.74,moderate,48.12,moderate,52.72,moderate,48.12,moderate
+Intelligence Analysts,74090.00,93580.00,Protective Service Occupations,4.00,4.00,77.46,high,62.38,high,67.32,high,76.15,high,67.32,high
+Interior Designers,69580.00,63490.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,3.00,52.70,moderate,44.80,moderate,44.98,moderate,49.33,moderate,44.98,moderate
+Interpreters and Translators,53360.00,59440.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,3.00,87.70,high,84.04,high,78.04,high,87.05,high,78.58,high
+"Interviewers, Except Eligibility and Loan",157310.00,43830.00,Office and Administrative Support Occupations,3.00,2.00,76.14,high,59.68,moderate,71.36,high,68.81,high,71.36,high
+Investment Fund Managers,513192.00,161700.00,Management Occupations,5.00,5.00,92.45,high,61.65,high,86.35,high,89.34,high,86.35,high
+"Janitors and Cleaners, Except Maids and Housekeeping Cleaners",2199900.00,35930.00,Building and Grounds Cleaning and Maintenance Occupations,3.00,2.00,16.79,low,11.34,low,5.45,low,11.34,low,5.45,low
+Jewelers and Precious Stone and Metal Workers,17230.00,49140.00,Production Occupations,3.00,2.00,21.97,restructuring,19.34,low,9.19,low,19.34,low,9.40,low
+"Judges, Magistrate Judges, and Magistrates",25580.00,156210.00,Legal Occupations,5.00,4.00,24.47,restructuring,23.86,restructuring,15.76,low,24.47,restructuring,15.76,low
+Judicial Law Clerks,13220.00,60400.00,Legal Occupations,5.00,0.00,70.16,high,62.97,high,52.51,moderate,62.97,high,52.51,moderate
+"Kindergarten Teachers, Except Special Education",114410.00,61430.00,Educational Instruction and Library Occupations,4.00,3.00,61.39,high,52.68,moderate,27.58,restructuring,56.91,moderate,27.68,restructuring
+Labor Relations Specialists,64590.00,93500.00,Business and Financial Operations Occupations,4.00,4.00,39.28,restructuring,17.63,low,33.72,restructuring,37.62,restructuring,33.72,restructuring
+"Laborers and Freight, Stock, and Material Movers, Hand",2982530.00,38940.00,Transportation and Material Moving Occupations,2.00,2.00,20.71,restructuring,5.97,low,16.64,low,5.97,low,16.64,low
+Landscape Architects,19580.00,79660.00,Architecture and Engineering Occupations,4.00,4.00,46.66,moderate,44.00,moderate,18.00,low,44.00,moderate,18.00,low
+Landscaping and Groundskeeping Workers,943430.00,38090.00,Building and Grounds Cleaning and Maintenance Occupations,1.00,2.00,16.08,low,5.83,low,11.10,low,5.83,low,11.10,low
+"Lathe and Turning Machine Tool Setters, Operators, and Tenders, Metal and Plastic",18970.00,48620.00,Production Occupations,2.00,2.00,30.36,restructuring,28.63,restructuring,7.62,low,28.63,restructuring,7.62,low
+Laundry and Dry-Cleaning Workers,195360.00,33800.00,Production Occupations,1.00,1.00,21.62,restructuring,13.23,low,8.39,low,13.23,low,8.39,low
+"Law Teachers, Postsecondary",22800.00,126650.00,Educational Instruction and Library Occupations,5.00,3.00,81.71,high,61.74,high,71.25,high,75.25,high,71.25,high
+Lawyers,747750.00,151160.00,Legal Occupations,5.00,5.00,47.39,moderate,38.63,restructuring,35.17,restructuring,41.80,moderate,35.17,restructuring
+"Layout Workers, Metal and Plastic",5610.00,61870.00,Production Occupations,2.00,2.00,19.32,low,18.20,low,10.62,low,18.20,low,10.62,low
+Legal Secretaries and Administrative Assistants,154540.00,54140.00,Office and Administrative Support Occupations,3.00,2.00,74.10,high,33.57,restructuring,71.37,high,33.57,restructuring,71.74,high
+Legislators,26510.00,44810.00,Management Occupations,4.00,3.00,50.04,moderate,45.88,moderate,19.02,low,47.74,moderate,19.02,low
+Librarians and Media Collections Specialists,131830.00,64320.00,Educational Instruction and Library Occupations,5.00,3.00,55.13,moderate,40.40,moderate,43.28,moderate,40.40,moderate,43.33,moderate
+"Library Assistants, Clerical",80070.00,36010.00,Office and Administrative Support Occupations,2.00,1.00,58.46,moderate,39.06,restructuring,46.22,moderate,41.44,moderate,46.52,moderate
+"Library Science Teachers, Postsecondary",4100.00,78630.00,Educational Instruction and Library Occupations,5.00,3.00,83.47,high,68.87,high,65.78,high,77.66,high,65.78,high
+Library Technicians,73770.00,39970.00,Educational Instruction and Library Occupations,3.00,1.00,68.01,high,51.99,moderate,54.19,moderate,58.86,moderate,54.19,moderate
+Licensed Practical and Licensed Vocational Nurses,632430.00,62340.00,Healthcare Practitioners and Technical Occupations,3.00,4.00,36.97,restructuring,20.16,restructuring,31.85,restructuring,28.83,restructuring,32.73,restructuring
+"Lifeguards, Ski Patrol, and Other Recreational Protective Service Workers",143590.00,33720.00,Protective Service Occupations,2.00,2.00,31.20,restructuring,20.62,restructuring,11.21,low,20.62,restructuring,13.71,low
+Light Truck Drivers,994410.00,44140.00,Transportation and Material Moving Occupations,2.00,3.00,27.47,restructuring,15.34,low,20.51,restructuring,15.34,low,20.51,restructuring
+Lighting Technicians,10130.00,60560.00,"Arts, Design, Entertainment, Sports, and Media Occupations",3.00,3.00,51.44,moderate,33.91,restructuring,26.71,restructuring,33.91,restructuring,27.89,restructuring
+"Loading and Moving Machine Operators, Underground Mining",6130.00,68860.00,Construction and Extraction Occupations,2.00,4.00,14.11,low,7.19,low,6.91,low,7.19,low,6.91,low
+Loan Interviewers and Clerks,173100.00,48950.00,Office and Administrative Support Occupations,3.00,3.00,76.27,high,46.37,moderate,67.97,high,59.14,moderate,68.30,high
+Loan Officers,290530.00,74180.00,Business and Financial Operations Occupations,4.00,5.00,59.11,moderate,40.23,moderate,50.16,moderate,43.68,moderate,51.06,moderate
+"Locker Room, Coatroom, and Dressing Room Attendants",14960.00,34800.00,Personal Care and Service Occupations,2.00,1.00,35.20,restructuring,31.45,restructuring,15.69,low,31.45,restructuring,16.10,low
+Locksmiths and Safe Repairers,15550.00,50490.00,"Installation, Maintenance, and Repair Occupations",2.00,3.00,10.50,low,3.11,low,7.39,low,3.11,low,7.39,low
+Locomotive Engineers,31990.00,77400.00,Transportation and Material Moving Occupations,2.00,2.00,23.14,restructuring,18.80,low,8.99,low,18.80,low,8.99,low
+Lodging Managers,41350.00,68130.00,Management Occupations,4.00,3.00,67.79,high,46.64,moderate,61.72,high,56.23,moderate,62.40,high
+Log Graders and Scalers,3310.00,46710.00,"Farming, Fishing, and Forestry Occupations",2.00,1.00,26.20,restructuring,12.19,low,17.41,low,12.19,low,17.41,low
+Logging Equipment Operators,22520.00,49210.00,"Farming, Fishing, and Forestry Occupations",1.00,1.00,8.35,low,3.97,low,4.10,low,3.97,low,4.38,low
+Logisticians,69452.00,80880.00,Business and Financial Operations Occupations,4.00,5.00,65.04,high,58.40,moderate,53.04,moderate,58.84,moderate,53.04,moderate
+Logistics Analysts,77318.00,80880.00,Business and Financial Operations Occupations,4.00,5.00,80.47,high,37.22,restructuring,74.51,high,70.71,high,74.51,high
+Logistics Engineers,88870.00,80880.00,Business and Financial Operations Occupations,4.00,5.00,65.76,high,44.08,moderate,60.26,high,50.68,moderate,60.26,high
+Loss Prevention Managers,164169.00,136550.00,Management Occupations,4.00,4.00,35.18,restructuring,14.87,low,28.43,restructuring,16.16,low,28.43,restructuring
+"Low Vision Therapists, Orientation and Mobility Specialists, and Vision Rehabilitation Therapists",96385.00,98340.00,Healthcare Practitioners and Technical Occupations,5.00,4.00,45.80,moderate,42.04,moderate,15.78,low,44.60,moderate,16.32,low
+Machine Feeders and Offbearers,46690.00,39700.00,Transportation and Material Moving Occupations,2.00,2.00,14.15,low,4.35,low,9.81,low,4.35,low,9.81,low
+Machinists,298790.00,56150.00,Production Occupations,3.00,3.00,36.25,restructuring,30.94,restructuring,20.47,restructuring,31.89,restructuring,20.47,restructuring
+Magnetic Resonance Imaging Technologists,41530.00,88180.00,Healthcare Practitioners and Technical Occupations,3.00,4.00,34.26,restructuring,22.02,restructuring,23.82,restructuring,22.02,restructuring,23.82,restructuring
+Maids and Housekeeping Cleaners,854910.00,34660.00,Building and Grounds Cleaning and Maintenance Occupations,1.00,2.00,8.94,low,2.80,low,2.76,low,2.80,low,6.15,low
+"Mail Clerks and Mail Machine Operators, Except Postal Service",62730.00,38150.00,Office and Administrative Support Occupations,2.00,2.00,39.02,restructuring,17.72,low,32.84,restructuring,22.21,restructuring,32.84,restructuring
+"Maintenance Workers, Machinery",56540.00,60500.00,"Installation, Maintenance, and Repair Occupations",3.00,4.00,28.10,restructuring,17.99,low,13.86,low,17.99,low,13.86,low
+"Maintenance and Repair Workers, General",1531700.00,48620.00,"Installation, Maintenance, and Repair Occupations",3.00,3.00,25.12,restructuring,20.80,restructuring,5.63,low,20.80,restructuring,5.63,low
+"Makeup Artists, Theatrical and Performance",3320.00,50280.00,Personal Care and Service Occupations,3.00,2.00,17.67,low,17.67,low,0.88,low,17.67,low,0.88,low
+Management Analysts,893900.00,101190.00,Business and Financial Operations Occupations,4.00,4.00,73.77,high,68.72,high,56.90,moderate,69.24,high,56.90,moderate
+Manicurists and Pedicurists,147820.00,34660.00,Personal Care and Service Occupations,2.00,1.00,16.21,low,4.60,low,12.36,low,10.39,low,12.89,low
+Manufactured Building and Mobile Home Installers,2610.00,41080.00,"Installation, Maintenance, and Repair Occupations",2.00,2.00,26.17,restructuring,26.17,restructuring,4.66,low,26.17,restructuring,4.66,low
+Manufacturing Engineers,87557.50,101140.00,Architecture and Engineering Occupations,4.00,4.00,63.02,high,45.54,moderate,45.12,moderate,53.38,moderate,45.12,moderate
+Marine Engineers and Naval Architects,8440.00,105670.00,Architecture and Engineering Occupations,4.00,5.00,38.85,restructuring,29.69,restructuring,22.59,restructuring,29.69,restructuring,22.59,restructuring
+Market Research Analysts and Marketing Specialists,430570.00,76950.00,Business and Financial Operations Occupations,4.00,4.00,92.71,high,80.41,high,91.01,high,89.50,high,91.01,high
+Marketing Managers,384980.00,161030.00,Management Occupations,4.00,5.00,78.01,high,59.80,moderate,73.76,high,76.80,high,73.76,high
+Marriage and Family Therapists,65870.00,63780.00,Community and Social Service Occupations,5.00,4.00,64.88,high,45.76,moderate,54.14,moderate,54.21,moderate,56.45,moderate
+Massage Therapists,96040.00,57950.00,Healthcare Support Occupations,3.00,4.00,22.52,restructuring,15.75,low,10.20,low,20.80,restructuring,10.20,low
+Materials Engineers,22770.00,108310.00,Architecture and Engineering Occupations,4.00,4.00,33.29,restructuring,24.60,restructuring,25.82,restructuring,25.35,restructuring,25.82,restructuring
+Materials Scientists,8330.00,104160.00,"Life, Physical, and Social Science Occupations",4.00,4.00,55.91,moderate,41.89,moderate,44.89,moderate,54.28,moderate,44.89,moderate
+"Mathematical Science Teachers, Postsecondary",48820.00,79350.00,Educational Instruction and Library Occupations,5.00,4.00,79.60,high,58.46,moderate,65.45,high,68.09,high,65.45,high
+Mathematicians,2220.00,121680.00,Computer and Mathematical Occupations,5.00,5.00,76.41,high,59.52,moderate,69.50,high,71.19,high,69.50,high
+"Meat, Poultry, and Fish Cutters and Trimmers",141090.00,37700.00,Production Occupations,1.00,1.00,45.01,moderate,45.01,moderate,4.29,low,45.01,moderate,4.29,low
+Mechanical Door Repairers,27970.00,51050.00,"Installation, Maintenance, and Repair Occupations",2.00,3.00,22.66,restructuring,11.38,low,11.37,low,11.38,low,11.71,low
+Mechanical Drafters,39900.00,68510.00,Architecture and Engineering Occupations,3.00,4.00,69.62,high,48.69,moderate,63.75,high,50.12,moderate,63.75,high
+Mechanical Engineering Technologists and Technicians,14740.00,68730.00,Architecture and Engineering Occupations,3.00,3.00,44.55,moderate,33.51,restructuring,37.02,restructuring,33.51,restructuring,37.55,restructuring
+Mechanical Engineers,99415.00,102320.00,Architecture and Engineering Occupations,4.00,5.00,55.70,moderate,39.60,restructuring,44.07,moderate,45.83,moderate,44.07,moderate
+Mechatronics Engineers,13659.00,117750.00,Architecture and Engineering Occupations,4.00,5.00,61.27,high,50.59,moderate,45.55,moderate,50.77,moderate,45.55,moderate
+Media Programming Directors,38771.00,83480.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,2.00,34.67,restructuring,21.73,restructuring,27.62,restructuring,21.73,restructuring,27.76,restructuring
+Media Technical Directors/Managers,24398.00,83480.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,2.00,40.64,moderate,23.92,restructuring,30.24,restructuring,23.92,restructuring,30.24,restructuring
+Medical Appliance Technicians,11490.00,47060.00,Production Occupations,3.00,2.00,8.97,low,8.97,low,0.00,low,8.97,low,0.00,low
+Medical Assistants,793460.00,44200.00,Healthcare Support Occupations,3.00,2.00,58.99,moderate,29.17,restructuring,51.98,moderate,50.91,moderate,51.98,moderate
+Medical Dosimetrists,3970.00,138110.00,Healthcare Practitioners and Technical Occupations,4.00,5.00,49.52,moderate,32.41,restructuring,31.25,restructuring,32.41,restructuring,31.25,restructuring
+Medical Equipment Preparers,72760.00,46490.00,Healthcare Support Occupations,2.00,2.00,9.56,low,0.97,low,8.59,low,0.97,low,8.59,low
+Medical Equipment Repairers,60830.00,62630.00,"Installation, Maintenance, and Repair Occupations",3.00,4.00,45.06,moderate,29.86,restructuring,27.36,restructuring,37.28,restructuring,27.36,restructuring
+Medical Records Specialists,115042.12,58521.52,Healthcare Practitioners and Technical Occupations,3.00,4.00,66.64,high,38.67,restructuring,62.50,high,38.67,restructuring,62.50,high
+"Medical Scientists, Except Epidemiologists",156300.00,100590.00,"Life, Physical, and Social Science Occupations",5.00,5.00,51.99,moderate,39.83,restructuring,34.02,restructuring,43.05,moderate,34.02,restructuring
+Medical Secretaries and Administrative Assistants,830760.00,44640.00,Office and Administrative Support Occupations,2.00,3.00,73.25,high,31.36,restructuring,69.57,high,31.36,restructuring,69.94,high
+Medical Transcriptionists,43070.00,37550.00,Healthcare Support Occupations,3.00,1.00,82.69,high,62.52,high,79.49,high,75.29,high,79.49,high
+Medical and Clinical Laboratory Technicians,85760.00,61890.00,Healthcare Practitioners and Technical Occupations,3.00,4.00,51.19,moderate,38.92,restructuring,26.53,restructuring,39.30,restructuring,26.53,restructuring
+Medical and Clinical Laboratory Technologists,42880.00,61890.00,Healthcare Practitioners and Technical Occupations,4.00,4.00,56.09,moderate,38.26,restructuring,49.26,moderate,52.46,moderate,49.26,moderate
+Medical and Health Services Managers,565840.00,117960.00,Management Occupations,4.00,5.00,65.06,high,44.33,moderate,51.43,moderate,47.27,moderate,51.43,moderate
+"Meeting, Convention, and Event Planners",134670.00,59440.00,Business and Financial Operations Occupations,4.00,3.00,70.12,high,51.29,moderate,67.60,high,60.62,high,67.74,high
+Mental Health Counselors,161811.67,60200.00,Community and Social Service Occupations,5.00,4.00,63.13,high,49.43,moderate,51.41,moderate,57.59,moderate,51.61,moderate
+Mental Health and Substance Abuse Social Workers,125910.00,60060.00,Community and Social Service Occupations,5.00,4.00,51.92,moderate,39.44,restructuring,35.44,restructuring,51.92,moderate,37.46,restructuring
+Merchandise Displayers and Window Trimmers,192480.00,37350.00,"Arts, Design, Entertainment, Sports, and Media Occupations",3.00,2.00,49.75,moderate,38.94,restructuring,28.69,restructuring,38.94,restructuring,28.69,restructuring
+Metal-Refining Furnace Operators and Tenders,20330.00,55770.00,Production Occupations,2.00,4.00,30.58,restructuring,17.97,low,15.94,low,17.97,low,15.94,low
+"Meter Readers, Utilities",19620.00,49180.00,Office and Administrative Support Occupations,2.00,2.00,48.12,moderate,29.13,restructuring,39.80,restructuring,42.77,moderate,39.93,restructuring
+Microbiologists,19760.00,87330.00,"Life, Physical, and Social Science Occupations",4.00,3.00,57.54,moderate,45.35,moderate,33.28,restructuring,55.44,moderate,33.28,restructuring
+Microsystems Engineers,23080.00,117750.00,Architecture and Engineering Occupations,5.00,5.00,53.12,moderate,37.35,restructuring,41.36,moderate,43.17,moderate,41.42,moderate
+"Middle School Teachers, Except Special and Career/Technical Education",620370.00,62970.00,Educational Instruction and Library Occupations,4.00,5.00,71.70,high,56.74,moderate,55.33,moderate,63.59,high,55.47,moderate
+Midwives,36970.00,64030.00,Healthcare Practitioners and Technical Occupations,5.00,2.00,37.18,restructuring,27.73,restructuring,23.01,restructuring,31.44,restructuring,23.24,restructuring
+"Milling and Planing Machine Setters, Operators, and Tenders, Metal and Plastic",13810.00,48310.00,Production Occupations,2.00,2.00,30.95,restructuring,19.76,low,14.47,low,19.76,low,14.47,low
+Millwrights,40660.00,65170.00,"Installation, Maintenance, and Repair Occupations",2.00,4.00,15.88,low,14.86,low,3.33,low,14.86,low,3.33,low
+"Mining and Geological Engineers, Including Mining Safety Engineers",6770.00,101020.00,Architecture and Engineering Occupations,4.00,4.00,36.10,restructuring,25.19,restructuring,24.06,restructuring,25.19,restructuring,24.06,restructuring
+"Mixing and Blending Machine Setters, Operators, and Tenders",100840.00,47680.00,Production Occupations,2.00,2.00,28.25,restructuring,18.49,low,17.25,low,22.50,restructuring,17.25,low
+"Mobile Heavy Equipment Mechanics, Except Engines",180270.00,63980.00,"Installation, Maintenance, and Repair Occupations",3.00,4.00,27.06,restructuring,20.33,restructuring,13.31,low,21.83,restructuring,13.31,low
+"Model Makers, Metal and Plastic",3230.00,62700.00,Production Occupations,3.00,3.00,27.13,restructuring,16.98,low,20.32,restructuring,16.98,low,20.32,restructuring
+"Model Makers, Wood",360.00,51850.00,Production Occupations,3.00,2.00,32.28,restructuring,24.17,restructuring,17.47,low,24.17,restructuring,17.47,low
+Models,5350.00,89990.00,Sales and Related Occupations,2.00,1.00,57.81,moderate,56.20,moderate,4.67,low,56.20,moderate,4.67,low
+"Molders, Shapers, and Casters, Except Metal and Plastic",3146.00,45690.00,Production Occupations,2.00,1.00,13.72,low,12.68,low,1.04,low,12.68,low,1.04,low
+"Molding, Coremaking, and Casting Machine Setters, Operators, and Tenders, Metal and Plastic",154820.00,41230.00,Production Occupations,2.00,3.00,23.34,restructuring,15.06,low,12.17,low,15.06,low,12.17,low
+Molecular and Cellular Biologists,10176.00,93330.00,"Life, Physical, and Social Science Occupations",5.00,4.00,61.14,high,35.84,restructuring,52.51,moderate,48.60,moderate,52.51,moderate
+"Morticians, Undertakers, and Funeral Arrangers",25700.00,49800.00,Personal Care and Service Occupations,3.00,2.00,29.57,restructuring,22.38,restructuring,17.71,low,22.38,restructuring,18.52,low
+Motion Picture Projectionists,1950.00,38180.00,Personal Care and Service Occupations,2.00,2.00,41.51,moderate,9.83,low,37.16,restructuring,9.83,low,37.16,restructuring
+Motorboat Mechanics and Service Technicians,24250.00,54950.00,"Installation, Maintenance, and Repair Occupations",3.00,3.00,13.04,low,12.95,low,6.50,low,12.95,low,6.50,low
+Motorboat Operators,2380.00,51880.00,Transportation and Material Moving Occupations,2.00,2.00,12.86,low,6.31,low,3.05,low,6.31,low,6.66,low
+Motorcycle Mechanics,14010.00,47200.00,"Installation, Maintenance, and Repair Occupations",3.00,3.00,22.62,restructuring,22.62,restructuring,2.18,low,22.62,restructuring,2.18,low
+"Multiple Machine Tool Setters, Operators, and Tenders, Metal and Plastic",129850.00,46060.00,Production Occupations,2.00,2.00,33.39,restructuring,24.87,restructuring,11.12,low,24.87,restructuring,11.12,low
+Museum Technicians and Conservators,13070.00,47460.00,Educational Instruction and Library Occupations,4.00,1.00,65.40,high,57.36,moderate,27.70,restructuring,57.94,moderate,27.70,restructuring
+Music Directors and Composers,12330.00,63670.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,0.00,50.89,moderate,37.62,restructuring,42.83,moderate,37.62,restructuring,43.45,moderate
+Music Therapists,10189.00,65010.00,Healthcare Practitioners and Technical Occupations,4.00,4.00,40.95,moderate,25.95,restructuring,23.83,restructuring,30.91,restructuring,31.88,restructuring
+Musical Instrument Repairers and Tuners,5730.00,45320.00,"Installation, Maintenance, and Repair Occupations",3.00,1.00,28.49,restructuring,25.23,restructuring,6.86,low,28.49,restructuring,6.86,low
+Musicians and Singers,38350.00,88296.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,0.00,28.94,restructuring,14.12,low,18.76,low,14.12,low,19.05,low
+Nannies,166129.00,32050.00,Personal Care and Service Occupations,2.00,2.00,47.53,moderate,37.78,restructuring,16.15,low,37.78,restructuring,16.18,low
+Nanosystems Engineers,21672.00,117750.00,Architecture and Engineering Occupations,5.00,5.00,48.19,moderate,33.99,restructuring,41.24,moderate,47.62,moderate,41.38,moderate
+Nanotechnology Engineering Technologists and Technicians,40840.00,64790.00,Architecture and Engineering Occupations,4.00,3.00,31.88,restructuring,23.23,restructuring,22.80,restructuring,23.23,restructuring,23.26,restructuring
+Natural Sciences Managers,33044.00,161180.00,Management Occupations,5.00,5.00,57.06,moderate,36.93,restructuring,47.89,moderate,41.41,moderate,47.89,moderate
+Naturopathic Physicians,20983.00,113730.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,49.89,moderate,30.23,restructuring,44.19,moderate,47.39,moderate,44.19,moderate
+Network and Computer Systems Administrators,318570.00,96800.00,Computer and Mathematical Occupations,4.00,5.00,85.55,high,56.11,moderate,84.26,high,73.68,high,84.26,high
+Neurodiagnostic Technologists,52948.00,48790.00,Healthcare Practitioners and Technical Occupations,3.00,4.00,24.99,restructuring,19.38,low,12.11,low,21.05,restructuring,12.11,low
+Neurologists,7700.00,249103.60,Healthcare Practitioners and Technical Occupations,5.00,0.00,37.17,restructuring,28.76,restructuring,16.85,low,34.88,restructuring,16.85,low
+Neuropsychologists,35580.00,117580.00,"Life, Physical, and Social Science Occupations",5.00,4.00,28.51,restructuring,25.94,restructuring,13.74,low,25.94,restructuring,13.74,low
+New Accounts Clerks,38030.00,46610.00,Office and Administrative Support Occupations,3.00,2.00,75.46,high,42.12,moderate,69.87,high,46.31,moderate,69.87,high
+"News Analysts, Reporters, and Journalists",41550.00,60280.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,2.00,58.29,moderate,50.37,moderate,53.04,moderate,50.37,moderate,53.38,moderate
+Non-Destructive Testing Specialists,47697.00,77390.00,Architecture and Engineering Occupations,2.00,3.00,42.34,moderate,39.98,restructuring,29.55,restructuring,40.30,moderate,30.59,restructuring
+Nuclear Engineers,14740.00,127520.00,Architecture and Engineering Occupations,4.00,5.00,26.83,restructuring,16.68,low,18.07,low,16.68,low,18.25,low
+Nuclear Medicine Technologists,16960.00,97020.00,Healthcare Practitioners and Technical Occupations,3.00,5.00,49.47,moderate,37.55,restructuring,32.18,restructuring,39.32,restructuring,32.18,restructuring
+Nuclear Monitoring Technicians,5370.00,104240.00,"Life, Physical, and Social Science Occupations",3.00,2.00,48.20,moderate,42.22,moderate,20.42,restructuring,42.22,moderate,20.42,restructuring
+Nuclear Power Reactor Operators,5720.00,122610.00,Production Occupations,3.00,4.00,35.94,restructuring,8.97,low,32.84,restructuring,8.97,low,32.84,restructuring
+Nuclear Technicians,620.00,104240.00,"Life, Physical, and Social Science Occupations",3.00,2.00,31.29,restructuring,17.93,low,15.47,low,17.93,low,15.57,low
+Nurse Anesthetists,50350.00,223210.00,Healthcare Practitioners and Technical Occupations,5.00,3.00,18.47,low,16.64,low,7.40,low,16.64,low,8.17,low
+Nurse Midwives,8280.00,128790.00,Healthcare Practitioners and Technical Occupations,5.00,4.00,45.91,moderate,37.08,restructuring,31.21,restructuring,45.91,moderate,31.21,restructuring
+Nurse Practitioners,307390.00,129210.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,49.95,moderate,28.02,restructuring,41.69,moderate,40.41,moderate,41.69,moderate
+Nursing Assistants,1388430.00,39530.00,Healthcare Support Occupations,3.00,2.00,18.82,low,14.54,low,9.23,low,14.84,low,10.57,low
+"Nursing Instructors and Teachers, Postsecondary",74250.00,79940.00,Educational Instruction and Library Occupations,5.00,4.00,63.58,high,52.04,moderate,51.27,moderate,59.60,moderate,51.27,moderate
+Obstetricians and Gynecologists,19900.00,257920.00,Healthcare Practitioners and Technical Occupations,5.00,0.00,47.07,moderate,27.27,restructuring,45.34,moderate,44.00,moderate,45.34,moderate
+Occupational Health and Safety Specialists,128430.00,83910.00,"Life, Physical, and Social Science Occupations",4.00,4.00,51.29,moderate,29.17,restructuring,27.76,restructuring,29.38,restructuring,28.06,restructuring
+Occupational Health and Safety Technicians,31450.00,58440.00,"Life, Physical, and Social Science Occupations",3.00,3.00,32.54,restructuring,16.05,low,20.05,restructuring,21.75,restructuring,21.55,restructuring
+Occupational Therapists,55895.00,98340.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,42.94,moderate,37.19,restructuring,18.91,low,40.17,moderate,23.17,restructuring
+Occupational Therapy Aides,5000.00,37370.00,Healthcare Support Occupations,3.00,3.00,34.41,restructuring,26.41,restructuring,21.16,restructuring,26.41,restructuring,21.16,restructuring
+Occupational Therapy Assistants,47910.00,68340.00,Healthcare Support Occupations,3.00,3.00,19.47,low,14.62,low,7.94,low,16.83,low,7.94,low
+"Office Clerks, General",2510550.00,43630.00,Office and Administrative Support Occupations,2.00,3.00,82.44,high,65.33,high,78.37,high,71.37,high,78.61,high
+"Office Machine Operators, Except Computer",24740.00,39020.00,Office and Administrative Support Occupations,2.00,1.00,53.09,moderate,45.78,moderate,35.92,restructuring,46.41,moderate,36.35,restructuring
+Online Merchants,316417.00,81270.00,Business and Financial Operations Occupations,4.00,4.00,96.90,high,68.55,high,96.55,high,84.04,high,96.68,high
+Operating Engineers and Other Construction Equipment Operators,469270.00,58710.00,Construction and Extraction Occupations,2.00,4.00,14.56,low,9.22,low,6.27,low,9.22,low,6.27,low
+Operations Research Analysts,107760.00,91290.00,Computer and Mathematical Occupations,5.00,5.00,74.82,high,62.27,high,65.64,high,70.69,high,65.64,high
+Ophthalmic Laboratory Technicians,18740.00,38420.00,Production Occupations,2.00,2.00,13.97,low,12.58,low,1.39,low,12.58,low,1.39,low
+Ophthalmic Medical Technicians,76520.00,44080.00,Healthcare Practitioners and Technical Occupations,3.00,1.00,3.35,low,1.21,low,2.14,low,1.21,low,2.14,low
+Ophthalmic Medical Technologists,3967.00,48790.00,Healthcare Practitioners and Technical Occupations,3.00,4.00,14.15,low,7.17,low,9.80,low,7.17,low,9.80,low
+"Ophthalmologists, Except Pediatric",12110.00,249103.60,Healthcare Practitioners and Technical Occupations,5.00,0.00,18.56,low,10.96,low,11.04,low,10.96,low,11.04,low
+"Opticians, Dispensing",79690.00,46560.00,Healthcare Practitioners and Technical Occupations,3.00,2.00,22.98,restructuring,20.21,restructuring,7.18,low,20.21,restructuring,7.18,low
+Optometrists,41890.00,134830.00,Healthcare Practitioners and Technical Occupations,5.00,4.00,30.19,restructuring,20.88,restructuring,19.12,low,30.19,restructuring,19.12,low
+Oral and Maxillofacial Surgeons,5330.00,179210.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,13.47,low,13.47,low,3.89,low,13.47,low,3.89,low
+Order Clerks,83420.00,44660.00,Office and Administrative Support Occupations,2.00,2.00,75.59,high,45.08,moderate,72.45,high,62.94,high,72.45,high
+Orderlies,53020.00,37700.00,Healthcare Support Occupations,2.00,2.00,6.42,low,4.94,low,5.50,low,4.94,low,5.85,low
+Orthodontists,5150.00,179210.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,31.79,restructuring,31.79,restructuring,10.27,low,31.79,restructuring,10.27,low
+"Orthopedic Surgeons, Except Pediatric",7009.09,257920.00,Healthcare Practitioners and Technical Occupations,5.00,0.00,19.44,low,13.62,low,11.12,low,13.62,low,11.12,low
+Orthoptists,9887.00,113730.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,23.33,restructuring,16.37,low,17.32,low,19.46,low,17.32,low
+Orthotists and Prosthetists,9930.00,78310.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,16.66,low,12.99,low,3.93,low,12.99,low,3.93,low
+Outdoor Power Equipment and Other Small Engine Mechanics,34240.00,46560.00,"Installation, Maintenance, and Repair Occupations",2.00,1.00,32.57,restructuring,15.17,low,20.14,restructuring,19.06,low,21.42,restructuring
+Packaging and Filling Machine Operators and Tenders,383860.00,40900.00,Production Occupations,2.00,2.00,26.56,restructuring,5.10,low,21.45,restructuring,5.10,low,21.45,restructuring
+"Packers and Packagers, Hand",601440.00,35580.00,Transportation and Material Moving Occupations,2.00,2.00,29.00,restructuring,16.33,low,12.67,low,25.47,restructuring,12.67,low
+"Painters, Construction and Maintenance",224180.00,48660.00,Construction and Extraction Occupations,2.00,3.00,19.74,low,19.35,low,2.30,low,19.74,low,2.30,low
+"Painting, Coating, and Decorating Workers",8470.00,40860.00,Production Occupations,1.00,1.00,13.39,low,13.39,low,0.00,low,13.39,low,0.00,low
+"Paper Goods Machine Setters, Operators, and Tenders",96950.00,49390.00,Production Occupations,2.00,2.00,34.82,restructuring,15.45,low,21.61,restructuring,15.45,low,21.61,restructuring
+Paperhangers,1520.00,48260.00,Construction and Extraction Occupations,2.00,3.00,22.39,restructuring,21.12,restructuring,4.32,low,22.39,restructuring,4.32,low
+Paralegals and Legal Assistants,367220.00,61010.00,Legal Occupations,3.00,3.00,55.24,moderate,41.59,moderate,47.45,moderate,41.59,moderate,47.45,moderate
+Paramedics,137186.00,50216.40,Healthcare Practitioners and Technical Occupations,3.00,4.00,13.51,low,11.11,low,4.50,low,11.11,low,4.50,low
+Park Naturalists,17599.00,67950.00,"Life, Physical, and Social Science Occupations",4.00,3.00,56.39,moderate,52.82,moderate,38.63,restructuring,52.82,moderate,38.63,restructuring
+Parking Attendants,134650.00,34600.00,Transportation and Material Moving Occupations,2.00,1.00,24.40,restructuring,17.80,low,9.79,low,17.80,low,11.13,low
+Parking Enforcement Workers,7770.00,47150.00,Protective Service Occupations,2.00,2.00,35.77,restructuring,18.67,low,27.14,restructuring,18.67,low,27.23,restructuring
+Parts Salespersons,265060.00,37440.00,Sales and Related Occupations,2.00,2.00,62.45,high,45.85,moderate,54.34,moderate,45.85,moderate,54.74,moderate
+Passenger Attendants,25340.00,37560.00,Transportation and Material Moving Occupations,2.00,2.00,53.50,moderate,47.01,moderate,33.12,restructuring,47.01,moderate,33.12,restructuring
+Patient Representatives,117145.00,48790.00,Healthcare Practitioners and Technical Occupations,3.00,4.00,80.85,high,56.99,moderate,63.92,high,80.85,high,63.92,high
+"Patternmakers, Metal and Plastic",1570.00,54540.00,Production Occupations,3.00,3.00,43.01,moderate,31.13,restructuring,40.25,moderate,34.89,restructuring,40.25,moderate
+"Patternmakers, Wood",180.00,52520.00,Production Occupations,3.00,2.00,36.86,restructuring,31.05,restructuring,20.22,restructuring,31.98,restructuring,20.22,restructuring
+"Paving, Surfacing, and Tamping Equipment Operators",45680.00,51650.00,Construction and Extraction Occupations,2.00,3.00,0.90,low,0.90,low,0.00,low,0.90,low,0.00,low
+Payroll and Timekeeping Clerks,156950.00,55290.00,Office and Administrative Support Occupations,3.00,3.00,73.89,high,42.53,moderate,67.62,high,54.70,moderate,68.84,high
+Pediatric Surgeons,7009.09,257920.00,Healthcare Practitioners and Technical Occupations,5.00,0.00,15.89,low,13.12,low,7.63,low,13.12,low,7.63,low
+"Pediatricians, General",42960.00,210130.00,Healthcare Practitioners and Technical Occupations,5.00,4.00,52.93,moderate,43.64,moderate,26.81,restructuring,50.52,moderate,26.81,restructuring
+Penetration Testers,17531.00,108970.00,Computer and Mathematical Occupations,4.00,5.00,68.24,high,50.76,moderate,61.45,high,50.76,moderate,61.45,high
+Personal Care Aides,1994070.00,34900.00,Healthcare Support Occupations,2.00,2.00,48.61,moderate,43.33,moderate,24.51,restructuring,44.45,moderate,25.10,restructuring
+Personal Financial Advisors,270480.00,102140.00,Business and Financial Operations Occupations,4.00,5.00,81.92,high,61.54,high,74.91,high,79.29,high,74.97,high
+Pest Control Workers,96110.00,44730.00,Building and Grounds Cleaning and Maintenance Occupations,2.00,1.00,33.79,restructuring,28.85,restructuring,26.16,restructuring,33.67,restructuring,26.67,restructuring
+"Pesticide Handlers, Sprayers, and Applicators, Vegetation",25200.00,45200.00,Building and Grounds Cleaning and Maintenance Occupations,2.00,1.00,14.94,low,14.94,low,0.00,low,14.94,low,0.00,low
+Petroleum Engineers,18970.00,141280.00,Architecture and Engineering Occupations,4.00,4.00,32.02,restructuring,20.42,restructuring,22.85,restructuring,20.42,restructuring,22.85,restructuring
+"Petroleum Pump System Operators, Refinery Operators, and Gaugers",34860.00,97540.00,Production Occupations,2.00,4.00,33.31,restructuring,20.80,restructuring,25.67,restructuring,21.79,restructuring,25.67,restructuring
+Pharmacists,328870.00,137480.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,69.00,high,42.36,moderate,52.14,moderate,64.86,high,52.14,moderate
+Pharmacy Aides,41100.00,37000.00,Healthcare Support Occupations,2.00,1.00,66.05,high,48.82,moderate,62.80,high,50.04,moderate,62.80,high
+Pharmacy Technicians,487920.00,43460.00,Healthcare Practitioners and Technical Occupations,3.00,3.00,65.11,high,46.95,moderate,56.86,moderate,50.59,moderate,56.86,moderate
+"Philosophy and Religion Teachers, Postsecondary",20840.00,78050.00,Educational Instruction and Library Occupations,5.00,3.00,83.55,high,66.41,high,74.08,high,75.68,high,74.08,high
+Phlebotomists,138880.00,43660.00,Healthcare Support Occupations,3.00,2.00,21.13,restructuring,11.57,low,14.64,low,17.06,low,14.64,low
+Photographers,51230.00,42520.00,"Arts, Design, Entertainment, Sports, and Media Occupations",3.00,3.00,69.88,high,54.72,moderate,56.42,moderate,60.56,high,56.42,moderate
+Photographic Process Workers and Processing Machine Operators,5550.00,40100.00,Production Occupations,2.00,1.00,57.22,moderate,20.26,restructuring,49.84,moderate,20.87,restructuring,54.14,moderate
+Photonics Engineers,37057.00,117750.00,Architecture and Engineering Occupations,4.00,5.00,60.71,high,45.59,moderate,50.71,moderate,54.71,moderate,51.72,moderate
+Photonics Technicians,16713.00,77390.00,Architecture and Engineering Occupations,3.00,3.00,36.05,restructuring,33.69,restructuring,20.87,restructuring,33.69,restructuring,21.08,restructuring
+Physical Medicine and Rehabilitation Physicians,41196.00,249103.60,Healthcare Practitioners and Technical Occupations,5.00,2.00,16.66,low,16.03,low,2.94,low,16.03,low,4.52,low
+Physical Therapist Aides,44010.00,34520.00,Healthcare Support Occupations,2.00,2.00,16.86,low,10.07,low,10.42,low,10.07,low,10.42,low
+Physical Therapist Assistants,108010.00,65510.00,Healthcare Support Occupations,3.00,3.00,20.60,restructuring,13.17,low,8.41,low,13.17,low,8.41,low
+Physical Therapists,248630.00,101020.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,51.85,moderate,37.27,restructuring,26.71,restructuring,48.91,moderate,29.75,restructuring
+Physician Assistants,120847.00,133260.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,48.98,moderate,33.77,restructuring,43.46,moderate,48.10,moderate,43.46,moderate
+"Physicians, Pathologists",11800.00,249103.60,Healthcare Practitioners and Technical Occupations,5.00,2.00,33.25,restructuring,22.36,restructuring,18.13,low,22.36,restructuring,18.13,low
+Physicists,21340.00,166290.00,"Life, Physical, and Social Science Occupations",5.00,4.00,70.15,high,60.82,high,55.04,moderate,64.12,high,55.04,moderate
+"Physics Teachers, Postsecondary",13590.00,97360.00,Educational Instruction and Library Occupations,5.00,4.00,86.07,high,67.65,high,66.63,high,80.44,high,66.63,high
+Pile Driver Operators,3040.00,70510.00,Construction and Extraction Occupations,2.00,4.00,6.36,low,0.00,low,6.36,low,0.00,low,6.36,low
+Pipelayers,33580.00,48710.00,Construction and Extraction Occupations,1.00,3.00,12.45,low,11.09,low,1.36,low,11.09,low,1.36,low
+Plasterers and Stucco Masons,20880.00,56020.00,Construction and Extraction Occupations,1.00,4.00,29.14,restructuring,29.14,restructuring,0.00,low,29.14,restructuring,0.00,low
+"Plating Machine Setters, Operators, and Tenders, Metal and Plastic",31510.00,41600.00,Production Occupations,2.00,2.00,23.19,restructuring,14.60,low,9.08,low,14.60,low,9.08,low
+"Plumbers, Pipefitters, and Steamfitters",238034.00,62970.00,Construction and Extraction Occupations,3.00,4.00,22.69,restructuring,19.99,low,9.97,low,19.99,low,9.97,low
+Podiatrists,9520.00,152800.00,Healthcare Practitioners and Technical Occupations,5.00,4.00,23.08,restructuring,23.08,restructuring,4.92,low,23.08,restructuring,4.92,low
+"Poets, Lyricists and Creative Writers",45017.00,72270.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,3.00,88.54,high,78.65,high,81.10,high,87.44,high,83.16,high
+Police Identification and Records Officers,17928.00,93580.00,Protective Service Occupations,3.00,4.00,41.61,moderate,22.07,restructuring,31.98,restructuring,22.07,restructuring,31.98,restructuring
+Police and Sheriff's Patrol Officers,138105.00,76290.00,Protective Service Occupations,3.00,5.00,30.37,restructuring,26.44,restructuring,9.48,low,26.44,restructuring,9.60,low
+"Political Science Teachers, Postsecondary",17170.00,94680.00,Educational Instruction and Library Occupations,5.00,3.00,85.40,high,66.64,high,68.63,high,79.99,high,68.63,high
+Political Scientists,5950.00,139380.00,"Life, Physical, and Social Science Occupations",5.00,2.00,73.36,high,53.65,moderate,48.89,moderate,72.79,high,48.94,moderate
+Postal Service Clerks,78060.00,61630.00,Office and Administrative Support Occupations,2.00,3.00,51.31,moderate,28.78,restructuring,44.13,moderate,28.78,restructuring,44.32,moderate
+Postal Service Mail Carriers,336040.00,57490.00,Office and Administrative Support Occupations,2.00,4.00,36.80,restructuring,21.06,restructuring,32.97,restructuring,21.06,restructuring,33.32,restructuring
+"Postal Service Mail Sorters, Processors, and Processing Machine Operators",111930.00,56530.00,Office and Administrative Support Occupations,2.00,3.00,40.89,moderate,12.92,low,36.92,restructuring,18.89,low,36.92,restructuring
+Postmasters and Mail Superintendents,13810.00,92730.00,Management Occupations,2.00,3.00,62.17,high,14.87,low,61.07,high,17.28,low,61.38,high
+"Potters, Manufacturing",11662.00,45690.00,Production Occupations,3.00,2.00,24.81,restructuring,17.30,low,8.53,low,17.30,low,8.53,low
+"Pourers and Casters, Metal",5830.00,48940.00,Production Occupations,2.00,0.00,22.16,restructuring,17.06,low,5.09,low,17.06,low,5.09,low
+Power Distributors and Dispatchers,9180.00,107240.00,Production Occupations,3.00,4.00,48.36,moderate,34.51,restructuring,33.00,restructuring,36.17,restructuring,33.00,restructuring
+Power Plant Operators,21510.00,99670.00,Production Occupations,2.00,4.00,26.17,restructuring,15.78,low,19.39,low,15.78,low,19.39,low
+Precision Agriculture Technicians,7170.00,46790.00,"Life, Physical, and Social Science Occupations",3.00,2.00,64.15,high,36.35,restructuring,52.19,moderate,37.75,restructuring,52.59,moderate
+Prepress Technicians and Workers,23070.00,47300.00,Production Occupations,3.00,1.00,58.13,moderate,35.42,restructuring,46.37,moderate,36.67,restructuring,48.21,moderate
+"Preschool Teachers, Except Special Education",445080.00,37120.00,Educational Instruction and Library Occupations,3.00,2.00,52.65,moderate,44.27,moderate,24.05,restructuring,46.74,moderate,24.05,restructuring
+"Pressers, Textile, Garment, and Related Materials",26830.00,33880.00,Production Occupations,1.00,1.00,15.78,low,10.75,low,5.02,low,10.75,low,5.02,low
+Preventive Medicine Physicians,47978.00,249103.60,Healthcare Practitioners and Technical Occupations,5.00,2.00,28.14,restructuring,19.43,low,13.22,low,19.43,low,13.33,low
+Print Binding and Finishing Workers,36470.00,39820.00,Production Occupations,2.00,2.00,20.41,restructuring,8.02,low,14.31,low,8.02,low,14.31,low
+Printing Press Operators,145110.00,45160.00,Production Occupations,2.00,2.00,35.78,restructuring,22.24,restructuring,22.71,restructuring,22.24,restructuring,23.34,restructuring
+Private Detectives and Investigators,38700.00,52370.00,Protective Service Occupations,3.00,2.00,66.41,high,56.83,moderate,38.77,restructuring,60.57,high,38.98,restructuring
+Probation Officers and Correctional Treatment Specialists,86820.00,64520.00,Community and Social Service Occupations,4.00,4.00,45.07,moderate,36.82,restructuring,16.28,low,36.82,restructuring,16.28,low
+Procurement Clerks,59900.00,48510.00,Office and Administrative Support Occupations,2.00,3.00,77.32,high,61.70,high,59.71,moderate,69.39,high,60.04,high
+Producers and Directors,24762.00,83480.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,4.00,38.85,restructuring,28.12,restructuring,26.59,restructuring,28.12,restructuring,26.64,restructuring
+"Production, Planning, and Expediting Clerks",385000.00,57770.00,Office and Administrative Support Occupations,2.00,3.00,65.36,high,42.85,moderate,52.87,moderate,46.06,moderate,52.87,moderate
+Project Management Specialists,560732.43,89920.54,Business and Financial Operations Occupations,4.00,5.00,55.58,moderate,24.05,restructuring,51.06,moderate,24.05,restructuring,51.06,moderate
+Proofreaders and Copy Markers,5160.00,49210.00,Office and Administrative Support Occupations,4.00,2.00,64.10,high,53.07,moderate,48.65,moderate,54.18,moderate,52.55,moderate
+"Property, Real Estate, and Community Association Managers",296640.00,66700.00,Management Occupations,4.00,5.00,68.54,high,57.07,moderate,55.23,moderate,61.50,high,55.23,moderate
+Prosthodontists,760.00,179210.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,18.35,low,7.89,low,10.45,low,18.35,low,10.45,low
+Psychiatric Aides,34900.00,41590.00,Healthcare Support Occupations,2.00,2.00,29.03,restructuring,20.63,restructuring,18.06,low,22.92,restructuring,18.45,low
+Psychiatric Technicians,136300.00,42590.00,Healthcare Practitioners and Technical Occupations,3.00,2.00,18.76,low,15.72,low,6.97,low,15.72,low,6.97,low
+Psychiatrists,24800.00,257920.00,Healthcare Practitioners and Technical Occupations,5.00,0.00,45.10,moderate,38.78,restructuring,26.40,restructuring,44.56,moderate,26.40,restructuring
+"Psychology Teachers, Postsecondary",41610.00,80330.00,Educational Instruction and Library Occupations,5.00,4.00,79.19,high,63.09,high,59.78,moderate,75.88,high,59.78,moderate
+Public Relations Managers,58664.44,131835.56,Management Occupations,4.00,5.00,48.52,moderate,26.43,restructuring,39.79,restructuring,26.43,restructuring,40.12,moderate
+Public Relations Specialists,280590.00,69780.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,4.00,90.67,high,71.32,high,86.32,high,83.21,high,86.42,high
+Public Safety Telecommunicators,101140.00,50730.00,Office and Administrative Support Occupations,2.00,3.00,59.42,moderate,34.51,restructuring,51.39,moderate,34.51,restructuring,51.57,moderate
+"Pump Operators, Except Wellhead Pumpers",12600.00,60020.00,Transportation and Material Moving Occupations,2.00,3.00,44.03,moderate,20.64,restructuring,28.33,restructuring,20.64,restructuring,28.33,restructuring
+"Purchasing Agents, Except Wholesale, Retail, and Farm Products",162300.00,75650.00,Business and Financial Operations Occupations,4.00,4.00,81.95,high,65.95,high,79.73,high,71.60,high,79.73,high
+Purchasing Managers,81240.00,139510.00,Management Occupations,4.00,4.00,59.66,moderate,45.74,moderate,57.06,moderate,46.97,moderate,57.06,moderate
+Quality Control Analysts,20858.00,60130.00,"Life, Physical, and Social Science Occupations",3.00,2.00,42.59,moderate,23.05,restructuring,34.74,restructuring,25.72,restructuring,34.74,restructuring
+Quality Control Systems Managers,44992.00,121440.00,Management Occupations,4.00,5.00,33.95,restructuring,17.52,low,29.02,restructuring,17.89,low,29.02,restructuring
+Radiation Therapists,18700.00,101990.00,Healthcare Practitioners and Technical Occupations,3.00,4.00,25.64,restructuring,15.26,low,16.50,low,19.52,low,16.50,low
+Radio Frequency Identification Device Specialists,27927.00,127590.00,Architecture and Engineering Occupations,4.00,5.00,62.28,high,48.75,moderate,44.68,moderate,50.09,moderate,47.95,moderate
+"Radio, Cellular, and Tower Equipment Installers and Repairers",11400.00,64190.00,"Installation, Maintenance, and Repair Occupations",3.00,2.00,37.99,restructuring,27.44,restructuring,18.81,low,36.76,restructuring,18.81,low
+Radiologic Technologists and Technicians,223460.00,77660.00,Healthcare Practitioners and Technical Occupations,3.00,5.00,33.30,restructuring,20.21,restructuring,21.52,restructuring,20.21,restructuring,21.52,restructuring
+Radiologists,26290.00,249103.60,Healthcare Practitioners and Technical Occupations,5.00,2.00,48.92,moderate,40.89,moderate,34.36,restructuring,46.77,moderate,34.36,restructuring
+Rail Car Repairers,18300.00,65680.00,"Installation, Maintenance, and Repair Occupations",2.00,3.00,15.50,low,7.40,low,8.39,low,7.40,low,8.39,low
+"Rail Yard Engineers, Dinkey Operators, and Hostlers",3300.00,58030.00,Transportation and Material Moving Occupations,2.00,2.00,22.96,restructuring,18.05,low,7.80,low,18.05,low,7.80,low
+Rail-Track Laying and Maintenance Equipment Operators,16480.00,67370.00,Construction and Extraction Occupations,2.00,3.00,0.77,low,0.00,low,0.77,low,0.00,low,0.77,low
+"Railroad Brake, Signal, and Switch Operators and Locomotive Firers",12460.00,65480.00,Transportation and Material Moving Occupations,2.00,2.00,10.36,low,5.52,low,5.86,low,5.52,low,5.86,low
+Railroad Conductors and Yardmasters,42710.00,74080.00,Transportation and Material Moving Occupations,2.00,2.00,26.48,restructuring,18.88,low,9.82,low,18.88,low,9.82,low
+Range Managers,2547.00,67950.00,"Life, Physical, and Social Science Occupations",4.00,3.00,16.23,low,13.80,low,10.43,low,13.80,low,10.90,low
+Real Estate Brokers,49590.00,72280.00,Sales and Related Occupations,4.00,4.00,90.33,high,51.44,moderate,85.11,high,90.16,high,85.11,high
+Real Estate Sales Agents,190600.00,56320.00,Sales and Related Occupations,3.00,4.00,82.72,high,63.65,high,78.94,high,78.11,high,80.14,high
+Receptionists and Information Clerks,964530.00,37230.00,Office and Administrative Support Occupations,2.00,2.00,84.57,high,64.28,high,76.17,high,73.83,high,77.27,high
+Recreation Workers,309640.00,35380.00,Personal Care and Service Occupations,4.00,2.00,51.29,moderate,31.95,restructuring,33.09,restructuring,31.95,restructuring,33.09,restructuring
+"Recreation and Fitness Studies Teachers, Postsecondary",12680.00,75890.00,Educational Instruction and Library Occupations,5.00,4.00,77.02,high,56.68,moderate,66.03,high,69.59,high,66.03,high
+Recreational Therapists,15060.00,60280.00,Healthcare Practitioners and Technical Occupations,4.00,3.00,52.32,moderate,36.00,restructuring,20.60,restructuring,44.55,moderate,25.14,restructuring
+Recreational Vehicle Service Technicians,18710.00,50540.00,"Installation, Maintenance, and Repair Occupations",2.00,2.00,29.04,restructuring,29.04,restructuring,7.55,low,29.04,restructuring,7.55,low
+Recycling Coordinators,61568.00,61900.00,Transportation and Material Moving Occupations,2.00,2.00,41.10,moderate,16.18,low,30.88,restructuring,19.89,low,31.67,restructuring
+Recycling and Reclamation Workers,2982530.00,38940.00,Transportation and Material Moving Occupations,2.00,2.00,13.56,low,0.00,low,13.56,low,0.00,low,13.56,low
+"Refractory Materials Repairers, Except Brickmasons",1100.00,58540.00,"Installation, Maintenance, and Repair Occupations",2.00,4.00,12.88,low,12.88,low,0.00,low,12.88,low,0.00,low
+Refuse and Recyclable Material Collectors,139180.00,48350.00,Transportation and Material Moving Occupations,2.00,3.00,21.01,restructuring,7.76,low,15.96,low,8.35,low,15.96,low
+Registered Nurses,304558.00,93600.00,Healthcare Practitioners and Technical Occupations,4.00,5.00,40.16,moderate,18.49,low,29.72,restructuring,33.36,restructuring,29.72,restructuring
+Regulatory Affairs Managers,194569.00,136550.00,Management Occupations,4.00,4.00,61.99,high,37.38,restructuring,49.76,moderate,46.00,moderate,49.76,moderate
+Regulatory Affairs Specialists,101060.00,78420.00,Business and Financial Operations Occupations,4.00,4.00,58.47,moderate,37.97,restructuring,49.78,moderate,40.69,moderate,49.78,moderate
+Rehabilitation Counselors,88930.00,46110.00,Community and Social Service Occupations,4.00,3.00,59.95,moderate,30.70,restructuring,45.74,moderate,38.06,restructuring,45.74,moderate
+Reinforcing Iron and Rebar Workers,14140.00,59280.00,Construction and Extraction Occupations,2.00,3.00,11.47,low,11.47,low,0.00,low,11.47,low,0.00,low
+Remote Sensing Scientists and Technologists,22580.00,117960.00,"Life, Physical, and Social Science Occupations",4.00,4.00,66.30,high,26.35,restructuring,62.55,high,39.16,restructuring,62.90,high
+Remote Sensing Technicians,50542.00,60130.00,"Life, Physical, and Social Science Occupations",4.00,2.00,63.81,high,25.82,restructuring,57.55,moderate,29.17,restructuring,59.29,moderate
+Reservation and Transportation Ticket Agents and Travel Clerks,127440.00,41460.00,Office and Administrative Support Occupations,2.00,2.00,68.47,high,48.11,moderate,60.56,high,50.48,moderate,60.69,high
+Residential Advisors,82810.00,39180.00,Personal Care and Service Occupations,3.00,2.00,52.60,moderate,38.53,restructuring,36.43,restructuring,42.88,moderate,37.33,restructuring
+Respiratory Therapists,136420.00,80450.00,Healthcare Practitioners and Technical Occupations,3.00,5.00,21.73,restructuring,15.65,low,6.08,low,15.65,low,6.08,low
+Retail Loss Prevention Specialists,83110.00,41600.00,Protective Service Occupations,2.00,2.00,55.08,moderate,30.59,restructuring,49.42,moderate,43.59,moderate,49.42,moderate
+Retail Salespersons,3800250.00,34580.00,Sales and Related Occupations,2.00,2.00,69.00,high,49.23,moderate,62.93,high,57.36,moderate,66.28,high
+Riggers,24190.00,62060.00,"Installation, Maintenance, and Repair Occupations",2.00,2.00,32.31,restructuring,29.83,restructuring,2.49,low,29.83,restructuring,2.49,low
+Robotics Engineers,24369.00,117750.00,Architecture and Engineering Occupations,4.00,5.00,64.19,high,51.66,moderate,56.19,moderate,57.70,moderate,56.19,moderate
+Robotics Technicians,7340.00,70760.00,Architecture and Engineering Occupations,3.00,3.00,49.93,moderate,40.31,moderate,37.20,restructuring,40.31,moderate,37.20,restructuring
+"Rock Splitters, Quarry",3080.00,47460.00,Construction and Extraction Occupations,1.00,3.00,6.41,low,6.41,low,0.00,low,6.41,low,0.00,low
+"Rolling Machine Setters, Operators, and Tenders, Metal and Plastic",22350.00,48630.00,Production Occupations,2.00,1.00,33.14,restructuring,20.34,restructuring,18.40,low,20.34,restructuring,18.40,low
+"Roof Bolters, Mining",2230.00,76640.00,Construction and Extraction Occupations,2.00,4.00,14.05,low,10.08,low,3.97,low,10.08,low,3.97,low
+Roofers,136740.00,50970.00,Construction and Extraction Occupations,2.00,4.00,5.61,low,4.58,low,5.61,low,5.61,low,5.61,low
+"Rotary Drill Operators, Oil and Gas",13090.00,65010.00,Construction and Extraction Occupations,2.00,3.00,17.98,low,9.33,low,8.65,low,9.33,low,8.65,low
+"Roustabouts, Oil and Gas",45330.00,47510.00,Construction and Extraction Occupations,1.00,2.00,3.54,low,2.46,low,1.09,low,2.46,low,1.09,low
+Sailors and Marine Oilers,31360.00,49610.00,Transportation and Material Moving Occupations,2.00,2.00,15.20,low,8.72,low,7.59,low,8.72,low,7.59,low
+Sales Engineers,56690.00,121520.00,Sales and Related Occupations,4.00,4.00,78.04,high,60.56,high,68.45,high,72.01,high,70.16,high
+Sales Managers,603710.00,138060.00,Management Occupations,4.00,5.00,57.71,moderate,34.96,restructuring,55.02,moderate,53.40,moderate,55.02,moderate
+"Sales Representatives of Services, Except Advertising, Insurance, Financial Services, and Travel",1189330.00,66260.00,Sales and Related Occupations,2.00,4.00,72.98,high,38.31,restructuring,52.69,moderate,38.31,restructuring,70.86,high
+"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products",1266860.00,66780.00,Sales and Related Occupations,4.00,4.00,85.70,high,66.18,high,79.02,high,81.81,high,84.02,high
+"Sales Representatives, Wholesale and Manufacturing, Technical and Scientific Products",236233.00,100070.00,Sales and Related Occupations,4.00,5.00,81.38,high,64.04,high,70.33,high,76.76,high,73.66,high
+"Sawing Machine Setters, Operators, and Tenders, Wood",43140.00,39950.00,Production Occupations,2.00,1.00,38.37,restructuring,25.45,restructuring,15.36,low,27.59,restructuring,15.36,low
+School Bus Monitors,72140.00,34980.00,Protective Service Occupations,2.00,1.00,42.72,moderate,36.95,restructuring,11.85,low,36.95,restructuring,12.56,low
+School Psychologists,63830.00,86930.00,"Life, Physical, and Social Science Occupations",5.00,4.00,54.91,moderate,31.25,restructuring,37.96,restructuring,34.71,restructuring,38.21,restructuring
+Search Marketing Strategists,430570.00,76950.00,Business and Financial Operations Occupations,4.00,4.00,92.03,high,79.95,high,89.28,high,89.65,high,89.62,high
+"Secondary School Teachers, Except Special and Career/Technical Education",1072540.00,64580.00,Educational Instruction and Library Occupations,4.00,5.00,64.94,high,52.56,moderate,49.44,moderate,59.76,moderate,49.58,moderate
+"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",1737820.00,46290.00,Office and Administrative Support Occupations,2.00,3.00,90.87,high,67.23,high,88.98,high,75.10,high,89.35,high
+"Securities, Commodities, and Financial Services Sales Agents",472300.00,78140.00,Sales and Related Occupations,4.00,5.00,67.48,high,29.00,restructuring,64.71,high,29.00,restructuring,65.91,high
+Security Guards,1241770.00,38370.00,Protective Service Occupations,2.00,2.00,60.43,high,42.56,moderate,50.92,moderate,54.66,moderate,51.28,moderate
+Security Management Specialists,483001.00,81270.00,Business and Financial Operations Occupations,4.00,4.00,59.51,moderate,43.14,moderate,44.46,moderate,49.70,moderate,44.46,moderate
+Security Managers,70545.00,104690.00,Management Occupations,4.00,5.00,56.74,moderate,29.20,restructuring,53.43,moderate,38.31,restructuring,53.59,moderate
+Security and Fire Alarm Systems Installers,81510.00,59300.00,"Installation, Maintenance, and Repair Occupations",3.00,3.00,37.72,restructuring,34.13,restructuring,20.10,restructuring,37.72,restructuring,20.10,restructuring
+Segmental Pavers,16765.00,48120.00,Construction and Extraction Occupations,2.00,3.00,5.39,low,5.39,low,3.23,low,5.39,low,3.23,low
+Self-Enrichment Teachers,308520.00,45590.00,Educational Instruction and Library Occupations,3.00,2.00,41.24,moderate,27.88,restructuring,21.73,restructuring,27.88,restructuring,22.38,restructuring
+Semiconductor Processing Technicians,32150.00,51180.00,Production Occupations,2.00,0.00,33.29,restructuring,20.76,restructuring,22.16,restructuring,20.76,restructuring,22.53,restructuring
+"Separating, Filtering, Clarifying, Precipitating, and Still Machine Setters, Operators, and Tenders",54200.00,49500.00,Production Occupations,2.00,2.00,37.74,restructuring,20.61,restructuring,19.35,low,31.93,restructuring,19.35,low
+Septic Tank Servicers and Sewer Pipe Cleaners,29050.00,49140.00,Construction and Extraction Occupations,1.00,3.00,28.53,restructuring,21.23,restructuring,8.96,low,21.23,restructuring,8.96,low
+"Service Unit Operators, Oil and Gas",44120.00,57980.00,Construction and Extraction Occupations,2.00,3.00,13.51,low,6.07,low,7.87,low,6.07,low,7.87,low
+Set and Exhibit Designers,10850.00,66280.00,"Arts, Design, Entertainment, Sports, and Media Occupations",5.00,2.00,47.14,moderate,44.13,moderate,25.43,restructuring,44.77,moderate,25.73,restructuring
+"Sewers, Hand",2240.00,33760.00,Production Occupations,1.00,1.00,17.94,low,17.94,low,0.36,low,17.94,low,0.36,low
+Sewing Machine Operators,109590.00,36000.00,Production Occupations,1.00,2.00,21.20,restructuring,11.19,low,10.69,low,11.19,low,10.69,low
+Shampooers,8890.00,31470.00,Personal Care and Service Occupations,2.00,2.00,32.54,restructuring,14.82,low,17.72,low,14.82,low,17.72,low
+Sheet Metal Workers,117470.00,60850.00,Construction and Extraction Occupations,2.00,3.00,31.58,restructuring,31.58,restructuring,22.38,restructuring,31.58,restructuring,22.38,restructuring
+Ship Engineers,8580.00,101320.00,Transportation and Material Moving Occupations,3.00,2.00,16.55,low,4.44,low,16.55,low,7.43,low,16.55,low
+"Shipping, Receiving, and Inventory Clerks",857630.00,43190.00,Office and Administrative Support Occupations,2.00,2.00,51.03,moderate,25.81,restructuring,40.58,moderate,25.81,restructuring,41.24,moderate
+Shoe Machine Operators and Tenders,3270.00,38160.00,Production Occupations,2.00,1.00,11.16,low,8.17,low,2.99,low,8.17,low,2.99,low
+Shoe and Leather Workers and Repairers,7640.00,35950.00,Production Occupations,2.00,1.00,10.77,low,10.77,low,1.84,low,10.77,low,1.84,low
+Shuttle Drivers and Chauffeurs,292209.77,40769.77,Transportation and Material Moving Occupations,2.00,2.00,27.69,restructuring,16.14,low,16.72,low,16.14,low,16.72,low
+Signal and Track Switch Repairers,8210.00,83600.00,"Installation, Maintenance, and Repair Occupations",3.00,2.00,20.01,restructuring,13.79,low,15.65,low,13.79,low,15.65,low
+Skincare Specialists,70240.00,41560.00,Personal Care and Service Occupations,3.00,2.00,55.30,moderate,30.88,restructuring,36.40,restructuring,52.96,moderate,36.65,restructuring
+Slaughterers and Meat Packers,67500.00,39790.00,Production Occupations,2.00,1.00,32.66,restructuring,32.66,restructuring,0.00,low,32.66,restructuring,0.00,low
+Social Science Research Assistants,32940.00,58040.00,"Life, Physical, and Social Science Occupations",4.00,2.00,68.89,high,38.64,restructuring,64.75,high,53.47,moderate,64.75,high
+"Social Work Teachers, Postsecondary",13350.00,76210.00,Educational Instruction and Library Occupations,5.00,4.00,80.86,high,65.36,high,64.34,high,75.98,high,64.34,high
+Social and Community Service Managers,195490.00,78240.00,Management Occupations,4.00,4.00,45.39,moderate,34.49,restructuring,33.50,restructuring,37.07,restructuring,36.06,restructuring
+Social and Human Service Assistants,424220.00,45120.00,Community and Social Service Occupations,4.00,2.00,42.55,moderate,38.53,restructuring,19.42,low,38.53,restructuring,19.42,low
+Sociologists,2950.00,101690.00,"Life, Physical, and Social Science Occupations",5.00,3.00,71.20,high,59.14,moderate,56.27,moderate,70.51,high,56.27,moderate
+"Sociology Teachers, Postsecondary",12380.00,82540.00,Educational Instruction and Library Occupations,5.00,3.00,80.41,high,61.82,high,62.30,high,72.41,high,62.30,high
+Software Developers,725946.38,113631.06,Computer and Mathematical Occupations,4.00,5.00,64.68,high,45.16,moderate,60.87,high,45.16,moderate,60.87,high
+Software Quality Assurance Analysts and Testers,725946.38,113631.06,Computer and Mathematical Occupations,4.00,5.00,75.24,high,49.63,moderate,72.27,high,49.63,moderate,72.38,high
+Soil and Plant Scientists,16600.00,71410.00,"Life, Physical, and Social Science Occupations",5.00,3.00,46.80,moderate,38.51,restructuring,25.10,restructuring,41.05,moderate,25.10,restructuring
+Solar Energy Installation Managers,322868.00,78690.00,Construction and Extraction Occupations,3.00,4.00,40.93,moderate,35.74,restructuring,21.51,restructuring,37.36,restructuring,21.51,restructuring
+Solar Energy Systems Engineers,1591.00,117750.00,Architecture and Engineering Occupations,4.00,5.00,47.45,moderate,42.06,moderate,34.26,restructuring,42.06,moderate,35.66,restructuring
+Solar Photovoltaic Installers,28280.00,51860.00,Construction and Extraction Occupations,2.00,2.00,38.80,restructuring,31.86,restructuring,25.18,restructuring,37.91,restructuring,25.18,restructuring
+Solar Sales Representatives and Assessors,57697.00,100070.00,Sales and Related Occupations,3.00,4.00,78.13,high,55.50,moderate,69.61,high,74.57,high,69.61,high
+Solar Thermal Installers and Technicians,217906.00,62970.00,Construction and Extraction Occupations,3.00,4.00,12.18,low,8.43,low,8.33,low,8.43,low,8.33,low
+Sound Engineering Technicians,13050.00,66430.00,"Arts, Design, Entertainment, Sports, and Media Occupations",3.00,2.00,70.50,high,23.47,restructuring,66.18,high,28.35,restructuring,67.12,high
+Spa Managers,4869.00,61340.00,Management Occupations,3.00,4.00,81.10,high,33.04,restructuring,77.93,high,46.13,moderate,77.93,high
+"Special Education Teachers, Elementary School",92873.33,64270.00,Educational Instruction and Library Occupations,4.00,4.00,28.55,restructuring,19.90,low,12.05,low,19.90,low,12.05,low
+"Special Education Teachers, Kindergarten",92873.33,64270.00,Educational Instruction and Library Occupations,4.00,4.00,31.79,restructuring,20.58,restructuring,18.74,low,20.58,restructuring,19.27,low
+"Special Education Teachers, Middle School",95330.00,64880.00,Educational Instruction and Library Occupations,4.00,4.00,50.61,moderate,39.22,restructuring,36.11,restructuring,44.16,moderate,36.21,restructuring
+"Special Education Teachers, Preschool",28200.00,62190.00,Educational Instruction and Library Occupations,5.00,3.00,38.54,restructuring,30.85,restructuring,22.38,restructuring,32.51,restructuring,22.38,restructuring
+"Special Education Teachers, Secondary School",162780.00,69590.00,Educational Instruction and Library Occupations,4.00,4.00,53.42,moderate,43.11,moderate,33.55,restructuring,48.57,moderate,33.64,restructuring
+Special Effects Artists and Animators,21280.00,99800.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,3.00,58.54,moderate,41.87,moderate,55.79,moderate,41.87,moderate,57.25,moderate
+Speech-Language Pathologists,178790.00,95410.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,46.68,moderate,40.44,moderate,12.08,low,40.44,moderate,16.38,low
+Speech-Language Pathology Assistants,75937.00,46050.00,Healthcare Support Occupations,3.00,2.00,35.01,restructuring,28.83,restructuring,14.82,low,28.83,restructuring,14.82,low
+Sports Medicine Physicians,34183.00,249103.60,Healthcare Practitioners and Technical Occupations,5.00,2.00,30.46,restructuring,25.15,restructuring,14.19,low,25.31,restructuring,14.19,low
+Stationary Engineers and Boiler Operators,30780.00,75190.00,Production Occupations,3.00,2.00,35.57,restructuring,20.10,restructuring,21.66,restructuring,20.10,restructuring,21.66,restructuring
+Statistical Assistants,5900.00,51440.00,Office and Administrative Support Occupations,4.00,3.00,86.25,high,73.56,high,83.50,high,84.01,high,83.50,high
+Statisticians,18668.00,103300.00,Computer and Mathematical Occupations,5.00,5.00,84.65,high,59.35,moderate,81.90,high,71.76,high,81.90,high
+Stockers and Order Fillers,2779530.00,37090.00,Transportation and Material Moving Occupations,2.00,2.00,44.66,moderate,23.26,restructuring,37.39,restructuring,23.26,restructuring,37.92,restructuring
+"Stone Cutters and Carvers, Manufacturing",14904.00,45690.00,Production Occupations,2.00,2.00,18.82,low,15.17,low,8.96,low,17.41,low,8.96,low
+Stonemasons,8750.00,51990.00,Construction and Extraction Occupations,2.00,3.00,10.55,low,10.30,low,0.26,low,10.30,low,0.26,low
+Structural Iron and Steel Workers,64720.00,62700.00,Construction and Extraction Occupations,2.00,3.00,12.69,low,8.10,low,12.69,low,9.69,low,12.69,low
+Structural Metal Fabricators and Fitters,53380.00,49900.00,Production Occupations,2.00,3.00,9.74,low,8.66,low,1.38,low,8.66,low,1.38,low
+Substance Abuse and Behavioral Disorder Counselors,161811.67,60200.00,Community and Social Service Occupations,5.00,4.00,44.51,moderate,37.34,restructuring,25.36,restructuring,44.51,moderate,25.47,restructuring
+"Substitute Teachers, Short-Term",481300.00,38470.00,Educational Instruction and Library Occupations,4.00,2.00,52.79,moderate,38.11,restructuring,29.72,restructuring,38.11,restructuring,29.72,restructuring
+Subway and Streetcar Operators,9200.00,84830.00,Transportation and Material Moving Occupations,2.00,2.00,30.70,restructuring,14.09,low,30.40,restructuring,16.84,low,30.40,restructuring
+Supply Chain Managers,148351.00,102010.00,Management Occupations,4.00,5.00,62.92,high,36.61,restructuring,38.48,restructuring,37.24,restructuring,38.48,restructuring
+Surgical Assistants,22860.00,60290.00,Healthcare Practitioners and Technical Occupations,3.00,3.00,9.77,low,6.89,low,5.16,low,6.89,low,5.16,low
+Surgical Technologists,113890.00,62830.00,Healthcare Practitioners and Technical Occupations,3.00,4.00,12.58,low,7.70,low,5.89,low,7.70,low,5.89,low
+Survey Researchers,7720.00,63380.00,"Life, Physical, and Social Science Occupations",5.00,3.00,65.33,high,52.70,moderate,56.29,moderate,60.41,high,56.29,moderate
+Surveying and Mapping Technicians,56720.00,51940.00,Architecture and Engineering Occupations,3.00,2.00,46.50,moderate,29.73,restructuring,39.11,restructuring,29.73,restructuring,39.78,restructuring
+Surveyors,38663.00,72740.00,Architecture and Engineering Occupations,4.00,4.00,58.70,moderate,33.39,restructuring,49.85,moderate,33.39,restructuring,49.85,moderate
+Sustainability Specialists,111504.00,81270.00,Business and Financial Operations Occupations,4.00,4.00,75.53,high,60.25,high,30.49,restructuring,75.53,high,30.56,restructuring
+"Switchboard Operators, Including Answering Service",35730.00,38370.00,Office and Administrative Support Occupations,2.00,2.00,81.88,high,55.34,moderate,75.81,high,72.58,high,75.81,high
+"Tailors, Dressmakers, and Custom Sewers",16290.00,40860.00,Production Occupations,2.00,1.00,17.84,low,13.88,low,7.32,low,14.52,low,7.32,low
+Talent Directors,57339.00,83480.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,2.00,52.22,moderate,49.67,moderate,25.45,restructuring,50.97,moderate,25.45,restructuring
+"Tank Car, Truck, and Ship Loaders",10920.00,58070.00,Transportation and Material Moving Occupations,2.00,2.00,33.08,restructuring,14.53,low,18.54,low,14.53,low,18.54,low
+Tapers,12500.00,64700.00,Construction and Extraction Occupations,2.00,4.00,9.44,low,9.44,low,0.00,low,9.44,low,0.00,low
+"Tax Examiners and Collectors, and Revenue Agents",53530.00,59740.00,Business and Financial Operations Occupations,3.00,3.00,51.23,moderate,30.03,restructuring,41.87,moderate,30.90,restructuring,42.28,moderate
+Tax Preparers,73570.00,50560.00,Business and Financial Operations Occupations,3.00,4.00,73.45,high,52.28,moderate,67.33,high,62.90,high,67.33,high
+Taxi Drivers,17510.00,36220.00,Transportation and Material Moving Occupations,2.00,3.00,25.77,restructuring,22.94,restructuring,11.71,low,22.94,restructuring,11.71,low
+"Teaching Assistants, Postsecondary",155010.00,44930.00,Educational Instruction and Library Occupations,5.00,2.00,52.52,moderate,43.01,moderate,29.94,restructuring,43.01,moderate,29.94,restructuring
+"Teaching Assistants, Preschool, Elementary, Middle, and Secondary School, Except Special Education",382577.50,35550.00,Educational Instruction and Library Occupations,3.00,2.00,43.17,moderate,32.63,restructuring,22.77,restructuring,32.63,restructuring,23.36,restructuring
+"Teaching Assistants, Special Education",382577.50,35550.00,Educational Instruction and Library Occupations,3.00,2.00,38.06,restructuring,26.69,restructuring,20.07,restructuring,26.69,restructuring,20.74,restructuring
+Team Assemblers,728900.00,42210.00,Production Occupations,2.00,2.00,23.36,restructuring,13.85,low,13.78,low,13.85,low,13.78,low
+Technical Writers,55530.00,91670.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,4.00,85.88,high,70.70,high,75.83,high,85.76,high,75.83,high
+Telecommunications Engineering Specialists,80488.00,130390.00,Computer and Mathematical Occupations,3.00,5.00,77.37,high,47.87,moderate,72.14,high,67.97,high,72.39,high
+"Telecommunications Equipment Installers and Repairers, Except Line Installers",153890.00,62630.00,"Installation, Maintenance, and Repair Occupations",3.00,4.00,42.48,moderate,32.81,restructuring,23.70,restructuring,38.78,restructuring,23.98,restructuring
+Telecommunications Line Installers and Repairers,98360.00,70500.00,"Installation, Maintenance, and Repair Occupations",2.00,3.00,39.65,restructuring,35.28,restructuring,21.37,restructuring,39.03,restructuring,21.37,restructuring
+Telemarketers,66430.00,34410.00,Sales and Related Occupations,2.00,1.00,98.17,high,49.63,moderate,97.66,high,83.26,high,97.91,high
+Telephone Operators,3950.00,39130.00,Office and Administrative Support Occupations,2.00,2.00,71.71,high,49.59,moderate,64.93,high,52.49,moderate,65.59,high
+Tellers,339340.00,39340.00,Office and Administrative Support Occupations,2.00,2.00,71.25,high,43.99,moderate,65.33,high,45.63,moderate,65.44,high
+Terrazzo Workers and Finishers,1450.00,57260.00,Construction and Extraction Occupations,2.00,4.00,20.46,restructuring,20.00,low,3.08,low,20.46,restructuring,3.08,low
+Textile Bleaching and Dyeing Machine Operators and Tenders,5820.00,37320.00,Production Occupations,2.00,1.00,30.80,restructuring,18.56,low,19.47,low,18.56,low,19.47,low
+"Textile Cutting Machine Setters, Operators, and Tenders",8960.00,37940.00,Production Occupations,2.00,1.00,25.42,restructuring,16.22,low,17.31,low,17.74,low,17.31,low
+"Textile Knitting and Weaving Machine Setters, Operators, and Tenders",14530.00,38260.00,Production Occupations,2.00,1.00,17.35,low,11.17,low,12.20,low,12.11,low,12.20,low
+"Textile Winding, Twisting, and Drawing Out Machine Setters, Operators, and Tenders",20600.00,37660.00,Production Occupations,2.00,1.00,20.52,restructuring,6.28,low,15.41,low,6.28,low,15.41,low
+Tile and Stone Setters,38740.00,52240.00,Construction and Extraction Occupations,2.00,4.00,16.11,low,16.11,low,2.68,low,16.11,low,2.68,low
+Timing Device Assemblers and Adjusters,230.00,40790.00,Production Occupations,2.00,2.00,11.05,low,9.74,low,6.22,low,9.74,low,6.22,low
+Tire Builders,20970.00,55580.00,Production Occupations,2.00,2.00,1.99,low,1.99,low,0.00,low,1.99,low,0.00,low
+Tire Repairers and Changers,106620.00,37120.00,"Installation, Maintenance, and Repair Occupations",2.00,2.00,9.18,low,8.09,low,1.09,low,8.09,low,1.09,low
+"Title Examiners, Abstractors, and Searchers",48170.00,54980.00,Legal Occupations,2.00,3.00,73.31,high,52.69,moderate,66.63,high,66.18,high,66.63,high
+"Tool Grinders, Filers, and Sharpeners",5730.00,48970.00,Production Occupations,2.00,2.00,30.99,restructuring,20.82,restructuring,15.95,low,20.82,restructuring,15.95,low
+Tool and Die Makers,55130.00,63180.00,Production Occupations,3.00,3.00,28.19,restructuring,22.89,restructuring,9.34,low,22.89,restructuring,9.34,low
+Tour Guides and Escorts,24505.00,36660.00,Personal Care and Service Occupations,3.00,2.00,43.85,moderate,36.81,restructuring,30.64,restructuring,36.88,restructuring,31.09,restructuring
+Traffic Technicians,7580.00,58480.00,Transportation and Material Moving Occupations,3.00,2.00,48.49,moderate,26.05,restructuring,39.27,restructuring,26.05,restructuring,39.55,restructuring
+Training and Development Managers,44960.00,127090.00,Management Occupations,4.00,4.00,88.25,high,76.89,high,81.55,high,85.71,high,81.55,high
+Training and Development Specialists,436610.00,65850.00,Business and Financial Operations Occupations,4.00,4.00,61.26,high,51.39,moderate,34.55,restructuring,60.20,high,34.55,restructuring
+Transit and Railroad Police,3000.00,82320.00,Protective Service Occupations,3.00,5.00,30.28,restructuring,24.91,restructuring,10.49,low,24.91,restructuring,10.49,low
+Transportation Engineers,118470.00,99590.00,Architecture and Engineering Occupations,4.00,5.00,61.06,high,53.74,moderate,38.24,restructuring,57.51,moderate,38.24,restructuring
+Transportation Inspectors,7773.33,85750.00,Transportation and Material Moving Occupations,4.00,3.00,32.65,restructuring,23.78,restructuring,15.01,low,23.78,restructuring,15.01,low
+Transportation Planners,36970.00,100340.00,"Life, Physical, and Social Science Occupations",4.00,2.00,62.43,high,54.75,moderate,44.00,moderate,57.57,moderate,44.00,moderate
+Transportation Security Screeners,46340.00,63360.00,Protective Service Occupations,2.00,2.00,51.61,moderate,42.00,moderate,25.15,restructuring,44.68,moderate,25.89,restructuring
+"Transportation Vehicle, Equipment and Systems Inspectors, Except Aviation",7773.33,85750.00,Transportation and Material Moving Occupations,2.00,3.00,21.75,restructuring,16.96,low,10.47,low,21.75,restructuring,10.47,low
+"Transportation, Storage, and Distribution Managers",64649.00,102010.00,Management Occupations,4.00,5.00,39.56,restructuring,27.35,restructuring,24.44,restructuring,27.35,restructuring,25.34,restructuring
+Travel Agents,59150.00,48450.00,Sales and Related Occupations,3.00,2.00,85.62,high,63.33,high,80.94,high,71.20,high,80.94,high
+Travel Guides,24505.00,36660.00,Personal Care and Service Occupations,2.00,2.00,57.71,moderate,39.12,restructuring,48.52,moderate,50.12,moderate,49.97,moderate
+Treasurers and Controllers,286560.00,161700.00,Management Occupations,4.00,5.00,64.19,high,40.56,moderate,54.48,moderate,47.63,moderate,54.50,moderate
+Tree Trimmers and Pruners,47870.00,50430.00,Building and Grounds Cleaning and Maintenance Occupations,2.00,3.00,8.61,low,8.23,low,0.87,low,8.23,low,0.87,low
+Tutors,174660.00,40090.00,Educational Instruction and Library Occupations,3.00,2.00,77.21,high,67.17,high,55.43,moderate,71.38,high,55.60,moderate
+"Umpires, Referees, and Other Sports Officials",15080.00,38820.00,"Arts, Design, Entertainment, Sports, and Media Occupations",2.00,1.00,30.69,restructuring,13.30,low,21.98,restructuring,13.30,low,23.60,restructuring
+Upholsterers,20990.00,46190.00,Production Occupations,2.00,2.00,22.75,restructuring,18.70,low,6.65,low,18.70,low,6.65,low
+Urban and Regional Planners,43040.00,83720.00,"Life, Physical, and Social Science Occupations",5.00,4.00,48.09,moderate,41.57,moderate,24.35,restructuring,41.57,moderate,24.63,restructuring
+Urologists,19891.00,249103.60,Healthcare Practitioners and Technical Occupations,5.00,2.00,31.25,restructuring,15.64,low,24.64,restructuring,27.09,restructuring,24.64,restructuring
+"Ushers, Lobby Attendants, and Ticket Takers",119210.00,31150.00,Personal Care and Service Occupations,2.00,2.00,52.29,moderate,36.90,restructuring,35.87,restructuring,37.60,restructuring,38.38,restructuring
+Validation Engineers,87557.50,101140.00,Architecture and Engineering Occupations,4.00,4.00,47.59,moderate,35.48,restructuring,36.12,restructuring,35.48,restructuring,36.12,restructuring
+Veterinarians,80630.00,125510.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,35.79,restructuring,30.62,restructuring,14.39,low,34.16,restructuring,14.39,low
+Veterinary Assistants and Laboratory Animal Caretakers,114190.00,37320.00,Healthcare Support Occupations,2.00,2.00,30.73,restructuring,19.22,low,25.40,restructuring,21.56,restructuring,25.69,restructuring
+Veterinary Technologists and Technicians,131320.00,45980.00,Healthcare Practitioners and Technical Occupations,3.00,2.00,30.81,restructuring,19.00,low,19.93,low,23.55,restructuring,19.93,low
+Video Game Designers,55700.00,98090.00,Computer and Mathematical Occupations,4.00,5.00,63.62,high,57.35,moderate,57.15,moderate,60.30,high,57.21,moderate
+Waiters and Waitresses,2302690.00,33760.00,Food Preparation and Serving Related Occupations,2.00,2.00,45.07,moderate,39.41,restructuring,26.03,restructuring,39.41,restructuring,27.89,restructuring
+Watch and Clock Repairers,1300.00,60690.00,"Installation, Maintenance, and Repair Occupations",3.00,2.00,19.73,low,16.48,low,4.33,low,16.48,low,4.33,low
+Water Resource Specialists,16173.00,161180.00,Management Occupations,4.00,5.00,38.65,restructuring,33.28,restructuring,19.74,low,33.28,restructuring,21.67,restructuring
+Water and Wastewater Treatment Plant and System Operators,126750.00,58260.00,Production Occupations,2.00,3.00,16.84,low,0.00,low,16.84,low,0.00,low,16.84,low
+Water/Wastewater Engineers,118470.00,99590.00,Architecture and Engineering Occupations,4.00,5.00,47.81,moderate,40.72,moderate,30.11,restructuring,41.50,moderate,30.11,restructuring
+Weatherization Installers and Technicians,16765.00,48120.00,Construction and Extraction Occupations,2.00,3.00,31.10,restructuring,22.02,restructuring,18.08,low,22.02,restructuring,18.08,low
+Web Administrators,189336.00,108970.00,Computer and Mathematical Occupations,4.00,5.00,82.27,high,62.12,high,79.43,high,69.77,high,79.56,high
+Web Developers,67083.73,94570.68,Computer and Mathematical Occupations,3.00,5.00,90.77,high,70.51,high,89.62,high,84.52,high,89.73,high
+Web and Digital Interface Designers,67083.73,94570.68,Computer and Mathematical Occupations,4.00,5.00,78.00,high,51.24,moderate,74.65,high,51.24,moderate,75.23,high
+"Weighers, Measurers, Checkers, and Samplers, Recordkeeping",49720.00,45650.00,Office and Administrative Support Occupations,2.00,2.00,48.16,moderate,24.45,restructuring,39.42,restructuring,32.67,restructuring,39.42,restructuring
+"Welders, Cutters, Solderers, and Brazers",424040.00,51000.00,Production Occupations,2.00,3.00,18.65,low,16.18,low,3.16,low,16.18,low,3.16,low
+"Welding, Soldering, and Brazing Machine Setters, Operators, and Tenders",36290.00,47060.00,Production Occupations,2.00,2.00,24.64,restructuring,15.25,low,14.02,low,15.25,low,14.26,low
+Wellhead Pumpers,17350.00,70010.00,Transportation and Material Moving Occupations,2.00,3.00,44.38,moderate,14.02,low,32.89,restructuring,14.02,low,32.89,restructuring
+"Wholesale and Retail Buyers, Except Farm Products",162300.00,75650.00,Business and Financial Operations Occupations,3.00,4.00,72.85,high,60.23,high,62.64,high,66.18,high,63.02,high
+Wind Energy Development Managers,76053.00,136550.00,Management Occupations,4.00,4.00,29.04,restructuring,13.94,low,17.45,low,13.94,low,19.43,low
+Wind Energy Engineers,3499.00,117750.00,Architecture and Engineering Occupations,4.00,5.00,32.49,restructuring,31.40,restructuring,17.12,low,31.40,restructuring,18.41,low
+Wind Energy Operations Managers,56843.00,136550.00,Management Occupations,3.00,4.00,40.39,moderate,13.82,low,32.63,restructuring,18.02,low,33.55,restructuring
+Wind Turbine Service Technicians,11220.00,62580.00,"Installation, Maintenance, and Repair Occupations",3.00,3.00,33.26,restructuring,29.01,restructuring,15.50,low,29.01,restructuring,15.50,low
+"Woodworking Machine Setters, Operators, and Tenders, Except Sawing",63350.00,40440.00,Production Occupations,2.00,2.00,29.82,restructuring,23.36,restructuring,8.22,low,23.36,restructuring,8.22,low
+Word Processors and Typists,36030.00,47850.00,Office and Administrative Support Occupations,2.00,1.00,90.66,high,72.28,high,88.20,high,75.09,high,88.20,high
+Writers and Authors,2783.00,72270.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,3.00,62.06,high,49.27,moderate,48.80,moderate,49.27,moderate,51.24,moderate
+Zoologists and Wildlife Biologists,16920.00,72860.00,"Life, Physical, and Social Science Occupations",4.00,4.00,41.37,moderate,36.45,restructuring,17.47,low,39.16,restructuring,17.47,low

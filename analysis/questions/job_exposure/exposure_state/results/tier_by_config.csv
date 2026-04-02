@@ -1,0 +1,21 @@
+config,config_label,tier,tier_label,n_occs,emp
+all_ceiling,All Sources (Ceiling),high,High (>=60%),249,54202779.30
+all_ceiling,All Sources (Ceiling),moderate,Moderate (40–60%),259,47346293.86
+all_ceiling,All Sources (Ceiling),restructuring,Restructuring (20–40%),275,33799204.54
+all_ceiling,All Sources (Ceiling),low,Low (<20%),140,17883016.78
+human_conversation,Human Conversation,high,High (>=60%),81,17492544.71
+human_conversation,Human Conversation,moderate,Moderate (40–60%),220,45374427.50
+human_conversation,Human Conversation,restructuring,Restructuring (20–40%),342,54569357.54
+human_conversation,Human Conversation,low,Low (<20%),280,35794964.73
+agentic_confirmed,Agentic Confirmed,high,High (>=60%),154,39007433.30
+agentic_confirmed,Agentic Confirmed,moderate,Moderate (40–60%),157,27671983.31
+agentic_confirmed,Agentic Confirmed,restructuring,Restructuring (20–40%),267,43948343.94
+agentic_confirmed,Agentic Confirmed,low,Low (<20%),345,42603533.93
+all_confirmed,All Confirmed,high,High (>=60%),145,31391971.68
+all_confirmed,All Confirmed,moderate,Moderate (40–60%),219,41779933.19
+all_confirmed,All Confirmed,restructuring,Restructuring (20–40%),300,48765725.20
+all_confirmed,All Confirmed,low,Low (<20%),259,31293664.40
+agentic_ceiling,Agentic Ceiling,high,High (>=60%),156,40256663.30
+agentic_ceiling,Agentic Ceiling,moderate,Moderate (40–60%),158,26883217.76
+agentic_ceiling,Agentic Ceiling,restructuring,Restructuring (20–40%),268,43591645.49
+agentic_ceiling,Agentic Ceiling,low,Low (<20%),341,42499767.93

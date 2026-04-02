@@ -1,0 +1,101 @@
+title_current,risk_score,pct,group,job_zone
+Amusement and Recreation Attendants,6,57.33,high_risk,1
+Baristas,5,51.91,high_risk,1
+"Door-to-Door Sales Workers, News and Street Vendors, and Related Workers",5,56.92,high_risk,1
+"Hosts and Hostesses, Restaurant, Lounge, and Coffee Shop",5,58.31,high_risk,1
+Conveyor Operators and Tenders,4,35.52,high_risk,1
+"Cooks, Fast Food",4,46.76,high_risk,1
+"Cutters and Trimmers, Hand",3,19.59,high_risk,1
+Dining Room and Cafeteria Attendants and Bartender Helpers,3,16.11,high_risk,1
+Dishwashers,3,5.27,high_risk,1
+Fast Food and Counter Workers,3,35.37,high_risk,1
+Fallers,1,17.31,low_risk,1
+"Farmworkers and Laborers, Crop, Nursery, and Greenhouse",1,11.34,low_risk,1
+Logging Equipment Operators,1,8.35,low_risk,1
+Agricultural Equipment Operators,2,16.24,low_risk,1
+Cement Masons and Concrete Finishers,2,16.12,low_risk,1
+"Derrick Operators, Oil and Gas",2,20.24,low_risk,1
+Fishing and Hunting Workers,2,9.29,low_risk,1
+Floor Sanders and Finishers,2,0.00,low_risk,1
+"Graders and Sorters, Agricultural Products",2,21.78,low_risk,1
+Laundry and Dry-Cleaning Workers,2,21.62,low_risk,1
+Bill and Account Collectors,7,80.11,high_risk,2
+Customer Service Representatives,7,85.86,high_risk,2
+Data Entry Keyers,7,79.58,high_risk,2
+"Dispatchers, Except Police, Fire, and Ambulance",7,81.27,high_risk,2
+First-Line Supervisors of Food Preparation and Serving Workers,7,53.71,high_risk,2
+First-Line Supervisors of Retail Sales Workers,7,81.60,high_risk,2
+Food Service Managers,7,46.49,high_risk,2
+Freight Forwarders,7,68.18,high_risk,2
+Insurance Claims and Policy Processing Clerks,7,69.60,high_risk,2
+Medical Secretaries and Administrative Assistants,7,73.25,high_risk,2
+Carpenters,1,16.40,low_risk,2
+Chemical Plant and System Operators,1,19.60,low_risk,2
+Continuous Mining Machine Operators,1,12.01,low_risk,2
+Electrical Power-Line Installers and Repairers,1,21.94,low_risk,2
+"Heat Treating Equipment Setters, Operators, and Tenders, Metal and Plastic",1,33.29,low_risk,2
+Metal-Refining Furnace Operators and Tenders,1,30.58,low_risk,2
+Millwrights,1,15.88,low_risk,2
+"Molders, Shapers, and Casters, Except Metal and Plastic",1,13.72,low_risk,2
+Operating Engineers and Other Construction Equipment Operators,1,14.56,low_risk,2
+Pile Driver Operators,1,6.36,low_risk,2
+Billing and Posting Clerks,7,66.60,high_risk,3
+"Bookkeeping, Accounting, and Auditing Clerks",7,82.82,high_risk,3
+Brokerage Clerks,7,83.73,high_risk,3
+Court Reporters and Simultaneous Captioners,7,57.07,high_risk,3
+Desktop Publishers,7,80.07,high_risk,3
+Executive Secretaries and Executive Administrative Assistants,7,87.55,high_risk,3
+Fashion Designers,7,60.91,high_risk,3
+"Fine Artists, Including Painters, Sculptors, and Illustrators",7,70.70,high_risk,3
+"Human Resources Assistants, Except Payroll and Timekeeping",7,89.79,high_risk,3
+"Interviewers, Except Eligibility and Loan",7,76.14,high_risk,3
+Bus and Truck Mechanics and Diesel Engine Specialists,1,34.68,low_risk,3
+Dancers,1,21.71,low_risk,3
+Elevator and Escalator Installers and Repairers,1,21.05,low_risk,3
+First-Line Supervisors of Correctional Officers,1,37.29,low_risk,3
+Hydroelectric Plant Technicians,1,22.03,low_risk,3
+Hydroelectric Production Managers,1,21.25,low_risk,3
+Industrial Machinery Mechanics,1,39.18,low_risk,3
+"Maintenance Workers, Machinery",1,28.10,low_risk,3
+"Mobile Heavy Equipment Mechanics, Except Engines",1,27.06,low_risk,3
+Musical Instrument Repairers and Tuners,1,28.49,low_risk,3
+Biological Technicians,6,71.71,high_risk,4
+"Compensation, Benefits, and Job Analysis Specialists",6,53.21,high_risk,4
+Credit Counselors,6,66.54,high_risk,4
+Film and Video Editors,6,79.84,high_risk,4
+Interpreters and Translators,6,87.70,high_risk,4
+Proofreaders and Copy Markers,6,64.10,high_risk,4
+Social Science Research Assistants,6,68.89,high_risk,4
+Statistical Assistants,6,86.25,high_risk,4
+Advertising Sales Agents,5,83.84,high_risk,4
+Advertising and Promotions Managers,5,68.99,high_risk,4
+"Special Education Teachers, Kindergarten",0,31.79,low_risk,4
+Wind Energy Development Managers,0,29.04,low_risk,4
+Acute Care Nurses,1,34.37,low_risk,4
+Aerospace Engineers,1,35.39,low_risk,4
+Agricultural Engineers,1,42.13,low_risk,4
+Biofuels Production Managers,1,22.30,low_risk,4
+Biofuels/Biodiesel Technology and Product Development Managers,1,29.44,low_risk,4
+Biomass Power Plant Managers,1,34.00,low_risk,4
+Civil Engineers,1,40.21,low_risk,4
+Critical Care Nurses,1,26.24,low_risk,4
+"Anthropology and Archeology Teachers, Postsecondary",5,77.58,high_risk,5
+Archivists,5,86.87,high_risk,5
+"Atmospheric, Earth, Marine, and Space Sciences Teachers, Postsecondary",5,74.27,high_risk,5
+Cytotechnologists,5,49.87,high_risk,5
+Economists,5,82.74,high_risk,5
+Environmental Economists,5,50.36,high_risk,5
+"Geography Teachers, Postsecondary",5,80.73,high_risk,5
+Historians,5,78.79,high_risk,5
+"Law Teachers, Postsecondary",5,81.71,high_risk,5
+Librarians and Media Collections Specialists,5,55.13,high_risk,5
+Anesthesiologists,0,10.19,low_risk,5
+Emergency Medicine Physicians,0,26.91,low_risk,5
+Oral and Maxillofacial Surgeons,0,13.47,low_risk,5
+"Orthopedic Surgeons, Except Pediatric",0,19.44,low_risk,5
+Pediatric Surgeons,0,15.89,low_risk,5
+Adapted Physical Education Specialists,1,38.19,low_risk,5
+Cardiologists,1,26.81,low_risk,5
+Clinical Neuropsychologists,1,20.03,low_risk,5
+"Judges, Magistrate Judges, and Magistrates",1,24.47,low_risk,5
+Nurse Anesthetists,1,18.47,low_risk,5

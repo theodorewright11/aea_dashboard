@@ -1,0 +1,71 @@
+major,tier,n_occs,emp,total_occs,total_emp,pct_of_major_occs,pct_of_major_emp
+Architecture and Engineering Occupations,high,13,746852.50,56,2551211.00,23.21,29.27
+Architecture and Engineering Occupations,moderate,30,1534832.50,56,2551211.00,53.57,60.16
+Architecture and Engineering Occupations,restructuring,13,269526.00,56,2551211.00,23.21,10.56
+"Arts, Design, Entertainment, Sports, and Media Occupations",high,17,1245800.00,40,2030020.00,42.50,61.37
+"Arts, Design, Entertainment, Sports, and Media Occupations",moderate,18,658197.00,40,2030020.00,45.00,32.42
+"Arts, Design, Entertainment, Sports, and Media Occupations",restructuring,5,126023.00,40,2030020.00,12.50,6.21
+Building and Grounds Cleaning and Maintenance Occupations,low,5,4071310.00,8,4466210.00,62.50,91.16
+Building and Grounds Cleaning and Maintenance Occupations,moderate,2,298790.00,8,4466210.00,25.00,6.69
+Building and Grounds Cleaning and Maintenance Occupations,restructuring,1,96110.00,8,4466210.00,12.50,2.15
+Business and Financial Operations Occupations,high,25,5450656.71,48,9885698.15,52.08,55.14
+Business and Financial Operations Occupations,moderate,18,4216555.43,48,9885698.15,37.50,42.65
+Business and Financial Operations Occupations,restructuring,5,218486.00,48,9885698.15,10.42,2.21
+Community and Social Service Occupations,high,4,307221.67,14,2232043.33,28.57,13.76
+Community and Social Service Occupations,moderate,10,1924821.67,14,2232043.33,71.43,86.24
+Computer and Mathematical Occupations,high,34,5009899.18,36,5055770.18,94.44,99.09
+Computer and Mathematical Occupations,moderate,2,45871.00,36,5055770.18,5.56,0.91
+Construction and Extraction Occupations,high,1,483212.00,61,6327088.93,1.64,7.64
+Construction and Extraction Occupations,low,44,4084109.93,61,6327088.93,72.13,64.55
+Construction and Extraction Occupations,moderate,4,1202658.00,61,6327088.93,6.56,19.01
+Construction and Extraction Occupations,restructuring,12,557109.00,61,6327088.93,19.67,8.81
+Educational Instruction and Library Occupations,high,43,4609100.00,62,7883001.67,69.35,58.47
+Educational Instruction and Library Occupations,moderate,13,2601767.50,62,7883001.67,20.97,33.00
+Educational Instruction and Library Occupations,restructuring,6,672134.17,62,7883001.67,9.68,8.53
+"Farming, Fishing, and Forestry Occupations",low,6,324890.00,12,433840.00,50.00,74.89
+"Farming, Fishing, and Forestry Occupations",moderate,1,1730.00,12,433840.00,8.33,0.40
+"Farming, Fishing, and Forestry Occupations",restructuring,5,107220.00,12,433840.00,41.67,24.71
+Food Preparation and Serving Related Occupations,low,2,993680.00,16,13500330.00,12.50,7.36
+Food Preparation and Serving Related Occupations,moderate,9,8347880.00,16,13500330.00,56.25,61.83
+Food Preparation and Serving Related Occupations,restructuring,5,4158770.00,16,13500330.00,31.25,30.80
+Healthcare Practitioners and Technical Occupations,high,6,1193969.24,89,9545687.23,6.74,12.51
+Healthcare Practitioners and Technical Occupations,low,19,928419.85,89,9545687.23,21.35,9.73
+Healthcare Practitioners and Technical Occupations,moderate,28,3716458.00,89,9545687.23,31.46,38.93
+Healthcare Practitioners and Technical Occupations,restructuring,36,3706840.14,89,9545687.23,40.45,38.83
+Healthcare Support Occupations,high,2,84170.00,19,7448000.00,10.53,1.13
+Healthcare Support Occupations,low,6,1633843.00,19,7448000.00,31.58,21.94
+Healthcare Support Occupations,moderate,3,3162960.00,19,7448000.00,15.79,42.47
+Healthcare Support Occupations,restructuring,8,2567027.00,19,7448000.00,42.11,34.47
+"Installation, Maintenance, and Repair Occupations",low,11,615870.00,50,6035350.00,22.00,10.20
+"Installation, Maintenance, and Repair Occupations",moderate,8,1552000.00,50,6035350.00,16.00,25.72
+"Installation, Maintenance, and Repair Occupations",restructuring,31,3867480.00,50,6035350.00,62.00,64.08
+Legal Occupations,high,2,61390.00,7,1226030.00,28.57,5.01
+Legal Occupations,moderate,4,1139060.00,7,1226030.00,57.14,92.91
+Legal Occupations,restructuring,1,25580.00,7,1226030.00,14.29,2.09
+"Life, Physical, and Social Science Occupations",high,20,421212.00,60,1493111.97,33.33,28.21
+"Life, Physical, and Social Science Occupations",low,2,12197.00,60,1493111.97,3.33,0.82
+"Life, Physical, and Social Science Occupations",moderate,27,830227.98,60,1493111.97,45.00,55.60
+"Life, Physical, and Social Science Occupations",restructuring,11,229474.98,60,1493111.97,18.33,15.37
+Management Occupations,high,19,3910786.00,56,11486199.36,33.93,34.05
+Management Occupations,moderate,20,6615458.36,56,11486199.36,35.71,57.59
+Management Occupations,restructuring,17,959955.00,56,11486199.36,30.36,8.36
+Office and Administrative Support Occupations,high,38,16020790.00,51,17839840.00,74.51,89.80
+Office and Administrative Support Occupations,moderate,10,1348360.00,51,17839840.00,19.61,7.56
+Office and Administrative Support Occupations,restructuring,3,470690.00,51,17839840.00,5.88,2.64
+Personal Care and Service Occupations,high,1,44200.00,31,3090055.42,3.23,1.43
+Personal Care and Service Occupations,low,6,195720.00,31,3090055.42,19.35,6.33
+Personal Care and Service Occupations,moderate,18,2459455.42,31,3090055.42,58.06,79.59
+Personal Care and Service Occupations,restructuring,6,390680.00,31,3090055.42,19.35,12.64
+Production Occupations,high,1,28230.00,107,7559298.00,0.93,0.37
+Production Occupations,low,27,1098677.00,107,7559298.00,25.23,14.53
+Production Occupations,moderate,10,1210920.00,107,7559298.00,9.35,16.02
+Production Occupations,restructuring,69,5221471.00,107,7559298.00,64.49,69.07
+Protective Service Occupations,high,4,1364560.00,26,3634460.00,15.38,37.55
+Protective Service Occupations,low,2,425920.00,26,3634460.00,7.69,11.72
+Protective Service Occupations,moderate,10,1019315.00,26,3634460.00,38.46,28.05
+Protective Service Occupations,restructuring,10,824665.00,26,3634460.00,38.46,22.69
+Sales and Related Occupations,high,19,13220730.00,22,13252600.00,86.36,99.76
+Sales and Related Occupations,moderate,3,31870.00,22,13252600.00,13.64,0.24
+Transportation and Material Moving Occupations,low,10,3498380.00,52,16255449.24,19.23,21.52
+Transportation and Material Moving Occupations,moderate,11,3427106.00,52,16255449.24,21.15,21.08
+Transportation and Material Moving Occupations,restructuring,31,9329963.24,52,16255449.24,59.62,57.40

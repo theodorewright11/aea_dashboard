@@ -231,7 +231,7 @@ def _make_scatter(
 def main() -> None:
     results = ensure_results_dir(HERE)
     fig_dir = results / "figures"
-    print("Job Exposure — generating outputs...\n")
+    print("Job Exposure -- generating outputs...\n")
 
     # ── Employment lookup ─────────────────────────────────────────────────
     print("Loading employment data...")

@@ -1,0 +1,16 @@
+element_name,mean_gap,median_gap,std_gap,n_occs,type
+Speed of Limb Movement,-7.49,-7.29,1.67,7,abilities
+Sound Localization,-7.33,-7.33,,1,abilities
+Dynamic Flexibility,-6.47,-5.42,2.96,3,abilities
+Reaction Time,-6.43,-5.90,2.32,144,abilities
+Response Orientation,-6.23,-5.48,3.08,57,abilities
+Static Strength,-6.19,-5.20,2.05,168,abilities
+Multilimb Coordination,-6.18,-5.42,2.20,250,abilities
+Extent Flexibility,-6.13,-5.61,2.09,153,abilities
+Depth Perception,-5.95,-4.89,2.26,95,abilities
+Control Precision,-5.76,-4.79,2.57,319,abilities
+Gross Body Equilibrium,-5.71,-4.96,2.38,53,abilities
+Dynamic Strength,-5.61,-4.74,2.26,40,abilities
+Trunk Strength,-5.60,-5.16,1.81,235,abilities
+Rate Control,-5.53,-5.23,1.96,95,abilities
+Building and Construction,-5.52,-5.02,4.98,113,knowledge

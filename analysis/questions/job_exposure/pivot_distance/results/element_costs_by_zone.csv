@@ -1,0 +1,259 @@
+element_name,type,high_risk_avg_score,low_risk_avg_score,pivot_cost,job_zone
+Building and Construction,knowledge,0.00,15.40,15.40,1
+Biology,knowledge,0.00,13.53,13.53,1
+Geography,knowledge,0.00,12.42,12.42,1
+Law and Government,knowledge,0.00,11.35,11.35,1
+Repairing,skills,0.00,10.62,10.62,1
+Education and Training,knowledge,0.00,10.17,10.17,1
+Management of Personnel Resources,skills,0.00,10.14,10.14,1
+Troubleshooting,skills,0.00,9.64,9.64,1
+Equipment Maintenance,skills,0.00,9.63,9.63,1
+Quality Control Analysis,skills,0.00,9.40,9.40,1
+Time Management,skills,0.00,8.58,8.58,1
+Mechanical,knowledge,9.12,15.19,6.08,1
+Mathematics,knowledge,7.45,9.91,2.46,1
+Production and Processing,knowledge,8.91,10.42,1.51,1
+Public Safety and Security,knowledge,8.92,9.95,1.03,1
+Coordination,skills,8.82,9.46,0.65,1
+Critical Thinking,skills,8.64,9.20,0.56,1
+Complex Problem Solving,skills,8.25,8.61,0.36,1
+Monitoring,skills,9.02,9.18,0.15,1
+English Language,knowledge,9.91,10.01,0.11,1
+Active Listening,skills,8.32,7.82,0.00,1
+Administration and Management,knowledge,11.04,7.85,0.00,1
+Administrative,unknown,11.28,0.00,0.00,1
+Communications and Media,unknown,12.83,0.00,0.00,1
+Customer and Personal Service,knowledge,15.16,13.13,0.00,1
+Food Production,unknown,9.51,0.00,0.00,1
+Judgment and Decision Making,skills,8.64,7.35,0.00,1
+Persuasion,unknown,16.00,0.00,0.00,1
+Negotiation,unknown,10.98,0.00,0.00,1
+Reading Comprehension,unknown,8.25,0.00,0.00,1
+Operation and Control,skills,15.52,12.58,0.00,1
+Operations Monitoring,skills,16.00,11.93,0.00,1
+Sales and Marketing,knowledge,11.58,11.07,0.00,1
+Social Perceptiveness,unknown,8.33,0.00,0.00,1
+Service Orientation,unknown,8.56,0.00,0.00,1
+Speaking,skills,9.79,8.04,0.00,1
+Transportation,unknown,12.00,0.00,0.00,1
+Building and Construction,knowledge,0.00,21.88,21.88,2
+Mechanical,knowledge,0.00,16.41,16.41,2
+Chemistry,knowledge,0.00,15.90,15.90,2
+Engineering and Technology,knowledge,0.00,14.63,14.63,2
+Operations Monitoring,skills,0.00,13.99,13.99,2
+Design,knowledge,0.00,13.71,13.71,2
+Operation and Control,skills,0.00,13.47,13.47,2
+Physics,knowledge,0.00,11.85,11.85,2
+Repairing,skills,0.00,11.03,11.03,2
+Equipment Maintenance,skills,0.00,10.76,10.76,2
+Troubleshooting,skills,0.00,10.62,10.62,2
+Quality Control Analysis,skills,0.00,10.37,10.37,2
+Installation,skills,0.00,9.91,9.91,2
+Production and Processing,knowledge,11.38,13.22,1.84,2
+Mathematics,skills,9.18,10.50,1.32,2
+Education and Training,knowledge,12.79,13.19,0.40,2
+Systems Analysis,skills,9.00,9.36,0.36,2
+Law and Government,knowledge,11.24,11.46,0.21,2
+Administration and Management,knowledge,14.93,13.09,0.00,2
+Administrative,unknown,17.18,0.00,0.00,2
+Active Learning,skills,9.91,9.13,0.00,2
+Active Listening,skills,13.10,9.72,0.00,2
+Instructing,unknown,10.94,0.00,0.00,2
+Geography,unknown,16.41,0.00,0.00,2
+Food Production,unknown,14.23,0.00,0.00,2
+English Language,knowledge,14.85,11.31,0.00,2
+Coordination,skills,12.45,10.65,0.00,2
+Critical Thinking,skills,11.62,10.53,0.00,2
+Customer and Personal Service,knowledge,21.83,9.84,0.00,2
+Economics and Accounting,unknown,11.05,0.00,0.00,2
+Complex Problem Solving,skills,9.27,9.19,0.00,2
+Computers and Electronics,unknown,12.53,0.00,0.00,2
+Communications and Media,unknown,12.87,0.00,0.00,2
+Learning Strategies,unknown,9.99,0.00,0.00,2
+Management of Material Resources,unknown,9.00,0.00,0.00,2
+Management of Personnel Resources,unknown,14.11,0.00,0.00,2
+Management of Financial Resources,unknown,9.00,0.00,0.00,2
+Judgment and Decision Making,skills,9.06,9.05,0.00,2
+Persuasion,unknown,10.31,0.00,0.00,2
+Personnel and Human Resources,unknown,11.01,0.00,0.00,2
+Monitoring,skills,10.99,10.45,0.00,2
+Negotiation,unknown,10.29,0.00,0.00,2
+Medicine and Dentistry,unknown,11.62,0.00,0.00,2
+Sales and Marketing,unknown,11.94,0.00,0.00,2
+Reading Comprehension,skills,11.96,9.71,0.00,2
+Public Safety and Security,knowledge,14.55,10.88,0.00,2
+Social Perceptiveness,skills,10.61,8.25,0.00,2
+Service Orientation,skills,11.67,7.86,0.00,2
+Systems Evaluation,unknown,9.18,0.00,0.00,2
+Speaking,skills,13.97,8.61,0.00,2
+Telecommunications,unknown,10.54,0.00,0.00,2
+Time Management,skills,10.41,9.01,0.00,2
+Transportation,knowledge,16.86,12.24,0.00,2
+Writing,skills,9.59,9.00,0.00,2
+Mechanical,knowledge,0.00,24.59,24.59,3
+Public Safety and Security,knowledge,0.00,16.51,16.51,3
+Building and Construction,knowledge,0.00,16.38,16.38,3
+Psychology,knowledge,0.00,15.71,15.71,3
+Engineering and Technology,knowledge,0.00,15.47,15.47,3
+Repairing,skills,0.00,14.77,14.77,3
+Physics,knowledge,0.00,14.68,14.68,3
+Transportation,knowledge,0.00,14.47,14.47,3
+Troubleshooting,skills,0.00,14.43,14.43,3
+Equipment Maintenance,skills,0.00,13.88,13.88,3
+Operations Monitoring,skills,0.00,13.50,13.50,3
+Therapy and Counseling,knowledge,0.00,12.25,12.25,3
+Operation and Control,skills,0.00,12.01,12.01,3
+Installation,skills,0.00,11.83,11.83,3
+Quality Control Analysis,skills,0.00,11.76,11.76,3
+Sociology and Anthropology,knowledge,0.00,11.53,11.53,3
+Telecommunications,knowledge,0.00,10.62,10.62,3
+Science,skills,0.00,10.56,10.56,3
+Management of Material Resources,skills,0.00,10.14,10.14,3
+Management of Financial Resources,skills,0.00,10.14,10.14,3
+Equipment Selection,skills,0.00,9.94,9.94,3
+Systems Evaluation,skills,0.00,9.81,9.81,3
+Education and Training,knowledge,12.04,16.71,4.67,3
+Fine Arts,knowledge,14.84,19.15,4.31,3
+Management of Personnel Resources,skills,11.38,14.53,3.16,3
+Social Perceptiveness,skills,10.77,13.88,3.11,3
+Administration and Management,knowledge,10.32,12.65,2.33,3
+Learning Strategies,skills,9.73,11.65,1.92,3
+Negotiation,skills,9.51,11.34,1.84,3
+Monitoring,skills,10.09,11.80,1.71,3
+Instructing,skills,10.50,11.83,1.33,3
+Systems Analysis,skills,9.00,10.17,1.17,3
+Persuasion,skills,11.23,12.25,1.02,3
+Coordination,skills,10.55,10.91,0.36,3
+Active Learning,skills,10.04,10.13,0.08,3
+Judgment and Decision Making,skills,10.01,10.04,0.03,3
+Active Listening,skills,13.96,10.78,0.00,3
+Administrative,knowledge,21.71,13.49,0.00,3
+Communications and Media,unknown,12.70,0.00,0.00,3
+Complex Problem Solving,skills,10.26,10.19,0.00,3
+Computers and Electronics,knowledge,15.54,13.28,0.00,3
+Law and Government,knowledge,15.29,14.44,0.00,3
+Design,knowledge,21.34,12.66,0.00,3
+Customer and Personal Service,knowledge,17.14,14.01,0.00,3
+Critical Thinking,skills,12.06,11.95,0.00,3
+Economics and Accounting,unknown,11.04,0.00,0.00,3
+English Language,knowledge,14.87,12.11,0.00,3
+Mathematics,skills,10.43,10.37,0.00,3
+Operations Analysis,unknown,10.56,0.00,0.00,3
+Production and Processing,knowledge,13.00,12.30,0.00,3
+Personnel and Human Resources,knowledge,19.62,14.47,0.00,3
+Reading Comprehension,skills,13.24,11.58,0.00,3
+Sales and Marketing,unknown,9.54,0.00,0.00,3
+Speaking,skills,12.39,10.86,0.00,3
+Service Orientation,skills,10.61,9.67,0.00,3
+Time Management,skills,10.03,9.76,0.00,3
+Writing,skills,11.24,10.97,0.00,3
+Medicine and Dentistry,knowledge,0.00,25.44,25.44,4
+Building and Construction,knowledge,0.00,17.33,17.33,4
+Mechanical,knowledge,0.00,17.32,17.32,4
+Food Production,knowledge,0.00,17.06,17.06,4
+Physics,knowledge,0.00,16.95,16.95,4
+Therapy and Counseling,knowledge,0.00,16.41,16.41,4
+Operations Analysis,skills,0.00,15.15,15.15,4
+Geography,knowledge,0.00,14.33,14.33,4
+Sociology and Anthropology,knowledge,0.00,13.76,13.76,4
+Engineering and Technology,knowledge,11.05,23.34,12.29,4
+Technology Design,skills,0.00,12.19,12.19,4
+Psychology,knowledge,10.86,22.17,11.31,4
+Management of Material Resources,skills,0.00,10.90,10.90,4
+Quality Control Analysis,skills,0.00,10.70,10.70,4
+Management of Financial Resources,skills,0.00,10.53,10.53,4
+Transportation,knowledge,0.00,10.46,10.46,4
+Operation and Control,skills,0.00,9.77,9.77,4
+Troubleshooting,skills,0.00,9.00,9.00,4
+Design,knowledge,11.05,18.95,7.90,4
+Law and Government,knowledge,8.35,12.51,4.15,4
+Chemistry,knowledge,12.52,16.39,3.87,4
+Education and Training,knowledge,12.88,16.71,3.83,4
+Public Safety and Security,knowledge,8.23,11.91,3.69,4
+Monitoring,skills,10.95,14.61,3.66,4
+Judgment and Decision Making,skills,10.90,14.39,3.48,4
+Complex Problem Solving,skills,10.95,14.15,3.20,4
+Coordination,skills,10.28,13.15,2.88,4
+Systems Analysis,skills,9.46,12.26,2.80,4
+Critical Thinking,skills,13.77,16.49,2.72,4
+Administration and Management,knowledge,13.59,16.16,2.57,4
+Time Management,skills,9.92,12.27,2.35,4
+Service Orientation,skills,11.22,13.27,2.05,4
+Learning Strategies,skills,9.55,11.48,1.93,4
+Instructing,skills,9.00,10.91,1.91,4
+Reading Comprehension,skills,15.74,17.54,1.80,4
+Production and Processing,knowledge,15.95,17.60,1.65,4
+Systems Evaluation,skills,10.41,12.04,1.63,4
+Active Learning,skills,12.14,13.58,1.44,4
+Speaking,skills,13.92,15.30,1.38,4
+Operations Monitoring,skills,9.00,10.38,1.38,4
+Writing,skills,13.18,14.29,1.11,4
+Administrative,knowledge,13.88,14.63,0.75,4
+Active Listening,skills,14.56,15.25,0.70,4
+Economics and Accounting,knowledge,10.81,11.30,0.49,4
+Mathematics,skills,12.20,12.63,0.43,4
+Computers and Electronics,knowledge,15.08,15.21,0.13,4
+Social Perceptiveness,skills,12.70,12.77,0.07,4
+Fine Arts,unknown,15.11,0.00,0.00,4
+English Language,knowledge,19.86,16.27,0.00,4
+Communications and Media,unknown,19.59,0.00,0.00,4
+Biology,knowledge,25.43,17.36,0.00,4
+Customer and Personal Service,knowledge,18.80,16.90,0.00,4
+Foreign Language,unknown,20.07,0.00,0.00,4
+Management of Personnel Resources,skills,12.11,11.17,0.00,4
+Personnel and Human Resources,knowledge,21.20,15.23,0.00,4
+Persuasion,skills,12.77,10.44,0.00,4
+Negotiation,skills,11.54,9.86,0.00,4
+Programming,unknown,10.50,0.00,0.00,4
+Science,skills,12.28,12.16,0.00,4
+Sales and Marketing,unknown,21.98,0.00,0.00,4
+Telecommunications,unknown,19.36,0.00,0.00,4
+Psychology,knowledge,0.00,21.89,21.89,5
+Therapy and Counseling,knowledge,0.00,17.35,17.35,5
+Medicine and Dentistry,knowledge,14.05,29.33,15.28,5
+Personnel and Human Resources,knowledge,0.00,11.97,11.97,5
+Operations Monitoring,skills,0.00,11.83,11.83,5
+Negotiation,skills,0.00,10.86,10.86,5
+Operations Analysis,skills,0.00,10.55,10.55,5
+Public Safety and Security,knowledge,0.00,10.23,10.23,5
+Engineering and Technology,knowledge,0.00,10.22,10.22,5
+Management of Personnel Resources,skills,0.00,9.57,9.57,5
+Quality Control Analysis,skills,0.00,9.36,9.36,5
+Social Perceptiveness,skills,10.17,16.63,6.46,5
+Judgment and Decision Making,skills,12.75,17.46,4.71,5
+Complex Problem Solving,skills,12.44,16.74,4.29,5
+Monitoring,skills,11.97,15.96,3.98,5
+Service Orientation,skills,9.77,13.72,3.95,5
+Coordination,skills,9.44,13.04,3.60,5
+Biology,knowledge,18.20,21.30,3.09,5
+Critical Thinking,skills,16.59,19.68,3.08,5
+Law and Government,knowledge,17.65,20.40,2.75,5
+Active Listening,skills,17.02,19.27,2.25,5
+Time Management,skills,10.14,11.86,1.72,5
+Persuasion,skills,9.97,11.60,1.63,5
+Active Learning,skills,15.03,16.62,1.59,5
+Customer and Personal Service,knowledge,18.46,18.59,0.13,5
+Education and Training,knowledge,19.82,19.93,0.12,5
+English Language,knowledge,21.62,20.82,0.00,5
+Economics and Accounting,unknown,24.02,0.00,0.00,5
+Administration and Management,knowledge,14.21,13.50,0.00,5
+Administrative,unknown,14.90,0.00,0.00,5
+Chemistry,knowledge,16.54,16.11,0.00,5
+Communications and Media,unknown,12.03,0.00,0.00,5
+Computers and Electronics,knowledge,16.98,13.02,0.00,5
+Foreign Language,unknown,16.15,0.00,0.00,5
+History and Archeology,unknown,22.57,0.00,0.00,5
+Mathematics,skills,16.68,10.35,0.00,5
+Geography,unknown,21.50,0.00,0.00,5
+Instructing,skills,14.67,12.70,0.00,5
+Management of Financial Resources,unknown,10.14,0.00,0.00,5
+Learning Strategies,skills,15.46,13.28,0.00,5
+Philosophy and Theology,unknown,17.12,0.00,0.00,5
+Science,skills,13.98,13.29,0.00,5
+Reading Comprehension,skills,19.43,19.30,0.00,5
+Physics,knowledge,18.54,15.26,0.00,5
+Sociology and Anthropology,knowledge,20.92,15.53,0.00,5
+Systems Analysis,skills,10.76,9.88,0.00,5
+Speaking,skills,17.57,16.81,0.00,5
+Systems Evaluation,skills,10.94,10.29,0.00,5
+Writing,skills,17.76,15.79,0.00,5

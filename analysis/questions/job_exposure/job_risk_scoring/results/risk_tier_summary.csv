@@ -1,0 +1,4 @@
+risk_tier,n_occs,total_emp,total_wages,avg_pct,avg_risk_score
+high,233,59890979.89,61033.44,63.29,5.57
+low,229,15545709.58,82533.73,26.39,1.64
+moderate,461,77794605.00,77558.39,45.10,3.45

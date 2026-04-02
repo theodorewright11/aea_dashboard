@@ -371,8 +371,12 @@ def generate_pdf(md_path: Path, pdf_path: Path) -> None:
     """
     import re
 
-    import markdown
-    from xhtml2pdf import pisa
+    try:
+        import markdown
+        from xhtml2pdf import pisa
+    except ImportError:
+        print(f"  [skip PDF] install markdown + xhtml2pdf for PDF export")
+        return
 
     md_text = md_path.read_text(encoding="utf-8")
     md_dir = md_path.parent

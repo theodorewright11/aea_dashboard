@@ -136,3 +136,131 @@ def ensure_results_dir(question_dir: Path) -> Path:
 def question_dir(name: str) -> Path:
     """Return the path to a question folder by name."""
     return QUESTIONS_DIR / name
+
+
+# ── Five primary analysis configs ─────────────────────────────────────────────
+# Single pre-combined datasets — no combine_method needed.
+# All use method="freq" (time-weighted), use_auto_aug=True, geo="nat".
+# These are the canonical configs for job_exposure and subsequent analyses.
+ANALYSIS_CONFIGS: dict[str, str] = {
+    "all_ceiling":        "All 2026-02-18",               # AEI Both + MCP + Microsoft — ceiling
+    "human_conversation": "AEI Conv + Micro 2026-02-12",  # confirmed human conversation usage
+    "agentic_confirmed":  "MCP + API 2026-02-12",         # confirmed agentic tool-use
+    "all_confirmed":      "AEI Both + Micro 2026-02-12",  # all confirmed usage (conv + API + Microsoft)
+    "agentic_ceiling":    "MCP + API 2026-02-18",         # agentic ceiling (most recent)
+}
+
+# Config labels for charts/reports
+ANALYSIS_CONFIG_LABELS: dict[str, str] = {
+    "all_ceiling":        "All Sources (Ceiling)",
+    "human_conversation": "Human Conversation",
+    "agentic_confirmed":  "Agentic Confirmed",
+    "all_confirmed":      "All Confirmed",
+    "agentic_ceiling":    "Agentic Ceiling",
+}
+
+# Full time series for each config (for trend analysis)
+ANALYSIS_CONFIG_SERIES: dict[str, list[str]] = {
+    "all_ceiling": [
+        "All 2024-09-30", "All 2024-12-23", "All 2025-03-06", "All 2025-04-24",
+        "All 2025-05-24", "All 2025-07-23", "All 2025-08-11", "All 2025-11-13",
+        "All 2026-02-12", "All 2026-02-18",
+    ],
+    "human_conversation": [
+        "AEI Conv + Micro 2024-09-30", "AEI Conv + Micro 2024-12-23",
+        "AEI Conv + Micro 2025-03-06", "AEI Conv + Micro 2025-08-11",
+        "AEI Conv + Micro 2025-11-13", "AEI Conv + Micro 2026-02-12",
+    ],
+    "agentic_confirmed": [
+        "MCP + API 2025-04-24", "MCP + API 2025-05-24", "MCP + API 2025-07-23",
+        "MCP + API 2025-08-11", "MCP + API 2025-11-13", "MCP + API 2026-02-12",
+    ],
+    "all_confirmed": [
+        "AEI Both + Micro 2024-09-30", "AEI Both + Micro 2024-12-23",
+        "AEI Both + Micro 2025-03-06", "AEI Both + Micro 2025-08-11",
+        "AEI Both + Micro 2025-11-13", "AEI Both + Micro 2026-02-12",
+    ],
+    "agentic_ceiling": [
+        "MCP + API 2025-04-24", "MCP + API 2025-05-24", "MCP + API 2025-07-23",
+        "MCP + API 2025-08-11", "MCP + API 2025-11-13", "MCP + API 2026-02-12",
+        "MCP + API 2026-02-18",
+    ],
+}
+
+# Occupations of interest (matched against title_current in eco_2025)
+OCCS_OF_INTEREST: list[str] = [
+    # High-profile / high-employment
+    "Registered Nurses",
+    "Software Developers",
+    "General and Operations Managers",
+    "Cashiers",
+    "Customer Service Representatives",
+    "Retail Salespersons",
+    "Heavy and Tractor-Trailer Truck Drivers",
+    "Elementary School Teachers, Except Special Education",
+    "Waiters and Waitresses",
+    "Janitors and Cleaners, Except Maids and Housekeeping Cleaners",
+    "Accountants and Auditors",
+    "Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",
+    # AI-controversial / interesting
+    "Lawyers",
+    "Physicians, All Other",
+    "Financial Analysts",
+    "Graphic Designers",
+    "Technical Writers",
+    "Web Developers",
+    "Paralegals and Legal Assistants",
+    "Data Scientists",
+    "Human Resources Specialists",
+    "Market Research Analysts and Marketing Specialists",
+    "Editors",
+    "Interpreters and Translators",
+    # Utah-relevant
+    "Computer Systems Analysts",
+    "Medical and Health Services Managers",
+    "Construction Laborers",
+    "Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products",
+    "Network and Computer Systems Administrators",
+]
+
+
+def get_pct_tasks_affected(
+    dataset_name: str,
+    method: str = "freq",
+    use_auto_aug: bool = True,
+) -> "pd.Series":
+    """
+    Run the backend compute pipeline for a single dataset and return
+    pct_tasks_affected as a Series keyed by title_current (occupation name).
+
+    Parameters
+    ----------
+    dataset_name : exact key from backend config, e.g. "All 2026-02-18"
+    method       : "freq" (time-weighted) or "imp" (value-weighted)
+    use_auto_aug : whether to apply the auto-aug multiplier
+
+    Returns
+    -------
+    pd.Series  index=title_current, values=pct_tasks_affected (0-100)
+    """
+    import pandas as pd
+    from backend.compute import get_group_data
+
+    config: dict[str, Any] = {
+        "selected_datasets": [dataset_name],
+        "combine_method": "Average",
+        "method": method,
+        "use_auto_aug": use_auto_aug,
+        "physical_mode": "all",
+        "geo": "nat",
+        "agg_level": "occupation",
+        "sort_by": "% Tasks Affected",
+        "top_n": 9999,
+        "search_query": "",
+        "context_size": 3,
+    }
+    data = get_group_data(config)
+    assert data is not None, f"get_pct_tasks_affected: no data returned for '{dataset_name}'"
+    df: pd.DataFrame = data["df"]
+    group_col: str = data["group_col"]
+    return df.set_index(group_col)["pct_tasks_affected"]
