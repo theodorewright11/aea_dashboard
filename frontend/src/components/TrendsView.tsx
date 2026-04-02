@@ -8,12 +8,13 @@ import {
 } from "recharts";
 import type {
   ConfigResponse, TrendsSettings, WATrendsSettings,
-  TrendsResponse, TrendSeries,
+  TrendsResponse, TrendSeries, DatasetCategory,
 } from "@/lib/types";
 import { fetchTrends, fetchWATrends } from "@/lib/api";
 import { downloadChartAsPng } from "@/lib/downloadChart";
 import type { LegendItem } from "@/lib/downloadChart";
 import { useSimpleMode } from "@/lib/SimpleModeContext";
+import { getAllDates, filterSubTypesByDateRange } from "@/lib/datasetRules";
 
 interface Props { config: ConfigResponse }
 
@@ -34,20 +35,31 @@ const CAT_COLORS = [
 
 // ── Dataset family helpers ─────────────────────────────────────────────────────
 
-function isAEIFamily(name: string) { return name.startsWith("AEI"); }
-function isMCPFamily(name: string) { return name.startsWith("MCP") || name === "Microsoft"; }
+/** AEI sub_types use eco_2015 baseline in WA trends; non-AEI use eco_2025. */
+function isAEISubType(key: string): boolean { return key.startsWith("AEI"); }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function getSeriesToFetch(
-  selectedDatasets: string[],
-  datasetSeries: Record<string, string[]>,
+/**
+ * Given selected sub_type keys and a date range, resolve the dataset names
+ * that should be included when filtering backend results on the frontend.
+ */
+function getDatasetsInRange(
+  subTypeKeys: string[],
+  categories: DatasetCategory[],
+  fromDate: string,
+  toDate: string,
 ): string[] {
-  const needed = new Set<string>();
-  Object.entries(datasetSeries).forEach(([seriesName, datasets]) => {
-    if (datasets.some((d) => selectedDatasets.includes(d))) needed.add(seriesName);
-  });
-  return Array.from(needed);
+  const result: string[] = [];
+  for (const cat of categories) {
+    for (const st of cat.sub_types) {
+      if (!subTypeKeys.includes(st.key)) continue;
+      for (const ds of st.datasets) {
+        if (ds.date >= fromDate && ds.date <= toDate) {
+          result.push(ds.name);
+        }
+      }
+    }
+  }
+  return result;
 }
 
 // ── Formatters ────────────────────────────────────────────────────────────────
@@ -799,74 +811,101 @@ function ChartPanel({
   );
 }
 
-// ── Shared controls sub-component ─────────────────────────────────────────────
+// ── Date range selector ──────────────────────────────────────────────────────
 
-function DatasetSelector({
-  allDatasets, selectedDatasets, onToggle, onAll, onNone,
+function DateRangeSelector({
+  allDates, fromDate, toDate, onFromChange, onToChange,
 }: {
-  allDatasets: string[];
-  selectedDatasets: string[];
-  onToggle: (ds: string) => void;
-  onAll: () => void;
-  onNone: () => void;
+  allDates: string[];
+  fromDate: string;
+  toDate: string;
+  onFromChange: (d: string) => void;
+  onToChange: (d: string) => void;
 }) {
+  const selectStyle: React.CSSProperties = {
+    fontSize: 12, padding: "5px 11px", border: "1px solid var(--border)",
+    borderRadius: 7, background: "var(--bg-surface)", color: "var(--text-primary)",
+  };
   return (
-    <div>
-      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
-        <ControlLabel>Datasets Trends</ControlLabel>
-        <button onClick={onAll}  style={{ fontSize: 10, color: "var(--brand)",      background: "none", border: "none", cursor: "pointer", padding: "0 2px", fontWeight: 600 }}>All</button>
-        <button onClick={onNone} style={{ fontSize: 10, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", padding: "0 2px" }}>None</button>
+    <div style={{ display: "flex", gap: 10, alignItems: "flex-end", flexWrap: "wrap" }}>
+      <div>
+        <ControlLabel>From date</ControlLabel>
+        <select value={fromDate} onChange={(e) => onFromChange(e.target.value)} style={selectStyle}>
+          {allDates.filter((d) => d <= toDate).map((d) => (
+            <option key={d} value={d}>{fmtDate(d)}&ensp;({d})</option>
+          ))}
+        </select>
       </div>
-      <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-        {allDatasets.map((ds) => (
-          <DatasetPill key={ds} label={ds} active={selectedDatasets.includes(ds)} onClick={() => onToggle(ds)} />
-        ))}
+      <div>
+        <ControlLabel>To date</ControlLabel>
+        <select value={toDate} onChange={(e) => onToChange(e.target.value)} style={selectStyle}>
+          {allDates.filter((d) => d >= fromDate).map((d) => (
+            <option key={d} value={d}>{fmtDate(d)}&ensp;({d})</option>
+          ))}
+        </select>
       </div>
     </div>
   );
 }
 
-// ── Family-aware dataset selector (Work Activity Trends) ─────────────────────
+// ── Sub-type pill selector (grouped by category) ─────────────────────────────
 
-function DatasetSelectorWA({
-  allDatasets, selectedDatasets, onToggle, onAll, onNone,
+function SubTypePillSelector({
+  categories, selectedSubTypes, fromDate, toDate, onToggle, onAll, onNone,
+  familyRestriction,
 }: {
-  allDatasets: string[];
-  selectedDatasets: string[];
-  onToggle: (ds: string) => void;
+  categories: DatasetCategory[];
+  selectedSubTypes: string[];
+  fromDate: string;
+  toDate: string;
+  onToggle: (key: string) => void;
   onAll: () => void;
   onNone: () => void;
+  /** If set, only show sub_types matching this family ("aei" or "non-aei"). */
+  familyRestriction?: "aei" | "non-aei" | null;
 }) {
-  const hasAEI = selectedDatasets.some(isAEIFamily);
-  const hasMCP = selectedDatasets.some(isMCPFamily);
-  const activeFamily: "aei" | "mcp" | null = hasAEI ? "aei" : hasMCP ? "mcp" : null;
-  const canAll = activeFamily != null;
+  const available = filterSubTypesByDateRange(categories, fromDate, toDate);
 
   return (
     <div>
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
-        <ControlLabel>Datasets Trends</ControlLabel>
-        <button
-          disabled={!canAll}
-          onClick={canAll ? onAll : undefined}
-          style={{ fontSize: 10, color: canAll ? "var(--brand)" : "var(--text-muted)", background: "none", border: "none", cursor: canAll ? "pointer" : "default", padding: "0 2px", fontWeight: 600, opacity: canAll ? 1 : 0.4 }}
-        >All</button>
+        <ControlLabel>Series</ControlLabel>
+        <button onClick={onAll}  style={{ fontSize: 10, color: "var(--brand)", background: "none", border: "none", cursor: "pointer", padding: "0 2px", fontWeight: 600 }}>All</button>
         <button onClick={onNone} style={{ fontSize: 10, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", padding: "0 2px" }}>None</button>
       </div>
-      <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-        {allDatasets.map((ds) => {
-          const hidden = activeFamily === "aei" ? isMCPFamily(ds) : activeFamily === "mcp" ? isAEIFamily(ds) : false;
-          if (hidden) return null;
-          return (
-            <DatasetPill key={ds} label={ds} active={selectedDatasets.includes(ds)} onClick={() => onToggle(ds)} />
-          );
-        })}
-      </div>
-      {activeFamily && (
+      {categories.map((cat) => {
+        const catItems = available.filter((a) => a.categoryKey === cat.key);
+        if (catItems.length === 0) return null;
+        return (
+          <div key={cat.key} style={{ marginBottom: 8 }}>
+            <p style={{ fontSize: 10, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>
+              {cat.label}
+            </p>
+            <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+              {catItems.map(({ subType }) => {
+                const isAEI = isAEISubType(subType.key);
+                const hidden = familyRestriction === "aei" ? !isAEI
+                  : familyRestriction === "non-aei" ? isAEI
+                  : false;
+                if (hidden) return null;
+                return (
+                  <DatasetPill
+                    key={subType.key}
+                    label={subType.label}
+                    active={selectedSubTypes.includes(subType.key)}
+                    onClick={() => onToggle(subType.key)}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+      {familyRestriction && (
         <p style={{ fontSize: 11, color: "var(--text-muted)", margin: "6px 0 0" }}>
-          {activeFamily === "aei"
-            ? "AEI selected — MCP/Microsoft hidden (different ECO baseline)"
-            : "MCP/Microsoft selected — AEI hidden (different ECO baseline)"}
+          {familyRestriction === "aei"
+            ? "AEI selected — non-AEI hidden (different ECO baseline)"
+            : "Non-AEI selected — AEI hidden (different ECO baseline)"}
         </p>
       )}
     </div>
@@ -877,9 +916,26 @@ function DatasetSelectorWA({
 
 function OccupationTrends({ config }: { config: ConfigResponse }) {
   const { isSimple } = useSimpleMode();
-  const allDatasets = config.datasets ?? [];
+  const categories = config.dataset_categories ?? [];
 
-  const [selectedDatasets, setSelectedDatasets] = useState<string[]>(allDatasets);
+  // Date range
+  const allDates = useMemo(() => getAllDates(categories), [categories]);
+  const [fromDate, setFromDate] = useState<string>(() => allDates[0] ?? "");
+  const [toDate,   setToDate]   = useState<string>(() => allDates[allDates.length - 1] ?? "");
+
+  // Available sub_types within the date range
+  const availableSubTypes = useMemo(
+    () => filterSubTypesByDateRange(categories, fromDate, toDate).map((a) => a.subType.key),
+    [categories, fromDate, toDate],
+  );
+  const [selectedSubTypes, setSelectedSubTypes] = useState<string[]>(() => availableSubTypes);
+
+  // Datasets resolved from selected sub_types + date range (for filtering backend results)
+  const effectiveDatasetsInRange = useMemo(
+    () => getDatasetsInRange(selectedSubTypes, categories, fromDate, toDate),
+    [selectedSubTypes, categories, fromDate, toDate],
+  );
+
   const [lineMode,     setLineMode]     = useState<LineMode>("individual");
   const [metric,       setMetric]       = useState<MetricKey>("workers_affected");
   const [aggLevel,     setAggLevel]     = useState<"major" | "minor" | "broad" | "occupation">("major");
@@ -909,7 +965,10 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
   const [panelCollapsed,    setPanelCollapsed]    = useState(false);
 
   // Effective values for simple mode overrides
-  const effectiveDatasets    = isSimple ? allDatasets : selectedDatasets;
+  const effectiveSubTypes     = isSimple ? availableSubTypes : selectedSubTypes;
+  const effectiveDatasets     = isSimple
+    ? getDatasetsInRange(availableSubTypes, categories, fromDate, toDate)
+    : effectiveDatasetsInRange;
   const effectiveMethod      = isSimple ? "freq" as const : method;
   const effectivePhysical    = isSimple ? "all"  as const : physicalMode;
   const effectiveAutoAug     = isSimple ? true : useAutoAug;
@@ -918,14 +977,12 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
   const effectiveValueAgg    = isSimple ? (effectiveLineMode === "max" ? "max" as const : "avg" as const) : valueAggMode;
 
   const run = useCallback(async () => {
-    if (!effectiveDatasets.length) return;
+    if (!effectiveSubTypes.length) return;
     setLoading(true); setError(null); setLockedLine(null);
     try {
-      const seriesToFetch = getSeriesToFetch(effectiveDatasets, config.dataset_series ?? {});
-      if (!seriesToFetch.length) { setError("No valid series for selected datasets."); return; }
       const fetchTopN = Math.max(topN, 50);
       const settings: TrendsSettings = {
-        series: seriesToFetch, method: effectiveMethod, useAutoAug: effectiveAutoAug,
+        series: effectiveSubTypes, method: effectiveMethod, useAutoAug: effectiveAutoAug,
         physicalMode: effectivePhysical, geo, aggLevel, topN: fetchTopN, sortBy: "Workers Affected",
       };
       const data = await fetchTrends(settings);
@@ -940,7 +997,7 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Failed to fetch trends");
     } finally { setLoading(false); }
-  }, [effectiveDatasets, aggLevel, effectiveMethod, geo, topN, effectiveAutoAug, effectivePhysical, config]);
+  }, [effectiveSubTypes, effectiveDatasets, aggLevel, effectiveMethod, geo, topN, effectiveAutoAug, effectivePhysical]);
 
   const metaLabel = METRIC_OPTIONS.find((m) => m.key === metric)?.label ?? "";
 
@@ -1017,14 +1074,14 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
     const map = new Map<string, string[]>();
     result.series.forEach((s: TrendSeries) => {
       s.data_points
-        .filter((dp) => selectedDatasets.includes(dp.dataset))
+        .filter((dp) => effectiveDatasets.includes(dp.dataset))
         .forEach((dp) => {
           if (!map.has(dp.date)) map.set(dp.date, []);
           if (!map.get(dp.date)!.includes(dp.dataset)) map.get(dp.date)!.push(dp.dataset);
         });
     });
     return map;
-  }, [result, selectedDatasets]);
+  }, [result, effectiveDatasets]);
 
   return (
     <>
@@ -1034,7 +1091,7 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
         {panelCollapsed ? (
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
             <span style={{ fontSize: 11, color: "var(--text-muted)", flexShrink: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {selectedDatasets.length} dataset{selectedDatasets.length !== 1 ? "s" : ""} · {aggLevel} · {method === "freq" ? "Time" : "Value"} · {config.geo_options[geo] ?? geo}{useAutoAug ? " · Auto-aug" : ""}
+              {selectedSubTypes.length} series · {fmtDate(fromDate)}–{fmtDate(toDate)} · {aggLevel} · {method === "freq" ? "Time" : "Value"} · {config.geo_options[geo] ?? geo}{useAutoAug ? " · Auto-aug" : ""}
             </span>
             <button
               onClick={() => setPanelCollapsed(false)}
@@ -1044,16 +1101,24 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
 
-            {/* Datasets (hidden in simple mode) */}
+            {/* Date range + Series (hidden in simple mode) */}
             {!isSimple && (
             <div>
-              <SectionHead label="Datasets" />
-              <DatasetSelector
-                allDatasets={allDatasets} selectedDatasets={selectedDatasets}
-                onToggle={(ds) => setSelectedDatasets((p) => p.includes(ds) ? p.filter((x) => x !== ds) : [...p, ds])}
-                onAll={() => setSelectedDatasets(allDatasets)}
-                onNone={() => setSelectedDatasets([])}
-              />
+              <SectionHead label="Date Range & Series" />
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <DateRangeSelector
+                  allDates={allDates} fromDate={fromDate} toDate={toDate}
+                  onFromChange={setFromDate} onToChange={setToDate}
+                />
+                <SubTypePillSelector
+                  categories={categories}
+                  selectedSubTypes={selectedSubTypes}
+                  fromDate={fromDate} toDate={toDate}
+                  onToggle={(key) => setSelectedSubTypes((p) => p.includes(key) ? p.filter((x) => x !== key) : [...p, key])}
+                  onAll={() => setSelectedSubTypes(availableSubTypes)}
+                  onNone={() => setSelectedSubTypes([])}
+                />
+              </div>
             </div>
             )}
 
@@ -1230,10 +1295,39 @@ function OccupationTrends({ config }: { config: ConfigResponse }) {
 
 function WorkActivityTrends({ config }: { config: ConfigResponse }) {
   const { isSimple } = useSimpleMode();
-  const allDatasets = config.datasets ?? [];
-  const aeiDatasets = allDatasets.filter((d) => d.startsWith("AEI"));
+  const categories = config.dataset_categories ?? [];
 
-  const [selectedDatasets, setSelectedDatasets] = useState<string[]>(allDatasets);
+  // Date range
+  const allDates = useMemo(() => getAllDates(categories), [categories]);
+  const [fromDate, setFromDate] = useState<string>(() => allDates[0] ?? "");
+  const [toDate,   setToDate]   = useState<string>(() => allDates[allDates.length - 1] ?? "");
+
+  // Available sub_types within the date range
+  const availableSubTypes = useMemo(
+    () => filterSubTypesByDateRange(categories, fromDate, toDate).map((a) => a.subType.key),
+    [categories, fromDate, toDate],
+  );
+
+  // Default to AEI sub_types for WA trends
+  const aeiSubTypes = useMemo(
+    () => availableSubTypes.filter(isAEISubType),
+    [availableSubTypes],
+  );
+
+  const [selectedSubTypes, setSelectedSubTypes] = useState<string[]>(() => aeiSubTypes);
+
+  // Determine active family for WA restriction (AEI vs non-AEI can't be mixed)
+  const hasAEI    = selectedSubTypes.some(isAEISubType);
+  const hasNonAEI = selectedSubTypes.some((k) => !isAEISubType(k));
+  const waFamilyRestriction: "aei" | "non-aei" | null =
+    hasAEI ? "aei" : hasNonAEI ? "non-aei" : null;
+
+  // Datasets resolved from selected sub_types + date range
+  const effectiveDatasetsInRange = useMemo(
+    () => getDatasetsInRange(selectedSubTypes, categories, fromDate, toDate),
+    [selectedSubTypes, categories, fromDate, toDate],
+  );
+
   const [lineMode,      setLineMode]      = useState<LineMode>("individual");
   const [activityLevel, setActivityLevel] = useState<"gwa" | "iwa" | "dwa">("gwa");
   const [metric,        setMetric]        = useState<MetricKey>("workers_affected");
@@ -1256,8 +1350,11 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
 
   const [panelCollapsed,    setPanelCollapsed]    = useState(false);
 
-  // Simple mode overrides — WA defaults to AEI datasets
-  const effectiveDatasets    = isSimple ? aeiDatasets : selectedDatasets;
+  // Simple mode overrides — WA defaults to AEI sub_types
+  const effectiveSubTypes     = isSimple ? aeiSubTypes : selectedSubTypes;
+  const effectiveDatasets     = isSimple
+    ? getDatasetsInRange(aeiSubTypes, categories, fromDate, toDate)
+    : effectiveDatasetsInRange;
   const effectiveMethod      = isSimple ? "freq" as const : method;
   const effectivePhysical    = isSimple ? "all"  as const : physicalMode;
   const effectiveAutoAug     = isSimple ? true : useAutoAug;
@@ -1265,14 +1362,12 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
   const effectiveValueAgg    = isSimple ? (effectiveLineMode === "max" ? "max" as const : "avg" as const) : valueAggMode;
 
   const run = useCallback(async () => {
-    if (!effectiveDatasets.length) return;
+    if (!effectiveSubTypes.length) return;
     setLoading(true); setError(null); setLockedLine(null);
     try {
-      const seriesToFetch = getSeriesToFetch(effectiveDatasets, config.dataset_series ?? {});
-      if (!seriesToFetch.length) { setError("No valid series for selected datasets."); return; }
       const fetchTopN = Math.max(topN, 50);
       const settings: WATrendsSettings = {
-        series: seriesToFetch, method: effectiveMethod, useAutoAug: effectiveAutoAug,
+        series: effectiveSubTypes, method: effectiveMethod, useAutoAug: effectiveAutoAug,
         physicalMode: effectivePhysical, geo, topN: fetchTopN, sortBy: "Workers Affected", activityLevel,
       };
       const data = await fetchWATrends(settings);
@@ -1287,7 +1382,7 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Failed to fetch WA trends");
     } finally { setLoading(false); }
-  }, [effectiveDatasets, activityLevel, effectiveMethod, geo, topN, effectiveAutoAug, effectivePhysical, config]);
+  }, [effectiveSubTypes, effectiveDatasets, activityLevel, effectiveMethod, geo, topN, effectiveAutoAug, effectivePhysical]);
 
   const metaLabel = METRIC_OPTIONS.find((m) => m.key === metric)?.label ?? "";
 
@@ -1358,18 +1453,29 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
     const map = new Map<string, string[]>();
     result.series.forEach((s: TrendSeries) => {
       s.data_points
-        .filter((dp) => selectedDatasets.includes(dp.dataset))
+        .filter((dp) => effectiveDatasets.includes(dp.dataset))
         .forEach((dp) => {
           if (!map.has(dp.date)) map.set(dp.date, []);
           if (!map.get(dp.date)!.includes(dp.dataset)) map.get(dp.date)!.push(dp.dataset);
         });
     });
     return map;
-  }, [result, selectedDatasets]);
+  }, [result, effectiveDatasets]);
 
   const levelLabels: Record<string, string> = {
     gwa: "General Work Activities", iwa: "Intermediate Work Activities", dwa: "Detailed Work Activities",
   };
+
+  // Handle "All" for WA: only select sub_types matching the active family
+  const handleAllWA = useCallback(() => {
+    if (waFamilyRestriction === "aei") {
+      setSelectedSubTypes(availableSubTypes.filter(isAEISubType));
+    } else if (waFamilyRestriction === "non-aei") {
+      setSelectedSubTypes(availableSubTypes.filter((k) => !isAEISubType(k)));
+    } else {
+      setSelectedSubTypes(availableSubTypes);
+    }
+  }, [availableSubTypes, waFamilyRestriction]);
 
   return (
     <>
@@ -1379,7 +1485,7 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
         {panelCollapsed ? (
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
             <span style={{ fontSize: 11, color: "var(--text-muted)", flexShrink: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {selectedDatasets.length} dataset{selectedDatasets.length !== 1 ? "s" : ""} · {levelLabels[activityLevel]} · {method === "freq" ? "Time" : "Value"} · {config.geo_options[geo] ?? geo}{useAutoAug ? " · Auto-aug" : ""}
+              {selectedSubTypes.length} series · {fmtDate(fromDate)}–{fmtDate(toDate)} · {levelLabels[activityLevel]} · {method === "freq" ? "Time" : "Value"} · {config.geo_options[geo] ?? geo}{useAutoAug ? " · Auto-aug" : ""}
             </span>
             <button
               onClick={() => setPanelCollapsed(false)}
@@ -1389,19 +1495,25 @@ function WorkActivityTrends({ config }: { config: ConfigResponse }) {
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
 
-            {/* Datasets (hidden in simple mode) */}
+            {/* Date range + Series (hidden in simple mode) */}
             {!isSimple && (
             <div>
-              <SectionHead label="Datasets" />
-              <DatasetSelectorWA
-                allDatasets={allDatasets} selectedDatasets={selectedDatasets}
-                onToggle={(ds) => setSelectedDatasets((p) => p.includes(ds) ? p.filter((x) => x !== ds) : [...p, ds])}
-                onAll={() => {
-                  const hasAEI = selectedDatasets.some(isAEIFamily);
-                  setSelectedDatasets(allDatasets.filter(hasAEI ? isAEIFamily : isMCPFamily));
-                }}
-                onNone={() => setSelectedDatasets([])}
-              />
+              <SectionHead label="Date Range & Series" />
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <DateRangeSelector
+                  allDates={allDates} fromDate={fromDate} toDate={toDate}
+                  onFromChange={setFromDate} onToChange={setToDate}
+                />
+                <SubTypePillSelector
+                  categories={categories}
+                  selectedSubTypes={selectedSubTypes}
+                  fromDate={fromDate} toDate={toDate}
+                  onToggle={(key) => setSelectedSubTypes((p) => p.includes(key) ? p.filter((x) => x !== key) : [...p, key])}
+                  onAll={handleAllWA}
+                  onNone={() => setSelectedSubTypes([])}
+                  familyRestriction={waFamilyRestriction}
+                />
+              </div>
             </div>
             )}
 

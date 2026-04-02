@@ -4,16 +4,15 @@ import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import type { GroupSettings, ComputeResponse, ConfigResponse, ChartRow } from "@/lib/types";
 import { fetchConfig, fetchCompute } from "@/lib/api";
 import GroupPanel from "@/components/GroupPanel";
+import DatasetSelector from "@/components/DatasetSelector";
 import { GROUP_A_COLOR, GROUP_B_COLOR } from "@/lib/theme";
 import { useSimpleMode } from "@/lib/SimpleModeContext";
-import { enforceDatasetToggle, classificationFromConfig, getDatasetSubsections } from "@/lib/datasetRules";
-import type { DatasetClassification } from "@/lib/datasetRules";
+import { getLatestDataset } from "@/lib/datasetRules";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 interface GroupPending {
-  datasets:     string[];
-  combineMethod: "Average" | "Max";
+  dataset:      string;
   method:       "freq" | "imp";
   geo:          string;
   aggLevel:     GroupSettings["aggLevel"];
@@ -26,20 +25,18 @@ interface GroupPending {
 }
 
 function pendingToConfigSummary(p: GroupPending, groupId: "A" | "B"): string[] {
-  const dsLabel = p.datasets.length === 0 ? "None"
-    : p.datasets.length === 1 ? p.datasets[0]
-    : `${p.datasets.join(", ")} (${p.combineMethod})`;
+  const dsLabel = p.dataset || "None";
   const physLabel = p.physicalMode === "all" ? "All tasks" : p.physicalMode === "exclude" ? "Non-physical only" : "Physical only";
   const augLabel  = p.useAutoAug ? "Auto-aug: On" : "Auto-aug: Off";
-  const line1 = `Group ${groupId}  ·  Datasets: ${dsLabel}  ·  Method: ${p.method === "freq" ? "Time" : "Value"}  ·  Geo: ${p.geo}`;
+  const line1 = `Group ${groupId}  ·  Dataset: ${dsLabel}  ·  Method: ${p.method === "freq" ? "Time" : "Value"}  ·  Geo: ${p.geo}`;
   const line2 = `Aggregation: ${p.aggLevel}  ·  Top ${p.topN}  ·  Sort: ${p.sortBy}  ·  ${physLabel}  ·  ${augLabel}${p.searchQuery ? `  ·  Search: "${p.searchQuery}"` : ""}`;
   return [line1, line2];
 }
 
 function pendingToSettings(p: GroupPending): GroupSettings {
   return {
-    selectedDatasets: p.datasets,
-    combineMethod:    p.combineMethod,
+    selectedDatasets: p.dataset ? [p.dataset] : [],
+    combineMethod:    "Average",
     method:           p.method,
     geo:              p.geo,
     aggLevel:         p.aggLevel,
@@ -75,10 +72,9 @@ function applyClientFilter(
 
 // ── Defaults ───────────────────────────────────────────────────────────────────
 
-function defaultPending(datasets: string[]): GroupPending {
+function defaultPending(dataset: string): GroupPending {
   return {
-    datasets,
-    combineMethod: "Average",
+    dataset,
     method:       "freq",
     geo:          "nat",
     aggLevel:     "major",
@@ -93,13 +89,10 @@ function defaultPending(datasets: string[]): GroupPending {
 
 /** In simple mode, override computation-fixed fields while keeping user-adjustable ones */
 function applySimpleDefaults(p: GroupPending, config: ConfigResponse): GroupPending {
-  const simpleDatasets = ["AEI Cumul. (Both) v4", "MCP Cumul. v4", "Microsoft"].filter(
-    (d) => config.dataset_availability[d],
-  );
+  const simple = getLatestDataset(config.dataset_categories, "All") ?? "";
   return {
     ...p,
-    datasets: simpleDatasets,
-    combineMethod: "Average",
+    dataset: config.dataset_availability[simple] ? simple : "",
     method: "freq",
     physicalMode: "all",
     useAutoAug: true,
@@ -200,91 +193,7 @@ function InfoTooltip({ text }: { text: string }) {
   );
 }
 
-// ── Dataset pills (like Trends) ────────────────────────────────────────────────
-
-function DatasetPills({
-  label, color, availability, selected, combineMethod,
-  classification,
-  onChange, onChangeCombine,
-}: {
-  label: string;
-  color: string;
-  availability: Record<string, boolean>;
-  selected: string[];
-  combineMethod: "Average" | "Max";
-  classification: DatasetClassification;
-  onChange: (v: string[]) => void;
-  onChangeCombine: (v: "Average" | "Max") => void;
-}) {
-  const subsections = getDatasetSubsections(classification);
-  const allDatasets = subsections.flatMap((s) => s.datasets);
-
-  function toggle(name: string) {
-    onChange(enforceDatasetToggle(selected, name, classification));
-  }
-
-  return (
-    <div>
-      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 5 }}>
-        <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", margin: 0 }}>
-          {label}
-        </p>
-        <InfoTooltip text="Select one or more datasets to compute automation exposure metrics. When multiple are selected, choose Average or Max to combine them." />
-        <button onClick={() => onChange(allDatasets.filter((d) => availability[d]))} style={{ fontSize: 10, color: "var(--brand)", background: "none", border: "none", cursor: "pointer", padding: "0 2px", fontWeight: 600 }}>All</button>
-        <button onClick={() => onChange([])} style={{ fontSize: 10, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", padding: "0 2px" }}>None</button>
-        {selected.length > 1 && (
-          <>
-            <span style={{ width: 1, height: 12, background: "var(--border)", display: "inline-block" }} />
-            {(["Average", "Max"] as const).map((v) => (
-              <button
-                key={v}
-                onClick={() => onChangeCombine(v)}
-                style={{
-                  fontSize: 10, padding: "2px 7px", borderRadius: 4,
-                  border: `1.5px solid ${combineMethod === v ? "var(--brand)" : "var(--border)"}`,
-                  background: combineMethod === v ? "var(--brand-light)" : "transparent",
-                  color: combineMethod === v ? "var(--brand)" : "var(--text-secondary)",
-                  cursor: "pointer", fontWeight: combineMethod === v ? 600 : 400,
-                }}
-              >{v}</button>
-            ))}
-          </>
-        )}
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {subsections.map((section) => (
-          <div key={section.label}>
-            <p style={{ fontSize: 9, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 3px 0" }}>
-              {section.label}
-            </p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-              {section.datasets.map((name) => {
-                const avail = availability[name];
-                const active = selected.includes(name);
-                return (
-                  <button
-                    key={name}
-                    onClick={() => avail && toggle(name)}
-                    style={{
-                      fontSize: 11, padding: "4px 9px", borderRadius: 6,
-                      border: `1.5px solid ${active ? color : "var(--border)"}`,
-                      background: active ? color + "18" : "transparent",
-                      color: active ? color : avail ? "var(--text-secondary)" : "var(--text-muted)",
-                      cursor: avail ? "pointer" : "default",
-                      fontWeight: active ? 600 : 400,
-                      textDecoration: avail ? "none" : "line-through",
-                      transition: "all 0.12s", whiteSpace: "nowrap",
-                    }}
-                  >{name}</button>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+// (DatasetPills removed — replaced by DatasetSelector component)
 
 // ── Section header ─────────────────────────────────────────────────────────────
 
@@ -341,9 +250,7 @@ function GroupSettingsPanel({
     setPending({ ...pending, [k]: v });
   }
 
-  const summaryDs = pending.datasets.length === 0 ? "No datasets"
-    : pending.datasets.length === 1 ? pending.datasets[0]
-    : `${pending.datasets.length} ds (${pending.combineMethod})`;
+  const summaryDs = pending.dataset || "No dataset";
   const summary = [
     summaryDs,
     pending.method === "freq" ? "Time" : "Value",
@@ -365,11 +272,15 @@ function GroupSettingsPanel({
             <div style={{ display: "flex", alignItems: "center" }}>
               <ControlLabel>Geography</ControlLabel>
             </div>
-            <SegBtn
-              options={[{ value: "nat", label: "National" }, { value: "ut", label: "Utah" }]}
+            <select
               value={pending.geo}
-              onChange={(v) => set("geo", v)}
-            />
+              onChange={(e) => set("geo", e.target.value)}
+              style={{ fontSize: 12, padding: "5px 8px", border: "1px solid var(--border)", borderRadius: 6, background: "var(--bg-surface)", color: "var(--text-primary)" }}
+            >
+              {Object.entries(config.geo_options).map(([code, label]) => (
+                <option key={code} value={code}>{label}</option>
+              ))}
+            </select>
           </div>
           <div>
             <div style={{ display: "flex", alignItems: "center" }}>
@@ -395,17 +306,13 @@ function GroupSettingsPanel({
       ) : !collapsed ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
 
-          {/* ─ Datasets ─ */}
-          <SectionHead label="Datasets" />
-          <DatasetPills
-            label={`Group ${groupId} datasets`}
-            color={color}
-            availability={config.dataset_availability}
-            selected={pending.datasets}
-            combineMethod={pending.combineMethod}
-            classification={classificationFromConfig(config)}
-            onChange={(v) => set("datasets", v)}
-            onChangeCombine={(v) => set("combineMethod", v)}
+          {/* ─ Dataset ─ */}
+          <SectionHead label="Dataset" />
+          <DatasetSelector
+            categories={config.dataset_categories}
+            value={pending.dataset}
+            onChange={(v) => set("dataset", v)}
+            label={`Group ${groupId}`}
           />
 
           {/* ─ Display ─ */}
@@ -426,13 +333,17 @@ function GroupSettingsPanel({
             <div>
               <div style={{ display: "flex", alignItems: "center" }}>
                 <ControlLabel>Geography</ControlLabel>
-                <InfoTooltip text="National: uses BLS OEWS national employment and wages. Utah: uses Utah-specific employment and wages." />
+                <InfoTooltip text="Select which state's BLS OEWS employment and wage figures to use." />
               </div>
-              <SegBtn
-                options={[{ value: "nat", label: "National" }, { value: "ut", label: "Utah" }]}
+              <select
                 value={pending.geo}
-                onChange={(v) => set("geo", v)}
-              />
+                onChange={(e) => set("geo", e.target.value)}
+                style={{ fontSize: 12, padding: "5px 8px", border: "1px solid var(--border)", borderRadius: 6, background: "var(--bg-surface)", color: "var(--text-primary)" }}
+              >
+                {Object.entries(config.geo_options).map(([code, label]) => (
+                  <option key={code} value={code}>{label}</option>
+                ))}
+              </select>
             </div>
 
             <div>
@@ -591,8 +502,8 @@ export default function HomePage() {
   const [config, setConfig]           = useState<ConfigResponse | null>(null);
   const [configError, setConfigError] = useState<string | null>(null);
 
-  const [pendingA, setPendingA] = useState<GroupPending>(defaultPending(["AEI Cumul. (Both) v4", "MCP Cumul. v4", "Microsoft"]));
-  const [pendingB, setPendingB] = useState<GroupPending>(defaultPending(["MCP Cumul. v4"]));
+  const [pendingA, setPendingA] = useState<GroupPending>(defaultPending("All 2026-02-18"));
+  const [pendingB, setPendingB] = useState<GroupPending>(defaultPending("MCP Cumul. v4"));
   const [activeGroup, setActiveGroup] = useState<"A" | "B">("A");
   const [panelCollapsed, setPanelCollapsed] = useState(false);
 
@@ -612,10 +523,9 @@ export default function HomePage() {
     fetchConfig()
       .then((cfg) => {
         setConfig(cfg);
-        const avail = cfg.datasets.filter((d) => cfg.dataset_availability[d]);
-        const filterDs = (ds: string[]) => ds.filter((d) => avail.includes(d));
-        setPendingA((p) => ({ ...p, datasets: filterDs(p.datasets) }));
-        setPendingB((p) => ({ ...p, datasets: filterDs(p.datasets) }));
+        const validDs = (ds: string) => cfg.dataset_availability[ds] ? ds : "";
+        setPendingA((p) => ({ ...p, dataset: validDs(p.dataset) }));
+        setPendingB((p) => ({ ...p, dataset: validDs(p.dataset) }));
       })
       .catch((e) => setConfigError(e.message));
   }, []);
@@ -632,7 +542,7 @@ export default function HomePage() {
 
     if (isSimple) {
       // Simple mode: only compute Group A
-      const resA = effectiveA.datasets.length > 0
+      const resA = effectiveA.dataset
         ? await fetchCompute(settingsA).catch((e: unknown) => { setErrorA(e instanceof Error ? e.message : "Failed"); return null; })
         : null;
       setFullResponseA(resA);
@@ -641,10 +551,10 @@ export default function HomePage() {
     } else {
       setLoadingB(true); setErrorB(null);
       const [resA, resB] = await Promise.all([
-        effectiveA.datasets.length > 0
+        effectiveA.dataset
           ? fetchCompute(settingsA).catch((e: unknown) => { setErrorA(e instanceof Error ? e.message : "Failed"); return null; })
           : Promise.resolve(null),
-        effectiveB.datasets.length > 0
+        effectiveB.dataset
           ? fetchCompute(settingsB).catch((e: unknown) => { setErrorB(e instanceof Error ? e.message : "Failed"); return null; })
           : Promise.resolve(null),
       ]);
@@ -707,9 +617,7 @@ export default function HomePage() {
   const physLabelOther = otherPending.physicalMode === "all" ? "All tasks"
     : otherPending.physicalMode === "exclude" ? "No Phys" : "Phys only";
   const augLabelOther = otherPending.useAutoAug ? "Auto-aug On" : "Auto-aug Off";
-  const dsLabelOther = otherPending.datasets.length === 0 ? "none"
-    : otherPending.datasets.length === 1 ? otherPending.datasets[0]
-    : `${otherPending.datasets.length} datasets (${otherPending.combineMethod})`;
+  const dsLabelOther = otherPending.dataset || "none";
 
   return (
     <div style={{
@@ -761,10 +669,7 @@ export default function HomePage() {
                   <span style={{ width: 8, height: 8, borderRadius: "50%", background: col }} />
                   Group {g}
                   <span style={{ fontSize: 10, color: "var(--text-muted)", fontWeight: 400 }}>
-                    ({(g === "A" ? pendingA : pendingB).datasets.length === 0 ? "none"
-                      : (g === "A" ? pendingA : pendingB).datasets.length === 1
-                        ? (g === "A" ? pendingA : pendingB).datasets[0]
-                        : `${(g === "A" ? pendingA : pendingB).datasets.length} ds`})
+                    ({(g === "A" ? pendingA : pendingB).dataset || "none"})
                   </span>
                 </button>
               );

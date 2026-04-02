@@ -11,7 +11,8 @@ import { createPortal } from "react-dom";
 import type { WAExplorerRow, WATaskDetail, ConfigResponse, EcoTaskRow, TaskSourceStats, ActivityRow, McpEntry } from "@/lib/types";
 import { fetchWAExplorer, fetchWAActivityTasks, fetchWorkActivities, fetchAllEcoTasks } from "@/lib/api";
 import { useSimpleMode } from "@/lib/SimpleModeContext";
-import { enforceDatasetToggle, classificationFromConfig } from "@/lib/datasetRules";
+import { getLatestDataset } from "@/lib/datasetRules";
+import DatasetSelector from "@/components/DatasetSelector";
 
 // ── Debounce hook ──────────────────────────────────────────────────────────────
 
@@ -690,7 +691,7 @@ function WATaskSubRow({ task, empWeighting }: { task: WATaskDetail; empWeighting
               {sources.length > 0 && (() => {
                 const aeiSources = sources.filter(([name]) => name.startsWith("AEI"));
                 const nonAeiSources = sources.filter(([name]) => !name.startsWith("AEI"));
-                const allAeiNull = aeiSources.length > 0 && aeiSources.every(([, v]) => v.auto_aug == null && v.pct_norm == null);
+                const allAeiNull = aeiSources.length === 0 || aeiSources.every(([, v]) => v.auto_aug == null && v.pct_norm == null);
                 return (
                 <div>
                   <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>
@@ -852,8 +853,7 @@ type SortDir = "asc" | "desc";
 // ── WA % Tasks Affected compute panel ─────────────────────────────────────────
 
 interface WaPctSettings {
-  datasets: string[];
-  combineMethod: "Average" | "Max";
+  dataset: string;
   method: "freq" | "imp";
   geo: string;
   physicalMode: "all" | "exclude" | "only";
@@ -875,8 +875,7 @@ function WaPctComputePanel({
 }) {
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState<WaPctSettings>({
-    datasets: ["AEI Cumul. (Both) v4"],
-    combineMethod: "Average",
+    dataset: "All 2026-02-18",
     method: "freq",
     geo,
     physicalMode: "all",
@@ -908,19 +907,14 @@ function WaPctComputePanel({
     setSettings((s) => ({ ...s, [k]: v }));
   }
 
-  // Check if datasets are AEI-family (cannot mix)
-  const hasAEI = settings.datasets.some((d) => d.startsWith("AEI"));
-  const hasMCPorMS = settings.datasets.some((d) => d.startsWith("MCP") || d === "Microsoft");
-  const isMixed = hasAEI && hasMCPorMS;
-
   const compute = useCallback(async () => {
-    if (!settings.datasets.length || isMixed) return;
+    if (!settings.dataset) return;
     setLoading(true);
     setError(null);
     try {
       const resp = await fetchWorkActivities({
-        selectedDatasets: settings.datasets,
-        combineMethod: settings.combineMethod,
+        selectedDatasets: [settings.dataset],
+        combineMethod: "Average",
         method: settings.method,
         useAutoAug: settings.useAutoAug,
         physicalMode: settings.physicalMode,
@@ -946,7 +940,7 @@ function WaPctComputePanel({
     } finally {
       setLoading(false);
     }
-  }, [settings, onResult, isMixed]);
+  }, [settings, onResult]);
 
   // Auto-recompute when geo changes while already computed
   useEffect(() => {
@@ -987,42 +981,17 @@ function WaPctComputePanel({
       </button>
       {open && (
         <div style={{ padding: "12px 14px", borderTop: "1px solid var(--border)", background: "var(--bg-surface)", display: "flex", flexDirection: "column", gap: 10 }}>
-          {isMixed && (
-            <p style={{ fontSize: 11, color: "#b91c1c", margin: 0 }}>
-              Cannot mix AEI and MCP/Microsoft datasets — they use different baselines.
-            </p>
-          )}
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
             <div>
-              <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>Datasets</p>
-              <div style={{ display: "flex", gap: 4, flexWrap: "wrap", maxWidth: 420 }}>
-                {config.datasets.map((ds) => {
-                  const avail = config.dataset_availability[ds];
-                  const sel = settings.datasets.includes(ds);
-                  return (
-                    <button key={ds} disabled={!avail} onClick={() => {
-                      const next = enforceDatasetToggle(settings.datasets, ds, classificationFromConfig(config));
-                      set("datasets", next);
-                    }} style={{
-                      fontSize: 10, padding: "3px 7px", borderRadius: 5,
-                      border: `1.5px solid ${sel ? "var(--brand)" : "var(--border)"}`,
-                      background: sel ? "var(--brand-light)" : "transparent",
-                      color: sel ? "var(--brand)" : avail ? "var(--text-secondary)" : "var(--text-muted)",
-                      cursor: avail ? "pointer" : "default",
-                      fontWeight: sel ? 600 : 400,
-                      textDecoration: avail ? "none" : "line-through",
-                    }}>{ds}</button>
-                  );
-                })}
-              </div>
+              <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>Dataset</p>
+              <DatasetSelector
+                categories={config.dataset_categories}
+                value={settings.dataset}
+                onChange={(v) => set("dataset", v)}
+                compact
+              />
             </div>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-end" }}>
-              {settings.datasets.length > 1 && (
-                <div>
-                  <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>Combine</p>
-                  <BtnSeg opts={[{ v: "Average", l: "Avg" }, { v: "Max", l: "Max" }]} val={settings.combineMethod} onChange={(v) => set("combineMethod", v)} />
-                </div>
-              )}
               <div>
                 <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>Method</p>
                 <BtnSeg opts={[{ v: "freq", l: "Time" }, { v: "imp", l: "Value" }]} val={settings.method} onChange={(v) => set("method", v)} />
@@ -1037,9 +1006,9 @@ function WaPctComputePanel({
               </div>
               <button
                 onClick={compute}
-                disabled={loading || !settings.datasets.length || isMixed}
+                disabled={loading || !settings.dataset}
                 className="btn-brand"
-                style={{ padding: "6px 18px", fontSize: 12, opacity: (loading || !settings.datasets.length || isMixed) ? 0.5 : 1 }}
+                style={{ padding: "6px 18px", fontSize: 12, opacity: loading || !settings.dataset ? 0.5 : 1 }}
               >
                 {loading ? "Computing…" : "Compute %"}
               </button>
@@ -1154,20 +1123,14 @@ export default function WAExplorerView({ config }: Props) {
       .finally(() => setDataLoading(false));
   }, [geo, isSimple, selectedSourcesArray]);
 
-  // ── Auto-compute pct with WA defaults (AEI Cumul. (Both) v4) ────────────
+  // ── Auto-compute pct with WA defaults ────────────────────────────────
   // Runs on mount (both simple and advanced modes), on geo change, and on reset.
   useEffect(() => {
-    const simpleDatasets = ["AEI Cumul. (Both) v4"].filter(
-      (d) => config.dataset_availability[d],
-    );
-    const aeiDatasets = simpleDatasets.length > 0 ? simpleDatasets
-      : config.datasets.filter(
-          (d) => d.startsWith("AEI") && config.dataset_availability[d],
-        );
-    if (aeiDatasets.length === 0) return;
+    const defaultDataset = getLatestDataset(config.dataset_categories, "all") ?? "All 2026-02-18";
+    if (!defaultDataset) return;
     let cancelled = false;
     fetchWorkActivities({
-      selectedDatasets: aeiDatasets,
+      selectedDatasets: [defaultDataset],
       combineMethod: "Average",
       method: "freq",
       useAutoAug: true,
@@ -1191,7 +1154,7 @@ export default function WAExplorerView({ config }: Props) {
     }).catch(() => { /* silent */ });
     return () => { cancelled = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [geo, config.datasets, config.dataset_availability, computeGeneration]);
+  }, [geo, config.dataset_categories, computeGeneration]);
 
   // ── Reset row limit when filters/level change ────────────────────────────
   useEffect(() => { setRowLimit(100); }, [viewLevel, selectedGwas, debouncedSearch, colFilters, textColFilters, physicalMode, pctAffectedMap, minPctAffected, sortCol, sortDir]);
@@ -1681,7 +1644,7 @@ export default function WAExplorerView({ config }: Props) {
                   {sources.length > 0 && (() => {
                     const aeiSources = sources.filter(([name]) => name.startsWith("AEI"));
                     const nonAeiSources = sources.filter(([name]) => !name.startsWith("AEI"));
-                    const allAeiNull = aeiSources.length > 0 && aeiSources.every(([, v]) => v.auto_aug == null && v.pct_norm == null);
+                    const allAeiNull = aeiSources.length === 0 || aeiSources.every(([, v]) => v.auto_aug == null && v.pct_norm == null);
                     return (
                     <div>
                       <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Source Breakdown</p>

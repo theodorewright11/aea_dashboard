@@ -33,20 +33,32 @@ export interface ComputeResponse {
   matched_category?: string | null;
 }
 
+export interface DatasetEntry {
+  name: string;
+  date: string;
+}
+
+export interface SubType {
+  key: string;
+  label: string;
+  datasets: DatasetEntry[];
+}
+
+export interface DatasetCategory {
+  key: string;
+  label: string;
+  sub_types: SubType[];
+}
+
 export interface ConfigResponse {
   datasets: string[];
   dataset_availability: Record<string, boolean>;
   dataset_series: Record<string, string[]>;
+  dataset_categories: DatasetCategory[];
   agg_levels: Record<string, string>;
   sort_options: string[];
   crosswalk_available: boolean;
   eco2015_available: boolean;
-  aei_conv_snapshot_datasets: string[];
-  aei_api_snapshot_datasets: string[];
-  aei_conv_cumulative_datasets: string[];
-  aei_api_cumulative_datasets: string[];
-  aei_both_cumulative_datasets: string[];
-  mcp_datasets: string[];
   geo_options: Record<string, string>;
   explorer_source_names: string[];
 }
@@ -148,6 +160,7 @@ export interface OccupationSummary extends ExplorerMetrics {
   emp?: number | null;
   wage?: number | null;
   dws_star_rating?: number | null;
+  job_zone?: number | null;
 }
 
 export interface TaskSourceStats {
@@ -193,6 +206,7 @@ export interface ExplorerGroupRow extends ExplorerMetrics {
   emp?: number | null;
   wage?: number | null;
   dws_star_rating?: number | null;
+  job_zone?: number | null;
   n_occs: number;
 }
 

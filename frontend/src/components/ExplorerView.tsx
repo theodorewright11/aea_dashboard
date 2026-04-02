@@ -16,7 +16,8 @@ import type {
 } from "@/lib/types";
 import { fetchOccupationTasks, fetchCompute, fetchAllEcoTasks, fetchExplorerOccupations, fetchExplorerGroups } from "@/lib/api";
 import { useSimpleMode } from "@/lib/SimpleModeContext";
-import { enforceDatasetToggle, classificationFromConfig } from "@/lib/datasetRules";
+import { getLatestDataset } from "@/lib/datasetRules";
+import DatasetSelector from "@/components/DatasetSelector";
 
 // ── Debounce hook ──────────────────────────────────────────────────────────────
 
@@ -85,7 +86,8 @@ const COLUMNS: ColDef[] = [
   { key: "dwa_col",      label: "DWA",              width: 200, numeric: false, tooltip: "Detailed Work Activity" },
   { key: "iwa_col",      label: "IWA",              width: 200, numeric: false, tooltip: "Intermediate Work Activity" },
   { key: "gwa_col",      label: "GWA",              width: 200, numeric: false, tooltip: "General Work Activity" },
-  { key: "dws_star",     label: "Job Outlook",      width: 90,  numeric: true,  tooltip: "DWS star rating (1\u20135). Group values are averages rounded to 1 decimal." },
+  { key: "dws_star",     label: "Job Outlook (Utah)", width: 90,  numeric: true,  tooltip: "Utah DWS star rating (1\u20135). Based on Utah Department of Workforce Services job outlook data. Group values are averages rounded to 1 decimal." },
+  { key: "job_zone",    label: "Job Zone",           width: 70,  numeric: true,  tooltip: "O*NET job zone (1-5). Group values are averages rounded to 1 decimal." },
   { key: "emp",          label: "Emp",              width: 90,  numeric: true,  tooltip: "Total employment (BLS OEWS 2024)" },
   { key: "wage",         label: "Med Wage",         width: 90,  numeric: true,  tooltip: "Median annual wage (BLS OEWS 2024)" },
   { key: "phys_col",     label: "Phys",             width: 52,  numeric: false, tooltip: "Physical task (requires physical presence)" },
@@ -131,6 +133,7 @@ interface FlatRow {
   sum_pct_avg: number | null;
   sum_pct_max: number | null;
   dws_star_rating?: number | null;
+  job_zone?: number | null;
   parent?: string | null;
   grandparent?: string | null;
   sourceOccs?: OccupationSummary[];
@@ -172,6 +175,7 @@ function groupToRow(g: ExplorerGroupRow): FlatRow {
     sum_pct_avg: g.sum_pct_avg ?? null,
     sum_pct_max: g.sum_pct_max ?? null,
     dws_star_rating: g.dws_star_rating ?? null,
+    job_zone: g.job_zone ?? null,
     parent: g.parent ?? null,
     grandparent: g.grandparent ?? null,
   };
@@ -196,6 +200,7 @@ function occToRow(occ: OccupationSummary): FlatRow {
     sum_pct_avg: occ.sum_pct_avg ?? null,
     sum_pct_max: occ.sum_pct_max ?? null,
     dws_star_rating: occ.dws_star_rating ?? null,
+    job_zone: occ.job_zone ?? null,
     parent: occ.broad ?? null,
     grandparent: occ.minor ?? null,
     sourceOccs: [occ],
@@ -261,6 +266,7 @@ function getVal(row: FlatRow, col: string, pctMap: Map<string, number> | null): 
     case "sum_pct_avg":  return row.sum_pct_avg;
     case "sum_pct_max":  return row.sum_pct_max;
     case "dws_star":     return row.dws_star_rating ?? null;
+    case "job_zone":     return row.job_zone ?? null;
     case "freq_col":     return row.freq_mean ?? null;
     case "imp_col":      return row.importance ?? null;
     case "rel_col":      return row.relevance ?? null;
@@ -317,6 +323,7 @@ function renderCell(
     case "sum_pct_avg":  return fmtPctNorm(row.sum_pct_avg);
     case "sum_pct_max":  return fmtPctNorm(row.sum_pct_max);
     case "dws_star":     return row.dws_star_rating != null ? row.dws_star_rating.toFixed(1) : <span style={muted}>—</span>;
+    case "job_zone":     return row.job_zone != null ? row.job_zone.toFixed(1) : <span style={muted}>—</span>;
     case "freq_col":     return row.freq_mean != null ? row.freq_mean.toFixed(1) : <span style={muted}>—</span>;
     case "imp_col":      return row.importance != null ? row.importance.toFixed(1) : <span style={muted}>—</span>;
     case "rel_col":      return row.relevance != null ? row.relevance.toFixed(0) : <span style={muted}>—</span>;
@@ -831,7 +838,7 @@ function TaskSubRow({
               {sources.length > 0 && (() => {
                 const aeiSources = sources.filter(([name]) => name.startsWith("AEI"));
                 const nonAeiSources = sources.filter(([name]) => !name.startsWith("AEI"));
-                const allAeiNull = aeiSources.length > 0 && aeiSources.every(([, v]) => v.auto_aug == null && v.pct_norm == null);
+                const allAeiNull = aeiSources.length === 0 || aeiSources.every(([, v]) => v.auto_aug == null && v.pct_norm == null);
                 return (
                 <div>
                   <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>Source Breakdown</p>
@@ -966,8 +973,7 @@ function TaskSubHeader() {
 // ── % Tasks Affected compute panel ─────────────────────────────────────────────
 
 interface PctSettings {
-  datasets: string[];
-  combineMethod: "Average" | "Max";
+  dataset: string;
   method: "freq" | "imp";
   geo: string;
   physicalMode: "all" | "exclude" | "only";
@@ -987,8 +993,7 @@ function PctComputePanel({
 }) {
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState<PctSettings>({
-    datasets: ["AEI Cumul. (Both) v4", "MCP Cumul. v4", "Microsoft"],
-    combineMethod: "Average",
+    dataset: "All 2026-02-18",
     method: "freq",
     geo,
     physicalMode: "all",
@@ -1015,13 +1020,13 @@ function PctComputePanel({
     : tableLevel as "major" | "minor" | "broad";
 
   const compute = useCallback(async () => {
-    if (!settings.datasets.length) return;
+    if (!settings.dataset) return;
     setLoading(true);
     setError(null);
     try {
       const resp = await fetchCompute({
-        selectedDatasets: settings.datasets,
-        combineMethod: settings.combineMethod,
+        selectedDatasets: [settings.dataset],
+        combineMethod: "Average",
         method: settings.method,
         useAutoAug: settings.useAutoAug,
         physicalMode: settings.physicalMode,
@@ -1076,35 +1081,15 @@ function PctComputePanel({
         <div style={{ padding: "12px 14px", borderTop: "1px solid var(--border)", background: "var(--bg-surface)", display: "flex", flexDirection: "column", gap: 10 }}>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
             <div>
-              <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>Datasets</p>
-              <div style={{ display: "flex", gap: 4, flexWrap: "wrap", maxWidth: 420 }}>
-                {config.datasets.map((ds) => {
-                  const avail = config.dataset_availability[ds];
-                  const sel = settings.datasets.includes(ds);
-                  return (
-                    <button key={ds} disabled={!avail} onClick={() => {
-                      const next = enforceDatasetToggle(settings.datasets, ds, classificationFromConfig(config));
-                      set("datasets", next);
-                    }} style={{
-                      fontSize: 10, padding: "3px 7px", borderRadius: 5,
-                      border: `1.5px solid ${sel ? "var(--brand)" : "var(--border)"}`,
-                      background: sel ? "var(--brand-light)" : "transparent",
-                      color: sel ? "var(--brand)" : avail ? "var(--text-secondary)" : "var(--text-muted)",
-                      cursor: avail ? "pointer" : "default",
-                      fontWeight: sel ? 600 : 400,
-                      textDecoration: avail ? "none" : "line-through",
-                    }}>{ds}</button>
-                  );
-                })}
-              </div>
+              <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>Dataset</p>
+              <DatasetSelector
+                categories={config.dataset_categories}
+                value={settings.dataset}
+                onChange={(v) => set("dataset", v)}
+                compact
+              />
             </div>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-end" }}>
-              {settings.datasets.length > 1 && (
-                <div>
-                  <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>Combine</p>
-                  <BtnSeg opts={[{ v: "Average", l: "Avg" }, { v: "Max", l: "Max" }]} val={settings.combineMethod} onChange={(v) => set("combineMethod", v)} />
-                </div>
-              )}
               <div>
                 <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>Method</p>
                 <BtnSeg opts={[{ v: "freq", l: "Time" }, { v: "imp", l: "Value" }]} val={settings.method} onChange={(v) => set("method", v)} />
@@ -1119,9 +1104,9 @@ function PctComputePanel({
               </div>
               <button
                 onClick={compute}
-                disabled={loading || !settings.datasets.length}
+                disabled={loading || !settings.dataset}
                 className="btn-brand"
-                style={{ padding: "6px 18px", fontSize: 12, opacity: loading || !settings.datasets.length ? 0.5 : 1 }}
+                style={{ padding: "6px 18px", fontSize: 12, opacity: loading || !settings.dataset ? 0.5 : 1 }}
               >
                 {loading ? "Computing…" : "Compute %"}
               </button>
@@ -1234,7 +1219,7 @@ export default function ExplorerView({ config }: Props) {
 
   // ── Column selector state (persisted to localStorage) ──────────────────
   const TASK_ONLY_COLS = new Set(["occ", "major_cat", "minor_cat", "broad_cat", "dwa_col", "iwa_col", "gwa_col", "phys_col", "freq_col", "imp_col", "rel_col"]);
-  const NON_TASK_COLS = new Set(["n_occs", "n_tasks", "auto_avg_all", "auto_max_all", "pct_phys", "pct_avg_all", "pct_max_all", "sum_pct_avg", "sum_pct_max", "dws_star"]);
+  const NON_TASK_COLS = new Set(["n_occs", "n_tasks", "auto_avg_all", "auto_max_all", "pct_phys", "pct_avg_all", "pct_max_all", "sum_pct_avg", "sum_pct_max", "dws_star", "job_zone"]);
   const [hiddenCols, setHiddenCols] = useState<Set<string>>(() => {
     if (typeof window === "undefined") return new Set<string>();
     try {
@@ -1273,17 +1258,13 @@ export default function ExplorerView({ config }: Props) {
   // ── Auto-compute pct with preset settings (runs on load for both modes) ──
   const [computeVersion, setComputeVersion] = useState(0);
   useEffect(() => {
-    const simpleDatasets = ["AEI Cumul. (Both) v4", "MCP Cumul. v4", "Microsoft"].filter(
-      (d) => config.dataset_availability[d],
-    );
-    const availableDatasets = simpleDatasets.length > 0 ? simpleDatasets
-      : config.datasets.filter((d) => config.dataset_availability[d]);
-    if (availableDatasets.length === 0) return;
+    const defaultDataset = getLatestDataset(config.dataset_categories, "all") ?? "All 2026-02-18";
+    if (!defaultDataset) return;
     const backendAgg = (tableLevel === "task" || tableLevel === "occupation") ? "occupation"
       : tableLevel as "major" | "minor" | "broad";
     let cancelled = false;
     fetchCompute({
-      selectedDatasets: availableDatasets,
+      selectedDatasets: [defaultDataset],
       combineMethod: "Average",
       method: "freq",
       useAutoAug: true,
@@ -1301,7 +1282,7 @@ export default function ExplorerView({ config }: Props) {
       setPctAffectedMap(map);
     }).catch(() => { /* silent */ });
     return () => { cancelled = true; };
-  }, [geo, tableLevel, config.datasets, config.dataset_availability, computeVersion]);
+  }, [geo, tableLevel, config.dataset_categories, computeVersion]);
 
   // ── Reset row limit whenever the visible set changes ─────────────────────
   useEffect(() => { setRowLimit(100); }, [tableLevel, selectedMajors, debouncedSearch, searchLevel, colFilters, textColFilters, physicalMode, pctAffectedMap, minPctAffected, sortCol, sortDir]);
@@ -1783,7 +1764,7 @@ export default function ExplorerView({ config }: Props) {
                   const sources = Object.entries(row.sources);
                   const aeiSources = sources.filter(([name]) => name.startsWith("AEI"));
                   const nonAeiSources = sources.filter(([name]) => !name.startsWith("AEI"));
-                  const allAeiNull = aeiSources.length > 0 && aeiSources.every(([, v]) => v.auto_aug == null && v.pct_norm == null);
+                  const allAeiNull = aeiSources.length === 0 || aeiSources.every(([, v]) => v.auto_aug == null && v.pct_norm == null);
                   const autoVals = sources.map(([, s]) => s.auto_aug).filter((v): v is number => v != null);
                   const pctVals = sources.map(([, s]) => s.pct_norm).filter((v): v is number => v != null);
                   const avgAuto = autoVals.length > 0 ? autoVals.reduce((a, b) => a + b, 0) / autoVals.length : null;

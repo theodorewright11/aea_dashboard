@@ -876,12 +876,12 @@ def compute_trends(settings: dict) -> dict:
 
 def compute_wa_trends(settings: dict) -> dict:
     """
-    Computes work-activity time trends for AEI and MCP/Microsoft series separately.
-    For each dataset version, calls _compute_wa_for_group and records the date.
+    Computes work-activity time trends per sub_type series.
+    Series names are sub_type keys from DATASET_SERIES (e.g. "AEI Conv.", "MCP").
+    AEI sub_types (keys starting with "AEI") use eco_2015 baseline; others use eco_2025.
     Returns {"series": [{"name": ..., "data_points": [...], "top_categories": [...]}]}
-    where each series is either "AEI" (eco_2015 baseline) or "MCP" (eco_2025 baseline).
     """
-    series_names  = settings.get("series", ["AEI", "MCP"])
+    series_names  = settings.get("series", [])
     method        = settings["method"]
     use_auto_aug  = settings["use_auto_aug"]
     physical_mode = settings["physical_mode"]
@@ -890,24 +890,14 @@ def compute_wa_trends(settings: dict) -> dict:
     sort_by       = settings.get("sort_by", "Workers Affected")
     activity_level = settings.get("activity_level", "gwa")  # gwa | iwa | dwa
 
-    # Map series name → (dataset family names, use_eco2015)
-    SERIES_MAP = {
-        "AEI":       (["AEI Conv.", "AEI API", "AEI Cumul. Conv.", "AEI API Cumul.", "AEI Cumul. (Both)"], True),
-        "MCP":       (["MCP Cumul."],   False),
-        "Microsoft": (["Microsoft"],    False),
-    }
-
     result_series = []
 
     for series_name in series_names:
-        if series_name not in SERIES_MAP:
+        ds_list = DATASET_SERIES.get(series_name, [])
+        if not ds_list:
             continue
-        family_names, use_eco2015 = SERIES_MAP[series_name]
-
-        # Collect all datasets in this series family
-        ds_list = []
-        for family in family_names:
-            ds_list.extend(DATASET_SERIES.get(family, []))
+        # AEI sub_types use eco_2015 baseline; others use eco_2025
+        use_eco2015 = series_name.startswith("AEI")
 
         series_data = []
         latest_categories: list[str] = []
@@ -1026,6 +1016,8 @@ def _build_explorer_occ_base(selected_sources: Optional[frozenset] = None) -> li
     }
     if "dws_star_rating" in eco.columns:
         agg_dict["dws_star_rating"] = ("dws_star_rating", "first")
+    if "job_zone" in eco.columns:
+        agg_dict["job_zone"] = ("job_zone", "first")
     occ_stats = eco.groupby("title_current").agg(**agg_dict).reset_index()
 
     result = []
@@ -1038,6 +1030,7 @@ def _build_explorer_occ_base(selected_sources: Optional[frozenset] = None) -> li
         metrics = _compute_task_metrics(task_norms, lookup, selected_sources)
 
         dws_val = _safe_num(row.get("dws_star_rating")) if "dws_star_rating" in row.index else None
+        jz_val = _safe_num(row.get("job_zone")) if "job_zone" in row.index else None
 
         occ_dict: dict = {
             "title_current": title,
@@ -1045,6 +1038,7 @@ def _build_explorer_occ_base(selected_sources: Optional[frozenset] = None) -> li
             "minor":   row.get("minor"),
             "broad":   row.get("broad"),
             "dws_star_rating": round(dws_val, 1) if dws_val is not None else None,
+            "job_zone": round(jz_val, 1) if jz_val is not None else None,
             "n_tasks":  n_tasks,
             "n_physical_tasks": n_phys,
             "pct_physical": round(n_phys / n_tasks, 4) if n_tasks else None,
@@ -1411,6 +1405,8 @@ def _build_explorer_groups_base(selected_sources: Optional[frozenset] = None) ->
     }
     if "dws_star_rating" in eco.columns:
         group_agg_dict["dws_star_rating"] = ("dws_star_rating", "first")
+    if "job_zone" in eco.columns:
+        group_agg_dict["job_zone"] = ("job_zone", "first")
     occ_basic = eco.groupby("title_current").agg(**group_agg_dict).reset_index()
 
     # Build occ->dws mapping for group averaging
@@ -1420,6 +1416,14 @@ def _build_explorer_groups_base(selected_sources: Optional[frozenset] = None) ->
             v = _safe_num(r.get("dws_star_rating"))
             if v is not None:
                 occ_to_dws[r["title_current"]] = v
+
+    # Build occ->job_zone mapping for group averaging
+    occ_to_jz: dict = {}
+    if "job_zone" in occ_basic.columns:
+        for _, r in occ_basic.iterrows():
+            v = _safe_num(r.get("job_zone"))
+            if v is not None:
+                occ_to_jz[r["title_current"]] = v
 
     # Unique (title, task_norm) pairs with physical flag
     task_pairs = eco[["title_current", "task_normalized", "physical"]].drop_duplicates(
@@ -1488,11 +1492,16 @@ def _build_explorer_groups_base(selected_sources: Optional[frozenset] = None) ->
             dws_vals = [occ_to_dws[t] for t in occs if t in occ_to_dws]
             group_dws = round(sum(dws_vals) / len(dws_vals), 1) if dws_vals else None
 
+            # Job zone: average across occs in this group
+            jz_vals = [occ_to_jz[t] for t in occs if t in occ_to_jz]
+            group_jz = round(sum(jz_vals) / len(jz_vals), 1) if jz_vals else None
+
             row = {
                 "name":    group_name,
                 "parent":  parent_name,
                 "grandparent": grandparent_name,
                 "dws_star_rating": group_dws,
+                "job_zone": group_jz,
                 "n_occs":  len(occs),
                 "n_tasks": n_tasks,
                 "n_physical_tasks": n_phys,

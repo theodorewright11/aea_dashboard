@@ -99,6 +99,7 @@ These sets are exposed via `GET /api/config` as `aei_conv_snapshot_datasets`, `a
 | `emp_tot_{geo}_2024` | float | BLS OEWS 2024 employment per geography (nat, al, ak, ..., wy, gu, pr, vi) |
 | `a_med_{geo}_2024` | float | BLS OEWS 2024 median annual wage per geography |
 | `dws_star_rating` | 1–5 | ECO 2025 only — DWS job outlook star rating |
+| `job_zone` | 1–5 | ECO 2025 only — O*NET job zone |
 | `task_prop` | float | ECO 2025 only — ratio of 2025/2015 tasks per occupation |
 | `soc_code_2010` | str | AEI datasets only — used for crosswalk |
 
@@ -185,16 +186,16 @@ Organized by pipeline stage:
 #### Stage 7: Orchestration
 - `get_group_data(settings)` — orchestrates the full pipeline for one sidebar group. Returns top-N or search-windowed rows plus `total_categories`, `total_emp`, `total_wages`, `matched_category`.
 - `compute_work_activities(settings)` — splits datasets into AEI group (eco_2015 baseline) and MCP/MS group (eco_2025 baseline). Calls `_compute_wa_for_group()` for each.
-- `compute_trends(settings)` — for each series family, runs `compute_single_dataset` for every version, records date, returns time series.
-- `compute_wa_trends(settings)` — same but for work activities, using `_compute_wa_for_group()` per dataset version.
+- `compute_trends(settings)` — for each sub_type series key, looks up datasets from `DATASET_SERIES`, runs `compute_single_dataset` for every version, records date, returns time series.
+- `compute_wa_trends(settings)` — same but for work activities, using `_compute_wa_for_group()` per dataset version. Series names are sub_type keys from `DATASET_SERIES`. AEI sub_types (keys starting with "AEI") use eco_2015 baseline; others use eco_2025.
 
 #### Stage 8: Explorer
 - `get_explorer_source_names()` — returns the list of source names used in the explorer task lookup: `AEI_EXPLORER_DATASETS + ["MCP", "Microsoft"]`. Exposed via `/api/config` as `explorer_source_names`.
 - `_build_explorer_task_lookup()` — builds `task_normalized → {source_name: {auto_aug, pct_norm}}` across all 8+ sources. AEI values averaged across 2010 SOC titles. Cached.
 - `_compute_task_metrics(task_norms, lookup, selected_sources=None)` — given task list + lookup, returns 10 metric fields (§4.6). When `selected_sources` (a frozenset of source names) is provided, only those sources contribute to metrics. When None, all sources are used.
-- `_build_explorer_occ_base(selected_sources=None)` — builds geo-independent base for occupations (hierarchy, dws, task counts, metrics). Cached in `_explorer_occ_base_cache` keyed by `frozenset|None`.
+- `_build_explorer_occ_base(selected_sources=None)` — builds geo-independent base for occupations (hierarchy, dws, job_zone, task counts, metrics). Cached in `_explorer_occ_base_cache` keyed by `frozenset|None`.
 - `get_explorer_occupations(geo="nat", selected_sources=None)` — 923 occupation summaries with hierarchy, single `emp`/`wage` for requested geo, 10 metrics. Base cached; emp/wage overlaid per geo. `selected_sources` filters which AI datasets contribute to metrics.
-- `_build_explorer_groups_base(selected_sources=None)` — builds geo-independent base for groups (hierarchy, metrics, parent info, dws, task counts, `_occs` set). Cached in `_explorer_groups_base_cache` keyed by `frozenset|None`.
+- `_build_explorer_groups_base(selected_sources=None)` — builds geo-independent base for groups (hierarchy, metrics, parent info, dws, job_zone, task counts, `_occs` set). Cached in `_explorer_groups_base_cache` keyed by `frozenset|None`.
 - `get_explorer_groups(geo="nat", selected_sources=None)` — pre-computed major/minor/broad aggregations (unique task_norms per group, not averages of occ-level values). Single `emp`/`wage` per geo. Base cached; emp/wage overlaid per geo. `selected_sources` filters which AI datasets contribute to metrics.
 - `get_occupation_tasks(title)` — task details for one occupation (all 8 sources). Cached per title.
 - `get_all_tasks(geo="nat")` — all unique tasks (deduplicated by `task_normalized`) with metrics + allocated `emp`/`wage` for requested geo. Cached per geo in `_all_tasks_geo_cache`.
@@ -362,11 +363,13 @@ Weighted emp allocation uses the same approach as WA explorer (§4.5): for each 
 
 ### 4.9 Trends
 
-`compute_trends()` iterates over each series family (AEI, MCP, etc.), runs `compute_single_dataset()` for each version in the family, and records the date (read from the CSV's `date` column). Returns all rows (not just top-N) per data point so the frontend can filter.
+`compute_trends()` iterates over each sub_type series key (e.g., "AEI Both + Micro", "MCP"), looks up datasets from `DATASET_SERIES`, runs `compute_single_dataset()` for each version, and records the date (read from the CSV's `date` column). Returns all rows (not just top-N) per data point so the frontend can filter.
+
+`compute_wa_trends()` works similarly but uses `_compute_wa_for_group()` per dataset version. AEI sub_types (keys starting with "AEI") use eco_2015 baseline; others use eco_2025.
 
 `top_categories` is set from the last (most recent) dataset version — these are the reference categories for the series.
 
-**Frontend filtering:** The backend receives series family names (e.g., `["AEI", "MCP"]`), computes all versions in those families, but the frontend filters `data_points` by `dp.dataset` matching user-selected individual datasets before building chart data.
+**Frontend date-range filtering:** The user selects a date range (from/to) and sub_types. The backend receives sub_type keys as `series`, computes all versions in those sub_types, but the frontend resolves sub_type + date range → dataset names via `getDatasetsInRange()` and filters `data_points` by `dp.dataset` before building chart data. This allows the full backend response to be cached while the frontend adjusts the visible date range without refetching.
 
 **Cumulative max mode** (frontend): value at date T = max of all dataset values at dates ≤ T, tracked via a running-max Map that carries forward. The line never decreases.
 
@@ -495,7 +498,7 @@ Response:
 Request body (`TrendsRequest`):
 ```ts
 {
-  series: string[];                   // ["AEI", "MCP", "Microsoft"]
+  series: string[];                   // sub_type keys, e.g. ["AEI Both + Micro", "MCP"]
   method: string;
   use_auto_aug: boolean;
   physical_mode: string;
@@ -510,9 +513,9 @@ Response:
 ```ts
 {
   series: Array<{
-    name: string;                     // series family name (e.g., "AEI")
+    name: string;                     // sub_type key (e.g., "AEI Both + Micro")
     data_points: Array<{
-      dataset: string;                // individual dataset (e.g., "AEI Conv. v2")
+      dataset: string;                // individual dataset (e.g., "AEI Both + Micro 2025-03-06")
       date: string;                   // from CSV date column
       rows: TrendRow[];               // ALL categories, not just top-N
     }>;
@@ -570,6 +573,7 @@ Response:
     sum_pct_avg?: number;
     sum_pct_max?: number;
     dws_star_rating?: number;         // 1–5 DWS star rating (raw for occs)
+    job_zone?: number;                // 1–5 O*NET job zone (raw for occs)
   }>;
 }
 ```
@@ -613,7 +617,7 @@ Response:
   broad: ExplorerGroupRow[];
 }
 // ExplorerGroupRow = { name, parent?, grandparent?, emp, wage, n_occs, n_tasks,
-//                      n_physical_tasks, pct_physical, dws_star_rating?, ...10 metric fields }
+//                      n_physical_tasks, pct_physical, dws_star_rating?, job_zone?, ...10 metric fields }
 ```
 
 ### `GET /api/explorer/all-tasks`
@@ -901,7 +905,7 @@ Pure renderer for work activity charts. Props include `otherResponse` and `other
 
 Two tabs: **Occupation Categories** and **Work Activities**, each with independent controls.
 
-**Dataset selection:** Individual dataset pills (not family toggles). Backend receives family names (derived via `getSeriesToFetch()`); frontend filters `data_points` by `dp.dataset` matching selected individual datasets.
+**Dataset selection:** Date range (from/to dropdowns from `getAllDates()`) plus sub_type pills grouped by category (Snapshots, Usage, Agentic, All) via `SubTypePillSelector`. User selects sub_type keys (e.g. "AEI Both + Micro", "MCP"). Backend receives sub_type keys as `series` parameter (matching keys in `DATASET_SERIES`). Frontend resolves sub_type keys + date range to dataset names via `getDatasetsInRange()` and filters `data_points` by `dp.dataset`. For WA Trends, AEI and non-AEI sub_types cannot be mixed (AEI uses eco_2015, non-AEI uses eco_2025); `familyRestriction` prop hides incompatible pills.
 
 **Three line modes:**
 - `individual` — one line per (dataset × category); `buildIndividualData()` filters to selected datasets
@@ -932,13 +936,13 @@ Props: `config: ConfigResponse`. Occupations, groups, and task data are fetched 
 
 **Column order at task level:** name, occ, broad, minor, major, dwa, iwa, gwa, emp, wage, phys (checkmark), freq, imp, rel, auto avg, auto max, auto avg (all), auto max (all), % phys, pct avg, pct max, pct avg (all), pct max (all), sum pct avg, sum pct max, % tasks aff, workers aff, wages aff. At non-task levels: name, job outlook (DWS star rating), emp, wage, # occs, # tasks, auto avg/max (with vals), auto avg/max (all), % phys, pct avg/max (with vals), pct avg/max (all), sum pct avg/max, % tasks aff, workers aff, wages aff.
 
-**Columns hidden at task level:** `n_occs`, `n_tasks`, `auto_avg_all`, `auto_max_all`, `pct_phys`, `pct_avg_all`, `pct_max_all`, `sum_pct_avg`, `sum_pct_max`, `dws_star` (`NON_TASK_COLS`). Columns hidden at non-task levels: `occ`, `major_cat`, `minor_cat`, `broad_cat`, `dwa_col`, `iwa_col`, `gwa_col`, `phys_col`, `freq_col`, `imp_col`, `rel_col` (`TASK_ONLY_COLS`).
+**Columns hidden at task level:** `n_occs`, `n_tasks`, `auto_avg_all`, `auto_max_all`, `pct_phys`, `pct_avg_all`, `pct_max_all`, `sum_pct_avg`, `sum_pct_max`, `dws_star`, `job_zone` (`NON_TASK_COLS`). Columns hidden at non-task levels: `occ`, `major_cat`, `minor_cat`, `broad_cat`, `dwa_col`, `iwa_col`, `gwa_col`, `phys_col`, `freq_col`, `imp_col`, `rel_col` (`TASK_ONLY_COLS`).
 
-**Simple mode task columns:** name, occ, major, gwa, emp, wage, auto avg, pct avg, % tasks aff, workers aff, wages aff (`SIMPLE_TASK_COLS`). **DWS Star Rating** (`dws_star` / "Job Outlook") is NOT in `SIMPLE_COLS`, so it is hidden in simple mode at non-task levels.
+**Simple mode task columns:** name, occ, major, gwa, emp, wage, auto avg, pct avg, % tasks aff, workers aff, wages aff (`SIMPLE_TASK_COLS`). **DWS Star Rating** (`dws_star` / "Job Outlook") and **Job Zone** (`job_zone`) are NOT in `SIMPLE_COLS`, so they are hidden in simple mode at non-task levels.
 
 Levels: Major / Minor / Broad / Occupation / Task. At "Task" level, data fetched from `/api/explorer/all-eco-tasks` on first switch and cached.
 
-**`FlatRow` interface:** holds all metric fields plus `sourceOccs: OccupationSummary[]` (for lazy drilldown), `level`, and `dws_star_rating?: number | null` (DWS star rating, 1–5 for occupations, averaged for groups).
+**`FlatRow` interface:** holds all metric fields plus `sourceOccs: OccupationSummary[]` (for lazy drilldown), `level`, `dws_star_rating?: number | null` (DWS star rating, 1–5 for occupations, averaged for groups), and `job_zone?: number | null` (O*NET job zone, 1–5 for occupations, averaged for groups).
 
 **Controls:**
 - Multi-select major category pills (empty = all)
@@ -1031,7 +1035,7 @@ WA Explorer task view uses weighted emp (freq or value based on Time/Value toggl
 
 ### Component: `TaskChangesView`
 
-`TaskChangesView.tsx` — Task-level dataset comparison table (titled "Task Changes Explorer"). Props: `config` (`ConfigResponse`). Dataset pickers, geography dropdown (populated from `config.geo_options`, state is `string`), status filter pills (with dynamic counts that update based on active filters), major category pills, search, per-column numeric threshold filters (funnel icon → min/max dropdown), per-column text filters (funnel icon → multi-select checkbox dropdown for Occupation, Major, Minor, Broad, GWA, IWA, DWA), column selector, pagination. Passes `geo` to `fetchTaskChanges()` and `fetchAllEcoTasks()` API calls. Task column uses word-wrap (no truncation); lowercase task names are auto-capitalized via `titleCaseTask()`. Column labels use "Auto" instead of "auto_aug". Source breakdown in expanded rows uses colored AVG/MAX badges matching explorer style. Table container has `maxHeight` with `overflowY: auto` so horizontal scroll is accessible from any vertical position. Row expansion ALWAYS shows occupation categories and work activities sections (even when values are null/dash), plus source breakdown and top MCP servers. When the "to" dataset starts with "AEI", section headers change to "2015 Occupation Hierarchy" and "2015 Task Hierarchy". Default datasets: AEI Cumul. Conv. v2 → AEI Cumul. (Both) v5. **AEI N/A handling:** Same collapsed "AEI → Not in task set" pattern as ExplorerView (see above).
+`TaskChangesView.tsx` — Task-level dataset comparison table (titled "Task Changes Explorer"). Props: `config` (`ConfigResponse`). Dataset pickers, geography dropdown (populated from `config.geo_options`, state is `string`), status filter pills (with dynamic counts that update based on active filters), major category pills, search, per-column numeric threshold filters (funnel icon → min/max dropdown), per-column text filters (funnel icon → multi-select checkbox dropdown for Occupation, Major, Minor, Broad, GWA, IWA, DWA), column selector, pagination. Passes `geo` to `fetchTaskChanges()` and `fetchAllEcoTasks()` API calls. Task column uses word-wrap (no truncation); lowercase task names are auto-capitalized via `titleCaseTask()`. Column labels use "Auto" instead of "auto_aug". Source breakdown in expanded rows uses colored AVG/MAX badges matching explorer style. Table container has `maxHeight` with `overflowY: auto` so horizontal scroll is accessible from any vertical position. Row expansion ALWAYS shows occupation categories and work activities sections (even when values are null/dash), plus source breakdown and top MCP servers. When the "to" dataset starts with "AEI", section headers change to "2015 Occupation Hierarchy" and "2015 Task Hierarchy". Dataset pickers use the `DatasetSelector` component (category → sub_type → date cascading selection) sourced from `config.dataset_categories`. Default datasets: AEI Both 2025-03-06 → All 2026-02-18. **AEI N/A handling:** Same collapsed "AEI → Not in task set" pattern as ExplorerView (see above).
 
 ### Utility: `lib/datasetRules.ts`
 
@@ -1103,7 +1107,7 @@ The explorer endpoints are **cold-start heavy** (~2–5s on first `/api/explorer
 
 8. **`ComputeResponse.total_emp` and `total_wages` are economy-wide sums** (before top-N filter), used for economy-share % in tooltips.
 
-9. **Trends backend receives family names, not individual datasets.** `getSeriesToFetch()` maps selected individual datasets → families. Frontend filters data_points by individual dataset name.
+9. **Trends backend receives sub_type keys as series names.** Frontend passes selected sub_type keys (e.g. "AEI Both + Micro", "MCP") directly; backend looks them up in `DATASET_SERIES`. Frontend resolves sub_type keys + date range → dataset names via `getDatasetsInRange()` and filters data_points accordingly.
 
 10. **Trends cumulative max carries forward.** If a category has no data at a date, the running max from prior dates is used — it never decreases.
 

@@ -20,19 +20,26 @@ The dashboard draws on five independent data sources. Using multiple AI scoring 
 
 ### AI Scoring Sources
 
-**Anthropic Economic Index (AEI)** — Derived from analysis of real Claude interactions. Each O*NET task has an automatability score (0–5) based on the averages of the collaboration patterns that each task was used for in the given Claude interaction (directive, feedback loop, task iteration, validation, learning). AEI data is split into two sub-families based on interaction type: **Conversation** (Conv.) captures direct human–AI conversation, while **API** captures tool-use/API interactions specifically. Each sub-family has snapshot and cumulative versions:
+Datasets are organized into four categories:
 
-- **AEI Conv. v1–v5** — Five snapshot versions spanning December 2024 to February 2026 (conversation data only).
-- **AEI API v3–v5** — Three snapshot versions (API data only).
-- **AEI Cumul. Conv. v1–v5** — Cumulative conversation-only data aggregating all conversations up to each snapshot date. Only one cumulative version should be selected at a time (v5 already contains v1–v4's data).
-- **AEI API Cumul. v4–v5** — Cumulative API-only data.
-- **AEI Cumul. (Both) v3–v5** — Cumulative data combining both conversation and API interactions. Only one at a time; selecting one of these blocks all other AEI datasets.
+**Snapshots** — Single-point-in-time AI scoring datasets:
+- **AEI Conv. v1–v5** — Five snapshot versions of Anthropic Economic Index conversation data spanning December 2024 to February 2026. Each O*NET task has an automatability score (0–5) based on the averages of the collaboration patterns observed in Claude interactions. Uses 2010 SOC codes (crosswalked to 2019 SOC).
+- **AEI API v3–v5** — Three snapshot versions of AEI API/tool-use interaction data. Same scoring methodology as AEI Conv. but from programmatic API usage. Uses 2010 SOC codes (crosswalked to 2019 SOC).
+- **Microsoft** — A single September 2024 assessment of AI exposure across occupations from Microsoft on Copilot usage. Automation scores are based on the average of the percent of a work activity's work that could be automated by the demonstrated use of the AI in a given conversation. Uses 2019 SOC codes natively.
 
-AEI data uses 2010 SOC occupation codes and must be crosswalked to the current 2019 SOC system before comparison with other sources.
+**Usage** (cumulative) — Cumulative datasets tracking confirmed AI usage over time. Each date version accumulates all interactions up to that point:
+- **AEI Both + Micro** — All confirmed usage: AEI conversation + API data, crosswalked to 2019 SOC and combined with Microsoft. Six date versions (Sep 2024–Feb 2026). Uses 2019 SOC.
+- **AEI Conv + Micro** — All confirmed human usage: AEI conversation-only data, crosswalked to 2019 SOC and combined with Microsoft. Six date versions. Uses 2019 SOC.
+- **AEI Both** — AEI conversation + API data (no Microsoft). Five date versions (Dec 2024–Feb 2026). Uses 2010 SOC (crosswalked).
+- **AEI Conv** — AEI conversation-only data (no Microsoft). Five date versions. Uses 2010 SOC (crosswalked).
+- **AEI API** — AEI API-only data. Three date versions. Uses 2010 SOC (crosswalked).
 
-**MCP Server Pipeline** — AI task classifications drawn from Model Context Protocol server logs. These capture what AI systems can do when given access to tools and external resources, rather than conversation-only capability. Four cumulative versions (MCP Cumul. v1–v4) from April 2025 to February 2026. Uses 2019 SOC codes natively.
+**Agentic** (cumulative) — Datasets capturing agentic AI tool-use capability:
+- **MCP + API** — All possible agentic usage: MCP server logs combined with AEI API data. Seven date versions (Apr 2025–Feb 2026). Uses 2019 SOC.
+- **MCP Cumul. v1–v4** — Standalone MCP server pipeline data. Four cumulative versions from April 2025 to February 2026. Uses 2019 SOC codes natively.
 
-**Microsoft Occupational AI Analysis** — An assessment of AI exposure across occupations from September 2024 from Microsoft on Copilot usage. Provides a single-point comparison against the other sources. Uses 2019 SOC codes natively. The automation scores here are based on the average of the percent of a work activities work could be automated by the demonstrated use of the AI in a given conversation
+**All** (cumulative) — Combined across all source families:
+- **All** — AEI Both + MCP + Microsoft combined. Ten date versions (Sep 2024–Feb 2026). Uses 2019 SOC.
 
 ### Structural & Economic Sources
 
@@ -56,7 +63,7 @@ A sortable, filterable data table covering all 923 occupations in the O*NET/BLS 
 - For a given occupation, which of its tasks are most exposed and which AI sources agree?
 
 **What the user sees and can do:**
-- A table with columns for name, **Job Outlook** (DWS star rating, 1–5; averaged at group levels, shown to 1 decimal; hidden at task level and in simple mode), employment, median wage, number of occupations (at group levels), number of tasks, four auto-aug score variants (avg/max, with values only or across all tasks), percent physical, four pct_normalized variants, and two sum-of-pct columns. At the Task level, the column order is: name, occupation, broad, minor, major, DWA, IWA, GWA, emp, wage, physical (checkmark), freq, imp, rel, auto avg, auto max, pct avg, pct max, % tasks aff, workers aff, wages aff. The "% Tasks Affected" column shows "—" at the task level since the metric does not apply to individual tasks; Workers Affected and Wages Affected still display values. Group-level columns (# occs, # tasks, auto/pct "all" variants, % phys, sum pct) are hidden at task level.
+- A table with columns for name, **Job Outlook (Utah)** (Utah DWS star rating, 1–5; averaged at group levels, shown to 1 decimal; hidden at task level and in simple mode), **Job Zone** (O*NET job zone, 1–5; averaged at group levels, shown to 1 decimal; hidden at task level and in simple mode), employment, median wage, number of occupations (at group levels), number of tasks, four auto-aug score variants (avg/max, with values only or across all tasks), percent physical, four pct_normalized variants, and two sum-of-pct columns. At the Task level, the column order is: name, occupation, broad, minor, major, DWA, IWA, GWA, emp, wage, physical (checkmark), freq, imp, rel, auto avg, auto max, pct avg, pct max, % tasks aff, workers aff, wages aff. The "% Tasks Affected" column shows "—" at the task level since the metric does not apply to individual tasks; Workers Affected and Wages Affected still display values. Group-level columns (# occs, # tasks, auto/pct "all" variants, % phys, sum pct) are hidden at task level.
 - A **column selector** (gear icon in the header bar) that lets users toggle which columns are visible. Click-outside closes the panel. At the task level, includes All/None, Occ, and WA group toggle buttons. Persisted to localStorage. In Simple mode, only a curated subset is selectable (at task level: name, occ, major, GWA, emp, wage, auto avg, pct avg, % tasks aff, workers aff, wages aff).
 - A **level selector** (Major / Minor / Broad / Occupation / Task) that controls the granularity of the table. At the Task level, each row is one task × occupation combination from the full ECO 2025 dataset (~23,850 rows). Tasks can repeat across occupations but each row has a unique combination of task, occupation, and work activity classification. Employment and wage columns show the raw occupation-level numbers (not divided).
 - **Inline drilldown**: clicking any row expands it to show child rows at the next level down. At the occupation level, expanding shows individual tasks. At the task level, expanding a row shows five sections: **Occupation Categories** (Occupation → Broad → Minor → Major), **Work Activities** (GWA / IWA / DWA), **Task Detail** (Emp, Wage, Physical, Freq, Imp, Rel — no auto/pct since those are already table columns), **Source Breakdown** (per-source scores from all ten AI sources plus computed AVG and MAX summary rows; if a task is not in the eco 2015 task set, AEI sources collapse into a single "AEI — Not in task set" row), and **Top MCP Servers** (if available).
@@ -100,8 +107,8 @@ A side-by-side comparison view with two independently configurable groups (A and
 
 **What the user sees and can do:**
 - **Two-group layout** — Group A and Group B side by side. Each group has its own independent control panel.
-- **Dataset selection** — pick one or more AI datasets per group. When multiple are selected, choose Average or Max to combine scores.
-- **Display controls** — method (Time or Value), geography (National or Utah), aggregation level (Major / Minor / Broad / Occupation), and Top N (up to 30).
+- **Dataset selection** — single dataset per group via cascading category → sub_type → date picker (using the `DatasetSelector` component sourced from `config.dataset_categories`).
+- **Display controls** — method (Time or Value), geography (all states, populated from backend `geo_options`), aggregation level (Major / Minor / Broad / Occupation), and Top N (up to 30).
 - **Filtering controls** — physical task filter (all / exclude physical / physical only), auto-aug multiplier toggle (Off / On).
 - **Run button** — charts only update on Run, not on every control change. After running, control sections collapse to a summary bar.
 - **Search** — type a category name to find it in the ranked list. The matched bar is highlighted orange with surrounding context bars shown (±N configurable).
@@ -155,7 +162,7 @@ A task-level comparison view that shows what changed between two dataset version
 - For cross-family comparisons (e.g., AEI vs MCP), which tasks exist only in one family's baseline?
 
 **What the user sees and can do:**
-- **Dataset pickers** — select any two datasets from the full registry (including all cumulative variants) as "From" and "To", then click Run to compare. Default: AEI Cumul. Conv. v2 → AEI Cumul. (Both) v5.
+- **Dataset pickers** — cascading category → sub-type → date selectors (using the DatasetSelector component) for "From" and "To", then click Run to compare. Default: AEI Both 2025-03-06 → All 2026-02-18.
 - **Status summary** — colored pills showing counts for each status: New (green), Changed (orange), Removed (red), Unchanged (grey), Not in baseline (muted/italic). Each pill toggles visibility of that status. Default: New + Changed + Removed visible. **Counts are dynamic** — they update based on active filters (major pills, search, physical filter, column filters), excluding the status filter itself.
 - **Table** with default visible columns: Task, Occupation, Status, From Auto, To Auto, Δ Auto. Available via column selector: Major, Minor, Broad, GWA, IWA, DWA, Physical, Freq, Importance, Relevance, Emp, Wage, From pct, To pct, Δ pct. Task column displays full text (word-wrapping enabled, no truncation). Lowercase task names (from AEI data) are auto-capitalized.
 - **Row expansion** — clicking a row shows occupation categories (labeled "2015 Occupation Hierarchy" when the to-dataset is AEI), work activities (labeled "2015 Task Hierarchy" when the to-dataset is AEI), source breakdown (all 10 AI sources with colored AVG/MAX badges matching explorer style; if a task is not in the eco 2015 task set, AEI sources collapse into a single "AEI — Not in task set" row), and top MCP servers.
@@ -242,7 +249,7 @@ A global toggle in the navigation bar switches the dashboard between **Simple** 
 | **Work Activities** | AEI Cumul. (Both) v4 + MCP Cumul. v4 + Microsoft on Average, Time, All phys, Auto-aug On, single group | Activity level, Geo, Sort, Search, Top N | Group B, Dataset/Method/Physical/Auto-aug controls |
 | **Trends (Occ)** | All datasets, Time, All phys, Auto-aug On | Lines (Avg/Max only), Metric, Aggregation, Geo, Top N, Sort, Search | Datasets, Filtering, Individual line mode, Value ranking (auto-matches line mode) |
 | **Trends (WA)** | All AEI datasets, Time, All phys, Auto-aug On | Lines (Avg/Max only), Metric, Activity level, Geo, Top N, Sort, Search | Datasets, Filtering, Individual line mode, Value ranking |
-| **Task Changes Explorer** | AEI Cumul. Conv. v2 → AEI Cumul. (Both) v5 | Dataset pickers, Status filter, Major pills, Search, Core columns | Physical filter, Minor/Broad/IWA/DWA columns |
+| **Task Changes Explorer** | AEI Both 2025-03-06 → All 2026-02-18 | Dataset pickers (cascading category/sub-type/date), Status filter, Major pills, Search, Core columns | Physical filter, Minor/Broad/IWA/DWA columns |
 
 Explorer pages auto-compute % Tasks Affected, Workers Affected, and Wages Affected columns on page load in **both** simple and advanced modes using their respective default datasets (Occupation Explorer: AEI Cumul. (Both) v4 + MCP Cumul. v4 + Microsoft on Average; WA Explorer: AEI Cumul. (Both) v4), freq method, all phys, auto-aug on. The pct columns are always visible in the table (showing "---" while loading). In advanced mode, users can still open the PctComputePanel to re-run with custom settings. The Reset button restores all controls to defaults (including geo→nat, physical→all, hidden columns→defaults) and re-runs auto-compute. The WA Explorer auto-compute populates pctAffectedMap from all three levels (GWA + IWA + DWA) so results persist across level switches.
 

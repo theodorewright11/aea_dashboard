@@ -20,10 +20,8 @@ import math
 from typing import Optional
 
 from config import (
-    DATASETS, DATASET_SERIES, AGG_LEVEL_OPTIONS, SORT_OPTIONS, AGG_LEVEL_COL,
-    AEI_CONV_SNAPSHOT_DATASETS, AEI_API_SNAPSHOT_DATASETS,
-    AEI_CONV_CUMULATIVE_DATASETS, AEI_API_CUMULATIVE_DATASETS,
-    AEI_BOTH_CUMULATIVE_DATASETS, MCP_DATASETS, GEO_OPTIONS,
+    DATASETS, DATASET_SERIES, DATASET_CATEGORIES,
+    AGG_LEVEL_OPTIONS, SORT_OPTIONS, AGG_LEVEL_COL, GEO_OPTIONS,
 )
 from compute import (
     get_group_data,
@@ -88,20 +86,29 @@ class GroupSettingsModel(BaseModel):
 
 # ── /api/config ────────────────────────────────────────────────────────────────
 
+class DatasetEntry(BaseModel):
+    name: str
+    date: str
+
+class SubType(BaseModel):
+    key:      str
+    label:    str
+    datasets: list[DatasetEntry]
+
+class Category(BaseModel):
+    key:       str
+    label:     str
+    sub_types: list[SubType]
+
 class ConfigResponse(BaseModel):
     datasets:                    list[str]
     dataset_availability:        dict[str, bool]
     dataset_series:              dict[str, list[str]]
+    dataset_categories:          list[Category]
     agg_levels:                  dict[str, str]
     sort_options:                list[str]
     crosswalk_available:         bool
     eco2015_available:           bool
-    aei_conv_snapshot_datasets:  list[str]
-    aei_api_snapshot_datasets:   list[str]
-    aei_conv_cumulative_datasets: list[str]
-    aei_api_cumulative_datasets: list[str]
-    aei_both_cumulative_datasets: list[str]
-    mcp_datasets:                list[str]
     geo_options:                 dict[str, str]
     explorer_source_names:       list[str]
 
@@ -117,16 +124,11 @@ def config():
         datasets=list(DATASETS.keys()),
         dataset_availability={name: dataset_exists(name) for name in DATASETS},
         dataset_series=DATASET_SERIES,
+        dataset_categories=DATASET_CATEGORIES,
         agg_levels=AGG_LEVEL_OPTIONS,
         sort_options=SORT_OPTIONS,
         crosswalk_available=crosswalk_available(),
         eco2015_available=eco2015_available(),
-        aei_conv_snapshot_datasets=sorted(AEI_CONV_SNAPSHOT_DATASETS),
-        aei_api_snapshot_datasets=sorted(AEI_API_SNAPSHOT_DATASETS),
-        aei_conv_cumulative_datasets=sorted(AEI_CONV_CUMULATIVE_DATASETS),
-        aei_api_cumulative_datasets=sorted(AEI_API_CUMULATIVE_DATASETS),
-        aei_both_cumulative_datasets=sorted(AEI_BOTH_CUMULATIVE_DATASETS),
-        mcp_datasets=sorted(MCP_DATASETS),
         geo_options=GEO_OPTIONS,
         explorer_source_names=get_explorer_source_names(),
     )
@@ -374,6 +376,7 @@ class OccupationSummary(BaseModel):
     emp:                Optional[float] = None
     wage:               Optional[float] = None
     dws_star_rating:    Optional[float] = None
+    job_zone:           Optional[float] = None
     n_tasks:            int             = 0
     n_physical_tasks:   int             = 0
     pct_physical:       Optional[float] = None
@@ -466,6 +469,7 @@ class ExplorerGroupRow(BaseModel):
     emp:                Optional[float] = None
     wage:               Optional[float] = None
     dws_star_rating:    Optional[float] = None
+    job_zone:           Optional[float] = None
     n_occs:             int             = 0
     n_tasks:            int             = 0
     n_physical_tasks:   int             = 0

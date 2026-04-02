@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { useSimpleMode } from "@/lib/SimpleModeContext";
 import { fetchTaskChanges, fetchAllEcoTasks } from "@/lib/api";
 import type { ConfigResponse, TaskChangeRow, TaskChangeStatus, EcoTaskRow, McpEntry } from "@/lib/types";
+import DatasetSelector from "@/components/DatasetSelector";
 
 /* ── Utilities ────────────────────────────────────────────────────────────── */
 
@@ -342,11 +343,10 @@ interface Props {
 
 export default function TaskChangesView({ config }: Props) {
   const { isSimple } = useSimpleMode();
-  const datasets = config.datasets;
 
   // ── Dataset pickers ──
-  const [fromDataset, setFromDataset] = useState("AEI Cumul. Conv. v2");
-  const [toDataset, setToDataset] = useState("AEI Cumul. (Both) v5");
+  const [fromDataset, setFromDataset] = useState("AEI Both 2025-03-06");
+  const [toDataset, setToDataset] = useState("All 2026-02-18");
 
   // ── Data state ──
   const [rows, setRows] = useState<TaskChangeRow[] | null>(null);
@@ -677,21 +677,21 @@ export default function TaskChangesView({ config }: Props) {
 
         {/* Dataset pickers + Run */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <label style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)" }}>From:</label>
-            <select value={fromDataset} onChange={(e) => setFromDataset(e.target.value)}
-              style={{ fontSize: 12, padding: "4px 8px", border: "1px solid var(--border)", borderRadius: 5, background: "var(--bg-surface)", color: "var(--text-primary)" }}>
-              {datasets.map((d) => <option key={d} value={d}>{d}</option>)}
-            </select>
-          </div>
+          <DatasetSelector
+            categories={config.dataset_categories}
+            value={fromDataset}
+            onChange={(v) => setFromDataset(v)}
+            compact
+            label="From"
+          />
           <span style={{ fontSize: 14, color: "var(--text-muted)" }}>&rarr;</span>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <label style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)" }}>To:</label>
-            <select value={toDataset} onChange={(e) => setToDataset(e.target.value)}
-              style={{ fontSize: 12, padding: "4px 8px", border: "1px solid var(--border)", borderRadius: 5, background: "var(--bg-surface)", color: "var(--text-primary)" }}>
-              {datasets.map((d) => <option key={d} value={d}>{d}</option>)}
-            </select>
-          </div>
+          <DatasetSelector
+            categories={config.dataset_categories}
+            value={toDataset}
+            onChange={(v) => setToDataset(v)}
+            compact
+            label="To"
+          />
           <button onClick={runComparison} disabled={loading}
             style={{ padding: "5px 16px", fontSize: 12, fontWeight: 600, borderRadius: 6, border: "none", background: "var(--brand)", color: "#fff", cursor: loading ? "wait" : "pointer", opacity: loading ? 0.7 : 1 }}>
             {loading ? "Running..." : "Run"}
@@ -943,9 +943,11 @@ export default function TaskChangesView({ config }: Props) {
 
 /* ── Expanded detail panel ────────────────────────────────────────────────── */
 
-function fmtPctNorm(v: number | null | undefined): string {
+function fmtPctNorm(v?: number | null): string {
   if (v == null) return "\u2014";
-  return v.toFixed(4) + "%";
+  if (v < 0.0001) return ">.0001%";
+  if (v < 0.01) return `${parseFloat(v.toPrecision(1))}%`;
+  return `${parseFloat(v.toFixed(4))}%`;
 }
 
 function ExpandedDetail({ row, toDataset }: { row: TaskChangeRow; toDataset: string }) {
@@ -992,7 +994,7 @@ function ExpandedDetail({ row, toDataset }: { row: TaskChangeRow; toDataset: str
         const allSources = Object.entries(row.sources);
         const aeiSources = allSources.filter(([name]) => name.startsWith("AEI"));
         const nonAeiSources = allSources.filter(([name]) => !name.startsWith("AEI"));
-        const allAeiNull = aeiSources.length > 0 && aeiSources.every(([, v]) => v.auto_aug == null && v.pct_norm == null);
+        const allAeiNull = aeiSources.length === 0 || aeiSources.every(([, v]) => v.auto_aug == null && v.pct_norm == null);
         return (
         <div style={{ minWidth: 220 }}>
           <p style={sectionHead}>Source Breakdown</p>
