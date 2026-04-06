@@ -1,4 +1,4 @@
-risk_tier,n_occs,total_emp,total_wages,avg_pct,avg_risk_score
-high,233,59890979.89,61033.44,63.29,5.57
-low,229,15545709.58,82533.73,26.39,1.64
-moderate,461,77794605.00,77558.39,45.10,3.45
+risk_tier,n_occs,total_emp,avg_pct,avg_risk_score,total_workers_affected,total_wages_affected
+high,195,50678923.23,56.43,9.08,28898651.46,1392589530939.16
+low,224,20065647.60,18.98,2.10,4344037.03,320658577085.08
+moderate,504,82486723.64,35.86,5.62,28056268.84,2279942121808.33

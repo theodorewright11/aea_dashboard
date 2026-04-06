@@ -3,9 +3,11 @@ run.py — Job Exposure: Job Risk Scoring
 
 Which jobs are most at risk of replacement (not just transformation)?
 
-Computes seven binary risk flags per occupation and combines them into a
-composite risk score (0–7). Primary config: all_ceiling. Cross-config
-comparison shows which assignments are robust vs. source-dependent.
+Computes seven binary risk flags per occupation with weighted scoring:
+  - Flags 1–4 (exposure signal): weight 2 each
+  - Flags 5–7 (structural vulnerability): weight 1 each
+  - Maximum score: 11
+  - Exposure gate: pct_tasks_affected < 33% cannot be high risk
 
 Risk flags (1 = at risk):
   1. pct_tasks_affected > median
@@ -16,7 +18,10 @@ Risk flags (1 = at risk):
   6. outlook ∈ {2, 3}  (note: 1 = good outlook/low wages — NOT at risk)
   7. n_software > median
 
-Risk tiers: 5–7 = High, 3–4 = Moderate, 1–2 = Low.
+Risk tiers: 8–11 = High, 4–7 = Moderate, 0–3 = Low.
+Exposure gate: pct < 33% → cannot be high regardless of score.
+
+Primary config: all_confirmed. Cross-config comparison shows tier volatility.
 
 Run from project root:
     venv/Scripts/python -m analysis.questions.job_exposure.job_risk_scoring.run
@@ -40,7 +45,9 @@ from analysis.config import (
 from analysis.data.compute_ska import SKAData, compute_ska, load_ska_data
 from analysis.utils import (
     COLORS,
+    CATEGORY_PALETTE,
     FONT_FAMILY,
+    format_workers,
     save_csv,
     save_figure,
     style_figure,
@@ -50,19 +57,43 @@ HERE = Path(__file__).resolve().parent
 DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent.parent / "analysis" / "data"
 TECH_SKILLS_FILE = DATA_DIR / "tech_skills_simple.csv"
 
-RISK_AT_RISK_ZONE = {1, 2, 3}      # job_zone values flagged as at risk
-RISK_AT_RISK_OUTLOOK = {2, 3}      # DWS outlook values flagged as at risk
-PIVOT_N = 10                        # top/bottom N occs used for pivot distance
+PRIMARY_KEY = "all_confirmed"
+CEILING_KEY = "all_ceiling"
 
-TIER_LABELS = {"high": "High Risk (5–7)", "moderate": "Moderate Risk (3–4)", "low": "Low Risk (1–2)"}
+RISK_AT_RISK_ZONE = {1, 2, 3}
+RISK_AT_RISK_OUTLOOK = {2, 3}
+PIVOT_N = 10
+
+EXPOSURE_GATE = 33.0  # pct below this cannot be high risk
+
+# Weights: flags 1-4 get 2x, flags 5-7 get 1x
+FLAG_WEIGHTS = {
+    "flag1_pct": 2,
+    "flag2_ska": 2,
+    "flag3_pct_trend": 2,
+    "flag4_ska_trend": 2,
+    "flag5_job_zone": 1,
+    "flag6_outlook": 1,
+    "flag7_n_software": 1,
+}
+
+TIER_LABELS = {
+    "high": "High Risk (8–11)",
+    "moderate": "Moderate Risk (4–7)",
+    "low": "Low Risk (0–3)",
+}
 TIER_ORDER = ["high", "moderate", "low"]
 TIER_COLORS = {"high": COLORS["negative"], "moderate": COLORS["accent"], "low": COLORS["muted"]}
 
 
-def _assign_risk_tier(score: int) -> str:
-    if score >= 5:
+def _assign_risk_tier(score: int, pct: float) -> str:
+    """Assign risk tier with exposure gate."""
+    if score >= 8 and pct >= EXPOSURE_GATE:
         return "high"
-    if score >= 3:
+    elif score >= 8 and pct < EXPOSURE_GATE:
+        # Gate: downgrade to moderate
+        return "moderate"
+    elif score >= 4:
         return "moderate"
     return "low"
 
@@ -124,17 +155,7 @@ def _compute_flags(
     pct_delta: pd.Series,
     ska_delta: pd.Series,
 ) -> pd.DataFrame:
-    """
-    Compute all 7 binary flags for each occupation.
-
-    Parameters
-    ----------
-    df        : structural data (title_current, emp_nat, job_zone, outlook, n_software)
-    pct       : pct_tasks_affected Series (title_current index)
-    ska_gap   : overall_gap Series (title_current index)
-    pct_delta : pct delta from first to last date (title_current index)
-    ska_delta : ska_gap delta from first to last date (title_current index)
-    """
+    """Compute all 7 binary flags with weighted scoring + exposure gate."""
     out = df.copy()
     out["pct"] = out["title_current"].map(pct).fillna(0.0)
     out["ska_gap"] = out["title_current"].map(ska_gap).fillna(np.nan)
@@ -163,10 +184,26 @@ def _compute_flags(
     )
     out["flag7_n_software"] = (out["n_software"] > n_software_median).astype(int)
 
-    flag_cols = [f"flag{i}_{n}" for i, n in
-                 enumerate(["pct", "ska", "pct_trend", "ska_trend", "job_zone", "outlook", "n_software"], 1)]
-    out["risk_score"] = out[flag_cols].sum(axis=1)
-    out["risk_tier"] = out["risk_score"].apply(_assign_risk_tier)
+    # Weighted score
+    flag_cols = list(FLAG_WEIGHTS.keys())
+    out["risk_score"] = sum(
+        out[col] * weight for col, weight in FLAG_WEIGHTS.items()
+    )
+
+    # Apply exposure gate
+    out["risk_tier"] = [
+        _assign_risk_tier(score, pct_val)
+        for score, pct_val in zip(out["risk_score"], out["pct"])
+    ]
+
+    # Track which occs were gated
+    out["exposure_gated"] = (out["risk_score"] >= 8) & (out["pct"] < EXPOSURE_GATE)
+
+    # Store medians for reporting
+    out.attrs["pct_median"] = pct_median
+    out.attrs["ska_median"] = ska_median
+    out.attrs["pct_delta_median"] = pct_delta_median
+    out.attrs["n_software_median"] = n_software_median
 
     return out
 
@@ -190,14 +227,19 @@ def _risk_distribution_bar(df: pd.DataFrame, config_label: str) -> go.Figure:
             name=TIER_LABELS[tier],
             showlegend=False,
         ))
+    gated = df["exposure_gated"].sum()
+    subtitle = f"{config_label} | Weighted scoring (max 11) + 33% exposure gate"
+    if gated > 0:
+        subtitle += f" | {gated} occs downgraded by gate"
     style_figure(
         fig,
-        "Most Occupations Are in the Low-Risk Tier",
-        subtitle=f"{config_label} | 7-factor composite risk score",
+        "Risk Tier Distribution",
+        subtitle=subtitle,
         x_title=None, y_title="Number of Occupations",
-        height=500, width=700, show_legend=False,
+        height=550, width=750, show_legend=False,
     )
     fig.update_layout(
+        margin=dict(l=60, r=40, t=80, b=100),
         yaxis=dict(showgrid=True, gridcolor=COLORS["border"]),
         xaxis=dict(showgrid=False),
         bargap=0.35,
@@ -211,7 +253,7 @@ def _risk_vs_pct_scatter(df: pd.DataFrame, config_label: str) -> go.Figure:
     for tier in TIER_ORDER:
         sub = df[df["risk_tier"] == tier]
         fig.add_trace(go.Scatter(
-            x=sub["risk_score"] + (np.random.default_rng(42).uniform(-0.2, 0.2, len(sub))),
+            x=sub["risk_score"] + (np.random.default_rng(42).uniform(-0.25, 0.25, len(sub))),
             y=sub["pct"],
             mode="markers",
             name=TIER_LABELS[tier],
@@ -220,69 +262,150 @@ def _risk_vs_pct_scatter(df: pd.DataFrame, config_label: str) -> go.Figure:
             text=sub["title_current"],
             hovertemplate="<b>%{text}</b><br>Risk Score: %{x:.0f}<br>% Tasks: %{y:.1f}%<extra></extra>",
         ))
+    # Gate line
+    fig.add_hline(y=EXPOSURE_GATE, line_dash="dot", line_color=COLORS["accent"], line_width=1,
+                  annotation_text=f"Exposure gate ({EXPOSURE_GATE:.0f}%)",
+                  annotation_position="right",
+                  annotation_font=dict(size=9, color=COLORS["accent"], family=FONT_FAMILY))
     style_figure(
         fig,
         "Risk Score vs Task Exposure",
-        subtitle=f"{config_label} | Jitter added to x-axis for visibility",
-        x_title="Composite Risk Score (0–7)", y_title="% Tasks Affected",
-        height=600, width=900, show_legend=True,
+        subtitle=f"{config_label} | Jitter on x for visibility | Horizontal line = exposure gate",
+        x_title="Weighted Risk Score (0–11)", y_title="% Tasks Affected",
+        height=650, width=950, show_legend=True,
     )
     fig.update_layout(
+        margin=dict(l=60, r=40, t=80, b=120),
         xaxis=dict(tickmode="linear", tick0=0, dtick=1),
-        legend=dict(orientation="h", yanchor="top", y=-0.12, xanchor="center", x=0.5,
+        legend=dict(orientation="h", yanchor="top", y=-0.15, xanchor="center", x=0.5,
                     font=dict(size=10, color=COLORS["neutral"], family=FONT_FAMILY)),
     )
     return fig
 
 
-def _cross_config_heatmap(risk_all: pd.DataFrame) -> go.Figure:
+def _flag_breakdown_by_score(df: pd.DataFrame) -> go.Figure:
+    """Stacked bar: for each risk score (0-11), show which flags are typically active."""
+    flag_cols = list(FLAG_WEIGHTS.keys())
+    flag_labels = {
+        "flag1_pct": "% Tasks > median",
+        "flag2_ska": "SKA gap > median",
+        "flag3_pct_trend": "Pct trend ↑",
+        "flag4_ska_trend": "SKA trend ↑",
+        "flag5_job_zone": "Job zone 1-3",
+        "flag6_outlook": "Outlook 2-3",
+        "flag7_n_software": "Software > median",
+    }
+    scores = sorted(df["risk_score"].unique())
+    fig = go.Figure()
+    for i, flag_col in enumerate(flag_cols):
+        pcts = []
+        for score in scores:
+            score_df = df[df["risk_score"] == score]
+            if len(score_df) == 0:
+                pcts.append(0)
+            else:
+                pcts.append(score_df[flag_col].mean() * 100)
+        fig.add_trace(go.Bar(
+            x=[str(s) for s in scores], y=pcts,
+            name=flag_labels[flag_col],
+            marker=dict(color=CATEGORY_PALETTE[i], line=dict(width=0)),
+        ))
+    style_figure(
+        fig,
+        "Which Flags Drive Each Risk Score Level?",
+        subtitle="% of occupations at each score that have each flag active",
+        x_title="Weighted Risk Score", y_title="% with Flag Active",
+        height=600, width=1000, show_legend=True,
+    )
+    fig.update_layout(
+        barmode="group", bargap=0.15, bargroupgap=0.05,
+        margin=dict(l=60, r=40, t=80, b=120),
+        xaxis=dict(showgrid=False),
+        yaxis=dict(showgrid=True, gridcolor=COLORS["border"], ticksuffix="%"),
+        legend=dict(orientation="h", yanchor="top", y=-0.15, xanchor="center", x=0.5,
+                    font=dict(size=9, color=COLORS["neutral"], family=FONT_FAMILY)),
+    )
+    return fig
+
+
+def _cross_config_volatility(risk_all: pd.DataFrame, primary_df: pd.DataFrame) -> go.Figure:
     """
-    Heatmap: for each occ, show risk tier across all five configs.
-    Only show top 40 highest-risk occs (by primary config score).
+    Show occupations that change tiers across configs.
+    Focus on the most volatile ones + base ranking.
     """
     tier_to_num = {"high": 3, "moderate": 2, "low": 1}
-    tier_to_color = {3: COLORS["negative"], 2: COLORS["accent"], 1: COLORS["muted"]}
+    config_order = list(ANALYSIS_CONFIGS.keys())
 
-    top40 = (
-        risk_all[risk_all["config"] == "all_ceiling"]
-        .nlargest(40, "risk_score")["title_current"]
-        .tolist()
-    )
-    pivot = risk_all[risk_all["title_current"].isin(top40)].pivot(
-        index="title_current", columns="config", values="risk_tier"
-    )
-    pivot = pivot.loc[top40]
+    # Build pivot of tier assignments
+    pivot = risk_all.pivot(index="title_current", columns="config", values="risk_tier")
+    pivot = pivot.reindex(columns=config_order)
     pivot_num = pivot.map(lambda t: tier_to_num.get(t, 0))
 
-    config_order = list(ANALYSIS_CONFIGS.keys())
-    pivot = pivot[config_order]
-    pivot_num = pivot_num[config_order]
+    # Compute volatility: range of tier numbers across configs
+    pivot_num["tier_range"] = pivot_num[config_order].max(axis=1) - pivot_num[config_order].min(axis=1)
 
-    z = pivot_num.values
-    text = pivot.values
+    # Get occupations that actually change tier (range > 0)
+    volatile = pivot_num[pivot_num["tier_range"] > 0].nlargest(30, "tier_range")
+
+    # Also get top 10 by primary risk score for context
+    top_primary = primary_df.nlargest(10, "risk_score")["title_current"].tolist()
+
+    # Combine: volatile + top primary, deduplicated
+    show_occs = list(dict.fromkeys(volatile.index.tolist() + top_primary))[:40]
+
+    pivot_show = pivot.loc[[o for o in show_occs if o in pivot.index]]
+    pivot_num_show = pivot_num.loc[pivot_show.index, config_order]
+
+    z = pivot_num_show.values
+    text = pivot_show.values
 
     fig = go.Figure(go.Heatmap(
         z=z,
         x=[ANALYSIS_CONFIG_LABELS[k] for k in config_order],
-        y=top40,
+        y=pivot_show.index.tolist(),
         text=text,
         texttemplate="%{text}",
         colorscale=[[0, COLORS["muted"]], [0.5, COLORS["accent"]], [1.0, COLORS["negative"]]],
         showscale=False,
         hovertemplate="<b>%{y}</b><br>Config: %{x}<br>Tier: %{text}<extra></extra>",
     ))
-    chart_h = max(700, len(top40) * 20 + 200)
+    chart_h = max(700, len(pivot_show) * 20 + 250)
     style_figure(
         fig,
-        "Risk Tier Robustness Across Dataset Configs",
-        subtitle="Top 40 highest-risk occupations (all_ceiling) | How tier assignment varies by config",
-        x_title=None, y_title=None, height=chart_h, width=900, show_legend=False,
+        "Which Occupations Change Risk Tier Across Configs?",
+        subtitle="Top volatile occs + top-risk by primary config | Tier: high/moderate/low",
+        x_title=None, y_title=None, height=chart_h, width=950, show_legend=False,
     )
     fig.update_layout(
+        margin=dict(l=20, r=40, t=80, b=100),
         yaxis=dict(autorange="reversed", tickfont=dict(size=9, family=FONT_FAMILY)),
         xaxis=dict(tickfont=dict(size=10, family=FONT_FAMILY)),
     )
     return fig
+
+
+def _cross_config_tier_shifts(risk_all: pd.DataFrame) -> pd.DataFrame:
+    """Find occupations that jump between tiers across configs."""
+    tier_to_num = {"high": 3, "moderate": 2, "low": 1}
+    config_order = list(ANALYSIS_CONFIGS.keys())
+
+    pivot = risk_all.pivot(index="title_current", columns="config", values="risk_tier")
+    pivot = pivot.reindex(columns=config_order)
+    pivot_num = pivot.map(lambda t: tier_to_num.get(t, 0))
+
+    shifts = []
+    for occ in pivot.index:
+        tiers = pivot.loc[occ]
+        tier_nums = pivot_num.loc[occ]
+        if tier_nums.max() - tier_nums.min() > 0:
+            shifts.append({
+                "title_current": occ,
+                "min_tier": tiers[tier_nums.idxmin()],
+                "max_tier": tiers[tier_nums.idxmax()],
+                "tier_range": int(tier_nums.max() - tier_nums.min()),
+                **{f"tier_{k}": tiers[k] for k in config_order},
+            })
+    return pd.DataFrame(shifts).sort_values("tier_range", ascending=False)
 
 
 # ── Main ───────────────────────────────────────────────────────────────────────
@@ -315,10 +438,9 @@ def main() -> None:
     print("Loading SKA base data...")
     ska_data = load_ska_data()
 
-    # ── Primary config: all_ceiling ───────────────────────────────────────────
-    primary_key = "all_ceiling"
-    primary_dataset = ANALYSIS_CONFIGS[primary_key]
-    print(f"\n== Primary config: {primary_key} ({primary_dataset}) ==")
+    # ── Primary config: all_confirmed ────────────────────────────────────────
+    primary_dataset = ANALYSIS_CONFIGS[PRIMARY_KEY]
+    print(f"\n== Primary config: {PRIMARY_KEY} ({primary_dataset}) ==")
 
     print("  Computing pct_tasks_affected...")
     pct_primary = get_pct_tasks_affected(primary_dataset)
@@ -328,12 +450,12 @@ def main() -> None:
     ska_gap_primary = ska_primary.occ_gaps.set_index("title_current")["overall_gap"]
 
     print("  Computing pct trend (first -> last date)...")
-    pct_delta_primary = _compute_pct_trend(primary_key)
+    pct_delta_primary = _compute_pct_trend(PRIMARY_KEY)
 
     print("  Computing SKA trend (first -> last date)...")
-    ska_delta_primary = _compute_ska_trend(primary_key, ska_data)
+    ska_delta_primary = _compute_ska_trend(PRIMARY_KEY, ska_data)
 
-    print("  Computing risk flags...")
+    print("  Computing risk flags (weighted scoring)...")
     primary_df = _compute_flags(struct, pct_primary, ska_gap_primary,
                                 pct_delta_primary, ska_delta_primary)
 
@@ -344,17 +466,33 @@ def main() -> None:
         e = tier_emp.get(tier, 0)
         print(f"  {TIER_LABELS[tier]}: {n} occs, {e/1e6:.1f}M workers")
 
+    gated = primary_df["exposure_gated"].sum()
+    if gated > 0:
+        print(f"  Exposure gate: {gated} occs downgraded from high to moderate (pct < {EXPOSURE_GATE}%)")
+
     # Flag frequency
-    flag_cols = [c for c in primary_df.columns if c.startswith("flag")]
+    flag_cols = list(FLAG_WEIGHTS.keys())
     flag_freq = primary_df[flag_cols].sum().reset_index()
     flag_freq.columns = ["flag", "n_triggered"]
     flag_freq["pct_of_occs"] = flag_freq["n_triggered"] / len(primary_df) * 100
+    flag_freq["weight"] = flag_freq["flag"].map(FLAG_WEIGHTS)
     save_csv(flag_freq, results / "flags_breakdown.csv")
+
+    # Per-score flag breakdown
+    print("\n  Flag composition by risk score:")
+    for score in sorted(primary_df["risk_score"].unique()):
+        score_df = primary_df[primary_df["risk_score"] == score]
+        n = len(score_df)
+        tier = score_df["risk_tier"].mode().iloc[0] if n > 0 else "?"
+        avg_pct = score_df["pct"].mean()
+        flag_pcts = {col: f"{score_df[col].mean()*100:.0f}%" for col in flag_cols}
+        print(f"    Score {score} ({tier}): {n} occs, avg pct={avg_pct:.1f}%, "
+              f"flags: {flag_pcts}")
 
     # Save primary results
     out_cols = ["title_current", "emp_nat", "wage_nat", "major", "job_zone", "outlook",
                 "n_software", "pct", "ska_gap", "pct_delta", "ska_delta"] + flag_cols + \
-               ["risk_score", "risk_tier"]
+               ["risk_score", "risk_tier", "exposure_gated"]
     primary_out = primary_df[out_cols].rename(columns={
         "emp_nat": "employment", "wage_nat": "median_wage", "pct": "pct_tasks_affected"
     })
@@ -366,10 +504,17 @@ def main() -> None:
     tier_summary = primary_df.groupby("risk_tier").agg(
         n_occs=("title_current", "count"),
         total_emp=("emp_nat", "sum"),
-        total_wages=("wage_nat", "mean"),  # median wage isn't directly addable
         avg_pct=("pct", "mean"),
         avg_risk_score=("risk_score", "mean"),
     ).reset_index()
+    # Compute total wages affected per tier
+    primary_df["workers_affected"] = primary_df["pct"] / 100.0 * primary_df["emp_nat"]
+    primary_df["wages_affected"] = primary_df["workers_affected"] * primary_df["wage_nat"]
+    wages_by_tier = primary_df.groupby("risk_tier").agg(
+        total_workers_affected=("workers_affected", "sum"),
+        total_wages_affected=("wages_affected", "sum"),
+    ).reset_index()
+    tier_summary = tier_summary.merge(wages_by_tier, on="risk_tier", how="left")
     save_csv(tier_summary, results / "risk_tier_summary.csv")
 
     # ── Cross-config comparison ───────────────────────────────────────────────
@@ -386,12 +531,26 @@ def main() -> None:
         flags_cfg["config"] = config_key
         all_config_rows.append(
             flags_cfg[["title_current", "config", "pct", "ska_gap",
-                        "risk_score", "risk_tier"]].copy()
+                        "risk_score", "risk_tier", "exposure_gated"]].copy()
         )
 
     risk_all = pd.concat(all_config_rows, ignore_index=True)
     save_csv(risk_all, results / "risk_scores_all_configs.csv")
     print("Saved risk_scores_all_configs.csv")
+
+    # Tier shifts across configs
+    tier_shifts = _cross_config_tier_shifts(risk_all)
+    save_csv(tier_shifts, results / "cross_config_tier_shifts.csv")
+    n_volatile = len(tier_shifts)
+    n_big_jumps = len(tier_shifts[tier_shifts["tier_range"] >= 2])
+    print(f"Saved cross_config_tier_shifts.csv ({n_volatile} volatile, {n_big_jumps} big jumps)")
+
+    # Show interesting examples
+    if not tier_shifts.empty:
+        print("\n  Notable tier shifts:")
+        for _, row in tier_shifts.head(10).iterrows():
+            configs = " | ".join(f"{k}={row.get(f'tier_{k}', '?')}" for k in ANALYSIS_CONFIGS)
+            print(f"    {row['title_current']}: {configs}")
 
     # ── Save pivot-distance inputs (top/bottom 10 per zone) ───────────────────
     zone_pivot_rows = []
@@ -417,23 +576,27 @@ def main() -> None:
     # ── Figures ───────────────────────────────────────────────────────────────
     print("\nGenerating figures...")
 
-    fig = _risk_distribution_bar(primary_df, ANALYSIS_CONFIG_LABELS[primary_key])
+    fig = _risk_distribution_bar(primary_df, ANALYSIS_CONFIG_LABELS[PRIMARY_KEY])
     save_figure(fig, fig_dir / "risk_tier_distribution.png")
     print("  risk_tier_distribution.png")
 
-    fig = _risk_vs_pct_scatter(primary_df, ANALYSIS_CONFIG_LABELS[primary_key])
+    fig = _risk_vs_pct_scatter(primary_df, ANALYSIS_CONFIG_LABELS[PRIMARY_KEY])
     save_figure(fig, fig_dir / "risk_vs_pct_scatter.png")
     print("  risk_vs_pct_scatter.png")
 
-    fig = _cross_config_heatmap(risk_all)
-    save_figure(fig, fig_dir / "cross_config_robustness.png")
-    print("  cross_config_robustness.png")
+    fig = _flag_breakdown_by_score(primary_df)
+    save_figure(fig, fig_dir / "flag_breakdown_by_score.png")
+    print("  flag_breakdown_by_score.png")
+
+    fig = _cross_config_volatility(risk_all, primary_df)
+    save_figure(fig, fig_dir / "cross_config_volatility.png")
+    print("  cross_config_volatility.png")
 
     # ── Copy key figures ──────────────────────────────────────────────────────
     committed = HERE / "figures"
     committed.mkdir(exist_ok=True)
     for fname in ["risk_tier_distribution.png", "risk_vs_pct_scatter.png",
-                  "cross_config_robustness.png"]:
+                  "flag_breakdown_by_score.png", "cross_config_volatility.png"]:
         src = fig_dir / fname
         if src.exists():
             shutil.copy2(src, committed / fname)

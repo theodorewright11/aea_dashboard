@@ -24,13 +24,18 @@ A structured system for answering research questions using the AEA Dashboard's c
 
 All analyses use one or more of these five canonical dataset configurations. Each is a single pre-combined dataset — no combine_method toggle needed. All use `method="freq"` (time-weighted), `use_auto_aug=True`, `geo="nat"` unless a script specifies otherwise.
 
+**Primary config is `all_confirmed`.** The three-layer framing:
+1. **Confirmed usage** (`all_confirmed`) — base lens. "AI is doing these things."
+2. **Ceiling** (`all_ceiling`) — comparison. "Here's where AI could be doing more than confirmed usage suggests." Includes MCP capability data which is less robust.
+3. **Actual adoption** — acknowledged gap; we don't have data on how many workplaces are actually using AI for these tasks yet.
+
 | Key | Dataset | What it measures |
 |-----|---------|-----------------|
+| `all_confirmed` | `final_all_confirmed_usage_2026-02-12` | **PRIMARY** — All confirmed usage (conv + API + Microsoft, no MCP) |
 | `all_ceiling` | `final_all_usage_2026-02-18` | Upper bound — everything AI can reach (AEI + MCP + Microsoft) |
 | `human_conversation` | `final_confirmed_human_usage_2026-02-12` | Confirmed human conversational AI use only |
 | `agentic_confirmed` | `final_aei_agentic_usage_2026-02-12` | Confirmed agentic tool-use (AEI API) |
-| `all_confirmed` | `final_all_confirmed_usage_2026-02-12` | All confirmed usage (conv + API + Microsoft, no MCP) |
-| `agentic_ceiling` | `final_all_agentic_usage_2026-02-18` |  Agentic Ceiling tool-use (MCP + AEI API) |
+| `agentic_ceiling` | `final_all_agentic_usage_2026-02-18` | Agentic Ceiling tool-use (MCP + AEI API) |
 
 The agentic configs show how much architectural investment would be needed to deploy AI for a given set of tasks, and what agentic AI covers vs. browser/conversational AI.
 
@@ -51,14 +56,18 @@ The agentic configs show how much architectural investment would be needed to de
 | `audience_framing/` | How do findings translate across audiences? (skill profile overlaps, dominant domains in high-risk/low-outlook jobs) |
 | `occs_of_interest/` | How do findings land for the named occupation list? |
 
-**Risk scoring factors** (job_risk_scoring) — 7 binary flags; `5–7 = high risk`, `3–4 = moderate`, `1–2 = low`:
-1. `pct_tasks_affected > median`
-2. `SKA gap > median` (AI capability exceeds typical job need)
-3. `pct trend: positive AND above-median growth`
-4. `SKA gap trend: positive AND above-median growth`
-5. `job_zone ∈ {1, 2, 3}`
-6. `outlook ∈ {2, 3}` (below-average; note: 1 = good outlook but low wages)
-7. `n_software > median`
+**Risk scoring factors** (job_risk_scoring) — 7 binary flags with weighted scoring + exposure gate:
+- **Flags 1–4 (exposure signal, weight = 2 each):**
+  1. `pct_tasks_affected > median`
+  2. `SKA gap > median` (AI capability exceeds typical job need)
+  3. `pct trend: positive AND above-median growth` (median of ALL growth, not just positive)
+  4. `SKA gap trend: positive AND above-median growth`
+- **Flags 5–7 (structural vulnerability, weight = 1 each):**
+  5. `job_zone ∈ {1, 2, 3}`
+  6. `outlook ∈ {2, 3}` (below-average; note: 1 = good outlook but low wages)
+  7. `n_software > median`
+- **Exposure gate:** occupations with `pct_tasks_affected < 33%` cannot be classified as high risk regardless of score.
+- **Tiers:** max score = 11. `8–11 = high risk`, `4–7 = moderate`, `0–3 = low`.
 
 **SKA formula** — see `ANALYSIS_ARCHITECTURE.md` for the locked-in spec.
 

@@ -1,0 +1,273 @@
+title_current,min_tier,max_tier,tier_range,tier_all_ceiling,tier_human_conversation,tier_agentic_confirmed,tier_all_confirmed,tier_agentic_ceiling
+Geothermal Technicians,low,high,2,low,high,moderate,high,moderate
+First-Line Supervisors of Security Workers,low,high,2,high,low,high,moderate,high
+"Insurance Appraisers, Auto Damage",low,high,2,moderate,high,low,high,low
+Non-Destructive Testing Specialists,low,high,2,low,high,moderate,moderate,moderate
+Speech-Language Pathologists,low,moderate,1,moderate,moderate,low,moderate,low
+Speech-Language Pathology Assistants,moderate,high,1,high,moderate,moderate,moderate,moderate
+Stockers and Order Fillers,moderate,high,1,high,moderate,high,moderate,high
+Structural Iron and Steel Workers,low,moderate,1,low,low,moderate,low,moderate
+Subway and Streetcar Operators,low,moderate,1,moderate,low,moderate,low,moderate
+Surgical Assistants,low,moderate,1,low,low,moderate,low,moderate
+Surgical Technologists,low,moderate,1,low,moderate,moderate,moderate,moderate
+Surveying and Mapping Technicians,moderate,high,1,high,moderate,high,moderate,high
+Sustainability Specialists,moderate,high,1,high,high,moderate,high,moderate
+"Tailors, Dressmakers, and Custom Sewers",low,moderate,1,low,moderate,low,moderate,low
+Talent Directors,moderate,high,1,high,high,moderate,high,moderate
+"Tax Examiners and Collectors, and Revenue Agents",moderate,high,1,high,moderate,moderate,moderate,moderate
+"Telecommunications Equipment Installers and Repairers, Except Line Installers",low,moderate,1,low,low,low,moderate,low
+Timing Device Assemblers and Adjusters,low,moderate,1,low,moderate,low,moderate,low
+Animal Caretakers,moderate,high,1,high,high,moderate,high,moderate
+Animal Control Workers,moderate,high,1,moderate,high,moderate,high,moderate
+Animal Scientists,low,moderate,1,moderate,moderate,low,moderate,low
+Architectural and Civil Drafters,moderate,high,1,high,high,moderate,moderate,moderate
+Architectural and Engineering Managers,low,moderate,1,moderate,low,moderate,moderate,moderate
+Athletes and Sports Competitors,moderate,high,1,moderate,high,moderate,high,moderate
+Athletic Trainers,low,moderate,1,low,moderate,low,moderate,low
+Audio and Video Technicians,moderate,high,1,high,moderate,high,moderate,high
+Automotive Engineering Technicians,moderate,high,1,high,high,moderate,high,moderate
+Automotive Engineers,low,moderate,1,low,moderate,moderate,moderate,moderate
+Avionics Technicians,low,moderate,1,low,moderate,low,low,low
+Biofuels Processing Technicians,low,moderate,1,low,low,moderate,low,moderate
+Biomass Power Plant Managers,low,moderate,1,low,low,moderate,low,moderate
+Brickmasons and Blockmasons,low,moderate,1,low,low,moderate,low,low
+Broadcast Technicians,moderate,high,1,high,moderate,high,moderate,high
+Brownfield Redevelopment Specialists and Site Managers,low,moderate,1,moderate,low,low,low,low
+Budget Analysts,moderate,high,1,high,moderate,moderate,moderate,moderate
+"Bus Drivers, Transit and Intercity",low,moderate,1,low,low,moderate,low,moderate
+Calibration Technologists and Technicians,low,moderate,1,low,moderate,low,moderate,low
+"Camera Operators, Television, Video, and Film",moderate,high,1,high,moderate,moderate,moderate,moderate
+Camera and Photographic Equipment Repairers,moderate,high,1,moderate,moderate,moderate,high,moderate
+Cargo and Freight Agents,moderate,high,1,high,moderate,high,high,high
+Cartographers and Photogrammetrists,moderate,high,1,high,high,high,moderate,high
+Cement Masons and Concrete Finishers,low,moderate,1,low,moderate,low,moderate,low
+Chemical Engineers,low,moderate,1,moderate,moderate,low,moderate,low
+Chemical Equipment Operators and Tenders,low,moderate,1,low,low,low,moderate,low
+Chemical Plant and System Operators,low,moderate,1,low,moderate,low,low,low
+Chief Sustainability Officers,low,moderate,1,moderate,moderate,low,moderate,low
+"Child, Family, and School Social Workers",low,moderate,1,moderate,moderate,low,moderate,low
+Childcare Workers,moderate,high,1,moderate,high,moderate,high,moderate
+Choreographers,moderate,high,1,moderate,high,moderate,moderate,moderate
+Civil Engineers,low,moderate,1,low,moderate,moderate,moderate,moderate
+"Claims Adjusters, Examiners, and Investigators",low,moderate,1,moderate,moderate,low,moderate,low
+"Cleaning, Washing, and Metal Pickling Equipment Operators and Tenders",low,moderate,1,moderate,moderate,low,low,low
+Clinical Data Managers,moderate,high,1,high,moderate,high,high,high
+Commercial Pilots,low,moderate,1,low,low,moderate,low,moderate
+Commercial and Industrial Designers,low,moderate,1,moderate,moderate,low,moderate,low
+"Compensation, Benefits, and Job Analysis Specialists",moderate,high,1,high,moderate,high,high,high
+Computer Network Support Specialists,moderate,high,1,high,moderate,moderate,high,moderate
+Computer Programmers,moderate,high,1,high,high,moderate,high,moderate
+Computer Systems Engineers/Architects,moderate,high,1,high,moderate,moderate,high,moderate
+Computer User Support Specialists,moderate,high,1,high,high,moderate,high,moderate
+Concierges,moderate,high,1,high,high,moderate,high,moderate
+Construction Laborers,low,moderate,1,low,moderate,low,moderate,low
+"Cooks, Fast Food",moderate,high,1,moderate,high,moderate,moderate,moderate
+"Cooks, Private Household",moderate,high,1,moderate,high,moderate,moderate,moderate
+"Cooks, Restaurant",moderate,high,1,moderate,high,moderate,high,moderate
+"Cooks, Short Order",moderate,high,1,high,high,moderate,high,moderate
+Cost Estimators,moderate,high,1,high,moderate,moderate,moderate,moderate
+Couriers and Messengers,moderate,high,1,moderate,moderate,high,high,high
+Court Reporters and Simultaneous Captioners,moderate,high,1,high,moderate,high,moderate,high
+"Cutting and Slicing Machine Setters, Operators, and Tenders",low,moderate,1,moderate,moderate,moderate,low,moderate
+Cytogenetic Technologists,moderate,high,1,high,moderate,moderate,high,moderate
+Data Entry Keyers,moderate,high,1,high,high,high,high,moderate
+Data Scientists,low,moderate,1,moderate,low,low,low,low
+Data Warehousing Specialists,moderate,high,1,high,high,moderate,high,moderate
+Database Administrators,moderate,high,1,moderate,moderate,high,high,high
+Dental Assistants,moderate,high,1,high,moderate,high,high,high
+Dental Hygienists,low,moderate,1,low,low,moderate,low,moderate
+"Derrick Operators, Oil and Gas",low,moderate,1,low,moderate,low,low,low
+Detectives and Criminal Investigators,low,moderate,1,moderate,moderate,moderate,low,moderate
+Digital Forensics Analysts,low,moderate,1,moderate,low,low,low,low
+"Disc Jockeys, Except Radio",low,moderate,1,moderate,low,moderate,low,moderate
+Driver/Sales Workers,moderate,high,1,high,moderate,high,moderate,high
+Drywall and Ceiling Tile Installers,low,moderate,1,low,low,moderate,low,moderate
+"Educational, Guidance, and Career Counselors and Advisors",low,moderate,1,moderate,moderate,low,moderate,low
+Electricians,moderate,high,1,moderate,high,moderate,moderate,moderate
+Electro-Mechanical and Mechatronics Technologists and Technicians,low,moderate,1,low,moderate,low,moderate,low
+"Electronic Equipment Installers and Repairers, Motor Vehicles",moderate,high,1,moderate,moderate,moderate,high,moderate
+Emergency Management Directors,low,moderate,1,moderate,low,low,low,low
+Energy Auditors,moderate,high,1,high,moderate,high,moderate,high
+Environmental Engineers,low,moderate,1,low,moderate,low,moderate,low
+Equal Opportunity Representatives and Officers,low,moderate,1,low,moderate,moderate,moderate,moderate
+Etchers and Engravers,low,moderate,1,low,low,moderate,low,moderate
+Exercise Trainers and Group Fitness Instructors,moderate,high,1,moderate,high,moderate,high,moderate
+Facilities Managers,moderate,high,1,high,moderate,high,moderate,high
+"Family and Consumer Sciences Teachers, Postsecondary",low,moderate,1,moderate,moderate,moderate,low,moderate
+File Clerks,moderate,high,1,high,moderate,moderate,high,moderate
+Financial Managers,low,moderate,1,moderate,low,moderate,low,moderate
+Financial Risk Specialists,low,moderate,1,moderate,low,low,low,low
+Financial and Investment Analysts,low,moderate,1,low,low,moderate,low,moderate
+Fire Inspectors and Investigators,low,moderate,1,low,moderate,moderate,moderate,moderate
+First-Line Supervisors of Construction Trades and Extraction Workers,moderate,high,1,high,moderate,high,high,high
+"First-Line Supervisors of Entertainment and Recreation Workers, Except Gambling Services",low,moderate,1,moderate,low,moderate,low,moderate
+First-Line Supervisors of Gambling Services Workers,moderate,high,1,high,high,moderate,high,moderate
+"First-Line Supervisors of Helpers, Laborers, and Material Movers, Hand",moderate,high,1,high,moderate,high,high,high
+First-Line Supervisors of Personal Service Workers,moderate,high,1,high,moderate,high,moderate,high
+Fish and Game Wardens,low,moderate,1,low,moderate,low,moderate,low
+Fitness and Wellness Coordinators,moderate,high,1,high,moderate,high,high,high
+Flight Attendants,moderate,high,1,moderate,high,moderate,moderate,moderate
+Floor Sanders and Finishers,low,moderate,1,low,moderate,low,low,low
+Floral Designers,low,moderate,1,low,moderate,low,moderate,low
+Food Cooking Machine Operators and Tenders,low,moderate,1,moderate,low,moderate,low,moderate
+Food Preparation Workers,moderate,high,1,moderate,high,moderate,high,moderate
+Food Scientists and Technologists,low,moderate,1,low,moderate,moderate,moderate,moderate
+Food Service Managers,moderate,high,1,high,moderate,high,moderate,high
+"Food and Tobacco Roasting, Baking, and Drying Machine Operators and Tenders",low,moderate,1,moderate,low,moderate,low,moderate
+Forest Fire Inspectors and Prevention Specialists,moderate,high,1,high,moderate,moderate,moderate,high
+Fundraising Managers,low,moderate,1,moderate,low,moderate,low,moderate
+Funeral Attendants,moderate,high,1,moderate,high,moderate,high,moderate
+Gambling Cage Workers,moderate,high,1,high,moderate,high,moderate,high
+Gambling Change Persons and Booth Cashiers,moderate,high,1,high,moderate,high,moderate,high
+Gas Compressor and Gas Pumping Station Operators,moderate,high,1,high,moderate,high,moderate,high
+Geodetic Surveyors,low,moderate,1,moderate,low,moderate,low,moderate
+"Glass Blowers, Molders, Benders, and Finishers",low,moderate,1,low,moderate,low,low,low
+"Hairdressers, Hairstylists, and Cosmetologists",moderate,high,1,high,moderate,moderate,high,high
+Health Education Specialists,moderate,high,1,high,moderate,moderate,moderate,moderate
+Heavy and Tractor-Trailer Truck Drivers,low,moderate,1,moderate,moderate,moderate,low,moderate
+"Helpers--Pipelayers, Plumbers, Pipefitters, and Steamfitters",low,moderate,1,low,moderate,low,low,low
+Histotechnologists,low,moderate,1,moderate,low,moderate,low,moderate
+Hoist and Winch Operators,low,moderate,1,moderate,moderate,moderate,low,moderate
+Human Factors Engineers and Ergonomists,low,moderate,1,low,moderate,low,moderate,low
+Hydrologists,moderate,high,1,moderate,high,moderate,high,moderate
+Industrial Ecologists,low,moderate,1,low,low,moderate,low,moderate
+Industrial Engineering Technologists and Technicians,low,moderate,1,low,moderate,low,low,low
+Industrial Engineers,low,moderate,1,moderate,moderate,low,moderate,low
+Industrial Production Managers,low,moderate,1,moderate,low,low,low,low
+Industrial Truck and Tractor Operators,moderate,high,1,moderate,moderate,high,moderate,high
+Information Security Engineers,low,moderate,1,moderate,low,low,moderate,low
+Solar Photovoltaic Installers,low,moderate,1,low,moderate,moderate,moderate,moderate
+"Judges, Magistrate Judges, and Magistrates",low,moderate,1,low,moderate,moderate,moderate,moderate
+"Kindergarten Teachers, Except Special Education",moderate,high,1,high,high,moderate,high,moderate
+Landscape Architects,low,moderate,1,low,moderate,low,moderate,low
+Legal Secretaries and Administrative Assistants,moderate,high,1,high,moderate,moderate,moderate,moderate
+Legislators,low,moderate,1,moderate,moderate,low,moderate,low
+Librarians and Media Collections Specialists,moderate,high,1,high,moderate,high,high,high
+Licensed Practical and Licensed Vocational Nurses,moderate,high,1,high,moderate,moderate,moderate,moderate
+Loan Officers,moderate,high,1,high,moderate,high,high,high
+Loss Prevention Managers,low,moderate,1,moderate,low,moderate,low,moderate
+"Low Vision Therapists, Orientation and Mobility Specialists, and Vision Rehabilitation Therapists",low,moderate,1,moderate,moderate,low,moderate,low
+Magnetic Resonance Imaging Technologists,low,moderate,1,moderate,moderate,moderate,low,moderate
+"Mail Clerks and Mail Machine Operators, Except Postal Service",moderate,high,1,high,moderate,moderate,moderate,moderate
+Manicurists and Pedicurists,low,moderate,1,low,low,low,moderate,low
+Massage Therapists,low,moderate,1,low,moderate,moderate,moderate,moderate
+"Meat, Poultry, and Fish Cutters and Trimmers",low,moderate,1,moderate,moderate,low,moderate,low
+Mechanical Door Repairers,low,moderate,1,low,moderate,low,low,low
+Mechanical Drafters,moderate,high,1,high,high,moderate,high,moderate
+Mechanical Engineers,low,moderate,1,moderate,low,moderate,moderate,moderate
+Media Technical Directors/Managers,low,moderate,1,moderate,low,moderate,low,moderate
+Medical Assistants,moderate,high,1,high,moderate,high,high,high
+Medical Dosimetrists,low,moderate,1,moderate,moderate,moderate,low,moderate
+Medical Equipment Repairers,low,moderate,1,moderate,low,moderate,moderate,moderate
+Medical Secretaries and Administrative Assistants,moderate,high,1,high,moderate,high,moderate,high
+Medical and Clinical Laboratory Technicians,moderate,high,1,high,high,moderate,high,moderate
+Medical and Clinical Laboratory Technologists,low,moderate,1,moderate,low,moderate,moderate,moderate
+"Meeting, Convention, and Event Planners",moderate,high,1,high,moderate,moderate,moderate,moderate
+Merchandise Displayers and Window Trimmers,moderate,high,1,high,high,moderate,high,moderate
+"Meter Readers, Utilities",moderate,high,1,high,moderate,moderate,high,moderate
+Midwives,low,moderate,1,low,moderate,moderate,moderate,moderate
+"Mixing and Blending Machine Setters, Operators, and Tenders",low,moderate,1,low,moderate,moderate,moderate,moderate
+Models,low,moderate,1,low,moderate,low,moderate,low
+Motorboat Operators,low,moderate,1,low,moderate,low,moderate,low
+Museum Technicians and Conservators,moderate,high,1,high,high,moderate,high,moderate
+Music Directors and Composers,moderate,high,1,moderate,moderate,high,moderate,high
+Nannies,moderate,high,1,high,high,moderate,high,moderate
+Neurodiagnostic Technologists,low,moderate,1,low,moderate,moderate,moderate,moderate
+Neurologists,low,moderate,1,low,moderate,moderate,moderate,low
+"News Analysts, Reporters, and Journalists",moderate,high,1,high,moderate,high,high,high
+Sound Engineering Technicians,moderate,high,1,high,moderate,high,moderate,high
+Nuclear Monitoring Technicians,moderate,high,1,high,high,moderate,high,moderate
+Nurse Practitioners,low,moderate,1,moderate,low,moderate,moderate,moderate
+Occupational Health and Safety Specialists,low,moderate,1,moderate,low,moderate,low,moderate
+Occupational Therapy Aides,moderate,high,1,high,moderate,moderate,moderate,moderate
+Optometrists,low,moderate,1,low,low,moderate,low,moderate
+Orthodontists,low,moderate,1,low,moderate,low,low,low
+Orthoptists,low,moderate,1,low,low,moderate,moderate,moderate
+Outdoor Power Equipment and Other Small Engine Mechanics,low,moderate,1,moderate,low,low,low,low
+Parking Enforcement Workers,moderate,high,1,high,moderate,moderate,moderate,moderate
+Passenger Attendants,moderate,high,1,high,moderate,moderate,moderate,moderate
+"Patternmakers, Metal and Plastic",moderate,high,1,moderate,moderate,high,high,high
+Penetration Testers,low,moderate,1,moderate,low,low,low,low
+Personal Care Aides,moderate,high,1,high,high,moderate,high,moderate
+Pest Control Workers,low,moderate,1,moderate,moderate,low,moderate,low
+"Petroleum Pump System Operators, Refinery Operators, and Gaugers",low,moderate,1,moderate,moderate,low,moderate,low
+Photographic Process Workers and Processing Machine Operators,moderate,high,1,high,moderate,moderate,moderate,high
+Photonics Technicians,moderate,high,1,moderate,high,moderate,moderate,moderate
+Police Identification and Records Officers,moderate,high,1,high,moderate,moderate,moderate,moderate
+Postal Service Clerks,moderate,high,1,high,moderate,high,moderate,high
+"Postal Service Mail Sorters, Processors, and Processing Machine Operators",moderate,high,1,high,moderate,high,moderate,high
+Postmasters and Mail Superintendents,moderate,high,1,high,moderate,high,moderate,high
+Power Distributors and Dispatchers,moderate,high,1,high,high,moderate,high,moderate
+Prepress Technicians and Workers,moderate,high,1,high,high,moderate,high,high
+"Preschool Teachers, Except Special Education",moderate,high,1,high,high,moderate,high,moderate
+Probation Officers and Correctional Treatment Specialists,low,moderate,1,moderate,moderate,low,moderate,low
+Project Management Specialists,low,moderate,1,moderate,low,low,low,low
+"Property, Real Estate, and Community Association Managers",moderate,high,1,high,moderate,high,high,high
+Prosthodontists,low,moderate,1,low,low,low,moderate,low
+Public Relations Managers,low,moderate,1,moderate,low,low,low,low
+Public Safety Telecommunicators,moderate,high,1,high,moderate,high,moderate,high
+"Pump Operators, Except Wellhead Pumpers",moderate,high,1,high,moderate,moderate,moderate,moderate
+Quality Control Analysts,moderate,high,1,moderate,moderate,high,moderate,high
+Radiation Therapists,low,moderate,1,low,low,moderate,moderate,moderate
+Radio Frequency Identification Device Specialists,moderate,high,1,moderate,moderate,moderate,high,moderate
+"Radio, Cellular, and Tower Equipment Installers and Repairers",moderate,high,1,moderate,moderate,moderate,high,moderate
+"Rail Yard Engineers, Dinkey Operators, and Hostlers",low,moderate,1,moderate,moderate,moderate,low,moderate
+Recreation Workers,moderate,high,1,high,moderate,high,moderate,high
+Recycling Coordinators,moderate,high,1,high,moderate,moderate,moderate,moderate
+Registered Nurses,low,moderate,1,low,low,moderate,moderate,moderate
+Rehabilitation Counselors,moderate,high,1,high,moderate,high,high,high
+Reinforcing Iron and Rebar Workers,low,moderate,1,low,moderate,low,low,low
+Remote Sensing Technicians,moderate,high,1,high,moderate,moderate,moderate,moderate
+Retail Loss Prevention Specialists,moderate,high,1,high,moderate,high,high,high
+"Roustabouts, Oil and Gas",low,moderate,1,moderate,moderate,moderate,low,moderate
+Sailors and Marine Oilers,low,moderate,1,low,moderate,low,low,low
+"Sales Representatives of Services, Except Advertising, Insurance, Financial Services, and Travel",low,moderate,1,moderate,low,low,low,moderate
+"Sales Representatives, Wholesale and Manufacturing, Technical and Scientific Products",moderate,high,1,high,moderate,high,high,high
+"Securities, Commodities, and Financial Services Sales Agents",moderate,high,1,high,moderate,moderate,moderate,high
+Security Managers,low,moderate,1,moderate,low,moderate,moderate,moderate
+Security and Fire Alarm Systems Installers,moderate,high,1,moderate,high,moderate,high,moderate
+Segmental Pavers,low,moderate,1,moderate,moderate,low,moderate,low
+Semiconductor Processing Technicians,low,moderate,1,low,low,moderate,low,moderate
+Septic Tank Servicers and Sewer Pipe Cleaners,low,moderate,1,low,moderate,low,low,low
+Set and Exhibit Designers,moderate,high,1,moderate,high,moderate,high,moderate
+"Shipping, Receiving, and Inventory Clerks",moderate,high,1,high,moderate,high,moderate,high
+Signal and Track Switch Repairers,low,moderate,1,low,low,moderate,low,moderate
+Skincare Specialists,moderate,high,1,high,moderate,high,high,high
+Slaughterers and Meat Packers,low,moderate,1,low,moderate,low,low,low
+Social and Human Service Assistants,low,moderate,1,moderate,moderate,low,moderate,low
+Software Developers,low,moderate,1,moderate,moderate,low,moderate,low
+Soil and Plant Scientists,moderate,high,1,moderate,high,moderate,high,moderate
+Solar Energy Installation Managers,low,moderate,1,low,moderate,moderate,moderate,moderate
+Solar Energy Systems Engineers,low,moderate,1,low,low,moderate,low,moderate
+Tour Guides and Escorts,moderate,high,1,high,high,moderate,high,moderate
+Traffic Technicians,moderate,high,1,high,moderate,high,moderate,high
+Transportation Engineers,low,moderate,1,moderate,moderate,low,moderate,low
+Tree Trimmers and Pruners,low,moderate,1,low,moderate,low,low,low
+Urban and Regional Planners,low,moderate,1,moderate,moderate,low,moderate,low
+Urologists,low,moderate,1,moderate,low,moderate,moderate,moderate
+Validation Engineers,low,moderate,1,low,moderate,low,low,low
+Veterinarians,low,moderate,1,low,moderate,low,moderate,low
+Waiters and Waitresses,moderate,high,1,high,high,moderate,high,moderate
+Water Resource Specialists,low,moderate,1,low,moderate,low,moderate,low
+Water/Wastewater Engineers,low,moderate,1,low,moderate,moderate,moderate,moderate
+Web and Digital Interface Designers,low,moderate,1,moderate,low,low,low,low
+"Weighers, Measurers, Checkers, and Samplers, Recordkeeping",moderate,high,1,high,moderate,high,moderate,high
+Wellhead Pumpers,low,moderate,1,moderate,low,moderate,low,moderate
+Writers and Authors,moderate,high,1,moderate,moderate,high,moderate,high
+Zoologists and Wildlife Biologists,low,moderate,1,low,moderate,low,moderate,low
+Accountants and Auditors,low,moderate,1,moderate,low,moderate,low,moderate
+Actors,moderate,high,1,moderate,moderate,moderate,high,moderate
+Acute Care Nurses,low,moderate,1,low,moderate,moderate,moderate,moderate
+Adapted Physical Education Specialists,low,moderate,1,low,moderate,low,moderate,low
+Adhesive Bonding Machine Operators and Tenders,low,moderate,1,moderate,low,moderate,low,moderate
+"Administrative Law Judges, Adjudicators, and Hearing Officers",low,moderate,1,moderate,moderate,moderate,moderate,low
+Administrative Services Managers,moderate,high,1,high,moderate,high,moderate,high
+"Adult Basic Education, Adult Secondary Education, and English as a Second Language Instructors",low,moderate,1,moderate,low,low,low,low
+Aerospace Engineering and Operations Technologists and Technicians,low,moderate,1,low,moderate,moderate,moderate,moderate
+Agricultural Engineers,low,moderate,1,low,moderate,low,moderate,low
+Agricultural Technicians,low,moderate,1,low,moderate,low,moderate,low
+Aircraft Cargo Handling Supervisors,low,moderate,1,low,low,moderate,low,moderate
+Airfield Operations Specialists,low,moderate,1,moderate,low,moderate,moderate,moderate
+"Airline Pilots, Copilots, and Flight Engineers",low,moderate,1,moderate,low,low,low,low
+Allergists and Immunologists,moderate,high,1,moderate,moderate,high,moderate,high
+Anesthesiologist Assistants,low,moderate,1,low,low,moderate,low,moderate

@@ -16,7 +16,12 @@ For each job zone (1–5):
   5. Total pivot cost = sum of element pivot costs for that zone
 
 Uses Skills + Knowledge only (abilities excluded — less trainable).
-Primary config: all_ceiling. Reads pivot_distance_inputs.csv from job_risk_scoring.
+Primary config: all_confirmed. Ceiling comparison included.
+
+Actionable additions:
+  - Per-zone: which specific elements are the biggest cost drivers
+  - Cross-reference with worker_resilience tips: elements where AI can help
+    close the gap vs ones that need genuine human learning
 
 Run from project root:
     venv/Scripts/python -m analysis.questions.job_exposure.pivot_distance.run
@@ -49,8 +54,9 @@ HERE = Path(__file__).resolve().parent
 RISK_SCORING_RESULTS = HERE.parent / "job_risk_scoring" / "results"
 PIVOT_INPUTS_FILE = RISK_SCORING_RESULTS / "pivot_distance_inputs.csv"
 
-PRIMARY_KEY = "all_ceiling"
-PIVOT_N = 10   # top/bottom N occs per job zone
+PRIMARY_KEY = "all_confirmed"
+CEILING_KEY = "all_ceiling"
+PIVOT_N = 10
 IMPORTANCE_THRESHOLD = 3.0
 
 
@@ -75,12 +81,7 @@ def _build_occ_ska_profile(
     pct: pd.Series,
     types: tuple[str, ...] = ("skills", "knowledge"),
 ) -> pd.DataFrame:
-    """
-    Build average profile (element_name → mean_occ_score) for a list of occupations.
-
-    Uses the raw O*NET data filtered to the given occupations and importance >= 3.
-    No AI weighting — just the occupation's own importance × level.
-    """
+    """Build average profile (element_name → mean_occ_score) for a list of occupations."""
     result = compute_ska(pct, ska_data)
     rows = []
     for type_name in types:
@@ -89,15 +90,15 @@ def _build_occ_ska_profile(
             continue
         subset = elem_df[elem_df["title_current"].isin(occ_list)]
         agg = (
-            subset.groupby("element_name")["occ_score"]
-            .mean()
-            .reset_index()
-            .rename(columns={"occ_score": "avg_score"})
+            subset.groupby("element_name").agg(
+                avg_score=("occ_score", "mean"),
+                ai_score=("ai_score", "mean"),
+            ).reset_index()
         )
         agg["type"] = type_name
         rows.append(agg)
     return pd.concat(rows, ignore_index=True) if rows else pd.DataFrame(
-        columns=["element_name", "avg_score", "type"]
+        columns=["element_name", "avg_score", "ai_score", "type"]
     )
 
 
@@ -105,25 +106,16 @@ def _compute_pivot_cost(
     high_profile: pd.DataFrame,
     low_profile: pd.DataFrame,
 ) -> tuple[pd.DataFrame, float]:
-    """
-    Compute per-element pivot cost and total pivot cost.
-
-    pivot_cost_element = max(0, low_avg_score − high_avg_score)
-    total_pivot_cost   = sum of element costs
-
-    Returns
-    -------
-    element_costs : DataFrame[element_name, type, high_score, low_score, cost]
-    total_cost    : float
-    """
-    # Deduplicate: if same element appears under skills+knowledge, keep first
+    """Compute per-element pivot cost and total pivot cost."""
     high_dedup = high_profile.drop_duplicates(subset="element_name")
     low_dedup = low_profile.drop_duplicates(subset="element_name")
     high_idx = high_dedup.set_index("element_name")["avg_score"]
     low_idx = low_dedup.set_index("element_name")["avg_score"]
     type_idx = low_dedup.set_index("element_name")["type"]
 
-    # Union of all elements present in either profile
+    # AI score from low-risk profile (to see if AI can help)
+    ai_idx = low_dedup.set_index("element_name").get("ai_score", pd.Series(dtype=float))
+
     all_elements = low_idx.index.union(high_idx.index)
 
     rows = []
@@ -134,12 +126,17 @@ def _compute_pivot_cost(
         elem_type = type_idx.get(elem, "unknown")
         if isinstance(elem_type, pd.Series):
             elem_type = elem_type.iloc[0]
+        ai_score = float(ai_idx.get(elem, 0.0)) if not ai_idx.empty else 0.0
+        # Can AI help close this gap?
+        ai_can_help = ai_score > high_score if cost > 0 else False
         rows.append({
             "element_name": elem,
             "type": elem_type,
             "high_risk_avg_score": round(high_score, 3),
             "low_risk_avg_score": round(low_score, 3),
+            "ai_score": round(ai_score, 3),
             "pivot_cost": round(cost, 3),
+            "ai_can_help": ai_can_help,
         })
     element_costs = pd.DataFrame(rows).sort_values("pivot_cost", ascending=False)
     total = element_costs["pivot_cost"].sum()
@@ -149,32 +146,31 @@ def _compute_pivot_cost(
 # ── Figures ───────────────────────────────────────────────────────────────────
 
 def _pivot_cost_by_zone_bar(zone_summary: pd.DataFrame) -> go.Figure:
-    """Horizontal bar: total pivot cost per job zone."""
+    """Bar: total pivot cost per job zone."""
     zone_summary = zone_summary.sort_values("job_zone")
     labels = [f"{c:.1f}" for c in zone_summary["total_pivot_cost"]]
-    colors = [COLORS["primary"], COLORS["primary"], COLORS["primary"],
-              COLORS["muted"], COLORS["muted"]]
 
     fig = go.Figure()
     fig.add_trace(go.Bar(
         x=zone_summary["job_zone"].astype(str).tolist(),
         y=zone_summary["total_pivot_cost"],
-        marker=dict(color=colors[:len(zone_summary)], line=dict(width=0)),
+        marker=dict(color=COLORS["primary"], line=dict(width=0)),
         text=labels, textposition="outside",
         textfont=dict(size=12, color=COLORS["neutral"], family=FONT_FAMILY),
         cliponaxis=False,
     ))
     style_figure(
         fig,
-        "Lower Job Zones Have Shorter Pivot Distance",
+        "Reskilling Cost by Job Zone",
         subtitle=(
-            "Total skill+knowledge gap to close moving from top-10 high-risk "
-            "to bottom-10 low-risk occupations within each job zone"
+            "Total skill+knowledge gap to close: top-10 high-risk → bottom-10 low-risk "
+            f"per zone | {ANALYSIS_CONFIG_LABELS[PRIMARY_KEY]}"
         ),
         x_title="Job Zone", y_title="Total Pivot Cost (sum of element gaps)",
-        height=500, width=700, show_legend=False,
+        height=550, width=750, show_legend=False,
     )
     fig.update_layout(
+        margin=dict(l=60, r=40, t=80, b=100),
         xaxis=dict(showgrid=False),
         yaxis=dict(showgrid=True, gridcolor=COLORS["border"]),
         bargap=0.35,
@@ -187,7 +183,6 @@ def _element_cost_heatmap(
     top_n: int = 20,
 ) -> go.Figure:
     """Heatmap: element × job_zone pivot cost."""
-    # Get top N elements by average cost across zones
     all_costs = pd.concat([df.assign(zone=z) for z, df in element_costs_by_zone])
     top_elements = (
         all_costs.groupby("element_name")["pivot_cost"]
@@ -210,16 +205,56 @@ def _element_cost_heatmap(
         texttemplate="%{text:.1f}",
         hovertemplate="<b>%{y}</b><br>%{x}<br>Cost: %{z:.2f}<extra></extra>",
     ))
-    chart_h = max(500, top_n * 22 + 200)
+    chart_h = max(500, top_n * 22 + 250)
     style_figure(
         fig,
-        f"Which Skills Drive Pivot Cost Across Job Zones?",
+        "Which Skills Drive Reskilling Cost Across Job Zones?",
         subtitle="Top 20 elements by average pivot cost | Higher = more to learn",
-        x_title=None, y_title=None, height=chart_h, width=700, show_legend=False,
+        x_title=None, y_title=None, height=chart_h, width=750, show_legend=False,
     )
     fig.update_layout(
+        margin=dict(l=20, r=40, t=80, b=100),
         yaxis=dict(autorange="reversed", tickfont=dict(size=9, family=FONT_FAMILY)),
         xaxis=dict(tickfont=dict(size=10, family=FONT_FAMILY)),
+    )
+    return fig
+
+
+def _ai_assisted_reskilling_bar(element_costs_all: pd.DataFrame, top_n: int = 15) -> go.Figure:
+    """Bar chart: elements with highest pivot cost where AI can help close the gap."""
+    ai_helped = element_costs_all[element_costs_all["ai_can_help"]].copy()
+    if ai_helped.empty:
+        return go.Figure()
+
+    agg = (
+        ai_helped.groupby("element_name")
+        .agg(avg_cost=("pivot_cost", "mean"), n_zones=("job_zone", "nunique"))
+        .reset_index()
+        .nlargest(top_n, "avg_cost")
+        .sort_values("avg_cost", ascending=True)
+    )
+
+    labels = [f"{v:.1f} (in {n} zones)" for v, n in zip(agg["avg_cost"], agg["n_zones"])]
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        y=agg["element_name"], x=agg["avg_cost"], orientation="h",
+        marker=dict(color=COLORS["secondary"], line=dict(width=0)),
+        text=labels, textposition="outside",
+        textfont=dict(size=10, color=COLORS["neutral"], family=FONT_FAMILY),
+        cliponaxis=False,
+    ))
+    chart_h = max(400, len(agg) * 38 + 200)
+    style_figure(
+        fig,
+        "Reskilling Gaps Where AI Can Help",
+        subtitle="Elements with high pivot cost where AI capability exceeds the high-risk worker's current level",
+        x_title=None, height=chart_h, show_legend=False,
+    )
+    fig.update_layout(
+        margin=dict(l=20, r=120, t=80, b=100),
+        xaxis=dict(showgrid=False, showticklabels=False, showline=False, zeroline=False),
+        yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=10, family=FONT_FAMILY)),
+        bargap=0.25,
     )
     return fig
 
@@ -241,15 +276,17 @@ def main() -> None:
     pivot_inputs = pd.read_csv(PIVOT_INPUTS_FILE)
     print(f"Loaded pivot_distance_inputs.csv ({len(pivot_inputs)} rows)\n")
 
-    # ── Structural data (for job_zone) ────────────────────────────────────────
     struct = _get_structural_data()
 
-    # ── SKA data + pct (primary config) ──────────────────────────────────────
+    # ── SKA data + pct ───────────────────────────────────────────────────────
     print("Loading SKA data...")
     ska_data = load_ska_data()
 
     print(f"Computing pct for {PRIMARY_KEY}...")
     pct_primary = get_pct_tasks_affected(ANALYSIS_CONFIGS[PRIMARY_KEY])
+
+    print(f"Computing pct for ceiling ({CEILING_KEY})...")
+    pct_ceiling = get_pct_tasks_affected(ANALYSIS_CONFIGS[CEILING_KEY])
 
     # ── Per-zone pivot cost ───────────────────────────────────────────────────
     print("\nComputing pivot cost per job zone...")
@@ -257,6 +294,7 @@ def main() -> None:
     element_costs_by_zone: list[tuple[int, pd.DataFrame]] = []
     high_risk_profiles = []
     low_risk_profiles = []
+    all_element_costs = []
 
     for zone in [1, 2, 3, 4, 5]:
         zone_data = pivot_inputs[pivot_inputs["job_zone"] == zone]
@@ -279,18 +317,34 @@ def main() -> None:
         element_costs, total_cost = _compute_pivot_cost(high_profile, low_profile)
         element_costs["job_zone"] = zone
         element_costs_by_zone.append((zone, element_costs))
+        all_element_costs.append(element_costs)
+
+        # Count elements where AI can help
+        n_ai_helped = element_costs["ai_can_help"].sum()
+        ai_cost_share = (
+            element_costs[element_costs["ai_can_help"]]["pivot_cost"].sum() / total_cost * 100
+            if total_cost > 0 else 0
+        )
 
         zone_summary_rows.append({
             "job_zone": zone,
             "n_high_risk": len(high_risk_occs),
             "n_low_risk": len(low_risk_occs),
             "total_pivot_cost": round(total_cost, 2),
-            "n_elements": len(element_costs[element_costs["pivot_cost"] > 0]),
+            "n_elements_with_cost": len(element_costs[element_costs["pivot_cost"] > 0]),
+            "n_elements_ai_can_help": int(n_ai_helped),
+            "pct_cost_ai_can_help": round(ai_cost_share, 1),
             "example_high_risk": ", ".join(high_risk_occs[:3]),
             "example_low_risk": ", ".join(low_risk_occs[:3]),
         })
 
-        # Save profiles
+        # Ceiling comparison
+        high_profile_ceil = _build_occ_ska_profile(high_risk_occs, ska_data, pct_ceiling)
+        low_profile_ceil = _build_occ_ska_profile(low_risk_occs, ska_data, pct_ceiling)
+        _, ceiling_cost = _compute_pivot_cost(high_profile_ceil, low_profile_ceil)
+        zone_summary_rows[-1]["ceiling_pivot_cost"] = round(ceiling_cost, 2)
+        zone_summary_rows[-1]["cost_delta_ceiling"] = round(ceiling_cost - total_cost, 2)
+
         high_profile["job_zone"] = zone
         high_profile["group"] = "high_risk"
         low_profile["job_zone"] = zone
@@ -298,7 +352,7 @@ def main() -> None:
         high_risk_profiles.append(high_profile)
         low_risk_profiles.append(low_profile)
 
-        print(f"    Total pivot cost: {total_cost:.2f}")
+        print(f"    Total pivot cost: {total_cost:.2f} (ceiling: {ceiling_cost:.2f})")
 
     zone_summary = pd.DataFrame(zone_summary_rows)
     save_csv(zone_summary, results / "pivot_cost_by_zone.csv")
@@ -327,10 +381,18 @@ def main() -> None:
         save_figure(fig, fig_dir / "element_cost_heatmap.png")
         print("  element_cost_heatmap.png")
 
+    if all_element_costs:
+        combined_elem = pd.concat(all_element_costs)
+        fig = _ai_assisted_reskilling_bar(combined_elem)
+        if fig.data:
+            save_figure(fig, fig_dir / "ai_assisted_reskilling.png")
+            print("  ai_assisted_reskilling.png")
+
     # ── Copy key figures ──────────────────────────────────────────────────────
     committed = HERE / "figures"
     committed.mkdir(exist_ok=True)
-    for fname in ["pivot_cost_by_zone.png", "element_cost_heatmap.png"]:
+    for fname in ["pivot_cost_by_zone.png", "element_cost_heatmap.png",
+                  "ai_assisted_reskilling.png"]:
         src = fig_dir / fname
         if src.exists():
             shutil.copy2(src, committed / fname)

@@ -1,68 +1,68 @@
 element_name,avg_score,type
-Philosophy and Theology,18.83,knowledge
-Customer and Personal Service,18.39,knowledge
-Foreign Language,18.11,knowledge
-History and Archeology,17.96,knowledge
-Design,17.73,knowledge
-Sociology and Anthropology,17.28,knowledge
-Biology,17.22,knowledge
-Geography,17.14,knowledge
-Fine Arts,17.07,knowledge
-Education and Training,16.73,knowledge
-Building and Construction,16.61,knowledge
-English Language,16.14,knowledge
-Mechanical,15.98,knowledge
-Administrative,15.77,knowledge
-Computers and Electronics,15.43,knowledge
-Engineering and Technology,15.34,knowledge
-Therapy and Counseling,15.18,knowledge
-Sales and Marketing,14.77,knowledge
-Chemistry,14.69,knowledge
-Food Production,14.40,knowledge
-Psychology,14.39,knowledge
-Mathematics,14.15,knowledge
-Medicine and Dentistry,14.13,knowledge
+Foreign Language,18.74,knowledge
+History and Archeology,18.36,knowledge
+Customer and Personal Service,18.35,knowledge
+Philosophy and Theology,18.30,knowledge
+Sociology and Anthropology,18.13,knowledge
+Building and Construction,17.66,knowledge
+Design,17.51,knowledge
+Fine Arts,17.31,knowledge
+Mechanical,17.07,knowledge
+Biology,16.92,knowledge
+Geography,16.72,knowledge
+Education and Training,16.31,knowledge
+Therapy and Counseling,16.06,knowledge
+English Language,15.98,knowledge
+Engineering and Technology,15.84,knowledge
+Medicine and Dentistry,15.59,knowledge
+Administrative,15.57,knowledge
+Computers and Electronics,15.22,knowledge
+Food Production,14.88,knowledge
+Chemistry,14.78,knowledge
+Sales and Marketing,14.78,knowledge
+Mathematics,14.64,knowledge
+Physics,14.57,knowledge
+Law and Government,14.17,knowledge
+Psychology,14.11,knowledge
 Reading Comprehension,13.95,skills
-Communications and Media,13.87,knowledge
-Law and Government,13.83,knowledge
-Active Listening,13.81,skills
-Production and Processing,13.76,knowledge
-Transportation,13.74,knowledge
-Science,13.57,skills
-Speaking,13.53,skills
-Personnel and Human Resources,13.36,knowledge
-Critical Thinking,13.19,skills
-Physics,13.09,knowledge
-Administration and Management,12.95,knowledge
-Writing,12.91,skills
-Public Safety and Security,12.52,knowledge
-Economics and Accounting,12.40,knowledge
-Learning Strategies,12.36,skills
-Instructing,12.12,skills
+Communications and Media,13.84,knowledge
+Active Listening,13.61,skills
+Speaking,13.41,skills
+Telecommunications,13.32,knowledge
+Personnel and Human Resources,13.23,knowledge
+Science,13.21,skills
+Critical Thinking,13.14,skills
+Production and Processing,13.02,knowledge
+Transportation,13.00,knowledge
+Administration and Management,12.99,knowledge
+Writing,12.96,skills
+Economics and Accounting,12.66,knowledge
+Learning Strategies,12.31,skills
+Public Safety and Security,12.17,knowledge
 Programming,12.04,skills
-Telecommunications,12.01,knowledge
-Operations Monitoring,11.92,skills
-Active Learning,11.79,skills
-Management of Personnel Resources,11.62,skills
-Repairing,11.55,skills
-Operation and Control,11.37,skills
-Monitoring,11.22,skills
-Social Perceptiveness,11.20,skills
+Instructing,12.02,skills
+Active Learning,11.71,skills
+Repairing,11.67,skills
+Management of Personnel Resources,11.59,skills
+Operations Monitoring,11.35,skills
+Operations Analysis,11.32,skills
+Troubleshooting,11.30,skills
+Social Perceptiveness,11.24,skills
+Monitoring,11.21,skills
 Persuasion,11.15,skills
-Mathematics,11.09,skills
-Operations Analysis,10.94,skills
-Service Orientation,10.90,skills
-Complex Problem Solving,10.89,skills
-Judgment and Decision Making,10.82,skills
-Equipment Maintenance,10.72,skills
-Negotiation,10.62,skills
-Coordination,10.60,skills
-Troubleshooting,10.54,skills
-Systems Evaluation,10.39,skills
-Time Management,10.09,skills
-Quality Control Analysis,10.06,skills
-Systems Analysis,10.05,skills
+Mathematics,11.12,skills
+Service Orientation,10.95,skills
+Complex Problem Solving,10.86,skills
+Quality Control Analysis,10.77,skills
+Judgment and Decision Making,10.74,skills
+Negotiation,10.73,skills
+Operation and Control,10.63,skills
+Equipment Maintenance,10.51,skills
+Systems Evaluation,10.47,skills
+Coordination,10.46,skills
+Installation,10.30,skills
+Systems Analysis,10.13,skills
+Time Management,10.01,skills
 Management of Material Resources,9.96,skills
-Equipment Selection,9.95,skills
 Management of Financial Resources,9.60,skills
-Installation,8.82,skills
+Equipment Selection,9.45,skills

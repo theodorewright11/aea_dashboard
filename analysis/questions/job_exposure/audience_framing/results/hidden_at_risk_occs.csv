@@ -1,135 +1,151 @@
-title_current,pct,emp_nat,major,job_zone,outlook,skill_similarity
-"Education Administrators, Kindergarten through Secondary",38.18,319630.00,Management Occupations,5.00,5.00,0.92
-Range Managers,16.23,2547.00,"Life, Physical, and Social Science Occupations",4.00,3.00,0.92
-"Special Education Teachers, Elementary School",28.55,92873.33,Educational Instruction and Library Occupations,4.00,4.00,0.92
-"Special Education Teachers, Preschool",38.54,28200.00,Educational Instruction and Library Occupations,5.00,3.00,0.91
-"Education and Childcare Administrators, Preschool and Daycare",42.53,71620.00,Management Occupations,4.00,4.00,0.91
-Loss Prevention Managers,35.18,164169.00,Management Occupations,4.00,4.00,0.90
-Gambling Managers,36.14,4620.00,Management Occupations,2.00,3.00,0.90
-Foresters,13.95,9650.00,"Life, Physical, and Social Science Occupations",4.00,3.00,0.90
-Media Programming Directors,34.67,38771.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,2.00,0.90
-"Ophthalmologists, Except Pediatric",18.56,12110.00,Healthcare Practitioners and Technical Occupations,5.00,0.00,0.90
-Allergists and Immunologists,37.38,137310.00,Healthcare Practitioners and Technical Occupations,5.00,2.00,0.90
-Facilities Managers,41.14,184500.52,Management Occupations,3.00,5.00,0.90
-Neurodiagnostic Technologists,24.99,52948.00,Healthcare Practitioners and Technical Occupations,3.00,4.00,0.89
-Forest and Conservation Technicians,26.68,31080.00,"Life, Physical, and Social Science Occupations",3.00,2.00,0.89
-Emergency Management Directors,37.78,12570.00,Management Occupations,4.00,3.00,0.89
-Audiologists,25.48,14730.00,Healthcare Practitioners and Technical Occupations,5.00,4.00,0.89
-Correctional Officers and Jailers,27.69,365380.00,Protective Service Occupations,2.00,4.00,0.88
-Neuropsychologists,28.51,35580.00,"Life, Physical, and Social Science Occupations",5.00,4.00,0.88
-"Career/Technical Education Teachers, Postsecondary",42.84,111150.00,Educational Instruction and Library Occupations,3.00,4.00,0.88
-Airfield Operations Specialists,42.91,16640.00,Transportation and Material Moving Occupations,3.00,3.00,0.88
-Quality Control Systems Managers,33.95,44992.00,Management Occupations,4.00,5.00,0.88
-Preventive Medicine Physicians,28.14,47978.00,Healthcare Practitioners and Technical Occupations,5.00,2.00,0.87
-"Transportation, Storage, and Distribution Managers",39.56,64649.00,Management Occupations,4.00,5.00,0.87
-Chief Sustainability Officers,34.20,39381.00,Management Occupations,5.00,5.00,0.87
-Optometrists,30.19,41890.00,Healthcare Practitioners and Technical Occupations,5.00,4.00,0.87
-"Adult Basic Education, Adult Secondary Education, and English as a Second Language Instructors",38.03,36260.00,Educational Instruction and Library Occupations,4.00,3.00,0.87
-Equal Opportunity Representatives and Officers,36.57,63415.00,Business and Financial Operations Occupations,4.00,4.00,0.87
-Animal Scientists,40.02,2470.00,"Life, Physical, and Social Science Occupations",5.00,4.00,0.87
-Conservation Scientists,23.08,5444.00,"Life, Physical, and Social Science Occupations",4.00,3.00,0.87
-Occupational Health and Safety Technicians,32.54,31450.00,"Life, Physical, and Social Science Occupations",3.00,3.00,0.87
-Podiatrists,23.08,9520.00,Healthcare Practitioners and Technical Occupations,5.00,4.00,0.87
-Brownfield Redevelopment Specialists and Site Managers,35.42,22567.00,Management Occupations,4.00,4.00,0.86
-Ophthalmic Medical Technologists,14.15,3967.00,Healthcare Practitioners and Technical Occupations,3.00,4.00,0.86
-Neurologists,37.17,7700.00,Healthcare Practitioners and Technical Occupations,5.00,0.00,0.86
-Social and Human Service Assistants,42.55,424220.00,Community and Social Service Occupations,4.00,2.00,0.86
-Licensed Practical and Licensed Vocational Nurses,36.97,632430.00,Healthcare Practitioners and Technical Occupations,3.00,4.00,0.86
-"Morticians, Undertakers, and Funeral Arrangers",29.57,25700.00,Personal Care and Service Occupations,3.00,2.00,0.86
-Occupational Therapy Aides,34.41,5000.00,Healthcare Support Occupations,3.00,3.00,0.86
-Orthodontists,31.79,5150.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,0.86
-Producers and Directors,38.85,24762.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,4.00,0.86
-Acute Care Nurses,34.37,495221.00,Healthcare Practitioners and Technical Occupations,4.00,5.00,0.86
-Recycling Coordinators,41.10,61568.00,Transportation and Material Moving Occupations,2.00,2.00,0.86
-General Internal Medicine Physicians,22.61,66640.00,Healthcare Practitioners and Technical Occupations,5.00,4.00,0.86
-Registered Nurses,40.16,304558.00,Healthcare Practitioners and Technical Occupations,4.00,5.00,0.86
-"Teaching Assistants, Preschool, Elementary, Middle, and Secondary School, Except Special Education",43.17,382577.50,Educational Instruction and Library Occupations,3.00,2.00,0.86
-"Environmental Science and Protection Technicians, Including Health",37.23,39390.00,"Life, Physical, and Social Science Occupations",4.00,3.00,0.86
-Environmental Restoration Planners,32.52,7041.00,"Life, Physical, and Social Science Occupations",5.00,4.00,0.86
-Chiropractors,38.87,37630.00,Healthcare Practitioners and Technical Occupations,5.00,4.00,0.86
-Adapted Physical Education Specialists,38.19,39350.00,Educational Instruction and Library Occupations,5.00,4.00,0.85
-Zoologists and Wildlife Biologists,41.37,16920.00,"Life, Physical, and Social Science Occupations",4.00,4.00,0.85
-Hospitalists,30.16,34801.00,Healthcare Practitioners and Technical Occupations,5.00,2.00,0.85
-Orthoptists,23.33,9887.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,0.85
-Fundraising Managers,42.87,58664.44,Management Occupations,4.00,4.00,0.85
-"Physicians, Pathologists",33.25,11800.00,Healthcare Practitioners and Technical Occupations,5.00,2.00,0.85
-Home Health Aides,31.23,1994070.00,Healthcare Support Occupations,2.00,2.00,0.85
-Psychiatric Technicians,18.76,136300.00,Healthcare Practitioners and Technical Occupations,3.00,2.00,0.85
-"Opticians, Dispensing",22.98,79690.00,Healthcare Practitioners and Technical Occupations,3.00,2.00,0.85
-First-Line Supervisors of Correctional Officers,37.29,53390.00,Protective Service Occupations,3.00,4.00,0.85
-Clinical Neuropsychologists,20.03,35580.00,"Life, Physical, and Social Science Occupations",5.00,4.00,0.85
-Occupational Therapy Assistants,19.47,47910.00,Healthcare Support Occupations,3.00,3.00,0.85
-Orthotists and Prosthetists,16.66,9930.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,0.85
-Respiratory Therapists,21.73,136420.00,Healthcare Practitioners and Technical Occupations,3.00,5.00,0.85
-Physical Therapist Assistants,20.60,108010.00,Healthcare Support Occupations,3.00,3.00,0.85
-First-Line Supervisors of Material-Moving Machine and Vehicle Operators,34.82,123136.00,Transportation and Material Moving Occupations,3.00,2.00,0.85
-Athletic Trainers,35.78,28950.00,Healthcare Practitioners and Technical Occupations,5.00,3.00,0.84
-"Judges, Magistrate Judges, and Magistrates",24.47,25580.00,Legal Occupations,5.00,4.00,0.84
-Cardiovascular Technologists and Technicians,33.00,61180.00,Healthcare Practitioners and Technical Occupations,3.00,5.00,0.84
-Endoscopy Technicians,2.95,27713.00,Healthcare Support Occupations,2.00,2.00,0.84
-Physical Medicine and Rehabilitation Physicians,16.66,41196.00,Healthcare Practitioners and Technical Occupations,5.00,2.00,0.84
-Petroleum Engineers,32.02,18970.00,Architecture and Engineering Occupations,4.00,4.00,0.84
-Urologists,31.25,19891.00,Healthcare Practitioners and Technical Occupations,5.00,2.00,0.84
-Funeral Home Managers,38.78,13120.00,Management Occupations,3.00,4.00,0.84
-Critical Care Nurses,26.24,665841.00,Healthcare Practitioners and Technical Occupations,4.00,5.00,0.84
-Childcare Workers,40.53,354051.00,Personal Care and Service Occupations,2.00,2.00,0.84
-Dermatologists,36.84,10080.00,Healthcare Practitioners and Technical Occupations,5.00,2.00,0.84
-Financial Examiners,34.02,62830.00,Business and Financial Operations Occupations,4.00,4.00,0.84
-Family Medicine Physicians,23.99,107950.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,0.84
-First-Line Supervisors of Police and Detectives,42.62,153130.00,Protective Service Occupations,2.00,5.00,0.84
-Wind Energy Development Managers,29.04,76053.00,Management Occupations,4.00,4.00,0.84
-Hydroelectric Production Managers,21.25,31675.00,Management Occupations,3.00,5.00,0.83
-Speech-Language Pathology Assistants,35.01,75937.00,Healthcare Support Occupations,3.00,2.00,0.83
-Media Technical Directors/Managers,40.64,24398.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,2.00,0.83
-Occupational Therapists,42.94,55895.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,0.83
-Police Identification and Records Officers,41.61,17928.00,Protective Service Occupations,3.00,4.00,0.83
-Anesthesiologist Assistants,21.01,34693.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,0.83
-Clinical and Counseling Psychologists,40.47,72190.00,"Life, Physical, and Social Science Occupations",5.00,5.00,0.83
-Nurse Anesthetists,18.47,50350.00,Healthcare Practitioners and Technical Occupations,5.00,3.00,0.83
-Magnetic Resonance Imaging Technologists,34.26,41530.00,Healthcare Practitioners and Technical Occupations,3.00,4.00,0.83
-Emergency Medicine Physicians,26.91,24358.57,Healthcare Practitioners and Technical Occupations,5.00,0.00,0.83
-Fish and Game Wardens,38.96,6420.00,Protective Service Occupations,4.00,4.00,0.83
-Coroners,34.35,27241.00,Business and Financial Operations Occupations,3.00,4.00,0.83
-"Dentists, General",33.43,113490.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,0.83
-Sports Medicine Physicians,30.46,34183.00,Healthcare Practitioners and Technical Occupations,5.00,2.00,0.83
-"First-Line Supervisors of Landscaping, Lawn Service, and Groundskeeping Workers",42.80,124130.00,Building and Grounds Cleaning and Maintenance Occupations,3.00,4.00,0.82
-Forest Fire Inspectors and Prevention Specialists,39.56,2780.00,Protective Service Occupations,3.00,3.00,0.82
-"First-Line Supervisors of Farming, Fishing, and Forestry Workers",21.46,29530.00,"Farming, Fishing, and Forestry Occupations",3.00,3.00,0.82
-Aircraft Cargo Handling Supervisors,30.24,10160.00,Transportation and Material Moving Occupations,2.00,2.00,0.82
-Police and Sheriff's Patrol Officers,30.37,138105.00,Protective Service Occupations,3.00,5.00,0.82
-Midwives,37.18,36970.00,Healthcare Practitioners and Technical Occupations,5.00,2.00,0.82
-Biofuels Production Managers,22.30,6633.00,Management Occupations,4.00,5.00,0.82
-Construction and Building Inspectors,40.89,85782.00,Construction and Extraction Occupations,3.00,4.00,0.82
-Labor Relations Specialists,39.28,64590.00,Business and Financial Operations Occupations,4.00,4.00,0.82
-Veterinarians,35.79,80630.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,0.82
-Hearing Aid Specialists,14.11,10580.00,Healthcare Practitioners and Technical Occupations,3.00,2.00,0.82
-Phlebotomists,21.13,138880.00,Healthcare Support Occupations,3.00,2.00,0.82
-First-Line Supervisors of Firefighting and Prevention Workers,19.81,93680.00,Protective Service Occupations,3.00,5.00,0.81
-Radiation Therapists,25.64,18700.00,Healthcare Practitioners and Technical Occupations,3.00,4.00,0.81
-Music Therapists,40.95,10189.00,Healthcare Practitioners and Technical Occupations,4.00,4.00,0.81
-Anesthesiologists,10.19,41890.00,Healthcare Practitioners and Technical Occupations,5.00,0.00,0.81
-Physical Therapist Aides,16.86,44010.00,Healthcare Support Occupations,2.00,2.00,0.81
-Environmental Engineers,40.73,37950.00,Architecture and Engineering Occupations,4.00,5.00,0.81
-"Mining and Geological Engineers, Including Mining Safety Engineers",36.10,6770.00,Architecture and Engineering Occupations,4.00,4.00,0.81
-Transit and Railroad Police,30.28,3000.00,Protective Service Occupations,3.00,5.00,0.81
-Industrial Ecologists,37.34,26139.00,"Life, Physical, and Social Science Occupations",5.00,4.00,0.81
-Agricultural Inspectors,31.08,12090.00,"Farming, Fishing, and Forestry Occupations",2.00,1.00,0.80
-Wind Energy Operations Managers,40.39,56843.00,Management Occupations,3.00,4.00,0.80
-Anthropologists and Archeologists,42.60,8070.00,"Life, Physical, and Social Science Occupations",5.00,3.00,0.80
-Pest Control Workers,33.79,96110.00,Building and Grounds Cleaning and Maintenance Occupations,2.00,1.00,0.80
-"Farmers, Ranchers, and Other Agricultural Managers",20.79,5910.00,Management Occupations,4.00,4.00,0.80
-Transportation Inspectors,32.65,7773.33,Transportation and Material Moving Occupations,4.00,3.00,0.80
-Fire Inspectors and Investigators,27.90,14050.00,Protective Service Occupations,3.00,3.00,0.80
-Oral and Maxillofacial Surgeons,13.47,5330.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,0.80
-Flight Attendants,38.93,130110.00,Transportation and Material Moving Occupations,2.00,3.00,0.80
-Non-Destructive Testing Specialists,42.34,47697.00,Architecture and Engineering Occupations,2.00,3.00,0.80
-Acupuncturists,24.63,8440.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,0.79
-Materials Engineers,33.29,22770.00,Architecture and Engineering Occupations,4.00,4.00,0.79
-Fire-Prevention and Protection Engineers,34.42,13114.00,Architecture and Engineering Occupations,4.00,4.00,0.79
-Self-Enrichment Teachers,41.24,308520.00,Educational Instruction and Library Occupations,3.00,2.00,0.79
-Veterinary Technologists and Technicians,30.81,131320.00,Healthcare Practitioners and Technical Occupations,3.00,2.00,0.79
-"Makeup Artists, Theatrical and Performance",17.67,3320.00,Personal Care and Service Occupations,3.00,2.00,0.79
-Hydrologists,41.48,5720.00,"Life, Physical, and Social Science Occupations",5.00,3.00,0.79
-Civil Engineers,40.21,118470.00,Architecture and Engineering Occupations,4.00,5.00,0.79
-Water Resource Specialists,38.65,16173.00,Management Occupations,4.00,5.00,0.79
-Bartenders,34.33,745610.00,Food Preparation and Serving Related Occupations,2.00,2.00,0.79
+title_current,pct,pct_ceiling,emp_nat,major,job_zone,outlook,ai_projection,exposure_projection
+Preventive Medicine Physicians,19.43,28.14,47978.00,Healthcare Practitioners and Technical Occupations,5.00,2.00,64.28,92.43
+Urologists,27.09,31.25,19891.00,Healthcare Practitioners and Technical Occupations,5.00,2.00,62.07,83.29
+Nurse Anesthetists,16.64,18.47,50350.00,Healthcare Practitioners and Technical Occupations,5.00,3.00,60.49,79.98
+General Internal Medicine Physicians,16.70,22.61,66640.00,Healthcare Practitioners and Technical Occupations,5.00,4.00,59.76,82.65
+Physical Medicine and Rehabilitation Physicians,16.03,16.66,41196.00,Healthcare Practitioners and Technical Occupations,5.00,2.00,59.59,82.43
+"Education Administrators, Kindergarten through Secondary",22.43,38.18,319630.00,Management Occupations,5.00,5.00,58.66,94.54
+Audiologists,21.24,25.48,14730.00,Healthcare Practitioners and Technical Occupations,5.00,4.00,57.01,81.65
+Nuclear Engineers,16.68,26.83,14740.00,Architecture and Engineering Occupations,4.00,5.00,56.89,74.47
+Emergency Management Directors,26.92,37.78,12570.00,Management Occupations,4.00,3.00,56.46,87.11
+Optometrists,30.19,30.19,41890.00,Healthcare Practitioners and Technical Occupations,5.00,4.00,55.45,74.81
+Geothermal Production Managers,10.04,30.99,42452.00,Management Occupations,3.00,5.00,55.36,70.08
+Neuropsychologists,25.94,28.51,35580.00,"Life, Physical, and Social Science Occupations",5.00,4.00,55.20,84.70
+Hospitalists,18.60,30.16,34801.00,Healthcare Practitioners and Technical Occupations,5.00,2.00,54.63,81.14
+Hydroelectric Production Managers,10.08,21.25,31675.00,Management Occupations,3.00,5.00,53.56,71.89
+Coroners,32.08,34.35,27241.00,Business and Financial Operations Occupations,3.00,4.00,53.37,71.85
+Emergency Medicine Physicians,16.51,26.91,24358.57,Healthcare Practitioners and Technical Occupations,5.00,0.00,53.36,79.81
+Orthotists and Prosthetists,12.99,16.66,9930.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,53.22,72.98
+Biomass Power Plant Managers,18.11,34.00,57123.00,Management Occupations,4.00,5.00,53.15,68.10
+Podiatrists,23.08,23.08,9520.00,Healthcare Practitioners and Technical Occupations,5.00,4.00,53.06,78.26
+Occupational Health and Safety Specialists,29.38,51.29,128430.00,"Life, Physical, and Social Science Occupations",4.00,4.00,52.97,72.60
+Biofuels Production Managers,4.10,22.30,6633.00,Management Occupations,4.00,5.00,52.73,69.54
+Allergists and Immunologists,30.31,37.38,137310.00,Healthcare Practitioners and Technical Occupations,5.00,2.00,52.60,79.33
+Epidemiologists,31.54,43.64,11460.00,"Life, Physical, and Social Science Occupations",5.00,4.00,52.57,79.09
+Media Programming Directors,21.73,34.67,38771.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,2.00,51.83,78.79
+Clinical Neuropsychologists,18.17,20.03,35580.00,"Life, Physical, and Social Science Occupations",5.00,4.00,51.37,78.87
+"Ophthalmologists, Except Pediatric",10.96,18.56,12110.00,Healthcare Practitioners and Technical Occupations,5.00,0.00,51.14,80.38
+Materials Engineers,25.35,33.29,22770.00,Architecture and Engineering Occupations,4.00,4.00,51.03,69.16
+Health Education Specialists,25.86,48.06,65150.00,Community and Social Service Occupations,4.00,3.00,50.92,76.78
+Family Medicine Physicians,21.06,23.99,107950.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,50.90,76.12
+Chief Sustainability Officers,32.17,34.20,39381.00,Management Occupations,5.00,5.00,50.28,73.94
+Aviation Inspectors,15.13,22.75,7773.33,Transportation and Material Moving Occupations,3.00,3.00,49.93,65.67
+"Education and Childcare Administrators, Preschool and Daycare",27.09,42.53,71620.00,Management Occupations,4.00,4.00,49.16,76.34
+"Physicians, Pathologists",22.36,33.25,11800.00,Healthcare Practitioners and Technical Occupations,5.00,2.00,49.11,74.71
+First-Line Supervisors of Firefighting and Prevention Workers,3.73,19.81,93680.00,Protective Service Occupations,3.00,5.00,48.77,67.23
+Critical Care Nurses,24.02,26.24,665841.00,Healthcare Practitioners and Technical Occupations,4.00,5.00,48.65,70.24
+Anesthesiologists,5.78,10.19,41890.00,Healthcare Practitioners and Technical Occupations,5.00,0.00,48.55,69.12
+First-Line Supervisors of Material-Moving Machine and Vehicle Operators,21.06,34.82,123136.00,Transportation and Material Moving Occupations,3.00,2.00,48.41,70.69
+Financial Managers,25.11,52.40,18868.00,Management Occupations,4.00,5.00,48.32,73.95
+Acute Care Nurses,32.08,34.37,495221.00,Healthcare Practitioners and Technical Occupations,4.00,5.00,48.27,73.55
+Marine Engineers and Naval Architects,29.69,38.85,8440.00,Architecture and Engineering Occupations,4.00,5.00,48.26,66.19
+Quality Control Systems Managers,17.89,33.95,44992.00,Management Occupations,4.00,5.00,48.12,73.48
+First-Line Supervisors of Security Workers,21.55,44.92,70310.00,Protective Service Occupations,2.00,3.00,48.08,72.71
+Loss Prevention Managers,16.16,35.18,164169.00,Management Occupations,4.00,4.00,47.88,75.23
+Gambling Managers,21.88,36.14,4620.00,Management Occupations,2.00,3.00,47.14,73.12
+Aerospace Engineers,27.46,35.39,68440.00,Architecture and Engineering Occupations,4.00,5.00,47.03,66.59
+Postmasters and Mail Superintendents,17.28,62.17,13810.00,Management Occupations,2.00,3.00,46.56,69.32
+Oral and Maxillofacial Surgeons,13.47,13.47,5330.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,46.56,67.90
+Occupational Health and Safety Technicians,21.75,32.54,31450.00,"Life, Physical, and Social Science Occupations",3.00,3.00,46.48,66.39
+"Transportation, Storage, and Distribution Managers",27.35,39.56,64649.00,Management Occupations,4.00,5.00,46.37,69.43
+First-Line Supervisors of Police and Detectives,18.41,42.62,153130.00,Protective Service Occupations,2.00,5.00,46.02,71.34
+Sports Medicine Physicians,25.31,30.46,34183.00,Healthcare Practitioners and Technical Occupations,5.00,2.00,45.59,71.48
+Funeral Home Managers,19.66,38.78,13120.00,Management Occupations,3.00,4.00,45.51,65.58
+Dermatologists,28.56,36.84,10080.00,Healthcare Practitioners and Technical Occupations,5.00,2.00,45.49,68.81
+"Career/Technical Education Teachers, Postsecondary",32.38,42.84,111150.00,Educational Instruction and Library Occupations,3.00,4.00,45.44,67.40
+First-Line Supervisors of Correctional Officers,26.39,37.29,53390.00,Protective Service Occupations,3.00,4.00,45.40,68.32
+"Mining and Geological Engineers, Including Mining Safety Engineers",25.19,36.10,6770.00,Architecture and Engineering Occupations,4.00,4.00,45.11,66.41
+Orthodontists,31.79,31.79,5150.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,44.47,67.08
+Wind Energy Engineers,31.40,32.49,3499.00,Architecture and Engineering Occupations,4.00,5.00,44.41,61.53
+Petroleum Engineers,20.42,32.02,18970.00,Architecture and Engineering Occupations,4.00,4.00,44.27,65.93
+Nanotechnology Engineering Technologists and Technicians,23.23,31.88,40840.00,Architecture and Engineering Occupations,4.00,3.00,43.77,58.62
+"Family and Consumer Sciences Teachers, Postsecondary",31.46,50.12,2630.00,Educational Instruction and Library Occupations,5.00,3.00,43.76,71.56
+Industrial Production Managers,19.54,45.17,51505.00,Management Occupations,4.00,5.00,43.66,67.40
+Environmental Restoration Planners,28.49,32.52,7041.00,"Life, Physical, and Social Science Occupations",5.00,4.00,43.61,66.17
+Facilities Managers,7.55,41.14,184500.52,Management Occupations,3.00,5.00,43.60,66.26
+Hydroelectric Plant Technicians,10.99,22.03,2387.00,Production Occupations,3.00,4.00,43.56,50.83
+Police and Sheriff's Patrol Officers,26.44,30.37,138105.00,Protective Service Occupations,3.00,5.00,42.94,64.97
+Medical Dosimetrists,32.41,49.52,3970.00,Healthcare Practitioners and Technical Occupations,4.00,5.00,42.32,64.60
+Hearing Aid Specialists,14.11,14.11,10580.00,Healthcare Practitioners and Technical Occupations,3.00,2.00,42.25,59.54
+Industrial Ecologists,23.49,37.34,26139.00,"Life, Physical, and Social Science Occupations",5.00,4.00,42.04,61.47
+Conservation Scientists,14.57,23.08,5444.00,"Life, Physical, and Social Science Occupations",4.00,3.00,41.76,61.02
+First-Line Supervisors of Personal Service Workers,27.95,48.69,107697.71,Personal Care and Service Occupations,3.00,2.00,41.36,66.77
+Clinical and Counseling Psychologists,28.86,40.47,72190.00,"Life, Physical, and Social Science Occupations",5.00,5.00,41.31,69.22
+"Farmers, Ranchers, and Other Agricultural Managers",12.11,20.79,5910.00,Management Occupations,4.00,4.00,41.18,57.96
+Construction and Building Inspectors,24.32,40.89,85782.00,Construction and Extraction Occupations,3.00,4.00,41.15,59.42
+Brownfield Redevelopment Specialists and Site Managers,15.93,35.42,22567.00,Management Occupations,4.00,4.00,41.07,65.40
+Detectives and Criminal Investigators,31.20,44.48,18772.00,Protective Service Occupations,3.00,4.00,41.05,65.68
+Midwives,31.44,37.18,36970.00,Healthcare Practitioners and Technical Occupations,5.00,2.00,40.77,62.90
+Fundraising Managers,11.92,42.87,58664.44,Management Occupations,4.00,4.00,40.73,65.25
+"Special Education Teachers, Elementary School",19.90,28.55,92873.33,Educational Instruction and Library Occupations,4.00,4.00,40.47,69.61
+Wind Energy Operations Managers,18.02,40.39,56843.00,Management Occupations,3.00,4.00,40.36,59.99
+"Judges, Magistrate Judges, and Magistrates",24.47,24.47,25580.00,Legal Occupations,5.00,4.00,40.30,73.20
+Foresters,12.88,13.95,9650.00,"Life, Physical, and Social Science Occupations",4.00,3.00,40.18,66.04
+Equal Opportunity Representatives and Officers,31.77,36.57,63415.00,Business and Financial Operations Occupations,4.00,4.00,39.57,65.93
+"Airline Pilots, Copilots, and Flight Engineers",14.89,33.76,99300.00,Transportation and Material Moving Occupations,4.00,3.00,39.49,59.74
+Range Managers,13.80,16.23,2547.00,"Life, Physical, and Social Science Occupations",4.00,3.00,39.34,63.61
+General and Operations Managers,27.87,52.31,3584420.00,Management Occupations,4.00,5.00,38.90,64.52
+Manufactured Building and Mobile Home Installers,26.17,26.17,2610.00,"Installation, Maintenance, and Repair Occupations",2.00,2.00,38.54,47.24
+Respiratory Therapists,15.65,21.73,136420.00,Healthcare Practitioners and Technical Occupations,3.00,5.00,38.52,59.10
+Airfield Operations Specialists,29.10,42.91,16640.00,Transportation and Material Moving Occupations,3.00,3.00,38.33,61.78
+"First-Line Supervisors of Landscaping, Lawn Service, and Groundskeeping Workers",22.93,42.80,124130.00,Building and Grounds Cleaning and Maintenance Occupations,3.00,4.00,38.02,56.22
+Wind Energy Development Managers,13.94,29.04,76053.00,Management Occupations,4.00,4.00,37.90,59.51
+Forest Fire Inspectors and Prevention Specialists,12.20,39.56,2780.00,Protective Service Occupations,3.00,3.00,37.87,56.83
+Athletic Trainers,31.80,35.78,28950.00,Healthcare Practitioners and Technical Occupations,5.00,3.00,37.76,60.17
+Aircraft Cargo Handling Supervisors,20.85,30.24,10160.00,Transportation and Material Moving Occupations,2.00,2.00,37.75,58.54
+Energy Auditors,29.04,45.55,51428.00,Construction and Extraction Occupations,3.00,4.00,37.66,54.98
+Transit and Railroad Police,24.91,30.28,3000.00,Protective Service Occupations,3.00,5.00,37.61,58.09
+Firefighters,13.47,17.36,332240.00,Protective Service Occupations,3.00,3.00,37.50,51.34
+Solar Thermal Installers and Technicians,8.43,12.18,217906.00,Construction and Extraction Occupations,3.00,4.00,37.44,47.93
+Music Therapists,30.91,40.95,10189.00,Healthcare Practitioners and Technical Occupations,4.00,4.00,37.35,61.39
+Administrative Services Managers,21.21,46.12,184500.52,Management Occupations,3.00,5.00,37.21,63.77
+"Morticians, Undertakers, and Funeral Arrangers",22.38,29.57,25700.00,Personal Care and Service Occupations,3.00,2.00,37.19,59.94
+Geodetic Surveyors,19.55,55.84,14417.00,Architecture and Engineering Occupations,4.00,4.00,36.74,58.20
+"Geoscientists, Except Hydrologists and Geographers",32.58,59.55,22510.00,"Life, Physical, and Social Science Occupations",5.00,4.00,36.64,58.87
+"Opticians, Dispensing",20.21,22.98,79690.00,Healthcare Practitioners and Technical Occupations,3.00,2.00,36.62,56.77
+Media Technical Directors/Managers,23.92,40.64,24398.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,2.00,36.50,61.46
+Neurodiagnostic Technologists,21.05,24.99,52948.00,Healthcare Practitioners and Technical Occupations,3.00,4.00,36.10,58.27
+Orthoptists,19.46,23.33,9887.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,35.78,58.34
+Aircraft Mechanics and Service Technicians,14.03,18.25,136390.00,"Installation, Maintenance, and Repair Occupations",3.00,4.00,35.57,44.67
+Acupuncturists,21.71,24.63,8440.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,35.33,52.64
+"Special Education Teachers, Preschool",32.51,38.54,28200.00,Educational Instruction and Library Occupations,5.00,3.00,35.28,62.03
+"Securities, Commodities, and Financial Services Sales Agents",29.00,67.48,472300.00,Sales and Related Occupations,4.00,5.00,35.09,57.09
+Air Traffic Controllers,31.15,48.88,22400.00,Transportation and Material Moving Occupations,3.00,3.00,35.01,60.75
+Recreation Workers,31.95,51.29,309640.00,Personal Care and Service Occupations,4.00,2.00,34.87,57.86
+Recycling Coordinators,19.89,41.10,61568.00,Transportation and Material Moving Occupations,2.00,2.00,34.80,55.62
+Biofuels/Biodiesel Technology and Product Development Managers,22.85,29.44,38238.00,Management Occupations,4.00,5.00,34.76,52.76
+Traffic Technicians,26.05,48.49,7580.00,Transportation and Material Moving Occupations,3.00,2.00,34.73,51.36
+Nuclear Technicians,17.93,31.29,620.00,"Life, Physical, and Social Science Occupations",3.00,2.00,34.68,47.63
+Radiation Therapists,19.52,25.64,18700.00,Healthcare Practitioners and Technical Occupations,3.00,4.00,34.66,52.61
+Financial Examiners,19.16,34.02,62830.00,Business and Financial Operations Occupations,4.00,4.00,34.50,60.24
+"Heating, Air Conditioning, and Refrigeration Mechanics and Installers",27.05,40.24,396870.00,"Installation, Maintenance, and Repair Occupations",3.00,4.00,34.43,43.26
+"Environmental Science and Protection Technicians, Including Health",29.56,37.23,39390.00,"Life, Physical, and Social Science Occupations",4.00,3.00,34.35,54.21
+Industrial Engineering Technologists and Technicians,30.38,39.93,32570.00,Architecture and Engineering Occupations,3.00,4.00,34.05,49.71
+Wind Turbine Service Technicians,29.01,33.26,11220.00,"Installation, Maintenance, and Repair Occupations",3.00,3.00,34.04,43.69
+Producers and Directors,28.12,38.85,24762.00,"Arts, Design, Entertainment, Sports, and Media Occupations",4.00,4.00,34.00,61.06
+Occupational Therapy Assistants,16.83,19.47,47910.00,Healthcare Support Occupations,3.00,3.00,33.97,55.14
+Correctional Officers and Jailers,18.03,27.69,365380.00,Protective Service Occupations,2.00,4.00,33.95,56.37
+"First-Line Supervisors of Farming, Fishing, and Forestry Workers",7.87,21.46,29530.00,"Farming, Fishing, and Forestry Occupations",3.00,3.00,33.94,52.46
+Commercial Pilots,26.52,39.43,51830.00,Transportation and Material Moving Occupations,3.00,3.00,33.91,53.23
+Avionics Technicians,29.42,39.85,20900.00,"Installation, Maintenance, and Repair Occupations",3.00,3.00,33.63,48.60
+"Electrical and Electronics Installers and Repairers, Transportation Equipment",32.01,36.08,7310.00,"Installation, Maintenance, and Repair Occupations",3.00,3.00,33.50,43.93
+Millwrights,14.86,15.88,40660.00,"Installation, Maintenance, and Repair Occupations",2.00,4.00,33.35,37.74
+Psychiatric Technicians,15.72,18.76,136300.00,Healthcare Practitioners and Technical Occupations,3.00,2.00,33.13,54.01
+Water and Wastewater Treatment Plant and System Operators,0.00,16.84,126750.00,Production Occupations,2.00,3.00,32.99,41.15
+Magnetic Resonance Imaging Technologists,22.02,34.26,41530.00,Healthcare Practitioners and Technical Occupations,3.00,4.00,32.95,51.60
+Prosthodontists,18.35,18.35,760.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,32.77,51.66
+Licensed Practical and Licensed Vocational Nurses,28.83,36.97,632430.00,Healthcare Practitioners and Technical Occupations,3.00,4.00,32.46,56.11
+Accountants and Auditors,28.09,43.59,1448290.00,Business and Financial Operations Occupations,4.00,5.00,32.30,55.71
+Fire Inspectors and Investigators,21.51,27.90,14050.00,Protective Service Occupations,3.00,3.00,32.28,52.80
+Chemical Equipment Operators and Tenders,22.80,28.15,127410.00,Production Occupations,2.00,3.00,32.19,43.04
+Physical Therapist Assistants,13.17,20.60,108010.00,Healthcare Support Occupations,3.00,3.00,31.97,53.19
+Anesthesiologist Assistants,10.49,21.01,34693.00,Healthcare Practitioners and Technical Occupations,5.00,5.00,31.90,51.91
+Forest and Conservation Technicians,22.14,26.68,31080.00,"Life, Physical, and Social Science Occupations",3.00,2.00,31.71,50.89
+Environmental Engineering Technologists and Technicians,31.26,46.85,12500.00,Architecture and Engineering Occupations,4.00,2.00,31.61,48.41
+Nuclear Power Reactor Operators,8.97,35.94,5720.00,Production Occupations,3.00,4.00,31.37,42.45
+"Service Unit Operators, Oil and Gas",6.07,13.51,44120.00,Construction and Extraction Occupations,2.00,3.00,31.31,39.28
+Shuttle Drivers and Chauffeurs,16.14,27.69,292209.77,Transportation and Material Moving Occupations,2.00,2.00,30.90,35.93
+Gas Compressor and Gas Pumping Station Operators,0.83,51.97,5110.00,Transportation and Material Moving Occupations,2.00,3.00,30.46,39.36
+Radiologic Technologists and Technicians,20.21,33.30,223460.00,Healthcare Practitioners and Technical Occupations,3.00,5.00,29.79,44.76
+"Teaching Assistants, Preschool, Elementary, Middle, and Secondary School, Except Special Education",32.63,43.17,382577.50,Educational Instruction and Library Occupations,3.00,2.00,29.79,49.79
+"Adult Basic Education, Adult Secondary Education, and English as a Second Language Instructors",24.89,38.03,36260.00,Educational Instruction and Library Occupations,4.00,3.00,29.38,54.75

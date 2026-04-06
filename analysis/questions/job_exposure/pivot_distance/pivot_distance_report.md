@@ -1,99 +1,74 @@
-# Pivot Distance: Where Is It Cheap to Reskill, and Where Is It Expensive?
+# Pivot Distance: The Cost of Crossing the AI Risk Line
 
-*Config: all_ceiling | Method: freq | Skills + Knowledge, importance >= 3 | Top 10 high/low risk per zone*
+**TLDR:** Zone 3 workers -- office clerks, bookkeepers, billing specialists -- face the most expensive reskilling path in the entire labor market (303.79 total cost across 36 skill/knowledge elements). The gaps are mechanical, physical, and construction-related, not the soft-skill deficits that workforce programs typically target. But here's the new wrinkle: AI itself can help close many of these gaps. In Zone 2, AI tools can assist with 99.5% of the gap elements. Even in Zone 3, the number is 98.4%. The reskilling problem is real, but the reskilling toolkit just got a lot more powerful.
 
 ---
 
-## 1. Framework
+## The Zone 3 Crisis
 
-Workers in high-risk occupations are not trapped, but the cost of pivoting to a low-risk occupation depends heavily on how specialized the required knowledge is. We measure "pivot distance" as the total skill and knowledge gap a high-risk worker would need to close to reach the profile of a typical low-risk occupation in the same job zone.
+Workers in high-risk Zone 3 occupations are the labor market's most stranded population.
 
-For each job zone (1 through 5), we take the top 10 highest-risk and bottom 10 lowest-risk occupations by composite risk score, build their average Skills + Knowledge profiles (excluding Abilities, which are less trainable and therefore less useful for designing retraining programs), and compute per-element costs:
-
-> `element_cost = max(0, low_risk_avg_score - high_risk_avg_score)`
-
-Elements where the high-risk worker already meets or exceeds the low-risk need cost nothing. The total pivot cost is the sum of all positive element gaps. A higher total means the worker must acquire proficiency across more dimensions to complete the transition.
-
-## 2. Pivot Cost by Job Zone
+The total pivot cost -- the sum of all skill and knowledge gaps a high-risk worker must close to reach the profile of a typical low-risk occupation in the same job zone -- peaks sharply at 303.79 for Zone 3. That's nearly double Zone 2 (152.91) and meaningfully higher than Zone 4 (250.13) or Zone 5 (230.94).
 
 ![Pivot Cost by Job Zone](figures/pivot_cost_by_zone.png)
 
-The relationship between job zone and pivot cost is not linear. It peaks sharply at Zone 3, drops at Zone 5, and is cheapest at Zone 1:
+| Zone | Total Cost | Elements with Gap | AI Assists (%) |
+|------|-----------|-------------------|----------------|
+| 1 | 55.67 | 19 | 78.4% |
+| 2 | 152.91 | 17 | 99.5% |
+| 3 | 303.79 | 36 | 98.4% |
+| 4 | 250.13 | 42 | 89.6% |
+| 5 | 230.94 | 29 | 80.1% |
 
-| Zone | Description | Total Cost | Elements with Cost > 0 |
-|------|-------------|-----------|----------------------|
-| 1 | Little/no preparation | 133.8 | 20 |
-| 2 | Some preparation | 178.7 | 18 |
-| 3 | Medium preparation | 322.1 | 36 |
-| 4 | Considerable preparation | 316.8 | 47 |
-| 5 | Extensive preparation | 182.5 | 26 |
+Zone 1 is cheap because both sides of the risk spectrum have shallow profiles. A barista pivoting to logging equipment operation doesn't need deep technical expertise -- the knowledge floor on both ends is low, and only 19 elements register a gap at all.
 
-Zone 1 has the shortest pivot distance because the occupations at both ends of the risk spectrum require relatively shallow skill profiles. A barista or door-to-door salesperson does not need to acquire deep technical expertise to move into logging or farmwork -- the knowledge floor for both groups is low. Zone 2 follows a similar pattern, though the gap widens as destination occupations like carpenters and chemical plant operators begin requiring mechanical and operational knowledge that service-sector workers lack.
+Zone 3 is a different story. Billing clerks, bookkeepers, and brokerage clerks face a 36-element deficit to reach occupations like bus mechanics, elevator installers, and skilled tradespeople. This is not a narrow certification gap. It is a broad-spectrum knowledge restructuring that no single program covers. Zone 4 actually has more gap elements (42), but they're spread across a wider range of professional domains and each individual gap is smaller. Zone 3 concentrates its cost in a handful of brutal technical deficits.
 
-Zone 3 is the most expensive pivot in the entire labor market. Office and clerical workers -- billing clerks, bookkeepers, brokerage clerks -- face a 322.1-point total cost across 36 distinct elements to reach the profiles of bus mechanics, elevator installers, or dancers. This is not a narrow specialization gap; it is a broad-spectrum knowledge deficit spanning mechanical systems, building construction, physics, and hands-on troubleshooting. The sheer number of elements (36) means no single certification program covers the distance.
+Zone 5 is surprisingly moderate at 230.94. High-risk academics (anthropology teachers, archivists, atmospheric sciences faculty) and low-risk clinicians (anesthesiologists, emergency physicians, oral surgeons) share enough common intellectual infrastructure -- research methods, analytical reasoning, statistical literacy -- that the pivot is less about building new foundations and more about redirecting existing ones.
 
-Zone 4 costs nearly as much (316.8) but distributes it across even more elements (47), reflecting the breadth of professional-level occupations. The gap between credit counselors and acute care nurses, or between compensation specialists and wind energy managers, spans clinical knowledge, engineering fundamentals, and domain-specific technical skills.
-
-Zone 5 is surprisingly moderate at 182.5. At the highest education level, the knowledge foundations of high-risk academics (anthropology teachers, archivists, atmospheric sciences faculty) and low-risk clinicians (anesthesiologists, emergency physicians, oral surgeons) share enough common ground -- research methods, analytical reasoning, statistical literacy -- that the pivot cost is comparable to Zone 2 despite the far greater depth of both profiles.
-
-## 3. Which Elements Drive the Cost
+## What Drives the Cost
 
 ![Element Cost Heatmap](figures/element_cost_heatmap.png)
 
-Summing each element's cost contribution across all five zones reveals a clear pattern: the most expensive gaps are almost entirely in specialized technical knowledge, not in transferable cognitive or interpersonal skills.
+The top cost drivers by zone tell a consistent story: the binding constraint on reskilling is technical and physical knowledge, not interpersonal or cognitive skills.
 
-| Rank | Element | Total Cost (All Zones) |
-|------|---------|----------------------|
-| 1 | Building and Construction | 71.0 |
-| 2 | Mechanical | 64.4 |
-| 3 | Engineering and Technology | 52.6 |
-| 4 | Quality Control Analysis | 51.6 |
-| 5 | Psychology | 48.9 |
-| 6 | Therapy and Counseling | 46.0 |
-| 7 | Troubleshooting | 43.7 |
-| 8 | Physics | 43.5 |
-| 9 | Medicine and Dentistry | 40.7 |
-| 10 | Operations Monitoring | 40.7 |
+**Zone 1:** Repairing (10.2), Management of Personnel (10.1), Troubleshooting (9.5). Even at the lowest tier, the gap is hands-on maintenance and operational judgment.
 
-The top three cost drivers -- Building and Construction (71.0), Mechanical (64.4), and Engineering and Technology (52.6) -- together account for more pivot cost than the bottom five drivers combined. These are the knowledge domains that separate desk-based, information-processing work from hands-on, systems-oriented work. They are also the domains least likely to be picked up through general education or soft-skills training.
+**Zone 2:** Building/Construction (20.5), Mechanical (16.9), Operations Monitoring (13.3). Service-sector workers pivoting to trades hit a wall of applied technical knowledge they've never been asked to develop.
 
-Quality Control Analysis (51.6) and Troubleshooting (43.7) represent applied diagnostic reasoning in physical systems -- skills that require not just classroom learning but supervised practice. Psychology (48.9) and Therapy and Counseling (46.0) appear because several low-risk Zone 4 and 5 occupations (special education teachers, nurses) demand behavioral and clinical knowledge that high-risk administrative and academic roles do not provide.
+**Zone 3:** Mechanical (24.0), Physics (16.4), Building/Construction (15.8), Engineering (15.7). Four heavy technical domains, 36 total gap elements. This is why Zone 3 is the crisis point -- it's not one big gap, it's a dozen medium-sized ones stacked together.
 
-The policy implication is direct: retraining programs built around general workforce readiness -- communication, teamwork, digital literacy -- will not close these gaps. The binding constraint is technical certification and applied knowledge in mechanical, construction, and engineering domains.
+**Zone 4:** Physics (16.7), Mechanical (16.7), Transportation (16.3). Professional-level pivots still run through technical knowledge, though the specific domains shift toward applied science and logistics.
 
-## 4. Example Occupations
+**Zone 5:** Psychology (23.1), Therapy/Counseling (18.9), Mechanical (18.7). At the highest education tier, the gap pivots from pure technical knowledge toward clinical and behavioral domains -- reflecting the distance between academic and clinical professions.
 
-The pivots become concrete when we name the occupations that define each zone's high-risk and low-risk profiles:
+The pattern across all zones: retraining programs built around general workforce readiness -- communication, teamwork, digital literacy -- will not close these gaps. The bottleneck is mechanical knowledge, construction expertise, engineering fundamentals, and applied physics. These require hands-on training, apprenticeships, and industry certification.
 
-| Zone | High-Risk (Top 3) | Low-Risk (Top 3) |
-|------|-------------------|------------------|
-| 1 | Amusement/Recreation Attendants, Baristas, Door-to-Door Sales Workers | Fallers, Farmworkers, Logging Equipment Operators |
-| 2 | Bill Collectors, Customer Service Reps, Data Entry Keyers | Carpenters, Chemical Plant Operators, Mining Machine Operators |
-| 3 | Billing Clerks, Bookkeeping/Accounting Clerks, Brokerage Clerks | Bus/Truck Mechanics, Dancers, Elevator Installers |
-| 4 | Biological Technicians, Compensation Specialists, Credit Counselors | Special Ed Teachers, Wind Energy Managers, Acute Care Nurses |
-| 5 | Anthropology Teachers, Archivists, Atmospheric Sciences Teachers | Anesthesiologists, Emergency Medicine Physicians, Oral Surgeons |
+## AI as Reskilling Partner
 
-The Zone 1 pivot (service worker to outdoor/physical laborer) is intuitively plausible and programmatically cheap. The Zone 3 pivot (office clerk to skilled tradesperson) is the least intuitive and most expensive -- it asks a bookkeeper to become a diesel mechanic, which is a career change, not a career adjustment.
+Here's where the analysis takes a turn that the previous version of this report couldn't make.
 
-## 5. Key Takeaways
+![AI-Assisted Reskilling](figures/ai_assisted_reskilling.png)
 
-1. **Zone 3 is the crisis point.** At 322.1 total cost across 36 elements, mid-skill office and clerical workers face the most expensive reskilling path in the labor market. This is the population most likely to be stranded by automation without targeted intervention.
+For many of the gap elements, AI capability already exceeds the high-risk worker's current level. That means AI tools could function not just as the thing displacing these workers, but as the thing helping them close the gap. An AI tutoring system that understands mechanical principles better than a billing clerk currently does can teach those principles. An AI assistant that exceeds a bookkeeper's physics knowledge can scaffold learning in that domain.
 
-2. **Technical knowledge, not soft skills, is the bottleneck.** The top cost drivers -- Building and Construction (71.0), Mechanical (64.4), Engineering and Technology (52.6) -- are domains that require hands-on training, apprenticeships, and industry certification. Generic workforce development programs will not close these gaps.
+The numbers are striking. In Zone 2, AI can assist with 99.5% of gap elements -- nearly every single one. Zone 3, the most expensive pivot, still shows 98.4% AI-assisted coverage. Zone 4 drops to 89.6%, and Zone 5 to 80.1%, reflecting the increasing depth and specialization of upper-tier professional knowledge.
 
-3. **Zone 5 workers are more portable than expected.** Despite occupying the highest education tier, high-risk academics face a moderate 182.5-point pivot cost to reach clinical and technical professions, because advanced education provides a broad knowledge base that transfers across specializations.
+This doesn't make the reskilling problem disappear. You still need hands-on practice, supervised apprenticeship, and real-world application for domains like mechanical repair and building construction. AI can teach the theory and provide practice environments, but it can't replace the physical skill development. The point is narrower than that: the knowledge acquisition phase of reskilling -- traditionally the most expensive and time-consuming part -- just got dramatically cheaper for the majority of gap elements.
 
-4. **Retraining investment should be tiered by zone.** Zone 1 workers need short-duration orientation programs. Zone 2 workers need single-trade certification. Zone 3 workers need comprehensive multi-domain technical education -- and that is where public investment will have the highest marginal impact per displaced worker.
+The policy implication shifts from "these workers need comprehensive multi-year programs" to "these workers need structured AI-assisted learning pathways paired with shorter hands-on practicums." That's a meaningfully different program design, and a meaningfully lower cost.
+
+Zone 1 is the exception that tests the rule. At 78.4% AI assistance, it has the lowest coverage -- not because the gaps are harder, but because the gap elements (repairing, personnel management, troubleshooting) are more judgment-and-practice-heavy than knowledge-heavy. AI can explain how to troubleshoot a diesel engine; it can't give you the feel for it.
 
 ## Config
 
-Primary: `All 2026-02-18`. Risk scores from `job_risk_scoring`. Skills + Knowledge only (importance >= 3). Top 10 occs per group per zone (min of 10 and available). Abilities excluded (less trainable).
+Primary: `all_confirmed`. Comparison: `all_ceiling`. Risk scores from `job_risk_scoring`. Skills + Knowledge only (importance >= 3). Top 10 high-risk and 10 low-risk occupations per zone (or all available if fewer than 10). Abilities excluded (less trainable). Ceiling costs are identical to confirmed because the same high/low risk occupations are selected -- risk scoring uses the same config for both.
 
 ## Files
 
 | File | Description |
 |------|-------------|
-| `results/pivot_cost_by_zone.csv` | Per-zone: total cost, n occs, example high/low risk occs |
+| `results/pivot_cost_by_zone.csv` | Per-zone: total cost, n occs, AI assistance %, example high/low risk occs |
 | `results/element_costs_by_zone.csv` | Per-element cost breakdown per zone |
 | `results/high_risk_profiles.csv` | Avg skill+knowledge profile of high-risk occs per zone |
 | `results/low_risk_profiles.csv` | Same for low-risk |
