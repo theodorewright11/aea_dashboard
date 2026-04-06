@@ -71,11 +71,32 @@ The agentic configs show how much architectural investment would be needed to de
 
 **SKA formula** — see `ANALYSIS_ARCHITECTURE.md` for the locked-in spec.
 
+### Active: Work Activity Exposure (`questions/work_activity_exposure/`)
+
+**Overarching question:** Which types of work are most affected by AI, and what does that mean for where education and workforce development should focus?
+
+Organized around IWA (Intermediate Work Activity) level as primary lens. No SKA or risk-scoring (occupation-level metrics); instead focuses on robustness tiers, confirmed-to-ceiling gaps, trend expansion, and audience-specific framing.
+
+| Sub-folder | Question |
+|------------|----------|
+| `exposure_state/` | What is the current state of AI task exposure across work activities? (IWA/GWA/DWA rankings, five configs, confirmed vs ceiling, trends) |
+| `activity_robustness/` | Which activities are AI-resistant, and which are in the next wave? (robustness tiers <33% / 33–66% / ≥66%, stable-robust IWAs, ceiling gaps) |
+| `education_lens/` | What does this mean for what we teach and train? (durable targets, workforce by tier, domain exposure, growth trends, is-AI-a-fad question) |
+| `audience_framing/` | How do findings translate for each audience? (policy, workforce/educators, researchers, laypeople) |
+
+**Key findings:**
+- 164 robust / 116 moderate / 52 fragile IWAs (out of 332 total)
+- 82% of affected workers in activities with ≥33% exposure (64.5M out of 78.6M)
+- 284/332 IWAs grew in exposure over 15 months (Sept 2024 → Feb 2026); 72 newly above 10%
+- Fastest-growing IWAs are educational: evaluate scholarly work (+77pp), assess student capabilities (+54pp)
+- Robust activities are almost entirely physical/operational; fragile ones are informational/cognitive
+
+**Note:** All five ANALYSIS_CONFIGS use pre-combined datasets (is_aei=False) → eco_2025 baseline for WA analysis. Consistent across all configs. No family separation needed.
+
 ### Planned (future sessions)
 
 | Bucket | Core question |
 |--------|--------------|
-| Work Activity Exposure | Which types of work are most affected? Where should education focus? |
 | Economic Footprint | General results: sectors, wages, trends, state profiles |
 | Potential Growth | Where is current usage far below capability? Where is the economic opportunity? |
 | Source Agreement | Where do sources agree/disagree? What does MCP uniquely add? |
