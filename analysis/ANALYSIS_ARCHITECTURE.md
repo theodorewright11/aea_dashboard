@@ -26,15 +26,22 @@ analysis/
 │   └── old_scripts/             — Reference only (notebook + old ratio script)
 ├── questions/
 │   ├── _template/
-│   └── job_exposure/            — Active question bucket
+│   ├── job_exposure/            — Active question bucket
+│   │   ├── README.md
+│   │   ├── job_exposure_report.md
+│   │   ├── exposure_state/
+│   │   ├── job_risk_scoring/
+│   │   ├── worker_resilience/
+│   │   ├── pivot_distance/
+│   │   ├── audience_framing/
+│   │   └── occs_of_interest/
+│   └── work_activity_exposure/  — Active question bucket
 │       ├── README.md
-│       ├── job_exposure_report.md
+│       ├── work_activity_exposure_report.md
 │       ├── exposure_state/
-│       ├── job_risk_scoring/
-│       ├── worker_resilience/
-│       ├── pivot_distance/
-│       ├── audience_framing/
-│       └── occs_of_interest/
+│       ├── activity_robustness/
+│       ├── education_lens/
+│       └── audience_framing/
 ├── question_findings/           — Flat copies of question .md reports
 └── report/
     └── report.md                — Rolling aggregate report
@@ -71,6 +78,40 @@ from analysis.utils import style_figure, save_figure, save_csv, COLORS, FONT_FAM
 ```python
 pct = get_pct_tasks_affected("All 2026-02-18")   # → pd.Series keyed by title_current
 # Equivalent to: make_config + get_group_data at agg_level="occupation", top_n=9999
+```
+
+### get_wa_data() pattern (work activity analysis)
+
+```python
+from backend.compute import compute_work_activities
+
+def get_wa_data(dataset_name: str, level: str = "iwa") -> pd.DataFrame:
+    """Get work activity exposure for one pre-combined dataset at a given level."""
+    settings = {
+        "selected_datasets": [dataset_name],
+        "combine_method": "Average",
+        "method": "freq",
+        "use_auto_aug": True,
+        "physical_mode": "all",
+        "geo": "nat",
+        "sort_by": "workers_affected",
+        "top_n": 9999,
+    }
+    result = compute_work_activities(settings)
+    # All ANALYSIS_CONFIGS are is_aei=False → results come back as "mcp_group"
+    # (uses eco_2025 O*NET baseline; consistent across all five configs)
+    group = result.get("mcp_group") or result.get("aei_group")
+    if group is None:
+        return pd.DataFrame()
+    rows = group.get(level, [])  # level: "gwa", "iwa", or "dwa"
+    return pd.DataFrame(rows) if rows else pd.DataFrame()
+
+# Each row: {"category": str, "pct_tasks_affected": float,
+#             "workers_affected": float, "wages_affected": float}
+
+# Note: raw AEI datasets (is_aei=True, e.g. "AEI Both 2026-02-12") use eco_2015
+# baseline and come back as "aei_group". Do NOT mix aei_group and mcp_group results.
+# The pre-combined datasets used in ANALYSIS_CONFIGS are all is_aei=False.
 ```
 
 ### compute_ska() pattern

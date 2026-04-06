@@ -1,0 +1,7 @@
+metric,value,unit
+pct_workforce_in_exposed_activities,82.01,pct
+workers_in_exposed_activities,64.48,M workers
+workers_total,78.63,M workers
+n_fragile_iwas,52.00,count
+n_moderate_iwas,116.00,count
+n_robust_iwas,164.00,count

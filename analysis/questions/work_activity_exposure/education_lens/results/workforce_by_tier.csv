@@ -1,0 +1,4 @@
+tier,n_activities,workers_affected,avg_pct,workers_affected_pct
+fragile,52,23641630.80,73.22,30.07
+moderate,116,40836682.41,53.94,51.94
+robust,164,14148414.32,12.20,17.99
