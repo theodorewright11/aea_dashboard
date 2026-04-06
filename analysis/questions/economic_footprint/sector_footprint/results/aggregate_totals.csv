@@ -1,0 +1,6 @@
+config_label,workers_affected,wages_affected,pct_of_employment,pct_tasks_affected_mean
+All Confirmed,61298957.33,3993190229832.57,40.00,36.11
+All Sources (Ceiling),77123457.33,4973936561347.53,50.33,45.05
+Human Conversation,54085274.55,3466123927452.91,35.30,32.07
+Agentic Confirmed,59421754.49,3921542792376.73,38.78,32.58
+Agentic Ceiling,60357728.40,3971936018538.08,39.39,32.88
