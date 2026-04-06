@@ -93,15 +93,38 @@ Organized around IWA (Intermediate Work Activity) level as primary lens. No SKA 
 
 **Note:** All five ANALYSIS_CONFIGS use pre-combined datasets (is_aei=False) → eco_2025 baseline for WA analysis. Consistent across all configs. No family separation needed.
 
+### Active: Economic Footprint (`questions/economic_footprint/`)
+
+**Overarching question:** What is the total economic scale of AI exposure — across sectors, wages, work activities, job structure, and geography — and how has it changed over time?
+
+| Sub-folder | Question |
+|------------|----------|
+| `sector_footprint/` | Which sectors carry the most workers and wages in scope? How do the five configs compare? |
+| `skills_landscape/` | What skills does AI lead vs. humans? Which technology categories are most exposed? |
+| `job_structure/` | How does exposure distribute across job zones (preparation level) and job outlook ratings? |
+| `ai_modes/` | How much more does agentic AI expose vs. conversational? What is the auto-augmentability distribution? |
+| `trends/` | How have workers affected, wages affected, and task penetration changed over time across all five config series? |
+| `state_profiles/` | What types of state economies have the most exposed workforces, clustered by sector composition? |
+| `work_activities/` | What is the GWA/IWA-level footprint? How do agentic vs. conversational modes differ at the activity level? |
+
+**Key findings (All Confirmed primary config):**
+- 61.3M workers affected, $3.99T wages in scope, 40.0% of total employment
+- Ceiling estimate: 77.1M workers, $4.97T wages, 50.3% of employment
+- Top sectors by workers: Office/Admin (11.2M, 51.1%), Sales (7.6M, 59.5%), Business/Finance (5.5M, 50.7%)
+- Agentic exposes 5.3M more workers than conversational (59.4M vs 54.1M)
+- Legal (+25.5 pp) and Education (+24.8 pp) saw the largest task penetration gains over the dataset window
+- Zone 4 (considerable prep) has the highest average AI exposure (~50.9%); Zone 1 the lowest (~26.9%)
+- 5 state clusters by sector composition; pct_tasks_affected is uniform (~36.1%) across all states
+- 97.7% of affected workers are in occupations with meaningful AI augmentation potential (auto-aug score >= 2)
+
+**Note:** `work_activities/` covers economic footprint angles only. For deeper WA exposure profiling see `questions/work_activity_exposure/`.
+
 ### Planned (future sessions)
 
 | Bucket | Core question |
 |--------|--------------|
-| Economic Footprint | General results: sectors, wages, trends, state profiles |
 | Potential Growth | Where is current usage far below capability? Where is the economic opportunity? |
 | Source Agreement | Where do sources agree/disagree? What does MCP uniquely add? |
-| Time Trends | Anything not covered in the above |
-| State Clusters | State groupings beyond what Utah vs. National covers |
 
 ---
 

@@ -1,0 +1,133 @@
+date,dataset,category,workers_affected,wages_affected,pct_tasks_affected
+2024-09-30,AEI Both + Micro 2024-09-30,Office and Administrative Support Occupations,6548923.73,308316882436.99,34.50
+2024-09-30,AEI Both + Micro 2024-09-30,Sales and Related Occupations,4940304.21,229174721792.67,36.75
+2024-09-30,AEI Both + Micro 2024-09-30,Food Preparation and Serving Related Occupations,4080028.89,137782117219.62,29.31
+2024-09-30,AEI Both + Micro 2024-09-30,Business and Financial Operations Occupations,3353854.30,277207073316.61,31.37
+2024-09-30,AEI Both + Micro 2024-09-30,Management Occupations,2518542.40,303101857685.85,20.44
+2024-09-30,AEI Both + Micro 2024-09-30,Educational Instruction and Library Occupations,2245934.94,134572869787.59,28.81
+2024-09-30,AEI Both + Micro 2024-09-30,Computer and Mathematical Occupations,2232021.88,227638359399.06,43.40
+2024-09-30,AEI Both + Micro 2024-09-30,Transportation and Material Moving Occupations,1883042.55,88387782968.20,15.24
+2024-09-30,AEI Both + Micro 2024-09-30,Healthcare Practitioners and Technical Occupations,1802704.11,171028887679.91,17.10
+2024-09-30,AEI Both + Micro 2024-09-30,Production Occupations,1366182.21,68525128671.59,15.75
+2024-09-30,AEI Both + Micro 2024-09-30,"Installation, Maintenance, and Repair Occupations",1325563.16,78490160658.90,20.51
+2024-09-30,AEI Both + Micro 2024-09-30,Healthcare Support Occupations,1049803.46,40267969686.22,11.95
+2024-09-30,AEI Both + Micro 2024-09-30,Protective Service Occupations,923564.64,52963412391.75,26.46
+2024-09-30,AEI Both + Micro 2024-09-30,Personal Care and Service Occupations,867048.76,31635592804.71,26.45
+2024-09-30,AEI Both + Micro 2024-09-30,Architecture and Engineering Occupations,863572.19,83985278521.73,33.88
+2024-09-30,AEI Both + Micro 2024-09-30,Construction and Extraction Occupations,835047.44,52301733322.86,11.11
+2024-09-30,AEI Both + Micro 2024-09-30,Community and Social Service Occupations,733860.51,42381036667.81,30.83
+2024-09-30,AEI Both + Micro 2024-09-30,"Arts, Design, Entertainment, Sports, and Media Occupations",702021.84,44428251360.37,32.52
+2024-09-30,AEI Both + Micro 2024-09-30,"Life, Physical, and Social Science Occupations",431824.66,37086229883.68,27.68
+2024-09-30,AEI Both + Micro 2024-09-30,Building and Grounds Cleaning and Maintenance Occupations,401191.74,15500892183.44,10.88
+2024-09-30,AEI Both + Micro 2024-09-30,Legal Occupations,310482.98,37857258550.29,22.80
+2024-09-30,AEI Both + Micro 2024-09-30,"Farming, Fishing, and Forestry Occupations",38281.54,1526517774.74,11.85
+2024-12-23,AEI Both + Micro 2024-12-23,Office and Administrative Support Occupations,6548923.73,308316882436.99,34.50
+2024-12-23,AEI Both + Micro 2024-12-23,Sales and Related Occupations,4940304.21,229174721792.67,36.75
+2024-12-23,AEI Both + Micro 2024-12-23,Food Preparation and Serving Related Occupations,4080028.89,137782117219.62,29.31
+2024-12-23,AEI Both + Micro 2024-12-23,Business and Financial Operations Occupations,3353854.30,277207073316.61,31.37
+2024-12-23,AEI Both + Micro 2024-12-23,Management Occupations,2518542.40,303101857685.85,20.44
+2024-12-23,AEI Both + Micro 2024-12-23,Educational Instruction and Library Occupations,2245934.94,134572869787.59,28.81
+2024-12-23,AEI Both + Micro 2024-12-23,Computer and Mathematical Occupations,2232021.88,227638359399.06,43.40
+2024-12-23,AEI Both + Micro 2024-12-23,Transportation and Material Moving Occupations,1883042.55,88387782968.20,15.24
+2024-12-23,AEI Both + Micro 2024-12-23,Healthcare Practitioners and Technical Occupations,1802704.11,171028887679.91,17.10
+2024-12-23,AEI Both + Micro 2024-12-23,Production Occupations,1366182.21,68525128671.59,15.75
+2024-12-23,AEI Both + Micro 2024-12-23,"Installation, Maintenance, and Repair Occupations",1325563.16,78490160658.90,20.51
+2024-12-23,AEI Both + Micro 2024-12-23,Healthcare Support Occupations,1049803.46,40267969686.22,11.95
+2024-12-23,AEI Both + Micro 2024-12-23,Protective Service Occupations,923564.64,52963412391.75,26.46
+2024-12-23,AEI Both + Micro 2024-12-23,Personal Care and Service Occupations,867048.76,31635592804.71,26.45
+2024-12-23,AEI Both + Micro 2024-12-23,Architecture and Engineering Occupations,863572.19,83985278521.73,33.88
+2024-12-23,AEI Both + Micro 2024-12-23,Construction and Extraction Occupations,835047.44,52301733322.86,11.11
+2024-12-23,AEI Both + Micro 2024-12-23,Community and Social Service Occupations,733860.51,42381036667.81,30.83
+2024-12-23,AEI Both + Micro 2024-12-23,"Arts, Design, Entertainment, Sports, and Media Occupations",702021.84,44428251360.37,32.52
+2024-12-23,AEI Both + Micro 2024-12-23,"Life, Physical, and Social Science Occupations",431824.66,37086229883.68,27.68
+2024-12-23,AEI Both + Micro 2024-12-23,Building and Grounds Cleaning and Maintenance Occupations,401191.74,15500892183.44,10.88
+2024-12-23,AEI Both + Micro 2024-12-23,Legal Occupations,310482.98,37857258550.29,22.80
+2024-12-23,AEI Both + Micro 2024-12-23,"Farming, Fishing, and Forestry Occupations",38281.54,1526517774.74,11.85
+2025-03-06,AEI Both + Micro 2025-03-06,Office and Administrative Support Occupations,7824343.58,369799005511.91,39.37
+2025-03-06,AEI Both + Micro 2025-03-06,Sales and Related Occupations,5360952.95,254777827738.89,40.95
+2025-03-06,AEI Both + Micro 2025-03-06,Business and Financial Operations Occupations,4277965.97,349344630091.52,38.69
+2025-03-06,AEI Both + Micro 2025-03-06,Food Preparation and Serving Related Occupations,4208626.99,142453539842.88,30.39
+2025-03-06,AEI Both + Micro 2025-03-06,Management Occupations,3394881.71,417969862087.24,25.74
+2025-03-06,AEI Both + Micro 2025-03-06,Educational Instruction and Library Occupations,3382333.58,210617613926.82,42.01
+2025-03-06,AEI Both + Micro 2025-03-06,Computer and Mathematical Occupations,2460355.74,252454067540.02,49.75
+2025-03-06,AEI Both + Micro 2025-03-06,Healthcare Practitioners and Technical Occupations,2295336.69,220470214264.34,21.13
+2025-03-06,AEI Both + Micro 2025-03-06,Transportation and Material Moving Occupations,1904646.26,89618789159.35,15.58
+2025-03-06,AEI Both + Micro 2025-03-06,Healthcare Support Occupations,1754291.47,65397635086.60,16.67
+2025-03-06,AEI Both + Micro 2025-03-06,Production Occupations,1432948.35,72050810682.38,16.77
+2025-03-06,AEI Both + Micro 2025-03-06,"Installation, Maintenance, and Repair Occupations",1413768.65,84722128090.40,21.22
+2025-03-06,AEI Both + Micro 2025-03-06,Protective Service Occupations,1076511.08,59606670402.38,28.75
+2025-03-06,AEI Both + Micro 2025-03-06,Architecture and Engineering Occupations,966546.03,94727525688.85,36.77
+2025-03-06,AEI Both + Micro 2025-03-06,Personal Care and Service Occupations,919139.40,33452250724.23,28.09
+2025-03-06,AEI Both + Micro 2025-03-06,Construction and Extraction Occupations,900668.19,56516683612.08,11.57
+2025-03-06,AEI Both + Micro 2025-03-06,"Arts, Design, Entertainment, Sports, and Media Occupations",888125.48,57099980885.99,39.38
+2025-03-06,AEI Both + Micro 2025-03-06,Community and Social Service Occupations,827183.89,48062293263.47,37.32
+2025-03-06,AEI Both + Micro 2025-03-06,"Life, Physical, and Social Science Occupations",492934.60,42015675568.07,31.95
+2025-03-06,AEI Both + Micro 2025-03-06,Building and Grounds Cleaning and Maintenance Occupations,412451.11,16034307344.51,11.92
+2025-03-06,AEI Both + Micro 2025-03-06,Legal Occupations,351707.94,41277688960.42,34.28
+2025-03-06,AEI Both + Micro 2025-03-06,"Farming, Fishing, and Forestry Occupations",40796.57,1641125473.56,13.37
+2025-08-11,AEI Both + Micro 2025-08-11,Office and Administrative Support Occupations,10475031.14,493849782005.74,47.07
+2025-08-11,AEI Both + Micro 2025-08-11,Sales and Related Occupations,6997691.40,333005568496.64,54.50
+2025-08-11,AEI Both + Micro 2025-08-11,Business and Financial Operations Occupations,5099781.77,416048519340.31,46.22
+2025-08-11,AEI Both + Micro 2025-08-11,Food Preparation and Serving Related Occupations,4758058.50,161864710758.93,34.07
+2025-08-11,AEI Both + Micro 2025-08-11,Management Occupations,4291437.34,543707124323.95,31.77
+2025-08-11,AEI Both + Micro 2025-08-11,Educational Instruction and Library Occupations,3895173.35,246483923633.81,49.42
+2025-08-11,AEI Both + Micro 2025-08-11,Computer and Mathematical Occupations,3097953.62,312834242830.57,62.32
+2025-08-11,AEI Both + Micro 2025-08-11,Healthcare Practitioners and Technical Occupations,2953417.33,286802091443.93,26.20
+2025-08-11,AEI Both + Micro 2025-08-11,Transportation and Material Moving Occupations,2066446.95,97988201515.17,16.74
+2025-08-11,AEI Both + Micro 2025-08-11,Healthcare Support Occupations,2046180.67,78170757864.08,22.51
+2025-08-11,AEI Both + Micro 2025-08-11,"Installation, Maintenance, and Repair Occupations",1555895.73,94802082783.96,23.07
+2025-08-11,AEI Both + Micro 2025-08-11,Production Occupations,1514796.87,76116428155.93,17.81
+2025-08-11,AEI Both + Micro 2025-08-11,Protective Service Occupations,1216201.13,66424320932.65,31.18
+2025-08-11,AEI Both + Micro 2025-08-11,Construction and Extraction Occupations,1125326.89,71314472282.78,12.95
+2025-08-11,AEI Both + Micro 2025-08-11,Architecture and Engineering Occupations,1048240.43,103428692708.47,39.00
+2025-08-11,AEI Both + Micro 2025-08-11,"Arts, Design, Entertainment, Sports, and Media Occupations",1044322.80,67535546596.53,42.93
+2025-08-11,AEI Both + Micro 2025-08-11,Personal Care and Service Occupations,1041260.65,37784735063.89,31.26
+2025-08-11,AEI Both + Micro 2025-08-11,Community and Social Service Occupations,890456.69,51834825501.78,43.29
+2025-08-11,AEI Both + Micro 2025-08-11,"Life, Physical, and Social Science Occupations",578684.14,49229925967.39,39.07
+2025-08-11,AEI Both + Micro 2025-08-11,Building and Grounds Cleaning and Maintenance Occupations,468635.21,18708365616.85,17.65
+2025-08-11,AEI Both + Micro 2025-08-11,Legal Occupations,468206.61,53466258524.21,42.67
+2025-08-11,AEI Both + Micro 2025-08-11,"Farming, Fishing, and Forestry Occupations",40796.57,1641125473.56,13.37
+2025-11-13,AEI Both + Micro 2025-11-13,Office and Administrative Support Occupations,11020719.26,522332323552.73,49.63
+2025-11-13,AEI Both + Micro 2025-11-13,Sales and Related Occupations,7514103.95,360278180626.17,58.31
+2025-11-13,AEI Both + Micro 2025-11-13,Business and Financial Operations Occupations,5315475.76,432204667040.84,49.09
+2025-11-13,AEI Both + Micro 2025-11-13,Food Preparation and Serving Related Occupations,4863067.78,165855886457.82,35.26
+2025-11-13,AEI Both + Micro 2025-11-13,Management Occupations,4646091.04,594141257239.04,34.53
+2025-11-13,AEI Both + Micro 2025-11-13,Educational Instruction and Library Occupations,4193227.81,265897678586.56,52.50
+2025-11-13,AEI Both + Micro 2025-11-13,Computer and Mathematical Occupations,3278592.65,328416921971.32,64.89
+2025-11-13,AEI Both + Micro 2025-11-13,Healthcare Practitioners and Technical Occupations,3241553.92,315828375077.43,28.53
+2025-11-13,AEI Both + Micro 2025-11-13,Healthcare Support Occupations,2314111.01,88875923216.25,24.59
+2025-11-13,AEI Both + Micro 2025-11-13,Transportation and Material Moving Occupations,2084341.43,98887018865.20,17.22
+2025-11-13,AEI Both + Micro 2025-11-13,"Installation, Maintenance, and Repair Occupations",1575490.78,95954770527.16,23.61
+2025-11-13,AEI Both + Micro 2025-11-13,Production Occupations,1539218.71,77180495988.04,18.11
+2025-11-13,AEI Both + Micro 2025-11-13,Protective Service Occupations,1330906.44,71284836467.83,32.92
+2025-11-13,AEI Both + Micro 2025-11-13,Construction and Extraction Occupations,1249664.51,79058755529.46,13.59
+2025-11-13,AEI Both + Micro 2025-11-13,"Arts, Design, Entertainment, Sports, and Media Occupations",1134048.27,73096537543.27,46.05
+2025-11-13,AEI Both + Micro 2025-11-13,Personal Care and Service Occupations,1107205.35,40185117068.47,33.29
+2025-11-13,AEI Both + Micro 2025-11-13,Architecture and Engineering Occupations,1092033.40,108358906932.68,39.80
+2025-11-13,AEI Both + Micro 2025-11-13,Community and Social Service Occupations,945850.42,55247286074.63,46.35
+2025-11-13,AEI Both + Micro 2025-11-13,"Life, Physical, and Social Science Occupations",601254.48,50998312094.09,41.09
+2025-11-13,AEI Both + Micro 2025-11-13,Legal Occupations,510012.93,59454335167.78,45.47
+2025-11-13,AEI Both + Micro 2025-11-13,Building and Grounds Cleaning and Maintenance Occupations,475412.81,19032349197.76,18.35
+2025-11-13,AEI Both + Micro 2025-11-13,"Farming, Fishing, and Forestry Occupations",40822.76,1642461261.14,13.39
+2026-02-12,AEI Both + Micro 2026-02-12,Office and Administrative Support Occupations,11211805.50,532655747235.43,51.05
+2026-02-12,AEI Both + Micro 2026-02-12,Sales and Related Occupations,7574293.67,363035474832.75,59.53
+2026-02-12,AEI Both + Micro 2026-02-12,Business and Financial Operations Occupations,5465270.63,443698131584.16,50.73
+2026-02-12,AEI Both + Micro 2026-02-12,Food Preparation and Serving Related Occupations,4905325.38,167268289053.74,35.56
+2026-02-12,AEI Both + Micro 2026-02-12,Management Occupations,4787440.12,613850326628.42,35.52
+2026-02-12,AEI Both + Micro 2026-02-12,Educational Instruction and Library Occupations,4231451.71,268872175208.94,53.58
+2026-02-12,AEI Both + Micro 2026-02-12,Healthcare Practitioners and Technical Occupations,3345832.72,326418819130.75,29.25
+2026-02-12,AEI Both + Micro 2026-02-12,Computer and Mathematical Occupations,3305671.69,331313213511.07,65.70
+2026-02-12,AEI Both + Micro 2026-02-12,Healthcare Support Occupations,2405440.06,92312817314.83,25.10
+2026-02-12,AEI Both + Micro 2026-02-12,Transportation and Material Moving Occupations,2141407.07,101021046727.33,17.58
+2026-02-12,AEI Both + Micro 2026-02-12,"Installation, Maintenance, and Repair Occupations",1587023.87,96709542294.39,23.91
+2026-02-12,AEI Both + Micro 2026-02-12,Production Occupations,1577975.29,79093629622.31,18.31
+2026-02-12,AEI Both + Micro 2026-02-12,Protective Service Occupations,1370571.58,72812418372.76,33.27
+2026-02-12,AEI Both + Micro 2026-02-12,Construction and Extraction Occupations,1338971.01,85605981839.16,13.88
+2026-02-12,AEI Both + Micro 2026-02-12,"Arts, Design, Entertainment, Sports, and Media Occupations",1176721.97,76028144251.40,47.59
+2026-02-12,AEI Both + Micro 2026-02-12,Personal Care and Service Occupations,1138612.05,41285161914.16,34.27
+2026-02-12,AEI Both + Micro 2026-02-12,Architecture and Engineering Occupations,1119726.49,111475278692.68,40.43
+2026-02-12,AEI Both + Micro 2026-02-12,Community and Social Service Occupations,961319.91,56006098808.93,47.26
+2026-02-12,AEI Both + Micro 2026-02-12,"Life, Physical, and Social Science Occupations",614566.92,52188878657.71,41.77
+2026-02-12,AEI Both + Micro 2026-02-12,Legal Occupations,521711.86,60787696848.72,48.28
+2026-02-12,AEI Both + Micro 2026-02-12,Building and Grounds Cleaning and Maintenance Occupations,476603.66,19088938187.05,18.46
+2026-02-12,AEI Both + Micro 2026-02-12,"Farming, Fishing, and Forestry Occupations",41214.17,1662419115.89,13.72

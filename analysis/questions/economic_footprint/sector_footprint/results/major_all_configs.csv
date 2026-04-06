@@ -1,0 +1,111 @@
+config_label,category,workers_affected,wages_affected,pct_tasks_affected
+All Sources (Ceiling),Office and Administrative Support Occupations,13793013.13,656643452002.82,68.35
+All Sources (Ceiling),Sales and Related Occupations,9712322.92,463671866278.04,74.50
+All Sources (Ceiling),Management Occupations,6608513.10,815773054101.77,51.26
+All Sources (Ceiling),Business and Financial Operations Occupations,6538446.55,532451207225.84,62.25
+All Sources (Ceiling),Food Preparation and Serving Related Occupations,5708987.91,195755254343.68,41.10
+All Sources (Ceiling),Educational Instruction and Library Occupations,4804818.59,300813628619.79,60.83
+All Sources (Ceiling),Transportation and Material Moving Occupations,4544620.49,205928848174.04,29.88
+All Sources (Ceiling),Computer and Mathematical Occupations,3957634.66,401659226951.23,78.38
+All Sources (Ceiling),Healthcare Practitioners and Technical Occupations,3893860.86,375496703668.20,34.87
+All Sources (Ceiling),Healthcare Support Occupations,2713512.15,104631263375.38,31.02
+All Sources (Ceiling),Production Occupations,2275648.44,113350779584.54,27.14
+All Sources (Ceiling),"Installation, Maintenance, and Repair Occupations",1963304.12,118421742016.29,29.44
+All Sources (Ceiling),Protective Service Occupations,1651253.82,90283155597.28,43.16
+All Sources (Ceiling),Construction and Extraction Occupations,1504296.23,96325626401.85,16.97
+All Sources (Ceiling),Personal Care and Service Occupations,1431845.45,52152300426.80,41.78
+All Sources (Ceiling),"Arts, Design, Entertainment, Sports, and Media Occupations",1349234.46,86320312214.34,58.64
+All Sources (Ceiling),Architecture and Engineering Occupations,1340764.04,131897099753.14,50.33
+All Sources (Ceiling),Community and Social Service Occupations,1085063.21,63030135342.22,53.32
+All Sources (Ceiling),"Life, Physical, and Social Science Occupations",780764.80,65349028739.69,51.99
+All Sources (Ceiling),Building and Grounds Cleaning and Maintenance Occupations,780092.67,30746636653.79,24.24
+All Sources (Ceiling),Legal Occupations,619404.51,70562918908.71,54.52
+All Sources (Ceiling),"Farming, Fishing, and Forestry Occupations",66055.22,2672320968.10,19.36
+Human Conversation,Office and Administrative Support Occupations,9741780.69,461607953561.29,44.20
+Human Conversation,Sales and Related Occupations,6510319.58,309521815394.90,49.76
+Human Conversation,Business and Financial Operations Occupations,4833941.83,394588132180.23,43.43
+Human Conversation,Food Preparation and Serving Related Occupations,4712073.95,160271285495.90,33.71
+Human Conversation,Management Occupations,3994913.56,498237038871.88,30.13
+Human Conversation,Educational Instruction and Library Occupations,3849226.25,242268860204.58,48.18
+Human Conversation,Computer and Mathematical Occupations,2713678.91,276950495235.72,55.08
+Human Conversation,Healthcare Practitioners and Technical Occupations,2690466.62,260317367073.66,24.76
+Human Conversation,Healthcare Support Occupations,2087489.37,78162068844.43,20.19
+Human Conversation,Transportation and Material Moving Occupations,2020607.16,95452179003.83,16.64
+Human Conversation,"Installation, Maintenance, and Repair Occupations",1536268.46,93522548846.05,22.31
+Human Conversation,Production Occupations,1508793.96,75583250898.70,17.62
+Human Conversation,Protective Service Occupations,1186857.32,64874620840.50,30.62
+Human Conversation,Construction and Extraction Occupations,1146201.42,71715732754.72,13.01
+Human Conversation,"Arts, Design, Entertainment, Sports, and Media Occupations",1058951.37,68213274277.92,43.62
+Human Conversation,Architecture and Engineering Occupations,1042978.35,102965578328.45,38.74
+Human Conversation,Personal Care and Service Occupations,1034656.75,37505538319.99,31.11
+Human Conversation,Community and Social Service Occupations,883987.51,51421665110.10,41.28
+Human Conversation,"Life, Physical, and Social Science Occupations",549958.75,46711162611.44,36.57
+Human Conversation,Legal Occupations,490206.41,56715092050.44,42.93
+Human Conversation,Building and Grounds Cleaning and Maintenance Occupations,451049.50,17873558243.57,16.00
+Human Conversation,"Farming, Fishing, and Forestry Occupations",40866.85,1644709304.61,13.43
+Agentic Confirmed,Office and Administrative Support Occupations,12811170.14,608112195493.99,61.78
+Agentic Confirmed,Sales and Related Occupations,8695314.75,410387572054.83,66.26
+Agentic Confirmed,Business and Financial Operations Occupations,5551825.58,451880519156.02,52.42
+Agentic Confirmed,Management Occupations,5494221.33,687771006581.51,41.39
+Agentic Confirmed,Computer and Mathematical Occupations,3818613.44,387045653260.22,74.88
+Agentic Confirmed,Transportation and Material Moving Occupations,3595028.83,160964491051.62,19.70
+Agentic Confirmed,Educational Instruction and Library Occupations,3278512.67,211695397868.26,41.72
+Agentic Confirmed,Food Preparation and Serving Related Occupations,2862840.86,98426399911.53,20.12
+Agentic Confirmed,Healthcare Practitioners and Technical Occupations,2762885.64,261182609509.02,22.17
+Agentic Confirmed,Healthcare Support Occupations,1392703.71,55886861348.35,22.85
+Agentic Confirmed,Production Occupations,1254658.07,63492427338.85,14.81
+Agentic Confirmed,"Arts, Design, Entertainment, Sports, and Media Occupations",1095988.06,71146354279.00,46.36
+Agentic Confirmed,Protective Service Occupations,1093659.37,56520775315.60,25.77
+Agentic Confirmed,Architecture and Engineering Occupations,1000139.64,98384077596.53,37.66
+Agentic Confirmed,"Installation, Maintenance, and Repair Occupations",909741.74,56967892669.15,14.25
+Agentic Confirmed,Construction and Extraction Occupations,871246.20,58190567462.07,8.28
+Agentic Confirmed,Personal Care and Service Occupations,869212.42,31419702072.69,27.46
+Agentic Confirmed,Community and Social Service Occupations,629064.88,36651971013.80,34.66
+Agentic Confirmed,"Life, Physical, and Social Science Occupations",541788.46,45011587899.81,37.85
+Agentic Confirmed,Legal Occupations,486290.51,53781962103.92,41.33
+Agentic Confirmed,Building and Grounds Cleaning and Maintenance Occupations,371224.99,15186455360.05,14.09
+Agentic Confirmed,"Farming, Fishing, and Forestry Occupations",35623.21,1436313029.91,7.90
+All Confirmed,Office and Administrative Support Occupations,11211805.50,532655747235.43,51.05
+All Confirmed,Sales and Related Occupations,7574293.67,363035474832.75,59.53
+All Confirmed,Business and Financial Operations Occupations,5465270.63,443698131584.16,50.73
+All Confirmed,Food Preparation and Serving Related Occupations,4905325.38,167268289053.74,35.56
+All Confirmed,Management Occupations,4787440.12,613850326628.42,35.52
+All Confirmed,Educational Instruction and Library Occupations,4231451.71,268872175208.94,53.58
+All Confirmed,Healthcare Practitioners and Technical Occupations,3345832.72,326418819130.75,29.25
+All Confirmed,Computer and Mathematical Occupations,3305671.69,331313213511.07,65.70
+All Confirmed,Healthcare Support Occupations,2405440.06,92312817314.83,25.10
+All Confirmed,Transportation and Material Moving Occupations,2141407.07,101021046727.33,17.58
+All Confirmed,"Installation, Maintenance, and Repair Occupations",1587023.87,96709542294.39,23.91
+All Confirmed,Production Occupations,1577975.29,79093629622.31,18.31
+All Confirmed,Protective Service Occupations,1370571.58,72812418372.76,33.27
+All Confirmed,Construction and Extraction Occupations,1338971.01,85605981839.16,13.88
+All Confirmed,"Arts, Design, Entertainment, Sports, and Media Occupations",1176721.97,76028144251.40,47.59
+All Confirmed,Personal Care and Service Occupations,1138612.05,41285161914.16,34.27
+All Confirmed,Architecture and Engineering Occupations,1119726.49,111475278692.68,40.43
+All Confirmed,Community and Social Service Occupations,961319.91,56006098808.93,47.26
+All Confirmed,"Life, Physical, and Social Science Occupations",614566.92,52188878657.71,41.77
+All Confirmed,Legal Occupations,521711.86,60787696848.72,48.28
+All Confirmed,Building and Grounds Cleaning and Maintenance Occupations,476603.66,19088938187.05,18.46
+All Confirmed,"Farming, Fishing, and Forestry Occupations",41214.17,1662419115.89,13.72
+Agentic Ceiling,Office and Administrative Support Occupations,12880563.23,611393854093.78,62.07
+Agentic Ceiling,Sales and Related Occupations,9184867.85,437413426601.30,68.47
+Agentic Ceiling,Business and Financial Operations Occupations,5564634.07,452863501882.20,52.63
+Agentic Ceiling,Management Occupations,5525817.49,690955238912.16,41.71
+Agentic Ceiling,Computer and Mathematical Occupations,3822099.27,387419233674.04,75.01
+Agentic Ceiling,Transportation and Material Moving Occupations,3620974.08,162077979830.07,19.93
+Agentic Ceiling,Educational Instruction and Library Occupations,3290851.18,212301960910.90,41.84
+Agentic Ceiling,Food Preparation and Serving Related Occupations,2983510.15,102748383298.66,20.87
+Agentic Ceiling,Healthcare Practitioners and Technical Occupations,2791033.69,263867009278.40,22.53
+Agentic Ceiling,Healthcare Support Occupations,1424859.98,57112681039.05,23.04
+Agentic Ceiling,Production Occupations,1256634.11,63582705415.43,14.90
+Agentic Ceiling,Protective Service Occupations,1115671.48,57663155672.10,26.29
+Agentic Ceiling,"Arts, Design, Entertainment, Sports, and Media Occupations",1104541.60,71658994836.74,46.83
+Agentic Ceiling,Architecture and Engineering Occupations,1005885.32,98968761070.67,37.96
+Agentic Ceiling,"Installation, Maintenance, and Repair Occupations",912810.92,57165066044.35,14.32
+Agentic Ceiling,Personal Care and Service Occupations,885052.80,31972387108.32,27.91
+Agentic Ceiling,Construction and Extraction Occupations,871246.20,58190567462.07,8.28
+Agentic Ceiling,Community and Social Service Occupations,643981.73,37579017547.53,35.36
+Agentic Ceiling,"Life, Physical, and Social Science Occupations",546101.99,45365071903.68,38.11
+Agentic Ceiling,Legal Occupations,486290.51,53781962103.92,41.33
+Agentic Ceiling,Building and Grounds Cleaning and Maintenance Occupations,404462.60,16409308451.89,15.12
+Agentic Ceiling,"Farming, Fishing, and Forestry Occupations",35838.16,1445751400.81,8.46

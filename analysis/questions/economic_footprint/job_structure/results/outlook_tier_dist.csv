@@ -1,0 +1,25 @@
+outlook,tier,n_occs,workers,workers_m,outlook_label
+0.00,High (≥60%),2,52020.00,0.05,
+0.00,Low (<20%),7,136556.75,0.14,
+0.00,Moderate (40–59%),4,56990.00,0.06,
+0.00,Restructuring (20–39%),4,61240.00,0.06,
+1.00,High (≥60%),8,285920.00,0.29,Rating 1 (Bright/High-wage)
+1.00,Low (<20%),31,1344886.00,1.34,Rating 1 (Bright/High-wage)
+1.00,Moderate (40–59%),12,560880.00,0.56,Rating 1 (Bright/High-wage)
+1.00,Restructuring (20–39%),16,487208.10,0.49,Rating 1 (Bright/High-wage)
+2.00,High (≥60%),15,4752150.00,4.75,Rating 2 (Average outlook)
+2.00,Low (<20%),91,17418594.77,17.42,Rating 2 (Average outlook)
+2.00,Moderate (40–59%),50,19492204.00,19.49,Rating 2 (Average outlook)
+2.00,Restructuring (20–39%),103,21175813.79,21.18,Rating 2 (Average outlook)
+3.00,High (≥60%),32,8603322.00,8.60,Rating 3 (Below average)
+3.00,Low (<20%),66,7304650.92,7.30,Rating 3 (Below average)
+3.00,Moderate (40–59%),38,3560364.00,3.56,Rating 3 (Below average)
+3.00,Restructuring (20–39%),67,9424159.99,9.42,Rating 3 (Below average)
+4.00,High (≥60%),53,8683732.00,8.68,
+4.00,Low (<20%),47,3992455.44,3.99,
+4.00,Moderate (40–59%),61,6105925.33,6.11,
+4.00,Restructuring (20–39%),70,7689605.08,7.69,
+5.00,High (≥60%),35,9014827.68,9.01,
+5.00,Low (<20%),17,1096520.52,1.10,
+5.00,Moderate (40–59%),54,12003569.85,12.00,
+5.00,Restructuring (20–39%),40,9927698.25,9.93,
