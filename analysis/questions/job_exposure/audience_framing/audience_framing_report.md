@@ -1,60 +1,68 @@
-# Audience Framing: How Do Findings Translate for Different Audiences?
+# Audience Framing: Finding the Jobs That Don't Know They're Next
 
-*Config: all_ceiling | Method: freq | Skills + Knowledge, importance ≥ 3*
-
----
-
-## 1. Hidden At-Risk Jobs
-
-### Framework
-
-Some occupations share a skill and knowledge profile nearly identical to high-exposure jobs but haven't yet been hit by confirmed AI usage. These are the "next wave" -- AI's capabilities already map onto their skill requirements, but adoption hasn't penetrated their task load yet. For policymakers, these are the jobs to watch and prepare for. For workers in these roles, the window to reskill is still open.
-
-We identify them using cosine similarity between each occupation's skill+knowledge vector (893 occupations by 53 elements) and the average profile of all above-median-exposure occupations. Occupations in the upper-left quadrant -- high similarity to the high-exposure profile but below-median exposure themselves -- are classified as hidden at-risk.
-
-### Results
-
-From a matrix of 893 occupations across 53 skill and knowledge elements, the high-exposure reference profile was computed from 445 occupations (those above the median exposure level). Cosine similarity to this profile ranges from 0.019 to 0.933, with a median of 0.785. **134 occupations are classified as hidden at-risk** -- their skill profiles closely match those of heavily exposed jobs, but their own task-level AI exposure has not yet materialized.
-
-The top ten hidden at-risk occupations, ranked by similarity to the high-exposure profile:
-
-| Rank | Occupation | Similarity |
-|------|-----------|-----------|
-| 1 | Education Administrators, K-12 | 0.920 |
-| 2 | Range Managers | 0.920 |
-| 3 | Special Education Teachers, Elementary | 0.920 |
-| 4 | Special Education Teachers, Preschool | 0.910 |
-| 5 | Education/Childcare Administrators, Preschool/Daycare | 0.910 |
-| 6 | Loss Prevention Managers | 0.900 |
-| 7 | Gambling Managers | 0.900 |
-| 8 | Foresters | 0.900 |
-| 9 | Media Programming Directors | 0.900 |
-| 10 | Ophthalmologists | 0.900 |
-
-Education and management roles dominate the hidden at-risk list. These occupations require analytical reasoning, written communication, coordination, and judgment -- the same skill profile that characterizes heavily exposed information-work roles. The difference is that AI adoption has not yet penetrated the specific task structures of K-12 administration, special education instruction, or specialized management. That gap is a matter of deployment timing, not capability mismatch.
-
-Notable among the 29 named occupations of interest: **Registered Nurses** are flagged as hidden at-risk. At 40.2% task exposure, they fall below the median, but their skill profile -- combining active listening, critical thinking, service orientation, and broad knowledge domains -- is highly similar to occupations already experiencing heavy AI integration. This finding should inform workforce planning in healthcare, one of the economy's largest employment sectors.
-
-![Hidden At-Risk Scatter](figures/hidden_at_risk_scatter.png)
+**TLDR:** We replaced cosine similarity with projection-based methods for identifying hidden at-risk occupations -- jobs with low current AI exposure but high alignment with AI's capability vector. The result: 150 occupations flagged by AI projection, 140 by exposure projection, with heavy representation from healthcare specialties. Preventive Medicine Physicians, Urologists, Nurse Anesthetists, and Nuclear Engineers all show up. Over half of these occupations have *rising* exposure trajectories, meaning the "hidden" part of hidden at-risk is temporary. The dominant skill domains in high-exposure/low-outlook jobs are uniformly knowledge-based -- skills don't crack the top 15 even though they're now included in the analysis.
 
 ---
 
-## 2. Dominant Skill Domains in High-Exposure / Low-Outlook Jobs
+## Why Projection
 
-### Framework
+The previous version of this analysis used cosine similarity: take each occupation's skill/knowledge vector, compare it to the average profile of high-exposure occupations, and flag the ones that look similar but aren't yet exposed. That method works, but it treats all elements equally. An occupation that scores high on the same elements as high-exposure jobs gets flagged, regardless of whether those elements are the ones AI actually reaches.
 
-High exposure combined with poor labor-market outlook (DWS rating 2 or 3) is the worst combination a worker can face: AI is already reaching into these jobs, and the labor market is not absorbing displaced workers effectively. Understanding which skill and knowledge domains are most concentrated in this group tells policymakers and educators where retraining investment is most urgent -- and whether the affected workers have transferable foundations or face a cold start.
+Projection fixes this. Instead of asking "does this occupation look like exposed occupations?" it asks "how much of this occupation's profile falls along the direction AI is actually moving?" Two projection variants:
 
-### Results
+**AI projection** takes each occupation's SKA vector and projects it onto the AI capability vector -- the direction defined by what AI systems can actually do. Higher projection means more of the occupation's requirements sit in AI's path. Range: 0.62 to 66.53, median 29.38.
 
-189 occupations meet the dual criteria of above-median AI exposure and a DWS outlook rating of 2 or 3. The dominant elements in this group, ranked by average importance-times-level score:
+**Exposure projection** projects onto the exposure vector -- the direction defined by which occupations are currently most exposed. This captures adoption patterns in addition to raw capability.
+
+The two methods substantially overlap but aren't identical. 150 occupations flag as hidden at-risk by AI projection, 140 by exposure projection. The differences are informative: they reveal occupations where AI has the capability to penetrate but adoption hasn't followed the expected pattern yet.
+
+## Hidden At-Risk: Two Lenses
+
+![Hidden At-Risk by AI Projection](figures/hidden_at_risk_ai_projection.png)
+
+![Hidden At-Risk by Exposure Projection](figures/hidden_at_risk_exp_projection.png)
+
+The top hidden at-risk occupations by projection method, with both confirmed and ceiling exposure:
+
+| Rank | Occupation | Confirmed Pct | Ceiling Pct | Gap |
+|------|-----------|---------------|-------------|-----|
+| 1 | Preventive Medicine Physicians | 19.4% | 28.1% | +8.7pp |
+| 2 | Urologists | 27.1% | 31.3% | +4.2pp |
+| 3 | Nurse Anesthetists | 16.6% | 18.5% | +1.9pp |
+| 4 | Education Administrators, K-12 | 22.4% | 38.2% | +15.8pp |
+| 5 | Nuclear Engineers | 16.7% | 26.8% | +10.1pp |
+| 6 | Geothermal Production Managers | 10.0% | 31.0% | +21.0pp |
+
+Geothermal Production Managers deserve a double-take. At 10.0% confirmed exposure, they look completely safe. But their ceiling exposure is 31.0% -- a 21-percentage-point gap that represents the distance between what AI can demonstrably do in their task space right now and what it could plausibly do. That's the largest confirmed-to-ceiling gap in the top group.
+
+## The Healthcare Cluster
+
+The hidden at-risk list is dominated by medical specialties. Preventive Medicine Physicians, Urologists, Nurse Anesthetists -- these are occupations where current AI deployment is low but the skill/knowledge profile projects heavily onto AI's capability direction. The reasons are structural: medical specialties require deep analytical reasoning, pattern recognition across complex data, protocol-based decision-making, and extensive documentation. Those are exactly the capability dimensions where AI systems have made the most progress.
+
+This doesn't mean AI will replace urologists. It means the task composition of these roles has significant overlap with what AI tools are increasingly good at -- diagnostic reasoning, literature synthesis, treatment protocol optimization, clinical documentation. The exposure will come through tool adoption, not role elimination. But 53% of the 150 hidden at-risk occupations (80 of them) already show *rising* exposure trajectories in the confirmed config. The wave is arriving.
+
+## Trend: Rising Exposure
+
+The "hidden" in hidden at-risk is time-limited for most of these occupations. A majority already show rising exposure trends, and some of the increases are dramatic:
+
+- **Geothermal Production Managers:** +22.2 percentage points in ceiling exposure
+- **Education Administrators, K-12:** +15.8pp in ceiling
+- **Nuclear Engineers:** +10.1pp in ceiling
+
+These aren't occupations where AI exposure is a static theoretical possibility. The trend data shows it materializing in real time. The window between "hidden at-risk" and "visibly at-risk" is closing, and for some of these occupations it may be 2-3 years rather than a decade.
+
+## Dominant Skill Domains
+
+![Dominant Elements Bar](figures/dominant_elements_bar.png)
+
+For occupations in the worst-case quadrant -- high exposure *and* poor labor market outlook (DWS rating 2 or 3) -- we asked which skill and knowledge elements are most concentrated. The answer is overwhelmingly knowledge, not skills.
 
 | Rank | Element | Type | Avg Score |
 |------|---------|------|-----------|
-| 1 | Philosophy and Theology | Knowledge | 18.83 |
-| 2 | Customer and Personal Service | Knowledge | 18.39 |
-| 3 | Foreign Language | Knowledge | 18.11 |
-| 4 | History and Archeology | Knowledge | 17.96 |
+| 1 | Foreign Language | Knowledge | 18.74 |
+| 2 | History and Archeology | Knowledge | 18.36 |
+| 3 | Customer and Personal Service | Knowledge | 18.35 |
+| 4 | Philosophy and Theology | Knowledge | 18.30 |
 | 5 | Design | Knowledge | 17.73 |
 | 6 | Sociology and Anthropology | Knowledge | 17.28 |
 | 7 | Biology | Knowledge | 17.22 |
@@ -62,30 +70,21 @@ High exposure combined with poor labor-market outlook (DWS rating 2 or 3) is the
 | 9 | Fine Arts | Knowledge | 17.07 |
 | 10 | Education and Training | Knowledge | 16.73 |
 
-The dominant elements are uniformly broad, general knowledge domains -- not specialized technical skills. Philosophy and Theology, History and Archeology, Sociology and Anthropology, and Foreign Language are liberal-arts foundations with wide applicability. Customer and Personal Service, Education and Training, and Design are practical domains that transfer across sectors. Even Biology and Geography represent general scientific literacy rather than narrow technical specialization.
+Skills data IS now included in the analysis -- this version incorporates skills alongside knowledge elements. But skills don't crack the top 15. The dominant profile of high-exposure/low-outlook workers is built on broad liberal-arts knowledge foundations: foreign language, history, philosophy, sociology, fine arts. These are not dead-end specializations. They're transferable intellectual assets.
 
-This pattern carries a direct policy implication: workers in the worst-case group are not starting from zero. They possess broadly transferable knowledge foundations. The reskilling challenge is not about building new competencies from scratch; it is about redirecting existing knowledge toward occupations with better labor-market outlook and lower AI exposure. Retraining programs for this population should emphasize career navigation and targeted technical upskilling, not foundational education.
-
-![Dominant Elements Bar Chart](figures/dominant_elements_bar.png)
-
----
-
-## 3. Key Takeaways
-
-1. **134 occupations are one deployment wave away from high exposure.** Their skill profiles are nearly indistinguishable from today's most-exposed jobs. Education and management roles are disproportionately represented, meaning the next wave of AI impact will likely hit public-sector and supervisory occupations that current policy discussions largely overlook.
-
-2. **Workers in the worst-case group have transferable foundations.** The dominant skill domains among high-exposure, low-outlook occupations are broad knowledge areas -- not dead-end specializations. Retraining investment should focus on career pathway design and targeted technical supplements, not remedial education.
-
-3. **Registered Nurses -- one of the largest employment categories in the economy -- are hidden at-risk.** At 40.2% current exposure, they appear moderate, but their skill profile closely mirrors heavily exposed occupations. Healthcare workforce planning should account for the probability that nursing task exposure will rise as AI deployment in clinical and administrative settings accelerates.
+The implication: workers in the worst-case group are not starting from zero. The reskilling challenge is redirection, not reconstruction. Career navigation and targeted technical upskilling will go further than foundational education for this population.
 
 ## Config
 
-Primary: `All 2026-02-18`. High-exposure: pct > median. Low-outlook: DWS rating in {2, 3}. Skills + Knowledge only, importance >= 3. Similarity: cosine, 893 occs x 53 elements.
+Primary: `all_confirmed`. Comparison: `all_ceiling`. Projection methods: AI projection (onto AI capability vector) and exposure projection (onto exposure vector). Skills + Knowledge, importance >= 3. Hidden at-risk threshold: below-median exposure, above-median projection. Trend: rising = positive slope in confirmed exposure over analysis period. High-exposure/low-outlook: pct > median AND DWS rating in {2, 3}.
 
 ## Files
 
 | File | Description |
 |------|-------------|
-| `results/skill_profile_similarity.csv` | All occs: exposure, cosine similarity to high-exposure profile |
-| `results/hidden_at_risk_occs.csv` | Low-exposure occs with high skill-profile similarity |
+| `results/projection_similarity.csv` | All occs: exposure, AI projection score, exposure projection score |
+| `results/hidden_at_risk_occs.csv` | Hidden at-risk occs by AI projection method |
+| `results/hidden_at_risk_exp_projection.csv` | Hidden at-risk occs by exposure projection method |
+| `results/hidden_at_risk_trends.csv` | Trend slopes for hidden at-risk occupations |
 | `results/dominant_elements_high_exp_low_outlook.csv` | Top elements in high-exp / low-outlook jobs |
+| `results/skill_profile_similarity.csv` | Legacy cosine similarity data (retained for comparison) |

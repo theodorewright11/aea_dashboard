@@ -1,261 +1,261 @@
 element_name,type,occ_score,ai_score,gap,direction,rank,title_current
-Psychology,knowledge,27.85,15.68,-12.17,human_advantage,1,Registered Nurses
-Problem Sensitivity,abilities,20.60,11.86,-8.74,human_advantage,2,Registered Nurses
-Customer and Personal Service,knowledge,24.11,16.83,-7.28,human_advantage,3,Registered Nurses
-Social Perceptiveness,skills,18.05,11.04,-7.01,human_advantage,4,Registered Nurses
-Inductive Reasoning,abilities,19.52,12.99,-6.53,human_advantage,5,Registered Nurses
-Biology,knowledge,7.79,18.32,10.53,ai_advantage,1,Registered Nurses
-Education and Training,knowledge,10.78,20.33,9.55,ai_advantage,2,Registered Nurses
-Mathematical Reasoning,abilities,9.00,13.36,4.36,ai_advantage,3,Registered Nurses
-Administration and Management,knowledge,9.51,13.80,4.29,ai_advantage,4,Registered Nurses
-Mathematics,knowledge,11.66,15.92,4.26,ai_advantage,5,Registered Nurses
-Computers and Electronics,knowledge,29.59,18.77,-10.83,human_advantage,1,Software Developers
-Technology Design,skills,12.24,9.24,-3.00,human_advantage,2,Software Developers
-Systems Evaluation,skills,13.93,11.04,-2.89,human_advantage,3,Software Developers
-Systems Analysis,skills,13.58,10.84,-2.74,human_advantage,4,Software Developers
-Problem Sensitivity,abilities,14.55,11.86,-2.69,human_advantage,5,Software Developers
-English Language,knowledge,11.87,18.29,6.42,ai_advantage,1,Software Developers
-Speech Clarity,abilities,9.75,13.76,4.01,ai_advantage,2,Software Developers
-Writing,skills,11.77,15.10,3.34,ai_advantage,3,Software Developers
-Speaking,skills,11.29,14.36,3.07,ai_advantage,4,Software Developers
-Customer and Personal Service,knowledge,14.67,16.83,2.16,ai_advantage,5,Software Developers
-Coordination,skills,15.52,9.86,-5.66,human_advantage,1,General and Operations Managers
-Monitoring,skills,16.48,11.66,-4.82,human_advantage,2,General and Operations Managers
-Administration and Management,knowledge,18.61,13.80,-4.82,human_advantage,3,General and Operations Managers
-Time Management,skills,14.05,9.57,-4.48,human_advantage,4,General and Operations Managers
-Management of Personnel Resources,skills,15.00,10.66,-4.34,human_advantage,5,General and Operations Managers
-Economics and Accounting,knowledge,11.46,17.02,5.56,ai_advantage,1,General and Operations Managers
-Instructing,skills,9.75,14.70,4.95,ai_advantage,2,General and Operations Managers
-English Language,knowledge,13.47,18.29,4.82,ai_advantage,3,General and Operations Managers
-Learning Strategies,skills,9.36,14.11,4.75,ai_advantage,4,General and Operations Managers
-Administrative,knowledge,12.68,16.98,4.31,ai_advantage,5,General and Operations Managers
-Customer and Personal Service,knowledge,17.66,16.83,-0.83,human_advantage,1,Cashiers
-Service Orientation,skills,8.99,9.85,0.86,human_advantage,2,Cashiers
-Near Vision,abilities,10.14,12.08,1.94,human_advantage,3,Cashiers
-Speech Recognition,abilities,9.00,11.73,2.73,human_advantage,4,Cashiers
-Social Perceptiveness,skills,8.25,11.04,2.79,human_advantage,5,Cashiers
-Sales and Marketing,knowledge,9.30,20.22,10.92,ai_advantage,1,Cashiers
-English Language,knowledge,9.84,18.29,8.45,ai_advantage,2,Cashiers
-Written Comprehension,abilities,9.36,15.98,6.62,ai_advantage,3,Cashiers
-Speaking,skills,7.86,14.36,6.50,ai_advantage,4,Cashiers
-Oral Expression,abilities,10.50,15.82,5.32,ai_advantage,5,Cashiers
-Customer and Personal Service,knowledge,26.65,16.83,-9.82,human_advantage,1,Customer Service Representatives
-Service Orientation,skills,14.48,9.85,-4.63,human_advantage,2,Customer Service Representatives
-Active Listening,skills,16.00,13.80,-2.20,human_advantage,3,Customer Service Representatives
-Speech Recognition,abilities,13.00,11.73,-1.27,human_advantage,4,Customer Service Representatives
-Problem Sensitivity,abilities,12.61,11.86,-0.75,human_advantage,5,Customer Service Representatives
-Sales and Marketing,knowledge,12.80,20.22,7.42,ai_advantage,1,Customer Service Representatives
-Computers and Electronics,knowledge,11.45,18.77,7.32,ai_advantage,2,Customer Service Representatives
-Writing,skills,9.00,15.10,6.10,ai_advantage,3,Customer Service Representatives
-Written Comprehension,abilities,10.55,15.98,5.44,ai_advantage,4,Customer Service Representatives
-Reading Comprehension,skills,10.55,15.71,5.16,ai_advantage,5,Customer Service Representatives
-Service Orientation,skills,14.55,9.85,-4.70,human_advantage,1,Retail Salespersons
-Persuasion,skills,15.52,10.96,-4.56,human_advantage,2,Retail Salespersons
-Negotiation,skills,13.12,10.41,-2.71,human_advantage,3,Retail Salespersons
-Speech Recognition,abilities,13.10,11.73,-1.38,human_advantage,4,Retail Salespersons
-Customer and Personal Service,knowledge,17.62,16.83,-0.79,human_advantage,5,Retail Salespersons
-Administrative,knowledge,9.63,16.98,7.35,ai_advantage,1,Retail Salespersons
-Written Expression,abilities,9.00,16.07,7.07,ai_advantage,2,Retail Salespersons
-Written Comprehension,abilities,9.00,15.98,6.98,ai_advantage,3,Retail Salespersons
-Mathematics,knowledge,9.03,15.92,6.89,ai_advantage,4,Retail Salespersons
-English Language,knowledge,11.85,18.29,6.43,ai_advantage,5,Retail Salespersons
-Rate Control,abilities,15.52,4.51,-11.01,human_advantage,1,Heavy and Tractor-Trailer Truck Drivers
-Response Orientation,abilities,15.52,4.66,-10.86,human_advantage,2,Heavy and Tractor-Trailer Truck Drivers
-Multilimb Coordination,abilities,15.52,4.72,-10.80,human_advantage,3,Heavy and Tractor-Trailer Truck Drivers
-Reaction Time,abilities,15.00,4.99,-10.01,human_advantage,4,Heavy and Tractor-Trailer Truck Drivers
-Control Precision,abilities,15.05,5.77,-9.28,human_advantage,5,Heavy and Tractor-Trailer Truck Drivers
-Written Comprehension,abilities,9.00,15.98,6.98,ai_advantage,1,Heavy and Tractor-Trailer Truck Drivers
-English Language,knowledge,11.39,18.29,6.90,ai_advantage,2,Heavy and Tractor-Trailer Truck Drivers
-Oral Expression,abilities,9.00,15.82,6.82,ai_advantage,3,Heavy and Tractor-Trailer Truck Drivers
-Reading Comprehension,skills,9.00,15.71,6.71,ai_advantage,4,Heavy and Tractor-Trailer Truck Drivers
-Law and Government,knowledge,7.90,13.90,6.00,ai_advantage,5,Heavy and Tractor-Trailer Truck Drivers
-Education and Training,knowledge,26.86,20.33,-6.53,human_advantage,1,"Elementary School Teachers, Except Special Education"
-Learning Strategies,skills,19.12,14.11,-5.02,human_advantage,2,"Elementary School Teachers, Except Special Education"
-Social Perceptiveness,skills,16.00,11.04,-4.96,human_advantage,3,"Elementary School Teachers, Except Special Education"
-Coordination,skills,14.55,9.86,-4.69,human_advantage,4,"Elementary School Teachers, Except Special Education"
-English Language,knowledge,22.74,18.29,-4.46,human_advantage,5,"Elementary School Teachers, Except Special Education"
-Computers and Electronics,knowledge,10.82,18.77,7.94,ai_advantage,1,"Elementary School Teachers, Except Special Education"
-Communications and Media,knowledge,9.42,16.08,6.65,ai_advantage,2,"Elementary School Teachers, Except Special Education"
-Mathematical Reasoning,abilities,8.64,13.36,4.72,ai_advantage,3,"Elementary School Teachers, Except Special Education"
-Administrative,knowledge,12.33,16.98,4.65,ai_advantage,4,"Elementary School Teachers, Except Special Education"
-Administration and Management,knowledge,10.33,13.80,3.47,ai_advantage,5,"Elementary School Teachers, Except Special Education"
-Trunk Strength,abilities,9.75,4.57,-5.18,human_advantage,1,Waiters and Waitresses
-Stamina,abilities,8.94,4.28,-4.66,human_advantage,2,Waiters and Waitresses
-Time Sharing,abilities,8.94,5.79,-3.15,human_advantage,3,Waiters and Waitresses
-Manual Dexterity,abilities,8.25,5.40,-2.85,human_advantage,4,Waiters and Waitresses
-Service Orientation,skills,11.64,9.85,-1.79,human_advantage,5,Waiters and Waitresses
-Sales and Marketing,knowledge,9.16,20.22,11.06,ai_advantage,1,Waiters and Waitresses
-English Language,knowledge,11.15,18.29,7.14,ai_advantage,2,Waiters and Waitresses
-Deductive Reasoning,abilities,7.14,13.34,6.20,ai_advantage,3,Waiters and Waitresses
-Speaking,skills,9.17,14.36,5.19,ai_advantage,4,Waiters and Waitresses
-Active Listening,skills,8.75,13.80,5.05,ai_advantage,5,Waiters and Waitresses
-Trunk Strength,abilities,9.75,4.57,-5.18,human_advantage,1,"Janitors and Cleaners, Except Maids and Housekeeping Cleaners"
-Static Strength,abilities,9.00,4.58,-4.42,human_advantage,2,"Janitors and Cleaners, Except Maids and Housekeeping Cleaners"
-Extent Flexibility,abilities,9.00,4.93,-4.07,human_advantage,3,"Janitors and Cleaners, Except Maids and Housekeeping Cleaners"
-Arm-Hand Steadiness,abilities,8.25,5.97,-2.28,human_advantage,4,"Janitors and Cleaners, Except Maids and Housekeeping Cleaners"
-Manual Dexterity,abilities,7.14,5.40,-1.74,human_advantage,5,"Janitors and Cleaners, Except Maids and Housekeeping Cleaners"
-Speaking,skills,6.36,14.36,8.00,ai_advantage,1,"Janitors and Cleaners, Except Maids and Housekeeping Cleaners"
-Oral Expression,abilities,8.64,15.82,7.18,ai_advantage,2,"Janitors and Cleaners, Except Maids and Housekeeping Cleaners"
-Active Listening,skills,6.75,13.80,7.05,ai_advantage,3,"Janitors and Cleaners, Except Maids and Housekeeping Cleaners"
-Oral Comprehension,abilities,8.64,15.33,6.69,ai_advantage,4,"Janitors and Cleaners, Except Maids and Housekeeping Cleaners"
-Administration and Management,knowledge,8.88,13.80,4.91,ai_advantage,5,"Janitors and Cleaners, Except Maids and Housekeeping Cleaners"
-Economics and Accounting,knowledge,27.16,17.02,-10.14,human_advantage,1,Accountants and Auditors
-Problem Sensitivity,abilities,15.45,11.86,-3.59,human_advantage,2,Accountants and Auditors
-Deductive Reasoning,abilities,16.88,13.34,-3.54,human_advantage,3,Accountants and Auditors
-Inductive Reasoning,abilities,16.43,12.99,-3.43,human_advantage,4,Accountants and Auditors
-Near Vision,abilities,15.45,12.08,-3.37,human_advantage,5,Accountants and Auditors
-Computers and Electronics,knowledge,12.10,18.77,6.67,ai_advantage,1,Accountants and Auditors
-Administrative,knowledge,13.85,16.98,3.14,ai_advantage,2,Accountants and Auditors
-Writing,skills,12.67,15.10,2.43,ai_advantage,3,Accountants and Auditors
-Speech Clarity,abilities,11.42,13.76,2.33,ai_advantage,4,Accountants and Auditors
-Active Learning,skills,10.92,13.11,2.19,ai_advantage,5,Accountants and Auditors
-Administrative,knowledge,26.22,16.98,-9.23,human_advantage,1,"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive"
-Near Vision,abilities,15.05,12.08,-2.98,human_advantage,2,"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive"
-Speech Recognition,abilities,14.06,11.73,-2.34,human_advantage,3,"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive"
-Active Listening,skills,15.00,13.80,-1.20,human_advantage,4,"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive"
-Service Orientation,skills,10.92,9.85,-1.07,human_advantage,5,"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive"
-Deductive Reasoning,abilities,8.64,13.34,4.70,ai_advantage,1,"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive"
-Inductive Reasoning,abilities,8.64,12.99,4.35,ai_advantage,2,"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive"
-Judgment and Decision Making,skills,7.86,11.85,3.99,ai_advantage,3,"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive"
-Administration and Management,knowledge,10.80,13.80,2.99,ai_advantage,4,"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive"
-Critical Thinking,skills,10.86,13.42,2.56,ai_advantage,5,"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive"
-Law and Government,knowledge,29.53,13.90,-15.63,human_advantage,1,Lawyers
-Critical Thinking,skills,22.50,13.42,-9.08,human_advantage,2,Lawyers
-Persuasion,skills,20.00,10.96,-9.04,human_advantage,3,Lawyers
-Active Listening,skills,22.50,13.80,-8.70,human_advantage,4,Lawyers
-Oral Expression,abilities,24.40,15.82,-8.58,human_advantage,5,Lawyers
-Computers and Electronics,knowledge,10.68,18.77,8.08,ai_advantage,1,Lawyers
-Communications and Media,knowledge,10.33,16.08,5.75,ai_advantage,2,Lawyers
-Administrative,knowledge,11.78,16.98,5.21,ai_advantage,3,Lawyers
-Instructing,skills,9.73,14.70,4.96,ai_advantage,4,Lawyers
-Learning Strategies,skills,9.73,14.11,4.37,ai_advantage,5,Lawyers
-Design,knowledge,27.26,16.28,-10.98,human_advantage,1,Graphic Designers
-Originality,abilities,16.00,11.29,-4.71,human_advantage,2,Graphic Designers
-Visual Color Discrimination,abilities,12.19,7.60,-4.59,human_advantage,3,Graphic Designers
-Fluency of Ideas,abilities,15.52,11.31,-4.21,human_advantage,4,Graphic Designers
-Near Vision,abilities,15.99,12.08,-3.91,human_advantage,5,Graphic Designers
-Writing,skills,9.75,15.10,5.35,ai_advantage,1,Graphic Designers
-Sales and Marketing,knowledge,15.15,20.22,5.07,ai_advantage,2,Graphic Designers
-Reading Comprehension,skills,11.70,15.71,4.01,ai_advantage,3,Graphic Designers
-Written Expression,abilities,12.67,16.07,3.40,ai_advantage,4,Graphic Designers
-Written Comprehension,abilities,12.67,15.98,3.31,ai_advantage,5,Graphic Designers
-Writing,skills,24.40,15.10,-9.30,human_advantage,1,Technical Writers
-English Language,knowledge,25.93,18.29,-7.64,human_advantage,2,Technical Writers
-Written Expression,abilities,21.76,16.07,-5.69,human_advantage,3,Technical Writers
-Near Vision,abilities,16.48,12.08,-4.40,human_advantage,4,Technical Writers
-Reading Comprehension,skills,20.11,15.71,-4.40,human_advantage,5,Technical Writers
-Education and Training,knowledge,13.05,20.33,7.28,ai_advantage,1,Technical Writers
-Speech Clarity,abilities,10.14,13.76,3.62,ai_advantage,2,Technical Writers
-Monitoring,skills,9.00,11.66,2.66,ai_advantage,3,Technical Writers
-Communications and Media,knowledge,13.55,16.08,2.52,ai_advantage,4,Technical Writers
-Judgment and Decision Making,skills,9.36,11.85,2.49,ai_advantage,5,Technical Writers
-Computers and Electronics,knowledge,25.18,18.77,-6.42,human_advantage,1,Web Developers
-Operations Analysis,skills,14.48,10.00,-4.48,human_advantage,2,Web Developers
-Near Vision,abilities,14.48,12.08,-2.40,human_advantage,3,Web Developers
-Selective Attention,abilities,10.14,7.78,-2.36,human_advantage,4,Web Developers
-Programming,skills,17.51,15.16,-2.35,human_advantage,5,Web Developers
-Communications and Media,knowledge,10.02,16.08,6.06,ai_advantage,1,Web Developers
-Written Expression,abilities,11.29,16.07,4.77,ai_advantage,2,Web Developers
-Mathematical Reasoning,abilities,8.99,13.36,4.37,ai_advantage,3,Web Developers
-Writing,skills,10.92,15.10,4.18,ai_advantage,4,Web Developers
-English Language,knowledge,14.16,18.29,4.13,ai_advantage,5,Web Developers
-Law and Government,knowledge,23.28,13.90,-9.38,human_advantage,1,Paralegals and Legal Assistants
-Administrative,knowledge,22.30,16.98,-5.31,human_advantage,2,Paralegals and Legal Assistants
-Near Vision,abilities,17.32,12.08,-5.25,human_advantage,3,Paralegals and Legal Assistants
-English Language,knowledge,21.57,18.29,-3.28,human_advantage,4,Paralegals and Legal Assistants
-Speech Recognition,abilities,14.06,11.73,-2.34,human_advantage,5,Paralegals and Legal Assistants
-Active Learning,skills,9.36,13.11,3.75,ai_advantage,1,Paralegals and Legal Assistants
-Deductive Reasoning,abilities,9.75,13.34,3.59,ai_advantage,2,Paralegals and Legal Assistants
-Inductive Reasoning,abilities,9.75,12.99,3.24,ai_advantage,3,Paralegals and Legal Assistants
-Complex Problem Solving,skills,9.00,11.96,2.96,ai_advantage,4,Paralegals and Legal Assistants
-Judgment and Decision Making,skills,9.00,11.85,2.85,ai_advantage,5,Paralegals and Legal Assistants
-Personnel and Human Resources,knowledge,26.20,15.40,-10.79,human_advantage,1,Human Resources Specialists
-Administrative,knowledge,20.76,16.98,-3.78,human_advantage,2,Human Resources Specialists
-Speech Recognition,abilities,15.05,11.73,-3.33,human_advantage,3,Human Resources Specialists
-Problem Sensitivity,abilities,14.55,11.86,-2.69,human_advantage,4,Human Resources Specialists
-Active Listening,skills,16.00,13.80,-2.20,human_advantage,5,Human Resources Specialists
-Education and Training,knowledge,12.34,20.33,7.99,ai_advantage,1,Human Resources Specialists
-Instructing,skills,9.73,14.70,4.96,ai_advantage,2,Human Resources Specialists
-English Language,knowledge,13.79,18.29,4.50,ai_advantage,3,Human Resources Specialists
-Learning Strategies,skills,9.75,14.11,4.36,ai_advantage,4,Human Resources Specialists
-Law and Government,knowledge,9.77,13.90,4.13,ai_advantage,5,Human Resources Specialists
-Customer and Personal Service,knowledge,23.23,16.83,-6.40,human_advantage,1,Market Research Analysts and Marketing Specialists
-Mathematics,knowledge,20.73,15.92,-4.80,human_advantage,2,Market Research Analysts and Marketing Specialists
-Fluency of Ideas,abilities,16.00,11.31,-4.69,human_advantage,3,Market Research Analysts and Marketing Specialists
-English Language,knowledge,22.88,18.29,-4.59,human_advantage,4,Market Research Analysts and Marketing Specialists
-Inductive Reasoning,abilities,17.51,12.99,-4.52,human_advantage,5,Market Research Analysts and Marketing Specialists
-Economics and Accounting,knowledge,10.75,17.02,6.26,ai_advantage,1,Market Research Analysts and Marketing Specialists
-Learning Strategies,skills,9.00,14.11,5.11,ai_advantage,2,Market Research Analysts and Marketing Specialists
-Computers and Electronics,knowledge,14.42,18.77,4.35,ai_advantage,3,Market Research Analysts and Marketing Specialists
-Psychology,knowledge,11.73,15.68,3.95,ai_advantage,4,Market Research Analysts and Marketing Specialists
-Sociology and Anthropology,knowledge,13.85,16.16,2.31,ai_advantage,5,Market Research Analysts and Marketing Specialists
-Communications and Media,knowledge,25.45,16.08,-9.37,human_advantage,1,Editors
-Reading Comprehension,skills,24.99,15.71,-9.28,human_advantage,2,Editors
-English Language,knowledge,26.54,18.29,-8.26,human_advantage,3,Editors
-Written Comprehension,abilities,23.81,15.98,-7.83,human_advantage,4,Editors
-Written Expression,abilities,23.10,16.07,-7.03,human_advantage,5,Editors
-Computers and Electronics,knowledge,10.86,18.77,7.90,ai_advantage,1,Editors
-Education and Training,knowledge,13.00,20.33,7.33,ai_advantage,2,Editors
-Customer and Personal Service,knowledge,10.73,16.83,6.10,ai_advantage,3,Editors
-Instructing,skills,9.36,14.70,5.34,ai_advantage,4,Editors
-Administrative,knowledge,12.88,16.98,4.11,ai_advantage,5,Editors
-Speech Recognition,abilities,18.43,11.73,-6.70,human_advantage,1,Interpreters and Translators
-English Language,knowledge,23.67,18.29,-5.38,human_advantage,2,Interpreters and Translators
-Auditory Attention,abilities,9.36,4.81,-4.55,human_advantage,3,Interpreters and Translators
-Oral Expression,abilities,20.19,15.82,-4.36,human_advantage,4,Interpreters and Translators
-Speech Clarity,abilities,17.93,13.76,-4.17,human_advantage,5,Interpreters and Translators
-Education and Training,knowledge,13.22,20.33,7.11,ai_advantage,1,Interpreters and Translators
-Instructing,skills,9.00,14.70,5.70,ai_advantage,2,Interpreters and Translators
-Law and Government,knowledge,8.61,13.90,5.29,ai_advantage,3,Interpreters and Translators
-Learning Strategies,skills,9.36,14.11,4.75,ai_advantage,4,Interpreters and Translators
-Foreign Language,knowledge,20.07,24.25,4.18,ai_advantage,5,Interpreters and Translators
-Computers and Electronics,knowledge,27.78,18.77,-9.01,human_advantage,1,Computer Systems Analysts
-Troubleshooting,skills,12.11,7.58,-4.53,human_advantage,2,Computer Systems Analysts
-Systems Evaluation,skills,15.45,11.04,-4.41,human_advantage,3,Computer Systems Analysts
-Information Ordering,abilities,16.00,11.66,-4.34,human_advantage,4,Computer Systems Analysts
-Systems Analysis,skills,15.00,10.84,-4.16,human_advantage,5,Computer Systems Analysts
-Learning Strategies,skills,9.36,14.11,4.75,ai_advantage,1,Computer Systems Analysts
-English Language,knowledge,14.37,18.29,3.92,ai_advantage,2,Computer Systems Analysts
-Mathematics,knowledge,12.22,15.92,3.70,ai_advantage,3,Computer Systems Analysts
-Mathematical Reasoning,abilities,10.50,13.36,2.86,ai_advantage,4,Computer Systems Analysts
-Speech Clarity,abilities,10.92,13.76,2.84,ai_advantage,5,Computer Systems Analysts
-Administration and Management,knowledge,25.74,13.80,-11.94,human_advantage,1,Medical and Health Services Managers
-Customer and Personal Service,knowledge,23.29,16.83,-6.46,human_advantage,2,Medical and Health Services Managers
-Time Management,skills,16.00,9.57,-6.43,human_advantage,3,Medical and Health Services Managers
-Coordination,skills,15.99,9.86,-6.12,human_advantage,4,Medical and Health Services Managers
-Management of Personnel Resources,skills,16.48,10.66,-5.82,human_advantage,5,Medical and Health Services Managers
-Economics and Accounting,knowledge,12.74,17.02,4.28,ai_advantage,1,Medical and Health Services Managers
-Psychology,knowledge,12.17,15.68,3.51,ai_advantage,2,Medical and Health Services Managers
-Medicine and Dentistry,knowledge,10.88,14.21,3.33,ai_advantage,3,Medical and Health Services Managers
-Law and Government,knowledge,10.92,13.90,2.97,ai_advantage,4,Medical and Health Services Managers
-Learning Strategies,skills,12.61,14.11,1.50,ai_advantage,5,Medical and Health Services Managers
-Static Strength,abilities,15.00,4.58,-10.42,human_advantage,1,Construction Laborers
-Manual Dexterity,abilities,14.55,5.40,-9.15,human_advantage,2,Construction Laborers
-Trunk Strength,abilities,12.19,4.57,-7.62,human_advantage,3,Construction Laborers
-Multilimb Coordination,abilities,12.24,4.72,-7.52,human_advantage,4,Construction Laborers
-Building and Construction,knowledge,18.87,11.53,-7.33,human_advantage,5,Construction Laborers
-Oral Expression,abilities,10.14,15.82,5.68,ai_advantage,1,Construction Laborers
-Deductive Reasoning,abilities,7.86,13.34,5.48,ai_advantage,2,Construction Laborers
-Speech Clarity,abilities,8.64,13.76,5.12,ai_advantage,3,Construction Laborers
-Speaking,skills,9.36,14.36,5.00,ai_advantage,4,Construction Laborers
-Active Listening,skills,9.36,13.80,4.44,ai_advantage,5,Construction Laborers
-Customer and Personal Service,knowledge,26.52,16.83,-9.69,human_advantage,1,"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products"
-Sales and Marketing,knowledge,25.83,20.22,-5.61,human_advantage,2,"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products"
-Negotiation,skills,14.55,10.41,-4.14,human_advantage,3,"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products"
-Persuasion,skills,15.00,10.96,-4.04,human_advantage,4,"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products"
-Speech Recognition,abilities,15.00,11.73,-3.27,human_advantage,5,"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products"
-Computers and Electronics,knowledge,11.06,18.77,7.70,ai_advantage,1,"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products"
-Writing,skills,10.56,15.10,4.54,ai_advantage,2,"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products"
-Inductive Reasoning,abilities,9.36,12.99,3.63,ai_advantage,3,"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products"
-Deductive Reasoning,abilities,10.14,13.34,3.20,ai_advantage,4,"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products"
-Reading Comprehension,skills,12.67,15.71,3.03,ai_advantage,5,"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products"
-Computers and Electronics,knowledge,33.16,18.77,-14.40,human_advantage,1,Network and Computer Systems Administrators
-Troubleshooting,skills,15.00,7.58,-7.42,human_advantage,2,Network and Computer Systems Administrators
-Operations Monitoring,skills,12.67,7.23,-5.44,human_advantage,3,Network and Computer Systems Administrators
-Operation and Control,skills,10.86,5.83,-5.03,human_advantage,4,Network and Computer Systems Administrators
-Systems Evaluation,skills,15.45,11.04,-4.41,human_advantage,5,Network and Computer Systems Administrators
-Administrative,knowledge,11.11,16.98,5.87,ai_advantage,1,Network and Computer Systems Administrators
-Speech Clarity,abilities,9.36,13.76,4.40,ai_advantage,2,Network and Computer Systems Administrators
-Mathematical Reasoning,abilities,9.36,13.36,4.00,ai_advantage,3,Network and Computer Systems Administrators
-Mathematics,knowledge,12.03,15.92,3.90,ai_advantage,4,Network and Computer Systems Administrators
-Written Expression,abilities,12.19,16.07,3.88,ai_advantage,5,Network and Computer Systems Administrators
+Psychology,knowledge,27.85,14.54,-13.31,human_advantage,1,Registered Nurses
+Problem Sensitivity,abilities,20.60,10.79,-9.81,human_advantage,2,Registered Nurses
+Customer and Personal Service,knowledge,24.11,14.88,-9.23,human_advantage,3,Registered Nurses
+Social Perceptiveness,skills,18.05,10.16,-7.88,human_advantage,4,Registered Nurses
+Inductive Reasoning,abilities,19.52,12.05,-7.47,human_advantage,5,Registered Nurses
+Biology,knowledge,7.79,16.27,8.48,ai_advantage,1,Registered Nurses
+Education and Training,knowledge,10.78,18.79,8.01,ai_advantage,2,Registered Nurses
+Therapy and Counseling,knowledge,12.42,15.97,3.56,ai_advantage,3,Registered Nurses
+Mathematical Reasoning,abilities,9.00,12.48,3.48,ai_advantage,4,Registered Nurses
+Administration and Management,knowledge,9.51,12.47,2.97,ai_advantage,5,Registered Nurses
+Computers and Electronics,knowledge,29.59,16.82,-12.77,human_advantage,1,Software Developers
+Technology Design,skills,12.24,8.21,-4.03,human_advantage,2,Software Developers
+Problem Sensitivity,abilities,14.55,10.79,-3.76,human_advantage,3,Software Developers
+Systems Evaluation,skills,13.93,10.22,-3.71,human_advantage,4,Software Developers
+Information Ordering,abilities,14.05,10.43,-3.62,human_advantage,5,Software Developers
+English Language,knowledge,11.87,16.99,5.12,ai_advantage,1,Software Developers
+Speech Clarity,abilities,9.75,12.75,3.00,ai_advantage,2,Software Developers
+Speaking,skills,11.29,13.74,2.44,ai_advantage,3,Software Developers
+Writing,skills,11.77,13.86,2.09,ai_advantage,4,Software Developers
+Written Expression,abilities,14.00,14.74,0.74,ai_advantage,5,Software Developers
+Coordination,skills,15.52,8.69,-6.83,human_advantage,1,General and Operations Managers
+Administration and Management,knowledge,18.61,12.47,-6.14,human_advantage,2,General and Operations Managers
+Monitoring,skills,16.48,10.53,-5.95,human_advantage,3,General and Operations Managers
+Management of Personnel Resources,skills,15.00,9.14,-5.86,human_advantage,4,General and Operations Managers
+Production and Processing,knowledge,15.10,9.51,-5.59,human_advantage,5,General and Operations Managers
+Learning Strategies,skills,9.36,13.46,4.10,ai_advantage,1,General and Operations Managers
+Instructing,skills,9.75,13.59,3.84,ai_advantage,2,General and Operations Managers
+English Language,knowledge,13.47,16.99,3.52,ai_advantage,3,General and Operations Managers
+Economics and Accounting,knowledge,11.46,14.47,3.02,ai_advantage,4,General and Operations Managers
+Administrative,knowledge,12.68,13.46,0.78,ai_advantage,5,General and Operations Managers
+Customer and Personal Service,knowledge,17.66,14.88,-2.77,human_advantage,1,Cashiers
+Service Orientation,skills,8.99,8.71,-0.27,human_advantage,2,Cashiers
+Near Vision,abilities,10.14,10.85,0.71,human_advantage,3,Cashiers
+Speech Recognition,abilities,9.00,10.68,1.68,human_advantage,4,Cashiers
+Social Perceptiveness,skills,8.25,10.16,1.91,human_advantage,5,Cashiers
+Sales and Marketing,knowledge,9.30,19.48,10.18,ai_advantage,1,Cashiers
+English Language,knowledge,9.84,16.99,7.15,ai_advantage,2,Cashiers
+Speaking,skills,7.86,13.74,5.88,ai_advantage,3,Cashiers
+Written Comprehension,abilities,9.36,14.93,5.57,ai_advantage,4,Cashiers
+Active Listening,skills,8.64,13.05,4.41,ai_advantage,5,Cashiers
+Customer and Personal Service,knowledge,26.65,14.88,-11.77,human_advantage,1,Customer Service Representatives
+Service Orientation,skills,14.48,8.71,-5.77,human_advantage,2,Customer Service Representatives
+Active Listening,skills,16.00,13.05,-2.95,human_advantage,3,Customer Service Representatives
+Speech Recognition,abilities,13.00,10.68,-2.32,human_advantage,4,Customer Service Representatives
+Problem Sensitivity,abilities,12.61,10.79,-1.82,human_advantage,5,Customer Service Representatives
+Sales and Marketing,knowledge,12.80,19.48,6.68,ai_advantage,1,Customer Service Representatives
+Computers and Electronics,knowledge,11.45,16.82,5.37,ai_advantage,2,Customer Service Representatives
+Writing,skills,9.00,13.86,4.86,ai_advantage,3,Customer Service Representatives
+Written Comprehension,abilities,10.55,14.93,4.38,ai_advantage,4,Customer Service Representatives
+Reading Comprehension,skills,10.55,14.64,4.09,ai_advantage,5,Customer Service Representatives
+Service Orientation,skills,14.55,8.71,-5.84,human_advantage,1,Retail Salespersons
+Persuasion,skills,15.52,9.91,-5.61,human_advantage,2,Retail Salespersons
+Negotiation,skills,13.12,9.25,-3.87,human_advantage,3,Retail Salespersons
+Customer and Personal Service,knowledge,17.62,14.88,-2.74,human_advantage,4,Retail Salespersons
+Speech Recognition,abilities,13.10,10.68,-2.43,human_advantage,5,Retail Salespersons
+Written Comprehension,abilities,9.00,14.93,5.93,ai_advantage,1,Retail Salespersons
+Written Expression,abilities,9.00,14.74,5.74,ai_advantage,2,Retail Salespersons
+Mathematics,knowledge,9.03,14.52,5.49,ai_advantage,3,Retail Salespersons
+Reading Comprehension,skills,9.36,14.64,5.28,ai_advantage,4,Retail Salespersons
+English Language,knowledge,11.85,16.99,5.13,ai_advantage,5,Retail Salespersons
+Rate Control,abilities,15.52,2.85,-12.67,human_advantage,1,Heavy and Tractor-Trailer Truck Drivers
+Response Orientation,abilities,15.52,3.33,-12.19,human_advantage,2,Heavy and Tractor-Trailer Truck Drivers
+Multilimb Coordination,abilities,15.52,3.67,-11.85,human_advantage,3,Heavy and Tractor-Trailer Truck Drivers
+Reaction Time,abilities,15.00,3.58,-11.42,human_advantage,4,Heavy and Tractor-Trailer Truck Drivers
+Control Precision,abilities,15.05,4.40,-10.65,human_advantage,5,Heavy and Tractor-Trailer Truck Drivers
+Written Comprehension,abilities,9.00,14.93,5.93,ai_advantage,1,Heavy and Tractor-Trailer Truck Drivers
+Oral Expression,abilities,9.00,14.80,5.80,ai_advantage,2,Heavy and Tractor-Trailer Truck Drivers
+Reading Comprehension,skills,9.00,14.64,5.64,ai_advantage,3,Heavy and Tractor-Trailer Truck Drivers
+English Language,knowledge,11.39,16.99,5.60,ai_advantage,4,Heavy and Tractor-Trailer Truck Drivers
+Speaking,skills,8.64,13.74,5.10,ai_advantage,5,Heavy and Tractor-Trailer Truck Drivers
+Education and Training,knowledge,26.86,18.79,-8.07,human_advantage,1,"Elementary School Teachers, Except Special Education"
+Coordination,skills,14.55,8.69,-5.86,human_advantage,2,"Elementary School Teachers, Except Special Education"
+Social Perceptiveness,skills,16.00,10.16,-5.84,human_advantage,3,"Elementary School Teachers, Except Special Education"
+English Language,knowledge,22.74,16.99,-5.76,human_advantage,4,"Elementary School Teachers, Except Special Education"
+Learning Strategies,skills,19.12,13.46,-5.66,human_advantage,5,"Elementary School Teachers, Except Special Education"
+Computers and Electronics,knowledge,10.82,16.82,6.00,ai_advantage,1,"Elementary School Teachers, Except Special Education"
+Communications and Media,knowledge,9.42,14.98,5.56,ai_advantage,2,"Elementary School Teachers, Except Special Education"
+Mathematical Reasoning,abilities,8.64,12.48,3.84,ai_advantage,3,"Elementary School Teachers, Except Special Education"
+Therapy and Counseling,knowledge,13.21,15.97,2.76,ai_advantage,4,"Elementary School Teachers, Except Special Education"
+Administration and Management,knowledge,10.33,12.47,2.14,ai_advantage,5,"Elementary School Teachers, Except Special Education"
+Trunk Strength,abilities,9.75,4.17,-5.58,human_advantage,1,Waiters and Waitresses
+Stamina,abilities,8.94,3.89,-5.04,human_advantage,2,Waiters and Waitresses
+Time Sharing,abilities,8.94,5.13,-3.81,human_advantage,3,Waiters and Waitresses
+Manual Dexterity,abilities,8.25,4.64,-3.61,human_advantage,4,Waiters and Waitresses
+Service Orientation,skills,11.64,8.71,-2.93,human_advantage,5,Waiters and Waitresses
+Sales and Marketing,knowledge,9.16,19.48,10.32,ai_advantage,1,Waiters and Waitresses
+English Language,knowledge,11.15,16.99,5.84,ai_advantage,2,Waiters and Waitresses
+Deductive Reasoning,abilities,7.14,12.32,5.18,ai_advantage,3,Waiters and Waitresses
+Speaking,skills,9.17,13.74,4.57,ai_advantage,4,Waiters and Waitresses
+Active Listening,skills,8.75,13.05,4.30,ai_advantage,5,Waiters and Waitresses
+Trunk Strength,abilities,9.75,4.17,-5.58,human_advantage,1,"Janitors and Cleaners, Except Maids and Housekeeping Cleaners"
+Static Strength,abilities,9.00,3.74,-5.26,human_advantage,2,"Janitors and Cleaners, Except Maids and Housekeeping Cleaners"
+Extent Flexibility,abilities,9.00,4.37,-4.63,human_advantage,3,"Janitors and Cleaners, Except Maids and Housekeeping Cleaners"
+Arm-Hand Steadiness,abilities,8.25,4.95,-3.30,human_advantage,4,"Janitors and Cleaners, Except Maids and Housekeeping Cleaners"
+Manual Dexterity,abilities,7.14,4.64,-2.50,human_advantage,5,"Janitors and Cleaners, Except Maids and Housekeeping Cleaners"
+Speaking,skills,6.36,13.74,7.38,ai_advantage,1,"Janitors and Cleaners, Except Maids and Housekeeping Cleaners"
+Active Listening,skills,6.75,13.05,6.30,ai_advantage,2,"Janitors and Cleaners, Except Maids and Housekeeping Cleaners"
+Oral Expression,abilities,8.64,14.80,6.16,ai_advantage,3,"Janitors and Cleaners, Except Maids and Housekeeping Cleaners"
+Oral Comprehension,abilities,8.64,14.34,5.70,ai_advantage,4,"Janitors and Cleaners, Except Maids and Housekeeping Cleaners"
+Administration and Management,knowledge,8.88,12.47,3.59,ai_advantage,5,"Janitors and Cleaners, Except Maids and Housekeeping Cleaners"
+Economics and Accounting,knowledge,27.16,14.47,-12.68,human_advantage,1,Accountants and Auditors
+Mathematics,knowledge,19.29,14.52,-4.76,human_advantage,2,Accountants and Auditors
+Problem Sensitivity,abilities,15.45,10.79,-4.66,human_advantage,3,Accountants and Auditors
+Near Vision,abilities,15.45,10.85,-4.60,human_advantage,4,Accountants and Auditors
+Deductive Reasoning,abilities,16.88,12.32,-4.56,human_advantage,5,Accountants and Auditors
+Computers and Electronics,knowledge,12.10,16.82,4.72,ai_advantage,1,Accountants and Auditors
+Active Learning,skills,10.92,12.35,1.43,ai_advantage,2,Accountants and Auditors
+Speech Clarity,abilities,11.42,12.75,1.32,ai_advantage,3,Accountants and Auditors
+Writing,skills,12.67,13.86,1.19,ai_advantage,4,Accountants and Auditors
+Law and Government,knowledge,11.95,12.41,0.45,ai_advantage,5,Accountants and Auditors
+Administrative,knowledge,26.22,13.46,-12.76,human_advantage,1,"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive"
+Near Vision,abilities,15.05,10.85,-4.20,human_advantage,2,"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive"
+Speech Recognition,abilities,14.06,10.68,-3.38,human_advantage,3,"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive"
+Service Orientation,skills,10.92,8.71,-2.21,human_advantage,4,"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive"
+Active Listening,skills,15.00,13.05,-1.95,human_advantage,5,"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive"
+Deductive Reasoning,abilities,8.64,12.32,3.68,ai_advantage,1,"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive"
+Inductive Reasoning,abilities,8.64,12.05,3.41,ai_advantage,2,"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive"
+Judgment and Decision Making,skills,7.86,10.85,2.99,ai_advantage,3,"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive"
+Administration and Management,knowledge,10.80,12.47,1.67,ai_advantage,4,"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive"
+Critical Thinking,skills,10.86,12.37,1.51,ai_advantage,5,"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive"
+Law and Government,knowledge,29.53,12.41,-17.12,human_advantage,1,Lawyers
+Critical Thinking,skills,22.50,12.37,-10.13,human_advantage,2,Lawyers
+Persuasion,skills,20.00,9.91,-10.09,human_advantage,3,Lawyers
+Oral Expression,abilities,24.40,14.80,-9.60,human_advantage,4,Lawyers
+Active Listening,skills,22.50,13.05,-9.45,human_advantage,5,Lawyers
+Computers and Electronics,knowledge,10.68,16.82,6.14,ai_advantage,1,Lawyers
+Communications and Media,knowledge,10.33,14.98,4.66,ai_advantage,2,Lawyers
+Instructing,skills,9.73,13.59,3.86,ai_advantage,3,Lawyers
+Learning Strategies,skills,9.73,13.46,3.73,ai_advantage,4,Lawyers
+Administrative,knowledge,11.78,13.46,1.68,ai_advantage,5,Lawyers
+Design,knowledge,27.26,15.00,-12.26,human_advantage,1,Graphic Designers
+Originality,abilities,16.00,10.47,-5.53,human_advantage,2,Graphic Designers
+Visual Color Discrimination,abilities,12.19,6.80,-5.38,human_advantage,3,Graphic Designers
+Near Vision,abilities,15.99,10.85,-5.13,human_advantage,4,Graphic Designers
+Fluency of Ideas,abilities,15.52,10.54,-4.98,human_advantage,5,Graphic Designers
+Sales and Marketing,knowledge,15.15,19.48,4.33,ai_advantage,1,Graphic Designers
+Writing,skills,9.75,13.86,4.11,ai_advantage,2,Graphic Designers
+Reading Comprehension,skills,11.70,14.64,2.94,ai_advantage,3,Graphic Designers
+Inductive Reasoning,abilities,9.73,12.05,2.32,ai_advantage,4,Graphic Designers
+Written Comprehension,abilities,12.67,14.93,2.25,ai_advantage,5,Graphic Designers
+Writing,skills,24.40,13.86,-10.54,human_advantage,1,Technical Writers
+English Language,knowledge,25.93,16.99,-8.94,human_advantage,2,Technical Writers
+Written Expression,abilities,21.76,14.74,-7.02,human_advantage,3,Technical Writers
+Administrative,knowledge,19.36,13.46,-5.90,human_advantage,4,Technical Writers
+Near Vision,abilities,16.48,10.85,-5.63,human_advantage,5,Technical Writers
+Education and Training,knowledge,13.05,18.79,5.74,ai_advantage,1,Technical Writers
+Speech Clarity,abilities,10.14,12.75,2.61,ai_advantage,2,Technical Writers
+Monitoring,skills,9.00,10.53,1.53,ai_advantage,3,Technical Writers
+Inductive Reasoning,abilities,10.55,12.05,1.51,ai_advantage,4,Technical Writers
+Judgment and Decision Making,skills,9.36,10.85,1.49,ai_advantage,5,Technical Writers
+Computers and Electronics,knowledge,25.18,16.82,-8.36,human_advantage,1,Web Developers
+Operations Analysis,skills,14.48,9.32,-5.16,human_advantage,2,Web Developers
+Near Vision,abilities,14.48,10.85,-3.63,human_advantage,3,Web Developers
+Programming,skills,17.51,14.22,-3.29,human_advantage,4,Web Developers
+Deductive Reasoning,abilities,15.52,12.32,-3.20,human_advantage,5,Web Developers
+Communications and Media,knowledge,10.02,14.98,4.97,ai_advantage,1,Web Developers
+Mathematical Reasoning,abilities,8.99,12.48,3.50,ai_advantage,2,Web Developers
+Written Expression,abilities,11.29,14.74,3.45,ai_advantage,3,Web Developers
+Speaking,skills,10.56,13.74,3.18,ai_advantage,4,Web Developers
+Writing,skills,10.92,13.86,2.94,ai_advantage,5,Web Developers
+Law and Government,knowledge,23.28,12.41,-10.87,human_advantage,1,Paralegals and Legal Assistants
+Administrative,knowledge,22.30,13.46,-8.84,human_advantage,2,Paralegals and Legal Assistants
+Near Vision,abilities,17.32,10.85,-6.47,human_advantage,3,Paralegals and Legal Assistants
+English Language,knowledge,21.57,16.99,-4.58,human_advantage,4,Paralegals and Legal Assistants
+Speech Recognition,abilities,14.06,10.68,-3.38,human_advantage,5,Paralegals and Legal Assistants
+Active Learning,skills,9.36,12.35,2.99,ai_advantage,1,Paralegals and Legal Assistants
+Deductive Reasoning,abilities,9.75,12.32,2.57,ai_advantage,2,Paralegals and Legal Assistants
+Inductive Reasoning,abilities,9.75,12.05,2.30,ai_advantage,3,Paralegals and Legal Assistants
+Complex Problem Solving,skills,9.00,11.05,2.05,ai_advantage,4,Paralegals and Legal Assistants
+Judgment and Decision Making,skills,9.00,10.85,1.85,ai_advantage,5,Paralegals and Legal Assistants
+Personnel and Human Resources,knowledge,26.20,12.95,-13.25,human_advantage,1,Human Resources Specialists
+Administrative,knowledge,20.76,13.46,-7.30,human_advantage,2,Human Resources Specialists
+Speech Recognition,abilities,15.05,10.68,-4.38,human_advantage,3,Human Resources Specialists
+Problem Sensitivity,abilities,14.55,10.79,-3.76,human_advantage,4,Human Resources Specialists
+Deductive Reasoning,abilities,15.52,12.32,-3.20,human_advantage,5,Human Resources Specialists
+Education and Training,knowledge,12.34,18.79,6.45,ai_advantage,1,Human Resources Specialists
+Instructing,skills,9.73,13.59,3.86,ai_advantage,2,Human Resources Specialists
+Learning Strategies,skills,9.75,13.46,3.71,ai_advantage,3,Human Resources Specialists
+English Language,knowledge,13.79,16.99,3.20,ai_advantage,4,Human Resources Specialists
+Law and Government,knowledge,9.77,12.41,2.64,ai_advantage,5,Human Resources Specialists
+Customer and Personal Service,knowledge,23.23,14.88,-8.34,human_advantage,1,Market Research Analysts and Marketing Specialists
+Mathematics,knowledge,20.73,14.52,-6.20,human_advantage,2,Market Research Analysts and Marketing Specialists
+English Language,knowledge,22.88,16.99,-5.89,human_advantage,3,Market Research Analysts and Marketing Specialists
+Inductive Reasoning,abilities,17.51,12.05,-5.46,human_advantage,4,Market Research Analysts and Marketing Specialists
+Fluency of Ideas,abilities,16.00,10.54,-5.46,human_advantage,5,Market Research Analysts and Marketing Specialists
+Learning Strategies,skills,9.00,13.46,4.46,ai_advantage,1,Market Research Analysts and Marketing Specialists
+Economics and Accounting,knowledge,10.75,14.47,3.72,ai_advantage,2,Market Research Analysts and Marketing Specialists
+Psychology,knowledge,11.73,14.54,2.81,ai_advantage,3,Market Research Analysts and Marketing Specialists
+Computers and Electronics,knowledge,14.42,16.82,2.40,ai_advantage,4,Market Research Analysts and Marketing Specialists
+Sociology and Anthropology,knowledge,13.85,15.37,1.52,ai_advantage,5,Market Research Analysts and Marketing Specialists
+Communications and Media,knowledge,25.45,14.98,-10.46,human_advantage,1,Editors
+Reading Comprehension,skills,24.99,14.64,-10.35,human_advantage,2,Editors
+English Language,knowledge,26.54,16.99,-9.56,human_advantage,3,Editors
+Written Comprehension,abilities,23.81,14.93,-8.89,human_advantage,4,Editors
+Written Expression,abilities,23.10,14.74,-8.36,human_advantage,5,Editors
+Computers and Electronics,knowledge,10.86,16.82,5.96,ai_advantage,1,Editors
+Education and Training,knowledge,13.00,18.79,5.79,ai_advantage,2,Editors
+Instructing,skills,9.36,13.59,4.23,ai_advantage,3,Editors
+Customer and Personal Service,knowledge,10.73,14.88,4.15,ai_advantage,4,Editors
+Complex Problem Solving,skills,9.73,11.05,1.32,ai_advantage,5,Editors
+Speech Recognition,abilities,18.43,10.68,-7.75,human_advantage,1,Interpreters and Translators
+English Language,knowledge,23.67,16.99,-6.68,human_advantage,2,Interpreters and Translators
+Oral Expression,abilities,20.19,14.80,-5.39,human_advantage,3,Interpreters and Translators
+Auditory Attention,abilities,9.36,4.15,-5.21,human_advantage,4,Interpreters and Translators
+Speech Clarity,abilities,17.93,12.75,-5.18,human_advantage,5,Interpreters and Translators
+Education and Training,knowledge,13.22,18.79,5.57,ai_advantage,1,Interpreters and Translators
+Instructing,skills,9.00,13.59,4.59,ai_advantage,2,Interpreters and Translators
+Learning Strategies,skills,9.36,13.46,4.10,ai_advantage,3,Interpreters and Translators
+Law and Government,knowledge,8.61,12.41,3.80,ai_advantage,4,Interpreters and Translators
+Inductive Reasoning,abilities,9.00,12.05,3.05,ai_advantage,5,Interpreters and Translators
+Computers and Electronics,knowledge,27.78,16.82,-10.96,human_advantage,1,Computer Systems Analysts
+Troubleshooting,skills,12.11,6.50,-5.61,human_advantage,2,Computer Systems Analysts
+Information Ordering,abilities,16.00,10.43,-5.57,human_advantage,3,Computer Systems Analysts
+Systems Evaluation,skills,15.45,10.22,-5.23,human_advantage,4,Computer Systems Analysts
+Problem Sensitivity,abilities,15.99,10.79,-5.19,human_advantage,5,Computer Systems Analysts
+Learning Strategies,skills,9.36,13.46,4.10,ai_advantage,1,Computer Systems Analysts
+English Language,knowledge,14.37,16.99,2.62,ai_advantage,2,Computer Systems Analysts
+Mathematics,knowledge,12.22,14.52,2.30,ai_advantage,3,Computer Systems Analysts
+Number Facility,abilities,9.75,11.74,1.99,ai_advantage,4,Computer Systems Analysts
+Mathematical Reasoning,abilities,10.50,12.48,1.98,ai_advantage,5,Computer Systems Analysts
+Administration and Management,knowledge,25.74,12.47,-13.27,human_advantage,1,Medical and Health Services Managers
+Customer and Personal Service,knowledge,23.29,14.88,-8.41,human_advantage,2,Medical and Health Services Managers
+Personnel and Human Resources,knowledge,20.39,12.95,-7.44,human_advantage,3,Medical and Health Services Managers
+Time Management,skills,16.00,8.62,-7.38,human_advantage,4,Medical and Health Services Managers
+Management of Personnel Resources,skills,16.48,9.14,-7.34,human_advantage,5,Medical and Health Services Managers
+Medicine and Dentistry,knowledge,10.88,13.41,2.54,ai_advantage,1,Medical and Health Services Managers
+Psychology,knowledge,12.17,14.54,2.37,ai_advantage,2,Medical and Health Services Managers
+Economics and Accounting,knowledge,12.74,14.47,1.73,ai_advantage,3,Medical and Health Services Managers
+Law and Government,knowledge,10.92,12.41,1.49,ai_advantage,4,Medical and Health Services Managers
+Learning Strategies,skills,12.61,13.46,0.85,ai_advantage,5,Medical and Health Services Managers
+Static Strength,abilities,15.00,3.74,-11.26,human_advantage,1,Construction Laborers
+Manual Dexterity,abilities,14.55,4.64,-9.91,human_advantage,2,Construction Laborers
+Building and Construction,knowledge,18.87,9.94,-8.92,human_advantage,3,Construction Laborers
+Multilimb Coordination,abilities,12.24,3.67,-8.56,human_advantage,4,Construction Laborers
+Trunk Strength,abilities,12.19,4.17,-8.02,human_advantage,5,Construction Laborers
+Oral Expression,abilities,10.14,14.80,4.66,ai_advantage,1,Construction Laborers
+Deductive Reasoning,abilities,7.86,12.32,4.46,ai_advantage,2,Construction Laborers
+Speaking,skills,9.36,13.74,4.38,ai_advantage,3,Construction Laborers
+Speech Clarity,abilities,8.64,12.75,4.11,ai_advantage,4,Construction Laborers
+Active Listening,skills,9.36,13.05,3.69,ai_advantage,5,Construction Laborers
+Customer and Personal Service,knowledge,26.52,14.88,-11.64,human_advantage,1,"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products"
+Sales and Marketing,knowledge,25.83,19.48,-6.35,human_advantage,2,"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products"
+Negotiation,skills,14.55,9.25,-5.30,human_advantage,3,"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products"
+Persuasion,skills,15.00,9.91,-5.09,human_advantage,4,"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products"
+Speech Recognition,abilities,15.00,10.68,-4.32,human_advantage,5,"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products"
+Computers and Electronics,knowledge,11.06,16.82,5.76,ai_advantage,1,"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products"
+Writing,skills,10.56,13.86,3.30,ai_advantage,2,"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products"
+Inductive Reasoning,abilities,9.36,12.05,2.69,ai_advantage,3,"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products"
+Active Learning,skills,10.14,12.35,2.21,ai_advantage,4,"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products"
+Deductive Reasoning,abilities,10.14,12.32,2.18,ai_advantage,5,"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products"
+Computers and Electronics,knowledge,33.16,16.82,-16.34,human_advantage,1,Network and Computer Systems Administrators
+Troubleshooting,skills,15.00,6.50,-8.50,human_advantage,2,Network and Computer Systems Administrators
+Operations Monitoring,skills,12.67,5.57,-7.11,human_advantage,3,Network and Computer Systems Administrators
+Operation and Control,skills,10.86,4.50,-6.36,human_advantage,4,Network and Computer Systems Administrators
+Quality Control Analysis,skills,12.19,6.61,-5.58,human_advantage,5,Network and Computer Systems Administrators
+Speech Clarity,abilities,9.36,12.75,3.39,ai_advantage,1,Network and Computer Systems Administrators
+Mathematical Reasoning,abilities,9.36,12.48,3.12,ai_advantage,2,Network and Computer Systems Administrators
+Number Facility,abilities,9.00,11.74,2.74,ai_advantage,3,Network and Computer Systems Administrators
+Written Expression,abilities,12.19,14.74,2.56,ai_advantage,4,Network and Computer Systems Administrators
+Mathematics,knowledge,12.03,14.52,2.50,ai_advantage,5,Network and Computer Systems Administrators

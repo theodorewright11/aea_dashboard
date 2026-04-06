@@ -1,191 +1,197 @@
-element_name,avg_score,type,job_zone,group
-Active Listening,8.32,skills,1,high_risk
-Complex Problem Solving,8.25,skills,1,high_risk
-Coordination,8.82,skills,1,high_risk
-Critical Thinking,8.64,skills,1,high_risk
-Judgment and Decision Making,8.64,skills,1,high_risk
-Monitoring,9.02,skills,1,high_risk
-Negotiation,10.98,skills,1,high_risk
-Operation and Control,15.52,skills,1,high_risk
-Operations Monitoring,16.00,skills,1,high_risk
-Persuasion,16.00,skills,1,high_risk
-Reading Comprehension,8.25,skills,1,high_risk
-Service Orientation,8.56,skills,1,high_risk
-Social Perceptiveness,8.33,skills,1,high_risk
-Speaking,9.79,skills,1,high_risk
-Administration and Management,11.04,knowledge,1,high_risk
-Administrative,11.28,knowledge,1,high_risk
-Communications and Media,12.83,knowledge,1,high_risk
-Customer and Personal Service,15.16,knowledge,1,high_risk
-English Language,9.91,knowledge,1,high_risk
-Food Production,9.51,knowledge,1,high_risk
-Mathematics,7.45,knowledge,1,high_risk
-Mechanical,9.12,knowledge,1,high_risk
-Production and Processing,8.91,knowledge,1,high_risk
-Public Safety and Security,8.92,knowledge,1,high_risk
-Sales and Marketing,11.58,knowledge,1,high_risk
-Transportation,12.00,knowledge,1,high_risk
-Active Learning,9.91,skills,2,high_risk
-Active Listening,13.10,skills,2,high_risk
-Complex Problem Solving,9.27,skills,2,high_risk
-Coordination,12.45,skills,2,high_risk
-Critical Thinking,11.62,skills,2,high_risk
-Instructing,10.94,skills,2,high_risk
-Judgment and Decision Making,9.06,skills,2,high_risk
-Learning Strategies,9.99,skills,2,high_risk
-Management of Financial Resources,9.00,skills,2,high_risk
-Management of Material Resources,9.00,skills,2,high_risk
-Management of Personnel Resources,14.11,skills,2,high_risk
-Mathematics,9.18,skills,2,high_risk
-Monitoring,10.99,skills,2,high_risk
-Negotiation,10.29,skills,2,high_risk
-Persuasion,10.31,skills,2,high_risk
-Reading Comprehension,11.96,skills,2,high_risk
-Service Orientation,11.67,skills,2,high_risk
-Social Perceptiveness,10.61,skills,2,high_risk
-Speaking,13.97,skills,2,high_risk
-Systems Analysis,9.00,skills,2,high_risk
-Systems Evaluation,9.18,skills,2,high_risk
-Time Management,10.41,skills,2,high_risk
-Writing,9.59,skills,2,high_risk
-Administration and Management,14.93,knowledge,2,high_risk
-Administrative,17.18,knowledge,2,high_risk
-Communications and Media,12.87,knowledge,2,high_risk
-Computers and Electronics,12.53,knowledge,2,high_risk
-Customer and Personal Service,21.83,knowledge,2,high_risk
-Economics and Accounting,11.05,knowledge,2,high_risk
-Education and Training,12.79,knowledge,2,high_risk
-English Language,14.85,knowledge,2,high_risk
-Food Production,14.23,knowledge,2,high_risk
-Geography,16.41,knowledge,2,high_risk
-Law and Government,11.24,knowledge,2,high_risk
-Mathematics,12.48,knowledge,2,high_risk
-Medicine and Dentistry,11.62,knowledge,2,high_risk
-Personnel and Human Resources,11.01,knowledge,2,high_risk
-Production and Processing,11.38,knowledge,2,high_risk
-Public Safety and Security,14.55,knowledge,2,high_risk
-Sales and Marketing,11.94,knowledge,2,high_risk
-Telecommunications,10.54,knowledge,2,high_risk
-Transportation,16.86,knowledge,2,high_risk
-Active Learning,10.04,skills,3,high_risk
-Active Listening,13.96,skills,3,high_risk
-Complex Problem Solving,10.26,skills,3,high_risk
-Coordination,10.55,skills,3,high_risk
-Critical Thinking,12.06,skills,3,high_risk
-Instructing,10.50,skills,3,high_risk
-Judgment and Decision Making,10.01,skills,3,high_risk
-Learning Strategies,9.73,skills,3,high_risk
-Management of Personnel Resources,11.38,skills,3,high_risk
-Mathematics,10.43,skills,3,high_risk
-Monitoring,10.09,skills,3,high_risk
-Negotiation,9.50,skills,3,high_risk
-Operations Analysis,10.56,skills,3,high_risk
-Persuasion,11.23,skills,3,high_risk
-Reading Comprehension,13.24,skills,3,high_risk
-Service Orientation,10.61,skills,3,high_risk
-Social Perceptiveness,10.77,skills,3,high_risk
-Speaking,12.39,skills,3,high_risk
-Systems Analysis,9.00,skills,3,high_risk
-Time Management,10.03,skills,3,high_risk
-Writing,11.24,skills,3,high_risk
-Administration and Management,10.32,knowledge,3,high_risk
-Administrative,21.71,knowledge,3,high_risk
-Communications and Media,12.70,knowledge,3,high_risk
-Computers and Electronics,15.54,knowledge,3,high_risk
-Customer and Personal Service,17.14,knowledge,3,high_risk
-Design,21.34,knowledge,3,high_risk
-Economics and Accounting,11.04,knowledge,3,high_risk
-Education and Training,12.04,knowledge,3,high_risk
-English Language,14.87,knowledge,3,high_risk
-Fine Arts,14.84,knowledge,3,high_risk
-Law and Government,15.29,knowledge,3,high_risk
-Mathematics,12.65,knowledge,3,high_risk
-Personnel and Human Resources,19.62,knowledge,3,high_risk
-Production and Processing,13.00,knowledge,3,high_risk
-Sales and Marketing,9.54,knowledge,3,high_risk
-Active Learning,12.14,skills,4,high_risk
-Active Listening,14.56,skills,4,high_risk
-Complex Problem Solving,10.95,skills,4,high_risk
-Coordination,10.28,skills,4,high_risk
-Critical Thinking,13.77,skills,4,high_risk
-Instructing,9.00,skills,4,high_risk
-Judgment and Decision Making,10.90,skills,4,high_risk
-Learning Strategies,9.55,skills,4,high_risk
-Management of Personnel Resources,12.11,skills,4,high_risk
-Mathematics,12.20,skills,4,high_risk
-Monitoring,10.95,skills,4,high_risk
-Negotiation,11.54,skills,4,high_risk
-Operations Monitoring,9.00,skills,4,high_risk
-Persuasion,12.77,skills,4,high_risk
-Programming,10.50,skills,4,high_risk
-Reading Comprehension,15.74,skills,4,high_risk
-Science,12.28,skills,4,high_risk
-Service Orientation,11.22,skills,4,high_risk
-Social Perceptiveness,12.70,skills,4,high_risk
-Speaking,13.92,skills,4,high_risk
-Systems Analysis,9.46,skills,4,high_risk
-Systems Evaluation,10.41,skills,4,high_risk
-Time Management,9.92,skills,4,high_risk
-Writing,13.18,skills,4,high_risk
-Administration and Management,13.59,knowledge,4,high_risk
-Administrative,13.88,knowledge,4,high_risk
-Biology,25.43,knowledge,4,high_risk
-Chemistry,12.52,knowledge,4,high_risk
-Communications and Media,19.59,knowledge,4,high_risk
-Computers and Electronics,15.08,knowledge,4,high_risk
-Customer and Personal Service,18.80,knowledge,4,high_risk
-Design,11.05,knowledge,4,high_risk
-Economics and Accounting,10.81,knowledge,4,high_risk
-Education and Training,12.89,knowledge,4,high_risk
-Engineering and Technology,11.06,knowledge,4,high_risk
-English Language,19.86,knowledge,4,high_risk
-Fine Arts,15.11,knowledge,4,high_risk
-Foreign Language,20.07,knowledge,4,high_risk
-Law and Government,8.35,knowledge,4,high_risk
-Mathematics,14.85,knowledge,4,high_risk
-Personnel and Human Resources,21.20,knowledge,4,high_risk
-Production and Processing,15.95,knowledge,4,high_risk
-Psychology,10.86,knowledge,4,high_risk
-Public Safety and Security,8.23,knowledge,4,high_risk
-Sales and Marketing,21.98,knowledge,4,high_risk
-Telecommunications,19.36,knowledge,4,high_risk
-Active Learning,15.03,skills,5,high_risk
-Active Listening,17.01,skills,5,high_risk
-Complex Problem Solving,12.44,skills,5,high_risk
-Coordination,9.44,skills,5,high_risk
-Critical Thinking,16.59,skills,5,high_risk
-Instructing,14.67,skills,5,high_risk
-Judgment and Decision Making,12.75,skills,5,high_risk
-Learning Strategies,15.46,skills,5,high_risk
-Management of Financial Resources,10.14,skills,5,high_risk
-Mathematics,16.68,skills,5,high_risk
-Monitoring,11.97,skills,5,high_risk
-Persuasion,9.97,skills,5,high_risk
-Reading Comprehension,19.43,skills,5,high_risk
-Science,13.98,skills,5,high_risk
-Service Orientation,9.77,skills,5,high_risk
-Social Perceptiveness,10.17,skills,5,high_risk
-Speaking,17.57,skills,5,high_risk
-Systems Analysis,10.76,skills,5,high_risk
-Systems Evaluation,10.94,skills,5,high_risk
-Time Management,10.14,skills,5,high_risk
-Writing,17.76,skills,5,high_risk
-Administration and Management,14.21,knowledge,5,high_risk
-Administrative,14.90,knowledge,5,high_risk
-Biology,18.20,knowledge,5,high_risk
-Chemistry,16.54,knowledge,5,high_risk
-Communications and Media,12.03,knowledge,5,high_risk
-Computers and Electronics,16.98,knowledge,5,high_risk
-Customer and Personal Service,18.46,knowledge,5,high_risk
-Economics and Accounting,24.02,knowledge,5,high_risk
-Education and Training,19.82,knowledge,5,high_risk
-English Language,21.62,knowledge,5,high_risk
-Foreign Language,16.15,knowledge,5,high_risk
-Geography,21.50,knowledge,5,high_risk
-History and Archeology,22.57,knowledge,5,high_risk
-Law and Government,17.65,knowledge,5,high_risk
-Mathematics,23.64,knowledge,5,high_risk
-Medicine and Dentistry,14.05,knowledge,5,high_risk
-Philosophy and Theology,17.12,knowledge,5,high_risk
-Physics,18.54,knowledge,5,high_risk
-Sociology and Anthropology,20.92,knowledge,5,high_risk
+element_name,avg_score,ai_score,type,job_zone,group
+Active Listening,8.17,13.05,skills,1,high_risk
+Complex Problem Solving,8.05,11.05,skills,1,high_risk
+Coordination,9.29,8.69,skills,1,high_risk
+Critical Thinking,8.14,12.37,skills,1,high_risk
+Judgment and Decision Making,7.12,10.85,skills,1,high_risk
+Monitoring,8.82,10.53,skills,1,high_risk
+Negotiation,10.98,9.25,skills,1,high_risk
+Operation and Control,15.52,4.50,skills,1,high_risk
+Operations Monitoring,16.00,5.57,skills,1,high_risk
+Persuasion,16.00,9.91,skills,1,high_risk
+Quality Control Analysis,8.58,6.61,skills,1,high_risk
+Reading Comprehension,8.25,14.64,skills,1,high_risk
+Service Orientation,8.61,8.71,skills,1,high_risk
+Social Perceptiveness,8.91,10.16,skills,1,high_risk
+Speaking,9.01,13.74,skills,1,high_risk
+Time Management,8.58,8.62,skills,1,high_risk
+Administration and Management,11.27,12.47,knowledge,1,high_risk
+Administrative,11.28,13.46,knowledge,1,high_risk
+Building and Construction,12.39,9.94,knowledge,1,high_risk
+Communications and Media,12.83,14.98,knowledge,1,high_risk
+Customer and Personal Service,15.51,14.88,knowledge,1,high_risk
+Education and Training,8.98,18.79,knowledge,1,high_risk
+English Language,10.18,16.99,knowledge,1,high_risk
+Food Production,15.18,8.94,knowledge,1,high_risk
+Mathematics,11.91,14.52,knowledge,1,high_risk
+Mechanical,11.38,9.76,knowledge,1,high_risk
+Personnel and Human Resources,11.31,12.95,knowledge,1,high_risk
+Production and Processing,12.03,9.51,knowledge,1,high_risk
+Public Safety and Security,9.68,9.10,knowledge,1,high_risk
+Sales and Marketing,11.58,19.48,knowledge,1,high_risk
+Transportation,11.59,10.75,knowledge,1,high_risk
+Active Learning,10.10,12.35,skills,2,high_risk
+Active Listening,13.77,13.05,skills,2,high_risk
+Complex Problem Solving,9.69,11.05,skills,2,high_risk
+Coordination,12.04,8.69,skills,2,high_risk
+Critical Thinking,11.87,12.37,skills,2,high_risk
+Instructing,10.94,13.59,skills,2,high_risk
+Judgment and Decision Making,9.37,10.85,skills,2,high_risk
+Learning Strategies,9.99,13.46,skills,2,high_risk
+Management of Financial Resources,9.00,9.72,skills,2,high_risk
+Management of Material Resources,9.00,8.94,skills,2,high_risk
+Management of Personnel Resources,14.11,9.14,skills,2,high_risk
+Mathematics,8.13,11.83,skills,2,high_risk
+Monitoring,11.33,10.53,skills,2,high_risk
+Negotiation,10.16,9.25,skills,2,high_risk
+Persuasion,10.12,9.91,skills,2,high_risk
+Reading Comprehension,12.56,14.64,skills,2,high_risk
+Service Orientation,11.37,8.71,skills,2,high_risk
+Social Perceptiveness,10.65,10.16,skills,2,high_risk
+Speaking,14.41,13.74,skills,2,high_risk
+Systems Analysis,8.88,9.98,skills,2,high_risk
+Systems Evaluation,9.24,10.22,skills,2,high_risk
+Time Management,10.20,8.62,skills,2,high_risk
+Writing,9.76,13.86,skills,2,high_risk
+Administration and Management,13.36,12.47,knowledge,2,high_risk
+Administrative,16.48,13.46,knowledge,2,high_risk
+Computers and Electronics,13.35,16.82,knowledge,2,high_risk
+Customer and Personal Service,20.31,14.88,knowledge,2,high_risk
+Economics and Accounting,10.53,14.47,knowledge,2,high_risk
+Education and Training,14.58,18.79,knowledge,2,high_risk
+Engineering and Technology,11.38,14.86,knowledge,2,high_risk
+English Language,14.95,16.99,knowledge,2,high_risk
+Food Production,14.23,8.94,knowledge,2,high_risk
+Law and Government,11.01,12.41,knowledge,2,high_risk
+Mathematics,12.51,14.52,knowledge,2,high_risk
+Personnel and Human Resources,10.85,12.95,knowledge,2,high_risk
+Production and Processing,13.82,9.51,knowledge,2,high_risk
+Public Safety and Security,14.40,9.10,knowledge,2,high_risk
+Sales and Marketing,12.60,19.48,knowledge,2,high_risk
+Transportation,11.54,10.75,knowledge,2,high_risk
+Active Learning,10.18,12.35,skills,3,high_risk
+Active Listening,14.13,13.05,skills,3,high_risk
+Complex Problem Solving,9.78,11.05,skills,3,high_risk
+Coordination,10.62,8.69,skills,3,high_risk
+Critical Thinking,12.13,12.37,skills,3,high_risk
+Instructing,9.93,13.59,skills,3,high_risk
+Judgment and Decision Making,9.87,10.85,skills,3,high_risk
+Learning Strategies,9.73,13.46,skills,3,high_risk
+Management of Personnel Resources,11.38,9.14,skills,3,high_risk
+Mathematics,10.69,11.83,skills,3,high_risk
+Monitoring,10.54,10.53,skills,3,high_risk
+Negotiation,9.50,9.25,skills,3,high_risk
+Operations Analysis,10.56,9.32,skills,3,high_risk
+Persuasion,11.23,9.91,skills,3,high_risk
+Reading Comprehension,13.84,14.64,skills,3,high_risk
+Service Orientation,10.38,8.71,skills,3,high_risk
+Social Perceptiveness,11.45,10.16,skills,3,high_risk
+Speaking,13.00,13.74,skills,3,high_risk
+Systems Analysis,9.00,9.98,skills,3,high_risk
+Time Management,10.31,8.62,skills,3,high_risk
+Writing,11.36,13.86,skills,3,high_risk
+Administration and Management,12.01,12.47,knowledge,3,high_risk
+Administrative,20.62,13.46,knowledge,3,high_risk
+Communications and Media,14.22,14.98,knowledge,3,high_risk
+Computers and Electronics,15.06,16.82,knowledge,3,high_risk
+Customer and Personal Service,17.99,14.88,knowledge,3,high_risk
+Design,21.34,15.00,knowledge,3,high_risk
+Economics and Accounting,13.84,14.47,knowledge,3,high_risk
+Education and Training,12.28,18.79,knowledge,3,high_risk
+English Language,14.82,16.99,knowledge,3,high_risk
+Fine Arts,14.84,20.76,knowledge,3,high_risk
+Mathematics,14.11,14.52,knowledge,3,high_risk
+Medicine and Dentistry,16.41,13.41,knowledge,3,high_risk
+Personnel and Human Resources,19.45,12.95,knowledge,3,high_risk
+Production and Processing,13.00,9.51,knowledge,3,high_risk
+Public Safety and Security,7.91,9.10,knowledge,3,high_risk
+Sales and Marketing,9.54,19.48,knowledge,3,high_risk
+Therapy and Counseling,9.42,15.97,knowledge,3,high_risk
+Active Learning,12.27,12.35,skills,4,high_risk
+Active Listening,14.46,13.05,skills,4,high_risk
+Complex Problem Solving,10.89,11.05,skills,4,high_risk
+Coordination,9.84,8.69,skills,4,high_risk
+Critical Thinking,14.11,12.37,skills,4,high_risk
+Instructing,12.08,13.59,skills,4,high_risk
+Judgment and Decision Making,10.50,10.85,skills,4,high_risk
+Learning Strategies,11.11,13.46,skills,4,high_risk
+Management of Personnel Resources,10.14,9.14,skills,4,high_risk
+Mathematics,12.84,11.83,skills,4,high_risk
+Monitoring,11.64,10.53,skills,4,high_risk
+Negotiation,9.96,9.25,skills,4,high_risk
+Operations Monitoring,9.00,5.57,skills,4,high_risk
+Persuasion,10.98,9.91,skills,4,high_risk
+Programming,11.13,14.22,skills,4,high_risk
+Reading Comprehension,16.23,14.64,skills,4,high_risk
+Science,12.28,12.31,skills,4,high_risk
+Service Orientation,10.39,8.71,skills,4,high_risk
+Social Perceptiveness,11.88,10.16,skills,4,high_risk
+Speaking,13.82,13.74,skills,4,high_risk
+Systems Analysis,9.78,9.98,skills,4,high_risk
+Systems Evaluation,9.86,10.22,skills,4,high_risk
+Time Management,9.67,8.62,skills,4,high_risk
+Writing,13.48,13.86,skills,4,high_risk
+Administration and Management,12.39,12.47,knowledge,4,high_risk
+Administrative,13.74,13.46,knowledge,4,high_risk
+Biology,25.43,16.27,knowledge,4,high_risk
+Chemistry,12.52,12.59,knowledge,4,high_risk
+Communications and Media,19.76,14.98,knowledge,4,high_risk
+Computers and Electronics,15.86,16.82,knowledge,4,high_risk
+Customer and Personal Service,16.24,14.88,knowledge,4,high_risk
+Design,11.05,15.00,knowledge,4,high_risk
+Economics and Accounting,11.75,14.47,knowledge,4,high_risk
+Education and Training,14.17,18.79,knowledge,4,high_risk
+Engineering and Technology,10.30,14.86,knowledge,4,high_risk
+English Language,19.73,16.99,knowledge,4,high_risk
+Fine Arts,15.11,20.76,knowledge,4,high_risk
+Foreign Language,20.07,21.48,knowledge,4,high_risk
+Law and Government,8.35,12.41,knowledge,4,high_risk
+Mathematics,14.97,14.52,knowledge,4,high_risk
+Medicine and Dentistry,8.39,13.41,knowledge,4,high_risk
+Personnel and Human Resources,21.20,12.95,knowledge,4,high_risk
+Production and Processing,15.95,9.51,knowledge,4,high_risk
+Psychology,13.02,14.54,knowledge,4,high_risk
+Public Safety and Security,7.74,9.10,knowledge,4,high_risk
+Sales and Marketing,11.23,19.48,knowledge,4,high_risk
+Telecommunications,19.36,14.44,knowledge,4,high_risk
+Active Learning,15.64,12.35,skills,5,high_risk
+Active Listening,17.06,13.05,skills,5,high_risk
+Complex Problem Solving,13.20,11.05,skills,5,high_risk
+Coordination,9.47,8.69,skills,5,high_risk
+Critical Thinking,17.03,12.37,skills,5,high_risk
+Instructing,14.63,13.59,skills,5,high_risk
+Judgment and Decision Making,13.13,10.85,skills,5,high_risk
+Learning Strategies,14.80,13.46,skills,5,high_risk
+Management of Financial Resources,10.14,9.72,skills,5,high_risk
+Mathematics,16.61,11.83,skills,5,high_risk
+Monitoring,12.23,10.53,skills,5,high_risk
+Persuasion,9.94,9.91,skills,5,high_risk
+Reading Comprehension,19.67,14.64,skills,5,high_risk
+Science,14.74,12.31,skills,5,high_risk
+Service Orientation,9.46,8.71,skills,5,high_risk
+Social Perceptiveness,10.04,10.16,skills,5,high_risk
+Speaking,17.76,13.74,skills,5,high_risk
+Systems Analysis,11.03,9.98,skills,5,high_risk
+Systems Evaluation,10.92,10.22,skills,5,high_risk
+Time Management,10.33,8.62,skills,5,high_risk
+Writing,17.89,13.86,skills,5,high_risk
+Administration and Management,16.72,12.47,knowledge,5,high_risk
+Administrative,14.01,13.46,knowledge,5,high_risk
+Biology,16.61,16.27,knowledge,5,high_risk
+Chemistry,15.56,12.59,knowledge,5,high_risk
+Communications and Media,12.46,14.98,knowledge,5,high_risk
+Computers and Electronics,16.46,16.82,knowledge,5,high_risk
+Customer and Personal Service,15.16,14.88,knowledge,5,high_risk
+Economics and Accounting,24.02,14.47,knowledge,5,high_risk
+Education and Training,19.91,18.79,knowledge,5,high_risk
+Engineering and Technology,19.48,14.86,knowledge,5,high_risk
+English Language,21.28,16.99,knowledge,5,high_risk
+Foreign Language,16.15,21.48,knowledge,5,high_risk
+Geography,21.61,14.63,knowledge,5,high_risk
+History and Archeology,22.57,21.94,knowledge,5,high_risk
+Law and Government,17.65,12.41,knowledge,5,high_risk
+Mathematics,23.94,14.52,knowledge,5,high_risk
+Medicine and Dentistry,14.05,13.41,knowledge,5,high_risk
+Philosophy and Theology,17.12,19.18,knowledge,5,high_risk
+Physics,19.59,13.58,knowledge,5,high_risk
+Sociology and Anthropology,20.92,15.37,knowledge,5,high_risk

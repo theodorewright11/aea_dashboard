@@ -1,103 +1,143 @@
-# Exposure State: What Is the Current State of AI Task Exposure?
+# Exposure State: What AI Is Actually Doing to Work Right Now
 
-*Config: All five analysis configs | Primary: all_ceiling | Method: freq (time-weighted) | Auto-aug ON | National*
+*Config: all_confirmed (primary) | Ceiling: all_ceiling (comparison) | Method: freq (time-weighted) | Auto-aug ON | National*
 
 ---
 
-## 1. The Breadth of AI Task Exposure
+## TLDR
 
-Across 923 detailed U.S. occupations covering approximately 153.2 million workers, AI systems can now address a substantial share of occupational tasks. Under the primary configuration (all_ceiling, which reflects the maximum demonstrated capability of current AI systems across all evaluated sources), the tier distribution is:
+Across 923 U.S. occupations, confirmed AI usage already touches a meaningful share of tasks for most of the workforce: 145 occupations (31.4M workers) have 60% or more of their tasks affected by tools people are actually using today. But the ceiling -- what current AI systems can demonstrably do -- puts that number at 249 occupations and 54.2M workers. The gap between those two figures is where the next wave of adoption lives. Exposure is growing almost everywhere: two-thirds of occupations saw positive growth in confirmed task coverage, and the median gain was 5.7 percentage points. The occupations climbing fastest are not the ones that dominate headlines.
+
+---
+
+## The Landscape
+
+Start with confirmed usage. The "all_confirmed" configuration counts only tasks where AI capability has been verified through actual deployment -- conversational tools, API integrations, and Microsoft Copilot-style products. No theoretical capability. No "an AI could probably do this." Just what's happening.
 
 | Tier | Threshold | Occupations | Workers |
 |------|-----------|-------------|---------|
-| High | >= 60% of tasks affected | 249 | 54.2M |
-| Moderate | 40 -- 59% | 259 | 47.3M |
-| Restructuring | 20 -- 39% | 275 | 33.8M |
-| Low | < 20% | 140 | 17.9M |
+| High | >= 60% of tasks | 145 | 31.4M |
+| Moderate | 40 -- 59% | 219 | 41.8M |
+| Restructuring | 20 -- 39% | 300 | 48.8M |
+| Low | < 20% | 259 | 31.3M |
 
-More than one in four occupations falls into the high-exposure tier, and those occupations employ 54.2 million workers -- roughly 35% of the measured workforce. Adding the moderate tier brings the total to 508 occupations and 101.5 million workers with at least 40% of their tasks affected. Only 140 occupations, employing 17.9 million workers, remain below the 20% threshold.
+The high tier is smaller than you might expect from media coverage. 145 occupations, 31.4 million workers -- that's roughly 20% of the measured workforce at the point where a supermajority of their tasks are already being done with AI assistance. But the moderate and restructuring tiers together account for 519 occupations and 90.6 million workers. These are jobs where AI isn't optional anymore but also isn't dominant. It's a tool in the workflow, not a replacement for the workflow. That middle band is where most American workers actually sit right now.
 
-![Exposure vs Employment](figures/scatter_exposure_vs_emp_ceiling.png)
+The low tier still holds 259 occupations and 31.3 million workers. These are overwhelmingly physical, site-specific, or manual-dexterity jobs -- construction, extraction, material moving, farming. The task structures that define them don't map onto what current AI systems do well.
 
-The scatter plot above illustrates the relationship between an occupation's task exposure level and its employment size. High-exposure occupations are not concentrated in small, niche roles -- they span some of the economy's largest employment categories.
+![Exposure vs Employment — Confirmed](figures/scatter_exposure_vs_emp_confirmed.png)
 
-## 2. Config Comparison: Capability Ceiling vs. Confirmed Deployment
+The scatter plot tells an important story about concentration. High-exposure occupations aren't clustered in small, specialized roles. Office and Administrative Support alone puts 12.4 million workers into the high tier -- nearly 70% of that entire major category's employment. Computer and Mathematical occupations are 62% high-tier by employment. Sales has 32% of its workers in the high tier, but another 55% sit in moderate. These are enormous labor pools.
 
-The gap between what AI can do and what organizations have actually deployed is one of the most policy-relevant dimensions of this analysis. Comparing the five analysis configurations for the high-exposure tier alone reveals the scale of that gap:
-
-| Configuration | High-Tier Occs | High-Tier Workers |
-|---------------|---------------|-------------------|
-| all_ceiling | 249 | 54.2M |
-| agentic_ceiling | 156 | 40.3M |
-| agentic_confirmed | 154 | 39.0M |
-| all_confirmed | 145 | 31.4M |
-| human_conversation | 81 | 17.5M |
-
-![Config Comparison](figures/config_comparison.png)
-
-The all_ceiling configuration identifies 249 occupations at high exposure; the most conservative configuration, human_conversation (which counts only tasks where AI capability has been confirmed through direct human use), identifies 81. That three-to-one ratio represents a deployment opportunity gap of roughly 36.7 million workers. In practical terms, current AI systems have demonstrated the capability to affect a high share of tasks in 168 more occupations than organizations have yet adopted them for.
-
-The agentic configurations (agentic_ceiling and agentic_confirmed) cluster closely at 154--156 occupations, suggesting that once agentic AI capabilities are relevant to a role, adoption tends to follow. The broader all_confirmed figure (145 occupations) is slightly lower than the agentic pair, reflecting the fact that some non-agentic ceiling capabilities have not yet been confirmed through deployment.
-
-## 3. Which Sectors Are Most Exposed
-
-Breaking exposure down by major occupation category shows that AI task exposure is not evenly distributed across the economy. The share of each category's employment that falls into the high-exposure tier under all_ceiling:
-
-| Major Category | % Employment in High Tier |
-|----------------|--------------------------|
-| Sales and Related | 99.8% |
-| Computer and Mathematical | 99.1% |
-| Office and Administrative Support | 89.8% |
-| Arts, Design, Entertainment, Sports, and Media | 61.4% |
-| Educational Instruction and Library | 58.5% |
-| Business and Financial Operations | 55.1% |
-| Protective Service | 37.5% |
-| Management | 34.0% |
+But there's a floor effect worth noting at the other end. Construction and Extraction has 77% of its occupations in the low tier. Production is 61% low. Transportation and Material Moving is 62% low. The physical economy and the information economy are living in different AI exposure worlds right now, and the gap between them is stark.
 
 ![Tier by Major Category](figures/tier_stacked_by_major.png)
 
-Sales and Computer/Mathematical occupations are nearly universally in the high tier, reflecting the information-intensive, rules-driven nature of their task structures. Office and Administrative Support follows closely at 89.8%, consistent with the well-documented susceptibility of clerical and data-handling work to automation. The Arts and Education categories, at 61% and 59% respectively, may surprise some readers -- these figures reflect AI's growing capacity for content generation, curriculum design, and assessment tasks, even though core creative and interpersonal elements remain less affected.
+---
 
-Management occupations are notable for their relatively low share (34%) in the high tier despite containing many information-heavy roles. This likely reflects the weight of supervisory, judgment, and relationship-management tasks that current AI systems handle less effectively.
+## Where the Ceiling Diverges
 
-## 4. Trend Analysis: The Trajectory Is Broad and Steep
+Here's where it gets more interesting. The "all_ceiling" configuration asks a different question: not "what are people using AI for?" but "what could they be using it for, based on demonstrated capability?" This includes every task where any evaluated AI system has shown it can perform at a functional level, whether or not anyone has actually deployed it that way.
 
-Exposure levels are not static. Comparing each occupation's earliest and most recent pct_tasks_affected values shows near-universal growth: 887 of 923 occupations saw positive increases, with zero occupations declining. The median gain was 16.7 percentage points; the mean was 20.9 percentage points.
+| Tier | Confirmed | Ceiling | Gap |
+|------|-----------|---------|-----|
+| High (>= 60%) | 145 occs / 31.4M workers | 249 occs / 54.2M workers | +104 occs / +22.8M workers |
+| Moderate (40-60%) | 219 / 41.8M | 259 / 47.3M | +40 / +5.5M |
+| Low (< 20%) | 259 / 31.3M | 140 / 17.9M | -119 / -13.4M |
 
-The fastest-rising occupations under all_ceiling include:
+The high-tier gap is the headline: 104 additional occupations covering 22.8 million more workers could be at 60%+ task exposure if organizations adopted every AI capability that's already been demonstrated to work. That's not a prediction about future AI development -- it's a statement about tools that exist today and aren't being used.
 
-| Occupation | From | To | Change |
-|------------|------|----|--------|
-| Real Estate Brokers | 18.6% | 90.3% | +71.7 pp |
-| Spa Managers | 9.9% | 81.1% | +71.2 pp |
-| Investment Fund Managers | 21.3% | 92.5% | +71.1 pp |
-| HR Assistants | 22.0% | 89.8% | +67.8 pp |
-| Medical Transcriptionists | 16.4% | 82.7% | +66.3 pp |
-| Actors | 14.2% | 79.6% | +65.4 pp |
-| Logistics Analysts | 15.7% | 80.5% | +64.8 pp |
-| Telemarketers | 35.4% | 98.2% | +62.7 pp |
+At the other end, the low tier shrinks from 259 occupations to 140 under the ceiling. Nearly half the jobs that look minimally affected under confirmed usage have more AI-applicable tasks than current adoption reveals. The ceiling doesn't eliminate the low tier -- 140 occupations and 17.9 million workers remain below 20% even at full demonstrated capability -- but it compresses it substantially.
 
-![Top Climbers](figures/top_climbers_ceiling.png)
+![Exposure vs Employment — Ceiling](figures/scatter_exposure_vs_emp_ceiling.png)
 
-These occupations span real estate, finance, healthcare administration, creative industries, and logistics -- there is no single-sector pattern. The top climbers under the more conservative human_conversation config tell a similar story: Actors (+49.0 pp), Medical Transcriptionists (+46.1 pp), and Communications Teachers (+45.6 pp) all show large confirmed-usage gains, indicating that these are not merely theoretical capability expansions but reflect real deployment trajectories.
+The three-layer framing matters here. Layer one: confirmed usage (what AI is doing). Layer two: the ceiling (what AI could do with existing technology). Layer three: actual adoption in specific workplaces -- which we don't have data on, and which almost certainly varies enormously within occupations. A Market Research Analyst at a Fortune 500 firm with an enterprise AI stack is living in a different world than one at a 15-person agency that hasn't updated its tools since 2022. The gap between confirmed and ceiling is the space where organizational decisions, not technological limitations, determine impact.
 
-The 36 occupations with zero change are concentrated in roles where the task inventory has remained stable and no new AI capabilities have been mapped -- typically highly physical or site-specific occupations.
+---
 
-## 5. Key Takeaways
+## Trends Over Time
 
-1. **AI task exposure is already majority-scale.** Under the primary ceiling configuration, occupations employing 101.5 million workers -- two-thirds of the measured workforce -- have at least 40% of their tasks affected. This is not a future scenario; it reflects current system capabilities.
+Confirmed task exposure isn't static. Comparing each occupation's earliest and most recent pct_tasks_affected values shows broad upward movement: 612 of 923 occupations have positive growth under the confirmed config, with a median gain of 5.7 percentage points. Total workers affected grew by 21.8 million.
 
-2. **The deployment gap is large but narrowing.** The difference between ceiling and confirmed-usage configurations shows that roughly 36.7 million additional workers are in occupations where AI could affect a high share of tasks but has not yet been widely deployed. Workforce development strategies should account for this latent exposure.
+That 612/923 split is less dramatic than the ceiling config's near-universal growth (the previous version of this analysis found 887/923 positive under ceiling). The gap makes sense -- confirmed usage requires actual deployment, and deployment is lumpy. Some occupations got new tool access and jumped; others are still waiting. But two-thirds of occupations showing confirmed growth means the adoption curve is broad, not narrow.
 
-3. **Exposure is broad-based, not sector-specific.** While Sales, Computer/Mathematical, and Office/Administrative occupations lead, the trend data shows rapid growth across real estate, finance, healthcare administration, creative industries, and education. No major sector is untouched.
+![Top Climbers — Confirmed Pct](figures/top_climbers_confirmed_pct.png)
 
-4. **Growth is near-universal and accelerating.** With 96% of occupations showing positive exposure growth and a median increase of 16.7 percentage points, the trajectory suggests that today's moderate-exposure occupations are tomorrow's high-exposure occupations. Policy responses that focus only on currently high-exposed roles will be insufficient.
+The occupations climbing fastest in percentage terms under confirmed usage span a wide range: finance, healthcare administration, creative industries, logistics. There's no single sector driving the trend. This is consistent with what we'd expect from general-purpose AI tools -- they don't respect industry boundaries.
 
-5. **Confirmed agentic deployment tracks capability closely.** The tight clustering of agentic_ceiling (156 occs) and agentic_confirmed (154 occs) in the high tier suggests that where agentic AI systems are capable, organizations are adopting them rapidly -- a pattern that may accelerate broader deployment.
+![Top Climbers — Confirmed Workers](figures/top_climbers_confirmed_workers.png)
+
+The workers-affected view tells a different story than the percentage view. Some occupations with modest percentage gains translate to enormous worker impacts because of their employment size. The top climbers by raw worker count tend to be large, mid-skill occupations where AI tools are being adopted across broad workforce populations rather than in specialized niches.
+
+![Top Climbers — Ceiling Pct](figures/top_climbers_ceiling_pct.png)
+
+Under the ceiling, the top climbers are even more dramatic -- but the gap between confirmed and ceiling climbers reveals which occupations have the most unrealized adoption potential. If an occupation is climbing fast under confirmed and even faster under ceiling, the deployment gap for that role is widening even as actual usage grows. The technology is outrunning the adoption.
+
+---
+
+## Surprises in the Hierarchy
+
+Occupation taxonomies have a nested structure: detailed occupations roll up to broad groups, broad groups to minor groups, minor groups to major categories. Most of the time, a detailed occupation's exposure score stays close to its parent group's average. The interesting cases are where it doesn't.
+
+### Minor Group Outliers
+
+![Minor Group Outliers](figures/minor_outliers.png)
+
+Two minor groups stand out for dramatically exceeding their major category averages:
+
+**Supervisors of Construction and Extraction Workers** come in at 47.2% average exposure -- in a major category (Construction and Extraction) that averages 14.4%. That's a 33-point deviation. The explanation is structural: construction supervisors spend most of their time on planning, scheduling, documentation, compliance tracking, and coordination. The actual building happens below them in the hierarchy. Their task profile looks more like a mid-level office manager's than a construction worker's, and AI tools map onto it accordingly. This is a case where the occupational category misleads about the actual work.
+
+**Supervisors of Installation, Maintenance, and Repair Workers** show a similar pattern: 48.7% against a major average of 24.6%. Same logic -- the supervisory layer of physical-work occupations has an information-intensive task structure that the category name obscures.
+
+**Religious Workers** at 66.2% in a Community and Social Service category averaging 46.0% are genuinely surprising. The 20-point deviation reflects the high share of sermon preparation, counseling documentation, educational content creation, administrative coordination, and communication tasks in religious work. The spiritual and interpersonal core of the job remains untouched by AI, but the operational infrastructure around it is heavily affected. Religious workers are, in task-structure terms, closer to educators and content creators than to the social workers and counselors that populate the rest of their major category.
+
+### Broad Group Outliers
+
+![Broad Group Outliers](figures/broad_outliers.png)
+
+At the broad occupation level, where you can identify specific jobs rather than groups, the deviations get sharper:
+
+**Training and Development Managers** hit 85.7% in a Management major that averages 36.3%. That's a 49-point gap -- the largest deviation I found. The reason is that training and development work is almost entirely information-based: designing curricula, writing materials, tracking program effectiveness, communicating with stakeholders. "Manager" in this context means "person who creates and organizes knowledge products," not "person who supervises physical operations." AI tools for content generation, assessment design, and data analysis cover the vast majority of the task inventory.
+
+**Computer and Information Systems Managers** at 77.6% (vs. 36.3% major average) are less surprising but still notable. They sit at the intersection of technical knowledge and organizational coordination -- both heavily AI-applicable domains.
+
+**Market Research Analysts** at 89.6% against a Business/Financial major average of 51.7% represent the purest case of AI task overlap in the dataset. Data collection, survey design, trend analysis, report generation, competitive intelligence -- every core function of the role maps onto demonstrated AI capability. The 38-point deviation from their major category reflects the fact that most Business/Financial occupations involve relational, judgmental, or regulatory tasks that AI handles less well. Market Research Analysts are the exception: their work is almost entirely analytical and communicative.
+
+**Pharmacists** at 64.9% in a Healthcare Practitioners major averaging 29.7% are the healthcare surprise. Most healthcare practitioner occupations are anchored in physical examination, hands-on treatment, or clinical judgment that requires embodied presence. Pharmacists are different. Drug interaction checking, dosing calculations, patient education documentation, insurance processing, inventory management -- these are information tasks wearing a healthcare costume. The 35-point deviation from their category average captures this structural difference.
+
+**Public Relations Specialists** at 83.2% (vs. 48.0% for Arts/Design/Entertainment/Sports/Media) round out the set. PR work -- writing press releases, drafting talking points, monitoring media coverage, managing social channels, creating campaign materials -- is essentially professional communication, and professional communication is exactly where current AI tools are strongest.
+
+The common thread across all these outliers: they're occupations whose actual task content diverges sharply from what their category label implies. The taxonomy groups them by industry or domain; the AI exposure analysis reveals them by what people actually do all day. When those two framings disagree, the outliers emerge.
+
+---
+
+## Config Comparison
+
+Five analysis configurations provide different lenses on the same occupation data. They're ordered here from most conservative to most inclusive:
+
+| Configuration | High-Tier Occs | High-Tier Workers | What It Counts |
+|---------------|---------------|-------------------|----------------|
+| Human Conversation | 81 | 17.5M | Tasks confirmed through direct human use of conversational AI |
+| All Confirmed | 145 | 31.4M | Conv + API + Microsoft confirmed usage |
+| Agentic Confirmed | 154 | 39.0M | Confirmed agentic (autonomous tool-using) AI usage |
+| Agentic Ceiling | 156 | 40.3M | Demonstrated agentic capability |
+| All Ceiling | 249 | 54.2M | Full demonstrated capability across all source types |
+
+![Config Comparison](figures/config_comparison.png)
+
+Three patterns stand out.
+
+**The conversation-to-confirmed jump is large.** Going from human_conversation (81 high-tier occupations, 17.5M workers) to all_confirmed (145 occupations, 31.4M) nearly doubles the high tier. This means that API integrations and Microsoft Copilot-style tools are reaching a substantial number of occupations that pure conversational AI doesn't. The additional 64 occupations and 13.9 million workers represent the deployment footprint of enterprise AI tools beyond chatbots.
+
+**Agentic confirmed actually exceeds all_confirmed in the high tier.** This is counterintuitive at first: 154 agentic-confirmed occupations and 39.0 million workers vs. 145 all-confirmed occupations and 31.4 million workers. The resolution is that agentic tools -- systems that can autonomously use other tools, browse the web, execute code, manage workflows -- cover different tasks than conversational + API tools. Some occupations have task inventories where autonomous multi-step operations contribute more than direct human-AI conversation does. The 9-occupation, 7.6-million-worker difference between agentic_confirmed and all_confirmed shows that for certain jobs, the agentic modality is the primary vector of AI impact, not a supplement to conversational use.
+
+**The ceiling gap is concentrated, not uniform.** The jump from all_confirmed (145 high) to all_ceiling (249 high) adds 104 occupations and 22.8 million workers. But those 104 occupations aren't evenly distributed across the economy. They're concentrated in mid-skill information work -- roles where AI capability has been demonstrated but organizational adoption hasn't caught up. This is the adoption frontier: not a technology problem, but a deployment problem. The tools exist. The question is when, and how fast, organizations will use them.
+
+---
 
 ## Config
 
-All five analysis configs (see `analysis/config.py::ANALYSIS_CONFIGS`). Primary: `All 2026-02-18`. Method: freq, auto-aug ON, national.
+Primary: `all_confirmed` (All Confirmed -- conv + API + Microsoft, no MCP). Ceiling comparison: `all_ceiling`. All five configs shown in config comparison section. Method: freq (time-weighted), auto-aug ON, national.
 
 ## Files
 
@@ -107,3 +147,5 @@ All five analysis configs (see `analysis/config.py::ANALYSIS_CONFIGS`). Primary:
 | `results/tier_by_config.csv` | Tier counts and employment per config |
 | `results/major_tier_rollup.csv` | Tier distribution within each major category |
 | `results/pct_trend_by_config.csv` | First-to-last pct growth per occ per config |
+| `results/minor_deviations.csv` | Minor group deviations from major averages |
+| `results/broad_deviations.csv` | Broad group deviations from major averages |

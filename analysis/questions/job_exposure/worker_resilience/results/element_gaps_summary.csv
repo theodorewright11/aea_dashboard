@@ -1,121 +1,121 @@
 element_name,mean_gap,median_gap,std_gap,n_occs,type
+Sound Localization,-7.89,-7.89,,1,abilities
+Reaction Time,-7.85,-7.31,2.32,144,abilities
+Peripheral Vision,-7.69,-6.95,2.22,9,abilities
+Response Orientation,-7.57,-6.81,3.08,57,abilities
 Speed of Limb Movement,-7.49,-7.29,1.67,7,abilities
-Sound Localization,-7.33,-7.33,,1,abilities
-Dynamic Flexibility,-6.47,-5.42,2.96,3,abilities
-Reaction Time,-6.43,-5.90,2.32,144,abilities
-Response Orientation,-6.23,-5.48,3.08,57,abilities
-Static Strength,-6.19,-5.20,2.05,168,abilities
-Multilimb Coordination,-6.18,-5.42,2.20,250,abilities
-Extent Flexibility,-6.13,-5.61,2.09,153,abilities
-Depth Perception,-5.95,-4.89,2.26,95,abilities
-Control Precision,-5.76,-4.79,2.57,319,abilities
+Glare Sensitivity,-7.48,-6.32,2.21,11,abilities
+Night Vision,-7.35,-6.51,2.63,4,abilities
+Spatial Orientation,-7.26,-6.01,3.35,27,abilities
+Multilimb Coordination,-7.23,-6.47,2.20,250,abilities
+Rate Control,-7.18,-6.88,1.96,95,abilities
+Control Precision,-7.12,-6.16,2.57,319,abilities
+Building and Construction,-7.11,-6.61,4.98,113,knowledge
+Depth Perception,-7.04,-5.99,2.26,95,abilities
+Static Strength,-7.03,-6.03,2.05,168,abilities
+Extent Flexibility,-6.70,-6.18,2.09,153,abilities
+Operation and Control,-6.58,-5.64,2.74,208,skills
+Dynamic Flexibility,-6.51,-5.46,2.96,3,abilities
+Mechanical,-6.36,-5.16,5.00,276,knowledge
+Trunk Strength,-6.00,-5.56,1.81,235,abilities
+Hearing Sensitivity,-5.99,-5.13,2.60,80,abilities
+Manual Dexterity,-5.96,-5.50,1.94,368,abilities
+Arm-Hand Steadiness,-5.94,-5.55,2.13,399,abilities
+Auditory Attention,-5.94,-5.59,1.61,125,abilities
+Repairing,-5.90,-4.71,2.87,92,skills
+Dynamic Strength,-5.85,-4.97,2.26,40,abilities
+Stamina,-5.84,-5.47,1.98,71,abilities
+Operations Monitoring,-5.72,-5.00,2.56,303,skills
 Gross Body Equilibrium,-5.71,-4.96,2.38,53,abilities
-Dynamic Strength,-5.61,-4.74,2.26,40,abilities
-Trunk Strength,-5.60,-5.16,1.81,235,abilities
-Rate Control,-5.53,-5.23,1.96,95,abilities
-Building and Construction,-5.52,-5.02,4.98,113,knowledge
-Peripheral Vision,-5.49,-4.74,2.22,9,abilities
-Stamina,-5.45,-5.08,1.98,71,abilities
-Glare Sensitivity,-5.41,-4.25,2.21,11,abilities
-Auditory Attention,-5.28,-4.92,1.61,125,abilities
-Operation and Control,-5.26,-4.31,2.74,208,skills
-Manual Dexterity,-5.20,-4.74,1.94,368,abilities
-Installation,-5.16,-4.88,2.72,23,skills
-Night Vision,-5.10,-4.26,2.63,4,abilities
-Arm-Hand Steadiness,-4.91,-4.53,2.13,399,abilities
-Spatial Orientation,-4.89,-3.64,3.35,27,abilities
-Hearing Sensitivity,-4.88,-4.02,2.60,80,abilities
-Medicine and Dentistry,-4.63,-2.88,7.96,113,knowledge
-Repairing,-4.61,-3.43,2.87,92,skills
-Explosive Strength,-4.59,-4.24,1.92,11,abilities
-Mechanical,-4.46,-3.26,5.00,276,knowledge
-Food Production,-4.41,-4.43,3.20,35,knowledge
+Installation,-5.65,-5.37,2.72,23,skills
+Medicine and Dentistry,-5.42,-3.68,7.96,113,knowledge
+Finger Dexterity,-5.03,-4.08,2.32,357,abilities
+Equipment Maintenance,-4.97,-4.17,2.77,101,skills
+Explosive Strength,-4.85,-4.50,1.92,11,abilities
+Equipment Selection,-4.73,-4.58,1.13,42,skills
+Food Production,-4.64,-4.66,3.20,35,knowledge
+Troubleshooting,-4.39,-3.24,2.54,138,skills
 Gross Body Coordination,-4.32,-2.90,3.95,31,abilities
-Finger Dexterity,-4.20,-3.25,2.32,357,abilities
-Operations Monitoring,-4.05,-3.33,2.56,303,skills
-Equipment Maintenance,-3.72,-2.93,2.77,101,skills
-Equipment Selection,-3.58,-3.43,1.13,42,skills
-Time Sharing,-3.48,-3.21,1.62,133,abilities
-Troubleshooting,-3.31,-2.16,2.54,138,skills
-Therapy and Counseling,-2.98,-1.92,7.26,88,knowledge
-Far Vision,-2.97,-2.23,2.02,397,abilities
-Visual Color Discrimination,-2.71,-2.14,1.92,200,abilities
-Quality Control Analysis,-2.63,-2.26,1.79,233,skills
-Perceptual Speed,-2.59,-2.06,1.49,396,abilities
-Speed of Closure,-2.56,-2.11,1.52,114,abilities
-Public Safety and Security,-2.42,-1.10,4.40,304,knowledge
-Technology Design,-2.21,-2.87,1.65,19,skills
-Production and Processing,-2.10,-1.15,3.59,247,knowledge
-Chemistry,-2.01,-1.40,4.00,119,knowledge
-Selective Attention,-1.94,-1.58,1.41,669,abilities
-Visualization,-1.82,-1.13,2.18,378,abilities
-Memorization,-1.75,-1.32,1.20,61,abilities
-Flexibility of Closure,-1.75,-1.30,1.85,481,abilities
-Operations Analysis,-1.74,-1.33,2.28,90,skills
-Problem Sensitivity,-1.57,-1.25,3.61,852,abilities
-Psychology,-1.48,0.63,6.29,190,knowledge
-Management of Material Resources,-1.46,-1.08,2.17,29,skills
-Service Orientation,-1.22,-0.29,2.55,473,skills
-Near Vision,-1.21,-1.05,2.32,886,abilities
-Coordination,-1.14,-0.28,2.42,663,skills
-Social Perceptiveness,-0.95,0.06,3.30,576,skills
-Management of Personnel Resources,-0.92,0.12,2.68,192,skills
-Time Management,-0.90,-0.17,2.13,662,skills
-Physics,-0.79,0.48,4.88,113,knowledge
-Category Flexibility,-0.58,0.41,2.42,704,abilities
-Customer and Personal Service,-0.58,-0.17,5.05,629,knowledge
-Fluency of Ideas,-0.58,-0.06,2.42,463,abilities
-Originality,-0.46,-0.01,2.41,395,abilities
-Science,-0.41,-0.04,3.78,150,skills
-Systems Evaluation,-0.41,0.47,2.27,326,skills
-Monitoring,-0.36,-0.04,2.78,767,skills
-Systems Analysis,-0.30,0.30,2.28,369,skills
-Persuasion,-0.27,0.39,2.16,329,skills
-Inductive Reasoning,-0.26,-0.11,3.89,746,abilities
-Information Ordering,-0.26,0.29,2.62,831,abilities
-Negotiation,-0.22,0.68,2.22,257,skills
-Engineering and Technology,-0.20,1.89,6.09,216,knowledge
-Deductive Reasoning,-0.15,-0.24,3.65,802,abilities
-Judgment and Decision Making,-0.15,0.47,3.11,682,skills
-Complex Problem Solving,-0.12,0.58,3.03,644,skills
-Critical Thinking,-0.11,-0.64,3.38,800,skills
-Management of Financial Resources,-0.06,0.27,2.69,41,skills
-Speech Recognition,-0.04,0.30,2.63,804,abilities
-Transportation,0.02,1.46,4.68,104,knowledge
-Oral Comprehension,0.12,-0.19,3.70,869,abilities
-Administration and Management,0.19,0.79,3.54,439,knowledge
-Active Listening,0.28,-0.75,3.54,830,skills
-Mathematics,0.31,1.71,3.68,237,skills
-Design,0.37,2.27,5.54,183,knowledge
-Law and Government,0.39,1.51,4.59,195,knowledge
-Active Learning,0.50,0.88,3.01,581,skills
-Biology,0.55,1.37,6.01,134,knowledge
-Wrist-Finger Speed,0.60,1.26,1.54,10,abilities
-Oral Expression,0.76,0.30,4.01,852,abilities
-Number Facility,0.89,1.75,2.81,225,abilities
-Sociology and Anthropology,0.92,2.13,4.93,93,knowledge
-Mathematics,0.98,1.94,4.73,496,knowledge
-Speaking,1.07,0.78,3.73,801,skills
-Reading Comprehension,1.09,0.65,4.01,729,skills
-Written Comprehension,1.20,0.46,4.04,745,abilities
-Personnel and Human Resources,1.34,2.01,3.83,136,knowledge
-Mathematical Reasoning,1.38,2.81,3.71,261,abilities
-Writing,1.39,1.35,3.52,588,skills
-Speech Clarity,1.55,2.06,3.28,786,abilities
-Written Expression,1.68,1.52,3.74,633,abilities
-Programming,1.95,1.85,3.10,26,skills
-Learning Strategies,2.03,3.12,3.08,356,skills
-Administrative,2.27,3.09,3.69,298,knowledge
-Geography,2.44,4.54,5.56,71,knowledge
-Communications and Media,2.69,4.06,4.70,131,knowledge
-English Language,2.73,3.15,4.80,774,knowledge
-Telecommunications,2.78,3.78,4.38,62,knowledge
-Instructing,2.87,3.84,3.09,397,skills
-Computers and Electronics,3.04,4.30,4.61,487,knowledge
-Fine Arts,3.18,6.58,7.05,33,knowledge
-Economics and Accounting,3.69,5.32,4.58,107,knowledge
-Education and Training,4.01,5.02,5.11,433,knowledge
-Philosophy and Theology,4.23,6.08,5.37,28,knowledge
-History and Archeology,4.58,6.79,5.71,24,knowledge
-Sales and Marketing,5.38,6.47,5.05,117,knowledge
-Foreign Language,6.05,8.09,7.58,7,knowledge
+Time Sharing,-4.14,-3.87,1.62,133,abilities
+Production and Processing,-3.90,-2.95,3.59,247,knowledge
+Quality Control Analysis,-3.89,-3.53,1.79,233,skills
+Public Safety and Security,-3.77,-2.45,4.40,304,knowledge
+Far Vision,-3.72,-2.98,2.02,397,abilities
+Visual Color Discrimination,-3.50,-2.93,1.92,200,abilities
+Perceptual Speed,-3.44,-2.91,1.49,396,abilities
+Therapy and Counseling,-3.42,-2.36,7.26,88,knowledge
+Speed of Closure,-3.35,-2.89,1.52,114,abilities
+Technology Design,-3.24,-3.90,1.65,19,skills
+Transportation,-2.93,-1.49,4.68,104,knowledge
+Chemistry,-2.87,-2.27,4.00,119,knowledge
+Flexibility of Closure,-2.85,-2.41,1.85,481,abilities
+Selective Attention,-2.73,-2.38,1.41,669,abilities
+Visualization,-2.69,-1.99,2.18,378,abilities
+Problem Sensitivity,-2.64,-2.32,3.61,852,abilities
+Psychology,-2.62,-0.51,6.29,190,knowledge
+Customer and Personal Service,-2.53,-2.12,5.05,629,knowledge
+Near Vision,-2.44,-2.27,2.32,886,abilities
+Management of Personnel Resources,-2.43,-1.40,2.68,192,skills
+Operations Analysis,-2.43,-2.02,2.28,90,skills
+Service Orientation,-2.35,-1.43,2.55,473,skills
+Coordination,-2.31,-1.45,2.42,663,skills
+Memorization,-2.10,-1.68,1.20,61,abilities
+Engineering and Technology,-2.08,0.01,6.09,216,knowledge
+Physics,-1.94,-0.68,4.88,113,knowledge
+Management of Material Resources,-1.94,-1.56,2.17,29,skills
+Management of Financial Resources,-1.90,-1.57,2.69,41,skills
+Time Management,-1.85,-1.12,2.13,662,skills
+Social Perceptiveness,-1.83,-0.82,3.30,576,skills
+Geography,-1.80,0.30,5.56,71,knowledge
+Science,-1.64,-1.26,3.78,150,skills
+Category Flexibility,-1.54,-0.55,2.42,704,abilities
+Biology,-1.51,-0.69,6.01,134,knowledge
+Information Ordering,-1.49,-0.94,2.62,831,abilities
+Monitoring,-1.49,-1.17,2.78,767,skills
+Negotiation,-1.38,-0.48,2.22,257,skills
+Fluency of Ideas,-1.35,-0.83,2.42,463,abilities
+Persuasion,-1.32,-0.65,2.16,329,skills
+Originality,-1.28,-0.82,2.41,395,abilities
+Administrative,-1.26,-0.44,3.69,298,knowledge
+Systems Evaluation,-1.23,-0.35,2.27,326,skills
+Inductive Reasoning,-1.20,-1.05,3.89,746,abilities
+Deductive Reasoning,-1.17,-1.26,3.65,802,abilities
+Systems Analysis,-1.17,-0.56,2.28,369,skills
+Critical Thinking,-1.16,-1.68,3.38,800,skills
+Judgment and Decision Making,-1.14,-0.52,3.11,682,skills
+Administration and Management,-1.14,-0.53,3.54,439,knowledge
+Wrist-Finger Speed,-1.13,-0.47,1.54,10,abilities
+Personnel and Human Resources,-1.11,-0.45,3.83,136,knowledge
+Law and Government,-1.09,0.02,4.59,195,knowledge
+Speech Recognition,-1.09,-0.75,2.63,804,abilities
+Complex Problem Solving,-1.03,-0.32,3.03,644,skills
+Design,-0.91,0.99,5.54,183,knowledge
+Oral Comprehension,-0.87,-1.18,3.70,869,abilities
+Active Listening,-0.47,-1.50,3.54,830,skills
+Mathematics,-0.44,0.97,3.68,237,skills
+Mathematics,-0.42,0.54,4.73,496,knowledge
+Oral Expression,-0.27,-0.72,4.01,852,abilities
+Active Learning,-0.26,0.12,3.01,581,skills
+Reading Comprehension,0.02,-0.42,4.01,729,skills
+Sociology and Anthropology,0.13,1.34,4.93,93,knowledge
+Writing,0.15,0.11,3.52,588,skills
+Written Comprehension,0.15,-0.59,4.04,745,abilities
+Number Facility,0.34,1.20,2.81,225,abilities
+Written Expression,0.36,0.19,3.74,633,abilities
+Speaking,0.44,0.16,3.73,801,skills
+Mathematical Reasoning,0.51,1.94,3.71,261,abilities
+Speech Clarity,0.54,1.05,3.28,786,abilities
+Programming,1.00,0.90,3.10,26,skills
+Computers and Electronics,1.09,2.35,4.61,487,knowledge
+Economics and Accounting,1.14,2.78,4.58,107,knowledge
+Learning Strategies,1.39,2.48,3.08,356,skills
+English Language,1.43,1.85,4.80,774,knowledge
+Communications and Media,1.60,2.97,4.70,131,knowledge
+Instructing,1.76,2.73,3.09,397,skills
+Telecommunications,1.77,2.77,4.38,62,knowledge
+Fine Arts,2.21,5.61,7.05,33,knowledge
+Education and Training,2.47,3.48,5.11,433,knowledge
+Foreign Language,3.28,5.33,7.58,7,knowledge
+Philosophy and Theology,3.28,5.13,5.37,28,knowledge
+History and Archeology,4.44,6.65,5.71,24,knowledge
+Sales and Marketing,4.64,5.73,5.05,117,knowledge

@@ -1,28 +1,28 @@
-title_current,group,pct_all_ceiling,pct_human_conversation,pct_agentic_confirmed,pct_all_confirmed,pct_agentic_ceiling
-Accountants and Auditors,high_profile,43.59,28.09,35.32,28.09,35.32
-Cashiers,high_profile,68.24,42.33,64.62,46.94,65.88
-Computer Systems Analysts,utah_relevant,80.71,57.53,79.94,70.69,79.94
-Construction Laborers,utah_relevant,12.60,11.24,5.04,11.96,5.04
-Customer Service Representatives,high_profile,85.86,71.00,81.55,84.08,82.09
-Data Scientists,ai_interesting,76.82,46.04,72.55,46.04,72.55
-Editors,ai_interesting,69.05,53.93,56.68,63.22,56.92
-"Elementary School Teachers, Except Special Education",high_profile,67.10,56.49,44.41,63.21,44.52
-General and Operations Managers,high_profile,52.31,25.56,42.36,27.87,42.78
-Graphic Designers,ai_interesting,87.30,74.28,79.92,81.02,81.00
-Heavy and Tractor-Trailer Truck Drivers,high_profile,29.40,19.54,23.08,21.53,23.08
-Human Resources Specialists,ai_interesting,86.37,60.20,79.75,75.84,80.29
-Interpreters and Translators,ai_interesting,87.70,84.04,78.04,87.05,78.58
-"Janitors and Cleaners, Except Maids and Housekeeping Cleaners",high_profile,16.79,11.34,5.45,11.34,5.45
-Lawyers,ai_interesting,47.39,38.63,35.17,41.80,35.17
-Market Research Analysts and Marketing Specialists,ai_interesting,92.71,80.41,91.01,89.50,91.01
-Medical and Health Services Managers,utah_relevant,65.06,44.33,51.43,47.27,51.43
-Network and Computer Systems Administrators,utah_relevant,85.55,56.11,84.26,73.68,84.26
-Paralegals and Legal Assistants,ai_interesting,55.24,41.59,47.45,41.59,47.45
-Registered Nurses,high_profile,40.16,18.49,29.72,33.36,29.72
-Retail Salespersons,high_profile,69.00,49.23,62.93,57.36,66.28
-"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products",utah_relevant,85.70,66.18,79.02,81.81,84.02
-"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",high_profile,90.87,67.23,88.98,75.10,89.35
-Software Developers,high_profile,64.68,45.16,60.87,45.16,60.87
-Technical Writers,ai_interesting,85.88,70.70,75.83,85.76,75.83
-Waiters and Waitresses,high_profile,45.07,39.41,26.03,39.41,27.89
-Web Developers,ai_interesting,90.77,70.51,89.62,84.52,89.73
+title_current,group,pct_all_ceiling,pct_human_conversation,pct_agentic_confirmed,pct_all_confirmed,pct_agentic_ceiling,ceiling_delta_pct
+Accountants and Auditors,high_profile,43.59,28.09,35.32,28.09,35.32,15.51
+Cashiers,high_profile,68.24,42.33,64.62,46.94,65.88,21.30
+Computer Systems Analysts,utah_relevant,80.71,57.53,79.94,70.69,79.94,10.01
+Construction Laborers,utah_relevant,12.60,11.24,5.04,11.96,5.04,0.64
+Customer Service Representatives,high_profile,85.86,71.00,81.55,84.08,82.09,1.78
+Data Scientists,ai_interesting,76.82,46.04,72.55,46.04,72.55,30.78
+Editors,ai_interesting,69.05,53.93,56.68,63.22,56.92,5.83
+"Elementary School Teachers, Except Special Education",high_profile,67.10,56.49,44.41,63.21,44.52,3.89
+General and Operations Managers,high_profile,52.31,25.56,42.36,27.87,42.78,24.44
+Graphic Designers,ai_interesting,87.30,74.28,79.92,81.02,81.00,6.28
+Heavy and Tractor-Trailer Truck Drivers,high_profile,29.40,19.54,23.08,21.53,23.08,7.87
+Human Resources Specialists,ai_interesting,86.37,60.20,79.75,75.84,80.29,10.53
+Interpreters and Translators,ai_interesting,87.70,84.04,78.04,87.05,78.58,0.65
+"Janitors and Cleaners, Except Maids and Housekeeping Cleaners",high_profile,16.79,11.34,5.45,11.34,5.45,5.45
+Lawyers,ai_interesting,47.39,38.63,35.17,41.80,35.17,5.59
+Market Research Analysts and Marketing Specialists,ai_interesting,92.71,80.41,91.01,89.50,91.01,3.21
+Medical and Health Services Managers,utah_relevant,65.06,44.33,51.43,47.27,51.43,17.79
+Network and Computer Systems Administrators,utah_relevant,85.55,56.11,84.26,73.68,84.26,11.87
+Paralegals and Legal Assistants,ai_interesting,55.24,41.59,47.45,41.59,47.45,13.65
+Registered Nurses,high_profile,40.16,18.49,29.72,33.36,29.72,6.80
+Retail Salespersons,high_profile,69.00,49.23,62.93,57.36,66.28,11.64
+"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products",utah_relevant,85.70,66.18,79.02,81.81,84.02,3.89
+"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",high_profile,90.87,67.23,88.98,75.10,89.35,15.77
+Software Developers,high_profile,64.68,45.16,60.87,45.16,60.87,19.52
+Technical Writers,ai_interesting,85.88,70.70,75.83,85.76,75.83,0.12
+Waiters and Waitresses,high_profile,45.07,39.41,26.03,39.41,27.89,5.66
+Web Developers,ai_interesting,90.77,70.51,89.62,84.52,89.73,6.25

@@ -118,19 +118,23 @@ for config_key, dataset_name in ANALYSIS_CONFIGS.items():
 
 ## Risk Scoring Flags
 
-Computed per occupation, based on the primary config (`all_ceiling`) unless otherwise noted:
+Computed per occupation, based on the primary config (`all_confirmed`) unless otherwise noted.
 
-| Flag | Condition | Notes |
-|------|-----------|-------|
-| 1 | `pct_tasks_affected > median(all occs)` | Varies by config |
-| 2 | `overall_gap > median(all occs)` | SKA gap; varies by config |
-| 3 | `pct_delta > 0 AND pct_delta > median(pct_delta)` | pct trend, first→last date |
-| 4 | `ska_delta > 0 AND ska_delta > median(ska_delta)` | SKA gap trend |
-| 5 | `job_zone ∈ {1, 2, 3}` | From eco_2025 |
-| 6 | `outlook ∈ {2, 3}` | DWS star rating; 1 = good outlook/low wages |
-| 7 | `n_software > median(all occs)` | From tech_skills_simple.csv |
+**Weighted scoring:** Flags 1–4 (direct exposure signal) get weight 2. Flags 5–7 (structural vulnerability) get weight 1. Maximum possible score = 11.
 
-**Tiers:** 5–7 flags = high risk, 3–4 = moderate, 1–2 = low.
+| Flag | Weight | Condition | Notes |
+|------|--------|-----------|-------|
+| 1 | 2 | `pct_tasks_affected > median(all occs)` | Varies by config |
+| 2 | 2 | `overall_gap > median(all occs)` | SKA gap; varies by config |
+| 3 | 2 | `pct_delta > 0 AND pct_delta > median(pct_delta)` | pct trend; median is of ALL growth (incl. negative) |
+| 4 | 2 | `ska_delta > 0 AND ska_delta > median(ska_delta)` | SKA gap trend |
+| 5 | 1 | `job_zone ∈ {1, 2, 3}` | From eco_2025 |
+| 6 | 1 | `outlook ∈ {2, 3}` | DWS star rating; 1 = good outlook/low wages |
+| 7 | 1 | `n_software > median(all occs)` | From tech_skills_simple.csv |
+
+**Exposure gate:** If `pct_tasks_affected < 33%`, the occupation cannot be classified as high risk regardless of weighted score.
+
+**Tiers:** 8–11 = high risk, 4–7 = moderate, 0–3 = low.
 
 ---
 

@@ -5,13 +5,14 @@ How do all job exposure findings land for the 29 named occupations?
 
 Applies all sub-analyses to the curated occupation list. Produces a focused,
 presentation-ready summary covering:
-  - Exposure pct across all five configs
-  - Risk scores and tier (loaded from job_risk_scoring results)
-  - SKA gap breakdown (top 5 human-advantage + top 5 AI-advantage elements per occ)
-  - Pct time trends per config
+  - Exposure pct across all five configs (primary: all_confirmed, ceiling comparison)
+  - Risk scores and tier (weighted scoring from job_risk_scoring)
+  - SKA gap breakdown (top 5 human-advantage + top 5 AI-advantage per occ)
+  - Pct and workers_affected time trends per config
   - Whether each occ is flagged as "hidden at-risk" by audience_framing
+  - Three-layer framing: confirmed → ceiling → actual adoption gap
 
-Run from project root (run after job_risk_scoring and worker_resilience):
+Run from project root (run after job_risk_scoring, worker_resilience, audience_framing):
     venv/Scripts/python -m analysis.questions.job_exposure.occs_of_interest.run
 """
 from __future__ import annotations
@@ -36,6 +37,7 @@ from analysis.utils import (
     COLORS,
     FONT_FAMILY,
     _format_bar_label,
+    format_workers,
     save_csv,
     save_figure,
     style_figure,
@@ -46,14 +48,15 @@ RISK_RESULTS = HERE.parent / "job_risk_scoring" / "results"
 RESILIENCE_RESULTS = HERE.parent / "worker_resilience" / "results"
 AUDIENCE_RESULTS = HERE.parent / "audience_framing" / "results"
 
-PRIMARY_KEY = "all_ceiling"
+PRIMARY_KEY = "all_confirmed"
+CEILING_KEY = "all_ceiling"
+
 GROUP_LABELS = {
     "high_profile": "High-Profile / High-Employment",
     "ai_interesting": "AI-Controversial / Interesting",
     "utah_relevant": "Utah-Relevant",
 }
 
-# Map each occupation name to its group
 OCC_GROUPS: dict[str, str] = {
     "Registered Nurses": "high_profile",
     "Software Developers": "high_profile",
@@ -90,7 +93,6 @@ TIER_COLORS_RISK = {"high": COLORS["negative"], "moderate": COLORS["accent"], "l
 
 
 def _find_occ(title: str, available: set[str]) -> str | None:
-    """Case-insensitive + partial fuzzy match."""
     title_lower = title.lower()
     for occ in available:
         if occ.lower() == title_lower:
@@ -104,17 +106,31 @@ def _find_occ(title: str, available: set[str]) -> str | None:
 # ── Figures ───────────────────────────────────────────────────────────────────
 
 def _exposure_ranked_bar(occ_df: pd.DataFrame) -> go.Figure:
-    """Horizontal bar: named occs ranked by all_ceiling pct, colored by group."""
+    """Horizontal bar: named occs ranked by primary pct, with ceiling shown as lighter overlay."""
     group_colors = {
         "high_profile": COLORS["primary"],
         "ai_interesting": COLORS["accent"],
-        "utah_relevant": COLORS["secondary"] if "secondary" in COLORS else "#4a7c6f",
+        "utah_relevant": COLORS["secondary"],
     }
     df = occ_df.sort_values(f"pct_{PRIMARY_KEY}", ascending=True)
+
+    # Primary config bars
     colors = [group_colors.get(g, COLORS["muted"]) for g in df["group"]]
     labels = [f"{v:.1f}%" for v in df[f"pct_{PRIMARY_KEY}"]]
 
     fig = go.Figure()
+
+    # Ceiling bars (background, lighter)
+    fig.add_trace(go.Bar(
+        y=df["title_current"],
+        x=df[f"pct_{CEILING_KEY}"],
+        orientation="h",
+        marker=dict(color="rgba(200,200,200,0.3)", line=dict(width=0)),
+        name="Ceiling",
+        showlegend=True,
+    ))
+
+    # Primary bars (foreground)
     fig.add_trace(go.Bar(
         y=df["title_current"],
         x=df[f"pct_{PRIMARY_KEY}"],
@@ -123,19 +139,25 @@ def _exposure_ranked_bar(occ_df: pd.DataFrame) -> go.Figure:
         text=labels, textposition="outside",
         textfont=dict(size=10, color=COLORS["neutral"], family=FONT_FAMILY),
         cliponaxis=False,
+        name="Confirmed",
+        showlegend=True,
     ))
-    chart_h = max(500, len(df) * 28 + 150)
+
+    chart_h = max(500, len(df) * 28 + 200)
     style_figure(
         fig,
         "AI Task Exposure — Occupations of Interest",
-        subtitle=f"% tasks affected | {ANALYSIS_CONFIG_LABELS[PRIMARY_KEY]} | Colored by group",
-        x_title=None, height=chart_h, show_legend=False,
+        subtitle=f"% tasks affected | Solid = {ANALYSIS_CONFIG_LABELS[PRIMARY_KEY]} | Faded = Ceiling",
+        x_title=None, height=chart_h, show_legend=True,
     )
     fig.update_layout(
-        margin=dict(l=20, r=80),
+        barmode="overlay",
+        margin=dict(l=20, r=80, t=80, b=120),
         xaxis=dict(showgrid=False, showticklabels=False, showline=False, zeroline=False),
         yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=9, family=FONT_FAMILY)),
         bargap=0.25,
+        legend=dict(orientation="h", yanchor="top", y=-0.12, xanchor="center", x=0.5,
+                    font=dict(size=10, color=COLORS["neutral"], family=FONT_FAMILY)),
     )
     return fig
 
@@ -154,17 +176,17 @@ def _risk_tier_chart(occ_df: pd.DataFrame) -> go.Figure:
         textfont=dict(size=10, color=COLORS["neutral"], family=FONT_FAMILY),
         cliponaxis=False,
     ))
-    chart_h = max(500, len(df) * 28 + 150)
+    chart_h = max(500, len(df) * 28 + 200)
     style_figure(
         fig,
         "Composite Risk Score — Occupations of Interest",
-        subtitle="7-factor risk score (0–7) | Red = high, Orange = moderate, Gray = low",
+        subtitle=f"Weighted scoring (0–11) | Red = high, Orange = moderate, Gray = low | {ANALYSIS_CONFIG_LABELS[PRIMARY_KEY]}",
         x_title=None, height=chart_h, show_legend=False,
     )
     fig.update_layout(
-        margin=dict(l=20, r=160),
+        margin=dict(l=20, r=160, t=80, b=100),
         xaxis=dict(showgrid=False, showticklabels=False, showline=False, zeroline=False,
-                   range=[0, 9]),
+                   range=[0, 13]),
         yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=9, family=FONT_FAMILY)),
         bargap=0.25,
     )
@@ -172,7 +194,7 @@ def _risk_tier_chart(occ_df: pd.DataFrame) -> go.Figure:
 
 
 def _ska_gap_heatmap(occ_df: pd.DataFrame) -> go.Figure:
-    """Heatmap: occ × SKA type (skills, abilities, knowledge) gap."""
+    """Heatmap: occ × SKA type gap."""
     pivot = occ_df[["title_current", "skills_gap", "abilities_gap", "knowledge_gap"]].copy()
     pivot = pivot.set_index("title_current")
     pivot.columns = ["Skills Gap", "Abilities Gap", "Knowledge Gap"]
@@ -191,14 +213,15 @@ def _ska_gap_heatmap(occ_df: pd.DataFrame) -> go.Figure:
         texttemplate="%{text:.2f}",
         hovertemplate="<b>%{y}</b><br>%{x}<br>Gap: %{z:.2f}<extra></extra>",
     ))
-    chart_h = max(600, len(pivot) * 24 + 200)
+    chart_h = max(600, len(pivot) * 24 + 250)
     style_figure(
         fig,
         "SKA Gap by Type — Occupations of Interest",
-        subtitle="Blue = human advantage (occ need > AI capability) | Red = AI leads",
-        x_title=None, y_title=None, height=chart_h, width=600, show_legend=False,
+        subtitle=f"Blue = human advantage | Red = AI leads | {ANALYSIS_CONFIG_LABELS[PRIMARY_KEY]}",
+        x_title=None, y_title=None, height=chart_h, width=650, show_legend=False,
     )
     fig.update_layout(
+        margin=dict(l=20, r=40, t=80, b=100),
         yaxis=dict(autorange="reversed", tickfont=dict(size=9, family=FONT_FAMILY)),
         xaxis=dict(tickfont=dict(size=11, family=FONT_FAMILY)),
     )
@@ -206,7 +229,7 @@ def _ska_gap_heatmap(occ_df: pd.DataFrame) -> go.Figure:
 
 
 def _trend_slopes_chart(trend_df: pd.DataFrame, config_key: str) -> go.Figure:
-    """Slope chart: pct at first date vs last date for each named occ."""
+    """Slope chart: pct at first date vs last date for named occs."""
     first_col = f"pct_first_{config_key}"
     last_col = f"pct_last_{config_key}"
     df = trend_df.dropna(subset=[first_col, last_col]).copy()
@@ -233,12 +256,13 @@ def _trend_slopes_chart(trend_df: pd.DataFrame, config_key: str) -> go.Figure:
     series = ANALYSIS_CONFIG_SERIES[config_key]
     style_figure(
         fig,
-        f"Trend in AI Exposure — {ANALYSIS_CONFIG_LABELS[config_key]}",
-        subtitle=f"{series[0]} -> {series[-1]} | Red = increasing, Gray = decreasing",
+        f"Exposure Trend — {ANALYSIS_CONFIG_LABELS[config_key]}",
+        subtitle=f"{series[0]} → {series[-1]} | Red = increasing, Gray = decreasing",
         x_title=None, y_title="% Tasks Affected",
         height=700, width=900, show_legend=False,
     )
     fig.update_layout(
+        margin=dict(l=60, r=40, t=80, b=100),
         xaxis=dict(
             tickmode="array", tickvals=[0, 1],
             ticktext=[series[0], series[-1]],
@@ -273,7 +297,6 @@ def main() -> None:
     struct = pd.DataFrame(struct_rows)
     available_occs = set(struct["title_current"].tolist())
 
-    # Match named occupations
     matched = {}
     for name in OCCS_OF_INTEREST:
         m = _find_occ(name, available_occs)
@@ -296,17 +319,20 @@ def main() -> None:
         print(f"  {config_key}")
         pct = get_pct_tasks_affected(dataset_name)
         occ_df[f"pct_{config_key}"] = occ_df["title_current"].map(pct).fillna(0.0)
+        # Workers affected
+        occ_df[f"workers_{config_key}"] = occ_df[f"pct_{config_key}"] / 100.0 * occ_df["emp_nat"]
+
+    # Ceiling delta (how much more ceiling shows vs confirmed)
+    occ_df["ceiling_delta_pct"] = occ_df[f"pct_{CEILING_KEY}"] - occ_df[f"pct_{PRIMARY_KEY}"]
 
     # ── Load risk scores ──────────────────────────────────────────────────────
     risk_file = RISK_RESULTS / "risk_scores_primary.csv"
     if risk_file.exists():
         risk_df = pd.read_csv(risk_file)
-        risk_cols = ["title_current", "risk_score", "risk_tier"] + \
+        risk_cols = ["title_current", "risk_score", "risk_tier", "exposure_gated"] + \
                     [c for c in risk_df.columns if c.startswith("flag")]
-        occ_df = occ_df.merge(
-            risk_df[risk_cols].rename(columns={"title_current": "title_current"}),
-            on="title_current", how="left",
-        )
+        risk_cols = [c for c in risk_cols if c in risk_df.columns]
+        occ_df = occ_df.merge(risk_df[risk_cols], on="title_current", how="left")
         print("Loaded risk scores from job_risk_scoring")
     else:
         print("WARNING: risk_scores_primary.csv not found -- run job_risk_scoring first")
@@ -325,9 +351,9 @@ def main() -> None:
         on="title_current", how="left",
     )
 
-    # ── Pct trends ────────────────────────────────────────────────────────────
-    print("\nComputing pct trends...")
-    trend_df = occ_df[["title_current"]].copy()
+    # ── Pct and workers trends ───────────────────────────────────────────────
+    print("\nComputing pct and workers trends...")
+    trend_df = occ_df[["title_current", "emp_nat"]].copy()
     for config_key, series in ANALYSIS_CONFIG_SERIES.items():
         if len(series) < 2:
             continue
@@ -337,6 +363,16 @@ def main() -> None:
         trend_df[f"pct_last_{config_key}"] = trend_df["title_current"].map(pct_last).fillna(0)
         trend_df[f"pct_delta_{config_key}"] = (
             trend_df[f"pct_last_{config_key}"] - trend_df[f"pct_first_{config_key}"]
+        )
+        # Workers trend
+        trend_df[f"workers_first_{config_key}"] = (
+            trend_df[f"pct_first_{config_key}"] / 100.0 * trend_df["emp_nat"]
+        )
+        trend_df[f"workers_last_{config_key}"] = (
+            trend_df[f"pct_last_{config_key}"] / 100.0 * trend_df["emp_nat"]
+        )
+        trend_df[f"workers_delta_{config_key}"] = (
+            trend_df[f"workers_last_{config_key}"] - trend_df[f"workers_first_{config_key}"]
         )
     save_csv(trend_df, results / "trend_summary.csv")
 
@@ -353,10 +389,12 @@ def main() -> None:
 
     # ── Save full output ──────────────────────────────────────────────────────
     pct_cols = [f"pct_{k}" for k in ANALYSIS_CONFIGS]
+    workers_cols = [f"workers_{k}" for k in ANALYSIS_CONFIGS]
     flag_cols = [c for c in occ_df.columns if c.startswith("flag")]
     out_cols = (
         ["title_current", "group", "major", "emp_nat", "wage_nat", "job_zone", "outlook"] +
-        pct_cols + ["risk_score", "risk_tier"] + flag_cols +
+        pct_cols + workers_cols + ["ceiling_delta_pct"] +
+        ["risk_score", "risk_tier"] + flag_cols +
         ["skills_gap", "abilities_gap", "knowledge_gap", "overall_gap", "hidden_at_risk"]
     )
     full_out = occ_df[[c for c in out_cols if c in occ_df.columns]].copy()
@@ -364,14 +402,13 @@ def main() -> None:
              results / "occs_of_interest_full.csv")
     print("\nSaved occs_of_interest_full.csv")
 
-    exposure_out = occ_df[["title_current", "group"] + pct_cols].copy()
+    exposure_out = occ_df[["title_current", "group"] + pct_cols + ["ceiling_delta_pct"]].copy()
     save_csv(exposure_out, results / "exposure_by_config.csv")
 
     # ── Per-occ SKA element detail ────────────────────────────────────────────
     interest_elem_file = RESILIENCE_RESULTS / "occs_of_interest_gaps.csv"
     if interest_elem_file.exists():
-        import shutil as _sh
-        _sh.copy2(interest_elem_file, results / "ska_element_detail.csv")
+        shutil.copy2(interest_elem_file, results / "ska_element_detail.csv")
         print("Copied SKA element detail from worker_resilience")
 
     # ── Figures ───────────────────────────────────────────────────────────────
@@ -391,18 +428,21 @@ def main() -> None:
         save_figure(fig, fig_dir / "ska_gap_heatmap.png")
         print("  ska_gap_heatmap.png")
 
-    # Trend slope chart for primary config
-    trend_cols_primary = [c for c in trend_df.columns if PRIMARY_KEY in c]
-    if trend_cols_primary:
-        fig = _trend_slopes_chart(trend_df, PRIMARY_KEY)
-        save_figure(fig, fig_dir / "trend_slopes.png")
-        print("  trend_slopes.png")
+    # Trend slope charts (primary + ceiling)
+    for ck in [PRIMARY_KEY, CEILING_KEY]:
+        trend_cols = [c for c in trend_df.columns if ck in c]
+        if trend_cols:
+            fig = _trend_slopes_chart(trend_df, ck)
+            safe_ck = ck.replace("_", "")
+            save_figure(fig, fig_dir / f"trend_slopes_{safe_ck}.png")
+            print(f"  trend_slopes_{safe_ck}.png")
 
     # ── Copy key figures ──────────────────────────────────────────────────────
     committed = HERE / "figures"
     committed.mkdir(exist_ok=True)
     for fname in ["exposure_ranked_bar.png", "risk_tier_summary.png",
-                  "ska_gap_heatmap.png", "trend_slopes.png"]:
+                  "ska_gap_heatmap.png", "trend_slopes_allconfirmed.png",
+                  "trend_slopes_allceiling.png"]:
         src = fig_dir / fname
         if src.exists():
             shutil.copy2(src, committed / fname)

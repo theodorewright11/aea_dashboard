@@ -1,8 +1,8 @@
-flag,n_triggered,pct_of_occs
-flag1_pct,461,49.95
-flag2_ska,446,48.32
-flag3_pct_trend,461,49.95
-flag4_ska_trend,446,48.32
-flag5_job_zone,544,58.94
-flag6_outlook,462,50.05
-flag7_n_software,441,47.78
+flag,n_triggered,pct_of_occs,weight
+flag1_pct,461,49.95,2
+flag2_ska,446,48.32,2
+flag3_pct_trend,461,49.95,2
+flag4_ska_trend,446,48.32,2
+flag5_job_zone,544,58.94,1
+flag6_outlook,462,50.05,1
+flag7_n_software,441,47.78,1

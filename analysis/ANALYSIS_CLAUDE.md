@@ -4,6 +4,12 @@ Rules specific to working in the `analysis/` folder. Read this alongside the pro
 
 ---
 
+## Writing Style
+
+When writing reports, narratives, or any prose deliverables, follow the writing style reference in `analysis/writing_style_reference.md`. The key points: conversational-analytical register, loose form but rigorous logic, no hedging filler, no bureaucratic framing, no AI-sounding connectors. Don't force it — the goal is to sound like a sharp person reasoning through data, not to match a template. Keep things as concise as they should be; don't pad sections.
+
+---
+
 ## Before Starting Any Analysis Task
 
 1. Read project-level `CLAUDE.md` and `PRD.md`.
