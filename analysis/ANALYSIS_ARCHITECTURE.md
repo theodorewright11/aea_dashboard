@@ -42,13 +42,28 @@ analysis/
 │   │   ├── activity_robustness/
 │   │   ├── education_lens/
 │   │   └── audience_framing/
-│   └── potential_growth/        — Active question bucket
+│   ├── potential_growth/        — Active question bucket
+│   │   ├── README.md
+│   │   ├── potential_growth_report.md
+│   │   ├── adoption_gap/
+│   │   ├── wage_potential/
+│   │   ├── automation_opportunity/
+│   │   └── audience_framing/
+│   ├── source_agreement/        — Active question bucket
+│   │   ├── README.md
+│   │   ├── source_agreement_report.md
+│   │   ├── ranking_agreement/
+│   │   ├── score_distributions/
+│   │   ├── source_portraits/
+│   │   └── marginal_contributions/
+│   └── agentic_usage/           — Active question bucket
 │       ├── README.md
-│       ├── potential_growth_report.md
-│       ├── adoption_gap/
-│       ├── wage_potential/
-│       ├── automation_opportunity/
-│       └── audience_framing/
+│       ├── agentic_usage_report.md
+│       ├── exposure_state/
+│       ├── sector_footprint/
+│       ├── work_activities/
+│       ├── mcp_profile/
+│       └── trends/
 ├── question_findings/           — Flat copies of question .md reports
 └── report/
     └── report.md                — Rolling aggregate report

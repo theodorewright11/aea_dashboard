@@ -1,0 +1,31 @@
+category,pct_mcp_only,pct_aei_api,pct_conv_baseline,delta_mcp_vs_aei,delta_mcp_vs_conv
+Telemarketers,90.13,68.29,83.26,21.84,6.87
+Online Merchants,87.39,68.38,84.04,19.01,3.35
+Web Developers,84.64,34.07,84.52,50.57,0.12
+Computer Network Support Specialists,80.99,62.03,81.36,18.96,-0.37
+Word Processors and Typists,79.15,45.94,75.09,33.21,4.06
+Network and Computer Systems Administrators,77.95,53.76,73.68,24.18,4.27
+"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",77.01,49.12,75.10,27.89,1.90
+Web and Digital Interface Designers,75.23,26.92,51.24,48.32,23.99
+Bioinformatics Technicians,74.28,63.66,87.67,10.61,-13.39
+Computer Programmers,73.46,65.53,78.84,7.92,-5.38
+Web Administrators,72.88,49.12,69.77,23.75,3.11
+Data Warehousing Specialists,72.81,71.54,88.71,1.27,-15.91
+Software Quality Assurance Analysts and Testers,72.37,18.32,49.63,54.05,22.74
+Data Scientists,72.12,0.00,46.04,72.12,26.08
+Legal Secretaries and Administrative Assistants,71.74,38.91,33.57,32.84,38.18
+Database Administrators,71.03,40.56,75.35,30.46,-4.33
+"Sales Representatives of Services, Except Advertising, Insurance, Financial Services, and Travel",70.78,0.00,38.31,70.78,32.48
+Data Entry Keyers,70.30,38.16,65.89,32.14,4.41
+Document Management Specialists,70.09,54.20,76.79,15.89,-6.69
+Medical Secretaries and Administrative Assistants,69.94,46.95,31.36,22.99,38.57
+Receptionists and Information Clerks,69.52,50.12,73.83,19.40,-4.31
+"Office Clerks, General",69.41,51.24,71.37,18.17,-1.96
+Computer Systems Analysts,69.13,60.67,70.69,8.47,-1.56
+Geographic Information Systems Technologists and Technicians,69.13,47.33,47.21,21.80,21.93
+"Switchboard Operators, Including Answering Service",68.98,39.30,72.58,29.68,-3.59
+Statistical Assistants,68.54,64.47,84.01,4.07,-15.47
+"Bookkeeping, Accounting, and Auditing Clerks",68.48,33.02,69.59,35.47,-1.10
+Graphic Designers,68.45,45.84,81.02,22.61,-12.58
+Business Intelligence Analysts,68.08,85.24,92.34,-17.16,-24.26
+Information Security Analysts,67.59,69.90,83.84,-2.30,-16.25

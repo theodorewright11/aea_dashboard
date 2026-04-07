@@ -143,11 +143,52 @@ Organized around IWA (Intermediate Work Activity) level as primary lens. No SKA 
 
 **Note:** `ai_transformative_potential/` (old folder) has been replaced by this analysis. Do not reference it.
 
+### Active: Source Agreement (`questions/source_agreement/`)
+
+**Overarching question:** How robust are the dashboard's findings across its four independent data sources, and what does each source uniquely contribute?
+
+**Four sources compared:** Human Conv. (AEI Conv + Micro 2026-02-12) | Agentic (AEI API 2026-02-12) | Microsoft | MCP Cumul. v4
+
+| Sub-folder | Question |
+|------------|----------|
+| `ranking_agreement/` | Where do the four sources agree/disagree on which occupations are most AI-exposed? (Spearman correlations, confidence tiers at all aggregation levels) |
+| `score_distributions/` | How are auto-aug scores distributed within each source, and where is cross-source variance highest? |
+| `source_portraits/` | What is each source's distinctive signature — what does each one uniquely see? |
+| `marginal_contributions/` | What does each source layer add to the combined picture? (layer-by-layer tier shifts) |
+
+**Key findings:**
+- Source agreement degrades with granularity: major mean Spearman rho = 0.875, occupation rho = 0.676; 91% of occupations have zero cross-source consensus in top-30
+- Six bedrock major categories (all four sources agree): Computer/Math, Office/Admin, Sales, Business/Finance, Arts/Design/Media, Life/Physical/Social Science
+- Strongest source pair: Human Conv. vs Microsoft (rho 0.93 major, 0.86 occ); weakest: Agentic vs Microsoft (rho 0.80 major, 0.55 occ)
+- MCP addition upgrades 104 occupations to High tier (>=60%); API addition upgrades 64
+- MCP distinctively exposes system-interaction and administrative automation work; Human Conv. distinctively exposes education, legal, and social service work
+
+### Active: Agentic Usage (`questions/agentic_usage/`)
+
+**Overarching question:** What is the full picture of agentic AI's footprint on U.S. work — which sectors, which work activities, how fast is it growing?
+
+**Primary datasets:** AEI API 2026-02-12 (Agentic Confirmed) | MCP Cumul. v4 (MCP Only) | MCP + API 2026-02-18 (Agentic Ceiling)
+
+| Sub-folder | Question |
+|------------|----------|
+| `exposure_state/` | Current agentic footprint: headline numbers, tier distributions, confirmed vs. ceiling |
+| `sector_footprint/` | Which sectors carry the most workers and wages in agentic scope? |
+| `work_activities/` | Which work activities does agentic AI specifically illuminate? |
+| `mcp_profile/` | What does MCP specifically reveal about tool-use AI exposure? |
+| `trends/` | How has the agentic frontier grown over time? |
+
+**Key findings:**
+- Agentic Confirmed (AEI API): 31.1M workers, 20.3% of employment; Agentic Ceiling (MCP+API): 60.4M workers, 39.4%
+- Conversational baseline (all_confirmed): 61.3M workers, 40.0% — agentic ceiling nearly matches conversational coverage
+- MCP distinctively exposes office/admin, data work, and system-interaction occupations; Computer/Math sector shows largest MCP-over-AEI-API delta
+- Agentic ceiling grew 81% from April 2025 to February 2026, but the last two dataset versions added only ~1.0M workers combined — growth is asymptoting
+- AEI API and MCP work activity profiles differ: AEI API (eco_2015 baseline) reflects agentic workflow integration; MCP (eco_2025) captures tool-use across information-processing and administrative activities
+
 ### Planned (future sessions)
 
 | Bucket | Core question |
 |--------|--------------|
-| Source Agreement | Where do sources agree/disagree? What does MCP uniquely add? |
+| (none remaining) | |
 
 ---
 
