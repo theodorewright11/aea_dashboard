@@ -1,0 +1,16 @@
+source,tier,count
+Human Conv.,20-40,342
+Human Conv.,40-60,220
+Human Conv.,<20,280
+Human Conv.,>=60,81
+Agentic (AEI API),20-40,158
+Agentic (AEI API),40-60,103
+Agentic (AEI API),<20,626
+Agentic (AEI API),>=60,36
+Microsoft,20-40,433
+Microsoft,40-60,121
+Microsoft,<20,369
+MCP,20-40,304
+MCP,40-60,120
+MCP,<20,445
+MCP,>=60,54

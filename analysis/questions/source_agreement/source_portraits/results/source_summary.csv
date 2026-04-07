@@ -1,0 +1,5 @@
+source,median_pct,mean_pct,max_pct,pct_high_tier,pct_low_tier
+Human Conv.,30.23,32.07,84.04,8.78,30.34
+Agentic (AEI API),8.65,16.52,85.24,3.90,67.82
+Microsoft,23.23,24.15,56.01,0.00,39.98
+MCP,20.80,24.77,90.13,5.85,48.21

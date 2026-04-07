@@ -1,0 +1,17 @@
+config_key,config_label,tier_label,tier_name,n_occs,workers
+agentic_confirmed,Agentic Confirmed,<20%,Low,626,5109831.47
+agentic_confirmed,Agentic Confirmed,20–40%,Restructuring,158,9555326.88
+agentic_confirmed,Agentic Confirmed,40–60%,Moderate,103,12387796.39
+agentic_confirmed,Agentic Confirmed,≥60%,High,36,4051376.37
+mcp_only,MCP Only,<20%,Low,445,7335467.11
+mcp_only,MCP Only,20–40%,Restructuring,304,14380093.51
+mcp_only,MCP Only,40–60%,Moderate,120,9586565.83
+mcp_only,MCP Only,≥60%,High,54,15246621.11
+agentic_ceiling,Agentic Ceiling,<20%,Low,341,4460876.35
+agentic_ceiling,Agentic Ceiling,20–40%,Restructuring,268,12765674.31
+agentic_ceiling,Agentic Ceiling,40–60%,Moderate,158,13109505.23
+agentic_ceiling,Agentic Ceiling,≥60%,High,156,30021672.52
+conv_baseline,Conv. Baseline,<20%,Low,259,3231735.20
+conv_baseline,Conv. Baseline,20–40%,Restructuring,300,14414828.10
+conv_baseline,Conv. Baseline,40–60%,Moderate,219,20448675.69
+conv_baseline,Conv. Baseline,≥60%,High,145,23203718.35
