@@ -54,6 +54,63 @@ Top-level `<bucket>_report.md` files follow a specific structure. Use `job_expos
 - **Sub-Report Index**: a table with columns Sub-Analysis | Report | What It Answers. Link the report filename.
 - **Config Reference**: a table with columns Config Key | Dataset | Role. Match the five ANALYSIS_CONFIGS exactly.
 
+## Rolling Aggregate Reports (report/ folder)
+
+The `analysis/report/` folder contains two documents that roll up findings across all active question buckets. These are the primary deliverables for stakeholders and paper authors. They are NOT auto-generated — they require a dedicated update pass when significant new results exist.
+
+**Two-document structure:**
+
+### `report_brief.md` — Highlighted Stories (3–8 findings)
+
+The short-form report. Tells the 3–8 most compelling stories across all analysis buckets. Intended audience: policymakers, paper reviewers, anyone who wants the main takeaways in one place.
+
+Format requirements:
+- **Opening paragraph** (1–2 sentences): scope and primary config.
+- **One overview figure** showing aggregate scale (e.g., five-config totals). This is the first figure in the document.
+- **One section per story** (3–8 total). Each section has:
+  - A header that states the finding, not the topic — skimming the headers alone should convey the paper's thesis. Example: "Zero to 145: The High-Exposure Tier Was Created During the Study Window", not "Temporal Analysis".
+  - Narrative prose in the conversational-analytical voice (see `writing_style_reference.md`). Walk through the reasoning, not just the conclusion.
+  - 1–2 figures from the relevant bucket's committed `figures/` dir. Figure paths use `../questions/{bucket}/...` relative to `report/`.
+  - A `*Full analysis: [...](...)*` link to the relevant bucket report.
+- **"Where to Go Next" section** at the end: links to `report.md` and to all eight bucket reports.
+- **Config reference footer** (one line).
+
+How to pick stories (in priority order):
+1. Findings that are counterintuitive or gap-filling relative to existing literature.
+2. Findings where the data produces a number or pattern that would change how a policymaker acts.
+3. Findings that are cross-validated by multiple independent sources or methods.
+4. Findings that are methodological contributions (not just results).
+5. Personal preference / editorial judgment.
+Cap at 8 stories. Past 8 becomes unwieldy for a "highlights" format. Below 3 feels thin.
+
+### `report.md` — Full Comprehensive Report
+
+The long-form report. Covers all active analysis buckets with depth. Intended audience: researchers, paper co-authors, anyone who wants the full picture with all supporting figures.
+
+Format requirements:
+- **Opening paragraph**: 3–5 sentences on scope, primary config, and what's new since the last version.
+- **Table of contents**: one entry per chapter, with anchor links.
+- **One chapter per active analysis bucket** (currently 8 buckets). Each chapter:
+  - Opens with `*Full detail: [bucket_report.md](...)*` link.
+  - Has a `*Primary config: ...*` line.
+  - Covers the key findings from that bucket with sub-sections. Section headers state findings, not topics.
+  - Embeds key figures (1–3 per sub-section) using `../questions/{bucket}/...` paths.
+  - Does NOT reproduce the full bucket report verbatim — synthesizes and distills, with forward-links for depth.
+- **Cross-Cutting Findings section**: 5–8 findings that span multiple buckets.
+- **Sub-Report Index table**: one row per bucket with columns Bucket | Report | Core Question.
+- **Config Reference table**: five configs.
+
+### Updating the Reports
+
+When new sub-question results are produced or an existing bucket report is updated:
+
+1. Identify which chapter of `report.md` covers that bucket and update the relevant sub-sections. Update numbers, figures, and narrative to reflect the new results.
+2. Assess whether any of the 8 stories in `report_brief.md` need updating. If a story's key numbers changed, update the narrative and figures. If a new result is more compelling than an existing story, consider swapping.
+3. If a new bucket is added (new top-level question folder), add a chapter to `report.md` and assess whether any finding from it warrants a story slot in `report_brief.md`.
+4. Do NOT update `report.md` or `report_brief.md` as part of a question-specific prompt. These are updated only by a dedicated report-update prompt.
+
+Figure path convention from `report/`: `../questions/{bucket}/{sub-folder}/figures/{filename}.png`
+
 ## Reference-Only Scripts
 
 The following question scripts are kept for reference but are **broken** due to dataset renames in the backend (e.g., old names like `"AEI Cumul. (Both) v4"` no longer exist). Do not attempt to run or fix them unless explicitly asked:
