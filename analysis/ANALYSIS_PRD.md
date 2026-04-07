@@ -184,6 +184,82 @@ Organized around IWA (Intermediate Work Activity) level as primary lens. No SKA 
 - Agentic ceiling grew 81% from April 2025 to February 2026, but the last two dataset versions added only ~1.0M workers combined — growth is asymptoting
 - AEI API and MCP work activity profiles differ: AEI API (eco_2015 baseline) reflects agentic workflow integration; MCP (eco_2025) captures tool-use across information-processing and administrative activities
 
+### Active: Field Benchmarks (`questions/field_benchmarks/`)
+
+**Overarching question:** How do the AEA Dashboard's findings compare to other major AI-and-work research, and where does our confirmed usage sit in the broader measurement landscape?
+
+**External sources:** Project Iceberg (Chopra et al., 2025) | Seampoint LLC (Utah, 2026 preliminary) | AEI (Humlum & Vestergaard, 2024) | ChatGPT usage (Weidinger et al., 2025) | Microsoft Copilot (2025)
+
+| Sub-folder | Question |
+|------------|----------|
+| `automation_share/` | How does our task exposure rate compare to Iceberg and Seampoint? |
+| `wage_impact/` | How do our wages_affected compare to Seampoint's Utah dollar estimates? |
+| `utah_benchmarks/` | Utah-specific: our pct_tasks_affected for Utah workers vs. Seampoint 20%/51% |
+| `theoretical_vs_confirmed/` | Where does confirmed usage sit relative to deployment readiness and technical capability? |
+| `sector_breakdown/` | Which sectors rank highest across our analysis, Copilot, AEI, and ChatGPT? |
+| `work_activity_comparison/` | Which GWA-level activity types appear across all confirmed-usage platforms? |
+| `platform_landscape/` | Full methodology comparison — all six sources side by side |
+
+**Key findings:**
+- Our agentic_confirmed (20.3%) matches Seampoint's governance-constrained takeover rate (20%) — the strongest external cross-validation signal for our framework
+- Our all_ceiling (50.3%) matches Seampoint's augment estimate (51%) — both frameworks converge on ~50% as the near-term AI task coverage ceiling
+- Iceberg's 11.7% Full Index is not a contradiction: it measures skill-wage substitutability, not task-level usage breadth — different question, not a disagreement
+- Utah all_confirmed: $62.6B wages in scope (60.2% of $104B total), vs. Seampoint's $21B takeover / $36B total
+- Cross-platform sector consensus: Computer/Math, Office/Admin, Sales, Business/Finance rank highest in every source that measures sector-level AI exposure
+- GWA convergence: Documenting/Recording, Getting Information, Processing Information are the top activity categories across our data, ChatGPT sessions, and Copilot enterprise logs
+
+**Three measurement layers:**
+- Layer 1 — Confirmed real-world usage (our data, AEI, ChatGPT): what AI is actually doing
+- Layer 2 — Deployment-constrained readiness (Seampoint): what orgs can deploy now under governance
+- Layer 3 — Technical capability ceiling (Iceberg): what AI tools can technically substitute
+
+### Active: State Clusters (`questions/state_clusters/`)
+
+**Overarching question:** When you examine U.S. states through the lenses established in the other analyses — risk landscape, work activity fingerprint, agentic exposure, adoption gap — do the same state groupings emerge each time, or does each lens reveal different fault lines?
+
+**Builds on:** `economic_footprint/state_profiles` sector-composition clustering (k=5, used as reference baseline throughout).
+
+**Primary datasets:** AEI Both + Micro 2026-02-12 (all_confirmed) | All 2026-02-18 (all_ceiling) | AEI API 2026-02-12 (agentic_confirmed)
+
+| Sub-folder | Question |
+|------------|----------|
+| `risk_profile/` | Which states have the most high-risk workers? (employment-weighted risk tier clustering) |
+| `activity_signature/` | What types of work is AI touching in each state's exposed workforce? (GWA share clustering) |
+| `agentic_profile/` | How agentic vs. conversational is each state's AI exposure? (agentic intensity per sector) |
+| `adoption_gap/` | Where is there the most room for AI to spread further? (ceiling vs. confirmed gap per sector) |
+| `cluster_convergence/` | Do all five schemes agree on state groupings? (ARI matrix, state stability scores) |
+
+**Key findings:**
+- All pairwise ARI values between clustering schemes are ≤ 0.26 — the five lenses are measuring genuinely different things
+- Risk varies significantly (35.9%–48.9% pct_high workers): Puerto Rico/USVI have the most high-risk workers; Massachusetts has the least; DC is mid-tier despite uniquely high exposure
+- Activity signature differences between non-DC states are sub-1pp on any GWA; DC is an outlier at +3–4pp on analytical/creative GWAs
+- Agentic intensity barely varies nationally (0.474–0.571 range); DC is the only strong outlier at 0.571
+- Adoption gap is nearly uniform (avg 0.243, range 0.216–0.277); Kentucky highest, DC lowest
+- DC has the lowest stability score (0.07) — consistently anomalous but in different ways under each lens
+- Most stable states: WV, ME, WI, MO, KS — consistently "typical" across all dimensions
+
+### Active: Time Trends (`questions/time_trends/`)
+
+**Overarching question:** What does the temporal dimension reveal that static snapshots miss — how did AI exposure evolve, which occupations followed which growth patterns, and what's the trajectory of the confirmed/ceiling gap?
+
+Primary lens: `all_confirmed` series (AEI Both + Micro, Sep 2024 – Feb 2026). Ceiling comparison uses `all_ceiling` series.
+
+| Sub-folder | Question |
+|------------|----------|
+| `trajectory_shapes/` | How did individual occupations grow? Six trajectory type classifications across all 923 occupations |
+| `tier_churn/` | How stable are exposure tiers? Tier transitions, new high-tier entrants, sector stability rates |
+| `confirmed_ceiling_convergence/` | Is deployment catching up to capability? National and sector-level confirmed/ceiling ratio trends |
+| `wa_tipping_points/` | Which IWAs crossed meaningful thresholds (10%, 33%, 66%), which are approaching them? |
+| `occs_timeline/` | Full time-series for the 29 named occupations of interest |
+
+**Key findings:**
+- Zero occupations at >=60% confirmed in Sep 2024; 145 by Feb 2026 — the entire high-exposure tier was created during the window
+- 44% of occupations (406) are "laggards" with <5pp total gain — AI expansion is concentrated, not universal
+- March 2025 and August 2025 are the two inflection-point dataset dates; confirmed exposure advances in discrete jumps
+- Confirmed/ceiling gap opened in Aug 2025 (MCP incorporation), sitting at ~10pp nationally; confirmed growing slightly faster than ceiling
+- Software Developers and Data Scientists: literally zero confirmed growth across all 6 dates; HR Specialists and Market Research Analysts: +53pp and +50pp respectively
+- 72 IWAs in active expansion zone (10–33%, growing); financial/legal/healthcare documentation IWAs approaching 33% threshold
+
 ### Planned (future sessions)
 
 | Bucket | Core question |

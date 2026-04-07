@@ -1,0 +1,6 @@
+config_key,config_label,workers_affected,wages_affected,pct_agg
+all_ceiling,All Sources (Ceiling),1141645.08,76964030257.83,50.49
+human_conversation,Human Conversation,803021.07,53661505622.98,36.51
+agentic_confirmed,Agentic Confirmed,481338.17,34036699131.64,27.16
+all_confirmed,All Confirmed,921333.30,62626064655.83,41.88
+agentic_ceiling,Agentic Ceiling,901695.77,61824359157.77,40.04
