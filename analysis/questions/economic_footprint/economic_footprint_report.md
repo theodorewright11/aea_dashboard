@@ -1,18 +1,20 @@
-# What Is AI's Total Economic Footprint Across the US Economy?
+# Economic Footprint: AI's Total Scale Across the US Economy
 
-**TLDR:** Under our primary configuration (All Confirmed), AI exposure now reaches 61.3 million workers — 40% of total US employment — representing $4.0 trillion in annual wages. The ceiling estimate puts it at 77.1 million workers and $5.0 trillion. The footprint has roughly doubled since late 2024. It is concentrated in knowledge work, heaviest in Zone 4 (credentialed professional jobs). Conversational AI (54.1M workers) currently has broader confirmed reach than agentic API usage (31.1M), but the agentic ceiling (60.4M) shows the potential is there once agentic deployment matures.
+*Primary config: All Confirmed | 923 occupations | National | Method: freq | Auto-aug ON*
 
 ---
 
-## The Scale
+Confirmed AI usage already reaches 61.3 million workers — 40% of total US employment — representing $3.99 trillion in annual wages. The ceiling estimate puts it at 77.1 million workers and $4.97 trillion, 50.3% of all employment. The footprint has roughly doubled since late 2024. It is concentrated in knowledge work, heaviest in Zone 4 (credentialed professional jobs), driven by information-processing and communication activities. Conversational AI currently has broader confirmed reach than agentic deployment, but the agentic ceiling already exceeds conversational confirmed — the potential is there once agentic infrastructure matures. Every state has essentially the same task exposure rate (~36.1%); what varies is sector composition.
 
-61.3 million workers. $3.99 trillion in wages. 40% of total US employment.
+---
 
-That's the confirmed estimate — requiring AI capability claims to be validated across multiple sources before a task counts as affected. The ceiling, which includes all AI capability claims regardless of cross-source confirmation, is 77.1 million workers and $4.97 trillion in wages, representing 50.3% of employment.
+## 1. The Scale
 
-The gap between confirmed and ceiling — 15.8 million workers, roughly $980 billion in wages — is not noise. It's a real methodological divide: tasks where some AI systems have demonstrated capability but the evidence hasn't consolidated into confirmed status. That gap is also a forward indicator. As AI capabilities continue to be confirmed across additional sources, some portion of those 15.8 million workers will shift from "ceiling only" to "confirmed."
+*Full detail: [sector_footprint/sector_footprint_report.md](sector_footprint/sector_footprint_report.md)*
 
-The five-config picture in full:
+61.3 million workers. $3.99 trillion in wages. 40% of total US employment. That's the All Confirmed number — requiring AI capability claims to be validated across multiple sources before a task counts as affected. The ceiling, which includes all AI capability claims regardless of cross-source confirmation, puts the count at 77.1 million workers and $4.97 trillion in wages, representing 50.3% of employment.
+
+The five-config picture:
 
 | Config | Workers | Wages | % Employment |
 |--------|---------|-------|-------------|
@@ -22,33 +24,107 @@ The five-config picture in full:
 | Agentic Confirmed (AEI API only) | 31.1M | $2.16T | 20.3% |
 | Agentic Ceiling (MCP + AEI API) | 60.4M | $3.97T | 39.4% |
 
----
+The gap between confirmed and ceiling — 15.8 million workers, roughly $980 billion in wages — is not noise. That's a real methodological divide: tasks where some AI systems have demonstrated capability but the evidence hasn't consolidated. It's also a forward indicator. As capabilities continue to be confirmed across additional sources, some portion of those 15.8 million workers will shift from "ceiling only" to "confirmed."
 
-## Where the Workers Are
+The largest sectors by raw workers affected under All Confirmed are Office and Administrative Support (11.2M, 51.1% tasks affected), Sales and Related (7.6M, 59.5%), and Business and Financial Operations (5.5M, 50.7%). But the highest-penetration sectors by task percentage tell a different story — Computer and Mathematical at 65.7%, Sales at 59.5%, and Educational Instruction at 53.6% are where AI is most deeply embedded relative to the work itself.
 
-The concentration of AI-exposed work follows the concentration of information-processing employment. The three largest sectors by workers affected under All Confirmed:
+Management Occupations carry $613.9 billion in wages affected despite only moderate task penetration (35.5%) — a function of the sector's massive payroll per worker. This is worth keeping in mind for policy discussions: the workers most exposed by percentage and the sector with the most wages at stake are not the same thing.
 
-- **Office and Administrative Support**: 11.2M workers, 51.1% tasks affected, $532.7B wages. The largest sector by raw worker count. These jobs were the focus of automation discussions long before LLMs — data entry, correspondence, scheduling, record-keeping — and the current data confirms their exposure is both wide and deep.
-- **Sales and Related**: 7.6M workers, 59.5% tasks affected, $363.0B wages. High worker count and one of the highest task penetration rates in the economy. Sales work is built around information-gathering, communication, and documentation — a natural fit for current AI capability.
-- **Business and Financial Operations**: 5.5M workers, 50.7% tasks affected, $443.7B wages. Analysts, accountants, consultants. The knowledge-worker core of the professional economy.
+At the other end: Farming/Forestry (13.7%), Construction and Extraction (13.9%), and Transportation (17.6%) have the lowest task penetration. Physical, equipment-dependent work where AI's current reach is limited.
 
-The highest-intensity sectors by task penetration rate tell a slightly different story:
+![Aggregate Totals Across Five Configs](sector_footprint/figures/aggregate_totals.png)
 
-- **Computer and Mathematical**: 65.7% — the most deeply task-penetrated major sector, with 3.3M workers and $331.3B in wages. These workers are also most likely to use AI as a productivity tool rather than face direct displacement; the distinction matters.
-- **Sales**: 59.5%
-- **Educational Instruction and Library**: 53.6% — higher than most people expect. The tasks embedded in educational work — content preparation, explanation, feedback, administrative documentation — are all areas of genuine AI strength.
+![Workers Affected by Major Sector](sector_footprint/figures/major_workers.png)
 
-At the other end: Farming/Forestry (13.7%), Construction and Extraction (13.9%), and Transportation and Material Moving (17.6%). Physical, equipment-dependent work where AI's current reach is limited.
-
-The wage picture is dominated by Management ($613.9B in wages affected) despite only moderate task penetration (35.5%) — a function of the sector's massive payroll per worker. This is worth keeping in mind for policy discussions: the workers most exposed by task percentage and the sector with the most wages at stake are not the same thing.
+![Confirmed vs Ceiling Range by Sector](sector_footprint/figures/floor_ceiling_range.png)
 
 ---
 
-## How We Got Here: The Trend
+## 2. Job Structure: The Preparation Paradox
 
-The All Confirmed estimate has roughly doubled since the first available dataset date (late September 2024). The ceiling configuration went from 39.5M workers to 77.1M over the same 18-month window. That kind of growth in assessed exposure isn't primarily a labor market story — the occupational mix hasn't changed that much. What changed is how much of existing work AI can demonstrably do.
+*Full detail: [job_structure/job_structure_report.md](job_structure/job_structure_report.md)*
 
-The sector-level trend data makes this concrete. Ranked by absolute percentage-point gain in task exposure over the full dataset window:
+The relationship between job preparation level and AI exposure runs counter to the standard automation narrative. Average task exposure by O*NET job zone:
+
+| Zone | Description | Avg % Tasks Affected |
+|------|-------------|---------------------|
+| Zone 1 | Little prep | ~26.9% |
+| Zone 2 | Some prep | ~30.6% |
+| Zone 3 | Medium prep | ~35.0% |
+| **Zone 4** | **Considerable prep (bachelor's + experience)** | **~50.9%** |
+| Zone 5 | Extensive prep (advanced degree) | ~45.9% |
+
+Zone 4 — managers, accountants, engineers, analysts, healthcare practitioners — carries the highest average exposure. This isn't a claim that Zone 4 workers will be replaced wholesale. It's a claim that a larger share of what they do on a given day is AI-capable than for someone in Zone 1.
+
+Zone 5 dips back slightly because the most elite professional work — original research, clinical judgment, legal strategy — still has meaningful AI-resistant components. The Zone 4 peak is where the combination of structured knowledge work and high task volume creates the greatest overlap with current AI capability.
+
+Almost all Zone 4 workers (roughly 35 million total) sit in the moderate-to-high exposure range. The low-exposure pocket (0.9M) is tiny compared to the high-exposure mass (12.4M). Zone 2 shows the opposite — 18.8 million Zone 2 workers are in the Low tier, concentrated in physically-grounded service and trade jobs. But Zone 2 also has 10.4 million in High exposure — the administrative, sales, and data-entry roles within Zone 2 that are heavily AI-reachable.
+
+The Utah DWS job outlook data adds another layer. Jobs with poorer labor market outlooks (Rating 3, below-average/declining) have higher average AI exposure (~39.2%) than bright-outlook jobs (Rating 1: ~29.8%). The labor market is already pricing in some of this. Whether AI exposure is *causing* the poor outlook or just correlated with it varies by occupation — some are declining because of automation; others are AI-exposed and the market hasn't fully repriced them yet.
+
+![AI Exposure by Job Zone](job_structure/figures/zone_exposure_violin.png)
+
+![Exposure Tier Breakdown by Job Zone](job_structure/figures/zone_tier_heatmap.png)
+
+![AI Exposure by Job Outlook Rating](job_structure/figures/outlook_exposure_violin.png)
+
+---
+
+## 3. What Kind of Work Is Exposed: The Skills and Technology Landscape
+
+*Full detail: [skills_landscape/skills_landscape_report.md](skills_landscape/skills_landscape_report.md)*
+
+Of 120 O*NET skills, knowledge, and abilities elements, AI currently leads on 23. All in knowledge or skills domains — none in physical or sensorimotor abilities. The top AI-leading elements: Sales and Marketing (+4.6), History and Archeology (+4.4), Philosophy and Theology (+3.3), Foreign Language (+3.3). The pattern is clear: knowledge that can be encoded, retrieved, and synthesized from text, especially domains with structured accumulated content.
+
+Human advantages are concentrated in physical and perceptual abilities. Sound Localization (-7.9), Reaction Time (-7.8), Peripheral Vision (-7.7) — these are hard limits, not gaps that will close through better prompting. AI scores near zero on them because they're embodied capabilities AI simply doesn't have.
+
+What's absent from the top human-advantage list is telling. Most cognitive skills — written comprehension, reading comprehension, mathematical reasoning — show near-parity or slight AI advantage. The cognitive frontier has moved further than most people realize.
+
+The technology data gives a different angle — not what AI can do, but what technology infrastructure the affected workforce is built around. Weighted by pct_tasks_affected × employment, the highest-footprint categories are database user interface software (by far the largest), ERP software, and CRM software. These are the technology layers of the knowledge economy. The occupations that use this software heavily are the same ones showing the highest task penetration rates.
+
+The combined picture: AI is strong where work is information-intensive, communication-heavy, and tool-mediated. The skills it leads on are precisely the skills needed to operate the technology infrastructure with the highest exposure footprint. The workers most at risk of displacement aren't workers who lack skills — many have substantial knowledge and communication skills that AI can now match. The workers with the most durable competitive advantage are those whose value comes from embodied, physical, or relational work that can't be replicated from text.
+
+![Elements Where AI Leads](skills_landscape/figures/ska_leads_ai.png)
+
+![Elements Where Humans Lead](skills_landscape/figures/ska_leads_human.png)
+
+![Top Technology Categories by AI-Exposure Footprint](skills_landscape/figures/tech_top_economy.png)
+
+---
+
+## 4. Agentic vs. Conversational AI
+
+*Full detail: [ai_modes/ai_modes_report.md](ai_modes/ai_modes_report.md)*
+
+Three configs capture the mode split:
+
+- **Human Conversation (confirmed)**: 54.1M workers, $3.47T wages
+- **Agentic Confirmed (AEI API only)**: 31.1M workers, $2.16T wages
+- **Agentic Ceiling (MCP + AEI API)**: 60.4M workers, $3.97T wages
+
+The 23M worker gap between conversational and confirmed agentic reflects the structure of current deployment. Agentic tool-use via API is concentrated in higher-skill, higher-complexity occupations. Conversational AI is already embedded broadly across the information economy. This isn't a capability story — it's a deployment story.
+
+The agentic ceiling (60.4M workers) already exceeds conversational confirmed (54.1M). The potential of agentic AI already exceeds the current conversational baseline — the gap between ceiling and confirmed (29.3M workers) is organizational deployment lag, not technical limitation.
+
+At the GWA level, the modes diverge in revealing ways. Administrative tasks are higher under conversational AI (55.0% vs. 25.1% agentic) — drafting, composing, and responding are communicative activities conversational AI covers broadly. But scheduling ticks up under agentic (27.7% conversational vs. 37.9% agentic), as does documentation. The agentic ceiling data shows that if MCP-based tooling were as widely deployed as conversational AI, administrative activities would jump dramatically.
+
+Auto-augmentability reinforces the picture: 97.7% of workers in AI-affected occupations are in roles with meaningful AI augmentation potential (score ≥ 2 on a 5-point scale), with a weighted mean of 2.82. Almost every worker in an AI-affected occupation can be meaningfully assisted by AI — not just marginally.
+
+The confirmed agentic number (31.1M) captures deployments where agentic tooling is actually in use in production environments. As agentic infrastructure becomes standard enterprise practice rather than specialized deployment, that number will grow toward the 60.4M ceiling. That's a path from 31M to 60M workers — roughly doubling — without any new AI capability being required.
+
+![Agentic vs. Conversational Worker Counts by Sector](ai_modes/figures/agentic_vs_conversational.png)
+
+![Auto-Augmentability Distribution Across Affected Workforce](ai_modes/figures/autoaug_distribution.png)
+
+---
+
+## 5. How We Got Here: The Trend
+
+*Full detail: [trends/trends_report.md](trends/trends_report.md)*
+
+The All Confirmed estimate has roughly doubled since the first available dataset date (late September 2024). The ceiling configuration went from 39.5M workers to 77.1M over an 18-month window. That kind of growth in assessed exposure isn't primarily a labor market story — the occupational mix hasn't changed much. What changed is how much of existing work AI can demonstrably do.
+
+Sector-level gains over the full All Confirmed series, ranked by absolute percentage-point change:
 
 1. **Legal Occupations**: +25.5 pp (22.8% → 48.3%)
 2. **Educational Instruction and Library**: +24.8 pp (28.8% → 53.6%)
@@ -56,82 +132,124 @@ The sector-level trend data makes this concrete. Ranked by absolute percentage-p
 4. **Computer and Mathematical**: +22.3 pp (43.4% → 65.7%)
 5. **Business and Financial Operations**: +19.4 pp (31.4% → 50.7%)
 
-Legal's near-doubling from 22.8% to 48.3% reflects AI systems' growing capability in legal reasoning, document analysis, and research — capabilities that have advanced rapidly and that legal work is unusually well-suited for (large volumes of structured text, well-defined task boundaries, strong retrieval demands). Education's jump tracks the emergence of capable writing, tutoring, and content-generation systems.
+Legal's near-doubling reflects AI systems' growing capability in legal reasoning, document analysis, and research. Education's jump tracks the emergence of capable writing, tutoring, and content-generation systems. At the bottom: Farming (+1.9 pp), Transportation (+2.3 pp), Production (+2.6 pp). The physical frontier hasn't moved.
 
-At the bottom: Farming (+1.9 pp), Transportation (+2.3 pp), Production (+2.6 pp). The physical frontier hasn't moved.
+The ceiling and confirmed trajectories have moved together rather than converging. A narrowing confirmed/ceiling gap would suggest AI capability claims are becoming more reliable as evidence accumulates. The fact that both are expanding means the frontier is still advancing faster than the validation process can consolidate it. New capabilities keep getting proposed before old proposals fully harden into confirmed status.
+
+The trend line isn't a reliable basis for mechanical extrapolation. Growth happens in step-function jumps rather than smooth curves, corresponding to specific capability demonstrations that propagate into confirmed task assessments. But the baseline trajectory — roughly doubling in 18 months at the ceiling — is the kind of growth rate that typically means a technology is past the early-adopter stage and into broad diffusion.
+
+![Aggregate Worker Count Trend Over Time](trends/figures/aggregate_trend.png)
+
+![Major Sector Exposure Growth (All Confirmed)](trends/figures/major_growth_bar.png)
+
+![Sector-Level Trends Over Time](trends/figures/major_trends_confirmed.png)
 
 ---
 
-## What Kind of Work Is Exposed
+## 6. Geography: Clusters, Not Gradients
 
-The skills data gives the sharpest picture of *why* these sectors are exposed. Across 120 O*NET skills, knowledge, and abilities elements, AI currently leads on 23 — all in knowledge or skills domains, none in physical or sensorimotor abilities. The top AI-leading elements: Sales and Marketing (+4.6 advantage over economy average), History and Archeology (+4.4), Foreign Language (+3.3). The pattern is clear: knowledge that can be encoded, retrieved, and synthesized from text — exactly what large language models are trained to do.
+*Full detail: [state_profiles/state_profiles_report.md](state_profiles/state_profiles_report.md)*
 
-Human advantages are concentrated in physical and perceptual abilities. Sound Localization, Reaction Time, Peripheral Vision — AI scores near zero on all of them, not because humans score exceptionally high but because these are capabilities AI simply doesn't have in any embodied sense. The deeper point: most *cognitive* skills — written comprehension, reading comprehension, mathematical reasoning — show near-parity or slight AI advantage. The cognitive frontier has moved further than most people realize.
+Every state has essentially the same average AI task exposure: approximately 36.1%. This isn't a data error — it's how the measure works. Task exposure is computed at the occupation level using national datasets. A software developer in Utah has the same exposure as a software developer in Massachusetts. What varies across states is sector composition, and that variation clusters into five recognizable economic types.
 
-At the work activity level, the highest-penetration GWAs under All Confirmed:
+**Cluster 1 — Tech and Sun Belt metros** (AZ, CA, CO, FL, GA, MD, NC, TX, UT, VA, WA): highest Computer/Math and Sales shares in their affected workforce.
+
+**Cluster 2 — Diversified industrial and northeastern states** (NY, IL, OH, PA, MI, MA, and others): highest healthcare shares, most balanced sector mix.
+
+**Cluster 3 — DC alone**: Business/Finance at 24.8%, Computer/Math at 21.2% — the federal contractor economy is its own category.
+
+**Cluster 4 — Rural and inland states** (IA, KS, AL, MS, ID, ND, and others): highest Office/Admin, Food Prep, and Production shares.
+
+**Cluster 5 — Tourism and service economies** (NV, HI, NM, GU, PR, VI): built on hospitality, tourism, and services; highest administrative share across all clusters.
+
+The state-uniform exposure finding has direct policy implications. There are no "high-exposure states" versus "low-exposure states" — the challenge is distributed. State-level responses should be calibrated to sector composition. In Cluster 1 states, the exposed work is concentrated in high-wage, high-productivity roles. Displacement or augmentation there has large wage implications per worker, but those workers have more resources and labor market options. In Cluster 4 states, the exposed work is more concentrated in lower-wage administrative and service roles — smaller wage implications per worker, but less buffered workers.
+
+![State Economic Cluster Map](state_profiles/figures/state_cluster_map.png)
+
+![Sector Composition by Cluster](state_profiles/figures/cluster_heatmap.png)
+
+---
+
+## 7. Work Activities: The Mechanism Layer
+
+*Full detail: [work_activities/work_activities_report.md](work_activities/work_activities_report.md)*
+
+The activity level is where you see *why* sectors are exposed. The sector findings tell you the scale; the GWA findings tell you the mechanism.
+
+The highest-penetration GWAs under All Confirmed:
+- **Updating and Using Relevant Knowledge**: 72.0%
 - **Interpreting the Meaning of Information for Others**: 70.0%
 - **Communicating with People Outside the Organization**: 69.6%
 - **Working with Computers**: 69.3%
-- **Updating and Using Relevant Knowledge**: 72.0%
 
-These are the activities that constitute the core of information work. The high-worker-count GWAs (Documenting/Recording at 5.9M, Handling and Moving Objects at 4.7M) tell you where the people are; the high-penetration GWAs tell you where AI is most deeply capable.
+These are the activities that constitute the core of information work. The robust end of the spectrum is entirely physical: Operating Vehicles (1.4%), Performing General Physical Activities (12.2%), Controlling Machines (12.7%).
 
-At the IWA level, the clearest signals: "Respond to customer problems or inquiries" (2.2M workers, 75.2% tasks affected) and "Explain technical details of products or services" (1.3M workers, 81.9% tasks affected) — customer-facing information work is among the most deeply affected activity categories in the economy.
+At the IWA level, the clearest signals: "Respond to customer problems or inquiries" (2.2M workers, 75.2% tasks affected) and "Explain technical details of products or services" (1.3M workers, 81.9%) — customer-facing information work is among the most deeply affected activity categories in the economy.
 
----
+The agentic/conversational split at the GWA level is revealing. Administrative tasks are higher under conversational (55.0% vs. 25.1% agentic), because drafting and responding are communicative. Getting Information is substantially higher under conversational (48.8% vs. 29.7% agentic). But scheduling ticks up under agentic (27.7% vs. 37.9%) — multi-step calendar management is more naturally agentic. The agentic ceiling (MCP + API) shows that scheduling, administrative, and documenting activities would all jump dramatically if MCP tooling were widely deployed.
 
-## Job Structure: The Preparation Paradox
+The GWA trend over the All Confirmed series is consistent with the sector trends: activities embedded in Legal, Educational, and Sales work have grown most. Information processing and communication GWAs were already high-exposure at the start and grew further.
 
-The relationship between job preparation level and AI exposure runs counter to the standard automation narrative. Average task exposure by O*NET job zone:
+![GWA Task Penetration — All Confirmed](work_activities/figures/gwa_pct.png)
 
-- Zone 1 (little prep): ~26.9%
-- Zone 2 (some prep): ~30.6%
-- Zone 3 (medium prep): ~35.0%
-- **Zone 4 (considerable prep, bachelor's + experience): ~50.9%** ← peak
-- Zone 5 (extensive prep, advanced degree): ~45.9%
+![GWA Workers Affected](work_activities/figures/gwa_workers.png)
 
-The most credentialed jobs — managers, accountants, engineers, analysts, healthcare practitioners — carry the highest average AI exposure. This is not a claim that Zone 4 workers will be replaced wholesale. It's a claim that a larger share of what they do on a given day is AI-capable than for someone in Zone 1.
+![Agentic vs. Conversational at GWA Level](work_activities/figures/gwa_mode_butterfly.png)
 
-Zone 5 shows slightly lower exposure than Zone 4 because the most elite professional work — original research, clinical judgment, legal strategy — still has meaningful AI-resistant components. The Zone 4 peak is where the combination of structured knowledge work and high task volume creates the greatest overlap with current AI capability.
-
-From the job outlook data: Rating 3 occupations (below-average / declining) carry higher average exposure (39.2%) than Rating 1 (bright outlook, 29.8%). Jobs the labor market already views as precarious tend to be more AI-exposed. Whether AI exposure is causing the poor outlook or just correlated with it varies by occupation — some are declining *because* of automation; others are AI-exposed and the market hasn't fully repriced them yet.
+![GWA Config Comparison Heatmap](work_activities/figures/gwa_config_heatmap.png)
 
 ---
 
-## Agentic vs. Conversational
+## 8. Cross-Cutting Findings
 
-Confirmed agentic tool-use (AEI API only) reaches 31.1M workers, compared to 54.1M for conversational AI. Confirmed agentic is currently narrower — API-based agentic deployment is concentrated in higher-complexity technical contexts rather than broadly across the information economy. But the agentic ceiling (MCP + AEI API, 60.4M workers) already exceeds conversational, which shows the potential is there; the gap between ceiling and confirmed (29.3M workers) is organizational deployment lag, not technical limitation.
+**The preparation paradox is real.** The highest task exposure is concentrated in Zone 4 — credentialed professional workers, not low-skill workers. This complicates any policy frame that focuses exclusively on supporting low-education workers. The people with the highest aggregate exposure are also the people with the most economic cushion, but also the most wages at stake.
 
-The mode-level data shows how confirmed agentic and conversational differ at the activity level. Administrative tasks (55.0% conversational vs. 25.1% agentic), information retrieval (48.8% vs. 29.7%), and data analysis (50.5% vs. 34.8%) are all higher under conversational — these are the activities where broad chatbot-style deployment is most mature. Where confirmed agentic modestly leads: scheduling (27.7% vs. 37.9%) and a handful of multi-step workflow activities where tool-using systems have been specifically deployed. The agentic ceiling data shows that scheduling, administrative, and documenting activities would all rise dramatically if MCP-based tooling were as widely deployed as conversational AI.
+**The mode gap is a deployment lag, not a capability gap.** The agentic ceiling (60.4M workers) already exceeds conversational confirmed (54.1M). Agentic AI has demonstrated capability to reach more workers than conversational AI has confirmed reach — the gap is organizational and infrastructural. As enterprise agentic deployment matures, the confirmed numbers will grow toward the ceiling without any new AI capability being required.
 
-The three-layer framing: confirmed agentic (31.1M) is what we've measured in production AEI API deployments. The agentic ceiling (60.4M) is what's possible with today's demonstrated capability. The gap between them — 29.3M workers — is the latent impact zone. As agentic infrastructure becomes standard enterprise practice, that gap closes.
+**The sector composition typology matters more than state-level geography.** Because every state has roughly the same average exposure (~36.1%), aggregate state-level risk rankings are not meaningful. What's meaningful is which sectors dominate each state's exposed workforce and how those sectors are likely to evolve.
 
-Auto-augmentability reinforces the picture from a different angle: 97.7% of workers in AI-affected occupations are in roles with meaningful AI augmentation potential (score >= 2 on a 5-point scale), with a weighted mean of 2.82. Almost every worker in an AI-affected occupation can be meaningfully assisted by AI — not just marginally.
+**The physical/cognitive split is the defining boundary.** AI leads on 23 of 120 SKA elements, all of them knowledge or skills domains. Humans lead on 97, concentrated almost entirely in physical and perceptual abilities. The cognitive frontier has moved further than most people realize — near-parity on written comprehension, reading comprehension, and mathematical reasoning. The reliable human moat is embodied.
 
----
-
-## Geography
-
-Every state has essentially the same average AI task exposure: approximately 36.1%. This isn't surprising once you understand how the measure works — task exposure is computed at the occupation level using national datasets, so geography doesn't enter the calculation directly. What varies across states is sector composition, and that variation clusters into five recognizable economic types:
-
-- **Cluster 1 — Tech/Sun Belt metros** (CA, TX, WA, CO, AZ, FL, VA, etc.): highest Computer/Math and Sales shares
-- **Cluster 2 — Diversified industrial/northeastern** (NY, IL, OH, PA, MI, MA, etc.): highest healthcare shares, most balanced
-- **Cluster 3 — DC alone**: Business/Finance at 24.8%, Computer/Math at 21.2% — the federal contractor economy, in its own category
-- **Cluster 4 — Rural/agricultural/inland** (IA, KS, AL, MS, ID, ND, etc.): highest Office/Admin, Food Prep, and Production shares
-- **Cluster 5 — Tourism/service economies** (NV, HI, NM, GU, PR, VI): highest hospitality and service shares
-
-The state-uniform exposure finding has direct policy implications. There are no "high-exposure states" versus "low-exposure states" — the challenge is distributed. State-level responses should be calibrated to sector composition, not to some notion that certain geographies face more risk than others.
+**Everything is trending in the same direction.** The All Confirmed series roughly doubled over 18 months. Ceiling and confirmed trajectories are moving together, not converging. The sector gainers (Legal, Education, Sales, Computer/Math) are the same ones with the highest current penetration. The physical sectors at the bottom of the trend table are the same ones at the bottom of the penetration ranking.
 
 ---
 
-## What This Adds Up To
+## 9. Key Takeaways
 
-40% of US employment, $4 trillion in wages, an exposure rate that has roughly doubled in 18 months. The sectors carrying the most workers are the same ones that have seen the fastest growth in exposure. The workers most deeply exposed by task percentage are credentialed Zone 4 professionals, not low-skill workers. The agentic gap is growing, and 97.7% of affected workers are in occupations where AI can meaningfully amplify their output.
+1. **61.3 million workers** are in occupations where confirmed AI usage affects a meaningful share of their tasks. At the ceiling, that rises to 77.1 million.
 
-The honest reading of these numbers has two parts. First, the scale is large enough that the economic disruption question is not "if" but "how" — through productivity gains, headcount reductions, wage compression, or some mix. Second, the data captures capability and exposure, not actual deployment. A substantial lag exists between what AI can demonstrably do and what firms are actually using it for at scale. That gap is probably closing faster in some sectors (legal, software, customer service) than others (healthcare, education, construction).
+2. **Zone 4 (bachelor's + experience)** carries the highest average AI exposure at ~50.9%. The professional workforce — managers, accountants, engineers, analysts — is more deeply exposed by task percentage than low-skill workers.
 
-The trend data — 18 months of roughly doubling confirmed exposure — suggests the capability side of the ledger is not plateauing. The question now is whether economic and organizational reality keeps pace.
+3. **The cognitive frontier has moved.** AI leads on knowledge and skills elements; humans retain a clear advantage only in physical and sensorimotor abilities. Most cognitive skills are at parity or slight AI advantage.
+
+4. **Agentic AI's confirmed footprint (31.1M workers) is half the ceiling (60.4M).** The gap is organizational deployment, not capability limitation. Doubling the confirmed agentic reach requires no new AI — only broader enterprise deployment.
+
+5. **Legal (+25.5 pp) and Education (+24.8 pp)** saw the largest gains in task penetration over the dataset window. Both are sectors where the capability has moved faster than institutional adaptation.
+
+6. **There are no high-exposure states or low-exposure states** — the average is ~36.1% everywhere. State-level policy should be calibrated to sector composition, not aggregate exposure.
+
+7. **97.7% of affected workers** are in occupations with meaningful AI augmentation potential (score ≥ 2). The data supports an augmentation frame — AI can meaningfully assist almost every affected worker — even as the disruption from productivity change plays out.
 
 ---
 
-*Analysis based on `final_all_confirmed_usage_2026-02-12` as primary config. Full sub-question breakdowns, figures, and CSVs in `sector_footprint/`, `skills_landscape/`, `job_structure/`, `ai_modes/`, `trends/`, `state_profiles/`, and `work_activities/` sub-folders.*
+## Sub-Report Index
+
+| Sub-Analysis | Report | What It Answers |
+|---|---|---|
+| Sector Footprint | [sector_footprint_report.md](sector_footprint/sector_footprint_report.md) | Which sectors carry the most workers and wages in scope? |
+| Skills Landscape | [skills_landscape_report.md](skills_landscape/skills_landscape_report.md) | What skills does AI lead vs. humans? Which tech categories are most exposed? |
+| Job Structure | [job_structure_report.md](job_structure/job_structure_report.md) | How does exposure distribute across job zones and outlook ratings? |
+| AI Modes | [ai_modes_report.md](ai_modes/ai_modes_report.md) | How much more does agentic AI expose vs. conversational? |
+| Trends | [trends_report.md](trends/trends_report.md) | How have workers affected, wages, and task penetration changed over time? |
+| State Profiles | [state_profiles_report.md](state_profiles/state_profiles_report.md) | What types of state economies have the most exposed workforces? |
+| Work Activities | [work_activities_report.md](work_activities/work_activities_report.md) | What is the GWA/IWA-level footprint? How do modes differ at the activity level? |
+
+## Config Reference
+
+| Config Key | Dataset | Role |
+|---|---|---|
+| `all_confirmed` | AEI Both + Micro 2026-02-12 | **Primary** — all confirmed usage |
+| `all_ceiling` | All 2026-02-18 | Comparison — includes MCP ceiling |
+| `human_conversation` | AEI Conv + Micro 2026-02-12 | Confirmed human conversation only |
+| `agentic_confirmed` | AEI API 2026-02-12 | Confirmed agentic tool-use (AEI API only) |
+| `agentic_ceiling` | MCP + API 2026-02-18 | Agentic ceiling |

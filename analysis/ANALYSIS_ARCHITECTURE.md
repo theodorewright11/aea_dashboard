@@ -193,8 +193,17 @@ Computed per occupation, based on the primary config (`all_confirmed`) unless ot
 - Round floats to 2–4 decimal places as appropriate.
 
 ### Reports
-- Each sub-question has a `<name>_report.md` with full narrative, inline figures, and a Config section.
+
+**Sub-question reports** (`<sub-folder>/<name>_report.md`):
+- Full narrative with inline figures (referenced from the sub-folder's committed `figures/` dir).
+- Ends with a Config section (dataset, method, settings used) and a Files table.
 - `run.py` calls `generate_pdf(md_path, pdf_path)` at the end.
+
+**Aggregate reports** (`<bucket>/<bucket>_report.md`):
+- One per top-level question bucket. See `job_exposure/job_exposure_report.md` as the canonical example.
+- Structure: config header line → opening summary paragraph → numbered sections (one per sub-question, each opening with `*Full detail: [...](...)*` link) → Cross-Cutting Findings → Key Takeaways → Sub-Report Index table → Config Reference table.
+- Each section must embed at least one figure from the relevant sub-folder's committed `figures/` dir using relative paths (e.g., `sector_footprint/figures/aggregate_totals.png`).
+- Written in the conversational-analytical voice from `writing_style_reference.md` — reasoning through findings, not summarizing bullet points.
 
 ---
 

@@ -27,6 +27,19 @@ When writing reports, narratives, or any prose deliverables, follow the writing 
 - Top-level question folders (e.g., `job_exposure/`) additionally have a `README.md` and a `job_exposure_report.md` that synthesizes all sub-questions.
 - Run scripts from project root: `venv/Scripts/python -m analysis.questions.job_exposure.<sub_question>.run`
 
+## Aggregate Report Format
+
+Top-level `<bucket>_report.md` files follow a specific structure. Use `job_exposure/job_exposure_report.md` as the canonical reference. Requirements:
+
+- **Header line**: config summary on the first line — `*Primary config: ... | ... | ...*`
+- **Opening paragraph**: 4–6 sentence summary of the full bucket's through-line (not an abstract — more like "here's the punchline before the reasoning").
+- **Numbered sections, one per sub-question**: each section opens with `*Full detail: [<name>_report.md](<sub-folder>/<name>_report.md)*` on its own line, then provides a narrative synthesis of that sub-question's findings — not a copy of the sub-report, but a distillation that stands on its own.
+- **Embedded figures**: key figures from each sub-folder's committed `figures/` dir, referenced with relative paths from the aggregate report (e.g., `sector_footprint/figures/aggregate_totals.png`). Every section should have at least one figure. Use `![Caption](relative/path)` format.
+- **Cross-Cutting Findings section**: 4–6 findings that span multiple sub-questions and couldn't appear in any single sub-report. Bold the finding name, then one paragraph of reasoning.
+- **Key Takeaways section**: numbered list, 5–7 items, each starting with a **bolded key number or fact** followed by one sentence of context.
+- **Sub-Report Index**: a table with columns Sub-Analysis | Report | What It Answers. Link the report filename.
+- **Config Reference**: a table with columns Config Key | Dataset | Role. Match the five ANALYSIS_CONFIGS exactly.
+
 ## Reference-Only Scripts
 
 The following question scripts are kept for reference but are **broken** due to dataset renames in the backend (e.g., old names like `"AEI Cumul. (Both) v4"` no longer exist). Do not attempt to run or fix them unless explicitly asked:
