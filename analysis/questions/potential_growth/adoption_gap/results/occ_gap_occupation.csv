@@ -1,0 +1,51 @@
+category,pct_tasks_affected_confirmed,workers_affected_confirmed,wages_affected_confirmed,dataset_confirmed,agg_level_confirmed,pct_tasks_affected_ceiling,workers_affected_ceiling,wages_affected_ceiling,dataset_ceiling,agg_level_ceiling,pct_tasks_affected_gap,workers_affected_gap,wages_affected_gap
+General and Operations Managers,27.87,999093.32,102856656979.21,AEI Both + Micro 2026-02-12,occupation,52.31,1875106.72,193042237156.46,All 2026-02-18,occupation,24.44,876013.41,90185580177.25
+Cashiers,46.94,1477540.91,46084501118.56,AEI Both + Micro 2026-02-12,occupation,68.24,2148107.83,66999483179.98,All 2026-02-18,occupation,21.30,670566.91,20914982061.41
+Stockers and Order Fillers,23.26,646480.80,23977972713.46,AEI Both + Micro 2026-02-12,occupation,44.66,1241241.34,46037641144.32,All 2026-02-18,occupation,21.40,594760.54,22059668430.86
+Retail Salespersons,57.36,2179886.98,75380491682.11,AEI Both + Micro 2026-02-12,occupation,69.00,2622196.64,90675559889.75,All 2026-02-18,occupation,11.64,442309.66,15295068207.63
+"Laborers and Freight, Stock, and Material Movers, Hand",5.97,178081.92,6934510155.93,AEI Both + Micro 2026-02-12,occupation,20.71,617811.81,24057591884.78,All 2026-02-18,occupation,14.74,439729.89,17123081728.85
+"Sales Representatives of Services, Except Advertising, Insurance, Financial Services, and Travel",38.31,455594.48,30187690497.43,AEI Both + Micro 2026-02-12,occupation,72.98,867966.14,57511436723.72,All 2026-02-18,occupation,34.67,412371.66,27323746226.28
+Recycling and Reclamation Workers,0.00,0.00,0.00,AEI Both + Micro 2026-02-12,occupation,13.56,404313.00,15743948050.03,All 2026-02-18,occupation,13.56,404313.00,15743948050.03
+Medical Secretaries and Administrative Assistants,31.36,260566.70,11631697449.06,AEI Both + Micro 2026-02-12,occupation,73.25,608508.61,27163824298.54,All 2026-02-18,occupation,41.88,347941.91,15532126849.48
+"Office Clerks, General",71.37,1791660.63,78170153362.97,AEI Both + Micro 2026-02-12,occupation,82.44,2069678.99,90300094127.05,All 2026-02-18,occupation,11.07,278018.35,12129940764.08
+"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",75.10,1305154.98,60415624181.77,AEI Both + Micro 2026-02-12,occupation,90.87,1579176.43,73100076739.57,All 2026-02-18,occupation,15.77,274021.44,12684452557.80
+Industrial Truck and Tractor Operators,5.43,43777.08,2030818594.71,AEI Both + Micro 2026-02-12,occupation,39.37,317212.20,14715473817.66,All 2026-02-18,occupation,33.93,273435.12,12684655222.95
+Accountants and Auditors,28.09,406788.64,33226496491.62,AEI Both + Micro 2026-02-12,occupation,43.59,631369.97,51570298906.80,All 2026-02-18,occupation,15.51,224581.32,18343802415.18
+"Shipping, Receiving, and Inventory Clerks",25.81,221355.21,9560331730.44,AEI Both + Micro 2026-02-12,occupation,51.03,437688.09,18903748746.06,All 2026-02-18,occupation,25.22,216332.88,9343417015.62
+First-Line Supervisors of Food Preparation and Serving Workers,36.45,432822.87,18182888890.75,AEI Both + Micro 2026-02-12,occupation,53.71,637739.38,26791431550.39,All 2026-02-18,occupation,17.26,204916.51,8608542659.65
+"Bookkeeping, Accounting, and Auditing Clerks",69.59,1013026.79,49851048430.02,AEI Both + Micro 2026-02-12,occupation,82.82,1205693.98,59332200900.88,All 2026-02-18,occupation,13.23,192667.19,9481152470.86
+Software Quality Assurance Analysts and Testers,49.63,360283.98,40939451965.53,AEI Both + Micro 2026-02-12,occupation,75.24,546177.09,62062683863.72,All 2026-02-18,occupation,25.61,185893.11,21123231898.19
+"Securities, Commodities, and Financial Services Sales Agents",29.00,136979.21,10703555742.56,AEI Both + Micro 2026-02-12,occupation,67.48,318731.51,24905680085.60,All 2026-02-18,occupation,38.48,181752.30,14202124343.04
+Project Management Specialists,24.05,134875.66,12128092008.79,AEI Both + Micro 2026-02-12,occupation,55.58,311668.34,28025385709.70,All 2026-02-18,occupation,31.53,176792.68,15897293700.92
+Heavy and Tractor-Trailer Truck Drivers,21.53,445791.35,25606255274.51,AEI Both + Micro 2026-02-12,occupation,29.40,608734.10,34965686776.13,All 2026-02-18,occupation,7.87,162942.75,9359431501.63
+First-Line Supervisors of Retail Sales Workers,67.18,747844.83,35388017512.09,AEI Both + Micro 2026-02-12,occupation,81.60,908388.03,42984921619.19,All 2026-02-18,occupation,14.42,160543.20,7596904107.11
+Software Developers,45.16,327857.15,37254756564.89,AEI Both + Micro 2026-02-12,occupation,64.68,469541.70,53354522704.87,All 2026-02-18,occupation,19.52,141684.55,16099766139.98
+Driver/Sales Workers,18.31,76418.13,2837405160.77,AEI Both + Micro 2026-02-12,occupation,50.33,210099.29,7800986707.92,All 2026-02-18,occupation,32.03,133681.16,4963581547.15
+Waiters and Waitresses,39.41,907500.77,30637225915.91,AEI Both + Micro 2026-02-12,occupation,45.07,1037900.67,35039526727.19,All 2026-02-18,occupation,5.66,130399.91,4402300811.27
+Billing and Posting Clerks,36.77,153517.97,7241442843.95,AEI Both + Micro 2026-02-12,occupation,66.60,278042.82,13115279680.47,All 2026-02-18,occupation,29.83,124524.84,5873836836.52
+Light Truck Drivers,15.34,152538.27,6733039395.09,AEI Both + Micro 2026-02-12,occupation,27.47,273137.16,12056274114.48,All 2026-02-18,occupation,12.13,120598.88,5323234719.39
+"Janitors and Cleaners, Except Maids and Housekeeping Cleaners",11.34,249546.90,8966220074.85,AEI Both + Micro 2026-02-12,occupation,16.79,369458.76,13274653382.52,All 2026-02-18,occupation,5.45,119911.86,4308433307.67
+Fast Food and Counter Workers,29.37,529914.37,16151789913.58,AEI Both + Micro 2026-02-12,occupation,35.37,638268.16,19454413535.23,All 2026-02-18,occupation,6.01,108353.79,3302623621.65
+Executive Secretaries and Executive Administrative Assistants,64.84,306536.60,22763407867.54,AEI Both + Micro 2026-02-12,occupation,87.55,413906.11,30736667905.74,All 2026-02-18,occupation,22.71,107369.51,7973260038.20
+First-Line Supervisors of Office and Administrative Support Workers,68.43,1023367.28,67685511818.04,AEI Both + Micro 2026-02-12,occupation,75.47,1128732.29,74654353675.11,All 2026-02-18,occupation,7.05,105365.01,6968841857.06
+Receptionists and Information Clerks,73.83,712141.63,26513032975.50,AEI Both + Micro 2026-02-12,occupation,84.57,815674.39,30367557375.49,All 2026-02-18,occupation,10.73,103532.75,3854524399.99
+Medical and Health Services Managers,47.27,267480.24,31551968799.74,AEI Both + Micro 2026-02-12,occupation,65.06,368154.77,43427537248.36,All 2026-02-18,occupation,17.79,100674.54,11875568448.62
+Landscaping and Groundskeeping Workers,5.83,54974.68,2093985583.38,AEI Both + Micro 2026-02-12,occupation,16.08,151671.24,5777157648.34,All 2026-02-18,occupation,10.25,96696.56,3683172064.97
+Human Resources Specialists,75.84,695759.72,50727841250.31,AEI Both + Micro 2026-02-12,occupation,86.37,792364.65,57771306499.32,All 2026-02-18,occupation,10.53,96604.93,7043465249.01
+First-Line Supervisors of Production and Operating Workers,32.67,223843.33,15935406585.35,AEI Both + Micro 2026-02-12,occupation,45.40,311051.96,22143788800.06,All 2026-02-18,occupation,12.73,87208.63,6208382214.71
+Tellers,45.63,154852.43,6091894738.84,AEI Both + Micro 2026-02-12,occupation,71.25,241789.76,9512009108.47,All 2026-02-18,occupation,25.62,86937.33,3420114369.62
+Baristas,47.64,941569.88,28699050049.02,AEI Both + Micro 2026-02-12,occupation,51.91,1025978.79,31271833622.77,All 2026-02-18,occupation,4.27,84408.91,2572783573.75
+"Entertainment and Recreation Managers, Except Gambling",39.76,222948.84,20047680499.91,AEI Both + Micro 2026-02-12,occupation,54.73,306876.04,27594459120.87,All 2026-02-18,occupation,14.97,83927.19,7546778620.96
+Personal Care Aides,44.45,886373.23,30934425892.69,AEI Both + Micro 2026-02-12,occupation,48.61,969269.06,33827490180.22,All 2026-02-18,occupation,4.16,82895.82,2893064287.52
+Packaging and Filling Machine Operators and Tenders,5.10,19588.81,801182325.72,AEI Both + Micro 2026-02-12,occupation,26.56,101944.72,4169539116.19,All 2026-02-18,occupation,21.45,82355.91,3368356790.47
+Insurance Claims and Policy Processing Clerks,36.27,83089.99,4025709898.51,AEI Both + Micro 2026-02-12,occupation,69.60,159441.79,7724954724.64,All 2026-02-18,occupation,33.33,76351.80,3699244826.13
+"Production, Planning, and Expediting Clerks",46.06,177340.70,10244972523.58,AEI Both + Micro 2026-02-12,occupation,65.36,251620.73,14536129764.05,All 2026-02-18,occupation,19.29,74280.03,4291157240.47
+Automotive Service Technicians and Mechanics,18.91,130238.40,6468941409.61,AEI Both + Micro 2026-02-12,occupation,29.48,203049.29,10085458059.52,All 2026-02-18,occupation,10.57,72810.88,3616516649.91
+Security Guards,54.66,678761.60,26044082623.66,AEI Both + Micro 2026-02-12,occupation,60.43,750368.08,28791623324.41,All 2026-02-18,occupation,5.77,71606.48,2747540700.75
+Pharmacy Technicians,50.59,246823.21,10726936490.57,AEI Both + Micro 2026-02-12,occupation,65.11,317683.48,13806523891.39,All 2026-02-18,occupation,14.52,70860.27,3079587400.82
+"Substitute Teachers, Short-Term",38.11,183416.55,7056034515.43,AEI Both + Micro 2026-02-12,occupation,52.79,254076.28,9774314447.84,All 2026-02-18,occupation,14.68,70659.73,2718279932.41
+Team Assemblers,13.85,100921.50,4259896514.84,AEI Both + Micro 2026-02-12,occupation,23.36,170292.73,7188056322.14,All 2026-02-18,occupation,9.52,69371.23,2928159807.30
+"Maintenance and Repair Workers, General",20.80,318519.04,15486395939.01,AEI Both + Micro 2026-02-12,occupation,25.12,384740.02,18706059615.33,All 2026-02-18,occupation,4.32,66220.97,3219663676.32
+Medical Assistants,50.91,403979.36,17855887607.08,AEI Both + Micro 2026-02-12,occupation,58.99,468068.56,20688630506.14,All 2026-02-18,occupation,8.08,64089.21,2832742899.07
+Legal Secretaries and Administrative Assistants,33.57,51875.98,2808565782.42,AEI Both + Micro 2026-02-12,occupation,74.10,114513.33,6199751777.18,All 2026-02-18,occupation,40.53,62637.35,3391185994.76
+Facilities Managers,7.55,13922.37,1489506500.07,AEI Both + Micro 2026-02-12,occupation,41.14,75909.48,8121293265.45,All 2026-02-18,occupation,33.60,61987.11,6631786765.38

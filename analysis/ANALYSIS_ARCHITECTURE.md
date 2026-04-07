@@ -35,12 +35,19 @@ analysis/
 │   │   ├── pivot_distance/
 │   │   ├── audience_framing/
 │   │   └── occs_of_interest/
-│   └── work_activity_exposure/  — Active question bucket
+│   ├── work_activity_exposure/  — Active question bucket
+│   │   ├── README.md
+│   │   ├── work_activity_exposure_report.md
+│   │   ├── exposure_state/
+│   │   ├── activity_robustness/
+│   │   ├── education_lens/
+│   │   └── audience_framing/
+│   └── potential_growth/        — Active question bucket
 │       ├── README.md
-│       ├── work_activity_exposure_report.md
-│       ├── exposure_state/
-│       ├── activity_robustness/
-│       ├── education_lens/
+│       ├── potential_growth_report.md
+│       ├── adoption_gap/
+│       ├── wage_potential/
+│       ├── automation_opportunity/
 │       └── audience_framing/
 ├── question_findings/           — Flat copies of question .md reports
 └── report/
