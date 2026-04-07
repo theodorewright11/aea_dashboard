@@ -119,11 +119,34 @@ Organized around IWA (Intermediate Work Activity) level as primary lens. No SKA 
 
 **Note:** `work_activities/` covers economic footprint angles only. For deeper WA exposure profiling see `questions/work_activity_exposure/`.
 
+### Active: Potential Growth (`questions/potential_growth/`)
+
+**Overarching question:** Where is current AI usage far below demonstrated capability, and what is the economic opportunity in that gap?
+
+| Sub-folder | Question |
+|------------|----------|
+| `adoption_gap/` | Where is confirmed usage furthest below the ceiling, across occupations and work activities? |
+| `wage_potential/` | Which occupations and sectors have the highest economic value locked in the gap? |
+| `automation_opportunity/` | Where does AI already lead on SKA AND the adoption gap is large? Where is the transformation signal? |
+| `audience_framing/` | How do these findings translate for policy, workforce practitioners, researchers, and laypeople? |
+
+**Key findings (all_confirmed primary config, all_ceiling as ceiling):**
+- Adoption gap: 15.8M workers (61.3M confirmed → 77.1M ceiling)
+- Wage gap: $980B/year ($3.99T confirmed → $4.97T ceiling)
+- Largest sector gaps by workers: Office/Admin (2.6M), Transportation (2.4M), Sales (2.1M), Management (1.8M)
+- Largest activity gap by workers: Documenting/Recording Information (GWA, +4.4M workers, +30pp)
+- Largest IWA wage gap: Maintain operational records ($144B)
+- 248 occupations in Q1 (AI leads on SKA AND large adoption gap); 102 also carry high risk tier (transformation signal)
+- Wage hotspots: 59 occupations in top quartile on both median wage (≥$90,845) and adoption gap (≥12.6pp)
+- General and Operations Managers alone: $90.2B wage gap from a single occupation category
+- Confirmed growth: +21.8M workers in 16 months (Sep 2024 → Feb 2026); ceiling also grew
+
+**Note:** `ai_transformative_potential/` (old folder) has been replaced by this analysis. Do not reference it.
+
 ### Planned (future sessions)
 
 | Bucket | Core question |
 |--------|--------------|
-| Potential Growth | Where is current usage far below capability? Where is the economic opportunity? |
 | Source Agreement | Where do sources agree/disagree? What does MCP uniquely add? |
 
 ---

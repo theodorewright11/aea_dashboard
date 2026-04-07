@@ -43,7 +43,6 @@ Top-level `<bucket>_report.md` files follow a specific structure. Use `job_expos
 ## Reference-Only Scripts
 
 The following question scripts are kept for reference but are **broken** due to dataset renames in the backend (e.g., old names like `"AEI Cumul. (Both) v4"` no longer exist). Do not attempt to run or fix them unless explicitly asked:
-- `questions/ai_transformative_potential/run.py`
 - `questions/economic_footprint/run.py`
 - `questions/utah_vs_national/run.py`
 - `questions/dataset_source_comparison/run.py`

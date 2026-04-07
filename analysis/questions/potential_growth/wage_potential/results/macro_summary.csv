@@ -1,0 +1,6 @@
+config_key,config_label,wages_confirmed,wages_ceiling,wages_gap
+all_ceiling,All Sources (Ceiling),4973936561348,4973936561348,0
+human_conversation,Human Conversation,3466123927453,4973936561348,1507812633895
+agentic_confirmed,Agentic Confirmed,2161947480917,4973936561348,2811989080430
+all_confirmed,All Confirmed,3993190229833,4973936561348,980746331515
+agentic_ceiling,Agentic Ceiling,3971936018538,4973936561348,1002000542809
