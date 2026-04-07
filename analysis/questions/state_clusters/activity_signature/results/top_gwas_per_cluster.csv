@@ -1,0 +1,26 @@
+act_cluster,rank,gwa,cluster_share,national_avg,delta_vs_nat
+Act-1,1,Analyzing Data or Information,3.81,3.65,0.16
+Act-1,2,Providing Consultation and Advice to Others,2.71,2.62,0.09
+Act-1,3,Documenting/Recording Information,7.39,7.30,0.08
+Act-1,4,Processing Information,2.86,2.78,0.08
+Act-1,5,"Judging the Qualities of Objects, Services, or People",2.20,2.13,0.07
+Act-2,1,Thinking Creatively,5.49,4.76,0.73
+Act-2,2,Analyzing Data or Information,4.18,3.65,0.53
+Act-2,3,"Guiding, Directing, and Motivating Subordinates",6.89,6.38,0.52
+Act-2,4,Providing Consultation and Advice to Others,3.01,2.62,0.39
+Act-2,5,Developing Objectives and Strategies,1.62,1.37,0.25
+Act-3,1,Performing General Physical Activities,10.83,9.65,1.18
+Act-3,2,Handling and Moving Objects,8.76,8.04,0.72
+Act-3,3,Controlling Machines and Processes,3.64,3.00,0.64
+Act-3,4,Processing Information,3.10,2.78,0.31
+Act-3,5,"Inspecting Equipment, Structures, or Materials",4.04,3.77,0.27
+Act-4,1,Handling and Moving Objects,8.66,8.04,0.62
+Act-4,2,Performing General Physical Activities,9.91,9.65,0.26
+Act-4,3,Assisting and Caring for Others,3.97,3.80,0.18
+Act-4,4,"Monitoring Processes, Materials, or Surroundings",5.76,5.60,0.17
+Act-4,5,Performing Administrative Activities,2.58,2.42,0.16
+Act-5,1,Thinking Creatively,8.65,4.76,3.89
+Act-5,2,"Guiding, Directing, and Motivating Subordinates",9.35,6.38,2.97
+Act-5,3,Analyzing Data or Information,6.49,3.65,2.83
+Act-5,4,Getting Information,6.36,4.42,1.94
+Act-5,5,Providing Consultation and Advice to Others,4.55,2.62,1.93

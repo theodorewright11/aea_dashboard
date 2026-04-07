@@ -1,0 +1,6 @@
+risk_cluster_id,pct_high,pct_moderate,pct_low,risk_cluster
+0,48.03,44.85,7.12,Risk-1
+1,44.67,47.73,7.60,Risk-2
+2,41.35,51.50,7.15,Risk-3
+3,41.35,50.34,8.32,Risk-4
+4,38.45,53.70,7.85,Risk-5
