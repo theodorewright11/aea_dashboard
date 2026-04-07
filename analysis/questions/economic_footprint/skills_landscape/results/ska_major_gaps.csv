@@ -43,28 +43,28 @@ Production Occupations,-1.91,human_conversation,Human Conversation
 Protective Service Occupations,-2.82,human_conversation,Human Conversation
 Sales and Related Occupations,-1.95,human_conversation,Human Conversation
 Transportation and Material Moving Occupations,-2.34,human_conversation,Human Conversation
-Architecture and Engineering Occupations,-3.28,agentic_confirmed,Agentic Confirmed
-"Arts, Design, Entertainment, Sports, and Media Occupations",-1.53,agentic_confirmed,Agentic Confirmed
-Building and Grounds Cleaning and Maintenance Occupations,-0.02,agentic_confirmed,Agentic Confirmed
-Business and Financial Operations Occupations,-1.89,agentic_confirmed,Agentic Confirmed
-Community and Social Service Occupations,-3.38,agentic_confirmed,Agentic Confirmed
-Computer and Mathematical Occupations,-2.33,agentic_confirmed,Agentic Confirmed
-Construction and Extraction Occupations,-1.61,agentic_confirmed,Agentic Confirmed
-Educational Instruction and Library Occupations,-2.86,agentic_confirmed,Agentic Confirmed
-"Farming, Fishing, and Forestry Occupations",-0.59,agentic_confirmed,Agentic Confirmed
-Food Preparation and Serving Related Occupations,1.37,agentic_confirmed,Agentic Confirmed
-Healthcare Practitioners and Technical Occupations,-3.04,agentic_confirmed,Agentic Confirmed
-Healthcare Support Occupations,-0.10,agentic_confirmed,Agentic Confirmed
-"Installation, Maintenance, and Repair Occupations",-1.93,agentic_confirmed,Agentic Confirmed
-Legal Occupations,-3.65,agentic_confirmed,Agentic Confirmed
-"Life, Physical, and Social Science Occupations",-3.09,agentic_confirmed,Agentic Confirmed
-Management Occupations,-2.79,agentic_confirmed,Agentic Confirmed
-Office and Administrative Support Occupations,0.18,agentic_confirmed,Agentic Confirmed
-Personal Care and Service Occupations,0.46,agentic_confirmed,Agentic Confirmed
-Production Occupations,-1.03,agentic_confirmed,Agentic Confirmed
-Protective Service Occupations,-1.52,agentic_confirmed,Agentic Confirmed
-Sales and Related Occupations,-0.35,agentic_confirmed,Agentic Confirmed
-Transportation and Material Moving Occupations,-1.28,agentic_confirmed,Agentic Confirmed
+Architecture and Engineering Occupations,-6.30,agentic_confirmed,Agentic Confirmed
+"Arts, Design, Entertainment, Sports, and Media Occupations",-4.48,agentic_confirmed,Agentic Confirmed
+Building and Grounds Cleaning and Maintenance Occupations,-2.77,agentic_confirmed,Agentic Confirmed
+Business and Financial Operations Occupations,-4.78,agentic_confirmed,Agentic Confirmed
+Community and Social Service Occupations,-5.97,agentic_confirmed,Agentic Confirmed
+Computer and Mathematical Occupations,-5.37,agentic_confirmed,Agentic Confirmed
+Construction and Extraction Occupations,-4.34,agentic_confirmed,Agentic Confirmed
+Educational Instruction and Library Occupations,-5.59,agentic_confirmed,Agentic Confirmed
+"Farming, Fishing, and Forestry Occupations",-3.29,agentic_confirmed,Agentic Confirmed
+Food Preparation and Serving Related Occupations,-1.33,agentic_confirmed,Agentic Confirmed
+Healthcare Practitioners and Technical Occupations,-5.66,agentic_confirmed,Agentic Confirmed
+Healthcare Support Occupations,-2.78,agentic_confirmed,Agentic Confirmed
+"Installation, Maintenance, and Repair Occupations",-4.79,agentic_confirmed,Agentic Confirmed
+Legal Occupations,-6.56,agentic_confirmed,Agentic Confirmed
+"Life, Physical, and Social Science Occupations",-5.93,agentic_confirmed,Agentic Confirmed
+Management Occupations,-5.67,agentic_confirmed,Agentic Confirmed
+Office and Administrative Support Occupations,-2.81,agentic_confirmed,Agentic Confirmed
+Personal Care and Service Occupations,-2.36,agentic_confirmed,Agentic Confirmed
+Production Occupations,-3.87,agentic_confirmed,Agentic Confirmed
+Protective Service Occupations,-4.24,agentic_confirmed,Agentic Confirmed
+Sales and Related Occupations,-3.35,agentic_confirmed,Agentic Confirmed
+Transportation and Material Moving Occupations,-4.12,agentic_confirmed,Agentic Confirmed
 Architecture and Engineering Occupations,-2.60,all_confirmed,All Confirmed
 "Arts, Design, Entertainment, Sports, and Media Occupations",-0.89,all_confirmed,All Confirmed
 Building and Grounds Cleaning and Maintenance Occupations,0.58,all_confirmed,All Confirmed

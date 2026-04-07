@@ -25,7 +25,7 @@ All sub-questions run against five canonical configs (defined in `analysis/confi
 |-----|---------|-------|
 | `all_ceiling` | `All 2026-02-18` | Upper bound — what AI can reach |
 | `human_conversation` | `AEI Conv + Micro 2026-02-12` | Where conversational AI is being used today |
-| `agentic_confirmed` | `MCP + API 2026-02-12` | Where agentic tool-use is confirmed |
+| `agentic_confirmed` | `AEI API 2026-02-12` | Where agentic tool-use is confirmed (AEI API only) |
 | `all_confirmed` | `AEI Both + Micro 2026-02-12` | All confirmed usage (no MCP ceiling) |
 | `agentic_ceiling` | `MCP + API 2026-02-18` | Agentic deployment potential |
 

@@ -1,6 +1,6 @@
 # What Is AI's Total Economic Footprint Across the US Economy?
 
-**TLDR:** Under our primary configuration (All Confirmed), AI exposure now reaches 61.3 million workers — 40% of total US employment — representing $4.0 trillion in annual wages. The ceiling estimate puts it at 77.1 million workers and $5.0 trillion. The footprint has roughly doubled since late 2024. It is concentrated in knowledge work, heaviest in Zone 4 (credentialed professional jobs), and the gap between conversational and agentic AI reach has grown to 5.3 million workers as agentic systems mature.
+**TLDR:** Under our primary configuration (All Confirmed), AI exposure now reaches 61.3 million workers — 40% of total US employment — representing $4.0 trillion in annual wages. The ceiling estimate puts it at 77.1 million workers and $5.0 trillion. The footprint has roughly doubled since late 2024. It is concentrated in knowledge work, heaviest in Zone 4 (credentialed professional jobs). Conversational AI (54.1M workers) currently has broader confirmed reach than agentic API usage (31.1M), but the agentic ceiling (60.4M) shows the potential is there once agentic deployment matures.
 
 ---
 
@@ -19,8 +19,8 @@ The five-config picture in full:
 | All Confirmed (primary) | 61.3M | $3.99T | 40.0% |
 | All Sources (ceiling) | 77.1M | $4.97T | 50.3% |
 | Human Conversation | 54.1M | $3.47T | 35.3% |
-| Agentic Confirmed | 59.4M | $3.92T | 38.8% |
-| Agentic Ceiling | 60.4M | $3.97T | 39.4% |
+| Agentic Confirmed (AEI API only) | 31.1M | $2.16T | 20.3% |
+| Agentic Ceiling (MCP + AEI API) | 60.4M | $3.97T | 39.4% |
 
 ---
 
@@ -100,11 +100,11 @@ From the job outlook data: Rating 3 occupations (below-average / declining) carr
 
 ## Agentic vs. Conversational
 
-Agentic AI (systems that can take multi-step actions, use tools, access APIs) now reaches 59.4M workers under confirmed estimates, compared to 54.1M for conversational AI — a gap of 5.3 million workers and roughly $450 billion in wages.
+Confirmed agentic tool-use (AEI API only) reaches 31.1M workers, compared to 54.1M for conversational AI. Confirmed agentic is currently narrower — API-based agentic deployment is concentrated in higher-complexity technical contexts rather than broadly across the information economy. But the agentic ceiling (MCP + AEI API, 60.4M workers) already exceeds conversational, which shows the potential is there; the gap between ceiling and confirmed (29.3M workers) is organizational deployment lag, not technical limitation.
 
-The activity-level data shows why. Scheduling Work and Activities: 27.7% (conversational) → 84.5% (agentic). Documenting/Recording Information: 29.6% → 62.2%. Working with Computers: 62.6% → 83.7%. These are sequential workflow tasks — the kind where the bottleneck isn't capability but *action*. Conversational AI can discuss them; agentic AI can complete them.
+The mode-level data shows how confirmed agentic and conversational differ at the activity level. Administrative tasks (55.0% conversational vs. 25.1% agentic), information retrieval (48.8% vs. 29.7%), and data analysis (50.5% vs. 34.8%) are all higher under conversational — these are the activities where broad chatbot-style deployment is most mature. Where confirmed agentic modestly leads: scheduling (27.7% vs. 37.9%) and a handful of multi-step workflow activities where tool-using systems have been specifically deployed. The agentic ceiling data shows that scheduling, administrative, and documenting activities would all rise dramatically if MCP-based tooling were as widely deployed as conversational AI.
 
-The 5.3M worker gap is a latent impact measure. These are workers whose tasks AI can demonstrably complete in principle, but only with agentic infrastructure that's only now becoming standard enterprise practice. As agentic deployment matures — tools, memory, long-horizon planning integrated into normal business systems — the conversational number is roughly what's in scope today, and the agentic number is what's in scope over the next 12–24 months.
+The three-layer framing: confirmed agentic (31.1M) is what we've measured in production AEI API deployments. The agentic ceiling (60.4M) is what's possible with today's demonstrated capability. The gap between them — 29.3M workers — is the latent impact zone. As agentic infrastructure becomes standard enterprise practice, that gap closes.
 
 Auto-augmentability reinforces the picture from a different angle: 97.7% of workers in AI-affected occupations are in roles with meaningful AI augmentation potential (score >= 2 on a 5-point scale), with a weighted mean of 2.82. Almost every worker in an AI-affected occupation can be meaningfully assisted by AI — not just marginally.
 

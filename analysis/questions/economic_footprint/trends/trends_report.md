@@ -10,7 +10,7 @@ The All Confirmed series shows sustained growth over the full dataset window. Th
 
 - The ceiling configuration (All Sources) started at 39.5M workers in September 2024 and reached 77.1M by February 2026. That's nearly a doubling in less than 18 months.
 - Human Conversation (confirmed) started at 39.5M and reached 54.1M — a 37% increase over the same period.
-- Agentic Confirmed began tracking from April 2025 at 33.4M and reached 59.4M by February 2026.
+- Agentic Confirmed (AEI API only) began tracking from August 2025 at 23.4M workers and reached 31.1M by February 2026 — a 33% increase over six months.
 
 The ceiling and confirmed trajectories have moved together rather than converging. A narrowing ceiling/confirmed gap would suggest AI capability claims are becoming more reliable as evidence accumulates. The fact that both are expanding means the frontier is still advancing faster than the validation process can consolidate it. New capabilities keep getting proposed before old proposals fully harden into confirmed status.
 

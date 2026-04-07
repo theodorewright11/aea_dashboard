@@ -144,5 +144,5 @@ Registered Nurses (33.4% confirmed, moderate risk) are worth watching. They're n
 | `all_confirmed` | AEI Both + Micro 2026-02-12 | **Primary** — all confirmed usage |
 | `all_ceiling` | All 2026-02-18 | Comparison — includes MCP ceiling |
 | `human_conversation` | AEI Conv + Micro 2026-02-12 | Confirmed human conversation only |
-| `agentic_confirmed` | MCP + API 2026-02-12 | Confirmed agentic tool-use |
+| `agentic_confirmed` | AEI API 2026-02-12 | Confirmed agentic tool-use (AEI API only) |
 | `agentic_ceiling` | MCP + API 2026-02-18 | Agentic ceiling |

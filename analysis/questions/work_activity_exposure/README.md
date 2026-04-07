@@ -26,7 +26,7 @@ All sub-questions use the same five canonical configs from `analysis/config.py`.
 | `all_confirmed` | AEI Both + Micro 2026-02-12 | **PRIMARY** — All confirmed usage |
 | `all_ceiling` | All 2026-02-18 | Upper bound — what AI can reach |
 | `human_conversation` | AEI Conv + Micro 2026-02-12 | Conversational AI only |
-| `agentic_confirmed` | MCP + API 2026-02-12 | Confirmed agentic tool-use |
+| `agentic_confirmed` | AEI API 2026-02-12 | Confirmed agentic tool-use (AEI API only) |
 | `agentic_ceiling` | MCP + API 2026-02-18 | Agentic deployment potential |
 
 ---

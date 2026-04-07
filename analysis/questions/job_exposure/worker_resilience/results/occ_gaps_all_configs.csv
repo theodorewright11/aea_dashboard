@@ -1785,899 +1785,899 @@ Emergency Medicine Physicians,human_conversation,-7.46,-6.48,-7.81,-8.09
 Mental Health Counselors,human_conversation,-7.49,-5.88,-7.28,-9.30
 Biochemists and Biophysicists,human_conversation,-7.61,-6.55,-7.63,-8.66
 Physicists,human_conversation,-9.12,-6.65,-10.00,-10.69
-"Postal Service Mail Sorters, Processors, and Processing Machine Operators",agentic_confirmed,3.77,2.92,-0.34,8.71
-Food Preparation Workers,agentic_confirmed,3.37,3.25,0.12,6.73
-Cashiers,agentic_confirmed,3.04,2.23,2.20,4.69
-Laundry and Dry-Cleaning Workers,agentic_confirmed,2.77,4.20,0.18,3.94
-Fast Food and Counter Workers,agentic_confirmed,2.70,2.36,3.09,2.66
-Pharmacy Aides,agentic_confirmed,2.57,1.55,0.75,5.40
-Baristas,agentic_confirmed,2.56,2.04,-1.02,6.68
-"Food Servers, Nonrestaurant",agentic_confirmed,2.51,4.08,2.20,1.25
-Stockers and Order Fillers,agentic_confirmed,2.49,3.37,-1.25,5.35
-Parking Attendants,agentic_confirmed,2.48,2.45,-0.11,5.09
-"Shipping, Receiving, and Inventory Clerks",agentic_confirmed,2.46,2.31,1.16,3.90
-"Locker Room, Coatroom, and Dressing Room Attendants",agentic_confirmed,2.42,1.32,2.16,3.79
-Crossing Guards and Flaggers,agentic_confirmed,2.41,3.21,0.69,3.31
-"Cooks, Fast Food",agentic_confirmed,2.36,3.71,1.77,1.58
-Postal Service Mail Carriers,agentic_confirmed,2.33,3.00,1.15,2.84
-"Pourers and Casters, Metal",agentic_confirmed,2.13,-0.09,-3.10,9.58
-"Library Assistants, Clerical",agentic_confirmed,2.13,1.95,0.83,3.61
-Shampooers,agentic_confirmed,2.13,2.90,0.81,2.67
-"Ushers, Lobby Attendants, and Ticket Takers",agentic_confirmed,2.01,1.46,2.46,2.11
-"Mail Clerks and Mail Machine Operators, Except Postal Service",agentic_confirmed,2.01,2.90,0.66,2.46
-"Janitors and Cleaners, Except Maids and Housekeeping Cleaners",agentic_confirmed,1.94,5.66,-1.45,1.60
-Childcare Workers,agentic_confirmed,1.92,1.50,0.62,3.65
-Postal Service Clerks,agentic_confirmed,1.91,1.80,-0.27,4.20
-Animal Caretakers,agentic_confirmed,1.84,2.29,0.71,2.50
-"Hosts and Hostesses, Restaurant, Lounge, and Coffee Shop",agentic_confirmed,1.75,1.40,2.40,1.46
-Dining Room and Cafeteria Attendants and Bartender Helpers,agentic_confirmed,1.72,2.77,-1.03,3.43
-Waiters and Waitresses,agentic_confirmed,1.70,1.13,-0.81,4.79
-"Office Machine Operators, Except Computer",agentic_confirmed,1.68,1.36,0.95,2.74
-Manicurists and Pedicurists,agentic_confirmed,1.67,2.70,-0.94,3.24
-Dishwashers,agentic_confirmed,1.62,,-4.27,7.51
-Parking Enforcement Workers,agentic_confirmed,1.60,1.54,1.11,2.16
-"Weighers, Measurers, Checkers, and Samplers, Recordkeeping",agentic_confirmed,1.60,1.06,0.43,3.32
-Gambling Cage Workers,agentic_confirmed,1.59,1.63,0.68,2.46
-Gambling Change Persons and Booth Cashiers,agentic_confirmed,1.59,2.61,1.34,0.81
-Counter and Rental Clerks,agentic_confirmed,1.54,1.22,0.38,3.02
-Costume Attendants,agentic_confirmed,1.53,0.96,0.73,2.89
-Amusement and Recreation Attendants,agentic_confirmed,1.50,2.62,0.75,1.12
-"Painters, Construction and Maintenance",agentic_confirmed,1.48,2.03,-1.82,4.24
-"Graders and Sorters, Agricultural Products",agentic_confirmed,1.46,,-0.35,3.27
-Couriers and Messengers,agentic_confirmed,1.45,2.84,-0.31,1.80
-Library Technicians,agentic_confirmed,1.43,0.99,0.81,2.49
-"Meter Readers, Utilities",agentic_confirmed,1.38,2.64,-0.68,2.17
-Structural Metal Fabricators and Fitters,agentic_confirmed,1.29,4.47,-2.35,1.74
-Home Health Aides,agentic_confirmed,1.23,0.73,-0.17,3.13
-Tellers,agentic_confirmed,1.20,1.23,-0.15,2.52
-"Stone Cutters and Carvers, Manufacturing",agentic_confirmed,1.20,3.60,-2.65,2.65
-Log Graders and Scalers,agentic_confirmed,1.13,2.05,-0.37,1.73
-"Helpers--Painters, Paperhangers, Plasterers, and Stucco Masons",agentic_confirmed,1.11,3.42,-3.67,3.59
-Bartenders,agentic_confirmed,1.11,1.29,-0.70,2.75
-Barbers,agentic_confirmed,1.09,1.93,-1.95,3.31
-"Umpires, Referees, and Other Sports Officials",agentic_confirmed,1.08,1.41,-2.11,3.94
-Tire Repairers and Changers,agentic_confirmed,1.06,3.27,-1.88,1.78
-Physical Therapist Aides,agentic_confirmed,0.99,1.47,1.18,0.33
-Retail Salespersons,agentic_confirmed,0.96,-0.44,0.85,2.48
-Forest and Conservation Workers,agentic_confirmed,0.96,2.30,-2.04,2.62
-"Office Clerks, General",agentic_confirmed,0.91,0.71,1.02,1.01
-Gambling and Sports Book Writers and Runners,agentic_confirmed,0.89,1.21,1.26,0.20
-Funeral Attendants,agentic_confirmed,0.88,0.56,2.16,-0.07
-"Switchboard Operators, Including Answering Service",agentic_confirmed,0.87,0.88,0.56,1.18
-Driver/Sales Workers,agentic_confirmed,0.87,1.33,-0.55,1.83
-Personal Care Aides,agentic_confirmed,0.81,0.09,0.95,1.38
-Prepress Technicians and Workers,agentic_confirmed,0.80,1.26,0.17,0.98
-"Cooks, Short Order",agentic_confirmed,0.80,2.33,-1.93,2.00
-Gambling Dealers,agentic_confirmed,0.79,1.92,-0.57,1.02
-Light Truck Drivers,agentic_confirmed,0.79,1.63,-2.12,2.86
-Shoe and Leather Workers and Repairers,agentic_confirmed,0.76,3.85,-0.15,-1.43
-"Credit Authorizers, Checkers, and Clerks",agentic_confirmed,0.75,0.38,0.97,0.91
-"Door-to-Door Sales Workers, News and Street Vendors, and Related Workers",agentic_confirmed,0.75,-0.74,0.83,2.16
-Craft Artists,agentic_confirmed,0.74,2.76,-2.09,1.55
-"Cooks, Restaurant",agentic_confirmed,0.74,1.59,-1.22,1.83
-Receptionists and Information Clerks,agentic_confirmed,0.73,1.00,-0.28,1.48
-Skincare Specialists,agentic_confirmed,0.69,0.75,-0.40,1.73
-"Title Examiners, Abstractors, and Searchers",agentic_confirmed,0.69,-0.39,-0.58,3.03
-"Pesticide Handlers, Sprayers, and Applicators, Vegetation",agentic_confirmed,0.66,0.97,-0.50,1.51
-Photographic Process Workers and Processing Machine Operators,agentic_confirmed,0.66,-0.16,-0.80,2.92
-Billing and Posting Clerks,agentic_confirmed,0.66,1.71,0.78,-0.53
-Telephone Operators,agentic_confirmed,0.65,0.46,-0.69,2.19
-"Teaching Assistants, Special Education",agentic_confirmed,0.64,0.02,-0.35,2.25
-Histology Technicians,agentic_confirmed,0.62,1.27,-0.81,1.39
-Maids and Housekeeping Cleaners,agentic_confirmed,0.59,0.91,-1.49,2.36
-Cargo and Freight Agents,agentic_confirmed,0.59,0.88,0.60,0.30
-"Hotel, Motel, and Resort Desk Clerks",agentic_confirmed,0.59,0.07,0.83,0.88
-"Packers and Packagers, Hand",agentic_confirmed,0.57,3.44,-1.37,-0.35
-Floral Designers,agentic_confirmed,0.57,0.37,-1.81,3.14
-Nursing Assistants,agentic_confirmed,0.56,0.05,-0.75,2.39
-Bakers,agentic_confirmed,0.56,1.90,-0.15,-0.06
-Animal Breeders,agentic_confirmed,0.56,2.28,-0.99,0.38
-Merchandise Displayers and Window Trimmers,agentic_confirmed,0.54,1.05,-2.44,3.01
-Fishing and Hunting Workers,agentic_confirmed,0.54,2.82,-3.99,2.78
-"Substitute Teachers, Short-Term",agentic_confirmed,0.53,0.02,-0.30,1.88
-"Bookkeeping, Accounting, and Auditing Clerks",agentic_confirmed,0.52,1.00,-0.53,1.10
-File Clerks,agentic_confirmed,0.52,1.59,-0.17,0.12
-Medical Secretaries and Administrative Assistants,agentic_confirmed,0.51,0.37,0.53,0.62
-Tour Guides and Escorts,agentic_confirmed,0.48,0.96,-0.57,1.05
-Demonstrators and Product Promoters,agentic_confirmed,0.47,0.31,0.41,0.70
-Insurance Claims and Policy Processing Clerks,agentic_confirmed,0.47,0.69,0.82,-0.11
-Nannies,agentic_confirmed,0.46,-0.21,-0.36,1.94
-Jewelers and Precious Stone and Metal Workers,agentic_confirmed,0.44,2.87,-0.80,-0.74
-"Cooks, Institution and Cafeteria",agentic_confirmed,0.42,0.67,-0.21,0.81
-"Cooks, Private Household",agentic_confirmed,0.42,1.50,-0.08,-0.16
-Motion Picture Projectionists,agentic_confirmed,0.39,0.78,-1.50,1.89
-Travel Guides,agentic_confirmed,0.39,-1.12,-1.12,3.40
-Telemarketers,agentic_confirmed,0.39,-0.85,-0.77,2.78
-Farm Labor Contractors,agentic_confirmed,0.38,0.10,0.94,0.11
-Bill and Account Collectors,agentic_confirmed,0.37,0.04,-0.15,1.22
-Animal Trainers,agentic_confirmed,0.37,0.42,-0.98,1.65
-First-Line Supervisors of Housekeeping and Janitorial Workers,agentic_confirmed,0.35,-0.08,0.83,0.31
-Customer Service Representatives,agentic_confirmed,0.34,-0.17,-0.15,1.36
-"Paper Goods Machine Setters, Operators, and Tenders",agentic_confirmed,0.33,-0.07,-1.30,2.37
-Passenger Attendants,agentic_confirmed,0.33,-0.17,0.39,0.79
-"Tailors, Dressmakers, and Custom Sewers",agentic_confirmed,0.32,2.26,-2.21,0.93
-"Plating Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,0.31,0.48,-1.38,1.85
-Team Assemblers,agentic_confirmed,0.30,0.93,-0.36,0.34
-Tile and Stone Setters,agentic_confirmed,0.30,1.67,-2.32,1.54
-Brokerage Clerks,agentic_confirmed,0.28,-0.17,-0.78,1.80
-Veterinary Assistants and Laboratory Animal Caretakers,agentic_confirmed,0.27,1.19,-0.57,0.21
-Pest Control Workers,agentic_confirmed,0.27,0.13,-1.64,2.33
-Proofreaders and Copy Markers,agentic_confirmed,0.25,0.15,-0.27,0.87
-Massage Therapists,agentic_confirmed,0.25,1.26,-2.58,2.07
-First-Line Supervisors of Food Preparation and Serving Workers,agentic_confirmed,0.24,-0.73,-0.33,1.77
-Butchers and Meat Cutters,agentic_confirmed,0.23,1.85,-1.13,-0.03
-Print Binding and Finishing Workers,agentic_confirmed,0.23,0.95,-1.33,1.06
-Upholsterers,agentic_confirmed,0.19,1.99,-3.52,2.12
-Dental Assistants,agentic_confirmed,0.19,1.35,-1.41,0.64
-Bridge and Lock Tenders,agentic_confirmed,0.16,0.60,-1.28,1.16
-"Farmworkers, Farm, Ranch, and Aquacultural Animals",agentic_confirmed,0.12,0.56,-1.52,1.31
-Travel Agents,agentic_confirmed,0.11,-0.80,-0.52,1.67
-"Hairdressers, Hairstylists, and Cosmetologists",agentic_confirmed,0.11,0.88,-1.68,1.14
-"Meat, Poultry, and Fish Cutters and Trimmers",agentic_confirmed,0.11,3.76,-0.74,-2.69
-New Accounts Clerks,agentic_confirmed,0.10,-0.20,0.19,0.32
-Surveying and Mapping Technicians,agentic_confirmed,0.10,0.58,0.06,-0.36
-Cement Masons and Concrete Finishers,agentic_confirmed,0.09,2.11,-3.01,1.18
-Gem and Diamond Workers,agentic_confirmed,0.05,0.70,-3.23,2.69
-Occupational Therapy Aides,agentic_confirmed,0.05,0.33,0.34,-0.53
-"Lifeguards, Ski Patrol, and Other Recreational Protective Service Workers",agentic_confirmed,0.04,0.61,-1.73,1.25
-Helpers--Carpenters,agentic_confirmed,0.03,2.91,-1.45,-1.38
-Fiberglass Laminators and Fabricators,agentic_confirmed,0.03,1.90,-1.91,0.09
-"Aircraft Structure, Surfaces, Rigging, and Systems Assemblers",agentic_confirmed,0.02,0.38,-2.13,1.79
-"Floor Layers, Except Carpet, Wood, and Hard Tiles",agentic_confirmed,-0.01,3.44,-1.42,-2.04
-Dental Laboratory Technicians,agentic_confirmed,-0.01,1.28,-1.97,0.67
-Appraisers and Assessors of Real Estate,agentic_confirmed,-0.01,0.54,-0.50,-0.06
-Histotechnologists,agentic_confirmed,-0.01,0.26,-1.77,1.47
-"First-Line Supervisors of Helpers, Laborers, and Material Movers, Hand",agentic_confirmed,-0.03,-0.62,-1.11,1.64
-"Geological Technicians, Except Hydrologic Technicians",agentic_confirmed,-0.05,-0.01,-0.62,0.49
-"Preschool Teachers, Except Special Education",agentic_confirmed,-0.06,-0.71,-0.49,1.01
-Sheet Metal Workers,agentic_confirmed,-0.08,1.83,-1.85,-0.21
-Museum Technicians and Conservators,agentic_confirmed,-0.08,0.09,-2.11,1.77
-Insurance Underwriters,agentic_confirmed,-0.09,-0.68,-1.04,1.46
-Electromechanical Equipment Assemblers,agentic_confirmed,-0.11,-0.03,-0.83,0.54
-Psychiatric Aides,agentic_confirmed,-0.11,-0.12,-0.98,0.75
-Endoscopy Technicians,agentic_confirmed,-0.15,0.16,-1.70,1.10
-Online Merchants,agentic_confirmed,-0.15,-0.11,0.28,-0.62
-Animal Control Workers,agentic_confirmed,-0.15,0.90,-1.11,-0.25
-Orderlies,agentic_confirmed,-0.15,2.80,-2.92,-0.34
-Traffic Technicians,agentic_confirmed,-0.19,0.24,-0.51,-0.29
-Social Science Research Assistants,agentic_confirmed,-0.20,-0.99,-0.70,1.09
-"Layout Workers, Metal and Plastic",agentic_confirmed,-0.20,1.04,-1.78,0.12
-"Ambulance Drivers and Attendants, Except Emergency Medical Technicians",agentic_confirmed,-0.21,0.96,-2.77,1.18
-Phlebotomists,agentic_confirmed,-0.21,0.53,-1.35,0.18
-Forest and Conservation Technicians,agentic_confirmed,-0.22,0.28,-2.48,1.55
-Cleaners of Vehicles and Equipment,agentic_confirmed,-0.23,-2.83,-3.84,5.99
-First-Line Supervisors of Retail Sales Workers,agentic_confirmed,-0.23,-1.22,-0.04,0.57
-"Painting, Coating, and Decorating Workers",agentic_confirmed,-0.24,,-1.80,1.32
-Electrical and Electronic Equipment Assemblers,agentic_confirmed,-0.24,1.26,-1.74,
-"Teaching Assistants, Preschool, Elementary, Middle, and Secondary School, Except Special Education",agentic_confirmed,-0.24,-0.37,-0.66,0.31
-"Food and Tobacco Roasting, Baking, and Drying Machine Operators and Tenders",agentic_confirmed,-0.24,0.42,-1.74,0.59
-"Fine Artists, Including Painters, Sculptors, and Illustrators",agentic_confirmed,-0.24,2.13,-2.55,-0.32
-Food Batchmakers,agentic_confirmed,-0.25,0.67,-0.40,-1.04
-Self-Enrichment Teachers,agentic_confirmed,-0.27,0.64,0.50,-1.96
-Plasterers and Stucco Masons,agentic_confirmed,-0.28,1.02,-3.70,1.83
-"Wholesale and Retail Buyers, Except Farm Products",agentic_confirmed,-0.29,-1.38,-0.78,1.29
-"Insulation Workers, Floor, Ceiling, and Wall",agentic_confirmed,-0.29,2.54,-4.14,0.72
-"Morticians, Undertakers, and Funeral Arrangers",agentic_confirmed,-0.29,-1.53,-0.43,1.08
-Fence Erectors,agentic_confirmed,-0.30,2.41,-3.43,0.13
-Procurement Clerks,agentic_confirmed,-0.31,-0.91,-0.26,0.25
-"Extruding and Forming Machine Setters, Operators, and Tenders, Synthetic and Glass Fibers",agentic_confirmed,-0.31,-1.06,-2.15,2.28
-Appraisers of Personal and Business Property,agentic_confirmed,-0.32,0.30,-1.98,0.71
-"Cutting, Punching, and Press Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,-0.34,-1.26,-1.94,2.18
-Recreation Workers,agentic_confirmed,-0.34,-1.27,-0.44,0.68
-Ophthalmic Medical Technicians,agentic_confirmed,-0.34,0.81,-0.94,-0.91
-Semiconductor Processing Technicians,agentic_confirmed,-0.34,-0.78,-1.47,1.22
-Food Science Technicians,agentic_confirmed,-0.34,0.33,-0.71,-0.65
-Retail Loss Prevention Specialists,agentic_confirmed,-0.35,0.27,-0.72,-0.61
-Recycling Coordinators,agentic_confirmed,-0.35,-0.42,0.23,-0.86
-Industrial Truck and Tractor Operators,agentic_confirmed,-0.36,-2.51,-4.08,5.53
-Tax Preparers,agentic_confirmed,-0.38,0.22,-0.08,-1.27
-"Laborers and Freight, Stock, and Material Movers, Hand",agentic_confirmed,-0.38,0.13,-3.67,2.40
-Word Processors and Typists,agentic_confirmed,-0.39,1.83,0.26,-3.28
-Bailiffs,agentic_confirmed,-0.40,0.46,-0.64,-1.02
-"Inspectors, Testers, Sorters, Samplers, and Weighers",agentic_confirmed,-0.40,0.54,-0.72,-1.02
-Locksmiths and Safe Repairers,agentic_confirmed,-0.46,-0.52,-1.89,1.04
-Insurance Sales Agents,agentic_confirmed,-0.46,-1.43,-0.74,0.80
-"Sewers, Hand",agentic_confirmed,-0.46,,-5.45,4.52
-Etchers and Engravers,agentic_confirmed,-0.46,0.67,-1.12,-0.94
-Solar Sales Representatives and Assessors,agentic_confirmed,-0.47,-0.81,-0.60,-0.01
-Medical and Clinical Laboratory Technicians,agentic_confirmed,-0.49,0.36,-1.12,-0.72
-Parts Salespersons,agentic_confirmed,-0.50,0.04,-0.65,-0.88
-Correspondence Clerks,agentic_confirmed,-0.51,-0.91,-0.11,-0.49
-Drywall and Ceiling Tile Installers,agentic_confirmed,-0.51,4.06,-3.22,-2.36
-Glaziers,agentic_confirmed,-0.52,2.16,-2.11,-1.60
-Shoe Machine Operators and Tenders,agentic_confirmed,-0.52,0.97,-3.56,1.03
-Helpers--Roofers,agentic_confirmed,-0.53,1.03,-3.39,0.77
-Pharmacy Technicians,agentic_confirmed,-0.53,0.26,-1.75,-0.11
-Cooling and Freezing Equipment Operators and Tenders,agentic_confirmed,-0.54,-1.61,-1.27,1.26
-Food Service Managers,agentic_confirmed,-0.55,-1.33,-0.64,0.31
-Dietetic Technicians,agentic_confirmed,-0.56,0.80,0.27,-2.74
-Data Warehousing Specialists,agentic_confirmed,-0.56,-0.71,-1.24,0.26
-Athletes and Sports Competitors,agentic_confirmed,-0.57,0.72,-4.79,2.36
-Power Distributors and Dispatchers,agentic_confirmed,-0.58,-0.92,-1.58,0.77
-Agricultural Technicians,agentic_confirmed,-0.58,0.80,-0.85,-1.68
-Foundry Mold and Coremakers,agentic_confirmed,-0.58,0.29,-3.52,1.48
-Agricultural Equipment Operators,agentic_confirmed,-0.59,-4.13,-3.64,6.01
-Embalmers,agentic_confirmed,-0.59,0.27,-1.63,-0.40
-"Tank Car, Truck, and Ship Loaders",agentic_confirmed,-0.60,0.46,-3.95,1.69
-Gambling Surveillance Officers and Gambling Investigators,agentic_confirmed,-0.60,0.41,-2.54,0.32
-"Patternmakers, Metal and Plastic",agentic_confirmed,-0.61,0.41,-0.49,-1.74
-Weatherization Installers and Technicians,agentic_confirmed,-0.61,-0.36,-2.16,0.69
-"Camera Operators, Television, Video, and Film",agentic_confirmed,-0.61,0.18,-2.51,0.49
-Biomass Plant Technicians,agentic_confirmed,-0.63,-0.32,-2.28,0.73
-Carpet Installers,agentic_confirmed,-0.63,0.49,-3.28,0.89
-Order Clerks,agentic_confirmed,-0.64,0.54,-0.76,-1.69
-Sewing Machine Operators,agentic_confirmed,-0.64,2.00,-3.28,
-First-Line Supervisors of Gambling Services Workers,agentic_confirmed,-0.65,-0.88,-1.66,0.60
-Packaging and Filling Machine Operators and Tenders,agentic_confirmed,-0.65,-0.96,-1.98,0.99
-Furniture Finishers,agentic_confirmed,-0.66,1.36,-2.66,-0.68
-Paperhangers,agentic_confirmed,-0.66,3.17,-4.59,-0.57
-Freight Forwarders,agentic_confirmed,-0.66,0.12,-0.01,-2.10
-Landscaping and Groundskeeping Workers,agentic_confirmed,-0.67,-3.61,-4.76,6.35
-Automotive Body and Related Repairers,agentic_confirmed,-0.67,-0.46,-2.58,1.02
-Nuclear Monitoring Technicians,agentic_confirmed,-0.67,-0.89,-2.74,1.62
-Reservation and Transportation Ticket Agents and Travel Clerks,agentic_confirmed,-0.67,-0.22,-0.40,-1.40
-Concierges,agentic_confirmed,-0.70,-0.64,0.25,-1.72
-"Crushing, Grinding, and Polishing Machine Setters, Operators, and Tenders",agentic_confirmed,-0.71,-1.14,-2.70,1.71
-Transportation Security Screeners,agentic_confirmed,-0.71,0.72,-2.27,-0.59
-Residential Advisors,agentic_confirmed,-0.72,-1.15,-0.62,-0.40
-"Insurance Appraisers, Auto Damage",agentic_confirmed,-0.72,-0.39,-0.96,-0.82
-Fashion Designers,agentic_confirmed,-0.73,-1.98,-2.50,2.30
-Ophthalmic Laboratory Technicians,agentic_confirmed,-0.73,-0.20,-2.66,0.68
-"Securities, Commodities, and Financial Services Sales Agents",agentic_confirmed,-0.74,-1.16,-1.34,0.28
-"Bus Drivers, School",agentic_confirmed,-0.75,1.01,-3.29,0.03
-"Cutters and Trimmers, Hand",agentic_confirmed,-0.76,,-1.64,0.13
-"Makeup Artists, Theatrical and Performance",agentic_confirmed,-0.77,0.64,-2.84,-0.09
-"Opticians, Dispensing",agentic_confirmed,-0.78,-0.51,-1.82,0.01
-"Welding, Soldering, and Brazing Machine Setters, Operators, and Tenders",agentic_confirmed,-0.78,0.89,-2.05,-1.18
-Ophthalmic Medical Technologists,agentic_confirmed,-0.78,-0.03,-1.81,-0.50
-"Computer, Automated Teller, and Office Machine Repairers",agentic_confirmed,-0.78,-0.94,-1.25,-0.16
-Security and Fire Alarm Systems Installers,agentic_confirmed,-0.81,-0.92,-1.45,-0.05
-Psychiatric Technicians,agentic_confirmed,-0.81,-1.33,-1.52,0.42
-Audio and Video Technicians,agentic_confirmed,-0.82,-0.14,-2.64,0.33
-"Interviewers, Except Eligibility and Loan",agentic_confirmed,-0.84,-0.59,-1.00,-0.92
-"Court, Municipal, and License Clerks",agentic_confirmed,-0.84,0.26,0.23,-3.02
-Surgical Technologists,agentic_confirmed,-0.84,-0.07,-2.21,-0.25
-Agricultural Inspectors,agentic_confirmed,-0.85,-1.63,-2.24,1.32
-Radiologic Technologists and Technicians,agentic_confirmed,-0.85,-0.76,-1.82,0.04
-Photographers,agentic_confirmed,-0.85,0.45,-2.09,-0.90
-"Pressers, Textile, Garment, and Related Materials",agentic_confirmed,-0.86,-2.18,-4.98,4.59
-Riggers,agentic_confirmed,-0.87,0.60,-2.78,-0.44
-Chemical Technicians,agentic_confirmed,-0.88,-1.60,-2.35,1.32
-Machinists,agentic_confirmed,-0.88,-0.70,-1.75,-0.19
-Data Entry Keyers,agentic_confirmed,-0.88,1.75,-0.07,-4.31
-"Radio, Cellular, and Tower Equipment Installers and Repairers",agentic_confirmed,-0.89,-0.91,-1.47,-0.28
-"Potters, Manufacturing",agentic_confirmed,-0.89,-0.54,-2.65,0.52
-Musicians and Singers,agentic_confirmed,-0.89,1.43,-2.59,-1.53
-"First-Line Supervisors of Farming, Fishing, and Forestry Workers",agentic_confirmed,-0.90,-1.29,-1.27,-0.13
-Food Cooking Machine Operators and Tenders,agentic_confirmed,-0.90,0.66,-1.17,-2.18
-Home Appliance Repairers,agentic_confirmed,-0.90,-2.38,-2.16,1.83
-"Buyers and Purchasing Agents, Farm Products",agentic_confirmed,-0.91,-0.24,-0.15,-2.33
-"Coil Winders, Tapers, and Finishers",agentic_confirmed,-0.91,-1.21,-0.33,-1.19
-Automotive and Watercraft Service Attendants,agentic_confirmed,-0.91,0.88,-2.23,-1.39
-Special Effects Artists and Animators,agentic_confirmed,-0.92,-0.11,-2.63,-0.02
-Web Developers,agentic_confirmed,-0.92,-0.96,-1.45,-0.36
-Talent Directors,agentic_confirmed,-0.92,-1.56,-1.79,0.59
-"Molding, Coremaking, and Casting Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,-0.93,-0.04,-1.79,-0.95
-Web Administrators,agentic_confirmed,-0.93,-0.89,-1.87,-0.05
-Security Guards,agentic_confirmed,-0.94,1.45,-0.29,-3.98
-Highway Maintenance Workers,agentic_confirmed,-0.95,-0.43,-3.04,0.63
-Baggage Porters and Bellhops,agentic_confirmed,-0.95,1.00,-2.63,-1.22
-Conveyor Operators and Tenders,agentic_confirmed,-0.96,-1.43,-2.56,1.11
-"Forging Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,-0.96,-0.18,-1.74,-0.96
-"Production, Planning, and Expediting Clerks",agentic_confirmed,-0.96,-0.21,-0.57,-2.10
-Compliance Officers,agentic_confirmed,-0.96,-1.01,-1.60,-0.28
-Film and Video Editors,agentic_confirmed,-0.97,0.35,-2.00,-1.24
-"Textile Knitting and Weaving Machine Setters, Operators, and Tenders",agentic_confirmed,-0.97,-1.04,-3.39,1.53
-Stonemasons,agentic_confirmed,-0.97,1.30,-3.93,-0.27
-Medical Equipment Preparers,agentic_confirmed,-0.97,0.43,-1.43,-1.91
-Transportation Inspectors,agentic_confirmed,-0.97,-0.37,-1.74,-0.80
-"Lathe and Turning Machine Tool Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,-0.97,-1.18,-1.97,0.24
-"Environmental Science and Protection Technicians, Including Health",agentic_confirmed,-0.97,-0.98,-1.95,0.00
-Fabric and Apparel Patternmakers,agentic_confirmed,-0.98,0.66,-2.06,-1.53
-Customs Brokers,agentic_confirmed,-0.98,-0.68,-0.88,-1.37
-Automotive Glass Installers and Repairers,agentic_confirmed,-1.00,-1.33,-1.26,-0.39
-Computer Programmers,agentic_confirmed,-1.00,-1.22,-1.12,-0.65
-Telecommunications Line Installers and Repairers,agentic_confirmed,-1.00,-0.32,-2.08,-0.60
-"Entertainment and Recreation Managers, Except Gambling",agentic_confirmed,-1.01,-2.24,-1.48,0.69
-Payroll and Timekeeping Clerks,agentic_confirmed,-1.01,1.03,-0.03,-4.04
-"Model Makers, Wood",agentic_confirmed,-1.03,1.49,-1.83,-2.75
-Precision Agriculture Technicians,agentic_confirmed,-1.03,-0.68,-1.91,-0.49
-Water and Wastewater Treatment Plant and System Operators,agentic_confirmed,-1.03,-1.67,-0.98,-0.45
-Cytotechnologists,agentic_confirmed,-1.03,-0.03,-3.36,0.28
-Diagnostic Medical Sonographers,agentic_confirmed,-1.04,-0.72,-2.13,-0.28
-Patient Representatives,agentic_confirmed,-1.05,-2.24,-1.49,0.59
-Railroad Conductors and Yardmasters,agentic_confirmed,-1.05,-0.96,-2.52,0.32
-Range Managers,agentic_confirmed,-1.06,-1.91,-2.08,0.82
-First-Line Supervisors of Production and Operating Workers,agentic_confirmed,-1.06,-1.68,-1.65,0.14
-Audiovisual Equipment Installers and Repairers,agentic_confirmed,-1.06,-2.28,-1.48,0.57
-Document Management Specialists,agentic_confirmed,-1.08,-0.64,-1.43,-1.15
-Roofers,agentic_confirmed,-1.08,0.13,-3.86,0.47
-Desktop Publishers,agentic_confirmed,-1.09,-0.57,-2.61,-0.08
-Medical Transcriptionists,agentic_confirmed,-1.09,-0.02,-1.57,-1.68
-Credit Counselors,agentic_confirmed,-1.09,-1.23,-1.10,-0.94
-Photonics Technicians,agentic_confirmed,-1.09,-1.27,-1.51,-0.50
-"Control and Valve Installers and Repairers, Except Mechanical Door",agentic_confirmed,-1.10,-0.66,-1.35,-1.27
-Loan Interviewers and Clerks,agentic_confirmed,-1.10,-1.07,-1.73,-0.49
-Stationary Engineers and Boiler Operators,agentic_confirmed,-1.10,-1.60,-1.71,-0.01
-Funeral Home Managers,agentic_confirmed,-1.11,-1.76,-0.78,-0.78
-"Insulation Workers, Mechanical",agentic_confirmed,-1.11,1.47,-2.45,-2.34
-Electrical and Electronics Drafters,agentic_confirmed,-1.12,-0.01,-1.15,-2.21
-"Compensation, Benefits, and Job Analysis Specialists",agentic_confirmed,-1.13,-1.16,-1.15,-1.09
-"Dispatchers, Except Police, Fire, and Ambulance",agentic_confirmed,-1.13,-0.65,-1.36,-1.39
-Helpers--Electricians,agentic_confirmed,-1.13,1.07,-3.02,-1.45
-Energy Auditors,agentic_confirmed,-1.13,-1.00,-1.97,-0.44
-Occupational Therapy Assistants,agentic_confirmed,-1.14,-0.66,-1.83,-0.93
-Executive Secretaries and Executive Administrative Assistants,agentic_confirmed,-1.15,-1.32,-1.36,-0.76
-"Transportation Vehicle, Equipment and Systems Inspectors, Except Aviation",agentic_confirmed,-1.17,-0.39,-0.79,-2.31
-Cardiovascular Technologists and Technicians,agentic_confirmed,-1.17,-1.24,-2.68,0.41
-"Extruding and Drawing Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,-1.17,-0.97,-2.96,0.42
-Cytogenetic Technologists,agentic_confirmed,-1.18,-1.14,-2.78,0.39
-Geographic Information Systems Technologists and Technicians,agentic_confirmed,-1.18,0.35,-1.22,-2.66
-Sustainability Specialists,agentic_confirmed,-1.18,-1.55,-1.66,-0.32
-Shuttle Drivers and Chauffeurs,agentic_confirmed,-1.18,0.47,-2.80,-1.23
-Telecommunications Engineering Specialists,agentic_confirmed,-1.20,-0.58,-0.77,-2.25
-Magnetic Resonance Imaging Technologists,agentic_confirmed,-1.22,-0.83,-2.26,-0.56
-"First-Line Supervisors of Landscaping, Lawn Service, and Groundskeeping Workers",agentic_confirmed,-1.23,-1.60,-1.66,-0.44
-Hazardous Materials Removal Workers,agentic_confirmed,-1.23,0.32,-2.72,-1.29
-Neurodiagnostic Technologists,agentic_confirmed,-1.23,-0.85,-2.51,-0.34
-Conservation Scientists,agentic_confirmed,-1.23,-0.86,-1.82,-1.02
-Graphic Designers,agentic_confirmed,-1.24,0.31,-1.41,-2.63
-Real Estate Brokers,agentic_confirmed,-1.25,-1.97,-1.38,-0.40
-"Extruding, Forming, Pressing, and Compacting Machine Setters, Operators, and Tenders",agentic_confirmed,-1.25,-0.77,-2.90,-0.08
-"Milling and Planing Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,-1.25,-1.92,-1.69,-0.15
-"Pump Operators, Except Wellhead Pumpers",agentic_confirmed,-1.26,-0.76,-2.55,-0.46
-Gas Plant Operators,agentic_confirmed,-1.26,-1.38,-2.32,-0.08
-"Furnace, Kiln, Oven, Drier, and Kettle Operators and Tenders",agentic_confirmed,-1.26,-0.42,-1.44,-1.94
-Police Identification and Records Officers,agentic_confirmed,-1.27,-0.24,-2.79,-0.79
-Forest Fire Inspectors and Prevention Specialists,agentic_confirmed,-1.28,-0.32,-2.09,-1.42
-"Drilling and Boring Machine Tool Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,-1.30,0.64,-1.39,-3.14
-"Coin, Vending, and Amusement Machine Servicers and Repairers",agentic_confirmed,-1.30,-4.27,-0.96,1.34
-Court Reporters and Simultaneous Captioners,agentic_confirmed,-1.30,0.73,-2.12,-2.52
-Nuclear Medicine Technologists,agentic_confirmed,-1.31,-1.04,-1.64,-1.24
-Flight Attendants,agentic_confirmed,-1.31,-0.52,-2.64,-0.76
-Park Naturalists,agentic_confirmed,-1.31,-1.40,-1.80,-0.74
-Quality Control Analysts,agentic_confirmed,-1.31,-1.00,-1.77,-1.18
-Interpreters and Translators,agentic_confirmed,-1.32,-1.02,-2.68,-0.26
-Computer Network Support Specialists,agentic_confirmed,-1.33,-0.71,-1.46,-1.81
-First-Line Supervisors of Construction Trades and Extraction Workers,agentic_confirmed,-1.33,-0.70,-1.07,-2.22
-Sound Engineering Technicians,agentic_confirmed,-1.33,-0.43,-2.56,-1.01
-"Teaching Assistants, Postsecondary",agentic_confirmed,-1.34,-0.23,-0.87,-2.91
-"Kindergarten Teachers, Except Special Education",agentic_confirmed,-1.34,-1.76,-1.84,-0.41
-First-Line Supervisors of Non-Retail Sales Workers,agentic_confirmed,-1.34,-3.20,-1.73,0.92
-"Human Resources Assistants, Except Payroll and Timekeeping",agentic_confirmed,-1.35,-0.67,-0.66,-2.71
-Architectural and Civil Drafters,agentic_confirmed,-1.35,-0.13,-0.73,-3.19
-"News Analysts, Reporters, and Journalists",agentic_confirmed,-1.35,-1.45,-1.70,-0.91
-Correctional Officers and Jailers,agentic_confirmed,-1.35,-0.54,-3.62,0.10
-Statistical Assistants,agentic_confirmed,-1.36,-1.29,-2.35,-0.42
-Brickmasons and Blockmasons,agentic_confirmed,-1.37,1.02,-3.82,-1.31
-Computer Numerically Controlled Tool Programmers,agentic_confirmed,-1.37,-0.37,-0.79,-2.96
-"Eligibility Interviewers, Government Programs",agentic_confirmed,-1.38,-1.65,-1.98,-0.50
-Camera and Photographic Equipment Repairers,agentic_confirmed,-1.38,-2.07,-1.82,-0.25
-"Property, Real Estate, and Community Association Managers",agentic_confirmed,-1.39,-1.16,-0.77,-2.25
-"Electronic Equipment Installers and Repairers, Motor Vehicles",agentic_confirmed,-1.40,-1.96,-2.94,0.70
-"Loading and Moving Machine Operators, Underground Mining",agentic_confirmed,-1.41,-1.26,-3.00,0.05
-Bicycle Repairers,agentic_confirmed,-1.41,-1.59,-1.76,-0.87
-Gas Compressor and Gas Pumping Station Operators,agentic_confirmed,-1.41,-1.11,-1.99,-1.13
-Facilities Managers,agentic_confirmed,-1.41,-1.39,-1.87,-0.96
-Broadcast Technicians,agentic_confirmed,-1.41,-1.07,-1.29,-1.87
-Hearing Aid Specialists,agentic_confirmed,-1.41,0.11,-1.95,-2.40
-Customs and Border Protection Officers,agentic_confirmed,-1.42,-1.71,-3.45,0.89
-"Sales Representatives, Wholesale and Manufacturing, Technical and Scientific Products",agentic_confirmed,-1.42,-2.76,-2.10,0.58
-Music Directors and Composers,agentic_confirmed,-1.43,-0.71,-3.57,0.00
-Medical Appliance Technicians,agentic_confirmed,-1.43,-1.26,-2.93,-0.10
-Software Quality Assurance Analysts and Testers,agentic_confirmed,-1.44,-1.62,-2.09,-0.60
-"Special Education Teachers, Preschool",agentic_confirmed,-1.45,-2.48,-2.77,0.91
-"Separating, Filtering, Clarifying, Precipitating, and Still Machine Setters, Operators, and Tenders",agentic_confirmed,-1.45,-0.38,-2.86,-1.10
-Airfield Operations Specialists,agentic_confirmed,-1.46,-1.24,-2.91,-0.23
-"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",agentic_confirmed,-1.46,-0.78,-0.95,-2.65
-"Rotary Drill Operators, Oil and Gas",agentic_confirmed,-1.47,-1.18,-2.87,-0.34
-Cartographers and Photogrammetrists,agentic_confirmed,-1.47,-0.06,-1.37,-2.98
-Acupuncturists,agentic_confirmed,-1.47,-1.32,-1.83,-1.26
-"Service Unit Operators, Oil and Gas",agentic_confirmed,-1.47,-1.01,-3.21,-0.19
-Recycling and Reclamation Workers,agentic_confirmed,-1.49,-0.71,-3.58,-0.17
-Radiation Therapists,agentic_confirmed,-1.49,-1.20,-2.43,-0.83
-Librarians and Media Collections Specialists,agentic_confirmed,-1.49,-0.56,-1.12,-2.78
-Loan Officers,agentic_confirmed,-1.50,-1.61,-1.70,-1.18
-"Career/Technical Education Teachers, Middle School",agentic_confirmed,-1.50,-2.19,-2.67,0.36
-Recreational Vehicle Service Technicians,agentic_confirmed,-1.52,-1.68,-2.31,-0.56
-"Patternmakers, Wood",agentic_confirmed,-1.52,0.17,-2.82,-1.91
-"Electrical and Electronics Installers and Repairers, Transportation Equipment",agentic_confirmed,-1.52,-0.58,-2.22,-1.77
-Exercise Trainers and Group Fitness Instructors,agentic_confirmed,-1.52,0.37,-3.41,-1.53
-Machine Feeders and Offbearers,agentic_confirmed,-1.53,-2.24,-2.42,0.07
-Construction and Building Inspectors,agentic_confirmed,-1.54,-0.17,-2.14,-2.30
-Helpers--Production Workers,agentic_confirmed,-1.54,,-2.99,-0.09
-Budget Analysts,agentic_confirmed,-1.54,-1.34,-1.91,-1.38
-"Career/Technical Education Teachers, Postsecondary",agentic_confirmed,-1.55,-1.88,-1.62,-1.16
-Terrazzo Workers and Finishers,agentic_confirmed,-1.55,-0.92,-4.87,1.14
-"Multiple Machine Tool Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,-1.55,-1.07,-2.80,-0.79
-Postmasters and Mail Superintendents,agentic_confirmed,-1.56,-1.94,-0.81,-1.93
-"Middle School Teachers, Except Special and Career/Technical Education",agentic_confirmed,-1.56,-2.83,-2.31,0.45
-Fitness and Wellness Coordinators,agentic_confirmed,-1.56,-1.51,-2.62,-0.56
-Real Estate Sales Agents,agentic_confirmed,-1.57,-2.15,-0.73,-1.81
-"Helpers--Brickmasons, Blockmasons, Stonemasons, and Tile and Marble Setters",agentic_confirmed,-1.57,0.79,-4.43,-1.07
-"Textile Cutting Machine Setters, Operators, and Tenders",agentic_confirmed,-1.58,-2.25,-2.71,0.21
-Dental Hygienists,agentic_confirmed,-1.59,0.85,-2.14,-3.47
-Outdoor Power Equipment and Other Small Engine Mechanics,agentic_confirmed,-1.59,-3.68,-2.83,1.73
-Biological Technicians,agentic_confirmed,-1.60,-1.66,-2.39,-0.73
-Medical Assistants,agentic_confirmed,-1.60,-0.98,-1.81,-2.00
-Cost Estimators,agentic_confirmed,-1.61,-1.61,-2.47,-0.75
-Clinical Data Managers,agentic_confirmed,-1.62,-2.14,-2.60,-0.10
-"Petroleum Pump System Operators, Refinery Operators, and Gaugers",agentic_confirmed,-1.62,-0.74,-2.54,-1.57
-"Helpers--Installation, Maintenance, and Repair Workers",agentic_confirmed,-1.62,-1.18,-2.73,-0.95
-Heavy and Tractor-Trailer Truck Drivers,agentic_confirmed,-1.63,-0.90,-3.82,-0.16
-First-Line Supervisors of Office and Administrative Support Workers,agentic_confirmed,-1.63,-3.04,-1.74,-0.11
-Slaughterers and Meat Packers,agentic_confirmed,-1.63,,-3.66,0.40
-"Railroad Brake, Signal, and Switch Operators and Locomotive Firers",agentic_confirmed,-1.64,0.08,-3.05,-1.96
-Motorcycle Mechanics,agentic_confirmed,-1.65,-1.55,-3.23,-0.18
-Logistics Analysts,agentic_confirmed,-1.65,-2.31,-2.48,-0.18
-Veterinary Technologists and Technicians,agentic_confirmed,-1.66,-0.20,-2.74,-2.02
-Engine and Other Machine Assemblers,agentic_confirmed,-1.66,0.79,-1.93,-3.83
-Legal Secretaries and Administrative Assistants,agentic_confirmed,-1.66,-0.67,-1.22,-3.08
-Medical Equipment Repairers,agentic_confirmed,-1.66,-2.97,-1.95,-0.07
-Aircraft Cargo Handling Supervisors,agentic_confirmed,-1.67,-0.19,-2.70,-2.13
-"Rail Yard Engineers, Dinkey Operators, and Hostlers",agentic_confirmed,-1.67,-1.01,-3.99,-0.03
-"Roustabouts, Oil and Gas",agentic_confirmed,-1.68,0.45,-3.28,-2.21
-Boilermakers,agentic_confirmed,-1.69,-1.49,-2.31,-1.27
-Solar Energy Installation Managers,agentic_confirmed,-1.69,-1.25,-2.02,-1.80
-"Welders, Cutters, Solderers, and Brazers",agentic_confirmed,-1.69,-0.77,-2.05,-2.26
-Tool and Die Makers,agentic_confirmed,-1.70,-1.44,-1.68,-1.96
-"Bus Drivers, Transit and Intercity",agentic_confirmed,-1.70,0.53,-3.24,-2.40
-Civil Engineering Technologists and Technicians,agentic_confirmed,-1.70,-0.78,-2.07,-2.26
-Speech-Language Pathology Assistants,agentic_confirmed,-1.71,-0.66,-2.71,-1.75
-Occupational Health and Safety Technicians,agentic_confirmed,-1.71,-0.51,-1.94,-2.67
-Power Plant Operators,agentic_confirmed,-1.72,-1.87,-2.04,-1.26
-Anesthesiologist Assistants,agentic_confirmed,-1.73,-2.16,-3.57,0.54
-Electrical and Electronic Engineering Technologists and Technicians,agentic_confirmed,-1.73,-1.49,-1.73,-1.97
-Environmental Engineering Technologists and Technicians,agentic_confirmed,-1.73,-1.39,-2.48,-1.33
-Database Administrators,agentic_confirmed,-1.74,-1.65,-1.83,-1.73
-Geothermal Technicians,agentic_confirmed,-1.74,-1.82,-2.58,-0.80
-Automotive Engineering Technicians,agentic_confirmed,-1.75,-0.95,-1.90,-2.39
-"Cleaning, Washing, and Metal Pickling Equipment Operators and Tenders",agentic_confirmed,-1.75,-4.19,-2.76,1.70
-Physical Therapist Assistants,agentic_confirmed,-1.77,-0.90,-2.38,-2.03
-Segmental Pavers,agentic_confirmed,-1.77,0.12,-1.56,-3.86
-Carpenters,agentic_confirmed,-1.77,0.37,-3.37,-2.31
-Remote Sensing Technicians,agentic_confirmed,-1.78,-1.16,-2.35,-1.83
-"Adult Basic Education, Adult Secondary Education, and English as a Second Language Instructors",agentic_confirmed,-1.78,-1.82,-1.56,-1.96
-Radio Frequency Identification Device Specialists,agentic_confirmed,-1.79,-0.96,-2.19,-2.20
-Crane and Tower Operators,agentic_confirmed,-1.79,0.02,-4.16,-1.23
-Mechanical Drafters,agentic_confirmed,-1.79,0.65,-0.87,-5.16
-Tutors,agentic_confirmed,-1.80,-1.92,-1.36,-2.13
-Industrial Engineering Technologists and Technicians,agentic_confirmed,-1.81,-1.59,-1.99,-1.84
-First-Line Supervisors of Personal Service Workers,agentic_confirmed,-1.82,-1.09,-0.48,-3.88
-Fundraisers,agentic_confirmed,-1.82,-2.30,-2.25,-0.92
-Septic Tank Servicers and Sewer Pipe Cleaners,agentic_confirmed,-1.82,-2.25,-3.35,0.14
-Social and Human Service Assistants,agentic_confirmed,-1.82,-2.44,-1.65,-1.38
-Chemical Equipment Operators and Tenders,agentic_confirmed,-1.83,-0.88,-2.79,-1.80
-Spa Managers,agentic_confirmed,-1.83,-2.62,-1.53,-1.33
-"Agents and Business Managers of Artists, Performers, and Athletes",agentic_confirmed,-1.83,-3.25,-2.07,-0.16
-Licensed Practical and Licensed Vocational Nurses,agentic_confirmed,-1.83,-2.36,-3.10,-0.04
-Administrative Services Managers,agentic_confirmed,-1.84,-1.80,-1.64,-2.07
-"Tax Examiners and Collectors, and Revenue Agents",agentic_confirmed,-1.84,-0.79,-2.18,-2.55
-Human Resources Specialists,agentic_confirmed,-1.85,-1.50,-2.43,-1.60
-Forensic Science Technicians,agentic_confirmed,-1.85,-1.57,-4.74,0.78
-Chemical Plant and System Operators,agentic_confirmed,-1.85,-2.10,-2.88,-0.58
-Advertising Sales Agents,agentic_confirmed,-1.85,-1.81,-1.46,-2.30
-Computer User Support Specialists,agentic_confirmed,-1.86,-0.86,-1.64,-3.08
-Non-Destructive Testing Specialists,agentic_confirmed,-1.87,-0.58,-2.58,-2.43
-"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products",agentic_confirmed,-1.88,-1.32,-0.55,-3.78
-Paralegals and Legal Assistants,agentic_confirmed,-1.88,-0.42,-1.17,-4.06
-Business Intelligence Analysts,agentic_confirmed,-1.88,-2.00,-2.87,-0.77
-Watch and Clock Repairers,agentic_confirmed,-1.89,-1.24,-3.49,-0.95
-Information Security Engineers,agentic_confirmed,-1.90,-2.04,-2.69,-0.97
-Reinforcing Iron and Rebar Workers,agentic_confirmed,-1.90,0.76,-5.10,-1.35
-"Helpers--Pipelayers, Plumbers, Pipefitters, and Steamfitters",agentic_confirmed,-1.91,,-2.57,-1.26
-Electricians,agentic_confirmed,-1.92,-1.65,-3.25,-0.85
-"Meeting, Convention, and Event Planners",agentic_confirmed,-1.92,-2.41,-2.62,-0.73
-Electrical Power-Line Installers and Repairers,agentic_confirmed,-1.92,-1.33,-4.36,-0.08
-"Glass Blowers, Molders, Benders, and Finishers",agentic_confirmed,-1.93,-0.42,-5.05,-0.34
-Transit and Railroad Police,agentic_confirmed,-1.94,-0.11,-3.17,-2.55
-Textile Bleaching and Dyeing Machine Operators and Tenders,agentic_confirmed,-1.94,-1.70,-1.76,-2.36
-Mechanical Door Repairers,agentic_confirmed,-1.94,0.49,-2.49,-3.83
-Wind Energy Development Managers,agentic_confirmed,-1.99,-2.24,-2.32,-1.40
-Foresters,agentic_confirmed,-1.99,-2.75,-3.16,-0.07
-Actors,agentic_confirmed,-1.99,-1.14,-2.41,-2.43
-Subway and Streetcar Operators,agentic_confirmed,-2.00,-0.20,-3.76,-2.04
-"Cutting and Slicing Machine Setters, Operators, and Tenders",agentic_confirmed,-2.00,-2.67,-3.50,0.15
-Credit Analysts,agentic_confirmed,-2.01,-0.96,-2.65,-2.41
-Respiratory Therapists,agentic_confirmed,-2.01,-1.72,-2.76,-1.56
-Sailors and Marine Oilers,agentic_confirmed,-2.02,-1.48,-4.44,-0.15
-Set and Exhibit Designers,agentic_confirmed,-2.04,-0.93,-3.31,-1.87
-"Earth Drillers, Except Oil and Gas",agentic_confirmed,-2.04,-2.21,-3.01,-0.90
-"Transportation, Storage, and Distribution Managers",agentic_confirmed,-2.05,-2.20,-2.12,-1.82
-"Environmental Scientists and Specialists, Including Health",agentic_confirmed,-2.05,-2.82,-4.14,0.80
-"Health and Safety Engineers, Except Mining Safety Engineers and Inspectors",agentic_confirmed,-2.06,-1.64,-2.70,-1.84
-Clinical Research Coordinators,agentic_confirmed,-2.06,-2.53,-2.32,-1.33
-Information Security Analysts,agentic_confirmed,-2.06,-2.08,-2.73,-1.37
-"Claims Adjusters, Examiners, and Investigators",agentic_confirmed,-2.06,-2.13,-2.78,-1.26
-Locomotive Engineers,agentic_confirmed,-2.06,-1.27,-4.82,-0.09
-Archivists,agentic_confirmed,-2.06,-1.29,-1.92,-2.98
-Compensation and Benefits Managers,agentic_confirmed,-2.07,-2.28,-1.35,-2.57
-"Textile Winding, Twisting, and Drawing Out Machine Setters, Operators, and Tenders",agentic_confirmed,-2.07,-1.02,-3.47,-1.71
-Private Detectives and Investigators,agentic_confirmed,-2.07,-1.73,-2.69,-1.79
-"First-Line Supervisors of Mechanics, Installers, and Repairers",agentic_confirmed,-2.07,-2.65,-3.10,-0.47
-Fish and Game Wardens,agentic_confirmed,-2.07,-0.96,-3.54,-1.73
-"Poets, Lyricists and Creative Writers",agentic_confirmed,-2.08,-3.56,-2.63,-0.04
-"Derrick Operators, Oil and Gas",agentic_confirmed,-2.08,-2.81,-5.22,1.78
-"Molders, Shapers, and Casters, Except Metal and Plastic",agentic_confirmed,-2.08,-3.29,-2.08,-0.88
-"Farmers, Ranchers, and Other Agricultural Managers",agentic_confirmed,-2.08,-2.22,-2.97,-1.06
-Accountants and Auditors,agentic_confirmed,-2.08,-1.71,-2.63,-1.91
-Network and Computer Systems Administrators,agentic_confirmed,-2.09,-2.97,-1.72,-1.56
-Floor Sanders and Finishers,agentic_confirmed,-2.09,-0.26,-4.57,-1.45
-Rehabilitation Counselors,agentic_confirmed,-2.10,-2.53,-2.28,-1.49
-Tree Trimmers and Pruners,agentic_confirmed,-2.10,-0.26,-4.70,-1.34
-"Directors, Religious Activities and Education",agentic_confirmed,-2.11,-2.80,-1.99,-1.56
-Chefs and Head Cooks,agentic_confirmed,-2.11,-1.99,-2.70,-1.66
-General and Operations Managers,agentic_confirmed,-2.12,-2.77,-2.37,-1.22
-Mechanical Engineering Technologists and Technicians,agentic_confirmed,-2.12,-1.30,-3.12,-1.94
-Hoist and Winch Operators,agentic_confirmed,-2.12,0.87,-2.78,-4.46
-Metal-Refining Furnace Operators and Tenders,agentic_confirmed,-2.12,-0.78,-3.95,-1.64
-Software Developers,agentic_confirmed,-2.13,-1.74,-2.03,-2.62
-Computer Numerically Controlled Tool Operators,agentic_confirmed,-2.13,-2.69,-3.01,-0.70
-Fundraising Managers,agentic_confirmed,-2.14,-2.48,-2.25,-1.68
-"Telecommunications Equipment Installers and Repairers, Except Line Installers",agentic_confirmed,-2.14,-2.35,-3.54,-0.52
-"Farmworkers and Laborers, Crop, Nursery, and Greenhouse",agentic_confirmed,-2.15,0.80,-5.09,
-Climate Change Policy Analysts,agentic_confirmed,-2.15,-2.02,-2.05,-2.39
-"Family and Consumer Sciences Teachers, Postsecondary",agentic_confirmed,-2.16,-2.81,-2.71,-0.95
-"Captains, Mates, and Pilots of Water Vessels",agentic_confirmed,-2.16,-1.44,-4.52,-0.52
-Video Game Designers,agentic_confirmed,-2.16,-1.29,-2.96,-2.23
-"Electric Motor, Power Tool, and Related Repairers",agentic_confirmed,-2.16,-3.40,-3.69,0.60
-Health Education Specialists,agentic_confirmed,-2.17,-1.83,-2.40,-2.27
-Biofuels Processing Technicians,agentic_confirmed,-2.17,-1.87,-3.22,-1.43
-Gambling Managers,agentic_confirmed,-2.18,-2.66,-1.96,-1.90
-Search Marketing Strategists,agentic_confirmed,-2.18,-2.04,-2.75,-1.75
-Zoologists and Wildlife Biologists,agentic_confirmed,-2.19,-2.14,-3.03,-1.40
-"Secondary School Teachers, Except Special and Career/Technical Education",agentic_confirmed,-2.21,-2.49,-2.97,-1.18
-"Elementary School Teachers, Except Special Education",agentic_confirmed,-2.21,-3.13,-2.99,-0.52
-"Low Vision Therapists, Orientation and Mobility Specialists, and Vision Rehabilitation Therapists",agentic_confirmed,-2.22,-2.29,-2.23,-2.13
-Regulatory Affairs Specialists,agentic_confirmed,-2.23,-2.55,-3.46,-0.66
-"Rolling Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,-2.23,-1.39,-3.43,-1.87
-Information Technology Project Managers,agentic_confirmed,-2.23,-3.27,-2.38,-1.04
-Industrial Machinery Mechanics,agentic_confirmed,-2.24,-3.83,-4.12,1.24
-Community Health Workers,agentic_confirmed,-2.24,-2.64,-1.85,-2.23
-First-Line Supervisors of Material-Moving Machine and Vehicle Operators,agentic_confirmed,-2.24,-1.73,-0.97,-4.03
-Biofuels Production Managers,agentic_confirmed,-2.24,-2.08,-2.60,-2.05
-Nuclear Technicians,agentic_confirmed,-2.25,-1.61,-3.01,-2.15
-"Education and Childcare Administrators, Preschool and Daycare",agentic_confirmed,-2.25,-3.57,-3.01,-0.19
-Aerospace Engineering and Operations Technologists and Technicians,agentic_confirmed,-2.26,-1.50,-2.57,-2.69
-Technical Writers,agentic_confirmed,-2.26,-2.52,-2.11,-2.14
-Computer Systems Analysts,agentic_confirmed,-2.26,-2.56,-2.75,-1.48
-Musical Instrument Repairers and Tuners,agentic_confirmed,-2.26,-1.57,-4.33,-0.88
-"Sawing Machine Setters, Operators, and Tenders, Wood",agentic_confirmed,-2.26,-1.48,-3.86,-1.45
-Choreographers,agentic_confirmed,-2.27,-1.38,-5.11,-0.31
-Surgical Assistants,agentic_confirmed,-2.27,-1.11,-4.29,-1.41
-Dredge Operators,agentic_confirmed,-2.28,-1.86,-3.89,-1.08
-Helpers--Extraction Workers,agentic_confirmed,-2.28,-2.49,-4.52,0.17
-Computer and Information Systems Managers,agentic_confirmed,-2.28,-2.77,-2.29,-1.79
-Computer Network Architects,agentic_confirmed,-2.30,-2.01,-2.72,-2.17
-Occupational Health and Safety Specialists,agentic_confirmed,-2.30,-2.37,-2.85,-1.69
-"Explosives Workers, Ordnance Handling Experts, and Blasters",agentic_confirmed,-2.31,-1.09,-4.74,-1.10
-Elevator and Escalator Installers and Repairers,agentic_confirmed,-2.31,-2.74,-2.52,-1.67
-Wind Energy Operations Managers,agentic_confirmed,-2.31,-2.45,-2.76,-1.72
-"Heat Treating Equipment Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,-2.33,-1.64,-3.33,-2.02
-Regulatory Affairs Managers,agentic_confirmed,-2.34,-2.70,-2.95,-1.36
-Producers and Directors,agentic_confirmed,-2.34,-3.23,-4.45,0.65
-Petroleum Engineers,agentic_confirmed,-2.35,-3.19,-3.14,-0.73
-Pipelayers,agentic_confirmed,-2.36,-0.19,-2.73,-4.15
-"Recreation and Fitness Studies Teachers, Postsecondary",agentic_confirmed,-2.37,-2.70,-2.73,-1.67
-Logisticians,agentic_confirmed,-2.38,-2.84,-2.94,-1.36
-"Maintenance and Repair Workers, General",agentic_confirmed,-2.38,-2.09,-2.92,-2.13
-Wellhead Pumpers,agentic_confirmed,-2.39,-2.79,-2.39,-1.98
-Broadcast Announcers and Radio Disc Jockeys,agentic_confirmed,-2.39,-1.53,-2.59,-3.06
-Editors,agentic_confirmed,-2.40,-2.40,-3.99,-0.80
-Database Architects,agentic_confirmed,-2.40,-1.38,-1.94,-3.87
-"Electrical and Electronics Repairers, Powerhouse, Substation, and Relay",agentic_confirmed,-2.40,-1.95,-2.05,-3.22
-Tire Builders,agentic_confirmed,-2.41,-0.10,-4.83,-2.28
-Probation Officers and Correctional Treatment Specialists,agentic_confirmed,-2.42,-2.57,-2.20,-2.48
-"Grinding, Lapping, Polishing, and Buffing Machine Tool Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,-2.42,-1.38,-2.91,-2.98
-Medical Dosimetrists,agentic_confirmed,-2.42,-2.52,-3.52,-1.23
-Environmental Compliance Inspectors,agentic_confirmed,-2.43,-2.55,-4.15,-0.58
-Historians,agentic_confirmed,-2.43,-2.82,-3.67,-0.81
-Intelligence Analysts,agentic_confirmed,-2.43,-1.79,-4.78,-0.72
-Cabinetmakers and Bench Carpenters,agentic_confirmed,-2.44,-1.19,-3.43,-2.69
-"Maintenance Workers, Machinery",agentic_confirmed,-2.44,-2.61,-2.53,-2.18
-Prosthodontists,agentic_confirmed,-2.44,-1.40,-3.79,-2.14
-Electro-Mechanical and Mechatronics Technologists and Technicians,agentic_confirmed,-2.44,-3.11,-3.13,-1.08
-Surveyors,agentic_confirmed,-2.45,-1.33,-3.42,-2.60
-Ship Engineers,agentic_confirmed,-2.45,-3.02,-3.53,-0.81
-Curators,agentic_confirmed,-2.46,-2.61,-4.37,-0.40
-Exercise Physiologists,agentic_confirmed,-2.47,-2.76,-3.65,-1.00
-Solar Photovoltaic Installers,agentic_confirmed,-2.47,-0.54,-2.92,-3.94
-Automotive Service Technicians and Mechanics,agentic_confirmed,-2.47,-1.73,-3.93,-1.75
-Motorboat Mechanics and Service Technicians,agentic_confirmed,-2.47,-3.18,-3.50,-0.73
-"Electrical and Electronics Repairers, Commercial and Industrial Equipment",agentic_confirmed,-2.48,-2.76,-2.67,-2.01
-Purchasing Managers,agentic_confirmed,-2.48,-3.47,-2.65,-1.34
-Marketing Managers,agentic_confirmed,-2.49,-3.49,-2.71,-1.29
-"Heating, Air Conditioning, and Refrigeration Mechanics and Installers",agentic_confirmed,-2.50,-2.02,-3.68,-1.80
-Orthodontists,agentic_confirmed,-2.50,-2.81,-4.65,-0.04
-Biofuels/Biodiesel Technology and Product Development Managers,agentic_confirmed,-2.50,-1.60,-3.16,-2.75
-Commercial Divers,agentic_confirmed,-2.52,-1.73,-4.31,-1.52
-Avionics Technicians,agentic_confirmed,-2.53,-2.74,-2.96,-1.88
-Public Safety Telecommunicators,agentic_confirmed,-2.53,-1.42,-2.83,-3.33
-"Career/Technical Education Teachers, Secondary School",agentic_confirmed,-2.54,-3.41,-3.44,-0.75
-Interior Designers,agentic_confirmed,-2.55,-1.79,-3.04,-2.82
-"Area, Ethnic, and Cultural Studies Teachers, Postsecondary",agentic_confirmed,-2.57,-3.21,-3.08,-1.40
-Wind Turbine Service Technicians,agentic_confirmed,-2.57,-1.74,-3.62,-2.35
-"Grinding and Polishing Workers, Hand",agentic_confirmed,-2.58,-4.24,-2.29,-1.22
-"Plumbers, Pipefitters, and Steamfitters",agentic_confirmed,-2.58,-1.04,-2.85,-3.87
-Writers and Authors,agentic_confirmed,-2.60,-2.15,-2.17,-3.49
-Orthoptists,agentic_confirmed,-2.62,-2.25,-3.67,-1.96
-Adhesive Bonding Machine Operators and Tenders,agentic_confirmed,-2.63,-1.71,-2.78,-3.42
-Signal and Track Switch Repairers,agentic_confirmed,-2.65,-4.75,-3.54,0.35
-Chiropractors,agentic_confirmed,-2.65,-2.32,-3.71,-1.92
-Athletic Trainers,agentic_confirmed,-2.65,-2.70,-3.15,-2.10
-Hydroelectric Production Managers,agentic_confirmed,-2.65,-2.95,-2.98,-2.03
-Validation Engineers,agentic_confirmed,-2.65,-2.51,-2.79,-2.65
-Adapted Physical Education Specialists,agentic_confirmed,-2.65,-3.07,-3.55,-1.34
-Market Research Analysts and Marketing Specialists,agentic_confirmed,-2.66,-2.28,-3.57,-2.12
-Nuclear Power Reactor Operators,agentic_confirmed,-2.67,-2.06,-2.70,-3.25
-Personal Financial Advisors,agentic_confirmed,-2.67,-1.97,-2.63,-3.41
-Operating Engineers and Other Construction Equipment Operators,agentic_confirmed,-2.67,-3.36,-3.61,-1.05
-Computer Systems Engineers/Architects,agentic_confirmed,-2.68,-2.20,-2.46,-3.37
-Management Analysts,agentic_confirmed,-2.68,-3.27,-3.39,-1.38
-"Purchasing Agents, Except Wholesale, Retail, and Farm Products",agentic_confirmed,-2.69,-2.65,-1.88,-3.53
-Health Informatics Specialists,agentic_confirmed,-2.71,-3.51,-3.96,-0.65
-Timing Device Assemblers and Adjusters,agentic_confirmed,-2.72,-3.35,-2.40,-2.40
-Coaches and Scouts,agentic_confirmed,-2.72,-5.75,-3.94,1.52
-"Educational, Guidance, and Career Counselors and Advisors",agentic_confirmed,-2.72,-3.62,-3.07,-1.48
-Sales Managers,agentic_confirmed,-2.73,-4.05,-3.05,-1.09
-"Fraud Examiners, Investigators and Analysts",agentic_confirmed,-2.73,-2.23,-2.65,-3.32
-Investment Fund Managers,agentic_confirmed,-2.75,-2.58,-3.64,-2.04
-Media Technical Directors/Managers,agentic_confirmed,-2.75,-2.83,-3.66,-1.77
-Police and Sheriff's Patrol Officers,agentic_confirmed,-2.75,-2.06,-4.36,-1.84
-"Tool Grinders, Filers, and Sharpeners",agentic_confirmed,-2.75,-4.12,-3.91,-0.23
-Fire Inspectors and Investigators,agentic_confirmed,-2.75,-0.18,-2.63,-5.45
-Optometrists,agentic_confirmed,-2.75,-2.12,-4.89,-1.26
-"Special Education Teachers, Secondary School",agentic_confirmed,-2.76,-3.22,-2.84,-2.23
-Solar Energy Systems Engineers,agentic_confirmed,-2.77,-1.67,-3.27,-3.38
-Environmental Restoration Planners,agentic_confirmed,-2.78,-2.67,-3.47,-2.19
-Geodetic Surveyors,agentic_confirmed,-2.78,-2.14,-3.80,-2.41
-Industrial Engineers,agentic_confirmed,-2.78,-2.45,-2.70,-3.20
-Geothermal Production Managers,agentic_confirmed,-2.79,-2.54,-2.05,-3.77
-Farm Equipment Mechanics and Service Technicians,agentic_confirmed,-2.79,-2.57,-4.01,-1.81
-Food Scientists and Technologists,agentic_confirmed,-2.80,-2.77,-4.13,-1.49
-Art Directors,agentic_confirmed,-2.80,-1.84,-4.09,-2.48
-Chief Sustainability Officers,agentic_confirmed,-2.80,-4.07,-4.19,-0.15
-Bus and Truck Mechanics and Diesel Engine Specialists,agentic_confirmed,-2.82,-2.68,-4.35,-1.42
-Government Property Inspectors and Investigators,agentic_confirmed,-2.82,-2.21,-3.77,-2.48
-Hydroelectric Plant Technicians,agentic_confirmed,-2.82,-1.98,-3.01,-3.46
-Landscape Architects,agentic_confirmed,-2.82,-2.50,-3.97,-1.99
-"Excavating and Loading Machine and Dragline Operators, Surface Mining",agentic_confirmed,-2.82,-0.58,-4.60,-3.28
-Media Programming Directors,agentic_confirmed,-2.82,-3.15,-3.65,-1.67
-"Special Education Teachers, Elementary School",agentic_confirmed,-2.84,-3.20,-3.68,-1.65
-First-Line Supervisors of Correctional Officers,agentic_confirmed,-2.86,-2.24,-3.62,-2.70
-Registered Nurses,agentic_confirmed,-2.86,-3.33,-3.88,-1.37
-Industrial Production Managers,agentic_confirmed,-2.86,-4.00,-2.64,-1.94
-Advertising and Promotions Managers,agentic_confirmed,-2.86,-2.89,-3.41,-2.29
-Biomass Power Plant Managers,agentic_confirmed,-2.87,-2.85,-2.49,-3.27
-Solar Thermal Installers and Technicians,agentic_confirmed,-2.89,-1.61,-1.63,-5.42
-"Roof Bolters, Mining",agentic_confirmed,-2.90,-0.95,-5.02,-2.74
-Transportation Planners,agentic_confirmed,-2.91,-2.91,-3.47,-2.35
-"Mobile Heavy Equipment Mechanics, Except Engines",agentic_confirmed,-2.92,-2.68,-4.56,-1.52
-Instructional Coordinators,agentic_confirmed,-2.92,-4.71,-3.66,-0.40
-Fallers,agentic_confirmed,-2.94,-0.39,-5.49,
-Brownfield Redevelopment Specialists and Site Managers,agentic_confirmed,-2.94,-2.82,-3.84,-2.17
-Construction Laborers,agentic_confirmed,-2.96,-0.74,-3.35,-4.80
-Loss Prevention Managers,agentic_confirmed,-2.97,-3.97,-2.93,-2.01
-Commercial and Industrial Designers,agentic_confirmed,-3.00,-1.99,-3.45,-3.55
-"Foreign Language and Literature Teachers, Postsecondary",agentic_confirmed,-3.03,-4.06,-4.02,-1.02
-"Special Education Teachers, Middle School",agentic_confirmed,-3.04,-3.51,-2.68,-2.95
-Physical Therapists,agentic_confirmed,-3.04,-2.56,-3.36,-3.21
-Rail-Track Laying and Maintenance Equipment Operators,agentic_confirmed,-3.05,-1.89,-4.58,-2.67
-Supply Chain Managers,agentic_confirmed,-3.06,-3.60,-2.13,-3.45
-Financial Examiners,agentic_confirmed,-3.06,-4.02,-3.87,-1.29
-"Woodworking Machine Setters, Operators, and Tenders, Except Sawing",agentic_confirmed,-3.07,-2.03,-3.31,-3.87
-First-Line Supervisors of Firefighting and Prevention Workers,agentic_confirmed,-3.08,-1.69,-3.74,-3.81
-Human Factors Engineers and Ergonomists,agentic_confirmed,-3.08,-3.27,-4.18,-1.80
-Survey Researchers,agentic_confirmed,-3.09,-3.17,-4.68,-1.40
-Continuous Mining Machine Operators,agentic_confirmed,-3.09,-1.69,-4.68,-2.88
-Business Continuity Planners,agentic_confirmed,-3.09,-4.21,-4.58,-0.46
-Quality Control Systems Managers,agentic_confirmed,-3.11,-3.56,-3.05,-2.72
-Pharmacists,agentic_confirmed,-3.11,-3.18,-3.97,-2.19
-Financial Managers,agentic_confirmed,-3.11,-3.13,-3.78,-2.44
-Coroners,agentic_confirmed,-3.11,-2.10,-3.68,-3.56
-"Geoscientists, Except Hydrologists and Geographers",agentic_confirmed,-3.12,-2.93,-4.22,-2.19
-Industrial Ecologists,agentic_confirmed,-3.12,-2.84,-4.21,-2.32
-"Communications Teachers, Postsecondary",agentic_confirmed,-3.13,-3.23,-3.21,-2.94
-Manufactured Building and Mobile Home Installers,agentic_confirmed,-3.13,-1.26,-4.99,-3.14
-Printing Press Operators,agentic_confirmed,-3.13,-1.45,-1.63,-6.31
-Dancers,agentic_confirmed,-3.13,1.18,-9.27,-1.32
-Urban and Regional Planners,agentic_confirmed,-3.14,-2.90,-3.64,-2.88
-Labor Relations Specialists,agentic_confirmed,-3.14,-3.59,-3.51,-2.33
-Wind Energy Engineers,agentic_confirmed,-3.15,-2.01,-1.92,-5.53
-Security Management Specialists,agentic_confirmed,-3.16,-2.45,-3.65,-3.37
-Lodging Managers,agentic_confirmed,-3.16,-3.80,-2.07,-3.61
-Detectives and Criminal Investigators,agentic_confirmed,-3.20,-2.70,-3.99,-2.91
-Water Resource Specialists,agentic_confirmed,-3.20,-2.29,-2.72,-4.61
-Refuse and Recyclable Material Collectors,agentic_confirmed,-3.21,-3.08,-3.55,-2.99
-Equal Opportunity Representatives and Officers,agentic_confirmed,-3.21,-3.27,-4.47,-1.91
-Political Scientists,agentic_confirmed,-3.22,-3.41,-3.75,-2.49
-First-Line Supervisors of Security Workers,agentic_confirmed,-3.22,-1.78,-2.67,-5.21
-"Computer Science Teachers, Postsecondary",agentic_confirmed,-3.22,-3.32,-3.40,-2.95
-"Model Makers, Metal and Plastic",agentic_confirmed,-3.23,-2.81,-3.09,-3.79
-Chemists,agentic_confirmed,-3.27,-2.91,-4.29,-2.61
-Rail Car Repairers,agentic_confirmed,-3.28,-3.58,-4.90,-1.35
-Geographers,agentic_confirmed,-3.28,-1.98,-3.58,-4.27
-Compliance Managers,agentic_confirmed,-3.29,-2.69,-3.30,-3.87
-Farm and Home Management Educators,agentic_confirmed,-3.29,-4.14,-3.58,-2.15
-Soil and Plant Scientists,agentic_confirmed,-3.29,-3.71,-4.46,-1.71
-"Rock Splitters, Quarry",agentic_confirmed,-3.32,-1.38,-5.26,
-"Health Specialties Teachers, Postsecondary",agentic_confirmed,-3.33,-3.80,-3.69,-2.49
-"Energy Engineers, Except Wind and Solar",agentic_confirmed,-3.35,-3.07,-3.55,-3.45
-Recreational Therapists,agentic_confirmed,-3.38,-2.61,-2.28,-5.24
-Motorboat Operators,agentic_confirmed,-3.41,-1.61,-4.36,-4.26
-"Political Science Teachers, Postsecondary",agentic_confirmed,-3.42,-3.65,-2.78,-3.83
-Structural Iron and Steel Workers,agentic_confirmed,-3.42,-0.09,-5.93,-4.25
-"Agricultural Sciences Teachers, Postsecondary",agentic_confirmed,-3.42,-4.78,-3.84,-1.64
-Medical and Clinical Laboratory Technologists,agentic_confirmed,-3.43,-2.73,-4.13,-3.44
-"Geography Teachers, Postsecondary",agentic_confirmed,-3.45,-3.33,-3.39,-3.63
-Electrical Engineers,agentic_confirmed,-3.46,-2.02,-3.57,-4.78
-Midwives,agentic_confirmed,-3.46,-2.43,-3.48,-4.46
-Dietitians and Nutritionists,agentic_confirmed,-3.48,-3.77,-3.39,-3.29
-Firefighters,agentic_confirmed,-3.50,-1.40,-5.71,-3.38
-Animal Scientists,agentic_confirmed,-3.50,-2.78,-4.23,-3.48
-Training and Development Specialists,agentic_confirmed,-3.52,-3.76,-3.29,-3.51
-Nanotechnology Engineering Technologists and Technicians,agentic_confirmed,-3.53,-3.04,-4.07,-3.47
-"Forestry and Conservation Science Teachers, Postsecondary",agentic_confirmed,-3.53,-3.15,-3.88,-3.55
-Remote Sensing Scientists and Technologists,agentic_confirmed,-3.53,-3.36,-4.29,-2.95
-Allergists and Immunologists,agentic_confirmed,-3.54,-4.15,-4.46,-2.01
-"English Language and Literature Teachers, Postsecondary",agentic_confirmed,-3.54,-3.79,-4.88,-1.96
-"Environmental Science Teachers, Postsecondary",agentic_confirmed,-3.56,-3.68,-3.50,-3.50
-"Child, Family, and School Social Workers",agentic_confirmed,-3.56,-4.50,-3.19,-3.00
-Orthotists and Prosthetists,agentic_confirmed,-3.57,-2.60,-4.38,-3.72
-"Art, Drama, and Music Teachers, Postsecondary",agentic_confirmed,-3.58,-4.23,-3.96,-2.54
-Commercial Pilots,agentic_confirmed,-3.59,-3.42,-6.46,-0.88
-"Education Administrators, Postsecondary",agentic_confirmed,-3.60,-4.59,-4.64,-1.56
-Substance Abuse and Behavioral Disorder Counselors,agentic_confirmed,-3.61,-3.61,-3.18,-4.03
-Genetic Counselors,agentic_confirmed,-3.61,-1.68,-3.51,-5.65
-Robotics Technicians,agentic_confirmed,-3.62,-3.29,-3.91,-3.64
-Computer and Information Research Scientists,agentic_confirmed,-3.64,-3.38,-4.12,-3.43
-Bioinformatics Technicians,agentic_confirmed,-3.65,-0.69,-2.27,-7.98
-Acute Care Nurses,agentic_confirmed,-3.65,-3.37,-3.42,-4.18
-Natural Sciences Managers,agentic_confirmed,-3.66,-4.29,-4.75,-1.94
-"History Teachers, Postsecondary",agentic_confirmed,-3.67,-3.63,-3.33,-4.06
-"Coating, Painting, and Spraying Machine Setters, Operators, and Tenders",agentic_confirmed,-3.68,-3.82,-3.53,
-Pile Driver Operators,agentic_confirmed,-3.69,-3.68,-3.47,-3.91
-"Business Teachers, Postsecondary",agentic_confirmed,-3.70,-4.01,-3.34,-3.74
-Veterinarians,agentic_confirmed,-3.71,-2.84,-3.70,-4.59
-Logistics Engineers,agentic_confirmed,-3.73,-3.83,-4.62,-2.74
-Social and Community Service Managers,agentic_confirmed,-3.74,-4.67,-3.47,-3.08
-Hydrologists,agentic_confirmed,-3.77,-2.70,-4.43,-4.16
-"Mining and Geological Engineers, Including Mining Safety Engineers",agentic_confirmed,-3.77,-4.22,-5.17,-1.91
-First-Line Supervisors of Police and Detectives,agentic_confirmed,-3.79,-3.96,-2.97,-4.43
-Dermatologists,agentic_confirmed,-3.80,-3.09,-4.57,-3.75
-Environmental Economists,agentic_confirmed,-3.80,-2.76,-4.16,-4.50
-Water/Wastewater Engineers,agentic_confirmed,-3.81,-3.23,-4.53,-3.65
-"Criminal Justice and Law Enforcement Teachers, Postsecondary",agentic_confirmed,-3.81,-4.25,-2.99,-4.19
-Aviation Inspectors,agentic_confirmed,-3.83,-2.26,-3.43,-5.82
-Environmental Engineers,agentic_confirmed,-3.84,-3.01,-3.64,-4.88
-"Architecture Teachers, Postsecondary",agentic_confirmed,-3.84,-4.07,-4.44,-3.03
-Critical Care Nurses,agentic_confirmed,-3.85,-3.22,-4.77,-3.55
-Atmospheric and Space Scientists,agentic_confirmed,-3.85,-3.15,-4.02,-4.38
-Biologists,agentic_confirmed,-3.88,-3.44,-5.05,-3.15
-"Architects, Except Landscape and Naval",agentic_confirmed,-3.88,-3.44,-5.30,-2.91
-Financial Quantitative Analysts,agentic_confirmed,-3.91,-2.65,-4.03,-5.05
-Architectural and Engineering Managers,agentic_confirmed,-3.91,-3.60,-4.68,-3.46
-Construction Managers,agentic_confirmed,-3.91,-4.10,-4.03,-3.62
-Nurse Practitioners,agentic_confirmed,-3.91,-3.74,-4.24,-3.76
-Nurse Anesthetists,agentic_confirmed,-3.92,-3.10,-3.89,-4.77
-"Dentists, General",agentic_confirmed,-3.93,-3.92,-6.38,-1.50
-Medical and Health Services Managers,agentic_confirmed,-3.96,-4.52,-3.83,-3.52
-Sociologists,agentic_confirmed,-3.97,-3.59,-4.10,-4.22
-Air Traffic Controllers,agentic_confirmed,-3.98,-3.09,-6.71,-2.13
-Mechanical Engineers,agentic_confirmed,-3.99,-3.93,-4.08,-3.94
-Audiologists,agentic_confirmed,-4.00,-3.50,-4.76,-3.74
-Aircraft Mechanics and Service Technicians,agentic_confirmed,-4.01,-5.17,-5.64,-1.21
-Podiatrists,agentic_confirmed,-4.01,-3.58,-4.98,-3.48
-Millwrights,agentic_confirmed,-4.02,-2.39,-4.82,-4.85
-Mechatronics Engineers,agentic_confirmed,-4.03,-2.46,-3.24,-6.39
-"Nursing Instructors and Teachers, Postsecondary",agentic_confirmed,-4.04,-4.22,-3.86,-4.03
-Anthropologists and Archeologists,agentic_confirmed,-4.05,-3.18,-5.30,-3.66
-Human Resources Managers,agentic_confirmed,-4.05,-5.22,-4.02,-2.91
-Materials Engineers,agentic_confirmed,-4.05,-2.55,-4.16,-5.45
-Microbiologists,agentic_confirmed,-4.06,-3.72,-5.73,-2.74
-"Biological Science Teachers, Postsecondary",agentic_confirmed,-4.07,-4.01,-4.61,-3.59
-Anesthesiologists,agentic_confirmed,-4.08,-3.73,-5.43,-3.07
-"Education Teachers, Postsecondary",agentic_confirmed,-4.09,-4.31,-4.65,-3.32
-"Electronics Engineers, Except Computer",agentic_confirmed,-4.10,-2.61,-3.56,-6.14
-Fuel Cell Engineers,agentic_confirmed,-4.11,-2.86,-4.00,-5.46
-Operations Research Analysts,agentic_confirmed,-4.11,-3.82,-4.42,-4.08
-Sales Engineers,agentic_confirmed,-4.12,-4.02,-3.96,-4.37
-"Refractory Materials Repairers, Except Brickmasons",agentic_confirmed,-4.13,-2.62,-2.64,-7.11
-"Philosophy and Religion Teachers, Postsecondary",agentic_confirmed,-4.13,-3.65,-3.63,-5.11
-Public Relations Specialists,agentic_confirmed,-4.13,-3.00,-3.26,-6.13
-"Administrative Law Judges, Adjudicators, and Hearing Officers",agentic_confirmed,-4.16,-4.70,-5.64,-2.14
-Marine Engineers and Naval Architects,agentic_confirmed,-4.16,-3.65,-4.56,-4.28
-Security Managers,agentic_confirmed,-4.20,-3.29,-4.48,-4.82
-Agricultural Engineers,agentic_confirmed,-4.22,-2.75,-3.58,-6.32
-Training and Development Managers,agentic_confirmed,-4.22,-4.17,-4.30,-4.19
-Economists,agentic_confirmed,-4.30,-2.95,-4.49,-5.46
-"Mathematical Science Teachers, Postsecondary",agentic_confirmed,-4.31,-3.67,-3.77,-5.48
-Occupational Therapists,agentic_confirmed,-4.31,-3.26,-3.52,-6.14
-Mental Health and Substance Abuse Social Workers,agentic_confirmed,-4.31,-4.11,-4.82,-4.00
-Materials Scientists,agentic_confirmed,-4.32,-2.74,-3.87,-6.35
-Computer Hardware Engineers,agentic_confirmed,-4.33,-2.73,-2.95,-7.30
-"Sociology Teachers, Postsecondary",agentic_confirmed,-4.33,-4.84,-3.67,-4.48
-Judicial Law Clerks,agentic_confirmed,-4.36,-3.17,-4.02,-5.88
-"Physicians, Pathologists",agentic_confirmed,-4.36,-3.75,-5.70,-3.63
-"Paving, Surfacing, and Tamping Equipment Operators",agentic_confirmed,-4.36,-2.34,-2.97,-7.76
-Clergy,agentic_confirmed,-4.37,-5.16,-4.65,-3.28
-Logging Equipment Operators,agentic_confirmed,-4.38,-3.59,-4.00,-5.55
-Nurse Midwives,agentic_confirmed,-4.41,-3.79,-3.91,-5.53
-Biostatisticians,agentic_confirmed,-4.42,-4.43,-5.20,-3.63
-Fire-Prevention and Protection Engineers,agentic_confirmed,-4.43,-2.57,-4.04,-6.69
-"Mixing and Blending Machine Setters, Operators, and Tenders",agentic_confirmed,-4.44,-1.29,-1.89,-10.12
-Advanced Practice Psychiatric Nurses,agentic_confirmed,-4.44,-4.39,-4.28,-4.65
-Transportation Engineers,agentic_confirmed,-4.44,-3.02,-4.74,-5.56
-"Atmospheric, Earth, Marine, and Space Sciences Teachers, Postsecondary",agentic_confirmed,-4.46,-4.20,-4.60,-4.58
-"Economics Teachers, Postsecondary",agentic_confirmed,-4.46,-2.84,-3.25,-7.30
-"Ophthalmologists, Except Pediatric",agentic_confirmed,-4.49,-4.45,-5.95,-3.06
-"Library Science Teachers, Postsecondary",agentic_confirmed,-4.51,-4.08,-4.72,-4.72
-Urologists,agentic_confirmed,-4.52,-3.99,-5.74,-3.82
-"Pediatricians, General",agentic_confirmed,-4.52,-4.25,-5.42,-3.90
-Emergency Management Directors,agentic_confirmed,-4.53,-5.47,-4.34,-3.79
-"Chemistry Teachers, Postsecondary",agentic_confirmed,-4.55,-3.85,-4.02,-5.77
-School Psychologists,agentic_confirmed,-4.57,-4.22,-4.00,-5.48
-General Internal Medicine Physicians,agentic_confirmed,-4.58,-3.62,-4.94,-5.17
-Naturopathic Physicians,agentic_confirmed,-4.60,-3.47,-5.36,-4.97
-Civil Engineers,agentic_confirmed,-4.62,-3.15,-5.36,-5.35
-"Psychology Teachers, Postsecondary",agentic_confirmed,-4.62,-4.38,-4.04,-5.44
-Clinical Nurse Specialists,agentic_confirmed,-4.66,-3.83,-3.55,-6.59
-Art Therapists,agentic_confirmed,-4.67,-2.62,-3.25,-8.14
-Healthcare Social Workers,agentic_confirmed,-4.68,-3.76,-3.62,-6.66
-Microsystems Engineers,agentic_confirmed,-4.68,-2.78,-3.96,-7.31
-Bioinformatics Scientists,agentic_confirmed,-4.69,-3.63,-5.31,-5.12
-Actuaries,agentic_confirmed,-4.69,-4.41,-5.33,-4.32
-"Airline Pilots, Copilots, and Flight Engineers",agentic_confirmed,-4.71,-4.47,-8.36,-1.30
-Obstetricians and Gynecologists,agentic_confirmed,-4.83,-4.62,-5.60,-4.28
-Epidemiologists,agentic_confirmed,-4.83,-5.58,-5.79,-3.14
-Geneticists,agentic_confirmed,-4.84,-3.53,-5.70,-5.30
-Bioengineers and Biomedical Engineers,agentic_confirmed,-4.85,-3.97,-4.75,-5.82
-Manufacturing Engineers,agentic_confirmed,-4.88,-4.25,-5.28,-5.10
-Speech-Language Pathologists,agentic_confirmed,-4.91,-4.28,-5.75,-4.68
-Aerospace Engineers,agentic_confirmed,-4.94,-4.08,-4.07,-6.66
-Physician Assistants,agentic_confirmed,-4.94,-3.40,-4.11,-7.32
-Mathematicians,agentic_confirmed,-4.95,-4.79,-6.42,-3.65
-"Arbitrators, Mediators, and Conciliators",agentic_confirmed,-4.96,-5.45,-3.68,-5.74
-Marriage and Family Therapists,agentic_confirmed,-4.96,-4.78,-4.25,-5.86
-Lawyers,agentic_confirmed,-4.98,-5.45,-6.39,-3.10
-Nanosystems Engineers,agentic_confirmed,-4.99,-3.76,-5.76,-5.45
-Physical Medicine and Rehabilitation Physicians,agentic_confirmed,-5.05,-4.23,-4.71,-6.20
-Radiologists,agentic_confirmed,-5.05,-4.48,-5.11,-5.57
-Automotive Engineers,agentic_confirmed,-5.06,-3.49,-4.94,-6.75
-Hospitalists,agentic_confirmed,-5.07,-4.60,-4.85,-5.76
-Family Medicine Physicians,agentic_confirmed,-5.12,-5.09,-5.41,-4.85
-"Anthropology and Archeology Teachers, Postsecondary",agentic_confirmed,-5.13,-5.56,-5.28,-4.54
-Nuclear Engineers,agentic_confirmed,-5.13,-4.67,-4.77,-5.96
-"Physics Teachers, Postsecondary",agentic_confirmed,-5.16,-4.44,-4.44,-6.62
-Music Therapists,agentic_confirmed,-5.17,-2.73,-3.57,-9.20
-Treasurers and Controllers,agentic_confirmed,-5.21,-4.45,-4.14,-7.04
-"Education Administrators, Kindergarten through Secondary",agentic_confirmed,-5.23,-7.57,-5.93,-2.19
-Oral and Maxillofacial Surgeons,agentic_confirmed,-5.25,-4.03,-7.15,-4.55
-Statisticians,agentic_confirmed,-5.26,-2.75,-4.89,-8.14
-"Social Work Teachers, Postsecondary",agentic_confirmed,-5.27,-5.35,-4.67,-5.79
-Sports Medicine Physicians,agentic_confirmed,-5.28,-4.47,-5.36,-6.01
-"Medical Scientists, Except Epidemiologists",agentic_confirmed,-5.28,-4.85,-4.99,-6.02
-Chemical Engineers,agentic_confirmed,-5.52,-4.47,-4.54,-7.55
-"Engineering Teachers, Postsecondary",agentic_confirmed,-5.52,-3.75,-4.70,-8.11
-Astronomers,agentic_confirmed,-5.56,-3.85,-5.95,-6.88
-Neuropsychologists,agentic_confirmed,-5.56,-4.91,-6.07,-5.71
-Psychiatrists,agentic_confirmed,-5.59,-5.64,-5.17,-5.98
-Photonics Engineers,agentic_confirmed,-5.63,-3.40,-5.17,-8.33
-Tapers,agentic_confirmed,-5.64,,-3.59,-7.69
-Molecular and Cellular Biologists,agentic_confirmed,-5.66,-4.93,-6.44,-5.62
-Chief Executives,agentic_confirmed,-5.69,-8.01,-5.46,-3.60
-Industrial-Organizational Psychologists,agentic_confirmed,-5.70,-5.28,-5.35,-6.46
-Clinical Neuropsychologists,agentic_confirmed,-5.79,-4.68,-4.96,-7.73
-"Judges, Magistrate Judges, and Magistrates",agentic_confirmed,-5.88,-6.09,-5.82,-5.74
-Neurologists,agentic_confirmed,-5.90,-5.46,-6.20,-6.03
-Robotics Engineers,agentic_confirmed,-5.92,-4.29,-5.25,-8.23
-"Law Teachers, Postsecondary",agentic_confirmed,-5.92,-4.95,-5.33,-7.49
-Preventive Medicine Physicians,agentic_confirmed,-5.97,-7.17,-6.06,-4.67
-Mental Health Counselors,agentic_confirmed,-6.19,-4.73,-6.02,-7.81
-Clinical and Counseling Psychologists,agentic_confirmed,-6.21,-4.05,-4.82,-9.76
-Biochemists and Biophysicists,agentic_confirmed,-6.45,-5.46,-6.38,-7.50
-Emergency Medicine Physicians,agentic_confirmed,-6.53,-5.36,-6.81,-7.41
-Physicists,agentic_confirmed,-7.93,-5.45,-8.76,-9.59
+"Postal Service Mail Sorters, Processors, and Processing Machine Operators",agentic_confirmed,1.13,0.63,-2.78,5.55
+Food Preparation Workers,agentic_confirmed,0.40,1.00,-2.25,2.46
+Fast Food and Counter Workers,agentic_confirmed,0.12,0.12,0.52,-0.27
+"Food Servers, Nonrestaurant",agentic_confirmed,-0.01,1.78,-0.32,-1.50
+Cashiers,agentic_confirmed,-0.04,-0.01,-0.46,0.34
+Laundry and Dry-Cleaning Workers,agentic_confirmed,-0.14,1.95,-2.37,-0.01
+Crossing Guards and Flaggers,agentic_confirmed,-0.30,1.16,-1.82,-0.24
+Stockers and Order Fillers,agentic_confirmed,-0.32,0.90,-3.47,1.63
+"Locker Room, Coatroom, and Dressing Room Attendants",agentic_confirmed,-0.39,-0.92,-0.32,0.07
+Baristas,agentic_confirmed,-0.43,-0.18,-3.43,2.33
+Parking Attendants,agentic_confirmed,-0.53,0.21,-2.73,0.94
+Childcare Workers,agentic_confirmed,-0.55,-0.63,-1.93,0.92
+"Pourers and Casters, Metal",agentic_confirmed,-0.58,-2.66,-5.50,6.41
+"Shipping, Receiving, and Inventory Clerks",agentic_confirmed,-0.59,0.02,-1.45,-0.34
+"Janitors and Cleaners, Except Maids and Housekeeping Cleaners",agentic_confirmed,-0.60,3.38,-3.64,-1.55
+"Cooks, Fast Food",agentic_confirmed,-0.61,1.30,-1.06,-2.07
+Pharmacy Aides,agentic_confirmed,-0.62,-0.76,-1.90,0.80
+Postal Service Mail Carriers,agentic_confirmed,-0.66,0.66,-1.41,-1.23
+"Library Assistants, Clerical",agentic_confirmed,-0.72,-0.38,-1.78,0.01
+"Ushers, Lobby Attendants, and Ticket Takers",agentic_confirmed,-0.75,-0.75,-0.17,-1.33
+"Mail Clerks and Mail Machine Operators, Except Postal Service",agentic_confirmed,-0.87,0.65,-2.00,-1.26
+Shampooers,agentic_confirmed,-0.90,0.60,-1.63,-1.68
+Dining Room and Cafeteria Attendants and Bartender Helpers,agentic_confirmed,-0.92,0.46,-3.18,-0.03
+Dishwashers,agentic_confirmed,-0.98,,-6.30,4.35
+Parking Enforcement Workers,agentic_confirmed,-1.14,-0.71,-1.48,-1.22
+"Hosts and Hostesses, Restaurant, Lounge, and Coffee Shop",agentic_confirmed,-1.14,-0.84,-0.32,-2.26
+Animal Caretakers,agentic_confirmed,-1.19,0.02,-1.82,-1.76
+"Helpers--Painters, Paperhangers, Plasterers, and Stucco Masons",agentic_confirmed,-1.20,1.33,-5.44,0.50
+"Painters, Construction and Maintenance",agentic_confirmed,-1.21,-0.36,-3.87,0.59
+Postal Service Clerks,agentic_confirmed,-1.26,-0.46,-2.87,-0.44
+Waiters and Waitresses,agentic_confirmed,-1.26,-1.05,-3.18,0.44
+"Weighers, Measurers, Checkers, and Samplers, Recordkeeping",agentic_confirmed,-1.27,-1.17,-2.21,-0.42
+Amusement and Recreation Attendants,agentic_confirmed,-1.31,0.39,-1.88,-2.43
+Manicurists and Pedicurists,agentic_confirmed,-1.32,0.47,-3.39,-1.03
+Gambling Cage Workers,agentic_confirmed,-1.36,-0.61,-2.05,-1.41
+Gambling Change Persons and Booth Cashiers,agentic_confirmed,-1.36,0.36,-1.38,-3.07
+"Meter Readers, Utilities",agentic_confirmed,-1.37,0.30,-3.03,-1.37
+Costume Attendants,agentic_confirmed,-1.39,-1.18,-1.89,-1.09
+Barbers,agentic_confirmed,-1.39,-0.30,-4.36,0.48
+"Office Machine Operators, Except Computer",agentic_confirmed,-1.40,-1.07,-1.70,-1.42
+Counter and Rental Clerks,agentic_confirmed,-1.45,-1.01,-2.19,-1.14
+"Cooks, Restaurant",agentic_confirmed,-1.45,-0.60,-3.60,-0.15
+"Umpires, Referees, and Other Sports Officials",agentic_confirmed,-1.47,-0.77,-4.42,0.77
+Library Technicians,agentic_confirmed,-1.49,-1.18,-1.77,-1.51
+Structural Metal Fabricators and Fitters,agentic_confirmed,-1.49,2.02,-4.77,-1.72
+"Graders and Sorters, Agricultural Products",agentic_confirmed,-1.52,,-2.90,-0.13
+Couriers and Messengers,agentic_confirmed,-1.55,0.54,-2.82,-2.36
+Tellers,agentic_confirmed,-1.55,-1.02,-2.87,-0.75
+Home Health Aides,agentic_confirmed,-1.57,-1.42,-2.71,-0.59
+"Stone Cutters and Carvers, Manufacturing",agentic_confirmed,-1.62,1.11,-5.07,-0.89
+"Cooks, Short Order",agentic_confirmed,-1.65,0.10,-4.31,-0.74
+Bartenders,agentic_confirmed,-1.66,-0.94,-3.10,-0.92
+Log Graders and Scalers,agentic_confirmed,-1.68,-0.21,-2.95,-1.89
+"Teaching Assistants, Special Education",agentic_confirmed,-1.70,-2.14,-2.93,-0.04
+Physical Therapist Aides,agentic_confirmed,-1.74,-0.70,-1.33,-3.19
+Personal Care Aides,agentic_confirmed,-1.80,-2.04,-1.62,-1.74
+Driver/Sales Workers,agentic_confirmed,-1.81,-0.98,-3.03,-1.44
+Forest and Conservation Workers,agentic_confirmed,-1.84,-0.01,-4.34,-1.18
+Tire Repairers and Changers,agentic_confirmed,-1.88,0.95,-4.23,-2.35
+Nursing Assistants,agentic_confirmed,-1.88,-2.24,-3.19,-0.22
+Maids and Housekeeping Cleaners,agentic_confirmed,-1.97,-1.21,-3.50,-1.19
+Animal Trainers,agentic_confirmed,-2.01,-1.67,-3.30,-1.06
+Gambling and Sports Book Writers and Runners,agentic_confirmed,-2.02,-0.95,-1.43,-3.68
+Gambling Dealers,agentic_confirmed,-2.03,-0.32,-3.16,-2.62
+Nannies,agentic_confirmed,-2.03,-2.39,-2.91,-0.79
+"Office Clerks, General",agentic_confirmed,-2.05,-1.55,-1.66,-2.95
+Retail Salespersons,agentic_confirmed,-2.06,-2.75,-1.76,-1.69
+Bakers,agentic_confirmed,-2.06,-0.34,-2.72,-3.13
+"Substitute Teachers, Short-Term",agentic_confirmed,-2.08,-2.07,-2.97,-1.19
+Tour Guides and Escorts,agentic_confirmed,-2.10,-1.22,-3.08,-2.00
+"Pesticide Handlers, Sprayers, and Applicators, Vegetation",agentic_confirmed,-2.10,-1.43,-3.00,-1.88
+Shoe and Leather Workers and Repairers,agentic_confirmed,-2.11,1.51,-2.77,-5.06
+"Credit Authorizers, Checkers, and Clerks",agentic_confirmed,-2.16,-1.85,-1.73,-2.91
+"Packers and Packagers, Hand",agentic_confirmed,-2.17,1.42,-3.64,-4.30
+Skincare Specialists,agentic_confirmed,-2.18,-1.52,-2.99,-2.01
+Funeral Attendants,agentic_confirmed,-2.18,-1.61,-0.41,-4.52
+Light Truck Drivers,agentic_confirmed,-2.18,-0.76,-4.49,-1.30
+"Cooks, Institution and Cafeteria",agentic_confirmed,-2.19,-1.61,-2.71,-2.26
+"Switchboard Operators, Including Answering Service",agentic_confirmed,-2.23,-1.38,-2.08,-3.25
+Fishing and Hunting Workers,agentic_confirmed,-2.26,0.53,-6.26,-1.04
+Histology Technicians,agentic_confirmed,-2.26,-1.07,-3.40,-2.30
+Billing and Posting Clerks,agentic_confirmed,-2.30,-0.55,-1.95,-4.41
+"Door-to-Door Sales Workers, News and Street Vendors, and Related Workers",agentic_confirmed,-2.30,-3.07,-1.69,-2.14
+Merchandise Displayers and Window Trimmers,agentic_confirmed,-2.31,-1.21,-4.69,-1.02
+Demonstrators and Product Promoters,agentic_confirmed,-2.31,-1.96,-2.26,-2.71
+Cargo and Freight Agents,agentic_confirmed,-2.31,-1.40,-2.05,-3.49
+Massage Therapists,agentic_confirmed,-2.32,-1.03,-4.75,-1.19
+Prepress Technicians and Workers,agentic_confirmed,-2.32,-1.08,-2.48,-3.42
+"Cooks, Private Household",agentic_confirmed,-2.35,-0.77,-2.64,-3.64
+Photographic Process Workers and Processing Machine Operators,agentic_confirmed,-2.37,-2.52,-3.37,-1.23
+"Tailors, Dressmakers, and Custom Sewers",agentic_confirmed,-2.38,-0.05,-4.73,-2.35
+"Hotel, Motel, and Resort Desk Clerks",agentic_confirmed,-2.38,-2.14,-1.87,-3.14
+Receptionists and Information Clerks,agentic_confirmed,-2.39,-1.30,-2.76,-3.10
+"Lifeguards, Ski Patrol, and Other Recreational Protective Service Workers",agentic_confirmed,-2.41,-1.54,-4.11,-1.57
+"Title Examiners, Abstractors, and Searchers",agentic_confirmed,-2.41,-2.65,-3.27,-1.31
+Medical Secretaries and Administrative Assistants,agentic_confirmed,-2.41,-1.86,-2.19,-3.19
+Farm Labor Contractors,agentic_confirmed,-2.42,-2.14,-1.70,-3.42
+Cement Masons and Concrete Finishers,agentic_confirmed,-2.44,-0.08,-5.19,-2.04
+Occupational Therapy Aides,agentic_confirmed,-2.44,-1.79,-2.24,-3.30
+First-Line Supervisors of Housekeeping and Janitorial Workers,agentic_confirmed,-2.45,-2.21,-1.77,-3.36
+Animal Breeders,agentic_confirmed,-2.46,-0.17,-3.40,-3.81
+Craft Artists,agentic_confirmed,-2.46,0.40,-4.64,-3.13
+File Clerks,agentic_confirmed,-2.46,-0.65,-2.83,-3.91
+Telephone Operators,agentic_confirmed,-2.47,-1.90,-3.26,-2.24
+First-Line Supervisors of Food Preparation and Serving Workers,agentic_confirmed,-2.47,-2.98,-2.81,-1.62
+"Bookkeeping, Accounting, and Auditing Clerks",agentic_confirmed,-2.48,-1.26,-3.26,-2.91
+"Farmworkers, Farm, Ranch, and Aquacultural Animals",agentic_confirmed,-2.50,-1.86,-3.94,-1.69
+Pest Control Workers,agentic_confirmed,-2.50,-2.24,-4.05,-1.22
+Bill and Account Collectors,agentic_confirmed,-2.53,-2.28,-2.71,-2.59
+"Paper Goods Machine Setters, Operators, and Tenders",agentic_confirmed,-2.53,-2.45,-3.89,-1.25
+Floral Designers,agentic_confirmed,-2.53,-1.92,-4.24,-1.45
+Butchers and Meat Cutters,agentic_confirmed,-2.54,-0.42,-3.58,-3.61
+Team Assemblers,agentic_confirmed,-2.54,-1.26,-2.85,-3.52
+Psychiatric Aides,agentic_confirmed,-2.54,-2.39,-3.52,-1.72
+Bridge and Lock Tenders,agentic_confirmed,-2.55,-1.86,-3.75,-2.04
+"Meat, Poultry, and Fish Cutters and Trimmers",agentic_confirmed,-2.55,1.45,-3.15,-5.95
+"Preschool Teachers, Except Special Education",agentic_confirmed,-2.55,-2.85,-3.08,-1.73
+"Plating Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,-2.56,-1.88,-3.85,-1.94
+Veterinary Assistants and Laboratory Animal Caretakers,agentic_confirmed,-2.58,-1.04,-2.98,-3.71
+Print Binding and Finishing Workers,agentic_confirmed,-2.59,-1.39,-3.82,-2.57
+Fiberglass Laminators and Fabricators,agentic_confirmed,-2.60,-0.50,-4.27,-3.03
+Jewelers and Precious Stone and Metal Workers,agentic_confirmed,-2.60,0.43,-3.40,-4.84
+Passenger Attendants,agentic_confirmed,-2.61,-2.44,-2.25,-3.14
+Telemarketers,agentic_confirmed,-2.62,-3.28,-3.21,-1.36
+Tile and Stone Setters,agentic_confirmed,-2.65,-0.61,-4.63,-2.72
+Motion Picture Projectionists,agentic_confirmed,-2.67,-1.82,-3.94,-2.25
+Brokerage Clerks,agentic_confirmed,-2.71,-2.42,-3.50,-2.21
+Insurance Claims and Policy Processing Clerks,agentic_confirmed,-2.71,-1.54,-1.90,-4.70
+"Food and Tobacco Roasting, Baking, and Drying Machine Operators and Tenders",agentic_confirmed,-2.73,-1.94,-4.16,-2.11
+Orderlies,agentic_confirmed,-2.74,0.56,-4.69,-4.08
+Helpers--Carpenters,agentic_confirmed,-2.74,0.65,-3.82,-5.06
+Proofreaders and Copy Markers,agentic_confirmed,-2.75,-2.22,-2.94,-3.08
+Electrical and Electronic Equipment Assemblers,agentic_confirmed,-2.75,-1.18,-4.32,
+Dental Assistants,agentic_confirmed,-2.75,-0.87,-3.95,-3.42
+Travel Guides,agentic_confirmed,-2.75,-3.42,-3.64,-1.20
+Gem and Diamond Workers,agentic_confirmed,-2.76,-1.53,-5.80,-0.95
+"First-Line Supervisors of Helpers, Laborers, and Material Movers, Hand",agentic_confirmed,-2.77,-2.75,-3.68,-1.87
+Customer Service Representatives,agentic_confirmed,-2.78,-2.49,-2.85,-3.00
+Museum Technicians and Conservators,agentic_confirmed,-2.81,-2.12,-4.62,-1.68
+Histotechnologists,agentic_confirmed,-2.82,-2.13,-4.32,-2.00
+"Aircraft Structure, Surfaces, Rigging, and Systems Assemblers",agentic_confirmed,-2.83,-1.85,-4.63,-2.02
+"Teaching Assistants, Preschool, Elementary, Middle, and Secondary School, Except Special Education",agentic_confirmed,-2.84,-2.52,-3.27,-2.73
+Sheet Metal Workers,agentic_confirmed,-2.85,-0.42,-4.28,-3.85
+New Accounts Clerks,agentic_confirmed,-2.85,-2.49,-2.55,-3.52
+"Ambulance Drivers and Attendants, Except Emergency Medical Technicians",agentic_confirmed,-2.86,-1.33,-5.22,-2.01
+Self-Enrichment Teachers,agentic_confirmed,-2.87,-1.47,-2.17,-4.98
+Endoscopy Technicians,agentic_confirmed,-2.88,-2.13,-4.25,-2.25
+Dental Laboratory Technicians,agentic_confirmed,-2.88,-1.09,-4.55,-3.00
+Phlebotomists,agentic_confirmed,-2.91,-1.64,-3.94,-3.13
+"Floor Layers, Except Carpet, Wood, and Hard Tiles",agentic_confirmed,-2.91,1.17,-3.81,-6.08
+Sewing Machine Operators,agentic_confirmed,-2.91,-0.02,-5.80,
+"Extruding and Forming Machine Setters, Operators, and Tenders, Synthetic and Glass Fibers",agentic_confirmed,-2.93,-3.35,-4.62,-0.81
+Appraisers and Assessors of Real Estate,agentic_confirmed,-2.94,-1.81,-3.17,-3.83
+"Hairdressers, Hairstylists, and Cosmetologists",agentic_confirmed,-2.94,-1.39,-4.25,-3.19
+Plasterers and Stucco Masons,agentic_confirmed,-2.94,-1.04,-5.66,-2.13
+Animal Control Workers,agentic_confirmed,-2.98,-1.32,-3.57,-4.05
+Forest and Conservation Technicians,agentic_confirmed,-2.99,-1.87,-4.88,-2.23
+Bailiffs,agentic_confirmed,-3.00,-1.75,-3.15,-4.10
+Upholsterers,agentic_confirmed,-3.00,-0.31,-5.86,-2.84
+"Insulation Workers, Floor, Ceiling, and Wall",agentic_confirmed,-3.01,-0.04,-6.11,-2.90
+Ophthalmic Medical Technicians,agentic_confirmed,-3.02,-1.46,-3.51,-4.10
+Food Batchmakers,agentic_confirmed,-3.02,-1.88,-3.03,-4.16
+"Laborers and Freight, Stock, and Material Movers, Hand",agentic_confirmed,-3.03,-1.97,-5.73,-1.39
+Helpers--Roofers,agentic_confirmed,-3.07,-1.17,-5.39,-2.64
+Fence Erectors,agentic_confirmed,-3.07,0.18,-5.60,-3.79
+Food Science Technicians,agentic_confirmed,-3.08,-1.90,-3.40,-3.92
+Cooling and Freezing Equipment Operators and Tenders,agentic_confirmed,-3.08,-3.95,-3.73,-1.56
+Recreation Workers,agentic_confirmed,-3.08,-3.45,-2.97,-2.82
+Cleaners of Vehicles and Equipment,agentic_confirmed,-3.09,-5.21,-5.90,1.83
+"Layout Workers, Metal and Plastic",agentic_confirmed,-3.12,-1.32,-4.32,-3.71
+Insurance Underwriters,agentic_confirmed,-3.12,-2.95,-3.74,-2.68
+Semiconductor Processing Technicians,agentic_confirmed,-3.13,-3.20,-4.04,-2.14
+Surveying and Mapping Technicians,agentic_confirmed,-3.14,-1.71,-2.57,-5.14
+Industrial Truck and Tractor Operators,agentic_confirmed,-3.14,-4.91,-6.55,2.04
+Travel Agents,agentic_confirmed,-3.15,-3.10,-3.19,-3.15
+Agricultural Technicians,agentic_confirmed,-3.15,-1.44,-3.46,-4.55
+"Cutting, Punching, and Press Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,-3.15,-3.67,-4.34,-1.45
+Online Merchants,agentic_confirmed,-3.16,-2.43,-2.48,-4.57
+First-Line Supervisors of Retail Sales Workers,agentic_confirmed,-3.17,-3.45,-2.68,-3.36
+Electromechanical Equipment Assemblers,agentic_confirmed,-3.17,-2.41,-3.39,-3.71
+"Geological Technicians, Except Hydrologic Technicians",agentic_confirmed,-3.18,-2.33,-3.26,-3.94
+Traffic Technicians,agentic_confirmed,-3.19,-2.06,-3.15,-4.36
+Athletes and Sports Competitors,agentic_confirmed,-3.19,-1.49,-6.78,-1.30
+"Fine Artists, Including Painters, Sculptors, and Illustrators",agentic_confirmed,-3.20,-0.26,-5.08,-4.26
+Carpet Installers,agentic_confirmed,-3.21,-1.65,-5.42,-2.55
+Agricultural Equipment Operators,agentic_confirmed,-3.21,-6.53,-5.94,2.84
+Locksmiths and Safe Repairers,agentic_confirmed,-3.23,-2.74,-4.32,-2.62
+"Inspectors, Testers, Sorters, Samplers, and Weighers",agentic_confirmed,-3.23,-1.74,-3.31,-4.65
+"Morticians, Undertakers, and Funeral Arrangers",agentic_confirmed,-3.24,-3.79,-3.07,-2.84
+Retail Loss Prevention Specialists,agentic_confirmed,-3.24,-1.99,-3.33,-4.41
+Paperhangers,agentic_confirmed,-3.25,0.96,-6.70,-4.01
+"Crushing, Grinding, and Polishing Machine Setters, Operators, and Tenders",agentic_confirmed,-3.25,-3.44,-5.09,-1.24
+Drywall and Ceiling Tile Installers,agentic_confirmed,-3.26,1.28,-5.43,-5.63
+"Wholesale and Retail Buyers, Except Farm Products",agentic_confirmed,-3.27,-3.69,-3.48,-2.63
+Medical and Clinical Laboratory Technicians,agentic_confirmed,-3.27,-1.92,-3.74,-4.17
+Embalmers,agentic_confirmed,-3.28,-1.97,-4.13,-3.74
+"Painting, Coating, and Decorating Workers",agentic_confirmed,-3.29,,-4.27,-2.30
+Shoe Machine Operators and Tenders,agentic_confirmed,-3.29,-1.66,-5.88,-2.33
+Recycling Coordinators,agentic_confirmed,-3.29,-2.62,-2.45,-4.81
+Psychiatric Technicians,agentic_confirmed,-3.31,-3.50,-4.13,-2.31
+Procurement Clerks,agentic_confirmed,-3.31,-3.16,-3.01,-3.78
+Surgical Technologists,agentic_confirmed,-3.32,-2.32,-4.69,-2.97
+Social Science Research Assistants,agentic_confirmed,-3.33,-3.32,-3.40,-3.27
+Dietetic Technicians,agentic_confirmed,-3.33,-1.31,-2.40,-6.28
+Food Service Managers,agentic_confirmed,-3.34,-3.61,-3.24,-3.17
+Tax Preparers,agentic_confirmed,-3.34,-2.05,-2.79,-5.19
+Appraisers of Personal and Business Property,agentic_confirmed,-3.35,-2.00,-4.62,-3.44
+Glaziers,agentic_confirmed,-3.36,-0.11,-4.41,-5.55
+Insurance Sales Agents,agentic_confirmed,-3.36,-3.75,-3.51,-2.84
+"Tank Car, Truck, and Ship Loaders",agentic_confirmed,-3.39,-1.95,-6.13,-2.07
+Biomass Plant Technicians,agentic_confirmed,-3.39,-2.57,-4.70,-2.90
+Packaging and Filling Machine Operators and Tenders,agentic_confirmed,-3.39,-3.48,-4.41,-2.29
+Gambling Surveillance Officers and Gambling Investigators,agentic_confirmed,-3.41,-1.79,-5.04,-3.40
+Pharmacy Technicians,agentic_confirmed,-3.41,-1.99,-4.31,-3.94
+Weatherization Installers and Technicians,agentic_confirmed,-3.41,-2.66,-4.55,-3.03
+Furniture Finishers,agentic_confirmed,-3.43,-0.99,-5.01,-4.28
+Residential Advisors,agentic_confirmed,-3.43,-3.45,-3.21,-3.62
+First-Line Supervisors of Gambling Services Workers,agentic_confirmed,-3.43,-3.15,-4.09,-3.07
+Ophthalmic Medical Technologists,agentic_confirmed,-3.44,-2.15,-4.38,-3.78
+Automotive Body and Related Repairers,agentic_confirmed,-3.45,-2.73,-4.92,-2.71
+Food Cooking Machine Operators and Tenders,agentic_confirmed,-3.46,-1.96,-3.71,-4.72
+Correspondence Clerks,agentic_confirmed,-3.49,-3.18,-2.79,-4.50
+"Camera Operators, Television, Video, and Film",agentic_confirmed,-3.49,-2.06,-5.00,-3.42
+Parts Salespersons,agentic_confirmed,-3.49,-2.24,-3.28,-4.96
+Transportation Security Screeners,agentic_confirmed,-3.51,-1.59,-4.80,-4.14
+Foundry Mold and Coremakers,agentic_confirmed,-3.51,-2.22,-5.87,-2.45
+"First-Line Supervisors of Farming, Fishing, and Forestry Workers",agentic_confirmed,-3.51,-3.57,-3.85,-3.12
+Automotive Glass Installers and Repairers,agentic_confirmed,-3.52,-2.81,-3.68,-4.05
+Power Distributors and Dispatchers,agentic_confirmed,-3.53,-3.29,-4.18,-3.11
+"Sewers, Hand",agentic_confirmed,-3.53,,-7.91,0.84
+Word Processors and Typists,agentic_confirmed,-3.57,-0.34,-2.51,-7.86
+Nuclear Monitoring Technicians,agentic_confirmed,-3.58,-3.12,-5.30,-2.32
+Security and Fire Alarm Systems Installers,agentic_confirmed,-3.59,-3.11,-3.91,-3.74
+Solar Sales Representatives and Assessors,agentic_confirmed,-3.59,-3.14,-3.21,-4.43
+Landscaping and Groundskeeping Workers,agentic_confirmed,-3.59,-6.58,-6.83,2.63
+Highway Maintenance Workers,agentic_confirmed,-3.60,-2.86,-5.37,-2.56
+Security Guards,agentic_confirmed,-3.62,-0.82,-2.90,-7.12
+Ophthalmic Laboratory Technicians,agentic_confirmed,-3.62,-2.59,-5.34,-2.93
+Etchers and Engravers,agentic_confirmed,-3.63,-1.78,-3.73,-5.37
+"Opticians, Dispensing",agentic_confirmed,-3.64,-2.78,-4.34,-3.79
+Riggers,agentic_confirmed,-3.64,-1.79,-5.03,-4.10
+Occupational Therapy Assistants,agentic_confirmed,-3.65,-2.80,-4.30,-3.85
+Radiologic Technologists and Technicians,agentic_confirmed,-3.66,-3.07,-4.46,-3.46
+Order Clerks,agentic_confirmed,-3.67,-1.75,-3.43,-5.83
+Patient Representatives,agentic_confirmed,-3.68,-4.54,-4.16,-2.33
+Reservation and Transportation Ticket Agents and Travel Clerks,agentic_confirmed,-3.68,-2.49,-3.08,-5.46
+Audio and Video Technicians,agentic_confirmed,-3.69,-2.49,-5.11,-3.46
+Agricultural Inspectors,agentic_confirmed,-3.70,-3.93,-4.80,-2.39
+Freight Forwarders,agentic_confirmed,-3.71,-2.22,-2.70,-6.20
+Conveyor Operators and Tenders,agentic_confirmed,-3.72,-3.95,-4.92,-2.29
+"Radio, Cellular, and Tower Equipment Installers and Repairers",agentic_confirmed,-3.72,-3.12,-3.95,-4.10
+Medical Equipment Preparers,agentic_confirmed,-3.73,-1.85,-3.92,-5.43
+"Molding, Coremaking, and Casting Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,-3.73,-2.43,-4.26,-4.51
+"Bus Drivers, School",agentic_confirmed,-3.73,-1.36,-5.82,-4.02
+Baggage Porters and Bellhops,agentic_confirmed,-3.73,-1.35,-4.71,-5.14
+Photographers,agentic_confirmed,-3.74,-1.82,-4.62,-4.77
+Stonemasons,agentic_confirmed,-3.74,-1.03,-6.07,-4.11
+"Patternmakers, Metal and Plastic",agentic_confirmed,-3.75,-2.03,-3.10,-6.11
+Exercise Trainers and Group Fitness Instructors,agentic_confirmed,-3.75,-1.73,-5.37,-4.15
+"Lathe and Turning Machine Tool Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,-3.76,-3.61,-4.45,-3.23
+"Textile Knitting and Weaving Machine Setters, Operators, and Tenders",agentic_confirmed,-3.76,-3.66,-5.77,-1.86
+Chemical Technicians,agentic_confirmed,-3.76,-3.90,-4.92,-2.47
+Telecommunications Line Installers and Repairers,agentic_confirmed,-3.76,-2.72,-4.43,-4.14
+Cytotechnologists,agentic_confirmed,-3.77,-2.28,-5.88,-3.14
+Fabric and Apparel Patternmakers,agentic_confirmed,-3.77,-1.55,-4.59,-5.17
+"Buyers and Purchasing Agents, Farm Products",agentic_confirmed,-3.77,-2.55,-2.81,-5.95
+Credit Counselors,agentic_confirmed,-3.77,-3.49,-3.82,-4.01
+Railroad Conductors and Yardmasters,agentic_confirmed,-3.78,-3.34,-5.04,-2.96
+Roofers,agentic_confirmed,-3.78,-2.28,-6.01,-3.05
+"Computer, Automated Teller, and Office Machine Repairers",agentic_confirmed,-3.79,-3.10,-3.81,-4.45
+"Securities, Commodities, and Financial Services Sales Agents",agentic_confirmed,-3.79,-3.55,-4.07,-3.74
+Transportation Inspectors,agentic_confirmed,-3.81,-2.65,-4.34,-4.45
+Musicians and Singers,agentic_confirmed,-3.82,-0.85,-4.91,-5.69
+"Makeup Artists, Theatrical and Performance",agentic_confirmed,-3.82,-1.62,-5.35,-4.49
+"Entertainment and Recreation Managers, Except Gambling",agentic_confirmed,-3.83,-4.46,-4.13,-2.89
+Diagnostic Medical Sonographers,agentic_confirmed,-3.83,-3.01,-4.64,-3.83
+Concierges,agentic_confirmed,-3.83,-2.91,-2.41,-6.17
+"Insurance Appraisers, Auto Damage",agentic_confirmed,-3.83,-2.66,-3.64,-5.20
+"Cutters and Trimmers, Hand",agentic_confirmed,-3.83,,-4.17,-3.50
+Automotive and Watercraft Service Attendants,agentic_confirmed,-3.85,-1.45,-4.49,-5.62
+Data Entry Keyers,agentic_confirmed,-3.86,-0.44,-2.78,-8.34
+Data Warehousing Specialists,agentic_confirmed,-3.86,-3.28,-3.93,-4.36
+Neurodiagnostic Technologists,agentic_confirmed,-3.86,-3.05,-5.09,-3.44
+Water and Wastewater Treatment Plant and System Operators,agentic_confirmed,-3.86,-3.99,-3.47,-4.13
+"Welding, Soldering, and Brazing Machine Setters, Operators, and Tenders",agentic_confirmed,-3.86,-1.63,-4.45,-5.51
+"Court, Municipal, and License Clerks",agentic_confirmed,-3.86,-1.96,-2.48,-7.15
+"Loading and Moving Machine Operators, Underground Mining",agentic_confirmed,-3.87,-3.74,-5.33,-2.54
+"Extruding and Drawing Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,-3.87,-3.32,-5.30,-3.00
+Precision Agriculture Technicians,agentic_confirmed,-3.88,-2.92,-4.48,-4.23
+"Interviewers, Except Eligibility and Loan",agentic_confirmed,-3.88,-2.89,-3.68,-5.07
+Cardiovascular Technologists and Technicians,agentic_confirmed,-3.88,-3.58,-5.19,-2.88
+"Insulation Workers, Mechanical",agentic_confirmed,-3.88,-0.78,-4.61,-6.26
+"Coil Winders, Tapers, and Finishers",agentic_confirmed,-3.90,-3.83,-2.87,-4.98
+"Environmental Science and Protection Technicians, Including Health",agentic_confirmed,-3.90,-3.31,-4.58,-3.80
+Home Appliance Repairers,agentic_confirmed,-3.90,-4.54,-4.56,-2.61
+"Pressers, Textile, Garment, and Related Materials",agentic_confirmed,-3.91,-5.16,-7.21,0.64
+Audiovisual Equipment Installers and Repairers,agentic_confirmed,-3.93,-4.44,-3.99,-3.36
+Sustainability Specialists,agentic_confirmed,-3.93,-3.77,-4.37,-3.64
+Magnetic Resonance Imaging Technologists,agentic_confirmed,-3.93,-3.13,-4.80,-3.85
+Machinists,agentic_confirmed,-3.93,-3.07,-4.31,-4.42
+Fashion Designers,agentic_confirmed,-3.94,-4.21,-5.06,-2.55
+Web Developers,agentic_confirmed,-3.94,-3.51,-4.11,-4.19
+Document Management Specialists,agentic_confirmed,-3.94,-2.83,-4.07,-4.93
+Helpers--Electricians,agentic_confirmed,-3.94,-1.15,-5.32,-5.36
+"Forging Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,-3.94,-2.66,-4.30,-4.87
+Correctional Officers and Jailers,agentic_confirmed,-3.95,-2.72,-5.76,-3.38
+Compliance Officers,agentic_confirmed,-3.96,-3.31,-4.27,-4.28
+Funeral Home Managers,agentic_confirmed,-3.96,-4.00,-3.49,-4.38
+Customs Brokers,agentic_confirmed,-3.97,-2.87,-3.55,-5.50
+First-Line Supervisors of Production and Operating Workers,agentic_confirmed,-3.98,-3.93,-4.22,-3.79
+Talent Directors,agentic_confirmed,-3.99,-3.81,-4.40,-3.75
+"Production, Planning, and Expediting Clerks",agentic_confirmed,-3.99,-2.46,-3.24,-6.28
+"Model Makers, Wood",agentic_confirmed,-3.99,-0.86,-4.38,-6.75
+"Pump Operators, Except Wellhead Pumpers",agentic_confirmed,-4.00,-3.17,-4.90,-3.92
+Desktop Publishers,agentic_confirmed,-4.01,-2.82,-5.17,-4.03
+Film and Video Editors,agentic_confirmed,-4.01,-1.91,-4.61,-5.52
+Hazardous Materials Removal Workers,agentic_confirmed,-4.02,-1.99,-5.14,-4.92
+"First-Line Supervisors of Landscaping, Lawn Service, and Groundskeeping Workers",agentic_confirmed,-4.03,-3.82,-4.08,-4.18
+Payroll and Timekeeping Clerks,agentic_confirmed,-4.03,-1.29,-2.75,-8.05
+Park Naturalists,agentic_confirmed,-4.03,-3.53,-4.39,-4.17
+Stationary Engineers and Boiler Operators,agentic_confirmed,-4.03,-3.92,-4.21,-3.97
+Range Managers,agentic_confirmed,-4.04,-4.20,-4.70,-3.21
+Shuttle Drivers and Chauffeurs,agentic_confirmed,-4.04,-1.99,-5.35,-4.79
+Medical Transcriptionists,agentic_confirmed,-4.05,-2.27,-4.21,-5.66
+"Kindergarten Teachers, Except Special Education",agentic_confirmed,-4.05,-3.98,-4.42,-3.74
+Brickmasons and Blockmasons,agentic_confirmed,-4.05,-1.25,-5.92,-4.99
+Cytogenetic Technologists,agentic_confirmed,-4.06,-3.47,-5.42,-3.31
+Computer Programmers,agentic_confirmed,-4.07,-3.68,-3.80,-4.74
+"Furnace, Kiln, Oven, Drier, and Kettle Operators and Tenders",agentic_confirmed,-4.07,-2.87,-3.94,-5.40
+Real Estate Brokers,agentic_confirmed,-4.08,-4.27,-4.08,-3.88
+"Teaching Assistants, Postsecondary",agentic_confirmed,-4.08,-2.35,-3.51,-6.37
+Special Effects Artists and Animators,agentic_confirmed,-4.08,-2.38,-5.24,-4.63
+Acupuncturists,agentic_confirmed,-4.09,-3.57,-4.45,-4.25
+"Transportation Vehicle, Equipment and Systems Inspectors, Except Aviation",agentic_confirmed,-4.10,-2.86,-3.37,-6.06
+Terrazzo Workers and Finishers,agentic_confirmed,-4.10,-2.87,-6.90,-2.53
+"Potters, Manufacturing",agentic_confirmed,-4.10,-3.19,-5.21,-3.91
+Web Administrators,agentic_confirmed,-4.11,-3.24,-4.53,-4.55
+Interpreters and Translators,agentic_confirmed,-4.11,-3.13,-5.23,-3.97
+Photonics Technicians,agentic_confirmed,-4.11,-3.54,-4.08,-4.72
+"Compensation, Benefits, and Job Analysis Specialists",agentic_confirmed,-4.11,-3.49,-3.82,-5.03
+"Special Education Teachers, Preschool",agentic_confirmed,-4.12,-4.69,-5.38,-2.29
+Hearing Aid Specialists,agentic_confirmed,-4.13,-2.04,-4.50,-5.87
+Police Identification and Records Officers,agentic_confirmed,-4.14,-2.48,-5.36,-4.58
+Loan Interviewers and Clerks,agentic_confirmed,-4.14,-3.28,-4.46,-4.69
+Forest Fire Inspectors and Prevention Specialists,agentic_confirmed,-4.15,-2.46,-4.58,-5.42
+"Control and Valve Installers and Repairers, Except Mechanical Door",agentic_confirmed,-4.16,-2.99,-3.85,-5.64
+Nuclear Medicine Technologists,agentic_confirmed,-4.16,-3.43,-4.36,-4.69
+Licensed Practical and Licensed Vocational Nurses,agentic_confirmed,-4.16,-4.50,-5.45,-2.53
+"Rotary Drill Operators, Oil and Gas",agentic_confirmed,-4.16,-3.39,-5.42,-3.68
+"Separating, Filtering, Clarifying, Precipitating, and Still Machine Setters, Operators, and Tenders",agentic_confirmed,-4.17,-2.79,-5.17,-4.55
+Dental Hygienists,agentic_confirmed,-4.18,-1.36,-4.67,-6.52
+"Electronic Equipment Installers and Repairers, Motor Vehicles",agentic_confirmed,-4.18,-4.11,-5.34,-3.10
+First-Line Supervisors of Non-Retail Sales Workers,agentic_confirmed,-4.19,-5.43,-4.49,-2.64
+Radiation Therapists,agentic_confirmed,-4.19,-3.50,-4.95,-4.12
+Energy Auditors,agentic_confirmed,-4.19,-3.30,-4.59,-4.68
+"Drilling and Boring Machine Tool Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,-4.19,-1.79,-3.94,-6.85
+Speech-Language Pathology Assistants,agentic_confirmed,-4.20,-2.79,-5.25,-4.56
+Medical Appliance Technicians,agentic_confirmed,-4.21,-3.47,-5.35,-3.81
+Executive Secretaries and Executive Administrative Assistants,agentic_confirmed,-4.21,-3.59,-4.00,-5.05
+"Dispatchers, Except Police, Fire, and Ambulance",agentic_confirmed,-4.22,-2.90,-4.04,-5.72
+Slaughterers and Meat Packers,agentic_confirmed,-4.23,,-5.89,-2.56
+Gas Plant Operators,agentic_confirmed,-4.23,-3.69,-4.78,-4.21
+First-Line Supervisors of Construction Trades and Extraction Workers,agentic_confirmed,-4.23,-2.85,-3.61,-6.22
+Gas Compressor and Gas Pumping Station Operators,agentic_confirmed,-4.24,-3.41,-4.46,-4.85
+Electrical and Electronics Drafters,agentic_confirmed,-4.24,-2.27,-3.87,-6.58
+Physical Therapist Assistants,agentic_confirmed,-4.24,-3.11,-4.80,-4.81
+Recreational Vehicle Service Technicians,agentic_confirmed,-4.24,-3.99,-4.78,-3.95
+"Service Unit Operators, Oil and Gas",agentic_confirmed,-4.25,-3.34,-5.50,-3.91
+Flight Attendants,agentic_confirmed,-4.25,-2.79,-5.04,-4.92
+Facilities Managers,agentic_confirmed,-4.25,-3.63,-4.51,-4.62
+Court Reporters and Simultaneous Captioners,agentic_confirmed,-4.25,-1.44,-4.81,-6.51
+Customs and Border Protection Officers,agentic_confirmed,-4.26,-4.01,-5.98,-2.79
+"Extruding, Forming, Pressing, and Compacting Machine Setters, Operators, and Tenders",agentic_confirmed,-4.26,-3.18,-5.27,-4.33
+"Milling and Planing Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,-4.27,-4.57,-4.19,-4.03
+Recycling and Reclamation Workers,agentic_confirmed,-4.27,-3.33,-5.86,-3.61
+Medical Assistants,agentic_confirmed,-4.27,-3.09,-4.45,-5.27
+Conservation Scientists,agentic_confirmed,-4.27,-3.25,-4.47,-5.10
+Veterinary Technologists and Technicians,agentic_confirmed,-4.28,-2.37,-5.27,-5.19
+"Career/Technical Education Teachers, Middle School",agentic_confirmed,-4.28,-4.38,-5.21,-3.26
+Telecommunications Engineering Specialists,agentic_confirmed,-4.29,-2.90,-3.41,-6.57
+Quality Control Analysts,agentic_confirmed,-4.29,-3.31,-4.37,-5.20
+Geographic Information Systems Technologists and Technicians,agentic_confirmed,-4.30,-1.92,-3.93,-7.04
+Music Directors and Composers,agentic_confirmed,-4.30,-3.04,-6.03,-3.82
+Airfield Operations Specialists,agentic_confirmed,-4.30,-3.46,-5.45,-3.99
+"Middle School Teachers, Except Special and Career/Technical Education",agentic_confirmed,-4.30,-5.06,-4.81,-3.04
+"Eligibility Interviewers, Government Programs",agentic_confirmed,-4.31,-3.93,-4.69,-4.31
+Fitness and Wellness Coordinators,agentic_confirmed,-4.32,-3.74,-5.05,-4.18
+Architectural and Civil Drafters,agentic_confirmed,-4.32,-2.27,-3.41,-7.30
+"Coin, Vending, and Amusement Machine Servicers and Repairers",agentic_confirmed,-4.34,-6.67,-3.53,-2.80
+"Property, Real Estate, and Community Association Managers",agentic_confirmed,-4.34,-3.50,-3.49,-6.02
+"News Analysts, Reporters, and Journalists",agentic_confirmed,-4.35,-3.72,-4.27,-5.05
+Librarians and Media Collections Specialists,agentic_confirmed,-4.36,-2.75,-3.79,-6.52
+Graphic Designers,agentic_confirmed,-4.36,-1.99,-4.02,-7.06
+"Petroleum Pump System Operators, Refinery Operators, and Gaugers",agentic_confirmed,-4.36,-3.13,-5.01,-4.93
+"Helpers--Brickmasons, Blockmasons, Stonemasons, and Tile and Marble Setters",agentic_confirmed,-4.36,-1.56,-6.36,-5.16
+Loan Officers,agentic_confirmed,-4.37,-3.89,-4.42,-4.78
+"Textile Cutting Machine Setters, Operators, and Tenders",agentic_confirmed,-4.37,-4.55,-5.14,-3.42
+Postmasters and Mail Superintendents,agentic_confirmed,-4.37,-4.14,-3.45,-5.52
+Boilermakers,agentic_confirmed,-4.37,-3.75,-4.69,-4.67
+Sound Engineering Technicians,agentic_confirmed,-4.37,-2.81,-5.04,-5.27
+Computer Network Support Specialists,agentic_confirmed,-4.38,-3.08,-4.10,-5.95
+Real Estate Sales Agents,agentic_confirmed,-4.38,-4.45,-3.40,-5.29
+"Farmworkers and Laborers, Crop, Nursery, and Greenhouse",agentic_confirmed,-4.38,-1.74,-7.02,
+Bicycle Repairers,agentic_confirmed,-4.38,-3.77,-4.29,-5.09
+Statistical Assistants,agentic_confirmed,-4.39,-3.83,-5.00,-4.33
+Machine Feeders and Offbearers,agentic_confirmed,-4.39,-4.76,-4.92,-3.49
+"Human Resources Assistants, Except Payroll and Timekeeping",agentic_confirmed,-4.39,-2.92,-3.37,-6.87
+"Welders, Cutters, Solderers, and Brazers",agentic_confirmed,-4.39,-2.67,-4.64,-5.86
+Camera and Photographic Equipment Repairers,agentic_confirmed,-4.40,-4.31,-4.34,-4.55
+Motorcycle Mechanics,agentic_confirmed,-4.40,-3.80,-5.62,-3.79
+Broadcast Technicians,agentic_confirmed,-4.41,-3.40,-3.84,-5.99
+"Sales Representatives, Wholesale and Manufacturing, Technical and Scientific Products",agentic_confirmed,-4.41,-5.06,-4.64,-3.54
+Helpers--Production Workers,agentic_confirmed,-4.43,,-5.20,-3.65
+Construction and Building Inspectors,agentic_confirmed,-4.44,-2.38,-4.72,-6.21
+Computer Numerically Controlled Tool Programmers,agentic_confirmed,-4.46,-2.94,-3.45,-6.99
+Anesthesiologist Assistants,agentic_confirmed,-4.46,-4.56,-6.10,-2.73
+"Electrical and Electronics Installers and Repairers, Transportation Equipment",agentic_confirmed,-4.47,-2.86,-4.65,-5.91
+Segmental Pavers,agentic_confirmed,-4.48,-2.29,-3.99,-7.15
+Social and Human Service Assistants,agentic_confirmed,-4.48,-4.74,-4.30,-4.41
+Occupational Health and Safety Technicians,agentic_confirmed,-4.48,-2.74,-4.53,-6.17
+"Multiple Machine Tool Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,-4.49,-3.41,-5.25,-4.82
+"Railroad Brake, Signal, and Switch Operators and Locomotive Firers",agentic_confirmed,-4.49,-2.31,-5.46,-5.71
+Tutors,agentic_confirmed,-4.50,-4.10,-4.01,-5.38
+"Patternmakers, Wood",agentic_confirmed,-4.50,-2.28,-5.27,-5.94
+"Rail Yard Engineers, Dinkey Operators, and Hostlers",agentic_confirmed,-4.50,-3.34,-6.42,-3.75
+Outdoor Power Equipment and Other Small Engine Mechanics,agentic_confirmed,-4.52,-6.00,-5.26,-2.30
+Biological Technicians,agentic_confirmed,-4.52,-4.12,-5.02,-4.43
+"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",agentic_confirmed,-4.52,-3.01,-3.62,-6.94
+Engine and Other Machine Assemblers,agentic_confirmed,-4.53,-1.59,-4.34,-7.65
+"Career/Technical Education Teachers, Postsecondary",agentic_confirmed,-4.53,-4.05,-4.25,-5.28
+Aircraft Cargo Handling Supervisors,agentic_confirmed,-4.53,-2.33,-5.04,-6.20
+Heavy and Tractor-Trailer Truck Drivers,agentic_confirmed,-4.53,-3.32,-6.29,-3.97
+Budget Analysts,agentic_confirmed,-4.53,-3.70,-4.63,-5.26
+"Helpers--Installation, Maintenance, and Repair Workers",agentic_confirmed,-4.54,-3.52,-5.04,-5.06
+"Roustabouts, Oil and Gas",agentic_confirmed,-4.54,-2.01,-5.50,-6.12
+Clinical Data Managers,agentic_confirmed,-4.54,-4.57,-5.29,-3.77
+"Derrick Operators, Oil and Gas",agentic_confirmed,-4.57,-5.14,-7.40,-1.17
+"Adult Basic Education, Adult Secondary Education, and English as a Second Language Instructors",agentic_confirmed,-4.57,-3.97,-4.19,-5.56
+Electrical Power-Line Installers and Repairers,agentic_confirmed,-4.58,-3.61,-6.64,-3.49
+Actors,agentic_confirmed,-4.58,-3.39,-4.78,-5.58
+Carpenters,agentic_confirmed,-4.59,-1.87,-5.72,-6.18
+Power Plant Operators,agentic_confirmed,-4.60,-4.20,-4.54,-5.07
+Crane and Tower Operators,agentic_confirmed,-4.60,-2.41,-6.64,-4.75
+Respiratory Therapists,agentic_confirmed,-4.61,-3.93,-5.27,-4.63
+Geothermal Technicians,agentic_confirmed,-4.62,-4.09,-4.96,-4.79
+"Bus Drivers, Transit and Intercity",agentic_confirmed,-4.62,-1.87,-5.77,-6.21
+First-Line Supervisors of Office and Administrative Support Workers,agentic_confirmed,-4.62,-5.27,-4.39,-4.19
+Septic Tank Servicers and Sewer Pipe Cleaners,agentic_confirmed,-4.62,-4.65,-5.66,-3.55
+Chemical Plant and System Operators,agentic_confirmed,-4.62,-4.44,-5.37,-4.04
+Legal Secretaries and Administrative Assistants,agentic_confirmed,-4.62,-2.90,-3.88,-7.09
+Cost Estimators,agentic_confirmed,-4.64,-3.98,-5.18,-4.75
+Environmental Engineering Technologists and Technicians,agentic_confirmed,-4.64,-3.66,-5.08,-5.17
+Medical Equipment Repairers,agentic_confirmed,-4.64,-5.24,-4.46,-4.23
+Chemical Equipment Operators and Tenders,agentic_confirmed,-4.65,-3.20,-5.29,-5.46
+Forensic Science Technicians,agentic_confirmed,-4.65,-3.86,-7.28,-2.81
+First-Line Supervisors of Personal Service Workers,agentic_confirmed,-4.65,-3.32,-3.12,-7.51
+Transit and Railroad Police,agentic_confirmed,-4.66,-2.37,-5.43,-6.17
+Logistics Analysts,agentic_confirmed,-4.66,-4.61,-5.16,-4.20
+Tool and Die Makers,agentic_confirmed,-4.66,-3.71,-4.28,-5.99
+Database Administrators,agentic_confirmed,-4.68,-4.07,-4.51,-5.47
+"Cleaning, Washing, and Metal Pickling Equipment Operators and Tenders",agentic_confirmed,-4.68,-7.19,-5.16,-1.70
+Human Resources Specialists,agentic_confirmed,-4.69,-3.65,-5.15,-5.29
+Cartographers and Photogrammetrists,agentic_confirmed,-4.70,-2.30,-3.98,-7.82
+"Directors, Religious Activities and Education",agentic_confirmed,-4.70,-5.00,-4.63,-4.46
+"Tax Examiners and Collectors, and Revenue Agents",agentic_confirmed,-4.70,-3.06,-4.93,-6.11
+Civil Engineering Technologists and Technicians,agentic_confirmed,-4.70,-3.06,-4.67,-6.39
+Reinforcing Iron and Rebar Workers,agentic_confirmed,-4.71,-1.68,-7.11,-5.35
+Solar Energy Installation Managers,agentic_confirmed,-4.72,-3.50,-4.56,-6.09
+Mechanical Door Repairers,agentic_confirmed,-4.72,-1.68,-4.70,-7.77
+"Low Vision Therapists, Orientation and Mobility Specialists, and Vision Rehabilitation Therapists",agentic_confirmed,-4.72,-4.52,-4.82,-4.82
+Software Quality Assurance Analysts and Testers,agentic_confirmed,-4.72,-4.15,-4.73,-5.29
+Spa Managers,agentic_confirmed,-4.73,-4.90,-4.19,-5.08
+Business Intelligence Analysts,agentic_confirmed,-4.73,-4.18,-5.59,-4.41
+Metal-Refining Furnace Operators and Tenders,agentic_confirmed,-4.73,-3.22,-6.31,-4.66
+Floor Sanders and Finishers,agentic_confirmed,-4.74,-2.78,-6.55,-4.91
+Chefs and Head Cooks,agentic_confirmed,-4.75,-4.25,-5.08,-4.91
+Electricians,agentic_confirmed,-4.75,-3.80,-5.64,-4.80
+Surgical Assistants,agentic_confirmed,-4.75,-3.35,-6.66,-4.25
+"Helpers--Pipelayers, Plumbers, Pipefitters, and Steamfitters",agentic_confirmed,-4.78,,-4.87,-4.69
+Non-Destructive Testing Specialists,agentic_confirmed,-4.78,-2.86,-5.13,-6.36
+Radio Frequency Identification Device Specialists,agentic_confirmed,-4.79,-3.16,-4.87,-6.33
+"Cutting and Slicing Machine Setters, Operators, and Tenders",agentic_confirmed,-4.79,-5.06,-5.91,-3.40
+"Rolling Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,-4.79,-3.71,-5.81,-4.86
+Automotive Engineering Technicians,agentic_confirmed,-4.80,-3.22,-4.46,-6.70
+Textile Bleaching and Dyeing Machine Operators and Tenders,agentic_confirmed,-4.80,-4.18,-4.22,-5.99
+"Textile Winding, Twisting, and Drawing Out Machine Setters, Operators, and Tenders",agentic_confirmed,-4.80,-3.47,-5.84,-5.09
+Mechanical Drafters,agentic_confirmed,-4.80,-1.58,-3.50,-9.33
+Administrative Services Managers,agentic_confirmed,-4.81,-4.00,-4.22,-6.21
+Rehabilitation Counselors,agentic_confirmed,-4.81,-4.76,-4.95,-4.72
+Fish and Game Wardens,agentic_confirmed,-4.82,-3.27,-6.00,-5.19
+"Secondary School Teachers, Except Special and Career/Technical Education",agentic_confirmed,-4.82,-4.72,-5.59,-4.16
+Computer User Support Specialists,agentic_confirmed,-4.83,-3.06,-4.28,-7.15
+Locomotive Engineers,agentic_confirmed,-4.83,-3.64,-7.29,-3.55
+Community Health Workers,agentic_confirmed,-4.83,-4.87,-4.42,-5.20
+Foresters,agentic_confirmed,-4.84,-5.08,-5.68,-3.75
+Electrical and Electronic Engineering Technologists and Technicians,agentic_confirmed,-4.84,-3.83,-4.33,-6.36
+Health Education Specialists,agentic_confirmed,-4.84,-4.09,-5.05,-5.40
+Credit Analysts,agentic_confirmed,-4.85,-3.21,-5.40,-5.93
+"Farmers, Ranchers, and Other Agricultural Managers",agentic_confirmed,-4.85,-4.63,-5.58,-4.34
+"Telecommunications Equipment Installers and Repairers, Except Line Installers",agentic_confirmed,-4.85,-4.54,-5.75,-4.26
+Fundraisers,agentic_confirmed,-4.85,-4.62,-4.98,-4.97
+Sailors and Marine Oilers,agentic_confirmed,-4.86,-3.79,-6.70,-4.09
+Hoist and Winch Operators,agentic_confirmed,-4.86,-1.41,-5.15,-8.02
+"Family and Consumer Sciences Teachers, Postsecondary",agentic_confirmed,-4.87,-4.98,-5.38,-4.24
+"Meeting, Convention, and Event Planners",agentic_confirmed,-4.87,-4.73,-5.19,-4.70
+"Elementary School Teachers, Except Special Education",agentic_confirmed,-4.88,-5.36,-5.56,-3.73
+Industrial Engineering Technologists and Technicians,agentic_confirmed,-4.89,-3.86,-4.63,-6.17
+"Environmental Scientists and Specialists, Including Health",agentic_confirmed,-4.89,-5.10,-6.80,-2.78
+"Electric Motor, Power Tool, and Related Repairers",agentic_confirmed,-4.90,-5.64,-6.13,-2.95
+Watch and Clock Repairers,agentic_confirmed,-4.90,-3.56,-6.06,-5.09
+Climate Change Policy Analysts,agentic_confirmed,-4.91,-4.25,-4.74,-5.73
+Remote Sensing Technicians,agentic_confirmed,-4.91,-3.47,-5.02,-6.23
+Advertising Sales Agents,agentic_confirmed,-4.91,-4.12,-4.10,-6.50
+Private Detectives and Investigators,agentic_confirmed,-4.91,-3.97,-5.28,-5.47
+Subway and Streetcar Operators,agentic_confirmed,-4.91,-2.56,-6.20,-5.96
+Clinical Research Coordinators,agentic_confirmed,-4.91,-4.75,-5.00,-4.99
+Adapted Physical Education Specialists,agentic_confirmed,-4.91,-5.28,-5.81,-3.65
+Choreographers,agentic_confirmed,-4.91,-3.56,-7.14,-4.03
+Tree Trimmers and Pruners,agentic_confirmed,-4.91,-2.60,-6.89,-5.25
+Paralegals and Legal Assistants,agentic_confirmed,-4.92,-2.68,-3.88,-8.19
+"Transportation, Storage, and Distribution Managers",agentic_confirmed,-4.92,-4.45,-4.73,-5.58
+"Captains, Mates, and Pilots of Water Vessels",agentic_confirmed,-4.93,-3.72,-6.90,-4.19
+"Health and Safety Engineers, Except Mining Safety Engineers and Inspectors",agentic_confirmed,-4.94,-3.87,-5.26,-5.67
+Gambling Managers,agentic_confirmed,-4.94,-4.90,-4.54,-5.37
+"Agents and Business Managers of Artists, Performers, and Athletes",agentic_confirmed,-4.94,-5.57,-4.74,-4.50
+Prosthodontists,agentic_confirmed,-4.94,-3.67,-6.34,-4.81
+Biofuels Processing Technicians,agentic_confirmed,-4.95,-4.13,-5.59,-5.11
+Information Security Analysts,agentic_confirmed,-4.95,-4.41,-5.36,-5.08
+Archivists,agentic_confirmed,-4.96,-3.61,-4.59,-6.67
+"Recreation and Fitness Studies Teachers, Postsecondary",agentic_confirmed,-4.96,-4.93,-5.37,-4.58
+Pipelayers,agentic_confirmed,-4.96,-2.64,-4.97,-7.28
+Computer Numerically Controlled Tool Operators,agentic_confirmed,-4.96,-5.01,-5.46,-4.42
+Compensation and Benefits Managers,agentic_confirmed,-4.98,-4.55,-4.07,-6.31
+"Glass Blowers, Molders, Benders, and Finishers",agentic_confirmed,-4.98,-2.92,-7.49,-4.52
+Set and Exhibit Designers,agentic_confirmed,-4.98,-3.21,-5.90,-5.84
+"Claims Adjusters, Examiners, and Investigators",agentic_confirmed,-4.98,-4.42,-5.45,-5.08
+"Maintenance and Repair Workers, General",agentic_confirmed,-4.99,-4.29,-5.17,-5.51
+Exercise Physiologists,agentic_confirmed,-5.00,-4.98,-6.17,-3.84
+"First-Line Supervisors of Mechanics, Installers, and Repairers",agentic_confirmed,-5.00,-4.92,-5.63,-4.45
+Wind Energy Development Managers,agentic_confirmed,-5.00,-4.62,-5.03,-5.36
+Dredge Operators,agentic_confirmed,-5.01,-4.47,-6.23,-4.34
+"Earth Drillers, Except Oil and Gas",agentic_confirmed,-5.02,-4.48,-5.44,-5.14
+First-Line Supervisors of Material-Moving Machine and Vehicle Operators,agentic_confirmed,-5.02,-3.91,-3.53,-7.62
+General and Operations Managers,agentic_confirmed,-5.02,-5.05,-5.04,-4.99
+Accountants and Auditors,agentic_confirmed,-5.03,-3.98,-5.38,-5.72
+"Sawing Machine Setters, Operators, and Tenders, Wood",agentic_confirmed,-5.03,-3.93,-6.11,-5.04
+Helpers--Extraction Workers,agentic_confirmed,-5.04,-4.76,-6.73,-3.64
+Zoologists and Wildlife Biologists,agentic_confirmed,-5.04,-4.42,-5.62,-5.09
+"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products",agentic_confirmed,-5.05,-3.62,-3.22,-8.30
+Regulatory Affairs Managers,agentic_confirmed,-5.06,-4.93,-5.62,-4.62
+Information Security Engineers,agentic_confirmed,-5.06,-4.51,-5.35,-5.32
+"Education and Childcare Administrators, Preschool and Daycare",agentic_confirmed,-5.06,-5.85,-5.49,-3.85
+Nuclear Technicians,agentic_confirmed,-5.07,-3.88,-5.49,-5.85
+Probation Officers and Correctional Treatment Specialists,agentic_confirmed,-5.08,-4.82,-4.87,-5.56
+Orthoptists,agentic_confirmed,-5.08,-4.49,-6.21,-4.56
+"Explosives Workers, Ordnance Handling Experts, and Blasters",agentic_confirmed,-5.09,-3.32,-7.06,-4.87
+"Molders, Shapers, and Casters, Except Metal and Plastic",agentic_confirmed,-5.09,-6.27,-4.53,-4.47
+"Heat Treating Equipment Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,-5.10,-4.04,-5.67,-5.58
+Technical Writers,agentic_confirmed,-5.10,-4.77,-4.80,-5.74
+Fundraising Managers,agentic_confirmed,-5.12,-4.85,-4.91,-5.59
+Elevator and Escalator Installers and Repairers,agentic_confirmed,-5.12,-4.98,-4.90,-5.48
+Athletic Trainers,agentic_confirmed,-5.13,-4.85,-5.60,-4.94
+Commercial Divers,agentic_confirmed,-5.16,-3.95,-6.53,-5.00
+Musical Instrument Repairers and Tuners,agentic_confirmed,-5.16,-3.74,-6.81,-4.92
+Video Game Designers,agentic_confirmed,-5.16,-3.82,-5.59,-6.07
+Historians,agentic_confirmed,-5.16,-4.93,-6.34,-4.22
+Tire Builders,agentic_confirmed,-5.17,-2.76,-7.04,-5.71
+"Career/Technical Education Teachers, Secondary School",agentic_confirmed,-5.17,-5.63,-5.89,-3.98
+Wellhead Pumpers,agentic_confirmed,-5.18,-5.19,-4.85,-5.51
+Biofuels Production Managers,agentic_confirmed,-5.21,-4.45,-5.15,-6.02
+Regulatory Affairs Specialists,agentic_confirmed,-5.21,-4.78,-6.20,-4.64
+Occupational Health and Safety Specialists,agentic_confirmed,-5.21,-4.61,-5.45,-5.57
+Search Marketing Strategists,agentic_confirmed,-5.23,-4.33,-5.39,-5.95
+Information Technology Project Managers,agentic_confirmed,-5.23,-5.55,-5.10,-5.04
+Producers and Directors,agentic_confirmed,-5.23,-5.54,-6.96,-3.19
+Software Developers,agentic_confirmed,-5.23,-4.28,-4.68,-6.74
+Computer and Information Systems Managers,agentic_confirmed,-5.24,-5.05,-5.00,-5.67
+Computer Systems Analysts,agentic_confirmed,-5.24,-4.96,-5.37,-5.39
+Industrial Machinery Mechanics,agentic_confirmed,-5.25,-6.07,-6.54,-3.13
+Solar Photovoltaic Installers,agentic_confirmed,-5.25,-2.75,-5.25,-7.76
+Network and Computer Systems Administrators,agentic_confirmed,-5.26,-5.44,-4.41,-5.93
+Broadcast Announcers and Radio Disc Jockeys,agentic_confirmed,-5.26,-3.78,-5.03,-6.97
+"Grinding, Lapping, Polishing, and Buffing Machine Tool Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,-5.26,-3.77,-5.40,-6.60
+Fallers,agentic_confirmed,-5.26,-2.98,-7.54,
+Curators,agentic_confirmed,-5.26,-4.85,-6.94,-4.00
+Editors,agentic_confirmed,-5.27,-4.64,-6.63,-4.54
+Wind Turbine Service Technicians,agentic_confirmed,-5.28,-3.95,-5.84,-6.04
+"Poets, Lyricists and Creative Writers",agentic_confirmed,-5.28,-5.88,-5.26,-4.70
+"Educational, Guidance, and Career Counselors and Advisors",agentic_confirmed,-5.29,-5.85,-5.72,-4.29
+Aerospace Engineering and Operations Technologists and Technicians,agentic_confirmed,-5.29,-3.91,-5.20,-6.77
+Personal Financial Advisors,agentic_confirmed,-5.29,-4.20,-5.36,-6.32
+Mechanical Engineering Technologists and Technicians,agentic_confirmed,-5.30,-3.70,-5.68,-6.51
+Environmental Compliance Inspectors,agentic_confirmed,-5.30,-4.80,-6.80,-4.30
+Orthodontists,agentic_confirmed,-5.31,-5.09,-7.14,-3.69
+Wind Energy Operations Managers,agentic_confirmed,-5.31,-4.70,-5.34,-5.89
+Public Safety Telecommunicators,agentic_confirmed,-5.31,-3.66,-5.39,-6.88
+Adhesive Bonding Machine Operators and Tenders,agentic_confirmed,-5.31,-4.00,-5.08,-6.87
+"Maintenance Workers, Machinery",agentic_confirmed,-5.33,-4.97,-4.89,-6.12
+Medical Dosimetrists,agentic_confirmed,-5.33,-4.77,-6.15,-5.09
+Logisticians,agentic_confirmed,-5.34,-5.10,-5.64,-5.29
+Intelligence Analysts,agentic_confirmed,-5.34,-3.99,-7.33,-4.70
+"Heating, Air Conditioning, and Refrigeration Mechanics and Installers",agentic_confirmed,-5.35,-4.27,-6.04,-5.75
+"Electrical and Electronics Repairers, Powerhouse, Substation, and Relay",agentic_confirmed,-5.35,-4.25,-4.59,-7.22
+Registered Nurses,agentic_confirmed,-5.35,-5.56,-6.24,-4.26
+Electro-Mechanical and Mechatronics Technologists and Technicians,agentic_confirmed,-5.36,-5.35,-5.59,-5.14
+Cabinetmakers and Bench Carpenters,agentic_confirmed,-5.36,-3.44,-5.80,-6.84
+Computer Network Architects,agentic_confirmed,-5.36,-4.40,-5.39,-6.31
+"Grinding and Polishing Workers, Hand",agentic_confirmed,-5.37,-6.69,-4.74,-4.67
+Ship Engineers,agentic_confirmed,-5.37,-5.28,-5.89,-4.94
+"Area, Ethnic, and Cultural Studies Teachers, Postsecondary",agentic_confirmed,-5.37,-5.42,-5.75,-4.95
+Fire Inspectors and Investigators,agentic_confirmed,-5.37,-2.37,-5.19,-8.55
+Operating Engineers and Other Construction Equipment Operators,agentic_confirmed,-5.37,-5.76,-6.00,-4.36
+Purchasing Managers,agentic_confirmed,-5.38,-5.74,-5.35,-5.04
+Petroleum Engineers,agentic_confirmed,-5.38,-5.45,-5.81,-4.88
+"Electrical and Electronics Repairers, Commercial and Industrial Equipment",agentic_confirmed,-5.39,-5.02,-5.18,-5.97
+"Roof Bolters, Mining",agentic_confirmed,-5.41,-3.26,-7.22,-5.75
+"Special Education Teachers, Secondary School",agentic_confirmed,-5.43,-5.45,-5.49,-5.34
+Biofuels/Biodiesel Technology and Product Development Managers,agentic_confirmed,-5.43,-3.94,-5.80,-6.54
+Chiropractors,agentic_confirmed,-5.43,-4.70,-6.23,-5.36
+First-Line Supervisors of Correctional Officers,agentic_confirmed,-5.43,-4.47,-5.88,-5.94
+Surveyors,agentic_confirmed,-5.43,-3.46,-6.03,-6.81
+Motorboat Mechanics and Service Technicians,agentic_confirmed,-5.44,-5.47,-5.84,-4.99
+Police and Sheriff's Patrol Officers,agentic_confirmed,-5.44,-4.30,-6.56,-5.44
+Management Analysts,agentic_confirmed,-5.44,-5.52,-6.07,-4.74
+Avionics Technicians,agentic_confirmed,-5.45,-4.96,-5.52,-5.87
+"Tool Grinders, Filers, and Sharpeners",agentic_confirmed,-5.47,-6.39,-6.37,-3.64
+Marketing Managers,agentic_confirmed,-5.47,-5.74,-5.41,-5.27
+"Excavating and Loading Machine and Dragline Operators, Surface Mining",agentic_confirmed,-5.48,-2.87,-6.99,-6.57
+"Fraud Examiners, Investigators and Analysts",agentic_confirmed,-5.49,-4.48,-5.33,-6.65
+Market Research Analysts and Marketing Specialists,agentic_confirmed,-5.50,-4.52,-6.29,-5.67
+"Special Education Teachers, Elementary School",agentic_confirmed,-5.50,-5.35,-6.27,-4.87
+"Plumbers, Pipefitters, and Steamfitters",agentic_confirmed,-5.50,-3.38,-5.15,-7.98
+Optometrists,agentic_confirmed,-5.51,-4.40,-7.41,-4.71
+Coaches and Scouts,agentic_confirmed,-5.52,-7.98,-6.52,-2.05
+Timing Device Assemblers and Adjusters,agentic_confirmed,-5.53,-5.64,-5.02,-5.92
+Health Informatics Specialists,agentic_confirmed,-5.53,-5.75,-6.63,-4.21
+Bus and Truck Mechanics and Diesel Engine Specialists,agentic_confirmed,-5.54,-4.92,-6.69,-5.01
+Automotive Service Technicians and Mechanics,agentic_confirmed,-5.57,-4.01,-6.37,-6.33
+Physical Therapists,agentic_confirmed,-5.57,-4.79,-5.79,-6.13
+Food Scientists and Technologists,agentic_confirmed,-5.58,-5.03,-6.71,-4.99
+Interior Designers,agentic_confirmed,-5.59,-4.07,-5.64,-7.07
+Signal and Track Switch Repairers,agentic_confirmed,-5.60,-7.03,-5.94,-3.83
+Hydroelectric Production Managers,agentic_confirmed,-5.61,-5.30,-5.59,-5.94
+Sales Managers,agentic_confirmed,-5.62,-6.31,-5.72,-4.83
+"Purchasing Agents, Except Wholesale, Retail, and Farm Products",agentic_confirmed,-5.62,-4.91,-4.61,-7.34
+Construction Laborers,agentic_confirmed,-5.63,-3.27,-5.54,-8.07
+Chief Sustainability Officers,agentic_confirmed,-5.63,-6.31,-6.84,-3.76
+Validation Engineers,agentic_confirmed,-5.64,-4.83,-5.48,-6.61
+Instructional Coordinators,agentic_confirmed,-5.65,-6.94,-6.21,-3.80
+Nuclear Power Reactor Operators,agentic_confirmed,-5.66,-4.27,-5.22,-7.48
+Continuous Mining Machine Operators,agentic_confirmed,-5.66,-4.06,-7.01,-5.92
+Media Technical Directors/Managers,agentic_confirmed,-5.67,-5.08,-6.15,-5.76
+"Special Education Teachers, Middle School",agentic_confirmed,-5.68,-5.68,-5.32,-6.02
+Database Architects,agentic_confirmed,-5.68,-3.87,-4.63,-8.56
+Solar Thermal Installers and Technicians,agentic_confirmed,-5.69,-3.78,-4.04,-9.24
+Investment Fund Managers,agentic_confirmed,-5.69,-4.86,-6.32,-5.89
+First-Line Supervisors of Firefighting and Prevention Workers,agentic_confirmed,-5.69,-3.95,-5.97,-7.16
+Financial Examiners,agentic_confirmed,-5.69,-6.21,-6.51,-4.36
+Writers and Authors,agentic_confirmed,-5.70,-4.42,-4.84,-7.84
+Industrial Production Managers,agentic_confirmed,-5.71,-6.28,-5.28,-5.57
+Hydroelectric Plant Technicians,agentic_confirmed,-5.71,-4.28,-5.36,-7.50
+Geothermal Production Managers,agentic_confirmed,-5.72,-4.83,-4.70,-7.63
+Government Property Inspectors and Investigators,agentic_confirmed,-5.72,-4.46,-6.24,-6.46
+"Rock Splitters, Quarry",agentic_confirmed,-5.73,-4.20,-7.26,
+Coroners,agentic_confirmed,-5.74,-4.29,-6.18,-6.76
+Rail-Track Laying and Maintenance Equipment Operators,agentic_confirmed,-5.75,-4.21,-6.77,-6.25
+Computer Systems Engineers/Architects,agentic_confirmed,-5.75,-4.61,-5.15,-7.50
+Recreational Therapists,agentic_confirmed,-5.76,-4.84,-4.82,-7.63
+Farm Equipment Mechanics and Service Technicians,agentic_confirmed,-5.77,-4.85,-6.42,-6.03
+Media Programming Directors,agentic_confirmed,-5.77,-5.42,-6.18,-5.71
+Loss Prevention Managers,agentic_confirmed,-5.77,-6.20,-5.52,-5.60
+Industrial Engineers,agentic_confirmed,-5.78,-4.69,-5.34,-7.30
+Pharmacists,agentic_confirmed,-5.78,-5.42,-6.43,-5.48
+Brownfield Redevelopment Specialists and Site Managers,agentic_confirmed,-5.79,-5.14,-6.50,-5.74
+Biomass Power Plant Managers,agentic_confirmed,-5.80,-5.14,-5.11,-7.16
+"Mobile Heavy Equipment Mechanics, Except Engines",agentic_confirmed,-5.81,-4.94,-6.95,-5.54
+Survey Researchers,agentic_confirmed,-5.81,-5.38,-7.37,-4.69
+"Woodworking Machine Setters, Operators, and Tenders, Except Sawing",agentic_confirmed,-5.82,-4.41,-5.62,-7.43
+"Foreign Language and Literature Teachers, Postsecondary",agentic_confirmed,-5.82,-6.16,-6.68,-4.63
+Environmental Restoration Planners,agentic_confirmed,-5.84,-4.99,-6.12,-6.39
+Solar Energy Systems Engineers,agentic_confirmed,-5.84,-3.97,-5.90,-7.64
+Advertising and Promotions Managers,agentic_confirmed,-5.85,-5.17,-6.10,-6.28
+Landscape Architects,agentic_confirmed,-5.86,-4.80,-6.60,-6.18
+Geodetic Surveyors,agentic_confirmed,-5.87,-4.41,-6.32,-6.88
+Midwives,agentic_confirmed,-5.87,-4.63,-6.13,-6.85
+"Communications Teachers, Postsecondary",agentic_confirmed,-5.88,-5.46,-5.84,-6.34
+Dancers,agentic_confirmed,-5.88,-1.27,-10.90,-5.48
+Detectives and Criminal Investigators,agentic_confirmed,-5.89,-5.00,-6.50,-6.18
+Manufactured Building and Mobile Home Installers,agentic_confirmed,-5.89,-3.50,-7.24,-6.94
+Human Factors Engineers and Ergonomists,agentic_confirmed,-5.90,-5.54,-6.79,-5.37
+Printing Press Operators,agentic_confirmed,-5.92,-3.77,-4.10,-9.90
+Business Continuity Planners,agentic_confirmed,-5.94,-6.45,-7.22,-4.13
+Quality Control Systems Managers,agentic_confirmed,-5.96,-5.80,-5.65,-6.44
+Art Directors,agentic_confirmed,-5.99,-4.09,-6.67,-7.21
+Labor Relations Specialists,agentic_confirmed,-5.99,-5.82,-6.18,-5.97
+Farm and Home Management Educators,agentic_confirmed,-5.99,-6.37,-6.09,-5.52
+Political Scientists,agentic_confirmed,-5.99,-5.63,-6.46,-5.90
+"Coating, Painting, and Spraying Machine Setters, Operators, and Tenders",agentic_confirmed,-6.00,-6.20,-5.79,
+Equal Opportunity Representatives and Officers,agentic_confirmed,-6.00,-5.55,-7.11,-5.35
+Lodging Managers,agentic_confirmed,-6.00,-6.04,-4.74,-7.23
+Structural Iron and Steel Workers,agentic_confirmed,-6.01,-2.42,-8.08,-7.53
+Dietitians and Nutritionists,agentic_confirmed,-6.01,-6.06,-6.08,-5.89
+Security Management Specialists,agentic_confirmed,-6.03,-4.68,-6.24,-7.17
+Firefighters,agentic_confirmed,-6.03,-3.70,-7.88,-6.51
+Transportation Planners,agentic_confirmed,-6.03,-5.20,-6.07,-6.84
+"Health Specialties Teachers, Postsecondary",agentic_confirmed,-6.04,-6.04,-6.34,-5.73
+First-Line Supervisors of Security Workers,agentic_confirmed,-6.05,-3.98,-5.24,-8.93
+"Political Science Teachers, Postsecondary",agentic_confirmed,-6.06,-5.80,-5.42,-6.96
+Refuse and Recyclable Material Collectors,agentic_confirmed,-6.06,-6.07,-5.57,-6.55
+Supply Chain Managers,agentic_confirmed,-6.07,-5.85,-4.82,-7.55
+Financial Managers,agentic_confirmed,-6.08,-5.43,-6.47,-6.32
+Genetic Counselors,agentic_confirmed,-6.08,-3.96,-6.19,-8.09
+Urban and Regional Planners,agentic_confirmed,-6.08,-5.15,-6.30,-6.78
+"Child, Family, and School Social Workers",agentic_confirmed,-6.09,-6.70,-5.83,-5.75
+Geographers,agentic_confirmed,-6.09,-4.23,-6.23,-7.83
+"Geoscientists, Except Hydrologists and Geographers",agentic_confirmed,-6.10,-5.19,-6.85,-6.27
+Training and Development Specialists,agentic_confirmed,-6.13,-6.02,-5.77,-6.60
+Acute Care Nurses,agentic_confirmed,-6.13,-5.68,-5.89,-6.82
+Motorboat Operators,agentic_confirmed,-6.16,-3.94,-6.79,-7.73
+Rail Car Repairers,agentic_confirmed,-6.18,-6.00,-7.07,-5.48
+Compliance Managers,agentic_confirmed,-6.18,-4.92,-5.91,-7.72
+"Art, Drama, and Music Teachers, Postsecondary",agentic_confirmed,-6.18,-6.36,-6.54,-5.66
+Substance Abuse and Behavioral Disorder Counselors,agentic_confirmed,-6.19,-5.84,-5.72,-6.99
+Industrial Ecologists,agentic_confirmed,-6.19,-5.10,-6.87,-6.60
+Commercial and Industrial Designers,agentic_confirmed,-6.19,-4.34,-6.01,-8.22
+Soil and Plant Scientists,agentic_confirmed,-6.21,-5.96,-7.10,-5.58
+"Computer Science Teachers, Postsecondary",agentic_confirmed,-6.22,-5.70,-6.10,-6.85
+Medical and Clinical Laboratory Technologists,agentic_confirmed,-6.22,-5.02,-6.68,-6.95
+Wind Energy Engineers,agentic_confirmed,-6.22,-4.42,-4.62,-9.62
+"Model Makers, Metal and Plastic",agentic_confirmed,-6.24,-5.04,-5.52,-8.16
+Chemists,agentic_confirmed,-6.24,-5.16,-6.91,-6.66
+"Geography Teachers, Postsecondary",agentic_confirmed,-6.25,-5.55,-6.06,-7.12
+"Agricultural Sciences Teachers, Postsecondary",agentic_confirmed,-6.25,-7.00,-6.45,-5.32
+Animal Scientists,agentic_confirmed,-6.27,-5.07,-6.87,-6.87
+First-Line Supervisors of Police and Detectives,agentic_confirmed,-6.27,-6.19,-5.41,-7.22
+Water Resource Specialists,agentic_confirmed,-6.29,-4.55,-5.35,-8.97
+Allergists and Immunologists,agentic_confirmed,-6.29,-6.43,-7.02,-5.43
+"English Language and Literature Teachers, Postsecondary",agentic_confirmed,-6.30,-5.98,-7.53,-5.39
+Veterinarians,agentic_confirmed,-6.32,-5.07,-6.29,-7.60
+Orthotists and Prosthetists,agentic_confirmed,-6.35,-4.80,-6.91,-7.33
+"History Teachers, Postsecondary",agentic_confirmed,-6.35,-5.83,-5.97,-7.26
+Critical Care Nurses,agentic_confirmed,-6.36,-5.50,-7.23,-6.36
+"Energy Engineers, Except Wind and Solar",agentic_confirmed,-6.37,-5.40,-6.18,-7.52
+"Education Administrators, Postsecondary",agentic_confirmed,-6.43,-6.86,-7.28,-5.16
+Dermatologists,agentic_confirmed,-6.45,-5.33,-7.02,-7.00
+Nurse Practitioners,agentic_confirmed,-6.45,-6.04,-6.67,-6.65
+Social and Community Service Managers,agentic_confirmed,-6.46,-6.90,-6.14,-6.34
+"Business Teachers, Postsecondary",agentic_confirmed,-6.48,-6.19,-6.04,-7.20
+"Environmental Science Teachers, Postsecondary",agentic_confirmed,-6.49,-5.92,-6.21,-7.33
+Environmental Economists,agentic_confirmed,-6.49,-5.00,-6.74,-7.74
+"Dentists, General",agentic_confirmed,-6.50,-6.21,-8.93,-4.38
+Electrical Engineers,agentic_confirmed,-6.52,-4.26,-6.20,-9.11
+Nanotechnology Engineering Technologists and Technicians,agentic_confirmed,-6.52,-5.39,-6.66,-7.53
+"Forestry and Conservation Science Teachers, Postsecondary",agentic_confirmed,-6.53,-5.43,-6.59,-7.58
+"Criminal Justice and Law Enforcement Teachers, Postsecondary",agentic_confirmed,-6.60,-6.39,-5.66,-7.75
+"Philosophy and Religion Teachers, Postsecondary",agentic_confirmed,-6.61,-5.83,-6.19,-7.81
+Sociologists,agentic_confirmed,-6.61,-5.83,-6.81,-7.19
+Nurse Anesthetists,agentic_confirmed,-6.61,-5.39,-6.34,-8.11
+Commercial Pilots,agentic_confirmed,-6.62,-5.67,-8.95,-5.23
+Podiatrists,agentic_confirmed,-6.63,-5.83,-7.44,-6.62
+"Architecture Teachers, Postsecondary",agentic_confirmed,-6.65,-6.31,-7.09,-6.54
+Robotics Technicians,agentic_confirmed,-6.65,-5.48,-6.36,-8.12
+Natural Sciences Managers,agentic_confirmed,-6.66,-6.58,-7.45,-5.95
+Remote Sensing Scientists and Technologists,agentic_confirmed,-6.67,-5.65,-6.92,-7.45
+Logistics Engineers,agentic_confirmed,-6.68,-6.10,-7.26,-6.68
+"Nursing Instructors and Teachers, Postsecondary",agentic_confirmed,-6.68,-6.45,-6.54,-7.05
+Occupational Therapists,agentic_confirmed,-6.68,-5.51,-6.08,-8.45
+Environmental Engineers,agentic_confirmed,-6.70,-5.28,-6.22,-8.58
+Biologists,agentic_confirmed,-6.70,-5.84,-7.66,-6.59
+Bioinformatics Technicians,agentic_confirmed,-6.70,-3.30,-4.95,-11.86
+Anesthesiologists,agentic_confirmed,-6.71,-6.03,-8.00,-6.11
+Mental Health and Substance Abuse Social Workers,agentic_confirmed,-6.72,-6.32,-7.47,-6.39
+Audiologists,agentic_confirmed,-6.73,-5.77,-7.31,-7.10
+Medical and Health Services Managers,agentic_confirmed,-6.73,-6.82,-6.50,-6.87
+Financial Quantitative Analysts,agentic_confirmed,-6.75,-4.85,-6.72,-8.66
+Pile Driver Operators,agentic_confirmed,-6.76,-6.10,-6.04,-8.13
+Millwrights,agentic_confirmed,-6.77,-4.63,-7.09,-8.59
+Water/Wastewater Engineers,agentic_confirmed,-6.78,-5.52,-7.17,-7.65
+Nurse Midwives,agentic_confirmed,-6.79,-5.97,-6.33,-8.06
+Human Resources Managers,agentic_confirmed,-6.79,-7.49,-6.57,-6.30
+"Education Teachers, Postsecondary",agentic_confirmed,-6.79,-6.49,-7.32,-6.56
+Computer and Information Research Scientists,agentic_confirmed,-6.79,-5.80,-6.82,-7.76
+Aviation Inspectors,agentic_confirmed,-6.80,-4.58,-5.91,-9.92
+Air Traffic Controllers,agentic_confirmed,-6.81,-5.32,-9.18,-5.93
+"Architects, Except Landscape and Naval",agentic_confirmed,-6.83,-5.66,-7.90,-6.92
+"Mining and Geological Engineers, Including Mining Safety Engineers",agentic_confirmed,-6.84,-6.54,-7.77,-6.20
+Construction Managers,agentic_confirmed,-6.84,-6.37,-6.57,-7.58
+Anthropologists and Archeologists,agentic_confirmed,-6.84,-5.39,-7.88,-7.25
+Hydrologists,agentic_confirmed,-6.84,-4.98,-7.08,-8.45
+Microbiologists,agentic_confirmed,-6.86,-5.94,-8.32,-6.31
+Atmospheric and Space Scientists,agentic_confirmed,-6.87,-5.35,-6.68,-8.56
+"Biological Science Teachers, Postsecondary",agentic_confirmed,-6.91,-6.25,-7.26,-7.20
+Architectural and Engineering Managers,agentic_confirmed,-6.93,-5.81,-7.30,-7.67
+Security Managers,agentic_confirmed,-6.93,-5.57,-6.98,-8.24
+"Economics Teachers, Postsecondary",agentic_confirmed,-6.94,-5.04,-5.86,-9.93
+"Refractory Materials Repairers, Except Brickmasons",agentic_confirmed,-6.94,-5.21,-4.94,-10.67
+Aircraft Mechanics and Service Technicians,agentic_confirmed,-6.95,-7.47,-7.99,-5.41
+"Administrative Law Judges, Adjudicators, and Hearing Officers",agentic_confirmed,-6.96,-6.92,-8.32,-5.65
+Clergy,agentic_confirmed,-6.99,-7.38,-7.13,-6.47
+Training and Development Managers,agentic_confirmed,-7.00,-6.45,-6.97,-7.59
+Mechanical Engineers,agentic_confirmed,-7.01,-6.33,-6.66,-8.05
+Economists,agentic_confirmed,-7.02,-5.16,-7.21,-8.67
+Advanced Practice Psychiatric Nurses,agentic_confirmed,-7.04,-6.62,-6.92,-7.59
+"Paving, Surfacing, and Tamping Equipment Operators",agentic_confirmed,-7.04,-4.80,-5.28,-11.05
+"Mathematical Science Teachers, Postsecondary",agentic_confirmed,-7.05,-5.83,-6.38,-8.94
+"Physicians, Pathologists",agentic_confirmed,-7.07,-6.03,-8.32,-6.85
+"Sociology Teachers, Postsecondary",agentic_confirmed,-7.08,-6.95,-6.34,-7.95
+Materials Engineers,agentic_confirmed,-7.10,-4.85,-6.81,-9.65
+Clinical Nurse Specialists,agentic_confirmed,-7.10,-6.13,-6.08,-9.09
+"Pediatricians, General",agentic_confirmed,-7.12,-6.51,-8.00,-6.85
+Agricultural Engineers,agentic_confirmed,-7.13,-5.10,-6.21,-10.08
+Operations Research Analysts,agentic_confirmed,-7.13,-6.11,-7.11,-8.17
+Urologists,agentic_confirmed,-7.13,-6.29,-8.16,-6.95
+"Ophthalmologists, Except Pediatric",agentic_confirmed,-7.14,-6.76,-8.51,-6.14
+"Library Science Teachers, Postsecondary",agentic_confirmed,-7.14,-6.27,-7.43,-7.73
+Logging Equipment Operators,agentic_confirmed,-7.15,-5.97,-6.46,-9.02
+"Electronics Engineers, Except Computer",agentic_confirmed,-7.15,-4.91,-6.19,-10.36
+Public Relations Specialists,agentic_confirmed,-7.17,-5.29,-5.94,-10.27
+Fuel Cell Engineers,agentic_confirmed,-7.17,-5.14,-6.60,-9.76
+"Psychology Teachers, Postsecondary",agentic_confirmed,-7.17,-6.62,-6.72,-8.17
+Art Therapists,agentic_confirmed,-7.17,-4.85,-5.81,-10.85
+Naturopathic Physicians,agentic_confirmed,-7.19,-5.71,-7.95,-7.91
+Marine Engineers and Naval Architects,agentic_confirmed,-7.19,-6.05,-7.14,-8.38
+Healthcare Social Workers,agentic_confirmed,-7.21,-5.98,-6.27,-9.38
+"Mixing and Blending Machine Setters, Operators, and Tenders",agentic_confirmed,-7.22,-3.59,-4.31,-13.75
+Sales Engineers,agentic_confirmed,-7.23,-6.26,-6.52,-8.90
+School Psychologists,agentic_confirmed,-7.23,-6.45,-6.65,-8.59
+Mechatronics Engineers,agentic_confirmed,-7.24,-4.78,-5.88,-11.05
+General Internal Medicine Physicians,agentic_confirmed,-7.24,-5.91,-7.49,-8.33
+Judicial Law Clerks,agentic_confirmed,-7.28,-5.32,-6.69,-9.84
+Biostatisticians,agentic_confirmed,-7.29,-6.86,-7.86,-7.15
+Materials Scientists,agentic_confirmed,-7.32,-5.06,-6.52,-10.39
+Fire-Prevention and Protection Engineers,agentic_confirmed,-7.34,-4.85,-6.64,-10.52
+Speech-Language Pathologists,agentic_confirmed,-7.35,-6.49,-8.31,-7.24
+"Atmospheric, Earth, Marine, and Space Sciences Teachers, Postsecondary",agentic_confirmed,-7.38,-6.44,-7.20,-8.50
+"Chemistry Teachers, Postsecondary",agentic_confirmed,-7.38,-6.08,-6.58,-9.48
+Transportation Engineers,agentic_confirmed,-7.43,-5.33,-7.37,-9.58
+Obstetricians and Gynecologists,agentic_confirmed,-7.45,-6.89,-8.09,-7.37
+Emergency Management Directors,agentic_confirmed,-7.46,-7.72,-6.85,-7.81
+Epidemiologists,agentic_confirmed,-7.47,-7.86,-8.43,-6.13
+Bioinformatics Scientists,agentic_confirmed,-7.49,-5.87,-7.85,-8.75
+Physician Assistants,agentic_confirmed,-7.51,-5.68,-6.72,-10.13
+Computer Hardware Engineers,agentic_confirmed,-7.55,-5.05,-5.65,-11.93
+Actuaries,agentic_confirmed,-7.55,-6.73,-8.05,-7.88
+Marriage and Family Therapists,agentic_confirmed,-7.55,-7.02,-6.85,-8.80
+Hospitalists,agentic_confirmed,-7.57,-6.88,-7.36,-8.47
+Geneticists,agentic_confirmed,-7.60,-5.81,-8.34,-8.64
+Music Therapists,agentic_confirmed,-7.65,-4.93,-6.17,-11.84
+Family Medicine Physicians,agentic_confirmed,-7.66,-7.31,-8.00,-7.66
+"Airline Pilots, Copilots, and Flight Engineers",agentic_confirmed,-7.66,-6.71,-10.82,-5.46
+Physical Medicine and Rehabilitation Physicians,agentic_confirmed,-7.66,-6.49,-7.30,-9.19
+Civil Engineers,agentic_confirmed,-7.69,-5.50,-7.99,-9.57
+Bioengineers and Biomedical Engineers,agentic_confirmed,-7.79,-6.36,-7.43,-9.58
+Microsystems Engineers,agentic_confirmed,-7.81,-5.07,-6.56,-11.78
+Radiologists,agentic_confirmed,-7.82,-6.74,-7.59,-9.14
+Oral and Maxillofacial Surgeons,agentic_confirmed,-7.83,-6.41,-9.68,-7.39
+"Social Work Teachers, Postsecondary",agentic_confirmed,-7.83,-7.53,-7.34,-8.63
+"Arbitrators, Mediators, and Conciliators",agentic_confirmed,-7.84,-7.81,-6.33,-9.38
+Sports Medicine Physicians,agentic_confirmed,-7.84,-6.75,-7.89,-8.89
+"Medical Scientists, Except Epidemiologists",agentic_confirmed,-7.87,-7.09,-7.54,-8.97
+Manufacturing Engineers,agentic_confirmed,-7.87,-6.56,-7.88,-9.16
+Mathematicians,agentic_confirmed,-7.88,-7.07,-9.11,-7.45
+"Anthropology and Archeology Teachers, Postsecondary",agentic_confirmed,-7.88,-7.82,-7.72,-8.10
+Nanosystems Engineers,agentic_confirmed,-7.95,-6.07,-8.39,-9.40
+Lawyers,agentic_confirmed,-7.98,-7.68,-9.03,-7.23
+"Education Administrators, Kindergarten through Secondary",agentic_confirmed,-7.99,-9.83,-8.38,-5.76
+Treasurers and Controllers,agentic_confirmed,-8.01,-6.75,-6.85,-10.42
+Nuclear Engineers,agentic_confirmed,-8.05,-6.97,-7.40,-9.76
+Aerospace Engineers,agentic_confirmed,-8.06,-6.36,-6.68,-11.14
+"Physics Teachers, Postsecondary",agentic_confirmed,-8.09,-6.66,-7.16,-10.46
+Psychiatrists,agentic_confirmed,-8.11,-7.94,-7.66,-8.73
+Automotive Engineers,agentic_confirmed,-8.13,-5.81,-7.58,-11.01
+Tapers,agentic_confirmed,-8.20,,-5.69,-10.71
+Neuropsychologists,agentic_confirmed,-8.21,-7.19,-8.75,-8.69
+Clinical Neuropsychologists,agentic_confirmed,-8.27,-6.88,-7.45,-10.48
+Molecular and Cellular Biologists,agentic_confirmed,-8.33,-7.22,-9.02,-8.75
+Statisticians,agentic_confirmed,-8.36,-5.26,-7.61,-12.21
+Industrial-Organizational Psychologists,agentic_confirmed,-8.43,-7.58,-8.00,-9.72
+Astronomers,agentic_confirmed,-8.47,-6.13,-8.56,-10.72
+"Engineering Teachers, Postsecondary",agentic_confirmed,-8.48,-5.99,-7.38,-12.06
+Neurologists,agentic_confirmed,-8.50,-7.73,-8.84,-8.92
+Chief Executives,agentic_confirmed,-8.51,-10.30,-8.05,-7.17
+"Judges, Magistrate Judges, and Magistrates",agentic_confirmed,-8.55,-8.35,-8.46,-8.82
+Clinical and Counseling Psychologists,agentic_confirmed,-8.57,-6.28,-7.46,-11.98
+Chemical Engineers,agentic_confirmed,-8.59,-6.80,-7.14,-11.85
+Preventive Medicine Physicians,agentic_confirmed,-8.61,-9.45,-8.61,-7.76
+"Law Teachers, Postsecondary",agentic_confirmed,-8.68,-7.16,-8.01,-10.86
+Mental Health Counselors,agentic_confirmed,-8.75,-6.96,-8.67,-10.61
+Photonics Engineers,agentic_confirmed,-8.82,-5.67,-7.87,-12.92
+Robotics Engineers,agentic_confirmed,-8.92,-6.65,-7.74,-12.38
+Emergency Medicine Physicians,agentic_confirmed,-8.98,-7.64,-9.26,-10.04
+Biochemists and Biophysicists,agentic_confirmed,-9.32,-7.73,-8.93,-11.28
+Physicists,agentic_confirmed,-10.89,-7.86,-11.36,-13.44
 "Postal Service Mail Sorters, Processors, and Processing Machine Operators",all_confirmed,4.65,3.76,0.19,10.00
 Food Preparation Workers,all_confirmed,3.65,3.63,0.79,6.55
 Cashiers,all_confirmed,3.56,2.98,2.85,4.85

@@ -39,7 +39,7 @@ All sub-questions use the five canonical `ANALYSIS_CONFIGS` (defined in `analysi
 | `all_confirmed` | `AEI Both + Micro 2026-02-12` | **PRIMARY** — confirmed usage (conv + API + Microsoft) |
 | `all_ceiling` | `All 2026-02-18` | Ceiling — everything AI can reach |
 | `human_conversation` | `AEI Conv + Micro 2026-02-12` | Confirmed human conversational use |
-| `agentic_confirmed` | `MCP + API 2026-02-12` | Confirmed agentic tool-use |
+| `agentic_confirmed` | `AEI API 2026-02-12` | Confirmed agentic tool-use (AEI API only) |
 | `agentic_ceiling` | `MCP + API 2026-02-18` | Agentic ceiling (most recent) |
 
 ---

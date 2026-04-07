@@ -91,7 +91,7 @@ Organized around IWA (Intermediate Work Activity) level as primary lens. No SKA 
 - Fastest-growing IWAs are educational: evaluate scholarly work (+77pp), assess student capabilities (+54pp)
 - Robust activities are almost entirely physical/operational; fragile ones are informational/cognitive
 
-**Note:** All five ANALYSIS_CONFIGS use pre-combined datasets (is_aei=False) → eco_2025 baseline for WA analysis. Consistent across all configs. No family separation needed.
+**Note:** Four of the five ANALYSIS_CONFIGS use pre-combined datasets (is_aei=False) → eco_2025 baseline for WA analysis. `agentic_confirmed` uses `AEI API 2026-02-12` (is_aei=True) → eco_2015 baseline for WA analysis (routed through aei_group). WA scripts that use `result.get("mcp_group") or result.get("aei_group")` handle this correctly.
 
 ### Active: Economic Footprint (`questions/economic_footprint/`)
 
@@ -111,7 +111,7 @@ Organized around IWA (Intermediate Work Activity) level as primary lens. No SKA 
 - 61.3M workers affected, $3.99T wages in scope, 40.0% of total employment
 - Ceiling estimate: 77.1M workers, $4.97T wages, 50.3% of employment
 - Top sectors by workers: Office/Admin (11.2M, 51.1%), Sales (7.6M, 59.5%), Business/Finance (5.5M, 50.7%)
-- Agentic exposes 5.3M more workers than conversational (59.4M vs 54.1M)
+- Confirmed agentic (AEI API only) reaches 31.1M workers, $2.16T wages, 20.3% of employment; agentic ceiling (MCP + AEI API) reaches 60.4M workers
 - Legal (+25.5 pp) and Education (+24.8 pp) saw the largest task penetration gains over the dataset window
 - Zone 4 (considerable prep) has the highest average AI exposure (~50.9%); Zone 1 the lowest (~26.9%)
 - 5 state clusters by sector composition; pct_tasks_affected is uniform (~36.1%) across all states

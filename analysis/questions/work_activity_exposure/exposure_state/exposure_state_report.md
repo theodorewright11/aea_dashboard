@@ -69,11 +69,11 @@ This split — cognitive/informational fragile, physical/operational robust — 
 
 ## Config Comparison
 
-The five configs tell a consistent story at the GWA level, with some important divergences. The biggest disagreement is on "Scheduling Work and Activities": 45% confirmed, 85% ceiling. That 40-point gap means agentic AI (MCP + API) shows it can handle most scheduling work, but conversational AI usage data shows it's only being used for about half. This is the signature of a category where the capability exists but adoption hasn't followed.
+The five configs tell a consistent story at the GWA level, with some important divergences. The biggest disagreement is on "Scheduling Work and Activities": 44.9% confirmed, 85.3% ceiling. The agentic ceiling (MCP + API) at 84.5% shows that agentic AI can handle most scheduling work when MCP tooling is fully deployed. Confirmed agentic (AEI API only) sits at 37.9% — above conversational (27.7%) but well below the ceiling. This is the signature of a category where the capability exists but broad deployment hasn't followed.
 
-"Coaching and Developing Others" shows the opposite pattern: 52% confirmed (human conversation) but only 14% agentic. This is work that happens through conversation and relationship, not through automated pipelines. The high conversational exposure reflects the reality that people are having AI-mediated coaching conversations — but there's no agentic deployment pathway for it.
+"Coaching and Developing Others" shows the opposite pattern: 51.7% confirmed (human conversation), 10.2% confirmed agentic, 13.7% agentic ceiling. This is work that happens through conversation and relationship, not through automated pipelines. The high conversational exposure reflects the reality that people are having AI-mediated coaching conversations — but there's no meaningful agentic deployment pathway for it.
 
-"Documenting/Recording Information" has a striking spread: 37% confirmed, 67% ceiling, with agentic configs at 62%. Documentation is exactly where agentic AI tools (coding assistants, medical documentation systems, automated record-keeping) are most actively deployed. The ceiling-to-confirmed gap reflects real tool-based adoption patterns that average usage data doesn't fully capture.
+"Documenting/Recording Information" has a striking spread: 37.3% confirmed, 67.1% ceiling, with agentic ceiling at 62.6% and confirmed agentic at 31.3% (similar to conversational at 29.6%). Documentation at the confirmed agentic level hasn't outpaced conversational usage, but the agentic ceiling shows where tool-based deployment (coding assistants, medical documentation systems, automated record-keeping) is heading.
 
 ---
 
