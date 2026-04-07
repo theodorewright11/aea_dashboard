@@ -56,14 +56,24 @@ analysis/
 │   │   ├── score_distributions/
 │   │   ├── source_portraits/
 │   │   └── marginal_contributions/
-│   └── agentic_usage/           — Active question bucket
+│   ├── agentic_usage/           — Active question bucket
+│   │   ├── README.md
+│   │   ├── agentic_usage_report.md
+│   │   ├── exposure_state/
+│   │   ├── sector_footprint/
+│   │   ├── work_activities/
+│   │   ├── mcp_profile/
+│   │   └── trends/
+│   └── field_benchmarks/        — Active question bucket
 │       ├── README.md
-│       ├── agentic_usage_report.md
-│       ├── exposure_state/
-│       ├── sector_footprint/
-│       ├── work_activities/
-│       ├── mcp_profile/
-│       └── trends/
+│       ├── field_benchmarks_report.md
+│       ├── automation_share/
+│       ├── wage_impact/
+│       ├── utah_benchmarks/
+│       ├── theoretical_vs_confirmed/
+│       ├── sector_breakdown/
+│       ├── work_activity_comparison/
+│       └── platform_landscape/
 ├── question_findings/           — Flat copies of question .md reports
 └── report/
     └── report.md                — Rolling aggregate report
