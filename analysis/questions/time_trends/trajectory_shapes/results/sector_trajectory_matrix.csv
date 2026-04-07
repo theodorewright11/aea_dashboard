@@ -1,0 +1,102 @@
+major_occ_category,trajectory,n_occs
+Architecture and Engineering Occupations,early_mover,10
+Architecture and Engineering Occupations,laggard,22
+Architecture and Engineering Occupations,mixed,7
+Architecture and Engineering Occupations,plateaued,7
+Architecture and Engineering Occupations,steady,10
+"Arts, Design, Entertainment, Sports, and Media Occupations",early_mover,5
+"Arts, Design, Entertainment, Sports, and Media Occupations",laggard,14
+"Arts, Design, Entertainment, Sports, and Media Occupations",late_mover,1
+"Arts, Design, Entertainment, Sports, and Media Occupations",mixed,2
+"Arts, Design, Entertainment, Sports, and Media Occupations",plateaued,4
+"Arts, Design, Entertainment, Sports, and Media Occupations",steady,14
+Building and Grounds Cleaning and Maintenance Occupations,laggard,5
+Building and Grounds Cleaning and Maintenance Occupations,mixed,1
+Building and Grounds Cleaning and Maintenance Occupations,plateaued,2
+Business and Financial Operations Occupations,early_mover,3
+Business and Financial Operations Occupations,laggard,8
+Business and Financial Operations Occupations,mixed,4
+Business and Financial Operations Occupations,plateaued,17
+Business and Financial Operations Occupations,steady,16
+Community and Social Service Occupations,early_mover,1
+Community and Social Service Occupations,laggard,4
+Community and Social Service Occupations,late_mover,1
+Community and Social Service Occupations,plateaued,2
+Community and Social Service Occupations,steady,6
+Computer and Mathematical Occupations,early_mover,10
+Computer and Mathematical Occupations,laggard,1
+Computer and Mathematical Occupations,plateaued,12
+Computer and Mathematical Occupations,steady,13
+Construction and Extraction Occupations,laggard,47
+Construction and Extraction Occupations,mixed,5
+Construction and Extraction Occupations,plateaued,4
+Construction and Extraction Occupations,steady,5
+Educational Instruction and Library Occupations,early_mover,3
+Educational Instruction and Library Occupations,laggard,10
+Educational Instruction and Library Occupations,mixed,1
+Educational Instruction and Library Occupations,plateaued,4
+Educational Instruction and Library Occupations,steady,44
+"Farming, Fishing, and Forestry Occupations",early_mover,1
+"Farming, Fishing, and Forestry Occupations",laggard,10
+"Farming, Fishing, and Forestry Occupations",steady,1
+Food Preparation and Serving Related Occupations,early_mover,1
+Food Preparation and Serving Related Occupations,laggard,8
+Food Preparation and Serving Related Occupations,mixed,2
+Food Preparation and Serving Related Occupations,plateaued,4
+Food Preparation and Serving Related Occupations,steady,1
+Healthcare Practitioners and Technical Occupations,early_mover,1
+Healthcare Practitioners and Technical Occupations,laggard,32
+Healthcare Practitioners and Technical Occupations,late_mover,4
+Healthcare Practitioners and Technical Occupations,mixed,7
+Healthcare Practitioners and Technical Occupations,plateaued,22
+Healthcare Practitioners and Technical Occupations,steady,23
+Healthcare Support Occupations,laggard,6
+Healthcare Support Occupations,mixed,2
+Healthcare Support Occupations,plateaued,6
+Healthcare Support Occupations,steady,5
+"Installation, Maintenance, and Repair Occupations",early_mover,1
+"Installation, Maintenance, and Repair Occupations",laggard,37
+"Installation, Maintenance, and Repair Occupations",mixed,4
+"Installation, Maintenance, and Repair Occupations",plateaued,7
+"Installation, Maintenance, and Repair Occupations",steady,1
+Legal Occupations,plateaued,5
+Legal Occupations,steady,2
+"Life, Physical, and Social Science Occupations",early_mover,4
+"Life, Physical, and Social Science Occupations",laggard,13
+"Life, Physical, and Social Science Occupations",mixed,11
+"Life, Physical, and Social Science Occupations",plateaued,17
+"Life, Physical, and Social Science Occupations",steady,15
+Management Occupations,laggard,23
+Management Occupations,mixed,1
+Management Occupations,plateaued,6
+Management Occupations,steady,26
+Office and Administrative Support Occupations,early_mover,7
+Office and Administrative Support Occupations,laggard,11
+Office and Administrative Support Occupations,mixed,1
+Office and Administrative Support Occupations,plateaued,13
+Office and Administrative Support Occupations,steady,19
+Personal Care and Service Occupations,early_mover,2
+Personal Care and Service Occupations,laggard,15
+Personal Care and Service Occupations,late_mover,1
+Personal Care and Service Occupations,mixed,5
+Personal Care and Service Occupations,plateaued,3
+Personal Care and Service Occupations,steady,5
+Production Occupations,early_mover,3
+Production Occupations,laggard,83
+Production Occupations,mixed,11
+Production Occupations,plateaued,8
+Production Occupations,steady,2
+Protective Service Occupations,early_mover,2
+Protective Service Occupations,laggard,12
+Protective Service Occupations,late_mover,1
+Protective Service Occupations,mixed,6
+Protective Service Occupations,plateaued,2
+Protective Service Occupations,steady,3
+Sales and Related Occupations,early_mover,2
+Sales and Related Occupations,laggard,3
+Sales and Related Occupations,plateaued,6
+Sales and Related Occupations,steady,11
+Transportation and Material Moving Occupations,early_mover,1
+Transportation and Material Moving Occupations,laggard,42
+Transportation and Material Moving Occupations,mixed,7
+Transportation and Material Moving Occupations,plateaued,2

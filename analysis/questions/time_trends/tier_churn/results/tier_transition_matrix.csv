@@ -1,0 +1,10 @@
+tier_first,tier_last,n_occs
+low,high,5
+low,low,259
+low,moderate,27
+low,restructuring,78
+moderate,high,60
+moderate,moderate,61
+restructuring,high,80
+restructuring,moderate,131
+restructuring,restructuring,222

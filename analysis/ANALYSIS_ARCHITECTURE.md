@@ -74,6 +74,22 @@ analysis/
 │       ├── sector_breakdown/
 │       ├── work_activity_comparison/
 │       └── platform_landscape/
+│   ├── state_clusters/          — Active question bucket
+│   │   ├── README.md
+│   │   ├── state_clusters_report.md
+│   │   ├── risk_profile/        — Cluster by employment-weighted risk tier distribution
+│   │   ├── activity_signature/  — Cluster by GWA share of AI-exposed employment
+│   │   ├── agentic_profile/     — Cluster by agentic intensity (agentic/confirmed) per sector
+│   │   ├── adoption_gap/        — Cluster by ceiling-confirmed gap ratio per sector
+│   │   └── cluster_convergence/ — ARI matrix + state stability across all 5 schemes
+│   └── time_trends/             — Active question bucket
+│       ├── README.md
+│       ├── time_trends_report.md
+│       ├── trajectory_shapes/   — Classify occupations by growth pattern (6 types)
+│       ├── tier_churn/          — Exposure tier transitions and sector stability
+│       ├── confirmed_ceiling_convergence/ — Confirmed/ceiling ratio trend nationally + by sector
+│       ├── wa_tipping_points/   — IWA threshold crossings (10%, 33%, 66%) and approaching IWAs
+│       └── occs_timeline/       — Full time-series for the 29 named occupations of interest
 ├── question_findings/           — Flat copies of question .md reports
 └── report/
     └── report.md                — Rolling aggregate report
