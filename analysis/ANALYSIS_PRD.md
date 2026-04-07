@@ -144,4 +144,4 @@ Each sub-question produces:
 - `results/figures/*.png` — full figure set (gitignored)
 - `figures/*.png` — key figures committed to git, embedded in the report
 
-Each top-level question bucket additionally produces `<bucket>_report.md` synthesizing all sub-question findings.
+Each top-level question bucket additionally produces `<bucket>_report.md` synthesizing all sub-question findings. This aggregate report follows a specific format: numbered sections (one per sub-question) with `*Full detail:*` links, embedded figures from each sub-folder's committed `figures/` dir, a Cross-Cutting Findings section, a Key Takeaways section, a Sub-Report Index table, and a Config Reference table. See `ANALYSIS_CLAUDE.md` for the full spec and `job_exposure/job_exposure_report.md` as the canonical reference.
