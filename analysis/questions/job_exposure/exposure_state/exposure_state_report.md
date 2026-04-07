@@ -119,8 +119,8 @@ Five analysis configurations provide different lenses on the same occupation dat
 |---------------|---------------|-------------------|----------------|
 | Human Conversation | 81 | 17.5M | Tasks confirmed through direct human use of conversational AI |
 | All Confirmed | 145 | 31.4M | Conv + API + Microsoft confirmed usage |
-| Agentic Confirmed | 154 | 39.0M | Confirmed agentic (autonomous tool-using) AI usage |
-| Agentic Ceiling | 156 | 40.3M | Demonstrated agentic capability |
+| Agentic Confirmed | 36 | 6.0M | Confirmed agentic tool-use (AEI API only) |
+| Agentic Ceiling | 156 | 40.3M | Demonstrated agentic capability (MCP + AEI API) |
 | All Ceiling | 249 | 54.2M | Full demonstrated capability across all source types |
 
 ![Config Comparison](figures/config_comparison.png)
@@ -129,9 +129,11 @@ Three patterns stand out.
 
 **The conversation-to-confirmed jump is large.** Going from human_conversation (81 high-tier occupations, 17.5M workers) to all_confirmed (145 occupations, 31.4M) nearly doubles the high tier. This means that API integrations and Microsoft Copilot-style tools are reaching a substantial number of occupations that pure conversational AI doesn't. The additional 64 occupations and 13.9 million workers represent the deployment footprint of enterprise AI tools beyond chatbots.
 
-**Agentic confirmed actually exceeds all_confirmed in the high tier.** This is counterintuitive at first: 154 agentic-confirmed occupations and 39.0 million workers vs. 145 all-confirmed occupations and 31.4 million workers. The resolution is that agentic tools -- systems that can autonomously use other tools, browse the web, execute code, manage workflows -- cover different tasks than conversational + API tools. Some occupations have task inventories where autonomous multi-step operations contribute more than direct human-AI conversation does. The 9-occupation, 7.6-million-worker difference between agentic_confirmed and all_confirmed shows that for certain jobs, the agentic modality is the primary vector of AI impact, not a supplement to conversational use.
+**Confirmed agentic (AEI API only) is narrower than all_confirmed.** With only 36 high-tier occupations covering 6.0M workers, confirmed agentic tool-use is currently more specialized than the full all_confirmed picture. AEI API data captures production deployments of agentic systems — code execution, API orchestration, complex automation pipelines — which are concentrated in higher-complexity technical occupations rather than broadly distributed across the information economy. This isn't a capability ceiling; it's a deployment pattern.
 
-**The ceiling gap is concentrated, not uniform.** The jump from all_confirmed (145 high) to all_ceiling (249 high) adds 104 occupations and 22.8 million workers. But those 104 occupations aren't evenly distributed across the economy. They're concentrated in mid-skill information work -- roles where AI capability has been demonstrated but organizational adoption hasn't caught up. This is the adoption frontier: not a technology problem, but a deployment problem. The tools exist. The question is when, and how fast, organizations will use them.
+**The agentic ceiling (156 high-tier occupations, 40.3M workers) tells a different story.** Adding MCP server capability data pushes the agentic high-tier well above all_confirmed. The 120-occupation gap between agentic ceiling and agentic confirmed is the largest confirmed/ceiling gap in the table — meaning agentic AI has demonstrated capability across a much wider set of occupations than current confirmed API usage reflects. That gap is organizational adoption lag, not technical limitation.
+
+**The overall ceiling gap is concentrated, not uniform.** The jump from all_confirmed (145 high) to all_ceiling (249 high) adds 104 occupations and 22.8 million workers. But those 104 occupations aren't evenly distributed across the economy. They're concentrated in mid-skill information work -- roles where AI capability has been demonstrated but organizational adoption hasn't caught up. This is the adoption frontier: not a technology problem, but a deployment problem. The tools exist. The question is when, and how fast, organizations will use them.
 
 ---
 

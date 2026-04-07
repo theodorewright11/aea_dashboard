@@ -1845,929 +1845,929 @@ Wind Turbine Service Technicians,human_conversation,29.01,-3.33,2,low,False
 Word Processors and Typists,human_conversation,72.28,-2.14,9,high,False
 Writers and Authors,human_conversation,49.27,-4.27,6,moderate,False
 Zoologists and Wildlife Biologists,human_conversation,36.45,-3.61,7,moderate,False
-Accountants and Auditors,agentic_confirmed,35.32,-2.08,5,moderate,False
-Actors,agentic_confirmed,63.71,-1.99,7,moderate,False
-Actuaries,agentic_confirmed,31.34,-4.69,7,moderate,False
-Acupuncturists,agentic_confirmed,9.44,-1.47,4,moderate,False
-Acute Care Nurses,agentic_confirmed,22.62,-3.65,5,moderate,False
-Adapted Physical Education Specialists,agentic_confirmed,8.05,-2.65,2,low,False
-Adhesive Bonding Machine Operators and Tenders,agentic_confirmed,21.12,-2.63,4,moderate,False
-"Administrative Law Judges, Adjudicators, and Hearing Officers",agentic_confirmed,23.27,-4.16,4,moderate,False
-Administrative Services Managers,agentic_confirmed,39.25,-1.84,8,high,False
-"Adult Basic Education, Adult Secondary Education, and English as a Second Language Instructors",agentic_confirmed,22.73,-1.78,3,low,False
-Advanced Practice Psychiatric Nurses,agentic_confirmed,40.57,-4.44,7,moderate,False
-Advertising Sales Agents,agentic_confirmed,72.15,-1.85,8,high,False
-Advertising and Promotions Managers,agentic_confirmed,59.47,-2.86,8,high,False
-Aerospace Engineering and Operations Technologists and Technicians,agentic_confirmed,27.25,-2.26,5,moderate,False
-Aerospace Engineers,agentic_confirmed,24.29,-4.94,1,low,False
-"Agents and Business Managers of Artists, Performers, and Athletes",agentic_confirmed,60.68,-1.83,8,high,False
-Agricultural Engineers,agentic_confirmed,22.98,-4.22,1,low,False
-Agricultural Equipment Operators,agentic_confirmed,2.25,-0.59,3,low,False
-Agricultural Inspectors,agentic_confirmed,17.78,-0.85,5,moderate,False
-"Agricultural Sciences Teachers, Postsecondary",agentic_confirmed,63.43,-3.42,7,moderate,False
-Agricultural Technicians,agentic_confirmed,11.93,-0.58,3,low,False
-Air Traffic Controllers,agentic_confirmed,31.44,-3.98,6,moderate,False
-Aircraft Cargo Handling Supervisors,agentic_confirmed,28.74,-1.67,6,moderate,False
-Aircraft Mechanics and Service Technicians,agentic_confirmed,9.01,-4.01,2,low,False
-Aircraft Service Attendants,agentic_confirmed,2.35,,2,low,False
-"Aircraft Structure, Surfaces, Rigging, and Systems Assemblers",agentic_confirmed,7.47,0.02,4,moderate,False
-Airfield Operations Specialists,agentic_confirmed,21.00,-1.46,7,moderate,False
-"Airline Pilots, Copilots, and Flight Engineers",agentic_confirmed,25.52,-4.71,2,low,False
-Allergists and Immunologists,agentic_confirmed,33.60,-3.54,8,high,False
-"Ambulance Drivers and Attendants, Except Emergency Medical Technicians",agentic_confirmed,3.84,-0.21,4,moderate,False
-Amusement and Recreation Attendants,agentic_confirmed,39.82,1.50,10,high,False
-Anesthesiologist Assistants,agentic_confirmed,10.64,-1.73,5,moderate,False
-Anesthesiologists,agentic_confirmed,5.53,-4.08,2,low,False
-Animal Breeders,agentic_confirmed,13.25,0.56,5,moderate,False
-Animal Caretakers,agentic_confirmed,22.24,1.84,4,moderate,False
-Animal Control Workers,agentic_confirmed,26.19,-0.15,6,moderate,False
-Animal Scientists,agentic_confirmed,10.00,-3.50,3,low,False
-Animal Trainers,agentic_confirmed,7.88,0.37,5,moderate,False
-Anthropologists and Archeologists,agentic_confirmed,16.05,-4.05,4,moderate,False
-"Anthropology and Archeology Teachers, Postsecondary",agentic_confirmed,65.42,-5.13,8,high,False
-Appraisers and Assessors of Real Estate,agentic_confirmed,29.84,-0.01,7,moderate,False
-Appraisers of Personal and Business Property,agentic_confirmed,33.27,-0.32,4,moderate,False
-"Arbitrators, Mediators, and Conciliators",agentic_confirmed,28.32,-4.96,6,moderate,False
-"Architects, Except Landscape and Naval",agentic_confirmed,66.53,-3.88,7,moderate,False
-Architectural and Civil Drafters,agentic_confirmed,56.14,-1.35,7,moderate,False
-Architectural and Engineering Managers,agentic_confirmed,57.13,-3.91,5,moderate,False
-"Architecture Teachers, Postsecondary",agentic_confirmed,67.45,-3.84,7,moderate,False
-Archivists,agentic_confirmed,66.13,-2.06,8,high,False
-"Area, Ethnic, and Cultural Studies Teachers, Postsecondary",agentic_confirmed,65.79,-2.57,7,moderate,False
-Art Directors,agentic_confirmed,47.48,-2.80,7,moderate,False
-Art Therapists,agentic_confirmed,18.27,-4.67,4,moderate,False
-"Art, Drama, and Music Teachers, Postsecondary",agentic_confirmed,61.48,-3.58,7,moderate,False
-Astronomers,agentic_confirmed,60.83,-5.56,7,moderate,False
-Athletes and Sports Competitors,agentic_confirmed,10.60,-0.57,4,moderate,False
-Athletic Trainers,agentic_confirmed,26.52,-2.65,3,low,False
-Atmospheric and Space Scientists,agentic_confirmed,60.68,-3.85,7,moderate,False
-"Atmospheric, Earth, Marine, and Space Sciences Teachers, Postsecondary",agentic_confirmed,62.84,-4.46,8,high,False
-Audio and Video Technicians,agentic_confirmed,38.20,-0.82,9,high,False
-Audiologists,agentic_confirmed,7.48,-4.00,3,low,False
-Audiovisual Equipment Installers and Repairers,agentic_confirmed,20.36,-1.06,4,moderate,False
-Automotive Body and Related Repairers,agentic_confirmed,1.89,-0.67,4,moderate,False
-Automotive Engineering Technicians,agentic_confirmed,49.34,-1.75,6,moderate,False
-Automotive Engineers,agentic_confirmed,36.40,-5.06,5,moderate,False
-Automotive Glass Installers and Repairers,agentic_confirmed,0.00,-1.00,4,moderate,False
-Automotive Service Technicians and Mechanics,agentic_confirmed,16.32,-2.47,3,low,False
-Automotive and Watercraft Service Attendants,agentic_confirmed,17.94,-0.91,4,moderate,False
-Aviation Inspectors,agentic_confirmed,11.70,-3.83,2,low,False
-Avionics Technicians,agentic_confirmed,21.48,-2.53,3,low,False
-Baggage Porters and Bellhops,agentic_confirmed,26.63,-0.95,3,low,False
-Bailiffs,agentic_confirmed,30.25,-0.40,9,moderate,True
-Bakers,agentic_confirmed,22.57,0.56,7,moderate,False
-Barbers,agentic_confirmed,16.87,1.09,4,moderate,False
-Baristas,agentic_confirmed,34.95,2.56,10,high,False
-Bartenders,agentic_confirmed,21.38,1.11,6,moderate,False
-Bicycle Repairers,agentic_confirmed,7.47,-1.41,3,low,False
-Bill and Account Collectors,agentic_confirmed,71.60,0.37,11,high,False
-Billing and Posting Clerks,agentic_confirmed,63.23,0.66,11,high,False
-Biochemists and Biophysicists,agentic_confirmed,38.29,-6.45,7,moderate,False
-Bioengineers and Biomedical Engineers,agentic_confirmed,36.46,-4.85,5,moderate,False
-Biofuels Processing Technicians,agentic_confirmed,30.95,-2.17,5,moderate,False
-Biofuels Production Managers,agentic_confirmed,18.20,-2.24,0,low,False
-Biofuels/Biodiesel Technology and Product Development Managers,agentic_confirmed,7.44,-2.50,1,low,False
-Bioinformatics Scientists,agentic_confirmed,71.60,-4.69,7,moderate,False
-Bioinformatics Technicians,agentic_confirmed,84.45,-3.65,7,moderate,False
-"Biological Science Teachers, Postsecondary",agentic_confirmed,58.09,-4.07,7,moderate,False
-Biological Technicians,agentic_confirmed,60.72,-1.60,10,high,False
-Biologists,agentic_confirmed,46.67,-3.88,7,moderate,False
-Biomass Plant Technicians,agentic_confirmed,18.60,-0.63,3,low,False
-Biomass Power Plant Managers,agentic_confirmed,30.17,-2.87,4,moderate,False
-Biostatisticians,agentic_confirmed,68.03,-4.42,7,moderate,False
-Blockchain Engineers,agentic_confirmed,58.08,,3,low,False
-Boilermakers,agentic_confirmed,14.97,-1.69,6,moderate,False
-"Bookkeeping, Accounting, and Auditing Clerks",agentic_confirmed,81.83,0.52,11,high,False
-Brickmasons and Blockmasons,agentic_confirmed,13.65,-1.37,5,moderate,False
-Bridge and Lock Tenders,agentic_confirmed,22.87,0.16,6,moderate,False
-Broadcast Announcers and Radio Disc Jockeys,agentic_confirmed,50.39,-2.39,5,moderate,False
-Broadcast Technicians,agentic_confirmed,52.59,-1.41,9,high,False
-Brokerage Clerks,agentic_confirmed,74.02,0.28,11,high,False
-Brownfield Redevelopment Specialists and Site Managers,agentic_confirmed,19.55,-2.94,3,low,False
-Budget Analysts,agentic_confirmed,46.46,-1.54,7,moderate,False
-"Bus Drivers, School",agentic_confirmed,13.35,-0.75,4,moderate,False
-"Bus Drivers, Transit and Intercity",agentic_confirmed,24.26,-1.70,4,moderate,False
-Bus and Truck Mechanics and Diesel Engine Specialists,agentic_confirmed,9.72,-2.82,1,low,False
-Business Continuity Planners,agentic_confirmed,44.84,-3.09,7,moderate,False
-Business Intelligence Analysts,agentic_confirmed,95.53,-1.88,7,moderate,False
-"Business Teachers, Postsecondary",agentic_confirmed,59.08,-3.70,7,moderate,False
-Butchers and Meat Cutters,agentic_confirmed,8.91,0.23,4,moderate,False
-"Buyers and Purchasing Agents, Farm Products",agentic_confirmed,50.35,-0.91,7,moderate,False
-Cabinetmakers and Bench Carpenters,agentic_confirmed,4.76,-2.44,2,low,False
-Calibration Technologists and Technicians,agentic_confirmed,13.57,,2,low,False
-"Camera Operators, Television, Video, and Film",agentic_confirmed,29.73,-0.61,9,moderate,True
-Camera and Photographic Equipment Repairers,agentic_confirmed,18.23,-1.38,6,moderate,False
-"Captains, Mates, and Pilots of Water Vessels",agentic_confirmed,22.70,-2.16,2,low,False
-Cardiologists,agentic_confirmed,12.49,,1,low,False
-Cardiovascular Technologists and Technicians,agentic_confirmed,20.36,-1.17,7,moderate,False
-"Career/Technical Education Teachers, Middle School",agentic_confirmed,43.04,-1.50,9,high,False
-"Career/Technical Education Teachers, Postsecondary",agentic_confirmed,25.10,-1.55,6,moderate,False
-"Career/Technical Education Teachers, Secondary School",agentic_confirmed,34.70,-2.54,7,moderate,False
-Cargo and Freight Agents,agentic_confirmed,58.77,0.59,10,high,False
-Carpenters,agentic_confirmed,9.98,-1.77,1,low,False
-Carpet Installers,agentic_confirmed,11.37,-0.63,4,moderate,False
-Cartographers and Photogrammetrists,agentic_confirmed,52.19,-1.47,9,high,False
-Cashiers,agentic_confirmed,64.62,3.04,10,high,False
-Cement Masons and Concrete Finishers,agentic_confirmed,9.55,0.09,3,low,False
-Chefs and Head Cooks,agentic_confirmed,29.19,-2.11,7,moderate,False
-Chemical Engineers,agentic_confirmed,35.38,-5.52,3,low,False
-Chemical Equipment Operators and Tenders,agentic_confirmed,13.29,-1.83,2,low,False
-Chemical Plant and System Operators,agentic_confirmed,9.23,-1.85,1,low,False
-Chemical Technicians,agentic_confirmed,45.08,-0.88,8,high,False
-"Chemistry Teachers, Postsecondary",agentic_confirmed,53.82,-4.55,7,moderate,False
-Chemists,agentic_confirmed,40.87,-3.27,5,moderate,False
-Chief Executives,agentic_confirmed,54.66,-5.69,7,moderate,False
-Chief Sustainability Officers,agentic_confirmed,15.16,-2.80,2,low,False
-"Child, Family, and School Social Workers",agentic_confirmed,25.94,-3.56,3,low,False
-Childcare Workers,agentic_confirmed,23.72,1.92,8,moderate,True
-Chiropractors,agentic_confirmed,28.75,-2.65,7,moderate,False
-Choreographers,agentic_confirmed,15.98,-2.27,6,moderate,False
-Civil Engineering Technologists and Technicians,agentic_confirmed,38.59,-1.70,7,moderate,False
-Civil Engineers,agentic_confirmed,37.41,-4.62,5,moderate,False
-"Claims Adjusters, Examiners, and Investigators",agentic_confirmed,25.51,-2.06,1,low,False
-Cleaners of Vehicles and Equipment,agentic_confirmed,3.65,-0.23,4,moderate,False
-"Cleaning, Washing, and Metal Pickling Equipment Operators and Tenders",agentic_confirmed,15.46,-1.75,2,low,False
-Clergy,agentic_confirmed,47.96,-4.37,6,moderate,False
-Climate Change Policy Analysts,agentic_confirmed,29.81,-2.15,5,moderate,False
-Clinical Data Managers,agentic_confirmed,69.68,-1.62,9,high,False
-Clinical Neuropsychologists,agentic_confirmed,10.21,-5.79,2,low,False
-Clinical Nurse Specialists,agentic_confirmed,36.23,-4.66,7,moderate,False
-Clinical Research Coordinators,agentic_confirmed,50.00,-2.06,7,moderate,False
-Clinical and Counseling Psychologists,agentic_confirmed,21.14,-6.21,3,low,False
-Coaches and Scouts,agentic_confirmed,45.28,-2.72,8,high,False
-"Coating, Painting, and Spraying Machine Setters, Operators, and Tenders",agentic_confirmed,7.82,-3.68,2,low,False
-"Coil Winders, Tapers, and Finishers",agentic_confirmed,17.66,-0.91,6,moderate,False
-"Coin, Vending, and Amusement Machine Servicers and Repairers",agentic_confirmed,30.49,-1.30,6,moderate,False
-Commercial Divers,agentic_confirmed,2.10,-2.52,2,low,False
-Commercial Pilots,agentic_confirmed,26.68,-3.59,5,moderate,False
-Commercial and Industrial Designers,agentic_confirmed,41.05,-3.00,3,low,False
-"Communications Teachers, Postsecondary",agentic_confirmed,65.30,-3.13,7,moderate,False
-Community Health Workers,agentic_confirmed,29.79,-2.24,7,moderate,False
-Compensation and Benefits Managers,agentic_confirmed,48.25,-2.07,7,moderate,False
-"Compensation, Benefits, and Job Analysis Specialists",agentic_confirmed,45.36,-1.13,10,high,False
-Compliance Managers,agentic_confirmed,52.79,-3.29,7,moderate,False
-Compliance Officers,agentic_confirmed,37.30,-0.96,6,moderate,False
-Computer Hardware Engineers,agentic_confirmed,57.79,-4.33,5,moderate,False
-Computer Network Architects,agentic_confirmed,75.38,-2.30,7,moderate,False
-Computer Network Support Specialists,agentic_confirmed,88.60,-1.33,7,moderate,False
-Computer Numerically Controlled Tool Operators,agentic_confirmed,36.18,-2.13,5,moderate,False
-Computer Numerically Controlled Tool Programmers,agentic_confirmed,46.43,-1.37,7,moderate,False
-Computer Programmers,agentic_confirmed,83.53,-1.00,7,moderate,False
-"Computer Science Teachers, Postsecondary",agentic_confirmed,57.81,-3.22,7,moderate,False
-Computer Systems Analysts,agentic_confirmed,79.94,-2.26,6,moderate,False
-Computer Systems Engineers/Architects,agentic_confirmed,76.98,-2.68,6,moderate,False
-Computer User Support Specialists,agentic_confirmed,83.22,-1.86,6,moderate,False
-Computer and Information Research Scientists,agentic_confirmed,70.11,-3.64,5,moderate,False
-Computer and Information Systems Managers,agentic_confirmed,72.50,-2.28,7,moderate,False
-"Computer, Automated Teller, and Office Machine Repairers",agentic_confirmed,47.47,-0.78,9,high,False
-Concierges,agentic_confirmed,71.05,-0.70,7,moderate,False
-Conservation Scientists,agentic_confirmed,10.35,-1.23,6,moderate,False
-Construction Laborers,agentic_confirmed,5.04,-2.96,2,low,False
-Construction Managers,agentic_confirmed,44.59,-3.91,5,moderate,False
-Construction and Building Inspectors,agentic_confirmed,32.43,-1.54,8,moderate,True
-Continuous Mining Machine Operators,agentic_confirmed,7.41,-3.09,1,low,False
-"Control and Valve Installers and Repairers, Except Mechanical Door",agentic_confirmed,15.09,-1.10,4,moderate,False
-Conveyor Operators and Tenders,agentic_confirmed,28.56,-0.96,8,moderate,True
-"Cooks, Fast Food",agentic_confirmed,10.95,2.36,4,moderate,False
-"Cooks, Institution and Cafeteria",agentic_confirmed,14.76,0.42,4,moderate,False
-"Cooks, Private Household",agentic_confirmed,12.86,0.42,4,moderate,False
-"Cooks, Restaurant",agentic_confirmed,10.21,0.74,4,moderate,False
-"Cooks, Short Order",agentic_confirmed,17.82,0.80,4,moderate,False
-Cooling and Freezing Equipment Operators and Tenders,agentic_confirmed,14.51,-0.54,4,moderate,False
-Coroners,agentic_confirmed,9.10,-3.11,4,moderate,False
-Correctional Officers and Jailers,agentic_confirmed,16.42,-1.35,3,low,False
-Correspondence Clerks,agentic_confirmed,66.97,-0.51,9,high,False
-Cost Estimators,agentic_confirmed,47.04,-1.61,7,moderate,False
-Costume Attendants,agentic_confirmed,18.82,1.53,6,moderate,False
-Counter and Rental Clerks,agentic_confirmed,77.02,1.54,10,high,False
-Couriers and Messengers,agentic_confirmed,37.24,1.45,8,high,False
-Court Reporters and Simultaneous Captioners,agentic_confirmed,55.37,-1.30,9,high,False
-"Court, Municipal, and License Clerks",agentic_confirmed,60.55,-0.84,10,high,False
-Craft Artists,agentic_confirmed,43.06,0.74,9,high,False
-Crane and Tower Operators,agentic_confirmed,9.39,-1.79,1,low,False
-Credit Analysts,agentic_confirmed,76.52,-2.01,7,moderate,False
-"Credit Authorizers, Checkers, and Clerks",agentic_confirmed,50.64,0.75,8,high,False
-Credit Counselors,agentic_confirmed,59.23,-1.09,10,high,False
-Crematory Operators,agentic_confirmed,5.55,,2,low,False
-"Criminal Justice and Law Enforcement Teachers, Postsecondary",agentic_confirmed,66.91,-3.81,7,moderate,False
-Critical Care Nurses,agentic_confirmed,15.03,-3.85,3,low,False
-Crossing Guards and Flaggers,agentic_confirmed,7.55,2.41,6,moderate,False
-"Crushing, Grinding, and Polishing Machine Setters, Operators, and Tenders",agentic_confirmed,15.24,-0.71,4,moderate,False
-Curators,agentic_confirmed,72.95,-2.46,7,moderate,False
-Customer Service Representatives,agentic_confirmed,81.55,0.34,11,high,False
-Customs Brokers,agentic_confirmed,54.69,-0.98,9,high,False
-Customs and Border Protection Officers,agentic_confirmed,20.34,-1.42,5,moderate,False
-"Cutters and Trimmers, Hand",agentic_confirmed,10.83,-0.76,4,moderate,False
-"Cutting and Slicing Machine Setters, Operators, and Tenders",agentic_confirmed,25.91,-2.00,4,moderate,False
-"Cutting, Punching, and Press Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,14.21,-0.34,4,moderate,False
-Cytogenetic Technologists,agentic_confirmed,24.38,-1.18,7,moderate,False
-Cytotechnologists,agentic_confirmed,36.71,-1.03,9,high,False
-Dancers,agentic_confirmed,1.60,-3.13,3,low,False
-Data Entry Keyers,agentic_confirmed,72.99,-0.88,9,high,False
-Data Scientists,agentic_confirmed,72.55,,3,low,False
-Data Warehousing Specialists,agentic_confirmed,91.40,-0.56,7,moderate,False
-Database Administrators,agentic_confirmed,83.05,-1.74,9,high,False
-Database Architects,agentic_confirmed,77.52,-2.40,5,moderate,False
-Demonstrators and Product Promoters,agentic_confirmed,46.85,0.47,9,high,False
-Dental Assistants,agentic_confirmed,33.83,0.19,10,high,False
-Dental Hygienists,agentic_confirmed,20.23,-1.59,5,moderate,False
-Dental Laboratory Technicians,agentic_confirmed,10.05,-0.01,5,moderate,False
-"Dentists, General",agentic_confirmed,25.35,-3.93,5,moderate,False
-Dermatologists,agentic_confirmed,10.32,-3.80,4,moderate,False
-"Derrick Operators, Oil and Gas",agentic_confirmed,2.91,-2.08,2,low,False
-Desktop Publishers,agentic_confirmed,75.51,-1.09,11,high,False
-Detectives and Criminal Investigators,agentic_confirmed,25.96,-3.20,6,moderate,False
-Diagnostic Medical Sonographers,agentic_confirmed,29.27,-1.04,9,moderate,True
-Dietetic Technicians,agentic_confirmed,49.36,-0.56,10,high,False
-Dietitians and Nutritionists,agentic_confirmed,44.78,-3.48,7,moderate,False
-Digital Forensics Analysts,agentic_confirmed,51.50,,3,low,False
-Dining Room and Cafeteria Attendants and Bartender Helpers,agentic_confirmed,9.62,1.72,4,moderate,False
-"Directors, Religious Activities and Education",agentic_confirmed,34.65,-2.11,6,moderate,False
-"Disc Jockeys, Except Radio",agentic_confirmed,29.17,,4,moderate,False
-Dishwashers,agentic_confirmed,0.00,1.62,4,moderate,False
-"Dispatchers, Except Police, Fire, and Ambulance",agentic_confirmed,74.21,-1.13,11,high,False
-Document Management Specialists,agentic_confirmed,84.84,-1.08,9,high,False
-"Door-to-Door Sales Workers, News and Street Vendors, and Related Workers",agentic_confirmed,44.50,0.75,8,high,False
-Dredge Operators,agentic_confirmed,10.32,-2.28,2,low,False
-"Drilling and Boring Machine Tool Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,6.48,-1.30,4,moderate,False
-Driver/Sales Workers,agentic_confirmed,46.49,0.87,8,high,False
-Drywall and Ceiling Tile Installers,agentic_confirmed,14.34,-0.51,5,moderate,False
-"Earth Drillers, Except Oil and Gas",agentic_confirmed,8.49,-2.04,2,low,False
-"Economics Teachers, Postsecondary",agentic_confirmed,68.81,-4.46,7,moderate,False
-Economists,agentic_confirmed,67.88,-4.30,8,high,False
-Editors,agentic_confirmed,56.68,-2.40,8,high,False
-"Education Administrators, Kindergarten through Secondary",agentic_confirmed,24.71,-5.23,3,low,False
-"Education Administrators, Postsecondary",agentic_confirmed,30.45,-3.60,5,moderate,False
-"Education Teachers, Postsecondary",agentic_confirmed,75.79,-4.09,7,moderate,False
-"Education and Childcare Administrators, Preschool and Daycare",agentic_confirmed,24.92,-2.25,3,low,False
-"Educational, Guidance, and Career Counselors and Advisors",agentic_confirmed,21.21,-2.72,3,low,False
-"Electric Motor, Power Tool, and Related Repairers",agentic_confirmed,14.00,-2.16,2,low,False
-Electrical Engineers,agentic_confirmed,44.17,-3.46,5,moderate,False
-Electrical Power-Line Installers and Repairers,agentic_confirmed,9.42,-1.92,1,low,False
-Electrical and Electronic Engineering Technologists and Technicians,agentic_confirmed,31.35,-1.73,6,moderate,False
-Electrical and Electronic Equipment Assemblers,agentic_confirmed,25.97,-0.24,6,moderate,False
-Electrical and Electronics Drafters,agentic_confirmed,43.59,-1.12,9,high,False
-"Electrical and Electronics Installers and Repairers, Transportation Equipment",agentic_confirmed,23.79,-1.52,6,moderate,False
-"Electrical and Electronics Repairers, Commercial and Industrial Equipment",agentic_confirmed,35.79,-2.48,5,moderate,False
-"Electrical and Electronics Repairers, Powerhouse, Substation, and Relay",agentic_confirmed,32.48,-2.40,6,moderate,False
-Electricians,agentic_confirmed,22.14,-1.92,4,moderate,False
-Electro-Mechanical and Mechatronics Technologists and Technicians,agentic_confirmed,23.97,-2.44,3,low,False
-Electromechanical Equipment Assemblers,agentic_confirmed,14.07,-0.11,6,moderate,False
-"Electronic Equipment Installers and Repairers, Motor Vehicles",agentic_confirmed,26.68,-1.40,6,moderate,False
-"Electronics Engineers, Except Computer",agentic_confirmed,50.66,-4.10,5,moderate,False
-"Elementary School Teachers, Except Special Education",agentic_confirmed,44.41,-2.21,7,moderate,False
-Elevator and Escalator Installers and Repairers,agentic_confirmed,13.04,-2.31,1,low,False
-"Eligibility Interviewers, Government Programs",agentic_confirmed,61.24,-1.38,10,high,False
-Embalmers,agentic_confirmed,7.49,-0.59,6,moderate,False
-Emergency Management Directors,agentic_confirmed,21.71,-4.53,2,low,False
-Emergency Medical Technicians,agentic_confirmed,6.41,,2,low,False
-Emergency Medicine Physicians,agentic_confirmed,15.40,-6.53,2,low,False
-Endoscopy Technicians,agentic_confirmed,1.49,-0.15,4,moderate,False
-Energy Auditors,agentic_confirmed,36.75,-1.13,8,high,False
-"Energy Engineers, Except Wind and Solar",agentic_confirmed,31.54,-3.35,3,low,False
-Engine and Other Machine Assemblers,agentic_confirmed,9.61,-1.66,4,moderate,False
-"Engineering Teachers, Postsecondary",agentic_confirmed,61.28,-5.52,7,moderate,False
-"English Language and Literature Teachers, Postsecondary",agentic_confirmed,70.73,-3.54,7,moderate,False
-"Entertainment and Recreation Managers, Except Gambling",agentic_confirmed,45.20,-1.01,10,high,False
-Environmental Compliance Inspectors,agentic_confirmed,32.84,-2.43,3,low,False
-Environmental Economists,agentic_confirmed,37.19,-3.80,8,high,False
-Environmental Engineering Technologists and Technicians,agentic_confirmed,36.75,-1.73,6,moderate,False
-Environmental Engineers,agentic_confirmed,19.01,-3.84,3,low,False
-Environmental Restoration Planners,agentic_confirmed,6.67,-2.78,3,low,False
-"Environmental Science Teachers, Postsecondary",agentic_confirmed,62.31,-3.56,7,moderate,False
-"Environmental Science and Protection Technicians, Including Health",agentic_confirmed,22.48,-0.97,4,moderate,False
-"Environmental Scientists and Specialists, Including Health",agentic_confirmed,39.81,-2.05,7,moderate,False
-Epidemiologists,agentic_confirmed,28.29,-4.83,7,moderate,False
-Equal Opportunity Representatives and Officers,agentic_confirmed,26.85,-3.21,7,moderate,False
-Etchers and Engravers,agentic_confirmed,18.22,-0.46,5,moderate,False
-"Excavating and Loading Machine and Dragline Operators, Surface Mining",agentic_confirmed,0.98,-2.82,2,low,False
-Executive Secretaries and Executive Administrative Assistants,agentic_confirmed,83.07,-1.15,9,high,False
-Exercise Physiologists,agentic_confirmed,46.13,-2.47,7,moderate,False
-Exercise Trainers and Group Fitness Instructors,agentic_confirmed,12.99,-1.52,6,moderate,False
-"Explosives Workers, Ordnance Handling Experts, and Blasters",agentic_confirmed,11.02,-2.31,2,low,False
-"Extruding and Drawing Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,8.04,-1.17,4,moderate,False
-"Extruding and Forming Machine Setters, Operators, and Tenders, Synthetic and Glass Fibers",agentic_confirmed,18.18,-0.31,4,moderate,False
-"Extruding, Forming, Pressing, and Compacting Machine Setters, Operators, and Tenders",agentic_confirmed,15.39,-1.25,4,moderate,False
-Fabric and Apparel Patternmakers,agentic_confirmed,32.55,-0.98,6,moderate,False
-Facilities Managers,agentic_confirmed,37.30,-1.41,10,high,False
-Fallers,agentic_confirmed,2.23,-2.94,1,low,False
-Family Medicine Physicians,agentic_confirmed,11.05,-5.12,3,low,False
-"Family and Consumer Sciences Teachers, Postsecondary",agentic_confirmed,31.00,-2.16,7,moderate,False
-Farm Equipment Mechanics and Service Technicians,agentic_confirmed,14.01,-2.79,2,low,False
-Farm Labor Contractors,agentic_confirmed,21.42,0.38,5,moderate,False
-Farm and Home Management Educators,agentic_confirmed,33.33,-3.29,5,moderate,False
-"Farmers, Ranchers, and Other Agricultural Managers",agentic_confirmed,14.74,-2.08,3,low,False
-"Farmworkers and Laborers, Crop, Nursery, and Greenhouse",agentic_confirmed,8.41,-2.15,1,low,False
-"Farmworkers, Farm, Ranch, and Aquacultural Animals",agentic_confirmed,3.55,0.12,4,moderate,False
-Fashion Designers,agentic_confirmed,43.58,-0.73,11,high,False
-Fast Food and Counter Workers,agentic_confirmed,14.90,2.70,4,moderate,False
-Fence Erectors,agentic_confirmed,3.06,-0.30,4,moderate,False
-Fiberglass Laminators and Fabricators,agentic_confirmed,0.00,0.03,4,moderate,False
-File Clerks,agentic_confirmed,69.15,0.52,7,moderate,False
-Film and Video Editors,agentic_confirmed,71.41,-0.97,10,high,False
-Financial Examiners,agentic_confirmed,23.46,-3.06,5,moderate,False
-Financial Managers,agentic_confirmed,49.83,-3.11,7,moderate,False
-Financial Quantitative Analysts,agentic_confirmed,81.97,-3.91,7,moderate,False
-Financial Risk Specialists,agentic_confirmed,59.45,,3,low,False
-Financial and Investment Analysts,agentic_confirmed,55.19,,5,moderate,False
-"Fine Artists, Including Painters, Sculptors, and Illustrators",agentic_confirmed,62.68,-0.24,11,high,False
-Fire Inspectors and Investigators,agentic_confirmed,15.76,-2.75,4,moderate,False
-Fire-Prevention and Protection Engineers,agentic_confirmed,16.01,-4.43,1,low,False
-Firefighters,agentic_confirmed,3.22,-3.50,2,low,False
-First-Line Supervisors of Construction Trades and Extraction Workers,agentic_confirmed,52.85,-1.33,8,high,False
-First-Line Supervisors of Correctional Officers,agentic_confirmed,22.29,-2.86,3,low,False
-"First-Line Supervisors of Entertainment and Recreation Workers, Except Gambling Services",agentic_confirmed,29.00,,4,moderate,False
-"First-Line Supervisors of Farming, Fishing, and Forestry Workers",agentic_confirmed,14.49,-0.90,5,moderate,False
-First-Line Supervisors of Firefighting and Prevention Workers,agentic_confirmed,16.15,-3.08,2,low,False
-First-Line Supervisors of Food Preparation and Serving Workers,agentic_confirmed,36.60,0.24,11,high,False
-First-Line Supervisors of Gambling Services Workers,agentic_confirmed,21.89,-0.65,6,moderate,False
-"First-Line Supervisors of Helpers, Laborers, and Material Movers, Hand",agentic_confirmed,33.29,-0.03,8,high,False
-First-Line Supervisors of Housekeeping and Janitorial Workers,agentic_confirmed,36.21,0.35,10,high,False
-"First-Line Supervisors of Landscaping, Lawn Service, and Groundskeeping Workers",agentic_confirmed,27.54,-1.23,5,moderate,False
-First-Line Supervisors of Material-Moving Machine and Vehicle Operators,agentic_confirmed,22.90,-2.24,7,moderate,False
-"First-Line Supervisors of Mechanics, Installers, and Repairers",agentic_confirmed,33.43,-2.07,6,moderate,False
-First-Line Supervisors of Non-Retail Sales Workers,agentic_confirmed,69.68,-1.34,9,high,False
-First-Line Supervisors of Office and Administrative Support Workers,agentic_confirmed,63.21,-1.63,10,high,False
-First-Line Supervisors of Passenger Attendants,agentic_confirmed,12.64,,2,low,False
-First-Line Supervisors of Personal Service Workers,agentic_confirmed,34.22,-1.82,8,high,False
-First-Line Supervisors of Police and Detectives,agentic_confirmed,25.56,-3.79,4,moderate,False
-First-Line Supervisors of Production and Operating Workers,agentic_confirmed,26.86,-1.06,6,moderate,False
-First-Line Supervisors of Retail Sales Workers,agentic_confirmed,68.69,-0.23,11,high,False
-First-Line Supervisors of Security Workers,agentic_confirmed,35.99,-3.22,8,high,False
-Fish and Game Wardens,agentic_confirmed,3.07,-2.07,0,low,False
-Fishing and Hunting Workers,agentic_confirmed,0.82,0.54,3,low,False
-Fitness and Wellness Coordinators,agentic_confirmed,47.46,-1.56,8,high,False
-Flight Attendants,agentic_confirmed,12.18,-1.31,4,moderate,False
-"Floor Layers, Except Carpet, Wood, and Hard Tiles",agentic_confirmed,4.15,-0.01,4,moderate,False
-Floor Sanders and Finishers,agentic_confirmed,0.00,-2.09,2,low,False
-Floral Designers,agentic_confirmed,17.42,0.57,3,low,False
-Food Batchmakers,agentic_confirmed,17.23,-0.25,6,moderate,False
-Food Cooking Machine Operators and Tenders,agentic_confirmed,22.56,-0.90,5,moderate,False
-Food Preparation Workers,agentic_confirmed,9.19,3.37,4,moderate,False
-Food Science Technicians,agentic_confirmed,37.74,-0.34,9,high,False
-Food Scientists and Technologists,agentic_confirmed,36.76,-2.80,5,moderate,False
-"Food Servers, Nonrestaurant",agentic_confirmed,20.94,2.51,6,moderate,False
-Food Service Managers,agentic_confirmed,36.47,-0.55,11,high,False
-"Food and Tobacco Roasting, Baking, and Drying Machine Operators and Tenders",agentic_confirmed,20.76,-0.24,5,moderate,False
-"Foreign Language and Literature Teachers, Postsecondary",agentic_confirmed,69.54,-3.03,7,moderate,False
-Forensic Science Technicians,agentic_confirmed,28.62,-1.85,9,moderate,True
-Forest Fire Inspectors and Prevention Specialists,agentic_confirmed,35.42,-1.28,7,moderate,False
-Forest and Conservation Technicians,agentic_confirmed,14.91,-0.22,5,moderate,False
-Forest and Conservation Workers,agentic_confirmed,4.63,0.96,3,low,False
-Foresters,agentic_confirmed,1.80,-1.99,3,low,False
-"Forestry and Conservation Science Teachers, Postsecondary",agentic_confirmed,63.78,-3.53,7,moderate,False
-"Forging Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,5.73,-0.96,4,moderate,False
-Foundry Mold and Coremakers,agentic_confirmed,1.73,-0.58,4,moderate,False
-"Fraud Examiners, Investigators and Analysts",agentic_confirmed,54.26,-2.73,7,moderate,False
-Freight Forwarders,agentic_confirmed,57.71,-0.66,9,high,False
-Fuel Cell Engineers,agentic_confirmed,27.11,-4.11,3,low,False
-Fundraisers,agentic_confirmed,52.93,-1.82,8,high,False
-Fundraising Managers,agentic_confirmed,40.97,-2.14,7,moderate,False
-Funeral Attendants,agentic_confirmed,22.68,0.88,8,moderate,True
-Funeral Home Managers,agentic_confirmed,28.12,-1.11,7,moderate,False
-"Furnace, Kiln, Oven, Drier, and Kettle Operators and Tenders",agentic_confirmed,29.74,-1.26,7,moderate,False
-Furniture Finishers,agentic_confirmed,0.62,-0.66,4,moderate,False
-Gambling Cage Workers,agentic_confirmed,40.31,1.59,10,high,False
-Gambling Change Persons and Booth Cashiers,agentic_confirmed,43.48,1.59,8,high,False
-Gambling Dealers,agentic_confirmed,44.68,0.79,10,high,False
-Gambling Managers,agentic_confirmed,17.17,-2.18,4,moderate,False
-Gambling Surveillance Officers and Gambling Investigators,agentic_confirmed,48.07,-0.60,10,high,False
-Gambling and Sports Book Writers and Runners,agentic_confirmed,44.66,0.89,8,high,False
-Gas Compressor and Gas Pumping Station Operators,agentic_confirmed,51.14,-1.41,8,high,False
-Gas Plant Operators,agentic_confirmed,23.03,-1.26,4,moderate,False
-Gem and Diamond Workers,agentic_confirmed,5.44,0.05,4,moderate,False
-General Internal Medicine Physicians,agentic_confirmed,10.88,-4.58,3,low,False
-General and Operations Managers,agentic_confirmed,42.36,-2.12,7,moderate,False
-Genetic Counselors,agentic_confirmed,32.13,-3.61,7,moderate,False
-Geneticists,agentic_confirmed,54.15,-4.84,7,moderate,False
-Geodetic Surveyors,agentic_confirmed,48.95,-2.78,7,moderate,False
-Geographers,agentic_confirmed,54.80,-3.28,8,high,False
-Geographic Information Systems Technologists and Technicians,agentic_confirmed,69.16,-1.18,8,high,False
-"Geography Teachers, Postsecondary",agentic_confirmed,65.66,-3.45,8,high,False
-"Geological Technicians, Except Hydrologic Technicians",agentic_confirmed,26.24,-0.05,6,moderate,False
-"Geoscientists, Except Hydrologists and Geographers",agentic_confirmed,50.21,-3.12,7,moderate,False
-Geothermal Production Managers,agentic_confirmed,23.07,-2.79,1,low,False
-Geothermal Technicians,agentic_confirmed,17.20,-1.74,4,moderate,False
-"Glass Blowers, Molders, Benders, and Finishers",agentic_confirmed,5.26,-1.93,2,low,False
-Glaziers,agentic_confirmed,5.41,-0.52,4,moderate,False
-Government Property Inspectors and Investigators,agentic_confirmed,38.99,-2.82,6,moderate,False
-"Graders and Sorters, Agricultural Products",agentic_confirmed,11.72,1.46,3,low,False
-Graphic Designers,agentic_confirmed,79.92,-1.24,9,high,False
-"Grinding and Polishing Workers, Hand",agentic_confirmed,12.30,-2.58,2,low,False
-"Grinding, Lapping, Polishing, and Buffing Machine Tool Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,9.47,-2.42,2,low,False
-"Hairdressers, Hairstylists, and Cosmetologists",agentic_confirmed,31.97,0.11,10,moderate,True
-Hazardous Materials Removal Workers,agentic_confirmed,15.67,-1.23,6,moderate,False
-Health Education Specialists,agentic_confirmed,24.84,-2.17,4,moderate,False
-Health Informatics Specialists,agentic_confirmed,55.73,-2.71,5,moderate,False
-Health Information Technologists and Medical Registrars,agentic_confirmed,52.44,,6,moderate,False
-"Health Specialties Teachers, Postsecondary",agentic_confirmed,64.98,-3.33,7,moderate,False
-"Health and Safety Engineers, Except Mining Safety Engineers and Inspectors",agentic_confirmed,14.99,-2.06,1,low,False
-Healthcare Social Workers,agentic_confirmed,24.65,-4.68,5,moderate,False
-Hearing Aid Specialists,agentic_confirmed,4.90,-1.41,6,moderate,False
-"Heat Treating Equipment Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,15.27,-2.33,1,low,False
-"Heating, Air Conditioning, and Refrigeration Mechanics and Installers",agentic_confirmed,20.62,-2.50,2,low,False
-Heavy and Tractor-Trailer Truck Drivers,agentic_confirmed,23.08,-1.63,4,moderate,False
-"Helpers--Brickmasons, Blockmasons, Stonemasons, and Tile and Marble Setters",agentic_confirmed,1.08,-1.57,4,moderate,False
-Helpers--Carpenters,agentic_confirmed,1.33,0.03,4,moderate,False
-Helpers--Electricians,agentic_confirmed,2.43,-1.13,4,moderate,False
-Helpers--Extraction Workers,agentic_confirmed,0.00,-2.28,2,low,False
-"Helpers--Installation, Maintenance, and Repair Workers",agentic_confirmed,1.37,-1.62,4,moderate,False
-"Helpers--Painters, Paperhangers, Plasterers, and Stucco Masons",agentic_confirmed,1.96,1.11,4,moderate,False
-"Helpers--Pipelayers, Plumbers, Pipefitters, and Steamfitters",agentic_confirmed,2.32,-1.91,2,low,False
-Helpers--Production Workers,agentic_confirmed,26.56,-1.54,5,moderate,False
-Helpers--Roofers,agentic_confirmed,0.00,-0.53,4,moderate,False
-Highway Maintenance Workers,agentic_confirmed,0.00,-0.95,4,moderate,False
-Histology Technicians,agentic_confirmed,2.02,0.62,5,moderate,False
-Historians,agentic_confirmed,63.22,-2.43,8,high,False
-"History Teachers, Postsecondary",agentic_confirmed,69.29,-3.67,7,moderate,False
-Histotechnologists,agentic_confirmed,2.79,-0.01,4,moderate,False
-Hoist and Winch Operators,agentic_confirmed,19.29,-2.12,4,moderate,False
-Home Appliance Repairers,agentic_confirmed,17.86,-0.90,4,moderate,False
-Home Health Aides,agentic_confirmed,3.59,1.23,6,moderate,False
-Hospitalists,agentic_confirmed,15.41,-5.07,3,low,False
-"Hosts and Hostesses, Restaurant, Lounge, and Coffee Shop",agentic_confirmed,35.85,1.75,10,high,False
-"Hotel, Motel, and Resort Desk Clerks",agentic_confirmed,59.67,0.59,8,high,False
-Human Factors Engineers and Ergonomists,agentic_confirmed,21.38,-3.08,3,low,False
-"Human Resources Assistants, Except Payroll and Timekeeping",agentic_confirmed,89.35,-1.35,11,high,False
-Human Resources Managers,agentic_confirmed,48.41,-4.05,7,moderate,False
-Human Resources Specialists,agentic_confirmed,79.75,-1.85,7,moderate,False
-Hydroelectric Plant Technicians,agentic_confirmed,16.28,-2.82,1,low,False
-Hydroelectric Production Managers,agentic_confirmed,11.17,-2.65,1,low,False
-Hydrologic Technicians,agentic_confirmed,34.67,,6,moderate,False
-Hydrologists,agentic_confirmed,29.76,-3.77,6,moderate,False
-Industrial Ecologists,agentic_confirmed,21.76,-3.12,5,moderate,False
-Industrial Engineering Technologists and Technicians,agentic_confirmed,25.77,-1.81,2,low,False
-Industrial Engineers,agentic_confirmed,35.84,-2.78,3,low,False
-Industrial Machinery Mechanics,agentic_confirmed,20.41,-2.24,1,low,False
-Industrial Production Managers,agentic_confirmed,37.26,-2.86,3,low,False
-Industrial Truck and Tractor Operators,agentic_confirmed,36.13,-0.36,8,high,False
-Industrial-Organizational Psychologists,agentic_confirmed,53.90,-5.70,7,moderate,False
-Information Security Analysts,agentic_confirmed,85.42,-2.06,5,moderate,False
-Information Security Engineers,agentic_confirmed,55.36,-1.90,3,low,False
-Information Technology Project Managers,agentic_confirmed,79.26,-2.23,7,moderate,False
-"Inspectors, Testers, Sorters, Samplers, and Weighers",agentic_confirmed,22.48,-0.40,5,moderate,False
-Instructional Coordinators,agentic_confirmed,45.96,-2.92,7,moderate,False
-"Insulation Workers, Floor, Ceiling, and Wall",agentic_confirmed,9.57,-0.29,4,moderate,False
-"Insulation Workers, Mechanical",agentic_confirmed,16.10,-1.11,6,moderate,False
-"Insurance Appraisers, Auto Damage",agentic_confirmed,15.98,-0.72,3,low,False
-Insurance Claims and Policy Processing Clerks,agentic_confirmed,65.55,0.47,11,high,False
-Insurance Sales Agents,agentic_confirmed,64.91,-0.46,9,high,False
-Insurance Underwriters,agentic_confirmed,48.12,-0.09,9,high,False
-Intelligence Analysts,agentic_confirmed,67.32,-2.43,5,moderate,False
-Interior Designers,agentic_confirmed,44.98,-2.55,8,high,False
-Interpreters and Translators,agentic_confirmed,78.04,-1.32,10,high,False
-"Interviewers, Except Eligibility and Loan",agentic_confirmed,71.36,-0.84,11,high,False
-Investment Fund Managers,agentic_confirmed,86.35,-2.75,7,moderate,False
-"Janitors and Cleaners, Except Maids and Housekeeping Cleaners",agentic_confirmed,5.45,1.94,4,moderate,False
-Jewelers and Precious Stone and Metal Workers,agentic_confirmed,9.19,0.44,6,moderate,False
-"Judges, Magistrate Judges, and Magistrates",agentic_confirmed,15.76,-5.88,4,moderate,False
-Judicial Law Clerks,agentic_confirmed,52.51,-4.36,7,moderate,False
-"Kindergarten Teachers, Except Special Education",agentic_confirmed,27.58,-1.34,9,moderate,True
-Labor Relations Specialists,agentic_confirmed,33.72,-3.14,6,moderate,False
-"Laborers and Freight, Stock, and Material Movers, Hand",agentic_confirmed,16.64,-0.38,4,moderate,False
-Landscape Architects,agentic_confirmed,18.00,-2.82,1,low,False
-Landscaping and Groundskeeping Workers,agentic_confirmed,11.10,-0.67,4,moderate,False
-"Lathe and Turning Machine Tool Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,7.62,-0.97,4,moderate,False
-Laundry and Dry-Cleaning Workers,agentic_confirmed,8.39,2.77,3,low,False
-"Law Teachers, Postsecondary",agentic_confirmed,71.25,-5.92,8,high,False
-Lawyers,agentic_confirmed,35.17,-4.98,7,moderate,False
-"Layout Workers, Metal and Plastic",agentic_confirmed,10.62,-0.20,4,moderate,False
-Legal Secretaries and Administrative Assistants,agentic_confirmed,71.37,-1.66,7,moderate,False
-Legislators,agentic_confirmed,19.02,,2,low,False
-Librarians and Media Collections Specialists,agentic_confirmed,43.28,-1.49,8,high,False
-"Library Assistants, Clerical",agentic_confirmed,46.22,2.13,9,high,False
-"Library Science Teachers, Postsecondary",agentic_confirmed,65.78,-4.51,8,high,False
-Library Technicians,agentic_confirmed,54.19,1.43,10,high,False
-Licensed Practical and Licensed Vocational Nurses,agentic_confirmed,31.85,-1.83,8,moderate,True
-"Lifeguards, Ski Patrol, and Other Recreational Protective Service Workers",agentic_confirmed,11.21,0.04,6,moderate,False
-Light Truck Drivers,agentic_confirmed,20.51,0.79,4,moderate,False
-Lighting Technicians,agentic_confirmed,26.71,,4,moderate,False
-"Loading and Moving Machine Operators, Underground Mining",agentic_confirmed,6.91,-1.41,3,low,False
-Loan Interviewers and Clerks,agentic_confirmed,67.97,-1.10,10,high,False
-Loan Officers,agentic_confirmed,50.16,-1.50,9,high,False
-"Locker Room, Coatroom, and Dressing Room Attendants",agentic_confirmed,15.69,2.42,5,moderate,False
-Locksmiths and Safe Repairers,agentic_confirmed,7.39,-0.46,4,moderate,False
-Locomotive Engineers,agentic_confirmed,8.99,-2.06,2,low,False
-Lodging Managers,agentic_confirmed,61.72,-3.16,8,high,False
-Log Graders and Scalers,agentic_confirmed,17.41,1.13,3,low,False
-Logging Equipment Operators,agentic_confirmed,4.10,-4.38,1,low,False
-Logisticians,agentic_confirmed,53.04,-2.38,7,moderate,False
-Logistics Analysts,agentic_confirmed,74.51,-1.65,7,moderate,False
-Logistics Engineers,agentic_confirmed,60.26,-3.73,5,moderate,False
-Loss Prevention Managers,agentic_confirmed,28.43,-2.97,5,moderate,False
-"Low Vision Therapists, Orientation and Mobility Specialists, and Vision Rehabilitation Therapists",agentic_confirmed,15.78,-2.22,3,low,False
-Machine Feeders and Offbearers,agentic_confirmed,9.81,-1.53,4,moderate,False
-Machinists,agentic_confirmed,20.47,-0.88,5,moderate,False
-Magnetic Resonance Imaging Technologists,agentic_confirmed,23.82,-1.22,7,moderate,False
-Maids and Housekeeping Cleaners,agentic_confirmed,2.76,0.59,4,moderate,False
-"Mail Clerks and Mail Machine Operators, Except Postal Service",agentic_confirmed,32.84,2.01,10,moderate,True
-"Maintenance Workers, Machinery",agentic_confirmed,13.86,-2.44,1,low,False
-"Maintenance and Repair Workers, General",agentic_confirmed,5.63,-2.38,3,low,False
-"Makeup Artists, Theatrical and Performance",agentic_confirmed,0.88,-0.77,6,moderate,False
-Management Analysts,agentic_confirmed,56.90,-2.68,7,moderate,False
-Manicurists and Pedicurists,agentic_confirmed,12.36,1.67,3,low,False
-Manufactured Building and Mobile Home Installers,agentic_confirmed,4.66,-3.13,2,low,False
-Manufacturing Engineers,agentic_confirmed,45.12,-4.88,5,moderate,False
-Marine Engineers and Naval Architects,agentic_confirmed,22.59,-4.16,1,low,False
-Market Research Analysts and Marketing Specialists,agentic_confirmed,91.01,-2.66,7,moderate,False
-Marketing Managers,agentic_confirmed,73.76,-2.49,7,moderate,False
-Marriage and Family Therapists,agentic_confirmed,54.14,-4.96,7,moderate,False
-Massage Therapists,agentic_confirmed,10.20,0.25,5,moderate,False
-Materials Engineers,agentic_confirmed,25.82,-4.05,1,low,False
-Materials Scientists,agentic_confirmed,44.89,-4.32,5,moderate,False
-"Mathematical Science Teachers, Postsecondary",agentic_confirmed,65.45,-4.31,7,moderate,False
-Mathematicians,agentic_confirmed,69.50,-4.95,7,moderate,False
-"Meat, Poultry, and Fish Cutters and Trimmers",agentic_confirmed,4.29,0.11,3,low,False
-Mechanical Door Repairers,agentic_confirmed,11.37,-1.94,2,low,False
-Mechanical Drafters,agentic_confirmed,63.75,-1.79,6,moderate,False
-Mechanical Engineering Technologists and Technicians,agentic_confirmed,37.02,-2.12,5,moderate,False
-Mechanical Engineers,agentic_confirmed,44.07,-3.99,5,moderate,False
-Mechatronics Engineers,agentic_confirmed,45.55,-4.03,5,moderate,False
-Media Programming Directors,agentic_confirmed,27.62,-2.82,6,moderate,False
-Media Technical Directors/Managers,agentic_confirmed,30.24,-2.75,6,moderate,False
-Medical Appliance Technicians,agentic_confirmed,0.00,-1.43,4,moderate,False
-Medical Assistants,agentic_confirmed,51.98,-1.60,11,high,False
-Medical Dosimetrists,agentic_confirmed,31.25,-2.42,4,moderate,False
-Medical Equipment Preparers,agentic_confirmed,8.59,-0.97,4,moderate,False
-Medical Equipment Repairers,agentic_confirmed,27.36,-1.66,7,moderate,False
-Medical Records Specialists,agentic_confirmed,62.50,,6,moderate,False
-"Medical Scientists, Except Epidemiologists",agentic_confirmed,34.02,-5.28,7,moderate,False
-Medical Secretaries and Administrative Assistants,agentic_confirmed,69.57,0.51,9,high,False
-Medical Transcriptionists,agentic_confirmed,79.49,-1.09,10,high,False
-Medical and Clinical Laboratory Technicians,agentic_confirmed,26.53,-0.49,6,moderate,False
-Medical and Clinical Laboratory Technologists,agentic_confirmed,49.26,-3.43,5,moderate,False
-Medical and Health Services Managers,agentic_confirmed,51.43,-3.96,7,moderate,False
-"Meeting, Convention, and Event Planners",agentic_confirmed,67.60,-1.92,6,moderate,False
-Mental Health Counselors,agentic_confirmed,51.41,-6.19,7,moderate,False
-Mental Health and Substance Abuse Social Workers,agentic_confirmed,35.44,-4.31,7,moderate,False
-Merchandise Displayers and Window Trimmers,agentic_confirmed,28.69,0.54,11,moderate,True
-Metal-Refining Furnace Operators and Tenders,agentic_confirmed,15.94,-2.12,1,low,False
-"Meter Readers, Utilities",agentic_confirmed,39.80,1.38,6,moderate,False
-Microbiologists,agentic_confirmed,33.28,-4.06,8,high,False
-Microsystems Engineers,agentic_confirmed,41.36,-4.68,5,moderate,False
-"Middle School Teachers, Except Special and Career/Technical Education",agentic_confirmed,55.33,-1.56,9,high,False
-Midwives,agentic_confirmed,23.01,-3.46,5,moderate,False
-"Milling and Planing Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,14.47,-1.25,4,moderate,False
-Millwrights,agentic_confirmed,3.33,-4.02,1,low,False
-"Mining and Geological Engineers, Including Mining Safety Engineers",agentic_confirmed,24.06,-3.77,1,low,False
-"Mixing and Blending Machine Setters, Operators, and Tenders",agentic_confirmed,17.25,-4.44,4,moderate,False
-"Mobile Heavy Equipment Mechanics, Except Engines",agentic_confirmed,13.31,-2.92,1,low,False
-"Model Makers, Metal and Plastic",agentic_confirmed,20.32,-3.23,2,low,False
-"Model Makers, Wood",agentic_confirmed,17.47,-1.03,6,moderate,False
-Models,agentic_confirmed,4.67,,1,low,False
-"Molders, Shapers, and Casters, Except Metal and Plastic",agentic_confirmed,1.04,-2.08,1,low,False
-"Molding, Coremaking, and Casting Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,12.17,-0.93,4,moderate,False
-Molecular and Cellular Biologists,agentic_confirmed,52.51,-5.66,7,moderate,False
-"Morticians, Undertakers, and Funeral Arrangers",agentic_confirmed,17.71,-0.29,6,moderate,False
-Motion Picture Projectionists,agentic_confirmed,37.16,0.39,6,moderate,False
-Motorboat Mechanics and Service Technicians,agentic_confirmed,6.50,-2.47,2,low,False
-Motorboat Operators,agentic_confirmed,3.05,-3.41,2,low,False
-Motorcycle Mechanics,agentic_confirmed,2.18,-1.65,4,moderate,False
-"Multiple Machine Tool Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,11.12,-1.55,4,moderate,False
-Museum Technicians and Conservators,agentic_confirmed,27.70,-0.08,6,moderate,False
-Music Directors and Composers,agentic_confirmed,42.83,-1.43,9,high,False
-Music Therapists,agentic_confirmed,23.83,-5.17,4,moderate,False
-Musical Instrument Repairers and Tuners,agentic_confirmed,6.86,-2.26,1,low,False
-Musicians and Singers,agentic_confirmed,18.76,-0.89,7,moderate,False
-Nannies,agentic_confirmed,16.15,0.46,6,moderate,False
-Nanosystems Engineers,agentic_confirmed,41.24,-4.99,5,moderate,False
-Nanotechnology Engineering Technologists and Technicians,agentic_confirmed,22.80,-3.53,1,low,False
-Natural Sciences Managers,agentic_confirmed,47.89,-3.66,7,moderate,False
-Naturopathic Physicians,agentic_confirmed,44.19,-4.60,6,moderate,False
-Network and Computer Systems Administrators,agentic_confirmed,84.26,-2.09,5,moderate,False
-Neurodiagnostic Technologists,agentic_confirmed,12.11,-1.23,5,moderate,False
-Neurologists,agentic_confirmed,16.85,-5.90,5,moderate,False
-Neuropsychologists,agentic_confirmed,13.74,-5.56,3,low,False
-New Accounts Clerks,agentic_confirmed,69.87,0.10,10,high,False
-"News Analysts, Reporters, and Journalists",agentic_confirmed,53.04,-1.35,8,high,False
-Non-Destructive Testing Specialists,agentic_confirmed,29.55,-1.87,6,moderate,False
-Nuclear Engineers,agentic_confirmed,18.07,-5.13,1,low,False
-Nuclear Medicine Technologists,agentic_confirmed,32.18,-1.31,9,moderate,True
-Nuclear Monitoring Technicians,agentic_confirmed,20.42,-0.67,4,moderate,False
-Nuclear Power Reactor Operators,agentic_confirmed,32.84,-2.67,3,low,False
-Nuclear Technicians,agentic_confirmed,15.47,-2.25,2,low,False
-Nurse Anesthetists,agentic_confirmed,7.40,-3.92,3,low,False
-Nurse Midwives,agentic_confirmed,31.21,-4.41,7,moderate,False
-Nurse Practitioners,agentic_confirmed,41.69,-3.91,7,moderate,False
-Nursing Assistants,agentic_confirmed,9.23,0.56,6,moderate,False
-"Nursing Instructors and Teachers, Postsecondary",agentic_confirmed,51.27,-4.04,7,moderate,False
-Obstetricians and Gynecologists,agentic_confirmed,45.34,-4.83,6,moderate,False
-Occupational Health and Safety Specialists,agentic_confirmed,27.76,-2.30,5,moderate,False
-Occupational Health and Safety Technicians,agentic_confirmed,20.05,-1.71,4,moderate,False
-Occupational Therapists,agentic_confirmed,18.91,-4.31,5,moderate,False
-Occupational Therapy Aides,agentic_confirmed,21.16,0.05,6,moderate,False
-Occupational Therapy Assistants,agentic_confirmed,7.94,-1.14,7,moderate,False
-"Office Clerks, General",agentic_confirmed,78.37,0.91,11,high,False
-"Office Machine Operators, Except Computer",agentic_confirmed,35.92,1.68,5,moderate,False
-Online Merchants,agentic_confirmed,96.55,-0.15,9,high,False
-Operating Engineers and Other Construction Equipment Operators,agentic_confirmed,6.27,-2.67,1,low,False
-Operations Research Analysts,agentic_confirmed,65.64,-4.11,7,moderate,False
-Ophthalmic Laboratory Technicians,agentic_confirmed,1.39,-0.73,4,moderate,False
-Ophthalmic Medical Technicians,agentic_confirmed,2.14,-0.34,5,moderate,False
-Ophthalmic Medical Technologists,agentic_confirmed,9.80,-0.78,5,moderate,False
-"Ophthalmologists, Except Pediatric",agentic_confirmed,11.04,-4.49,3,low,False
-"Opticians, Dispensing",agentic_confirmed,7.18,-0.78,6,moderate,False
-Optometrists,agentic_confirmed,19.12,-2.75,5,moderate,False
-Oral and Maxillofacial Surgeons,agentic_confirmed,3.89,-5.25,2,low,False
-Order Clerks,agentic_confirmed,72.45,-0.64,11,high,False
-Orderlies,agentic_confirmed,5.50,-0.15,4,moderate,False
-Orthodontists,agentic_confirmed,10.27,-2.50,3,low,False
-"Orthopedic Surgeons, Except Pediatric",agentic_confirmed,11.12,,0,low,False
-Orthoptists,agentic_confirmed,17.32,-2.62,4,moderate,False
-Orthotists and Prosthetists,agentic_confirmed,3.93,-3.57,1,low,False
-Outdoor Power Equipment and Other Small Engine Mechanics,agentic_confirmed,20.14,-1.59,3,low,False
-Packaging and Filling Machine Operators and Tenders,agentic_confirmed,21.45,-0.65,6,moderate,False
-"Packers and Packagers, Hand",agentic_confirmed,12.67,0.57,4,moderate,False
-"Painters, Construction and Maintenance",agentic_confirmed,2.30,1.48,4,moderate,False
-"Painting, Coating, and Decorating Workers",agentic_confirmed,0.00,-0.24,3,low,False
-"Paper Goods Machine Setters, Operators, and Tenders",agentic_confirmed,21.61,0.33,6,moderate,False
-Paperhangers,agentic_confirmed,4.32,-0.66,4,moderate,False
-Paralegals and Legal Assistants,agentic_confirmed,47.45,-1.88,9,high,False
-Paramedics,agentic_confirmed,4.50,,2,low,False
-Park Naturalists,agentic_confirmed,38.63,-1.31,7,moderate,False
-Parking Attendants,agentic_confirmed,9.79,2.48,3,low,False
-Parking Enforcement Workers,agentic_confirmed,27.14,1.60,8,moderate,True
-Parts Salespersons,agentic_confirmed,54.34,-0.50,8,high,False
-Passenger Attendants,agentic_confirmed,33.12,0.33,6,moderate,False
-Patient Representatives,agentic_confirmed,63.92,-1.05,10,high,False
-"Patternmakers, Metal and Plastic",agentic_confirmed,40.25,-0.61,8,high,False
-"Patternmakers, Wood",agentic_confirmed,20.22,-1.52,6,moderate,False
-"Paving, Surfacing, and Tamping Equipment Operators",agentic_confirmed,0.00,-4.36,2,low,False
-Payroll and Timekeeping Clerks,agentic_confirmed,67.62,-1.01,11,high,False
-Pediatric Surgeons,agentic_confirmed,7.63,,0,low,False
-"Pediatricians, General",agentic_confirmed,26.81,-4.52,6,moderate,False
-Penetration Testers,agentic_confirmed,61.45,,3,low,False
-Personal Care Aides,agentic_confirmed,24.51,0.81,8,moderate,True
-Personal Financial Advisors,agentic_confirmed,74.91,-2.67,7,moderate,False
-Pest Control Workers,agentic_confirmed,26.16,0.27,3,low,False
-"Pesticide Handlers, Sprayers, and Applicators, Vegetation",agentic_confirmed,0.00,0.66,3,low,False
-Petroleum Engineers,agentic_confirmed,22.85,-2.35,1,low,False
-"Petroleum Pump System Operators, Refinery Operators, and Gaugers",agentic_confirmed,25.67,-1.62,3,low,False
-Pharmacists,agentic_confirmed,52.14,-3.11,7,moderate,False
-Pharmacy Aides,agentic_confirmed,62.80,2.57,9,high,False
-Pharmacy Technicians,agentic_confirmed,56.86,-0.53,8,high,False
-"Philosophy and Religion Teachers, Postsecondary",agentic_confirmed,74.08,-4.13,8,high,False
-Phlebotomists,agentic_confirmed,14.64,-0.21,8,moderate,True
-Photographers,agentic_confirmed,56.42,-0.85,11,high,False
-Photographic Process Workers and Processing Machine Operators,agentic_confirmed,49.84,0.66,6,moderate,False
-Photonics Engineers,agentic_confirmed,50.71,-5.63,5,moderate,False
-Photonics Technicians,agentic_confirmed,20.87,-1.09,4,moderate,False
-Physical Medicine and Rehabilitation Physicians,agentic_confirmed,2.94,-5.05,4,moderate,False
-Physical Therapist Aides,agentic_confirmed,10.42,0.99,6,moderate,False
-Physical Therapist Assistants,agentic_confirmed,8.41,-1.77,5,moderate,False
-Physical Therapists,agentic_confirmed,26.71,-3.04,6,moderate,False
-Physician Assistants,agentic_confirmed,43.46,-4.94,6,moderate,False
-"Physicians, Pathologists",agentic_confirmed,18.13,-4.36,4,moderate,False
-Physicists,agentic_confirmed,55.04,-7.93,7,moderate,False
-"Physics Teachers, Postsecondary",agentic_confirmed,66.63,-5.16,7,moderate,False
-Pile Driver Operators,agentic_confirmed,6.36,-3.69,1,low,False
-Pipelayers,agentic_confirmed,1.36,-2.36,2,low,False
-Plasterers and Stucco Masons,agentic_confirmed,0.00,-0.28,3,low,False
-"Plating Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,9.08,0.31,4,moderate,False
-"Plumbers, Pipefitters, and Steamfitters",agentic_confirmed,9.97,-2.58,2,low,False
-Podiatrists,agentic_confirmed,4.92,-4.01,2,low,False
-"Poets, Lyricists and Creative Writers",agentic_confirmed,81.10,-2.08,8,high,False
-Police Identification and Records Officers,agentic_confirmed,31.98,-1.27,8,moderate,True
-Police and Sheriff's Patrol Officers,agentic_confirmed,9.48,-2.75,2,low,False
-"Political Science Teachers, Postsecondary",agentic_confirmed,68.63,-3.42,8,high,False
-Political Scientists,agentic_confirmed,48.89,-3.22,8,high,False
-Postal Service Clerks,agentic_confirmed,44.13,1.91,8,high,False
-Postal Service Mail Carriers,agentic_confirmed,32.97,2.33,7,moderate,False
-"Postal Service Mail Sorters, Processors, and Processing Machine Operators",agentic_confirmed,36.92,3.77,10,high,False
-Postmasters and Mail Superintendents,agentic_confirmed,61.07,-1.56,10,high,False
-"Potters, Manufacturing",agentic_confirmed,8.53,-0.89,4,moderate,False
-"Pourers and Casters, Metal",agentic_confirmed,5.09,2.13,3,low,False
-Power Distributors and Dispatchers,agentic_confirmed,33.00,-0.58,6,moderate,False
-Power Plant Operators,agentic_confirmed,19.39,-1.72,6,moderate,False
-Precision Agriculture Technicians,agentic_confirmed,52.19,-1.03,9,high,False
-Prepress Technicians and Workers,agentic_confirmed,46.37,0.80,6,moderate,False
-"Preschool Teachers, Except Special Education",agentic_confirmed,24.05,-0.06,8,moderate,True
-"Pressers, Textile, Garment, and Related Materials",agentic_confirmed,5.02,-0.86,3,low,False
-Preventive Medicine Physicians,agentic_confirmed,13.22,-5.97,4,moderate,False
-Print Binding and Finishing Workers,agentic_confirmed,14.31,0.23,4,moderate,False
-Printing Press Operators,agentic_confirmed,22.71,-3.13,3,low,False
-Private Detectives and Investigators,agentic_confirmed,38.77,-2.07,6,moderate,False
-Probation Officers and Correctional Treatment Specialists,agentic_confirmed,16.28,-2.42,2,low,False
-Procurement Clerks,agentic_confirmed,59.71,-0.31,11,high,False
-Producers and Directors,agentic_confirmed,26.59,-2.34,1,low,False
-"Production, Planning, and Expediting Clerks",agentic_confirmed,52.87,-0.96,9,high,False
-Project Management Specialists,agentic_confirmed,51.06,,3,low,False
-Proofreaders and Copy Markers,agentic_confirmed,48.65,0.25,8,high,False
-"Property, Real Estate, and Community Association Managers",agentic_confirmed,55.23,-1.39,9,high,False
-Prosthodontists,agentic_confirmed,10.45,-2.44,2,low,False
-Psychiatric Aides,agentic_confirmed,18.06,-0.11,8,moderate,True
-Psychiatric Technicians,agentic_confirmed,6.97,-0.81,6,moderate,False
-Psychiatrists,agentic_confirmed,26.40,-5.59,5,moderate,False
-"Psychology Teachers, Postsecondary",agentic_confirmed,59.78,-4.62,7,moderate,False
-Public Relations Managers,agentic_confirmed,39.79,,3,low,False
-Public Relations Specialists,agentic_confirmed,86.32,-4.13,7,moderate,False
-Public Safety Telecommunicators,agentic_confirmed,51.39,-2.53,8,high,False
-"Pump Operators, Except Wellhead Pumpers",agentic_confirmed,28.33,-1.26,8,moderate,True
-"Purchasing Agents, Except Wholesale, Retail, and Farm Products",agentic_confirmed,79.73,-2.69,7,moderate,False
-Purchasing Managers,agentic_confirmed,57.06,-2.48,7,moderate,False
-Quality Control Analysts,agentic_confirmed,34.74,-1.31,9,high,False
-Quality Control Systems Managers,agentic_confirmed,29.02,-3.11,3,low,False
-Radiation Therapists,agentic_confirmed,16.50,-1.49,5,moderate,False
-Radio Frequency Identification Device Specialists,agentic_confirmed,44.68,-1.79,5,moderate,False
-"Radio, Cellular, and Tower Equipment Installers and Repairers",agentic_confirmed,18.81,-0.89,6,moderate,False
-Radiologic Technologists and Technicians,agentic_confirmed,21.52,-0.85,6,moderate,False
-Radiologists,agentic_confirmed,34.36,-5.05,8,high,False
-Rail Car Repairers,agentic_confirmed,8.39,-3.28,2,low,False
-"Rail Yard Engineers, Dinkey Operators, and Hostlers",agentic_confirmed,7.80,-1.67,4,moderate,False
-Rail-Track Laying and Maintenance Equipment Operators,agentic_confirmed,0.77,-3.05,2,low,False
-"Railroad Brake, Signal, and Switch Operators and Locomotive Firers",agentic_confirmed,5.86,-1.64,4,moderate,False
-Railroad Conductors and Yardmasters,agentic_confirmed,9.82,-1.05,4,moderate,False
-Range Managers,agentic_confirmed,10.43,-1.06,6,moderate,False
-Real Estate Brokers,agentic_confirmed,85.11,-1.25,9,high,False
-Real Estate Sales Agents,agentic_confirmed,78.94,-1.57,10,high,False
-Receptionists and Information Clerks,agentic_confirmed,76.17,0.73,11,high,False
-Recreation Workers,agentic_confirmed,33.09,-0.34,9,high,False
-"Recreation and Fitness Studies Teachers, Postsecondary",agentic_confirmed,66.03,-2.37,7,moderate,False
-Recreational Therapists,agentic_confirmed,20.60,-3.38,5,moderate,False
-Recreational Vehicle Service Technicians,agentic_confirmed,7.55,-1.52,4,moderate,False
-Recycling Coordinators,agentic_confirmed,30.88,-0.35,10,moderate,True
-Recycling and Reclamation Workers,agentic_confirmed,13.56,-1.49,4,moderate,False
-"Refractory Materials Repairers, Except Brickmasons",agentic_confirmed,0.00,-4.13,1,low,False
-Refuse and Recyclable Material Collectors,agentic_confirmed,15.96,-3.21,2,low,False
-Registered Nurses,agentic_confirmed,29.72,-2.86,5,moderate,False
-Regulatory Affairs Managers,agentic_confirmed,49.76,-2.34,7,moderate,False
-Regulatory Affairs Specialists,agentic_confirmed,49.78,-2.23,7,moderate,False
-Rehabilitation Counselors,agentic_confirmed,45.74,-2.10,8,high,False
-Reinforcing Iron and Rebar Workers,agentic_confirmed,0.00,-1.90,2,low,False
-Remote Sensing Scientists and Technologists,agentic_confirmed,62.55,-3.53,7,moderate,False
-Remote Sensing Technicians,agentic_confirmed,57.55,-1.78,6,moderate,False
-Reservation and Transportation Ticket Agents and Travel Clerks,agentic_confirmed,60.56,-0.67,10,high,False
-Residential Advisors,agentic_confirmed,36.43,-0.72,10,high,False
-Respiratory Therapists,agentic_confirmed,6.08,-2.01,3,low,False
-Retail Loss Prevention Specialists,agentic_confirmed,49.42,-0.35,10,high,False
-Retail Salespersons,agentic_confirmed,62.93,0.96,11,high,False
-Riggers,agentic_confirmed,2.49,-0.87,4,moderate,False
-Robotics Engineers,agentic_confirmed,56.19,-5.92,5,moderate,False
-Robotics Technicians,agentic_confirmed,37.20,-3.62,5,moderate,False
-"Rock Splitters, Quarry",agentic_confirmed,0.00,-3.32,2,low,False
-"Rolling Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,18.40,-2.23,1,low,False
-"Roof Bolters, Mining",agentic_confirmed,3.97,-2.90,1,low,False
-Roofers,agentic_confirmed,5.61,-1.08,4,moderate,False
-"Rotary Drill Operators, Oil and Gas",agentic_confirmed,8.65,-1.47,4,moderate,False
-"Roustabouts, Oil and Gas",agentic_confirmed,1.09,-1.68,4,moderate,False
-Sailors and Marine Oilers,agentic_confirmed,7.59,-2.02,2,low,False
-Sales Engineers,agentic_confirmed,68.45,-4.12,7,moderate,False
-Sales Managers,agentic_confirmed,55.02,-2.73,7,moderate,False
-"Sales Representatives of Services, Except Advertising, Insurance, Financial Services, and Travel",agentic_confirmed,52.69,,3,low,False
-"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products",agentic_confirmed,79.02,-1.88,7,moderate,False
-"Sales Representatives, Wholesale and Manufacturing, Technical and Scientific Products",agentic_confirmed,70.33,-1.42,9,high,False
-"Sawing Machine Setters, Operators, and Tenders, Wood",agentic_confirmed,15.36,-2.26,3,low,False
-School Bus Monitors,agentic_confirmed,11.85,,1,low,False
-School Psychologists,agentic_confirmed,37.96,-4.57,7,moderate,False
-Search Marketing Strategists,agentic_confirmed,89.28,-2.18,7,moderate,False
-"Secondary School Teachers, Except Special and Career/Technical Education",agentic_confirmed,49.44,-2.21,7,moderate,False
-"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",agentic_confirmed,88.98,-1.46,11,high,False
-"Securities, Commodities, and Financial Services Sales Agents",agentic_confirmed,64.71,-0.74,7,moderate,False
-Security Guards,agentic_confirmed,50.92,-0.94,10,high,False
-Security Management Specialists,agentic_confirmed,44.46,-3.16,7,moderate,False
-Security Managers,agentic_confirmed,53.43,-4.20,7,moderate,False
-Security and Fire Alarm Systems Installers,agentic_confirmed,20.10,-0.81,6,moderate,False
-Segmental Pavers,agentic_confirmed,3.23,-1.77,2,low,False
-Self-Enrichment Teachers,agentic_confirmed,21.73,-0.27,6,moderate,False
-Semiconductor Processing Technicians,agentic_confirmed,22.16,-0.34,5,moderate,False
-"Separating, Filtering, Clarifying, Precipitating, and Still Machine Setters, Operators, and Tenders",agentic_confirmed,19.35,-1.45,6,moderate,False
-Septic Tank Servicers and Sewer Pipe Cleaners,agentic_confirmed,8.96,-1.82,2,low,False
-"Service Unit Operators, Oil and Gas",agentic_confirmed,7.87,-1.47,4,moderate,False
-Set and Exhibit Designers,agentic_confirmed,25.43,-2.04,4,moderate,False
-"Sewers, Hand",agentic_confirmed,0.36,-0.46,3,low,False
-Sewing Machine Operators,agentic_confirmed,10.69,-0.64,4,moderate,False
-Shampooers,agentic_confirmed,17.72,2.13,6,moderate,False
-Sheet Metal Workers,agentic_confirmed,22.38,-0.08,6,moderate,False
-Ship Engineers,agentic_confirmed,16.55,-2.45,2,low,False
-"Shipping, Receiving, and Inventory Clerks",agentic_confirmed,40.58,2.46,9,high,False
-Shoe Machine Operators and Tenders,agentic_confirmed,2.99,-0.52,3,low,False
-Shoe and Leather Workers and Repairers,agentic_confirmed,1.84,0.76,3,low,False
-Shuttle Drivers and Chauffeurs,agentic_confirmed,16.72,-1.18,4,moderate,False
-Signal and Track Switch Repairers,agentic_confirmed,15.65,-2.65,4,moderate,False
-Skincare Specialists,agentic_confirmed,36.40,0.69,10,high,False
-Slaughterers and Meat Packers,agentic_confirmed,0.00,-1.63,3,low,False
-Social Science Research Assistants,agentic_confirmed,64.75,-0.20,10,high,False
-"Social Work Teachers, Postsecondary",agentic_confirmed,64.34,-5.27,6,moderate,False
-Social and Community Service Managers,agentic_confirmed,33.50,-3.74,6,moderate,False
-Social and Human Service Assistants,agentic_confirmed,19.42,-1.82,3,low,False
-Sociologists,agentic_confirmed,56.27,-3.97,8,high,False
-"Sociology Teachers, Postsecondary",agentic_confirmed,62.30,-4.33,8,high,False
-Software Developers,agentic_confirmed,60.87,-2.13,3,low,False
-Software Quality Assurance Analysts and Testers,agentic_confirmed,72.27,-1.44,5,moderate,False
-Soil and Plant Scientists,agentic_confirmed,25.10,-3.29,6,moderate,False
-Solar Energy Installation Managers,agentic_confirmed,21.51,-1.69,6,moderate,False
-Solar Energy Systems Engineers,agentic_confirmed,34.26,-2.77,5,moderate,False
-Solar Photovoltaic Installers,agentic_confirmed,25.18,-2.47,4,moderate,False
-Solar Sales Representatives and Assessors,agentic_confirmed,69.61,-0.47,9,high,False
-Solar Thermal Installers and Technicians,agentic_confirmed,8.33,-2.89,1,low,False
-Sound Engineering Technicians,agentic_confirmed,66.18,-1.33,9,high,False
-Spa Managers,agentic_confirmed,77.93,-1.83,8,high,False
-"Special Education Teachers, Elementary School",agentic_confirmed,12.05,-2.84,2,low,False
-"Special Education Teachers, Kindergarten",agentic_confirmed,18.74,,0,low,False
-"Special Education Teachers, Middle School",agentic_confirmed,36.11,-3.04,7,moderate,False
-"Special Education Teachers, Preschool",agentic_confirmed,22.38,-1.45,7,moderate,False
-"Special Education Teachers, Secondary School",agentic_confirmed,33.55,-2.76,6,moderate,False
-Special Effects Artists and Animators,agentic_confirmed,55.79,-0.92,8,high,False
-Speech-Language Pathologists,agentic_confirmed,12.08,-4.91,3,low,False
-Speech-Language Pathology Assistants,agentic_confirmed,14.82,-1.71,6,moderate,False
-Sports Medicine Physicians,agentic_confirmed,14.19,-5.28,4,moderate,False
-Stationary Engineers and Boiler Operators,agentic_confirmed,21.66,-1.10,4,moderate,False
-Statistical Assistants,agentic_confirmed,83.50,-1.36,10,high,False
-Statisticians,agentic_confirmed,81.90,-5.26,7,moderate,False
-Stockers and Order Fillers,agentic_confirmed,37.39,2.49,8,high,False
-"Stone Cutters and Carvers, Manufacturing",agentic_confirmed,8.96,1.20,4,moderate,False
-Stonemasons,agentic_confirmed,0.26,-0.97,4,moderate,False
-Structural Iron and Steel Workers,agentic_confirmed,12.69,-3.42,4,moderate,False
-Structural Metal Fabricators and Fitters,agentic_confirmed,1.38,1.29,4,moderate,False
-Substance Abuse and Behavioral Disorder Counselors,agentic_confirmed,25.36,-3.61,5,moderate,False
-"Substitute Teachers, Short-Term",agentic_confirmed,29.72,0.53,9,moderate,True
-Subway and Streetcar Operators,agentic_confirmed,30.40,-2.00,4,moderate,False
-Supply Chain Managers,agentic_confirmed,38.48,-3.06,5,moderate,False
-Surgical Assistants,agentic_confirmed,5.16,-2.27,4,moderate,False
-Surgical Technologists,agentic_confirmed,5.89,-0.84,5,moderate,False
-Survey Researchers,agentic_confirmed,56.29,-3.09,8,high,False
-Surveying and Mapping Technicians,agentic_confirmed,39.11,0.10,11,high,False
-Surveyors,agentic_confirmed,49.85,-2.45,5,moderate,False
-Sustainability Specialists,agentic_confirmed,30.49,-1.18,9,moderate,True
-"Switchboard Operators, Including Answering Service",agentic_confirmed,75.81,0.87,10,high,False
-"Tailors, Dressmakers, and Custom Sewers",agentic_confirmed,7.32,0.32,3,low,False
-Talent Directors,agentic_confirmed,25.45,-0.92,7,moderate,False
-"Tank Car, Truck, and Ship Loaders",agentic_confirmed,18.54,-0.60,6,moderate,False
-Tapers,agentic_confirmed,0.00,-5.64,1,low,False
-"Tax Examiners and Collectors, and Revenue Agents",agentic_confirmed,41.87,-1.84,6,moderate,False
-Tax Preparers,agentic_confirmed,67.33,-0.38,10,high,False
-Taxi Drivers,agentic_confirmed,11.71,,2,low,False
-"Teaching Assistants, Postsecondary",agentic_confirmed,29.94,-1.34,9,moderate,True
-"Teaching Assistants, Preschool, Elementary, Middle, and Secondary School, Except Special Education",agentic_confirmed,22.77,-0.24,9,moderate,True
-"Teaching Assistants, Special Education",agentic_confirmed,20.07,0.64,7,moderate,False
-Team Assemblers,agentic_confirmed,13.78,0.30,4,moderate,False
-Technical Writers,agentic_confirmed,75.83,-2.26,7,moderate,False
-Telecommunications Engineering Specialists,agentic_confirmed,72.14,-1.20,8,high,False
-"Telecommunications Equipment Installers and Repairers, Except Line Installers",agentic_confirmed,23.70,-2.14,3,low,False
-Telecommunications Line Installers and Repairers,agentic_confirmed,21.37,-1.00,6,moderate,False
-Telemarketers,agentic_confirmed,97.66,0.39,9,high,False
-Telephone Operators,agentic_confirmed,64.93,0.65,10,high,False
-Tellers,agentic_confirmed,65.33,1.20,10,high,False
-Terrazzo Workers and Finishers,agentic_confirmed,3.08,-1.55,3,low,False
-Textile Bleaching and Dyeing Machine Operators and Tenders,agentic_confirmed,19.47,-1.94,1,low,False
-"Textile Cutting Machine Setters, Operators, and Tenders",agentic_confirmed,17.31,-1.58,3,low,False
-"Textile Knitting and Weaving Machine Setters, Operators, and Tenders",agentic_confirmed,12.20,-0.97,3,low,False
-"Textile Winding, Twisting, and Drawing Out Machine Setters, Operators, and Tenders",agentic_confirmed,15.41,-2.07,1,low,False
-Tile and Stone Setters,agentic_confirmed,2.68,0.30,3,low,False
-Timing Device Assemblers and Adjusters,agentic_confirmed,6.22,-2.72,2,low,False
-Tire Builders,agentic_confirmed,0.00,-2.41,2,low,False
-Tire Repairers and Changers,agentic_confirmed,1.09,1.06,4,moderate,False
-"Title Examiners, Abstractors, and Searchers",agentic_confirmed,66.63,0.69,11,high,False
-"Tool Grinders, Filers, and Sharpeners",agentic_confirmed,15.95,-2.75,2,low,False
-Tool and Die Makers,agentic_confirmed,9.34,-1.70,5,moderate,False
-Tour Guides and Escorts,agentic_confirmed,30.64,0.48,10,moderate,True
-Traffic Technicians,agentic_confirmed,39.27,-0.19,9,high,False
-Training and Development Managers,agentic_confirmed,81.55,-4.22,7,moderate,False
-Training and Development Specialists,agentic_confirmed,34.55,-3.52,7,moderate,False
-Transit and Railroad Police,agentic_confirmed,10.49,-1.94,1,low,False
-Transportation Engineers,agentic_confirmed,38.24,-4.44,3,low,False
-Transportation Inspectors,agentic_confirmed,15.01,-0.97,3,low,False
-Transportation Planners,agentic_confirmed,44.00,-2.91,6,moderate,False
-Transportation Security Screeners,agentic_confirmed,25.15,-0.71,6,moderate,False
-"Transportation Vehicle, Equipment and Systems Inspectors, Except Aviation",agentic_confirmed,10.47,-1.17,4,moderate,False
-"Transportation, Storage, and Distribution Managers",agentic_confirmed,24.44,-2.05,3,low,False
-Travel Agents,agentic_confirmed,80.94,0.11,11,high,False
-Travel Guides,agentic_confirmed,48.52,0.39,10,high,False
-Treasurers and Controllers,agentic_confirmed,54.48,-5.21,7,moderate,False
-Tree Trimmers and Pruners,agentic_confirmed,0.87,-2.10,2,low,False
-Tutors,agentic_confirmed,55.43,-1.80,9,high,False
-"Umpires, Referees, and Other Sports Officials",agentic_confirmed,21.98,1.08,7,moderate,False
-Upholsterers,agentic_confirmed,6.65,0.19,4,moderate,False
-Urban and Regional Planners,agentic_confirmed,24.35,-3.14,3,low,False
-Urologists,agentic_confirmed,24.64,-4.52,6,moderate,False
-"Ushers, Lobby Attendants, and Ticket Takers",agentic_confirmed,35.87,2.01,10,high,False
-Validation Engineers,agentic_confirmed,36.12,-2.65,3,low,False
-Veterinarians,agentic_confirmed,14.39,-3.71,2,low,False
-Veterinary Assistants and Laboratory Animal Caretakers,agentic_confirmed,25.40,0.27,4,moderate,False
-Veterinary Technologists and Technicians,agentic_confirmed,19.93,-1.66,6,moderate,False
-Video Game Designers,agentic_confirmed,57.15,-2.16,5,moderate,False
-Waiters and Waitresses,agentic_confirmed,26.03,1.70,6,moderate,False
-Watch and Clock Repairers,agentic_confirmed,4.33,-1.89,2,low,False
-Water Resource Specialists,agentic_confirmed,19.74,-3.20,1,low,False
-Water and Wastewater Treatment Plant and System Operators,agentic_confirmed,16.84,-1.03,4,moderate,False
-Water/Wastewater Engineers,agentic_confirmed,30.11,-3.81,5,moderate,False
-Weatherization Installers and Technicians,agentic_confirmed,18.08,-0.61,4,moderate,False
-Web Administrators,agentic_confirmed,79.43,-0.93,9,high,False
-Web Developers,agentic_confirmed,89.62,-0.92,8,high,False
-Web and Digital Interface Designers,agentic_confirmed,74.65,,3,low,False
-"Weighers, Measurers, Checkers, and Samplers, Recordkeeping",agentic_confirmed,39.42,1.60,8,high,False
-"Welders, Cutters, Solderers, and Brazers",agentic_confirmed,3.16,-1.69,4,moderate,False
-"Welding, Soldering, and Brazing Machine Setters, Operators, and Tenders",agentic_confirmed,14.02,-0.78,4,moderate,False
-Wellhead Pumpers,agentic_confirmed,32.89,-2.39,6,moderate,False
-"Wholesale and Retail Buyers, Except Farm Products",agentic_confirmed,62.64,-0.29,10,high,False
-Wind Energy Development Managers,agentic_confirmed,17.45,-1.99,0,low,False
-Wind Energy Engineers,agentic_confirmed,17.12,-3.15,1,low,False
-Wind Energy Operations Managers,agentic_confirmed,32.63,-2.31,4,moderate,False
-Wind Turbine Service Technicians,agentic_confirmed,15.50,-2.57,2,low,False
-"Woodworking Machine Setters, Operators, and Tenders, Except Sawing",agentic_confirmed,8.22,-3.07,3,low,False
-Word Processors and Typists,agentic_confirmed,88.20,-0.39,9,high,False
-Writers and Authors,agentic_confirmed,48.80,-2.60,8,high,False
-Zoologists and Wildlife Biologists,agentic_confirmed,17.47,-2.19,3,low,False
+Accountants and Auditors,agentic_confirmed,46.01,-5.03,7,moderate,False
+Actors,agentic_confirmed,57.76,-4.58,9,high,False
+Actuaries,agentic_confirmed,1.54,-7.55,1,low,False
+Acupuncturists,agentic_confirmed,5.05,-4.09,4,moderate,False
+Acute Care Nurses,agentic_confirmed,12.74,-6.13,7,moderate,False
+Adapted Physical Education Specialists,agentic_confirmed,2.74,-4.91,4,moderate,False
+Adhesive Bonding Machine Operators and Tenders,agentic_confirmed,0.00,-5.31,2,low,False
+"Administrative Law Judges, Adjudicators, and Hearing Officers",agentic_confirmed,18.40,-6.96,6,moderate,False
+Administrative Services Managers,agentic_confirmed,1.85,-4.81,6,moderate,False
+"Adult Basic Education, Adult Secondary Education, and English as a Second Language Instructors",agentic_confirmed,51.00,-4.57,9,high,False
+Advanced Practice Psychiatric Nurses,agentic_confirmed,27.19,-7.04,7,moderate,False
+Advertising Sales Agents,agentic_confirmed,44.12,-4.91,8,high,False
+Advertising and Promotions Managers,agentic_confirmed,42.68,-5.85,8,high,False
+Aerospace Engineering and Operations Technologists and Technicians,agentic_confirmed,10.75,-5.29,5,moderate,False
+Aerospace Engineers,agentic_confirmed,2.54,-8.06,1,low,False
+"Agents and Business Managers of Artists, Performers, and Athletes",agentic_confirmed,33.71,-4.94,8,high,False
+Agricultural Engineers,agentic_confirmed,0.00,-7.13,1,low,False
+Agricultural Equipment Operators,agentic_confirmed,0.00,-3.21,3,low,False
+Agricultural Inspectors,agentic_confirmed,6.78,-3.70,5,moderate,False
+"Agricultural Sciences Teachers, Postsecondary",agentic_confirmed,55.78,-6.25,7,moderate,False
+Agricultural Technicians,agentic_confirmed,6.49,-3.15,5,moderate,False
+Air Traffic Controllers,agentic_confirmed,1.83,-6.81,4,moderate,False
+Aircraft Cargo Handling Supervisors,agentic_confirmed,0.00,-4.53,4,moderate,False
+Aircraft Mechanics and Service Technicians,agentic_confirmed,0.00,-6.95,2,low,False
+Aircraft Service Attendants,agentic_confirmed,0.00,,2,low,False
+"Aircraft Structure, Surfaces, Rigging, and Systems Assemblers",agentic_confirmed,5.54,-2.83,4,moderate,False
+Airfield Operations Specialists,agentic_confirmed,10.58,-4.30,11,moderate,True
+"Airline Pilots, Copilots, and Flight Engineers",agentic_confirmed,0.88,-7.66,2,low,False
+Allergists and Immunologists,agentic_confirmed,23.74,-6.29,8,moderate,True
+"Ambulance Drivers and Attendants, Except Emergency Medical Technicians",agentic_confirmed,0.00,-2.86,4,moderate,False
+Amusement and Recreation Attendants,agentic_confirmed,7.49,-1.31,6,moderate,False
+Anesthesiologist Assistants,agentic_confirmed,0.00,-4.46,3,low,False
+Anesthesiologists,agentic_confirmed,0.39,-6.71,2,low,False
+Animal Breeders,agentic_confirmed,0.00,-2.46,5,moderate,False
+Animal Caretakers,agentic_confirmed,7.98,-1.19,6,moderate,False
+Animal Control Workers,agentic_confirmed,15.54,-2.98,10,moderate,True
+Animal Scientists,agentic_confirmed,0.00,-6.27,3,low,False
+Animal Trainers,agentic_confirmed,3.09,-2.01,5,moderate,False
+Anthropologists and Archeologists,agentic_confirmed,21.19,-6.84,8,moderate,True
+"Anthropology and Archeology Teachers, Postsecondary",agentic_confirmed,56.89,-7.88,8,high,False
+Appraisers and Assessors of Real Estate,agentic_confirmed,29.17,-2.94,9,moderate,True
+Appraisers of Personal and Business Property,agentic_confirmed,0.00,-3.35,4,moderate,False
+"Arbitrators, Mediators, and Conciliators",agentic_confirmed,20.51,-7.84,6,moderate,False
+"Architects, Except Landscape and Naval",agentic_confirmed,53.07,-6.83,5,moderate,False
+Architectural and Civil Drafters,agentic_confirmed,7.15,-4.32,7,moderate,False
+Architectural and Engineering Managers,agentic_confirmed,38.81,-6.93,3,low,False
+"Architecture Teachers, Postsecondary",agentic_confirmed,58.13,-6.65,7,moderate,False
+Archivists,agentic_confirmed,37.22,-4.96,8,high,False
+"Area, Ethnic, and Cultural Studies Teachers, Postsecondary",agentic_confirmed,58.90,-5.37,7,moderate,False
+Art Directors,agentic_confirmed,31.33,-5.99,7,moderate,False
+Art Therapists,agentic_confirmed,4.15,-7.17,2,low,False
+"Art, Drama, and Music Teachers, Postsecondary",agentic_confirmed,49.45,-6.18,7,moderate,False
+Astronomers,agentic_confirmed,16.52,-8.47,5,moderate,False
+Athletes and Sports Competitors,agentic_confirmed,9.61,-3.19,8,moderate,True
+Athletic Trainers,agentic_confirmed,15.76,-5.13,7,moderate,False
+Atmospheric and Space Scientists,agentic_confirmed,16.99,-6.87,7,moderate,False
+"Atmospheric, Earth, Marine, and Space Sciences Teachers, Postsecondary",agentic_confirmed,51.43,-7.38,8,high,False
+Audio and Video Technicians,agentic_confirmed,20.52,-3.69,11,moderate,True
+Audiologists,agentic_confirmed,0.00,-6.73,3,low,False
+Audiovisual Equipment Installers and Repairers,agentic_confirmed,29.73,-3.93,8,moderate,True
+Automotive Body and Related Repairers,agentic_confirmed,0.00,-3.45,4,moderate,False
+Automotive Engineering Technicians,agentic_confirmed,25.11,-4.80,6,moderate,False
+Automotive Engineers,agentic_confirmed,11.56,-8.13,3,low,False
+Automotive Glass Installers and Repairers,agentic_confirmed,0.00,-3.52,4,moderate,False
+Automotive Service Technicians and Mechanics,agentic_confirmed,5.94,-5.57,5,moderate,False
+Automotive and Watercraft Service Attendants,agentic_confirmed,9.81,-3.85,8,moderate,True
+Aviation Inspectors,agentic_confirmed,0.00,-6.80,2,low,False
+Avionics Technicians,agentic_confirmed,0.00,-5.45,3,low,False
+Baggage Porters and Bellhops,agentic_confirmed,10.26,-3.73,5,moderate,False
+Bailiffs,agentic_confirmed,18.05,-3.00,9,moderate,True
+Bakers,agentic_confirmed,0.00,-2.06,5,moderate,False
+Barbers,agentic_confirmed,5.00,-1.39,6,moderate,False
+Baristas,agentic_confirmed,23.07,-0.43,10,moderate,True
+Bartenders,agentic_confirmed,7.90,-1.66,8,moderate,True
+Bicycle Repairers,agentic_confirmed,0.00,-4.38,3,low,False
+Bill and Account Collectors,agentic_confirmed,54.00,-2.53,11,high,False
+Billing and Posting Clerks,agentic_confirmed,40.60,-2.30,11,high,False
+Biochemists and Biophysicists,agentic_confirmed,22.86,-9.32,7,moderate,False
+Bioengineers and Biomedical Engineers,agentic_confirmed,19.99,-7.79,5,moderate,False
+Biofuels Processing Technicians,agentic_confirmed,7.13,-4.95,1,low,False
+Biofuels Production Managers,agentic_confirmed,0.00,-5.21,0,low,False
+Biofuels/Biodiesel Technology and Product Development Managers,agentic_confirmed,0.00,-5.43,1,low,False
+Bioinformatics Scientists,agentic_confirmed,60.31,-7.49,7,moderate,False
+Bioinformatics Technicians,agentic_confirmed,63.66,-6.70,7,moderate,False
+"Biological Science Teachers, Postsecondary",agentic_confirmed,46.38,-6.91,7,moderate,False
+Biological Technicians,agentic_confirmed,21.33,-4.52,8,moderate,True
+Biologists,agentic_confirmed,9.17,-6.70,7,moderate,False
+Biomass Plant Technicians,agentic_confirmed,0.00,-3.39,3,low,False
+Biomass Power Plant Managers,agentic_confirmed,2.81,-5.80,0,low,False
+Biostatisticians,agentic_confirmed,32.50,-7.29,5,moderate,False
+Blockchain Engineers,agentic_confirmed,0.00,,1,low,False
+Boilermakers,agentic_confirmed,11.29,-4.37,8,moderate,True
+"Bookkeeping, Accounting, and Auditing Clerks",agentic_confirmed,33.02,-2.48,11,high,False
+Brickmasons and Blockmasons,agentic_confirmed,6.50,-4.05,3,low,False
+Bridge and Lock Tenders,agentic_confirmed,0.00,-2.55,4,moderate,False
+Broadcast Announcers and Radio Disc Jockeys,agentic_confirmed,23.96,-5.26,7,moderate,False
+Broadcast Technicians,agentic_confirmed,9.96,-4.41,7,moderate,False
+Brokerage Clerks,agentic_confirmed,35.42,-2.71,11,high,False
+Brownfield Redevelopment Specialists and Site Managers,agentic_confirmed,0.00,-5.79,3,low,False
+Budget Analysts,agentic_confirmed,7.97,-4.53,5,moderate,False
+"Bus Drivers, School",agentic_confirmed,0.00,-3.73,4,moderate,False
+"Bus Drivers, Transit and Intercity",agentic_confirmed,0.00,-4.62,4,moderate,False
+Bus and Truck Mechanics and Diesel Engine Specialists,agentic_confirmed,1.95,-5.54,1,low,False
+Business Continuity Planners,agentic_confirmed,31.46,-5.94,5,moderate,False
+Business Intelligence Analysts,agentic_confirmed,85.24,-4.73,7,moderate,False
+"Business Teachers, Postsecondary",agentic_confirmed,53.79,-6.48,7,moderate,False
+Butchers and Meat Cutters,agentic_confirmed,0.00,-2.54,4,moderate,False
+"Buyers and Purchasing Agents, Farm Products",agentic_confirmed,25.33,-3.77,7,moderate,False
+Cabinetmakers and Bench Carpenters,agentic_confirmed,0.00,-5.36,2,low,False
+Calibration Technologists and Technicians,agentic_confirmed,0.00,,2,low,False
+"Camera Operators, Television, Video, and Film",agentic_confirmed,20.06,-3.49,11,moderate,True
+Camera and Photographic Equipment Repairers,agentic_confirmed,16.95,-4.40,6,moderate,False
+"Captains, Mates, and Pilots of Water Vessels",agentic_confirmed,0.00,-4.93,2,low,False
+Cardiologists,agentic_confirmed,0.00,,1,low,False
+Cardiovascular Technologists and Technicians,agentic_confirmed,4.69,-3.88,5,moderate,False
+"Career/Technical Education Teachers, Middle School",agentic_confirmed,33.83,-4.28,9,high,False
+"Career/Technical Education Teachers, Postsecondary",agentic_confirmed,33.75,-4.53,10,high,False
+"Career/Technical Education Teachers, Secondary School",agentic_confirmed,30.48,-5.17,7,moderate,False
+Cargo and Freight Agents,agentic_confirmed,29.13,-2.31,10,moderate,True
+Carpenters,agentic_confirmed,4.02,-4.59,5,moderate,False
+Carpet Installers,agentic_confirmed,0.00,-3.21,4,moderate,False
+Cartographers and Photogrammetrists,agentic_confirmed,6.69,-4.70,1,low,False
+Cashiers,agentic_confirmed,18.39,-0.04,8,moderate,True
+Cement Masons and Concrete Finishers,agentic_confirmed,9.55,-2.44,7,moderate,False
+Chefs and Head Cooks,agentic_confirmed,14.64,-4.75,7,moderate,False
+Chemical Engineers,agentic_confirmed,0.00,-8.59,1,low,False
+Chemical Equipment Operators and Tenders,agentic_confirmed,7.94,-4.65,2,low,False
+Chemical Plant and System Operators,agentic_confirmed,0.00,-4.62,1,low,False
+Chemical Technicians,agentic_confirmed,26.22,-3.76,8,moderate,True
+"Chemistry Teachers, Postsecondary",agentic_confirmed,44.76,-7.38,7,moderate,False
+Chemists,agentic_confirmed,30.88,-6.24,5,moderate,False
+Chief Executives,agentic_confirmed,35.47,-8.51,7,moderate,False
+Chief Sustainability Officers,agentic_confirmed,0.00,-5.63,2,low,False
+"Child, Family, and School Social Workers",agentic_confirmed,1.31,-6.09,3,low,False
+Childcare Workers,agentic_confirmed,15.05,-0.55,10,moderate,True
+Chiropractors,agentic_confirmed,20.94,-5.43,7,moderate,False
+Choreographers,agentic_confirmed,13.44,-4.91,8,moderate,True
+Civil Engineering Technologists and Technicians,agentic_confirmed,33.09,-4.70,7,moderate,False
+Civil Engineers,agentic_confirmed,7.11,-7.69,1,low,False
+"Claims Adjusters, Examiners, and Investigators",agentic_confirmed,48.91,-4.98,5,moderate,False
+Cleaners of Vehicles and Equipment,agentic_confirmed,0.00,-3.09,4,moderate,False
+"Cleaning, Washing, and Metal Pickling Equipment Operators and Tenders",agentic_confirmed,0.00,-4.68,2,low,False
+Clergy,agentic_confirmed,9.73,-6.99,4,moderate,False
+Climate Change Policy Analysts,agentic_confirmed,16.19,-4.91,3,low,False
+Clinical Data Managers,agentic_confirmed,47.91,-4.54,7,moderate,False
+Clinical Neuropsychologists,agentic_confirmed,5.05,-8.27,4,moderate,False
+Clinical Nurse Specialists,agentic_confirmed,22.30,-7.10,7,moderate,False
+Clinical Research Coordinators,agentic_confirmed,27.27,-4.91,7,moderate,False
+Clinical and Counseling Psychologists,agentic_confirmed,39.26,-8.57,7,moderate,False
+Coaches and Scouts,agentic_confirmed,28.43,-5.52,8,moderate,True
+"Coating, Painting, and Spraying Machine Setters, Operators, and Tenders",agentic_confirmed,2.27,-6.00,2,low,False
+"Coil Winders, Tapers, and Finishers",agentic_confirmed,0.00,-3.90,4,moderate,False
+"Coin, Vending, and Amusement Machine Servicers and Repairers",agentic_confirmed,0.00,-4.34,4,moderate,False
+Commercial Divers,agentic_confirmed,0.00,-5.16,2,low,False
+Commercial Pilots,agentic_confirmed,6.13,-6.62,5,moderate,False
+Commercial and Industrial Designers,agentic_confirmed,1.45,-6.19,1,low,False
+"Communications Teachers, Postsecondary",agentic_confirmed,54.81,-5.88,7,moderate,False
+Community Health Workers,agentic_confirmed,12.43,-4.83,5,moderate,False
+Compensation and Benefits Managers,agentic_confirmed,27.02,-4.98,7,moderate,False
+"Compensation, Benefits, and Job Analysis Specialists",agentic_confirmed,11.65,-4.11,8,moderate,True
+Compliance Managers,agentic_confirmed,24.22,-6.18,7,moderate,False
+Compliance Officers,agentic_confirmed,17.80,-3.96,6,moderate,False
+Computer Hardware Engineers,agentic_confirmed,38.81,-7.55,5,moderate,False
+Computer Network Architects,agentic_confirmed,53.89,-5.36,5,moderate,False
+Computer Network Support Specialists,agentic_confirmed,62.03,-4.38,9,high,False
+Computer Numerically Controlled Tool Operators,agentic_confirmed,13.38,-4.96,7,moderate,False
+Computer Numerically Controlled Tool Programmers,agentic_confirmed,20.34,-4.46,7,moderate,False
+Computer Programmers,agentic_confirmed,65.53,-4.07,7,moderate,False
+"Computer Science Teachers, Postsecondary",agentic_confirmed,51.46,-6.22,5,moderate,False
+Computer Systems Analysts,agentic_confirmed,60.67,-5.24,6,moderate,False
+Computer Systems Engineers/Architects,agentic_confirmed,48.98,-5.75,8,high,False
+Computer User Support Specialists,agentic_confirmed,69.54,-4.83,8,high,False
+Computer and Information Research Scientists,agentic_confirmed,43.47,-6.79,5,moderate,False
+Computer and Information Systems Managers,agentic_confirmed,53.35,-5.24,7,moderate,False
+"Computer, Automated Teller, and Office Machine Repairers",agentic_confirmed,31.73,-3.79,7,moderate,False
+Concierges,agentic_confirmed,42.90,-3.83,9,high,False
+Conservation Scientists,agentic_confirmed,0.00,-4.27,4,moderate,False
+Construction Laborers,agentic_confirmed,3.60,-5.63,2,low,False
+Construction Managers,agentic_confirmed,23.50,-6.84,5,moderate,False
+Construction and Building Inspectors,agentic_confirmed,14.59,-4.44,6,moderate,False
+Continuous Mining Machine Operators,agentic_confirmed,0.00,-5.66,1,low,False
+"Control and Valve Installers and Repairers, Except Mechanical Door",agentic_confirmed,1.24,-4.16,4,moderate,False
+Conveyor Operators and Tenders,agentic_confirmed,11.41,-3.72,8,moderate,True
+"Cooks, Fast Food",agentic_confirmed,0.00,-0.61,6,moderate,False
+"Cooks, Institution and Cafeteria",agentic_confirmed,0.00,-2.19,4,moderate,False
+"Cooks, Private Household",agentic_confirmed,7.49,-2.35,6,moderate,False
+"Cooks, Restaurant",agentic_confirmed,0.40,-1.45,6,moderate,False
+"Cooks, Short Order",agentic_confirmed,8.72,-1.65,6,moderate,False
+Cooling and Freezing Equipment Operators and Tenders,agentic_confirmed,0.00,-3.08,4,moderate,False
+Coroners,agentic_confirmed,0.00,-5.74,4,moderate,False
+Correctional Officers and Jailers,agentic_confirmed,0.00,-3.95,3,low,False
+Correspondence Clerks,agentic_confirmed,20.69,-3.49,7,moderate,False
+Cost Estimators,agentic_confirmed,14.31,-4.64,3,low,False
+Costume Attendants,agentic_confirmed,0.79,-1.39,8,moderate,True
+Counter and Rental Clerks,agentic_confirmed,44.14,-1.45,10,high,False
+Couriers and Messengers,agentic_confirmed,23.59,-1.55,8,moderate,True
+Court Reporters and Simultaneous Captioners,agentic_confirmed,7.11,-4.25,7,moderate,False
+"Court, Municipal, and License Clerks",agentic_confirmed,20.07,-3.86,10,moderate,True
+Craft Artists,agentic_confirmed,25.41,-2.46,9,moderate,True
+Crane and Tower Operators,agentic_confirmed,0.00,-4.60,3,low,False
+Credit Analysts,agentic_confirmed,37.19,-4.85,3,low,False
+"Credit Authorizers, Checkers, and Clerks",agentic_confirmed,54.10,-2.16,10,high,False
+Credit Counselors,agentic_confirmed,46.63,-3.77,10,high,False
+Crematory Operators,agentic_confirmed,0.00,,2,low,False
+"Criminal Justice and Law Enforcement Teachers, Postsecondary",agentic_confirmed,56.15,-6.60,7,moderate,False
+Critical Care Nurses,agentic_confirmed,9.54,-6.36,5,moderate,False
+Crossing Guards and Flaggers,agentic_confirmed,2.02,-0.30,8,moderate,True
+"Crushing, Grinding, and Polishing Machine Setters, Operators, and Tenders",agentic_confirmed,3.60,-3.25,4,moderate,False
+Curators,agentic_confirmed,60.54,-5.26,7,moderate,False
+Customer Service Representatives,agentic_confirmed,54.54,-2.78,11,high,False
+Customs Brokers,agentic_confirmed,21.48,-3.97,7,moderate,False
+Customs and Border Protection Officers,agentic_confirmed,24.76,-4.26,7,moderate,False
+"Cutters and Trimmers, Hand",agentic_confirmed,0.00,-3.83,4,moderate,False
+"Cutting and Slicing Machine Setters, Operators, and Tenders",agentic_confirmed,4.27,-4.79,2,low,False
+"Cutting, Punching, and Press Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,4.52,-3.15,4,moderate,False
+Cytogenetic Technologists,agentic_confirmed,13.70,-4.06,7,moderate,False
+Cytotechnologists,agentic_confirmed,30.39,-3.77,9,moderate,True
+Dancers,agentic_confirmed,0.00,-5.88,3,low,False
+Data Entry Keyers,agentic_confirmed,38.16,-3.86,11,high,False
+Data Scientists,agentic_confirmed,0.00,,1,low,False
+Data Warehousing Specialists,agentic_confirmed,71.54,-3.86,7,moderate,False
+Database Administrators,agentic_confirmed,40.56,-4.68,7,moderate,False
+Database Architects,agentic_confirmed,54.80,-5.68,5,moderate,False
+Demonstrators and Product Promoters,agentic_confirmed,38.49,-2.31,9,high,False
+Dental Assistants,agentic_confirmed,28.60,-2.75,10,moderate,True
+Dental Hygienists,agentic_confirmed,9.13,-4.18,7,moderate,False
+Dental Laboratory Technicians,agentic_confirmed,9.17,-2.88,9,moderate,True
+"Dentists, General",agentic_confirmed,23.48,-6.50,7,moderate,False
+Dermatologists,agentic_confirmed,0.00,-6.45,4,moderate,False
+"Derrick Operators, Oil and Gas",agentic_confirmed,0.00,-4.57,4,moderate,False
+Desktop Publishers,agentic_confirmed,46.72,-4.01,11,high,False
+Detectives and Criminal Investigators,agentic_confirmed,22.66,-5.89,8,moderate,True
+Diagnostic Medical Sonographers,agentic_confirmed,14.89,-3.83,9,moderate,True
+Dietetic Technicians,agentic_confirmed,38.91,-3.33,10,high,False
+Dietitians and Nutritionists,agentic_confirmed,31.08,-6.01,7,moderate,False
+Digital Forensics Analysts,agentic_confirmed,0.00,,1,low,False
+Dining Room and Cafeteria Attendants and Bartender Helpers,agentic_confirmed,0.00,-0.92,4,moderate,False
+"Directors, Religious Activities and Education",agentic_confirmed,25.65,-4.70,6,moderate,False
+"Disc Jockeys, Except Radio",agentic_confirmed,0.00,,2,low,False
+Dishwashers,agentic_confirmed,0.00,-0.98,4,moderate,False
+"Dispatchers, Except Police, Fire, and Ambulance",agentic_confirmed,37.86,-4.22,11,high,False
+Document Management Specialists,agentic_confirmed,54.20,-3.94,9,high,False
+"Door-to-Door Sales Workers, News and Street Vendors, and Related Workers",agentic_confirmed,46.42,-2.30,8,high,False
+Dredge Operators,agentic_confirmed,0.00,-5.01,2,low,False
+"Drilling and Boring Machine Tool Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,0.00,-4.19,4,moderate,False
+Driver/Sales Workers,agentic_confirmed,20.57,-1.81,6,moderate,False
+Drywall and Ceiling Tile Installers,agentic_confirmed,6.05,-3.26,3,low,False
+"Earth Drillers, Except Oil and Gas",agentic_confirmed,0.00,-5.02,2,low,False
+"Economics Teachers, Postsecondary",agentic_confirmed,63.62,-6.94,7,moderate,False
+Economists,agentic_confirmed,59.52,-7.02,8,high,False
+Editors,agentic_confirmed,36.77,-5.27,8,high,False
+"Education Administrators, Kindergarten through Secondary",agentic_confirmed,22.08,-7.99,7,moderate,False
+"Education Administrators, Postsecondary",agentic_confirmed,8.26,-6.43,5,moderate,False
+"Education Teachers, Postsecondary",agentic_confirmed,63.85,-6.79,7,moderate,False
+"Education and Childcare Administrators, Preschool and Daycare",agentic_confirmed,25.03,-5.06,7,moderate,False
+"Educational, Guidance, and Career Counselors and Advisors",agentic_confirmed,29.64,-5.29,7,moderate,False
+"Electric Motor, Power Tool, and Related Repairers",agentic_confirmed,3.22,-4.90,2,low,False
+Electrical Engineers,agentic_confirmed,11.44,-6.52,5,moderate,False
+Electrical Power-Line Installers and Repairers,agentic_confirmed,0.00,-4.58,3,low,False
+Electrical and Electronic Engineering Technologists and Technicians,agentic_confirmed,13.14,-4.84,6,moderate,False
+Electrical and Electronic Equipment Assemblers,agentic_confirmed,12.29,-2.75,6,moderate,False
+Electrical and Electronics Drafters,agentic_confirmed,14.48,-4.24,11,moderate,True
+"Electrical and Electronics Installers and Repairers, Transportation Equipment",agentic_confirmed,12.73,-4.47,8,moderate,True
+"Electrical and Electronics Repairers, Commercial and Industrial Equipment",agentic_confirmed,10.56,-5.39,3,low,False
+"Electrical and Electronics Repairers, Powerhouse, Substation, and Relay",agentic_confirmed,0.00,-5.35,2,low,False
+Electricians,agentic_confirmed,14.17,-4.75,6,moderate,False
+Electro-Mechanical and Mechatronics Technologists and Technicians,agentic_confirmed,19.71,-5.36,7,moderate,False
+Electromechanical Equipment Assemblers,agentic_confirmed,6.02,-3.17,4,moderate,False
+"Electronic Equipment Installers and Repairers, Motor Vehicles",agentic_confirmed,15.78,-4.18,6,moderate,False
+"Electronics Engineers, Except Computer",agentic_confirmed,22.35,-7.15,5,moderate,False
+"Elementary School Teachers, Except Special Education",agentic_confirmed,38.60,-4.88,7,moderate,False
+Elevator and Escalator Installers and Repairers,agentic_confirmed,0.00,-5.12,1,low,False
+"Eligibility Interviewers, Government Programs",agentic_confirmed,36.81,-4.31,10,high,False
+Embalmers,agentic_confirmed,0.00,-3.28,6,moderate,False
+Emergency Management Directors,agentic_confirmed,0.00,-7.46,4,moderate,False
+Emergency Medical Technicians,agentic_confirmed,0.00,,2,low,False
+Emergency Medicine Physicians,agentic_confirmed,0.00,-8.98,2,low,False
+Endoscopy Technicians,agentic_confirmed,0.00,-2.88,6,moderate,False
+Energy Auditors,agentic_confirmed,7.54,-4.19,6,moderate,False
+"Energy Engineers, Except Wind and Solar",agentic_confirmed,27.55,-6.37,3,low,False
+Engine and Other Machine Assemblers,agentic_confirmed,7.43,-4.53,4,moderate,False
+"Engineering Teachers, Postsecondary",agentic_confirmed,55.80,-8.48,5,moderate,False
+"English Language and Literature Teachers, Postsecondary",agentic_confirmed,52.83,-6.30,7,moderate,False
+"Entertainment and Recreation Managers, Except Gambling",agentic_confirmed,0.00,-3.83,6,moderate,False
+Environmental Compliance Inspectors,agentic_confirmed,2.62,-5.30,1,low,False
+Environmental Economists,agentic_confirmed,19.87,-6.49,6,moderate,False
+Environmental Engineering Technologists and Technicians,agentic_confirmed,18.20,-4.64,6,moderate,False
+Environmental Engineers,agentic_confirmed,4.30,-6.70,1,low,False
+Environmental Restoration Planners,agentic_confirmed,0.00,-5.84,1,low,False
+"Environmental Science Teachers, Postsecondary",agentic_confirmed,52.18,-6.49,7,moderate,False
+"Environmental Science and Protection Technicians, Including Health",agentic_confirmed,7.61,-3.90,6,moderate,False
+"Environmental Scientists and Specialists, Including Health",agentic_confirmed,26.01,-4.89,5,moderate,False
+Epidemiologists,agentic_confirmed,8.99,-7.47,7,moderate,False
+Equal Opportunity Representatives and Officers,agentic_confirmed,1.94,-6.00,5,moderate,False
+Etchers and Engravers,agentic_confirmed,0.00,-3.63,3,low,False
+"Excavating and Loading Machine and Dragline Operators, Surface Mining",agentic_confirmed,3.46,-5.48,2,low,False
+Executive Secretaries and Executive Administrative Assistants,agentic_confirmed,42.41,-4.21,11,high,False
+Exercise Physiologists,agentic_confirmed,37.90,-5.00,7,moderate,False
+Exercise Trainers and Group Fitness Instructors,agentic_confirmed,10.83,-3.75,8,moderate,True
+"Explosives Workers, Ordnance Handling Experts, and Blasters",agentic_confirmed,0.00,-5.09,2,low,False
+"Extruding and Drawing Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,0.00,-3.87,4,moderate,False
+"Extruding and Forming Machine Setters, Operators, and Tenders, Synthetic and Glass Fibers",agentic_confirmed,5.71,-2.93,6,moderate,False
+"Extruding, Forming, Pressing, and Compacting Machine Setters, Operators, and Tenders",agentic_confirmed,0.00,-4.26,4,moderate,False
+Fabric and Apparel Patternmakers,agentic_confirmed,0.00,-3.77,4,moderate,False
+Facilities Managers,agentic_confirmed,1.86,-4.25,8,moderate,True
+Fallers,agentic_confirmed,0.00,-5.26,1,low,False
+Family Medicine Physicians,agentic_confirmed,19.70,-7.66,7,moderate,False
+"Family and Consumer Sciences Teachers, Postsecondary",agentic_confirmed,54.34,-4.87,7,moderate,False
+Farm Equipment Mechanics and Service Technicians,agentic_confirmed,0.00,-5.77,2,low,False
+Farm Labor Contractors,agentic_confirmed,0.00,-2.42,5,moderate,False
+Farm and Home Management Educators,agentic_confirmed,33.10,-5.99,7,moderate,False
+"Farmers, Ranchers, and Other Agricultural Managers",agentic_confirmed,4.31,-4.85,3,low,False
+"Farmworkers and Laborers, Crop, Nursery, and Greenhouse",agentic_confirmed,3.85,-4.38,3,low,False
+"Farmworkers, Farm, Ranch, and Aquacultural Animals",agentic_confirmed,0.00,-2.50,4,moderate,False
+Fashion Designers,agentic_confirmed,10.94,-3.94,9,moderate,True
+Fast Food and Counter Workers,agentic_confirmed,7.52,0.12,8,moderate,True
+Fence Erectors,agentic_confirmed,0.00,-3.07,4,moderate,False
+Fiberglass Laminators and Fabricators,agentic_confirmed,0.00,-2.60,4,moderate,False
+File Clerks,agentic_confirmed,32.24,-2.46,9,moderate,True
+Film and Video Editors,agentic_confirmed,55.41,-4.01,10,high,False
+Financial Examiners,agentic_confirmed,2.30,-5.69,1,low,False
+Financial Managers,agentic_confirmed,72.07,-6.08,7,moderate,False
+Financial Quantitative Analysts,agentic_confirmed,71.15,-6.75,5,moderate,False
+Financial Risk Specialists,agentic_confirmed,36.42,,5,moderate,False
+Financial and Investment Analysts,agentic_confirmed,34.81,,5,moderate,False
+"Fine Artists, Including Painters, Sculptors, and Illustrators",agentic_confirmed,43.74,-3.20,11,high,False
+Fire Inspectors and Investigators,agentic_confirmed,0.00,-5.37,4,moderate,False
+Fire-Prevention and Protection Engineers,agentic_confirmed,0.00,-7.34,1,low,False
+Firefighters,agentic_confirmed,0.00,-6.03,2,low,False
+First-Line Supervisors of Construction Trades and Extraction Workers,agentic_confirmed,48.68,-4.23,8,high,False
+First-Line Supervisors of Correctional Officers,agentic_confirmed,11.02,-5.43,3,low,False
+"First-Line Supervisors of Entertainment and Recreation Workers, Except Gambling Services",agentic_confirmed,6.38,,4,moderate,False
+"First-Line Supervisors of Farming, Fishing, and Forestry Workers",agentic_confirmed,3.23,-3.51,7,moderate,False
+First-Line Supervisors of Firefighting and Prevention Workers,agentic_confirmed,2.77,-5.69,2,low,False
+First-Line Supervisors of Food Preparation and Serving Workers,agentic_confirmed,10.45,-2.47,11,moderate,True
+First-Line Supervisors of Gambling Services Workers,agentic_confirmed,23.26,-3.43,10,moderate,True
+"First-Line Supervisors of Helpers, Laborers, and Material Movers, Hand",agentic_confirmed,11.68,-2.77,10,moderate,True
+First-Line Supervisors of Housekeeping and Janitorial Workers,agentic_confirmed,26.20,-2.45,10,moderate,True
+"First-Line Supervisors of Landscaping, Lawn Service, and Groundskeeping Workers",agentic_confirmed,8.04,-4.03,3,low,False
+First-Line Supervisors of Material-Moving Machine and Vehicle Operators,agentic_confirmed,5.16,-5.02,7,moderate,False
+"First-Line Supervisors of Mechanics, Installers, and Repairers",agentic_confirmed,22.17,-5.00,4,moderate,False
+First-Line Supervisors of Non-Retail Sales Workers,agentic_confirmed,49.01,-4.19,9,high,False
+First-Line Supervisors of Office and Administrative Support Workers,agentic_confirmed,38.90,-4.62,8,high,False
+First-Line Supervisors of Passenger Attendants,agentic_confirmed,7.71,,4,moderate,False
+First-Line Supervisors of Personal Service Workers,agentic_confirmed,7.40,-4.65,6,moderate,False
+First-Line Supervisors of Police and Detectives,agentic_confirmed,0.00,-6.27,4,moderate,False
+First-Line Supervisors of Production and Operating Workers,agentic_confirmed,2.09,-3.98,4,moderate,False
+First-Line Supervisors of Retail Sales Workers,agentic_confirmed,48.44,-3.17,11,high,False
+First-Line Supervisors of Security Workers,agentic_confirmed,0.00,-6.05,4,moderate,False
+Fish and Game Wardens,agentic_confirmed,0.00,-4.82,2,low,False
+Fishing and Hunting Workers,agentic_confirmed,0.00,-2.26,3,low,False
+Fitness and Wellness Coordinators,agentic_confirmed,22.60,-4.32,8,moderate,True
+Flight Attendants,agentic_confirmed,4.64,-4.25,4,moderate,False
+"Floor Layers, Except Carpet, Wood, and Hard Tiles",agentic_confirmed,0.00,-2.91,4,moderate,False
+Floor Sanders and Finishers,agentic_confirmed,0.00,-4.74,2,low,False
+Floral Designers,agentic_confirmed,0.00,-2.53,3,low,False
+Food Batchmakers,agentic_confirmed,0.00,-3.02,4,moderate,False
+Food Cooking Machine Operators and Tenders,agentic_confirmed,0.00,-3.46,3,low,False
+Food Preparation Workers,agentic_confirmed,0.00,0.40,4,moderate,False
+Food Science Technicians,agentic_confirmed,15.50,-3.08,11,moderate,True
+Food Scientists and Technologists,agentic_confirmed,34.61,-5.58,5,moderate,False
+"Food Servers, Nonrestaurant",agentic_confirmed,6.53,-0.01,6,moderate,False
+Food Service Managers,agentic_confirmed,14.83,-3.34,11,moderate,True
+"Food and Tobacco Roasting, Baking, and Drying Machine Operators and Tenders",agentic_confirmed,0.00,-2.73,3,low,False
+"Foreign Language and Literature Teachers, Postsecondary",agentic_confirmed,56.19,-5.82,7,moderate,False
+Forensic Science Technicians,agentic_confirmed,14.61,-4.65,7,moderate,False
+Forest Fire Inspectors and Prevention Specialists,agentic_confirmed,0.00,-4.15,7,moderate,False
+Forest and Conservation Technicians,agentic_confirmed,5.30,-2.99,5,moderate,False
+Forest and Conservation Workers,agentic_confirmed,0.00,-1.84,5,moderate,False
+Foresters,agentic_confirmed,0.00,-4.84,3,low,False
+"Forestry and Conservation Science Teachers, Postsecondary",agentic_confirmed,51.86,-6.53,7,moderate,False
+"Forging Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,0.00,-3.94,4,moderate,False
+Foundry Mold and Coremakers,agentic_confirmed,0.00,-3.51,4,moderate,False
+"Fraud Examiners, Investigators and Analysts",agentic_confirmed,36.96,-5.49,7,moderate,False
+Freight Forwarders,agentic_confirmed,26.68,-3.71,9,moderate,True
+Fuel Cell Engineers,agentic_confirmed,2.30,-7.17,3,low,False
+Fundraisers,agentic_confirmed,14.57,-4.85,8,moderate,True
+Fundraising Managers,agentic_confirmed,5.96,-5.12,5,moderate,False
+Funeral Attendants,agentic_confirmed,15.40,-2.18,10,moderate,True
+Funeral Home Managers,agentic_confirmed,9.55,-3.96,9,moderate,True
+"Furnace, Kiln, Oven, Drier, and Kettle Operators and Tenders",agentic_confirmed,4.44,-4.07,3,low,False
+Furniture Finishers,agentic_confirmed,0.00,-3.43,4,moderate,False
+Gambling Cage Workers,agentic_confirmed,10.25,-1.36,10,moderate,True
+Gambling Change Persons and Booth Cashiers,agentic_confirmed,0.00,-1.36,4,moderate,False
+Gambling Dealers,agentic_confirmed,9.16,-2.03,10,moderate,True
+Gambling Managers,agentic_confirmed,7.92,-4.94,6,moderate,False
+Gambling Surveillance Officers and Gambling Investigators,agentic_confirmed,15.41,-3.41,10,moderate,True
+Gambling and Sports Book Writers and Runners,agentic_confirmed,3.31,-2.02,6,moderate,False
+Gas Compressor and Gas Pumping Station Operators,agentic_confirmed,0.00,-4.24,4,moderate,False
+Gas Plant Operators,agentic_confirmed,10.55,-4.23,6,moderate,False
+Gem and Diamond Workers,agentic_confirmed,0.00,-2.76,4,moderate,False
+General Internal Medicine Physicians,agentic_confirmed,28.46,-7.24,7,moderate,False
+General and Operations Managers,agentic_confirmed,8.65,-5.02,5,moderate,False
+Genetic Counselors,agentic_confirmed,13.27,-6.08,7,moderate,False
+Geneticists,agentic_confirmed,33.78,-7.60,7,moderate,False
+Geodetic Surveyors,agentic_confirmed,3.55,-5.87,5,moderate,False
+Geographers,agentic_confirmed,25.60,-6.09,8,moderate,True
+Geographic Information Systems Technologists and Technicians,agentic_confirmed,47.33,-4.30,10,high,False
+"Geography Teachers, Postsecondary",agentic_confirmed,54.17,-6.25,8,high,False
+"Geological Technicians, Except Hydrologic Technicians",agentic_confirmed,23.36,-3.18,8,moderate,True
+"Geoscientists, Except Hydrologists and Geographers",agentic_confirmed,7.10,-6.10,5,moderate,False
+Geothermal Production Managers,agentic_confirmed,0.00,-5.72,1,low,False
+Geothermal Technicians,agentic_confirmed,0.00,-4.62,4,moderate,False
+"Glass Blowers, Molders, Benders, and Finishers",agentic_confirmed,0.00,-4.98,2,low,False
+Glaziers,agentic_confirmed,0.00,-3.36,4,moderate,False
+Government Property Inspectors and Investigators,agentic_confirmed,28.20,-5.72,6,moderate,False
+"Graders and Sorters, Agricultural Products",agentic_confirmed,0.00,-1.52,3,low,False
+Graphic Designers,agentic_confirmed,45.84,-4.36,9,high,False
+"Grinding and Polishing Workers, Hand",agentic_confirmed,0.00,-5.37,2,low,False
+"Grinding, Lapping, Polishing, and Buffing Machine Tool Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,0.00,-5.26,2,low,False
+"Hairdressers, Hairstylists, and Cosmetologists",agentic_confirmed,24.00,-2.94,8,moderate,True
+Hazardous Materials Removal Workers,agentic_confirmed,6.63,-4.02,4,moderate,False
+Health Education Specialists,agentic_confirmed,34.06,-4.84,8,high,False
+Health Informatics Specialists,agentic_confirmed,42.82,-5.53,7,moderate,False
+Health Information Technologists and Medical Registrars,agentic_confirmed,30.02,,4,moderate,False
+"Health Specialties Teachers, Postsecondary",agentic_confirmed,54.47,-6.04,7,moderate,False
+"Health and Safety Engineers, Except Mining Safety Engineers and Inspectors",agentic_confirmed,4.19,-4.94,1,low,False
+Healthcare Social Workers,agentic_confirmed,19.88,-7.21,7,moderate,False
+Hearing Aid Specialists,agentic_confirmed,0.00,-4.13,6,moderate,False
+"Heat Treating Equipment Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,0.00,-5.10,1,low,False
+"Heating, Air Conditioning, and Refrigeration Mechanics and Installers",agentic_confirmed,5.70,-5.35,4,moderate,False
+Heavy and Tractor-Trailer Truck Drivers,agentic_confirmed,10.98,-4.53,8,moderate,True
+"Helpers--Brickmasons, Blockmasons, Stonemasons, and Tile and Marble Setters",agentic_confirmed,0.00,-4.36,4,moderate,False
+Helpers--Carpenters,agentic_confirmed,0.00,-2.74,4,moderate,False
+Helpers--Electricians,agentic_confirmed,0.00,-3.94,4,moderate,False
+Helpers--Extraction Workers,agentic_confirmed,0.00,-5.04,2,low,False
+"Helpers--Installation, Maintenance, and Repair Workers",agentic_confirmed,0.00,-4.54,4,moderate,False
+"Helpers--Painters, Paperhangers, Plasterers, and Stucco Masons",agentic_confirmed,0.00,-1.20,4,moderate,False
+"Helpers--Pipelayers, Plumbers, Pipefitters, and Steamfitters",agentic_confirmed,0.00,-4.78,2,low,False
+Helpers--Production Workers,agentic_confirmed,5.79,-4.43,3,low,False
+Helpers--Roofers,agentic_confirmed,0.00,-3.07,4,moderate,False
+Highway Maintenance Workers,agentic_confirmed,0.00,-3.60,4,moderate,False
+Histology Technicians,agentic_confirmed,7.20,-2.26,7,moderate,False
+Historians,agentic_confirmed,41.33,-5.16,8,high,False
+"History Teachers, Postsecondary",agentic_confirmed,60.52,-6.35,7,moderate,False
+Histotechnologists,agentic_confirmed,10.54,-2.82,8,moderate,True
+Hoist and Winch Operators,agentic_confirmed,0.00,-4.86,2,low,False
+Home Appliance Repairers,agentic_confirmed,0.00,-3.90,4,moderate,False
+Home Health Aides,agentic_confirmed,0.00,-1.57,6,moderate,False
+Hospitalists,agentic_confirmed,0.00,-7.57,3,low,False
+"Hosts and Hostesses, Restaurant, Lounge, and Coffee Shop",agentic_confirmed,21.87,-1.14,10,moderate,True
+"Hotel, Motel, and Resort Desk Clerks",agentic_confirmed,34.94,-2.38,10,high,False
+Human Factors Engineers and Ergonomists,agentic_confirmed,14.62,-5.90,3,low,False
+"Human Resources Assistants, Except Payroll and Timekeeping",agentic_confirmed,67.30,-4.39,11,high,False
+Human Resources Managers,agentic_confirmed,18.65,-6.79,7,moderate,False
+Human Resources Specialists,agentic_confirmed,63.88,-4.69,7,moderate,False
+Hydroelectric Plant Technicians,agentic_confirmed,0.00,-5.71,1,low,False
+Hydroelectric Production Managers,agentic_confirmed,0.00,-5.61,1,low,False
+Hydrologic Technicians,agentic_confirmed,0.00,,2,low,False
+Hydrologists,agentic_confirmed,8.85,-6.84,8,moderate,True
+Industrial Ecologists,agentic_confirmed,2.00,-6.19,1,low,False
+Industrial Engineering Technologists and Technicians,agentic_confirmed,3.12,-4.89,4,moderate,False
+Industrial Engineers,agentic_confirmed,7.60,-5.78,1,low,False
+Industrial Machinery Mechanics,agentic_confirmed,4.83,-5.25,1,low,False
+Industrial Production Managers,agentic_confirmed,0.00,-5.71,1,low,False
+Industrial Truck and Tractor Operators,agentic_confirmed,0.00,-3.14,4,moderate,False
+Industrial-Organizational Psychologists,agentic_confirmed,57.57,-8.43,7,moderate,False
+Information Security Analysts,agentic_confirmed,69.90,-4.95,7,moderate,False
+Information Security Engineers,agentic_confirmed,0.00,-5.06,3,low,False
+Information Technology Project Managers,agentic_confirmed,48.35,-5.23,7,moderate,False
+"Inspectors, Testers, Sorters, Samplers, and Weighers",agentic_confirmed,10.96,-3.23,9,moderate,True
+Instructional Coordinators,agentic_confirmed,61.87,-5.65,7,moderate,False
+"Insulation Workers, Floor, Ceiling, and Wall",agentic_confirmed,0.00,-3.01,4,moderate,False
+"Insulation Workers, Mechanical",agentic_confirmed,3.56,-3.88,6,moderate,False
+"Insurance Appraisers, Auto Damage",agentic_confirmed,0.00,-3.83,5,moderate,False
+Insurance Claims and Policy Processing Clerks,agentic_confirmed,47.89,-2.71,11,high,False
+Insurance Sales Agents,agentic_confirmed,46.68,-3.36,9,high,False
+Insurance Underwriters,agentic_confirmed,30.74,-3.12,9,moderate,True
+Intelligence Analysts,agentic_confirmed,53.44,-5.34,7,moderate,False
+Interior Designers,agentic_confirmed,6.86,-5.59,6,moderate,False
+Interpreters and Translators,agentic_confirmed,41.43,-4.11,10,high,False
+"Interviewers, Except Eligibility and Loan",agentic_confirmed,43.61,-3.88,9,high,False
+Investment Fund Managers,agentic_confirmed,66.18,-5.69,5,moderate,False
+"Janitors and Cleaners, Except Maids and Housekeeping Cleaners",agentic_confirmed,0.00,-0.60,4,moderate,False
+Jewelers and Precious Stone and Metal Workers,agentic_confirmed,3.55,-2.60,8,moderate,True
+"Judges, Magistrate Judges, and Magistrates",agentic_confirmed,15.69,-8.55,6,moderate,False
+Judicial Law Clerks,agentic_confirmed,28.28,-7.28,7,moderate,False
+"Kindergarten Teachers, Except Special Education",agentic_confirmed,14.92,-4.05,9,moderate,True
+Labor Relations Specialists,agentic_confirmed,28.85,-5.99,6,moderate,False
+"Laborers and Freight, Stock, and Material Movers, Hand",agentic_confirmed,0.00,-3.03,4,moderate,False
+Landscape Architects,agentic_confirmed,5.97,-5.86,3,low,False
+Landscaping and Groundskeeping Workers,agentic_confirmed,0.00,-3.59,4,moderate,False
+"Lathe and Turning Machine Tool Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,0.00,-3.76,4,moderate,False
+Laundry and Dry-Cleaning Workers,agentic_confirmed,0.00,-0.14,3,low,False
+"Law Teachers, Postsecondary",agentic_confirmed,63.46,-8.68,8,high,False
+Lawyers,agentic_confirmed,28.18,-7.98,7,moderate,False
+"Layout Workers, Metal and Plastic",agentic_confirmed,0.00,-3.12,4,moderate,False
+Legal Secretaries and Administrative Assistants,agentic_confirmed,38.91,-4.62,9,high,False
+Legislators,agentic_confirmed,5.73,,4,moderate,False
+Librarians and Media Collections Specialists,agentic_confirmed,22.66,-4.36,10,moderate,True
+"Library Assistants, Clerical",agentic_confirmed,9.84,-0.72,7,moderate,False
+"Library Science Teachers, Postsecondary",agentic_confirmed,52.35,-7.14,8,high,False
+Library Technicians,agentic_confirmed,26.06,-1.49,10,moderate,True
+Licensed Practical and Licensed Vocational Nurses,agentic_confirmed,13.50,-4.16,8,moderate,True
+"Lifeguards, Ski Patrol, and Other Recreational Protective Service Workers",agentic_confirmed,0.00,-2.41,6,moderate,False
+Light Truck Drivers,agentic_confirmed,0.00,-2.18,4,moderate,False
+Lighting Technicians,agentic_confirmed,0.00,,2,low,False
+"Loading and Moving Machine Operators, Underground Mining",agentic_confirmed,0.00,-3.87,3,low,False
+Loan Interviewers and Clerks,agentic_confirmed,36.86,-4.14,10,high,False
+Loan Officers,agentic_confirmed,32.14,-4.37,9,moderate,True
+"Locker Room, Coatroom, and Dressing Room Attendants",agentic_confirmed,5.30,-0.39,7,moderate,False
+Locksmiths and Safe Repairers,agentic_confirmed,0.00,-3.23,4,moderate,False
+Locomotive Engineers,agentic_confirmed,0.00,-4.83,2,low,False
+Lodging Managers,agentic_confirmed,22.19,-6.00,8,moderate,True
+Log Graders and Scalers,agentic_confirmed,0.00,-1.68,3,low,False
+Logging Equipment Operators,agentic_confirmed,0.00,-7.15,1,low,False
+Logisticians,agentic_confirmed,17.63,-5.34,5,moderate,False
+Logistics Analysts,agentic_confirmed,50.51,-4.66,7,moderate,False
+Logistics Engineers,agentic_confirmed,33.42,-6.68,3,low,False
+Loss Prevention Managers,agentic_confirmed,4.15,-5.77,3,low,False
+"Low Vision Therapists, Orientation and Mobility Specialists, and Vision Rehabilitation Therapists",agentic_confirmed,11.51,-4.72,7,moderate,False
+Machine Feeders and Offbearers,agentic_confirmed,0.00,-4.39,4,moderate,False
+Machinists,agentic_confirmed,7.16,-3.93,7,moderate,False
+Magnetic Resonance Imaging Technologists,agentic_confirmed,4.81,-3.93,5,moderate,False
+Maids and Housekeeping Cleaners,agentic_confirmed,0.00,-1.97,4,moderate,False
+"Mail Clerks and Mail Machine Operators, Except Postal Service",agentic_confirmed,8.68,-0.87,10,moderate,True
+"Maintenance Workers, Machinery",agentic_confirmed,0.00,-5.33,1,low,False
+"Maintenance and Repair Workers, General",agentic_confirmed,0.00,-4.99,3,low,False
+"Makeup Artists, Theatrical and Performance",agentic_confirmed,0.00,-3.82,6,moderate,False
+Management Analysts,agentic_confirmed,25.41,-5.44,5,moderate,False
+Manicurists and Pedicurists,agentic_confirmed,5.80,-1.32,3,low,False
+Manufactured Building and Mobile Home Installers,agentic_confirmed,0.00,-5.89,2,low,False
+Manufacturing Engineers,agentic_confirmed,21.77,-7.87,5,moderate,False
+Marine Engineers and Naval Architects,agentic_confirmed,5.12,-7.19,3,low,False
+Market Research Analysts and Marketing Specialists,agentic_confirmed,77.33,-5.50,7,moderate,False
+Marketing Managers,agentic_confirmed,62.85,-5.47,7,moderate,False
+Marriage and Family Therapists,agentic_confirmed,37.29,-7.55,7,moderate,False
+Massage Therapists,agentic_confirmed,8.48,-2.32,7,moderate,False
+Materials Engineers,agentic_confirmed,0.00,-7.10,1,low,False
+Materials Scientists,agentic_confirmed,29.54,-7.32,5,moderate,False
+"Mathematical Science Teachers, Postsecondary",agentic_confirmed,53.52,-7.05,7,moderate,False
+Mathematicians,agentic_confirmed,33.71,-7.88,7,moderate,False
+"Meat, Poultry, and Fish Cutters and Trimmers",agentic_confirmed,0.00,-2.55,3,low,False
+Mechanical Door Repairers,agentic_confirmed,0.00,-4.72,2,low,False
+Mechanical Drafters,agentic_confirmed,6.90,-4.80,2,low,False
+Mechanical Engineering Technologists and Technicians,agentic_confirmed,17.18,-5.30,5,moderate,False
+Mechanical Engineers,agentic_confirmed,19.23,-7.01,3,low,False
+Mechatronics Engineers,agentic_confirmed,7.34,-7.24,3,low,False
+Media Programming Directors,agentic_confirmed,26.93,-5.77,8,moderate,True
+Media Technical Directors/Managers,agentic_confirmed,7.50,-5.67,6,moderate,False
+Medical Appliance Technicians,agentic_confirmed,0.00,-4.21,4,moderate,False
+Medical Assistants,agentic_confirmed,22.57,-4.27,11,moderate,True
+Medical Dosimetrists,agentic_confirmed,0.00,-5.33,2,low,False
+Medical Equipment Preparers,agentic_confirmed,0.00,-3.73,4,moderate,False
+Medical Equipment Repairers,agentic_confirmed,15.50,-4.64,3,low,False
+Medical Records Specialists,agentic_confirmed,18.61,,4,moderate,False
+"Medical Scientists, Except Epidemiologists",agentic_confirmed,4.31,-7.87,5,moderate,False
+Medical Secretaries and Administrative Assistants,agentic_confirmed,46.95,-2.41,11,high,False
+Medical Transcriptionists,agentic_confirmed,49.88,-4.05,10,high,False
+Medical and Clinical Laboratory Technicians,agentic_confirmed,5.15,-3.27,4,moderate,False
+Medical and Clinical Laboratory Technologists,agentic_confirmed,34.28,-6.22,5,moderate,False
+Medical and Health Services Managers,agentic_confirmed,25.69,-6.73,7,moderate,False
+"Meeting, Convention, and Event Planners",agentic_confirmed,48.73,-4.87,8,high,False
+Mental Health Counselors,agentic_confirmed,40.82,-8.75,7,moderate,False
+Mental Health and Substance Abuse Social Workers,agentic_confirmed,30.86,-6.72,7,moderate,False
+Merchandise Displayers and Window Trimmers,agentic_confirmed,0.00,-2.31,7,moderate,False
+Metal-Refining Furnace Operators and Tenders,agentic_confirmed,0.00,-4.73,1,low,False
+"Meter Readers, Utilities",agentic_confirmed,22.84,-1.37,8,moderate,True
+Microbiologists,agentic_confirmed,29.10,-6.86,8,moderate,True
+Microsystems Engineers,agentic_confirmed,20.51,-7.81,5,moderate,False
+"Middle School Teachers, Except Special and Career/Technical Education",agentic_confirmed,43.46,-4.30,9,high,False
+Midwives,agentic_confirmed,14.62,-5.87,7,moderate,False
+"Milling and Planing Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,0.00,-4.27,4,moderate,False
+Millwrights,agentic_confirmed,0.00,-6.77,1,low,False
+"Mining and Geological Engineers, Including Mining Safety Engineers",agentic_confirmed,0.00,-6.84,1,low,False
+"Mixing and Blending Machine Setters, Operators, and Tenders",agentic_confirmed,11.50,-7.22,6,moderate,False
+"Mobile Heavy Equipment Mechanics, Except Engines",agentic_confirmed,3.08,-5.81,1,low,False
+"Model Makers, Metal and Plastic",agentic_confirmed,0.00,-6.24,2,low,False
+"Model Makers, Wood",agentic_confirmed,7.38,-3.99,4,moderate,False
+Models,agentic_confirmed,11.74,,3,low,False
+"Molders, Shapers, and Casters, Except Metal and Plastic",agentic_confirmed,2.32,-5.09,3,low,False
+"Molding, Coremaking, and Casting Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,0.00,-3.73,4,moderate,False
+Molecular and Cellular Biologists,agentic_confirmed,35.67,-8.33,7,moderate,False
+"Morticians, Undertakers, and Funeral Arrangers",agentic_confirmed,0.00,-3.24,6,moderate,False
+Motion Picture Projectionists,agentic_confirmed,0.00,-2.67,4,moderate,False
+Motorboat Mechanics and Service Technicians,agentic_confirmed,0.00,-5.44,2,low,False
+Motorboat Operators,agentic_confirmed,0.00,-6.16,2,low,False
+Motorcycle Mechanics,agentic_confirmed,0.00,-4.40,4,moderate,False
+"Multiple Machine Tool Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,9.86,-4.49,8,moderate,True
+Museum Technicians and Conservators,agentic_confirmed,0.00,-2.81,4,moderate,False
+Music Directors and Composers,agentic_confirmed,5.32,-4.30,7,moderate,False
+Music Therapists,agentic_confirmed,17.22,-7.65,6,moderate,False
+Musical Instrument Repairers and Tuners,agentic_confirmed,4.22,-5.16,1,low,False
+Musicians and Singers,agentic_confirmed,17.54,-3.82,9,moderate,True
+Nannies,agentic_confirmed,3.74,-2.03,8,moderate,True
+Nanosystems Engineers,agentic_confirmed,30.61,-7.95,5,moderate,False
+Nanotechnology Engineering Technologists and Technicians,agentic_confirmed,14.20,-6.52,5,moderate,False
+Natural Sciences Managers,agentic_confirmed,16.14,-6.66,7,moderate,False
+Naturopathic Physicians,agentic_confirmed,35.59,-7.19,6,moderate,False
+Network and Computer Systems Administrators,agentic_confirmed,53.76,-5.26,5,moderate,False
+Neurodiagnostic Technologists,agentic_confirmed,4.40,-3.86,5,moderate,False
+Neurologists,agentic_confirmed,7.65,-8.50,3,low,False
+Neuropsychologists,agentic_confirmed,3.89,-8.21,5,moderate,False
+New Accounts Clerks,agentic_confirmed,10.79,-2.85,8,moderate,True
+"News Analysts, Reporters, and Journalists",agentic_confirmed,46.43,-4.35,10,high,False
+Non-Destructive Testing Specialists,agentic_confirmed,17.25,-4.78,4,moderate,False
+Nuclear Engineers,agentic_confirmed,8.32,-8.05,1,low,False
+Nuclear Medicine Technologists,agentic_confirmed,16.66,-4.16,9,moderate,True
+Nuclear Monitoring Technicians,agentic_confirmed,6.79,-3.58,6,moderate,False
+Nuclear Power Reactor Operators,agentic_confirmed,0.00,-5.66,1,low,False
+Nuclear Technicians,agentic_confirmed,0.00,-5.07,2,low,False
+Nurse Anesthetists,agentic_confirmed,0.00,-6.61,1,low,False
+Nurse Midwives,agentic_confirmed,23.19,-6.79,5,moderate,False
+Nurse Practitioners,agentic_confirmed,28.27,-6.45,7,moderate,False
+Nursing Assistants,agentic_confirmed,0.00,-1.88,6,moderate,False
+"Nursing Instructors and Teachers, Postsecondary",agentic_confirmed,44.47,-6.68,7,moderate,False
+Obstetricians and Gynecologists,agentic_confirmed,45.53,-7.45,6,moderate,False
+Occupational Health and Safety Specialists,agentic_confirmed,0.42,-5.21,1,low,False
+Occupational Health and Safety Technicians,agentic_confirmed,9.62,-4.48,8,moderate,True
+Occupational Therapists,agentic_confirmed,19.02,-6.68,7,moderate,False
+Occupational Therapy Aides,agentic_confirmed,8.94,-2.44,10,moderate,True
+Occupational Therapy Assistants,agentic_confirmed,5.30,-3.65,7,moderate,False
+"Office Clerks, General",agentic_confirmed,51.24,-2.05,11,high,False
+"Office Machine Operators, Except Computer",agentic_confirmed,4.80,-1.40,3,low,False
+Online Merchants,agentic_confirmed,68.38,-3.16,9,high,False
+Operating Engineers and Other Construction Equipment Operators,agentic_confirmed,0.00,-5.37,1,low,False
+Operations Research Analysts,agentic_confirmed,41.86,-7.13,5,moderate,False
+Ophthalmic Laboratory Technicians,agentic_confirmed,0.00,-3.62,4,moderate,False
+Ophthalmic Medical Technicians,agentic_confirmed,0.00,-3.02,5,moderate,False
+Ophthalmic Medical Technologists,agentic_confirmed,0.00,-3.44,5,moderate,False
+"Ophthalmologists, Except Pediatric",agentic_confirmed,9.39,-7.14,7,moderate,False
+"Opticians, Dispensing",agentic_confirmed,0.00,-3.64,6,moderate,False
+Optometrists,agentic_confirmed,19.12,-5.51,5,moderate,False
+Oral and Maxillofacial Surgeons,agentic_confirmed,0.00,-7.83,2,low,False
+Order Clerks,agentic_confirmed,50.27,-3.67,11,high,False
+Orderlies,agentic_confirmed,0.00,-2.74,4,moderate,False
+Orthodontists,agentic_confirmed,8.62,-5.31,3,low,False
+"Orthopedic Surgeons, Except Pediatric",agentic_confirmed,0.00,,0,low,False
+Orthoptists,agentic_confirmed,11.23,-5.08,6,moderate,False
+Orthotists and Prosthetists,agentic_confirmed,0.00,-6.35,1,low,False
+Outdoor Power Equipment and Other Small Engine Mechanics,agentic_confirmed,6.53,-4.52,3,low,False
+Packaging and Filling Machine Operators and Tenders,agentic_confirmed,0.00,-3.39,4,moderate,False
+"Packers and Packagers, Hand",agentic_confirmed,9.14,-2.17,8,moderate,True
+"Painters, Construction and Maintenance",agentic_confirmed,2.06,-1.21,4,moderate,False
+"Painting, Coating, and Decorating Workers",agentic_confirmed,0.00,-3.29,3,low,False
+"Paper Goods Machine Setters, Operators, and Tenders",agentic_confirmed,0.00,-2.53,4,moderate,False
+Paperhangers,agentic_confirmed,2.72,-3.25,6,moderate,False
+Paralegals and Legal Assistants,agentic_confirmed,29.29,-4.92,9,moderate,True
+Paramedics,agentic_confirmed,0.00,,2,low,False
+Park Naturalists,agentic_confirmed,0.00,-4.03,5,moderate,False
+Parking Attendants,agentic_confirmed,5.10,-0.53,3,low,False
+Parking Enforcement Workers,agentic_confirmed,0.00,-1.14,6,moderate,False
+Parts Salespersons,agentic_confirmed,13.80,-3.49,6,moderate,False
+Passenger Attendants,agentic_confirmed,20.51,-2.61,10,moderate,True
+Patient Representatives,agentic_confirmed,75.13,-3.68,10,high,False
+"Patternmakers, Metal and Plastic",agentic_confirmed,10.56,-3.75,6,moderate,False
+"Patternmakers, Wood",agentic_confirmed,8.99,-4.50,8,moderate,True
+"Paving, Surfacing, and Tamping Equipment Operators",agentic_confirmed,0.00,-7.04,2,low,False
+Payroll and Timekeeping Clerks,agentic_confirmed,20.64,-4.03,11,moderate,True
+Pediatric Surgeons,agentic_confirmed,0.00,,0,low,False
+"Pediatricians, General",agentic_confirmed,25.29,-7.12,6,moderate,False
+Penetration Testers,agentic_confirmed,0.00,,1,low,False
+Personal Care Aides,agentic_confirmed,10.01,-1.80,8,moderate,True
+Personal Financial Advisors,agentic_confirmed,59.97,-5.29,7,moderate,False
+Pest Control Workers,agentic_confirmed,18.43,-2.50,5,moderate,False
+"Pesticide Handlers, Sprayers, and Applicators, Vegetation",agentic_confirmed,0.00,-2.10,3,low,False
+Petroleum Engineers,agentic_confirmed,0.00,-5.38,1,low,False
+"Petroleum Pump System Operators, Refinery Operators, and Gaugers",agentic_confirmed,7.99,-4.36,3,low,False
+Pharmacists,agentic_confirmed,24.97,-5.78,7,moderate,False
+Pharmacy Aides,agentic_confirmed,13.38,-0.62,9,moderate,True
+Pharmacy Technicians,agentic_confirmed,13.00,-3.41,8,moderate,True
+"Philosophy and Religion Teachers, Postsecondary",agentic_confirmed,62.34,-6.61,8,high,False
+Phlebotomists,agentic_confirmed,5.25,-2.91,6,moderate,False
+Photographers,agentic_confirmed,32.66,-3.74,11,moderate,True
+Photographic Process Workers and Processing Machine Operators,agentic_confirmed,1.53,-2.37,4,moderate,False
+Photonics Engineers,agentic_confirmed,31.32,-8.82,5,moderate,False
+Photonics Technicians,agentic_confirmed,0.00,-4.11,4,moderate,False
+Physical Medicine and Rehabilitation Physicians,agentic_confirmed,0.00,-7.66,4,moderate,False
+Physical Therapist Aides,agentic_confirmed,0.00,-1.74,6,moderate,False
+Physical Therapist Assistants,agentic_confirmed,0.00,-4.24,7,moderate,False
+Physical Therapists,agentic_confirmed,17.38,-5.57,6,moderate,False
+Physician Assistants,agentic_confirmed,40.25,-7.51,6,moderate,False
+"Physicians, Pathologists",agentic_confirmed,25.60,-7.07,8,moderate,True
+Physicists,agentic_confirmed,10.02,-10.89,3,low,False
+"Physics Teachers, Postsecondary",agentic_confirmed,60.03,-8.09,7,moderate,False
+Pile Driver Operators,agentic_confirmed,0.00,-6.76,1,low,False
+Pipelayers,agentic_confirmed,0.00,-4.96,2,low,False
+Plasterers and Stucco Masons,agentic_confirmed,0.00,-2.94,3,low,False
+"Plating Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,4.93,-2.56,4,moderate,False
+"Plumbers, Pipefitters, and Steamfitters",agentic_confirmed,12.15,-5.50,6,moderate,False
+Podiatrists,agentic_confirmed,0.00,-6.63,2,low,False
+"Poets, Lyricists and Creative Writers",agentic_confirmed,63.89,-5.28,8,high,False
+Police Identification and Records Officers,agentic_confirmed,0.00,-4.14,6,moderate,False
+Police and Sheriff's Patrol Officers,agentic_confirmed,15.94,-5.44,6,moderate,False
+"Political Science Teachers, Postsecondary",agentic_confirmed,62.15,-6.06,8,high,False
+Political Scientists,agentic_confirmed,40.71,-5.99,8,high,False
+Postal Service Clerks,agentic_confirmed,0.00,-1.26,4,moderate,False
+Postal Service Mail Carriers,agentic_confirmed,0.00,-0.66,5,moderate,False
+"Postal Service Mail Sorters, Processors, and Processing Machine Operators",agentic_confirmed,8.70,1.13,8,moderate,True
+Postmasters and Mail Superintendents,agentic_confirmed,12.06,-4.37,10,moderate,True
+"Potters, Manufacturing",agentic_confirmed,0.00,-4.10,4,moderate,False
+"Pourers and Casters, Metal",agentic_confirmed,0.00,-0.58,3,low,False
+Power Distributors and Dispatchers,agentic_confirmed,7.04,-3.53,6,moderate,False
+Power Plant Operators,agentic_confirmed,2.81,-4.60,4,moderate,False
+Precision Agriculture Technicians,agentic_confirmed,16.30,-3.88,9,moderate,True
+Prepress Technicians and Workers,agentic_confirmed,12.70,-2.32,8,moderate,True
+"Preschool Teachers, Except Special Education",agentic_confirmed,11.83,-2.55,10,moderate,True
+"Pressers, Textile, Garment, and Related Materials",agentic_confirmed,0.00,-3.91,3,low,False
+Preventive Medicine Physicians,agentic_confirmed,0.00,-8.61,4,moderate,False
+Print Binding and Finishing Workers,agentic_confirmed,0.00,-2.59,4,moderate,False
+Printing Press Operators,agentic_confirmed,0.00,-5.92,3,low,False
+Private Detectives and Investigators,agentic_confirmed,6.26,-4.91,4,moderate,False
+Probation Officers and Correctional Treatment Specialists,agentic_confirmed,0.00,-5.08,2,low,False
+Procurement Clerks,agentic_confirmed,34.27,-3.31,11,high,False
+Producers and Directors,agentic_confirmed,44.72,-5.23,7,moderate,False
+"Production, Planning, and Expediting Clerks",agentic_confirmed,23.16,-3.99,11,moderate,True
+Project Management Specialists,agentic_confirmed,0.00,,1,low,False
+Proofreaders and Copy Markers,agentic_confirmed,12.53,-2.75,8,moderate,True
+"Property, Real Estate, and Community Association Managers",agentic_confirmed,33.17,-4.34,9,high,False
+Prosthodontists,agentic_confirmed,10.45,-4.94,4,moderate,False
+Psychiatric Aides,agentic_confirmed,8.62,-2.54,6,moderate,False
+Psychiatric Technicians,agentic_confirmed,0.00,-3.31,6,moderate,False
+Psychiatrists,agentic_confirmed,22.72,-8.11,5,moderate,False
+"Psychology Teachers, Postsecondary",agentic_confirmed,53.07,-7.17,7,moderate,False
+Public Relations Managers,agentic_confirmed,10.67,,5,moderate,False
+Public Relations Specialists,agentic_confirmed,69.72,-7.17,7,moderate,False
+Public Safety Telecommunicators,agentic_confirmed,7.78,-5.31,6,moderate,False
+"Pump Operators, Except Wellhead Pumpers",agentic_confirmed,0.00,-4.00,4,moderate,False
+"Purchasing Agents, Except Wholesale, Retail, and Farm Products",agentic_confirmed,54.44,-5.62,7,moderate,False
+Purchasing Managers,agentic_confirmed,32.83,-5.38,7,moderate,False
+Quality Control Analysts,agentic_confirmed,4.02,-4.29,5,moderate,False
+Quality Control Systems Managers,agentic_confirmed,0.71,-5.96,1,low,False
+Radiation Therapists,agentic_confirmed,4.26,-4.19,7,moderate,False
+Radio Frequency Identification Device Specialists,agentic_confirmed,6.06,-4.79,3,low,False
+"Radio, Cellular, and Tower Equipment Installers and Repairers",agentic_confirmed,13.44,-3.72,8,moderate,True
+Radiologic Technologists and Technicians,agentic_confirmed,3.76,-3.66,8,moderate,True
+Radiologists,agentic_confirmed,18.61,-7.82,8,moderate,True
+Rail Car Repairers,agentic_confirmed,0.00,-6.18,2,low,False
+"Rail Yard Engineers, Dinkey Operators, and Hostlers",agentic_confirmed,0.00,-4.50,4,moderate,False
+Rail-Track Laying and Maintenance Equipment Operators,agentic_confirmed,0.00,-5.75,2,low,False
+"Railroad Brake, Signal, and Switch Operators and Locomotive Firers",agentic_confirmed,0.00,-4.49,4,moderate,False
+Railroad Conductors and Yardmasters,agentic_confirmed,0.00,-3.78,4,moderate,False
+Range Managers,agentic_confirmed,0.00,-4.04,6,moderate,False
+Real Estate Brokers,agentic_confirmed,60.66,-4.08,9,high,False
+Real Estate Sales Agents,agentic_confirmed,59.50,-4.38,10,high,False
+Receptionists and Information Clerks,agentic_confirmed,50.12,-2.39,11,high,False
+Recreation Workers,agentic_confirmed,0.00,-3.08,5,moderate,False
+"Recreation and Fitness Studies Teachers, Postsecondary",agentic_confirmed,57.53,-4.96,7,moderate,False
+Recreational Therapists,agentic_confirmed,13.53,-5.76,7,moderate,False
+Recreational Vehicle Service Technicians,agentic_confirmed,0.00,-4.24,4,moderate,False
+Recycling Coordinators,agentic_confirmed,7.95,-3.29,8,moderate,True
+Recycling and Reclamation Workers,agentic_confirmed,0.00,-4.27,4,moderate,False
+"Refractory Materials Repairers, Except Brickmasons",agentic_confirmed,0.00,-6.94,1,low,False
+Refuse and Recyclable Material Collectors,agentic_confirmed,1.83,-6.06,4,moderate,False
+Registered Nurses,agentic_confirmed,19.43,-5.35,5,moderate,False
+Regulatory Affairs Managers,agentic_confirmed,27.89,-5.06,7,moderate,False
+Regulatory Affairs Specialists,agentic_confirmed,16.05,-5.21,7,moderate,False
+Rehabilitation Counselors,agentic_confirmed,14.16,-4.81,8,moderate,True
+Reinforcing Iron and Rebar Workers,agentic_confirmed,0.00,-4.71,2,low,False
+Remote Sensing Scientists and Technologists,agentic_confirmed,27.49,-6.67,5,moderate,False
+Remote Sensing Technicians,agentic_confirmed,10.87,-4.91,4,moderate,False
+Reservation and Transportation Ticket Agents and Travel Clerks,agentic_confirmed,18.79,-3.68,10,moderate,True
+Residential Advisors,agentic_confirmed,17.78,-3.43,10,moderate,True
+Respiratory Therapists,agentic_confirmed,0.00,-4.61,5,moderate,False
+Retail Loss Prevention Specialists,agentic_confirmed,35.26,-3.24,10,high,False
+Retail Salespersons,agentic_confirmed,37.64,-2.06,11,high,False
+Riggers,agentic_confirmed,0.00,-3.64,4,moderate,False
+Robotics Engineers,agentic_confirmed,36.31,-8.92,5,moderate,False
+Robotics Technicians,agentic_confirmed,4.02,-6.65,3,low,False
+"Rock Splitters, Quarry",agentic_confirmed,0.00,-5.73,2,low,False
+"Rolling Machine Setters, Operators, and Tenders, Metal and Plastic",agentic_confirmed,0.00,-4.79,1,low,False
+"Roof Bolters, Mining",agentic_confirmed,0.00,-5.41,1,low,False
+Roofers,agentic_confirmed,5.41,-3.78,4,moderate,False
+"Rotary Drill Operators, Oil and Gas",agentic_confirmed,0.00,-4.16,4,moderate,False
+"Roustabouts, Oil and Gas",agentic_confirmed,0.00,-4.54,4,moderate,False
+Sailors and Marine Oilers,agentic_confirmed,0.00,-4.86,2,low,False
+Sales Engineers,agentic_confirmed,51.57,-7.23,3,low,False
+Sales Managers,agentic_confirmed,47.26,-5.62,7,moderate,False
+"Sales Representatives of Services, Except Advertising, Insurance, Financial Services, and Travel",agentic_confirmed,0.00,,1,low,False
+"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products",agentic_confirmed,59.56,-5.05,7,moderate,False
+"Sales Representatives, Wholesale and Manufacturing, Technical and Scientific Products",agentic_confirmed,58.36,-4.41,9,high,False
+"Sawing Machine Setters, Operators, and Tenders, Wood",agentic_confirmed,4.20,-5.03,3,low,False
+School Bus Monitors,agentic_confirmed,0.00,,1,low,False
+School Psychologists,agentic_confirmed,8.31,-7.23,3,low,False
+Search Marketing Strategists,agentic_confirmed,72.72,-5.23,7,moderate,False
+"Secondary School Teachers, Except Special and Career/Technical Education",agentic_confirmed,48.06,-4.82,7,moderate,False
+"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",agentic_confirmed,49.12,-4.52,11,high,False
+"Securities, Commodities, and Financial Services Sales Agents",agentic_confirmed,52.76,-3.79,9,high,False
+Security Guards,agentic_confirmed,23.52,-3.62,10,moderate,True
+Security Management Specialists,agentic_confirmed,15.79,-6.03,5,moderate,False
+Security Managers,agentic_confirmed,20.20,-6.93,7,moderate,False
+Security and Fire Alarm Systems Installers,agentic_confirmed,9.70,-3.59,6,moderate,False
+Segmental Pavers,agentic_confirmed,0.00,-4.48,4,moderate,False
+Self-Enrichment Teachers,agentic_confirmed,46.27,-2.87,10,high,False
+Semiconductor Processing Technicians,agentic_confirmed,0.00,-3.13,3,low,False
+"Separating, Filtering, Clarifying, Precipitating, and Still Machine Setters, Operators, and Tenders",agentic_confirmed,10.78,-4.17,6,moderate,False
+Septic Tank Servicers and Sewer Pipe Cleaners,agentic_confirmed,0.00,-4.62,2,low,False
+"Service Unit Operators, Oil and Gas",agentic_confirmed,3.66,-4.25,4,moderate,False
+Set and Exhibit Designers,agentic_confirmed,14.82,-4.98,8,moderate,True
+"Sewers, Hand",agentic_confirmed,0.00,-3.53,3,low,False
+Sewing Machine Operators,agentic_confirmed,0.00,-2.91,4,moderate,False
+Shampooers,agentic_confirmed,0.00,-0.90,6,moderate,False
+Sheet Metal Workers,agentic_confirmed,14.63,-2.85,8,moderate,True
+Ship Engineers,agentic_confirmed,5.91,-5.37,4,moderate,False
+"Shipping, Receiving, and Inventory Clerks",agentic_confirmed,28.97,-0.59,9,moderate,True
+Shoe Machine Operators and Tenders,agentic_confirmed,0.00,-3.29,3,low,False
+Shoe and Leather Workers and Repairers,agentic_confirmed,0.00,-2.11,3,low,False
+Shuttle Drivers and Chauffeurs,agentic_confirmed,4.97,-4.04,6,moderate,False
+Signal and Track Switch Repairers,agentic_confirmed,0.00,-5.60,2,low,False
+Skincare Specialists,agentic_confirmed,14.12,-2.18,10,moderate,True
+Slaughterers and Meat Packers,agentic_confirmed,0.00,-4.23,3,low,False
+Social Science Research Assistants,agentic_confirmed,33.99,-3.33,10,high,False
+"Social Work Teachers, Postsecondary",agentic_confirmed,62.03,-7.83,6,moderate,False
+Social and Community Service Managers,agentic_confirmed,18.17,-6.46,6,moderate,False
+Social and Human Service Assistants,agentic_confirmed,0.00,-4.48,5,moderate,False
+Sociologists,agentic_confirmed,53.48,-6.61,8,high,False
+"Sociology Teachers, Postsecondary",agentic_confirmed,52.87,-7.08,8,high,False
+Software Developers,agentic_confirmed,19.58,-5.23,3,low,False
+Software Quality Assurance Analysts and Testers,agentic_confirmed,18.32,-4.72,3,low,False
+Soil and Plant Scientists,agentic_confirmed,13.70,-6.21,8,moderate,True
+Solar Energy Installation Managers,agentic_confirmed,13.82,-4.72,6,moderate,False
+Solar Energy Systems Engineers,agentic_confirmed,0.00,-5.84,1,low,False
+Solar Photovoltaic Installers,agentic_confirmed,19.34,-5.25,6,moderate,False
+Solar Sales Representatives and Assessors,agentic_confirmed,49.76,-3.59,7,moderate,False
+Solar Thermal Installers and Technicians,agentic_confirmed,0.00,-5.69,1,low,False
+Sound Engineering Technicians,agentic_confirmed,14.45,-4.37,9,moderate,True
+Spa Managers,agentic_confirmed,37.41,-4.73,8,high,False
+"Special Education Teachers, Elementary School",agentic_confirmed,7.56,-5.50,2,low,False
+"Special Education Teachers, Kindergarten",agentic_confirmed,7.31,,0,low,False
+"Special Education Teachers, Middle School",agentic_confirmed,32.60,-5.68,7,moderate,False
+"Special Education Teachers, Preschool",agentic_confirmed,12.28,-4.12,7,moderate,False
+"Special Education Teachers, Secondary School",agentic_confirmed,31.03,-5.43,6,moderate,False
+Special Effects Artists and Animators,agentic_confirmed,34.45,-4.08,10,high,False
+Speech-Language Pathologists,agentic_confirmed,0.00,-7.35,3,low,False
+Speech-Language Pathology Assistants,agentic_confirmed,0.00,-4.20,6,moderate,False
+Sports Medicine Physicians,agentic_confirmed,1.17,-7.84,6,moderate,False
+Stationary Engineers and Boiler Operators,agentic_confirmed,0.00,-4.03,4,moderate,False
+Statistical Assistants,agentic_confirmed,64.47,-4.39,10,high,False
+Statisticians,agentic_confirmed,59.91,-8.36,5,moderate,False
+Stockers and Order Fillers,agentic_confirmed,9.23,-0.32,10,moderate,True
+"Stone Cutters and Carvers, Manufacturing",agentic_confirmed,7.55,-1.62,4,moderate,False
+Stonemasons,agentic_confirmed,0.00,-3.74,4,moderate,False
+Structural Iron and Steel Workers,agentic_confirmed,9.21,-6.01,4,moderate,False
+Structural Metal Fabricators and Fitters,agentic_confirmed,0.00,-1.49,4,moderate,False
+Substance Abuse and Behavioral Disorder Counselors,agentic_confirmed,24.68,-6.19,7,moderate,False
+"Substitute Teachers, Short-Term",agentic_confirmed,0.00,-2.08,5,moderate,False
+Subway and Streetcar Operators,agentic_confirmed,8.94,-4.91,4,moderate,False
+Supply Chain Managers,agentic_confirmed,6.79,-6.07,3,low,False
+Surgical Assistants,agentic_confirmed,0.00,-4.75,4,moderate,False
+Surgical Technologists,agentic_confirmed,0.00,-3.32,5,moderate,False
+Survey Researchers,agentic_confirmed,34.71,-5.81,6,moderate,False
+Surveying and Mapping Technicians,agentic_confirmed,2.41,-3.14,5,moderate,False
+Surveyors,agentic_confirmed,0.04,-5.43,1,low,False
+Sustainability Specialists,agentic_confirmed,18.79,-3.93,9,moderate,True
+"Switchboard Operators, Including Answering Service",agentic_confirmed,39.30,-2.23,10,high,False
+"Tailors, Dressmakers, and Custom Sewers",agentic_confirmed,2.73,-2.38,3,low,False
+Talent Directors,agentic_confirmed,13.51,-3.99,9,moderate,True
+"Tank Car, Truck, and Ship Loaders",agentic_confirmed,0.00,-3.39,4,moderate,False
+Tapers,agentic_confirmed,0.00,-8.20,1,low,False
+"Tax Examiners and Collectors, and Revenue Agents",agentic_confirmed,5.40,-4.70,4,moderate,False
+Tax Preparers,agentic_confirmed,28.11,-3.34,8,moderate,True
+Taxi Drivers,agentic_confirmed,9.02,,6,moderate,False
+"Teaching Assistants, Postsecondary",agentic_confirmed,9.73,-4.08,7,moderate,False
+"Teaching Assistants, Preschool, Elementary, Middle, and Secondary School, Except Special Education",agentic_confirmed,8.25,-2.84,7,moderate,False
+"Teaching Assistants, Special Education",agentic_confirmed,6.67,-1.70,7,moderate,False
+Team Assemblers,agentic_confirmed,0.00,-2.54,4,moderate,False
+Technical Writers,agentic_confirmed,63.84,-5.10,7,moderate,False
+Telecommunications Engineering Specialists,agentic_confirmed,49.42,-4.29,8,high,False
+"Telecommunications Equipment Installers and Repairers, Except Line Installers",agentic_confirmed,11.10,-4.85,5,moderate,False
+Telecommunications Line Installers and Repairers,agentic_confirmed,7.64,-3.76,6,moderate,False
+Telemarketers,agentic_confirmed,68.29,-2.62,9,high,False
+Telephone Operators,agentic_confirmed,9.05,-2.47,10,moderate,True
+Tellers,agentic_confirmed,4.20,-1.55,6,moderate,False
+Terrazzo Workers and Finishers,agentic_confirmed,1.85,-4.10,5,moderate,False
+Textile Bleaching and Dyeing Machine Operators and Tenders,agentic_confirmed,4.61,-4.80,1,low,False
+"Textile Cutting Machine Setters, Operators, and Tenders",agentic_confirmed,7.38,-4.37,5,moderate,False
+"Textile Knitting and Weaving Machine Setters, Operators, and Tenders",agentic_confirmed,4.34,-3.76,3,low,False
+"Textile Winding, Twisting, and Drawing Out Machine Setters, Operators, and Tenders",agentic_confirmed,0.00,-4.80,1,low,False
+Tile and Stone Setters,agentic_confirmed,0.00,-2.65,3,low,False
+Timing Device Assemblers and Adjusters,agentic_confirmed,2.40,-5.53,2,low,False
+Tire Builders,agentic_confirmed,0.00,-5.17,2,low,False
+Tire Repairers and Changers,agentic_confirmed,0.00,-1.88,4,moderate,False
+"Title Examiners, Abstractors, and Searchers",agentic_confirmed,38.04,-2.41,11,high,False
+"Tool Grinders, Filers, and Sharpeners",agentic_confirmed,0.00,-5.47,2,low,False
+Tool and Die Makers,agentic_confirmed,3.61,-4.66,3,low,False
+Tour Guides and Escorts,agentic_confirmed,5.09,-2.10,6,moderate,False
+Traffic Technicians,agentic_confirmed,0.00,-3.19,5,moderate,False
+Training and Development Managers,agentic_confirmed,59.78,-7.00,7,moderate,False
+Training and Development Specialists,agentic_confirmed,26.37,-6.13,7,moderate,False
+Transit and Railroad Police,agentic_confirmed,0.00,-4.66,1,low,False
+Transportation Engineers,agentic_confirmed,10.23,-7.43,5,moderate,False
+Transportation Inspectors,agentic_confirmed,0.00,-3.81,3,low,False
+Transportation Planners,agentic_confirmed,12.23,-6.03,4,moderate,False
+Transportation Security Screeners,agentic_confirmed,6.21,-3.51,6,moderate,False
+"Transportation Vehicle, Equipment and Systems Inspectors, Except Aviation",agentic_confirmed,6.38,-4.10,6,moderate,False
+"Transportation, Storage, and Distribution Managers",agentic_confirmed,11.68,-4.92,7,moderate,False
+Travel Agents,agentic_confirmed,62.84,-3.15,11,high,False
+Travel Guides,agentic_confirmed,26.25,-2.75,10,moderate,True
+Treasurers and Controllers,agentic_confirmed,27.51,-8.01,5,moderate,False
+Tree Trimmers and Pruners,agentic_confirmed,0.00,-4.91,2,low,False
+Tutors,agentic_confirmed,30.80,-4.50,11,moderate,True
+"Umpires, Referees, and Other Sports Officials",agentic_confirmed,0.00,-1.47,5,moderate,False
+Upholsterers,agentic_confirmed,0.00,-3.00,4,moderate,False
+Urban and Regional Planners,agentic_confirmed,16.49,-6.08,7,moderate,False
+Urologists,agentic_confirmed,14.31,-7.13,6,moderate,False
+"Ushers, Lobby Attendants, and Ticket Takers",agentic_confirmed,4.87,-0.75,8,moderate,True
+Validation Engineers,agentic_confirmed,2.64,-5.64,1,low,False
+Veterinarians,agentic_confirmed,7.14,-6.32,4,moderate,False
+Veterinary Assistants and Laboratory Animal Caretakers,agentic_confirmed,9.37,-2.58,10,moderate,True
+Veterinary Technologists and Technicians,agentic_confirmed,6.54,-4.28,6,moderate,False
+Video Game Designers,agentic_confirmed,16.96,-5.16,3,low,False
+Waiters and Waitresses,agentic_confirmed,4.02,-1.26,6,moderate,False
+Watch and Clock Repairers,agentic_confirmed,0.00,-4.90,2,low,False
+Water Resource Specialists,agentic_confirmed,1.61,-6.29,3,low,False
+Water and Wastewater Treatment Plant and System Operators,agentic_confirmed,0.00,-3.86,4,moderate,False
+Water/Wastewater Engineers,agentic_confirmed,3.31,-6.78,3,low,False
+Weatherization Installers and Technicians,agentic_confirmed,0.00,-3.41,4,moderate,False
+Web Administrators,agentic_confirmed,49.12,-4.11,9,high,False
+Web Developers,agentic_confirmed,34.07,-3.94,8,high,False
+Web and Digital Interface Designers,agentic_confirmed,26.92,,5,moderate,False
+"Weighers, Measurers, Checkers, and Samplers, Recordkeeping",agentic_confirmed,15.81,-1.27,8,moderate,True
+"Welders, Cutters, Solderers, and Brazers",agentic_confirmed,0.00,-4.39,4,moderate,False
+"Welding, Soldering, and Brazing Machine Setters, Operators, and Tenders",agentic_confirmed,0.00,-3.86,4,moderate,False
+Wellhead Pumpers,agentic_confirmed,0.00,-5.18,2,low,False
+"Wholesale and Retail Buyers, Except Farm Products",agentic_confirmed,36.56,-3.27,10,high,False
+Wind Energy Development Managers,agentic_confirmed,15.27,-5.00,2,low,False
+Wind Energy Engineers,agentic_confirmed,0.00,-6.22,1,low,False
+Wind Energy Operations Managers,agentic_confirmed,11.19,-5.31,6,moderate,False
+Wind Turbine Service Technicians,agentic_confirmed,0.00,-5.28,2,low,False
+"Woodworking Machine Setters, Operators, and Tenders, Except Sawing",agentic_confirmed,0.00,-5.82,3,low,False
+Word Processors and Typists,agentic_confirmed,45.94,-3.57,9,high,False
+Writers and Authors,agentic_confirmed,50.60,-5.70,8,high,False
+Zoologists and Wildlife Biologists,agentic_confirmed,8.46,-5.04,5,moderate,False
 Accountants and Auditors,all_confirmed,28.09,-1.67,3,low,False
 Actors,all_confirmed,79.37,-1.00,9,high,False
 Actuaries,all_confirmed,45.67,-4.16,7,moderate,False

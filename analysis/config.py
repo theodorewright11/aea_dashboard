@@ -145,7 +145,7 @@ def question_dir(name: str) -> Path:
 ANALYSIS_CONFIGS: dict[str, str] = {
     "all_ceiling":        "All 2026-02-18",               # AEI Both + MCP + Microsoft — ceiling
     "human_conversation": "AEI Conv + Micro 2026-02-12",  # confirmed human conversation usage
-    "agentic_confirmed":  "MCP + API 2026-02-12",         # confirmed agentic tool-use
+    "agentic_confirmed":  "AEI API 2026-02-12",           # confirmed agentic tool-use (AEI API only)
     "all_confirmed":      "AEI Both + Micro 2026-02-12",  # all confirmed usage (conv + API + Microsoft)
     "agentic_ceiling":    "MCP + API 2026-02-18",         # agentic ceiling (most recent)
 }
@@ -172,8 +172,7 @@ ANALYSIS_CONFIG_SERIES: dict[str, list[str]] = {
         "AEI Conv + Micro 2025-11-13", "AEI Conv + Micro 2026-02-12",
     ],
     "agentic_confirmed": [
-        "MCP + API 2025-04-24", "MCP + API 2025-05-24", "MCP + API 2025-07-23",
-        "MCP + API 2025-08-11", "MCP + API 2025-11-13", "MCP + API 2026-02-12",
+        "AEI API 2025-08-11", "AEI API 2025-11-13", "AEI API 2026-02-12",
     ],
     "all_confirmed": [
         "AEI Both + Micro 2024-09-30", "AEI Both + Micro 2024-12-23",

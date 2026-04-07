@@ -7,10 +7,10 @@ human_conversation,Human Conversation,high,High (>=60%),81,17492544.71
 human_conversation,Human Conversation,moderate,Moderate (40–60%),220,45374427.50
 human_conversation,Human Conversation,restructuring,Restructuring (20–40%),342,54569357.54
 human_conversation,Human Conversation,low,Low (<20%),280,35794964.73
-agentic_confirmed,Agentic Confirmed,high,High (>=60%),154,39007433.30
-agentic_confirmed,Agentic Confirmed,moderate,Moderate (40–60%),157,27671983.31
-agentic_confirmed,Agentic Confirmed,restructuring,Restructuring (20–40%),267,43948343.94
-agentic_confirmed,Agentic Confirmed,low,Low (<20%),345,42603533.93
+agentic_confirmed,Agentic Confirmed,high,High (>=60%),36,6002464.00
+agentic_confirmed,Agentic Confirmed,moderate,Moderate (40–60%),103,24741354.62
+agentic_confirmed,Agentic Confirmed,restructuring,Restructuring (20–40%),158,32210992.35
+agentic_confirmed,Agentic Confirmed,low,Low (<20%),626,90276483.50
 all_confirmed,All Confirmed,high,High (>=60%),145,31391971.68
 all_confirmed,All Confirmed,moderate,Moderate (40–60%),219,41779933.19
 all_confirmed,All Confirmed,restructuring,Restructuring (20–40%),300,48765725.20

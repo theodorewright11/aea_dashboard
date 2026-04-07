@@ -1,6 +1,6 @@
 # Economic Footprint: AI Modes
 
-**TLDR:** Agentic AI exposes 5.3 million more workers than conversational AI under confirmed estimates (59.4M vs 54.1M). The gap reflects a genuine structural difference in what agentic systems can do — not just chat, but take multi-step actions, use tools, and complete workflows. Auto-augmentability scores are uniformly high: 97.7% of workers are in occupations with meaningful AI augmentation potential (score >= 2 on a 5-point scale), with a weighted mean of 2.82 across the full workforce.
+**TLDR:** Confirmed agentic tool-use (AEI API only) reaches 31.1 million workers — narrower than the 54.1 million reached by conversational AI. The gap reflects a real difference in deployment patterns: API-based agentic usage is currently more specialized than broad conversational AI adoption. But the agentic ceiling — adding MCP server capability data — pushes the count to 60.4 million, which exceeds conversational. The gap between confirmed agentic (31.1M) and ceiling agentic (60.4M) is where the next wave lives. Auto-augmentability scores are uniformly high: 97.7% of workers are in occupations with meaningful AI augmentation potential (score >= 2 on a 5-point scale), with a weighted mean of 2.82 across the full workforce.
 
 ---
 
@@ -10,13 +10,15 @@ Three configs capture the mode split:
 
 - **All Confirmed**: 61.3M workers, $3.99T wages
 - **Human Conversation (confirmed)**: 54.1M workers, $3.47T wages
-- **Agentic Confirmed**: 59.4M workers, $3.92T wages
+- **Agentic Confirmed (AEI API only)**: 31.1M workers, $2.16T wages
 
-The conversational number is the lower bound for non-physical AI interaction — it's asking how many workers have tasks that AI can handle in a back-and-forth exchange. Agentic is asking how many workers have tasks that AI can handle when given tools, memory, and the ability to take multi-step actions.
+The conversational number reflects what AI is doing when people interact with it directly — asking questions, getting help drafting, analyzing documents. Agentic confirmed (AEI API) is what AI is doing when it's given tools and takes autonomous actions — calling APIs, running code, managing workflows. These are different deployment patterns, and the numbers show they reach different jobs.
 
-The 5.3M worker gap between agentic confirmed and conversational confirmed represents occupations where the defining limitation was scope, not capability. These are jobs where AI can do the task, but only if it can act — access databases, write and execute code, browse the web, send emails, interact with APIs — not just respond to prompts. As agentic systems become standard rather than experimental, these 5.3 million workers move from "not yet affected" to "directly in scope."
+The 23M worker gap between conversational and confirmed agentic reflects the structure of current deployment: agentic tool-use via API is concentrated in higher-skill, higher-complexity occupations, while conversational AI is already embedded broadly across the information economy. This isn't a capability story — it's a deployment story. Agentic systems are capable of reaching more; they just haven't been deployed that broadly yet.
 
-The wage implication is significant: $3.92T for agentic vs. $3.47T for conversational — a $450 billion gap in wages of affected workers. That's a rough measure of the value pool that agentic capability unlocks beyond what conversational AI already touches.
+The agentic ceiling (MCP + AEI API combined) at 60.4M workers shows what agentic AI could reach if MCP-based tooling were as widely deployed as conversational tools. That number exceeds conversational (54.1M), which means the potential of agentic AI is already above the current conversational baseline — the gap is organizational deployment, not technical limitation.
+
+The wage gap between agentic confirmed and conversational is substantial: $2.16T vs. $3.47T, a $1.3T difference in wages of workers reached. That gap is almost entirely in occupations where conversational AI has broad reach but agentic deployment hasn't followed.
 
 ---
 
@@ -24,15 +26,17 @@ The wage implication is significant: $3.92T for agentic vs. $3.47T for conversat
 
 The GWA-level data shows where the modes diverge most sharply.
 
-Working with Computers is high-exposure under all modes (69.3% all_confirmed, 62.6% conversational, 83.7% agentic confirmed). The agentic score is dramatically higher because "working with computers" encompasses tasks that require persistent actions — running scripts, managing files, interacting with software — not just answering questions about them.
+**Documenting/Recording Information**: 29.6% (conversational) vs. 31.3% (agentic). These are nearly identical. Documentation tasks appear in the AEI API workflow data at roughly the same rate as in conversational usage — the difference is where it shows up, not how much.
 
-Documenting/Recording Information: 37.3% (all_confirmed), 29.6% (conversational), 62.2% (agentic). A huge gap. Documentation tasks are often multi-step workflows — pulling information from various sources, structuring it, saving it — that require agentic capability to complete end-to-end.
+**Performing Administrative Activities**: 55.0% (conversational) vs. 25.1% (agentic). Administrative tasks are actually higher under conversational AI — drafting, composing, responding, and organizing are primarily communicative activities that conversational AI covers well. API-based agentic usage captures the action layer but doesn't dominate the drafting layer.
 
-Scheduling Work and Activities: 44.9% (all_confirmed), 27.7% (conversational), 84.5% (agentic). Scheduling is almost entirely an action-sequencing task. Conversational AI can discuss schedules; agentic AI can actually manage them.
+**Scheduling Work and Activities**: 27.7% (conversational) vs. 37.9% (agentic). Scheduling ticks up under agentic — multi-step calendar management is more naturally agentic than conversational — but the difference is modest.
 
-Performing Administrative Activities: 58.7% (all_confirmed), 55.0% (conversational), 67.6% (agentic). Here the gap is smaller — administrative tasks have a high conversational component (drafting, answering, composing) alongside the action-taking component.
+**Getting Information**: 48.8% (conversational) vs. 29.7% (agentic). Getting information is substantially higher under conversational. Information retrieval through natural-language conversation is where AI is most confirmed and most broadly deployed. Agentic API usage for "getting information" is more specialized — querying structured systems, not answering questions.
 
-The pattern: tasks that are primarily communicative or analytical remain at roughly similar levels across modes. Tasks that require action-taking — accessing systems, managing workflows, completing multi-step processes — jump substantially in the agentic configuration.
+**Analyzing Data or Information**: 50.5% (conversational) vs. 34.8% (agentic). Similar pattern to Getting Information — analytical work is heavily conversational-first in current deployment.
+
+The broad pattern: activities that are communicative, interpretive, and analytical are currently higher under conversational AI. Activities requiring multi-step workflows or direct system access (scheduling, some documentation) are where agentic modestly leads. The confirmation data from AEI API reflects where agentic has been specifically deployed — high-complexity technical contexts — not the full breadth of what agentic could reach.
 
 ---
 
@@ -55,10 +59,10 @@ The by-major-sector breakdown of auto-augmentability scores generally tracks the
 
 ## Reading the Mode Gap as a Forward Indicator
 
-The 5.3M gap between agentic and conversational confirmed exposure is essentially a measure of latent impact — workers whose tasks AI can complete in principle, but only with the kind of agentic infrastructure that's just now becoming standard.
+The 23M worker gap between conversational confirmed (54.1M) and agentic confirmed (31.1M) is not primarily a capability gap — it's a deployment gap. The agentic ceiling at 60.4M demonstrates that agentic AI has already demonstrated capability across a broader set of tasks than current AEI API usage reflects.
 
-Agentic AI systems — models equipped with tools, long-horizon planning, and the ability to interact with real-world systems — have moved from research concept to production deployment in roughly the past 18 months. As enterprise adoption scales, the occupations that were in the "agentic only" exposure zone will increasingly face real workflow automation, not just AI-assisted drafting.
+The confirmed agentic number (AEI API) captures deployments where agentic tooling is actually in use — production environments, developer workflows, complex automation pipelines. These are higher-complexity use cases than the broad conversational AI baseline. As agentic infrastructure matures and enterprise deployments scale, the occupational coverage of confirmed agentic usage will expand toward the ceiling.
 
-The implication: the 54M conversational number is roughly what AI is capable of disrupting right now with current deployment patterns. The 59M agentic number is what's possible as agentic deployment matures. The ceiling config puts the outer bound at 77M workers. The path from 54M to 59M is probably measured in months, not decades. The path from 59M to 77M depends on what AI systems can demonstrate capability on next.
+The gap between agentic ceiling (60.4M) and agentic confirmed (31.1M) is 29.3M workers — occupations where agentic capability has been demonstrated but confirmed deployment hasn't reached them. By comparison, the conversational confirmed/ceiling gap is smaller, because conversational AI deployment is more mature. Agentic AI is at an earlier point on the adoption curve: high ceiling, lower confirmed floor, with a wide deployment gap that organizational decisions will close over time.
 
-This is why the mode comparison matters beyond just counting workers. It's a forward-looking decomposition of where the growth in AI impact will come from.
+The implication: the next major wave of measured AI impact will likely come from the agentic layer expanding its confirmed footprint. As agentic tools become standard deployment rather than specialized infrastructure, the AEI API numbers will grow toward the ceiling. That's a path from 31M to 60M workers — roughly doubling — without any new AI capability being required.

@@ -29,17 +29,19 @@ These are the activities where AI is most deeply capable relative to what the ty
 
 ## The Agentic Shift in GWAs
 
-The mode comparison reveals which activities change most dramatically when moving from conversational to agentic AI:
+The mode comparison reveals how confirmed agentic tool-use (AEI API only) differs from conversational AI at the activity level. The picture here is more nuanced than a simple "agentic beats conversational" story — confirmed agentic deployment is narrower and more specialized.
 
-**Scheduling Work and Activities**: 27.7% (conversational) -> 84.5% (agentic). Scheduling is almost entirely a multi-step action task — gathering constraints, negotiating options, committing to calendars, sending confirmations. Conversational AI can discuss schedules; agentic AI can manage them. This is one of the clearest cases of a task that's poorly suited to chatbot interaction but very well-suited to agentic automation.
+**Performing Administrative Activities**: 55.0% (conversational) vs. 25.1% (agentic). Administrative tasks are substantially higher under conversational AI. Drafting, composing, and organizing are primarily communicative activities that conversational AI covers broadly. Confirmed API-based agentic usage captures more specialized workflow automation but doesn't broadly dominate the drafting and responding layer.
 
-**Documenting/Recording Information**: 29.6% (conversational) -> 62.2% (agentic). Documentation requires pulling information from multiple sources, structuring it, and saving it somewhere — a workflow that needs tool access and persistent actions.
+**Getting Information**: 48.8% (conversational) vs. 29.7% (agentic). Information retrieval through natural-language conversation is where AI is most confirmed and most deployed. Agentic API usage for "getting information" is more specialized — querying structured databases and APIs — and hasn't reached the broad deployment of conversational information access.
 
-**Performing Administrative Activities**: 55.0% (conversational) -> 67.6% (agentic). The gap is smaller here because admin work has a large conversational component already (drafting, composing, answering), with some additional agentic capability in the action layer.
+**Analyzing Data or Information**: 50.5% (conversational) vs. 34.8% (agentic). Similar pattern — analytical work in current confirmed data is more often conversational than agentic.
 
-**Getting Information**: 48.8% (conversational) -> 39.2% (agentic). This one goes *down* under agentic. This is probably a definitional effect — "getting information" in a conversational setting means things like answering questions, retrieving facts, synthesizing documents (AI is good at this). In an agentic setting, the definition shifts toward searching external systems and databases, which has lower confirmed capability rates currently.
+**Scheduling Work and Activities**: 27.7% (conversational) vs. 37.9% (agentic). Scheduling ticks up under agentic, consistent with multi-step calendar management being naturally suited to tool-using systems. This is one of the few GWAs where confirmed agentic usage modestly leads conversational.
 
-The broad pattern: activities that are sequential workflows get much higher penetration under agentic. Activities that are primarily communicative or analytical stay similar or slightly shift based on how the tasks are operationalized.
+**Documenting/Recording Information**: 29.6% (conversational) vs. 31.3% (agentic). Nearly identical between modes. Documentation work appears at similar rates in both conversational and API-based agentic deployment.
+
+The agentic ceiling (MCP + AEI API) tells a different story from agentic confirmed: scheduling, administrative, and documenting activities all show much higher ceiling penetration, which is where the "agentic dramatically boosts action-taking activities" observation holds. But the *confirmed* agentic footprint is currently more concentrated in analytical and data-intensive tasks than in broad administrative workflow automation.
 
 ---
 

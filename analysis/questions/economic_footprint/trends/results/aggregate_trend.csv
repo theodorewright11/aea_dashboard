@@ -15,12 +15,9 @@ human_conversation,Human Conversation,AEI Conv + Micro 2025-03-06,2025-03-06,465
 human_conversation,Human Conversation,AEI Conv + Micro 2025-08-11,2025-08-11,50951294.98,3251664994856.74,0,0
 human_conversation,Human Conversation,AEI Conv + Micro 2025-11-13,2025-11-13,53002361.78,3387231751744.34,0,0
 human_conversation,Human Conversation,AEI Conv + Micro 2026-02-12,2026-02-12,54085274.55,3466123927452.91,0,0
-agentic_confirmed,Agentic Confirmed,MCP + API 2025-04-24,2025-04-24,33419816.35,2167233147832.49,0,0
-agentic_confirmed,Agentic Confirmed,MCP + API 2025-05-24,2025-05-24,41010666.33,2634304402657.48,0,0
-agentic_confirmed,Agentic Confirmed,MCP + API 2025-07-23,2025-07-23,45963343.43,2946055834157.07,0,0
-agentic_confirmed,Agentic Confirmed,MCP + API 2025-08-11,2025-08-11,55350885.04,3622491081747.61,0,0
-agentic_confirmed,Agentic Confirmed,MCP + API 2025-11-13,2025-11-13,58452853.47,3842599782380.10,0,0
-agentic_confirmed,Agentic Confirmed,MCP + API 2026-02-12,2026-02-12,59421754.49,3921542792376.73,0,0
+agentic_confirmed,Agentic Confirmed,AEI API 2025-08-11,2025-08-11,23379929.34,1620308993761.08,0,0
+agentic_confirmed,Agentic Confirmed,AEI API 2025-11-13,2025-11-13,29105520.62,2016856621950.48,0,0
+agentic_confirmed,Agentic Confirmed,AEI API 2026-02-12,2026-02-12,31104331.10,2161947480917.13,0,0
 all_confirmed,All Confirmed,AEI Both + Micro 2024-09-30,2024-09-30,39453802.14,2464160014764.60,0,0
 all_confirmed,All Confirmed,AEI Both + Micro 2024-12-23,2024-12-23,39453802.14,2464160014764.60,0,0
 all_confirmed,All Confirmed,AEI Both + Micro 2025-03-06,2025-03-06,46586516.23,2980110325945.91,0,0

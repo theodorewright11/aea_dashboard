@@ -98,7 +98,8 @@ def get_wa_data(dataset_name: str, level: str = "iwa") -> pd.DataFrame:
         "top_n": 9999,
     }
     result = compute_work_activities(settings)
-    # All ANALYSIS_CONFIGS are is_aei=False → results come back as "mcp_group"
+    # Most ANALYSIS_CONFIGS are is_aei=False → results come back as "mcp_group"
+    # Exception: agentic_confirmed uses AEI API 2026-02-12 (is_aei=True) → comes back as "aei_group"
     # (uses eco_2025 O*NET baseline; consistent across all five configs)
     group = result.get("mcp_group") or result.get("aei_group")
     if group is None:
@@ -111,7 +112,8 @@ def get_wa_data(dataset_name: str, level: str = "iwa") -> pd.DataFrame:
 
 # Note: raw AEI datasets (is_aei=True, e.g. "AEI Both 2026-02-12") use eco_2015
 # baseline and come back as "aei_group". Do NOT mix aei_group and mcp_group results.
-# The pre-combined datasets used in ANALYSIS_CONFIGS are all is_aei=False.
+# Four of five ANALYSIS_CONFIGS are is_aei=False (eco_2025 baseline for WA).
+# agentic_confirmed (AEI API 2026-02-12) is is_aei=True → eco_2015 baseline for WA, aei_group path.
 ```
 
 ### compute_ska() pattern
