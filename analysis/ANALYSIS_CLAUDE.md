@@ -27,6 +27,20 @@ When writing reports, narratives, or any prose deliverables, follow the writing 
 - Top-level question folders (e.g., `job_exposure/`) additionally have a `README.md` and a `job_exposure_report.md` that synthesizes all sub-questions.
 - Run scripts from project root: `venv/Scripts/python -m analysis.questions.job_exposure.<sub_question>.run`
 
+## Syncing to question_findings/
+
+Whenever a `*_report.md` is created or updated, copy it to `analysis/question_findings/` and rewrite its image paths to resolve from that folder.
+
+**Naming convention:**
+- Bucket-level reports (`questions/{bucket}/{bucket}_report.md`) → `question_findings/{bucket}_report.md`
+- Sub-question reports (`questions/{bucket}/{sub}/{sub}_report.md`) → `question_findings/{bucket}__{sub}_report.md`
+
+**Image path rewriting:** All `![caption](path)` image references must be updated to point back to the original `figures/` directory:
+- Bucket reports: prepend `../questions/{bucket}/` to each image path
+- Sub-question reports: prepend `../questions/{bucket}/{sub}/` to each image path
+
+Do not rewrite link-only syntax `[text](url)` or any path beginning with `http`.
+
 ## Aggregate Report Format
 
 Top-level `<bucket>_report.md` files follow a specific structure. Use `job_exposure/job_exposure_report.md` as the canonical reference. Requirements:
@@ -44,8 +58,6 @@ Top-level `<bucket>_report.md` files follow a specific structure. Use `job_expos
 
 The following question scripts are kept for reference but are **broken** due to dataset renames in the backend (e.g., old names like `"AEI Cumul. (Both) v4"` no longer exist). Do not attempt to run or fix them unless explicitly asked:
 - `questions/economic_footprint/run.py`
-- `questions/utah_vs_national/run.py`
-- `questions/dataset_source_comparison/run.py`
 - `questions/job_exposure/run.py` (old flat version, superseded by sub-folders)
 
 ---
