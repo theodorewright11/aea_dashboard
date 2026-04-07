@@ -1,0 +1,924 @@
+title_current,pct_first,pct_last,tier_first,tier_last,tier_changed,major_occ_category
+Accountants and Auditors,28.09,28.09,restructuring,restructuring,False,Business and Financial Operations Occupations
+Actors,14.19,79.37,low,high,True,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Actuaries,27.11,45.67,restructuring,moderate,True,Computer and Mathematical Occupations
+Acupuncturists,7.33,21.71,low,restructuring,True,Healthcare Practitioners and Technical Occupations
+Acute Care Nurses,19.58,32.08,low,restructuring,True,Healthcare Practitioners and Technical Occupations
+Adapted Physical Education Specialists,26.97,33.82,restructuring,restructuring,False,Educational Instruction and Library Occupations
+Adhesive Bonding Machine Operators and Tenders,19.24,21.57,low,restructuring,True,Production Occupations
+"Administrative Law Judges, Adjudicators, and Hearing Officers",24.41,40.53,restructuring,moderate,True,Legal Occupations
+Administrative Services Managers,21.00,21.21,restructuring,restructuring,False,Management Occupations
+"Adult Basic Education, Adult Secondary Education, and English as a Second Language Instructors",24.89,24.89,restructuring,restructuring,False,Educational Instruction and Library Occupations
+Advanced Practice Psychiatric Nurses,14.67,47.35,low,moderate,True,Healthcare Practitioners and Technical Occupations
+Advertising Sales Agents,50.03,83.62,moderate,high,True,Sales and Related Occupations
+Advertising and Promotions Managers,33.14,53.17,restructuring,moderate,True,Management Occupations
+Aerospace Engineering and Operations Technologists and Technicians,36.82,36.82,restructuring,restructuring,False,Architecture and Engineering Occupations
+Aerospace Engineers,24.41,27.46,restructuring,restructuring,False,Architecture and Engineering Occupations
+"Agents and Business Managers of Artists, Performers, and Athletes",28.24,53.06,restructuring,moderate,True,Business and Financial Operations Occupations
+Agricultural Engineers,30.44,38.39,restructuring,restructuring,False,Architecture and Engineering Occupations
+Agricultural Equipment Operators,16.24,16.24,low,low,False,"Farming, Fishing, and Forestry Occupations"
+Agricultural Inspectors,12.02,28.01,low,restructuring,True,"Farming, Fishing, and Forestry Occupations"
+"Agricultural Sciences Teachers, Postsecondary",33.02,75.45,restructuring,high,True,Educational Instruction and Library Occupations
+Agricultural Technicians,16.92,26.56,low,restructuring,True,"Life, Physical, and Social Science Occupations"
+Air Traffic Controllers,25.44,31.15,restructuring,restructuring,False,Transportation and Material Moving Occupations
+Aircraft Cargo Handling Supervisors,20.85,20.85,restructuring,restructuring,False,Transportation and Material Moving Occupations
+Aircraft Mechanics and Service Technicians,14.03,14.03,low,low,False,"Installation, Maintenance, and Repair Occupations"
+Aircraft Service Attendants,14.25,14.25,low,low,False,Transportation and Material Moving Occupations
+"Aircraft Structure, Surfaces, Rigging, and Systems Assemblers",10.52,13.39,low,low,False,Production Occupations
+Airfield Operations Specialists,27.12,29.10,restructuring,restructuring,False,Transportation and Material Moving Occupations
+"Airline Pilots, Copilots, and Flight Engineers",14.43,14.89,low,low,False,Transportation and Material Moving Occupations
+Allergists and Immunologists,13.20,30.31,low,restructuring,True,Healthcare Practitioners and Technical Occupations
+"Ambulance Drivers and Attendants, Except Emergency Medical Technicians",0.54,0.54,low,low,False,Transportation and Material Moving Occupations
+Amusement and Recreation Attendants,37.48,40.93,restructuring,moderate,True,Personal Care and Service Occupations
+Anesthesiologist Assistants,10.13,10.49,low,low,False,Healthcare Practitioners and Technical Occupations
+Anesthesiologists,5.14,5.78,low,low,False,Healthcare Practitioners and Technical Occupations
+Animal Breeders,42.89,47.23,moderate,moderate,False,"Farming, Fishing, and Forestry Occupations"
+Animal Caretakers,39.56,39.56,restructuring,restructuring,False,Personal Care and Service Occupations
+Animal Control Workers,40.37,47.12,moderate,moderate,False,Protective Service Occupations
+Animal Scientists,20.90,38.75,restructuring,restructuring,False,"Life, Physical, and Social Science Occupations"
+Animal Trainers,5.59,14.76,low,low,False,Personal Care and Service Occupations
+Anthropologists and Archeologists,33.15,33.15,restructuring,restructuring,False,"Life, Physical, and Social Science Occupations"
+"Anthropology and Archeology Teachers, Postsecondary",32.93,70.86,restructuring,high,True,Educational Instruction and Library Occupations
+Appraisers and Assessors of Real Estate,26.63,26.63,restructuring,restructuring,False,Business and Financial Operations Occupations
+Appraisers of Personal and Business Property,41.67,41.67,moderate,moderate,False,Business and Financial Operations Occupations
+"Arbitrators, Mediators, and Conciliators",18.40,42.77,low,moderate,True,Legal Occupations
+"Architects, Except Landscape and Naval",29.93,63.87,restructuring,high,True,Architecture and Engineering Occupations
+Architectural and Civil Drafters,45.47,45.47,moderate,moderate,False,Architecture and Engineering Occupations
+Architectural and Engineering Managers,17.32,57.38,low,moderate,True,Management Occupations
+"Architecture Teachers, Postsecondary",30.41,77.55,restructuring,high,True,Educational Instruction and Library Occupations
+Archivists,40.59,86.73,moderate,high,True,Educational Instruction and Library Occupations
+"Area, Ethnic, and Cultural Studies Teachers, Postsecondary",33.29,76.37,restructuring,high,True,Educational Instruction and Library Occupations
+Art Directors,38.48,62.54,restructuring,high,True,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Art Therapists,21.03,52.25,restructuring,moderate,True,Healthcare Practitioners and Technical Occupations
+"Art, Drama, and Music Teachers, Postsecondary",30.88,72.25,restructuring,high,True,Educational Instruction and Library Occupations
+Astronomers,23.17,72.49,restructuring,high,True,"Life, Physical, and Social Science Occupations"
+Athletes and Sports Competitors,37.03,46.65,restructuring,moderate,True,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Athletic Trainers,21.25,31.80,restructuring,restructuring,False,Healthcare Practitioners and Technical Occupations
+Atmospheric and Space Scientists,32.43,58.78,restructuring,moderate,True,"Life, Physical, and Social Science Occupations"
+"Atmospheric, Earth, Marine, and Space Sciences Teachers, Postsecondary",31.14,64.56,restructuring,high,True,Educational Instruction and Library Occupations
+Audio and Video Technicians,24.21,24.21,restructuring,restructuring,False,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Audiologists,20.68,21.24,restructuring,restructuring,False,Healthcare Practitioners and Technical Occupations
+Audiovisual Equipment Installers and Repairers,21.33,21.33,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+Automotive Body and Related Repairers,11.71,11.71,low,low,False,"Installation, Maintenance, and Repair Occupations"
+Automotive Engineering Technicians,30.30,49.03,restructuring,moderate,True,Architecture and Engineering Occupations
+Automotive Engineers,40.34,49.06,moderate,moderate,False,Architecture and Engineering Occupations
+Automotive Glass Installers and Repairers,4.75,4.75,low,low,False,"Installation, Maintenance, and Repair Occupations"
+Automotive Service Technicians and Mechanics,18.91,18.91,low,low,False,"Installation, Maintenance, and Repair Occupations"
+Automotive and Watercraft Service Attendants,6.49,17.99,low,low,False,Transportation and Material Moving Occupations
+Aviation Inspectors,15.13,15.13,low,low,False,Transportation and Material Moving Occupations
+Avionics Technicians,24.26,29.42,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+Baggage Porters and Bellhops,24.50,28.74,restructuring,restructuring,False,Personal Care and Service Occupations
+Bailiffs,33.16,43.53,restructuring,moderate,True,Protective Service Occupations
+Bakers,19.84,25.05,low,restructuring,True,Production Occupations
+Barbers,9.94,12.75,low,low,False,Personal Care and Service Occupations
+Baristas,35.90,47.64,restructuring,moderate,True,Food Preparation and Serving Related Occupations
+Bartenders,21.63,28.74,restructuring,restructuring,False,Food Preparation and Serving Related Occupations
+Bicycle Repairers,25.44,25.44,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+Bill and Account Collectors,26.84,71.85,restructuring,high,True,Office and Administrative Support Occupations
+Billing and Posting Clerks,36.77,36.77,restructuring,restructuring,False,Office and Administrative Support Occupations
+Biochemists and Biophysicists,39.07,53.57,restructuring,moderate,True,"Life, Physical, and Social Science Occupations"
+Bioengineers and Biomedical Engineers,40.11,40.11,moderate,moderate,False,Architecture and Engineering Occupations
+Biofuels Processing Technicians,6.74,13.88,low,low,False,Production Occupations
+Biofuels Production Managers,4.10,4.10,low,low,False,Management Occupations
+Biofuels/Biodiesel Technology and Product Development Managers,16.40,22.85,low,restructuring,True,Management Occupations
+Bioinformatics Scientists,40.62,72.19,moderate,high,True,"Life, Physical, and Social Science Occupations"
+Bioinformatics Technicians,41.61,87.67,moderate,high,True,Computer and Mathematical Occupations
+"Biological Science Teachers, Postsecondary",30.08,74.81,restructuring,high,True,Educational Instruction and Library Occupations
+Biological Technicians,27.12,50.27,restructuring,moderate,True,"Life, Physical, and Social Science Occupations"
+Biologists,40.25,58.37,moderate,moderate,False,"Life, Physical, and Social Science Occupations"
+Biomass Plant Technicians,8.87,8.87,low,low,False,Production Occupations
+Biomass Power Plant Managers,13.83,18.11,low,low,False,Management Occupations
+Biostatisticians,40.80,59.69,moderate,moderate,False,Computer and Mathematical Occupations
+Blockchain Engineers,48.02,48.02,moderate,moderate,False,Computer and Mathematical Occupations
+Boilermakers,10.26,15.52,low,low,False,Construction and Extraction Occupations
+"Bookkeeping, Accounting, and Auditing Clerks",40.95,69.59,moderate,high,True,Office and Administrative Support Occupations
+Brickmasons and Blockmasons,15.65,18.68,low,low,False,Construction and Extraction Occupations
+Bridge and Lock Tenders,0.00,0.00,low,low,False,Transportation and Material Moving Occupations
+Broadcast Announcers and Radio Disc Jockeys,42.82,42.82,moderate,moderate,False,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Broadcast Technicians,22.23,32.93,restructuring,restructuring,False,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Brokerage Clerks,46.55,71.34,moderate,high,True,Office and Administrative Support Occupations
+Brownfield Redevelopment Specialists and Site Managers,15.93,15.93,low,low,False,Management Occupations
+Budget Analysts,41.32,53.93,moderate,moderate,False,Business and Financial Operations Occupations
+"Bus Drivers, School",14.64,14.64,low,low,False,Transportation and Material Moving Occupations
+"Bus Drivers, Transit and Intercity",22.47,22.47,restructuring,restructuring,False,Transportation and Material Moving Occupations
+Bus and Truck Mechanics and Diesel Engine Specialists,27.65,28.48,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+Business Continuity Planners,35.39,56.03,restructuring,moderate,True,Business and Financial Operations Occupations
+Business Intelligence Analysts,46.81,92.34,moderate,high,True,Computer and Mathematical Occupations
+"Business Teachers, Postsecondary",41.75,80.38,moderate,high,True,Educational Instruction and Library Occupations
+Butchers and Meat Cutters,40.59,40.59,moderate,moderate,False,Production Occupations
+"Buyers and Purchasing Agents, Farm Products",24.78,42.88,restructuring,moderate,True,Business and Financial Operations Occupations
+Cabinetmakers and Bench Carpenters,22.01,23.19,restructuring,restructuring,False,Production Occupations
+Calibration Technologists and Technicians,33.22,33.22,restructuring,restructuring,False,Architecture and Engineering Occupations
+"Camera Operators, Television, Video, and Film",27.63,27.63,restructuring,restructuring,False,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Camera and Photographic Equipment Repairers,25.96,34.18,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+"Captains, Mates, and Pilots of Water Vessels",20.14,20.14,restructuring,restructuring,False,Transportation and Material Moving Occupations
+Cardiologists,21.34,21.34,restructuring,restructuring,False,Healthcare Practitioners and Technical Occupations
+Cardiovascular Technologists and Technicians,16.37,27.72,low,restructuring,True,Healthcare Practitioners and Technical Occupations
+"Career/Technical Education Teachers, Middle School",27.62,58.59,restructuring,moderate,True,Educational Instruction and Library Occupations
+"Career/Technical Education Teachers, Postsecondary",32.38,32.38,restructuring,restructuring,False,Educational Instruction and Library Occupations
+"Career/Technical Education Teachers, Secondary School",27.32,53.33,restructuring,moderate,True,Educational Instruction and Library Occupations
+Cargo and Freight Agents,21.55,51.94,restructuring,moderate,True,Office and Administrative Support Occupations
+Carpenters,10.71,10.71,low,low,False,Construction and Extraction Occupations
+Carpet Installers,15.76,15.76,low,low,False,Construction and Extraction Occupations
+Cartographers and Photogrammetrists,34.43,39.70,restructuring,restructuring,False,Architecture and Engineering Occupations
+Cashiers,37.18,46.94,restructuring,moderate,True,Sales and Related Occupations
+Cement Masons and Concrete Finishers,6.58,16.12,low,low,False,Construction and Extraction Occupations
+Chefs and Head Cooks,24.58,44.75,restructuring,moderate,True,Food Preparation and Serving Related Occupations
+Chemical Engineers,39.30,45.78,restructuring,moderate,True,Architecture and Engineering Occupations
+Chemical Equipment Operators and Tenders,14.71,22.80,low,restructuring,True,Production Occupations
+Chemical Plant and System Operators,7.17,17.22,low,low,False,Production Occupations
+Chemical Technicians,26.80,52.62,restructuring,moderate,True,"Life, Physical, and Social Science Occupations"
+"Chemistry Teachers, Postsecondary",28.34,65.95,restructuring,high,True,Educational Instruction and Library Occupations
+Chemists,33.78,59.71,restructuring,moderate,True,"Life, Physical, and Social Science Occupations"
+Chief Executives,20.51,50.67,restructuring,moderate,True,Management Occupations
+Chief Sustainability Officers,14.93,32.17,low,restructuring,True,Management Occupations
+"Child, Family, and School Social Workers",38.81,40.05,restructuring,moderate,True,Community and Social Service Occupations
+Childcare Workers,26.24,38.68,restructuring,restructuring,False,Personal Care and Service Occupations
+Chiropractors,14.75,36.39,low,restructuring,True,Healthcare Practitioners and Technical Occupations
+Choreographers,37.41,52.52,restructuring,moderate,True,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Civil Engineering Technologists and Technicians,32.67,32.67,restructuring,restructuring,False,Architecture and Engineering Occupations
+Civil Engineers,26.04,33.59,restructuring,restructuring,False,Architecture and Engineering Occupations
+"Claims Adjusters, Examiners, and Investigators",33.75,33.75,restructuring,restructuring,False,Business and Financial Operations Occupations
+Cleaners of Vehicles and Equipment,4.91,4.91,low,low,False,Transportation and Material Moving Occupations
+"Cleaning, Washing, and Metal Pickling Equipment Operators and Tenders",8.71,11.82,low,low,False,Production Occupations
+Clergy,42.32,72.16,moderate,high,True,Community and Social Service Occupations
+Climate Change Policy Analysts,43.62,43.62,moderate,moderate,False,"Life, Physical, and Social Science Occupations"
+Clinical Data Managers,31.95,58.62,restructuring,moderate,True,Computer and Mathematical Occupations
+Clinical Neuropsychologists,18.17,18.17,low,low,False,"Life, Physical, and Social Science Occupations"
+Clinical Nurse Specialists,24.89,47.25,restructuring,moderate,True,Healthcare Practitioners and Technical Occupations
+Clinical Research Coordinators,27.39,46.49,restructuring,moderate,True,Management Occupations
+Clinical and Counseling Psychologists,28.86,28.86,restructuring,restructuring,False,"Life, Physical, and Social Science Occupations"
+Coaches and Scouts,24.05,55.07,restructuring,moderate,True,"Arts, Design, Entertainment, Sports, and Media Occupations"
+"Coating, Painting, and Spraying Machine Setters, Operators, and Tenders",10.54,14.37,low,low,False,Production Occupations
+"Coil Winders, Tapers, and Finishers",16.19,16.19,low,low,False,Production Occupations
+"Coin, Vending, and Amusement Machine Servicers and Repairers",9.65,9.65,low,low,False,"Installation, Maintenance, and Repair Occupations"
+Commercial Divers,21.27,23.55,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+Commercial Pilots,23.39,26.52,restructuring,restructuring,False,Transportation and Material Moving Occupations
+Commercial and Industrial Designers,39.24,58.71,restructuring,moderate,True,"Arts, Design, Entertainment, Sports, and Media Occupations"
+"Communications Teachers, Postsecondary",26.04,78.83,restructuring,high,True,Educational Instruction and Library Occupations
+Community Health Workers,27.17,41.39,restructuring,moderate,True,Community and Social Service Occupations
+Compensation and Benefits Managers,21.64,55.61,restructuring,moderate,True,Management Occupations
+"Compensation, Benefits, and Job Analysis Specialists",15.63,33.65,low,restructuring,True,Business and Financial Operations Occupations
+Compliance Managers,27.19,55.62,restructuring,moderate,True,Management Occupations
+Compliance Officers,31.35,31.35,restructuring,restructuring,False,Business and Financial Operations Occupations
+Computer Hardware Engineers,29.05,54.59,restructuring,moderate,True,Architecture and Engineering Occupations
+Computer Network Architects,43.94,71.56,moderate,high,True,Computer and Mathematical Occupations
+Computer Network Support Specialists,42.28,81.36,moderate,high,True,Computer and Mathematical Occupations
+Computer Numerically Controlled Tool Operators,33.16,33.16,restructuring,restructuring,False,Production Occupations
+Computer Numerically Controlled Tool Programmers,53.08,53.08,moderate,moderate,False,Production Occupations
+Computer Programmers,47.94,78.84,moderate,high,True,Computer and Mathematical Occupations
+"Computer Science Teachers, Postsecondary",31.80,79.16,restructuring,high,True,Educational Instruction and Library Occupations
+Computer Systems Analysts,43.79,70.69,moderate,high,True,Computer and Mathematical Occupations
+Computer Systems Engineers/Architects,39.28,61.79,restructuring,high,True,Computer and Mathematical Occupations
+Computer User Support Specialists,44.63,81.76,moderate,high,True,Computer and Mathematical Occupations
+Computer and Information Research Scientists,33.57,75.93,restructuring,high,True,Computer and Mathematical Occupations
+Computer and Information Systems Managers,30.89,77.59,restructuring,high,True,Management Occupations
+"Computer, Automated Teller, and Office Machine Repairers",33.13,48.83,restructuring,moderate,True,"Installation, Maintenance, and Repair Occupations"
+Concierges,44.52,65.83,moderate,high,True,Personal Care and Service Occupations
+Conservation Scientists,14.57,14.57,low,low,False,"Life, Physical, and Social Science Occupations"
+Construction Laborers,3.87,11.96,low,low,False,Construction and Extraction Occupations
+Construction Managers,17.16,42.49,low,moderate,True,Management Occupations
+Construction and Building Inspectors,16.25,24.32,low,restructuring,True,Construction and Extraction Occupations
+Continuous Mining Machine Operators,7.01,7.01,low,low,False,Construction and Extraction Occupations
+"Control and Valve Installers and Repairers, Except Mechanical Door",23.67,24.17,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+Conveyor Operators and Tenders,11.44,20.08,low,restructuring,True,Transportation and Material Moving Occupations
+"Cooks, Fast Food",37.29,40.84,restructuring,moderate,True,Food Preparation and Serving Related Occupations
+"Cooks, Institution and Cafeteria",14.96,16.33,low,low,False,Food Preparation and Serving Related Occupations
+"Cooks, Private Household",37.61,41.42,restructuring,moderate,True,Food Preparation and Serving Related Occupations
+"Cooks, Restaurant",33.88,46.27,restructuring,moderate,True,Food Preparation and Serving Related Occupations
+"Cooks, Short Order",32.42,49.64,restructuring,moderate,True,Food Preparation and Serving Related Occupations
+Cooling and Freezing Equipment Operators and Tenders,24.18,24.18,restructuring,restructuring,False,Production Occupations
+Coroners,26.43,32.08,restructuring,restructuring,False,Business and Financial Operations Occupations
+Correctional Officers and Jailers,15.05,18.03,low,low,False,Protective Service Occupations
+Correspondence Clerks,33.63,50.43,restructuring,moderate,True,Office and Administrative Support Occupations
+Cost Estimators,40.65,56.37,moderate,moderate,False,Business and Financial Operations Occupations
+Costume Attendants,24.61,30.36,restructuring,restructuring,False,Personal Care and Service Occupations
+Counter and Rental Clerks,51.20,70.76,moderate,high,True,Sales and Related Occupations
+Couriers and Messengers,15.51,33.87,low,restructuring,True,Office and Administrative Support Occupations
+Court Reporters and Simultaneous Captioners,19.41,19.41,low,low,False,"Arts, Design, Entertainment, Sports, and Media Occupations"
+"Court, Municipal, and License Clerks",40.28,40.28,moderate,moderate,False,Office and Administrative Support Occupations
+Craft Artists,43.69,65.47,moderate,high,True,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Crane and Tower Operators,15.25,15.25,low,low,False,Transportation and Material Moving Occupations
+Credit Analysts,33.24,54.05,restructuring,moderate,True,Business and Financial Operations Occupations
+"Credit Authorizers, Checkers, and Clerks",35.11,35.11,restructuring,restructuring,False,Office and Administrative Support Occupations
+Credit Counselors,34.26,57.22,restructuring,moderate,True,Business and Financial Operations Occupations
+Crematory Operators,15.67,15.67,low,low,False,Personal Care and Service Occupations
+"Criminal Justice and Law Enforcement Teachers, Postsecondary",33.36,71.01,restructuring,high,True,Educational Instruction and Library Occupations
+Critical Care Nurses,11.65,24.02,low,restructuring,True,Healthcare Practitioners and Technical Occupations
+Crossing Guards and Flaggers,25.46,25.46,restructuring,restructuring,False,Protective Service Occupations
+"Crushing, Grinding, and Polishing Machine Setters, Operators, and Tenders",9.08,18.72,low,low,False,Production Occupations
+Curators,36.04,84.17,restructuring,high,True,Educational Instruction and Library Occupations
+Customer Service Representatives,45.08,84.08,moderate,high,True,Office and Administrative Support Occupations
+Customs Brokers,24.39,43.21,restructuring,moderate,True,Business and Financial Operations Occupations
+Customs and Border Protection Officers,44.11,44.11,moderate,moderate,False,Protective Service Occupations
+"Cutters and Trimmers, Hand",10.93,10.93,low,low,False,Production Occupations
+"Cutting and Slicing Machine Setters, Operators, and Tenders",14.36,16.59,low,low,False,Production Occupations
+"Cutting, Punching, and Press Machine Setters, Operators, and Tenders, Metal and Plastic",15.77,18.57,low,low,False,Production Occupations
+Cytogenetic Technologists,25.00,38.37,restructuring,restructuring,False,Healthcare Practitioners and Technical Occupations
+Cytotechnologists,23.31,45.93,restructuring,moderate,True,Healthcare Practitioners and Technical Occupations
+Dancers,21.71,21.71,restructuring,restructuring,False,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Data Entry Keyers,38.17,65.89,restructuring,high,True,Office and Administrative Support Occupations
+Data Scientists,46.04,46.04,moderate,moderate,False,Computer and Mathematical Occupations
+Data Warehousing Specialists,46.74,88.71,moderate,high,True,Computer and Mathematical Occupations
+Database Administrators,46.31,75.35,moderate,high,True,Computer and Mathematical Occupations
+Database Architects,38.92,68.69,restructuring,high,True,Computer and Mathematical Occupations
+Demonstrators and Product Promoters,41.67,57.43,moderate,moderate,False,Sales and Related Occupations
+Dental Assistants,12.50,38.05,low,restructuring,True,Healthcare Support Occupations
+Dental Hygienists,4.65,9.99,low,low,False,Healthcare Practitioners and Technical Occupations
+Dental Laboratory Technicians,10.16,14.43,low,low,False,Production Occupations
+"Dentists, General",8.74,33.43,low,restructuring,True,Healthcare Practitioners and Technical Occupations
+Dermatologists,11.53,28.56,low,restructuring,True,Healthcare Practitioners and Technical Occupations
+"Derrick Operators, Oil and Gas",19.38,19.38,low,low,False,Construction and Extraction Occupations
+Desktop Publishers,43.24,69.89,moderate,high,True,Office and Administrative Support Occupations
+Detectives and Criminal Investigators,31.20,31.20,restructuring,restructuring,False,Protective Service Occupations
+Diagnostic Medical Sonographers,19.30,37.23,low,restructuring,True,Healthcare Practitioners and Technical Occupations
+Dietetic Technicians,23.79,52.44,restructuring,moderate,True,Healthcare Practitioners and Technical Occupations
+Dietitians and Nutritionists,40.32,52.54,moderate,moderate,False,Healthcare Practitioners and Technical Occupations
+Digital Forensics Analysts,45.34,45.34,moderate,moderate,False,Computer and Mathematical Occupations
+Dining Room and Cafeteria Attendants and Bartender Helpers,13.34,13.34,low,low,False,Food Preparation and Serving Related Occupations
+"Directors, Religious Activities and Education",30.60,60.18,restructuring,high,True,Community and Social Service Occupations
+"Disc Jockeys, Except Radio",25.07,25.07,restructuring,restructuring,False,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Dishwashers,5.27,5.27,low,low,False,Food Preparation and Serving Related Occupations
+"Dispatchers, Except Police, Fire, and Ambulance",28.63,71.51,restructuring,high,True,Office and Administrative Support Occupations
+Document Management Specialists,44.31,76.79,moderate,high,True,Computer and Mathematical Occupations
+"Door-to-Door Sales Workers, News and Street Vendors, and Related Workers",40.73,40.73,moderate,moderate,False,Sales and Related Occupations
+Dredge Operators,0.00,0.00,low,low,False,Transportation and Material Moving Occupations
+"Drilling and Boring Machine Tool Setters, Operators, and Tenders, Metal and Plastic",16.03,16.32,low,low,False,Production Occupations
+Driver/Sales Workers,4.96,18.31,low,low,False,Transportation and Material Moving Occupations
+Drywall and Ceiling Tile Installers,10.18,15.59,low,low,False,Construction and Extraction Occupations
+"Earth Drillers, Except Oil and Gas",5.49,5.49,low,low,False,Construction and Extraction Occupations
+"Economics Teachers, Postsecondary",33.90,81.89,restructuring,high,True,Educational Instruction and Library Occupations
+Economists,49.72,82.53,moderate,high,True,"Life, Physical, and Social Science Occupations"
+Editors,42.04,63.22,moderate,high,True,"Arts, Design, Entertainment, Sports, and Media Occupations"
+"Education Administrators, Kindergarten through Secondary",22.43,22.43,restructuring,restructuring,False,Management Occupations
+"Education Administrators, Postsecondary",12.62,42.28,low,moderate,True,Management Occupations
+"Education Teachers, Postsecondary",29.57,83.15,restructuring,high,True,Educational Instruction and Library Occupations
+"Education and Childcare Administrators, Preschool and Daycare",27.09,27.09,restructuring,restructuring,False,Management Occupations
+"Educational, Guidance, and Career Counselors and Advisors",40.04,40.04,moderate,moderate,False,Community and Social Service Occupations
+"Electric Motor, Power Tool, and Related Repairers",19.63,21.61,low,restructuring,True,"Installation, Maintenance, and Repair Occupations"
+Electrical Engineers,32.95,46.76,restructuring,moderate,True,Architecture and Engineering Occupations
+Electrical Power-Line Installers and Repairers,19.30,20.80,low,restructuring,True,"Installation, Maintenance, and Repair Occupations"
+Electrical and Electronic Engineering Technologists and Technicians,42.53,42.53,moderate,moderate,False,Architecture and Engineering Occupations
+Electrical and Electronic Equipment Assemblers,19.86,26.38,low,restructuring,True,Production Occupations
+Electrical and Electronics Drafters,46.56,46.56,moderate,moderate,False,Architecture and Engineering Occupations
+"Electrical and Electronics Installers and Repairers, Transportation Equipment",23.50,32.01,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+"Electrical and Electronics Repairers, Commercial and Industrial Equipment",32.29,43.74,restructuring,moderate,True,"Installation, Maintenance, and Repair Occupations"
+"Electrical and Electronics Repairers, Powerhouse, Substation, and Relay",40.69,41.62,moderate,moderate,False,"Installation, Maintenance, and Repair Occupations"
+Electricians,32.95,43.47,restructuring,moderate,True,Construction and Extraction Occupations
+Electro-Mechanical and Mechatronics Technologists and Technicians,34.65,34.65,restructuring,restructuring,False,Architecture and Engineering Occupations
+Electromechanical Equipment Assemblers,12.58,15.62,low,low,False,Production Occupations
+"Electronic Equipment Installers and Repairers, Motor Vehicles",23.09,34.64,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+"Electronics Engineers, Except Computer",35.57,59.87,restructuring,moderate,True,Architecture and Engineering Occupations
+"Elementary School Teachers, Except Special Education",26.07,63.21,restructuring,high,True,Educational Instruction and Library Occupations
+Elevator and Escalator Installers and Repairers,8.02,8.02,low,low,False,Construction and Extraction Occupations
+"Eligibility Interviewers, Government Programs",37.08,55.87,restructuring,moderate,True,Office and Administrative Support Occupations
+Embalmers,7.28,9.68,low,low,False,Personal Care and Service Occupations
+Emergency Management Directors,25.40,26.92,restructuring,restructuring,False,Management Occupations
+Emergency Medical Technicians,10.44,10.44,low,low,False,Healthcare Practitioners and Technical Occupations
+Emergency Medicine Physicians,16.51,16.51,low,low,False,Healthcare Practitioners and Technical Occupations
+Endoscopy Technicians,1.46,1.46,low,low,False,Healthcare Support Occupations
+Energy Auditors,18.46,29.04,low,restructuring,True,Construction and Extraction Occupations
+"Energy Engineers, Except Wind and Solar",34.01,34.01,restructuring,restructuring,False,Architecture and Engineering Occupations
+Engine and Other Machine Assemblers,15.25,18.72,low,low,False,Production Occupations
+"Engineering Teachers, Postsecondary",32.46,82.86,restructuring,high,True,Educational Instruction and Library Occupations
+"English Language and Literature Teachers, Postsecondary",34.57,71.86,restructuring,high,True,Educational Instruction and Library Occupations
+"Entertainment and Recreation Managers, Except Gambling",39.76,39.76,restructuring,restructuring,False,Management Occupations
+Environmental Compliance Inspectors,32.31,33.29,restructuring,restructuring,False,Business and Financial Operations Occupations
+Environmental Economists,32.57,46.14,restructuring,moderate,True,"Life, Physical, and Social Science Occupations"
+Environmental Engineering Technologists and Technicians,31.26,31.26,restructuring,restructuring,False,Architecture and Engineering Occupations
+Environmental Engineers,24.74,37.92,restructuring,restructuring,False,Architecture and Engineering Occupations
+Environmental Restoration Planners,28.08,28.49,restructuring,restructuring,False,"Life, Physical, and Social Science Occupations"
+"Environmental Science Teachers, Postsecondary",26.80,72.77,restructuring,high,True,Educational Instruction and Library Occupations
+"Environmental Science and Protection Technicians, Including Health",21.88,29.56,restructuring,restructuring,False,"Life, Physical, and Social Science Occupations"
+"Environmental Scientists and Specialists, Including Health",27.57,49.68,restructuring,moderate,True,"Life, Physical, and Social Science Occupations"
+Epidemiologists,24.67,31.54,restructuring,restructuring,False,"Life, Physical, and Social Science Occupations"
+Equal Opportunity Representatives and Officers,26.00,31.77,restructuring,restructuring,False,Business and Financial Operations Occupations
+Etchers and Engravers,16.91,17.43,low,low,False,Production Occupations
+"Excavating and Loading Machine and Dragline Operators, Surface Mining",11.21,11.21,low,low,False,Construction and Extraction Occupations
+Executive Secretaries and Executive Administrative Assistants,40.85,64.84,moderate,high,True,Office and Administrative Support Occupations
+Exercise Physiologists,22.34,50.46,restructuring,moderate,True,Healthcare Practitioners and Technical Occupations
+Exercise Trainers and Group Fitness Instructors,34.33,34.33,restructuring,restructuring,False,Personal Care and Service Occupations
+"Explosives Workers, Ordnance Handling Experts, and Blasters",5.05,5.05,low,low,False,Construction and Extraction Occupations
+"Extruding and Drawing Machine Setters, Operators, and Tenders, Metal and Plastic",20.75,20.75,restructuring,restructuring,False,Production Occupations
+"Extruding and Forming Machine Setters, Operators, and Tenders, Synthetic and Glass Fibers",12.03,19.09,low,low,False,Production Occupations
+"Extruding, Forming, Pressing, and Compacting Machine Setters, Operators, and Tenders",18.58,18.58,low,low,False,Production Occupations
+Fabric and Apparel Patternmakers,23.62,23.62,restructuring,restructuring,False,Production Occupations
+Facilities Managers,7.55,7.55,low,low,False,Management Occupations
+Fallers,15.08,15.08,low,low,False,"Farming, Fishing, and Forestry Occupations"
+Family Medicine Physicians,21.06,21.06,restructuring,restructuring,False,Healthcare Practitioners and Technical Occupations
+"Family and Consumer Sciences Teachers, Postsecondary",31.46,31.46,restructuring,restructuring,False,Educational Instruction and Library Occupations
+Farm Equipment Mechanics and Service Technicians,18.20,18.20,low,low,False,"Installation, Maintenance, and Repair Occupations"
+Farm Labor Contractors,19.80,19.80,low,low,False,Business and Financial Operations Occupations
+Farm and Home Management Educators,36.57,36.57,restructuring,restructuring,False,Educational Instruction and Library Occupations
+"Farmers, Ranchers, and Other Agricultural Managers",12.11,12.11,low,low,False,Management Occupations
+"Farmworkers and Laborers, Crop, Nursery, and Greenhouse",5.69,5.69,low,low,False,"Farming, Fishing, and Forestry Occupations"
+"Farmworkers, Farm, Ranch, and Aquacultural Animals",24.17,26.78,restructuring,restructuring,False,"Farming, Fishing, and Forestry Occupations"
+Fashion Designers,40.95,55.70,moderate,moderate,False,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Fast Food and Counter Workers,29.37,29.37,restructuring,restructuring,False,Food Preparation and Serving Related Occupations
+Fence Erectors,8.90,8.90,low,low,False,Construction and Extraction Occupations
+Fiberglass Laminators and Fabricators,10.34,10.34,low,low,False,Production Occupations
+File Clerks,38.45,56.14,restructuring,moderate,True,Office and Administrative Support Occupations
+Film and Video Editors,22.74,72.00,restructuring,high,True,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Financial Examiners,13.44,19.16,low,low,False,Business and Financial Operations Occupations
+Financial Managers,25.11,25.11,restructuring,restructuring,False,Management Occupations
+Financial Quantitative Analysts,46.70,84.89,moderate,high,True,Business and Financial Operations Occupations
+Financial Risk Specialists,33.64,33.64,restructuring,restructuring,False,Business and Financial Operations Occupations
+Financial and Investment Analysts,50.47,50.47,moderate,moderate,False,Business and Financial Operations Occupations
+"Fine Artists, Including Painters, Sculptors, and Illustrators",38.31,67.94,restructuring,high,True,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Fire Inspectors and Investigators,21.51,21.51,restructuring,restructuring,False,Protective Service Occupations
+Fire-Prevention and Protection Engineers,33.64,33.79,restructuring,restructuring,False,Architecture and Engineering Occupations
+Firefighters,13.47,13.47,low,low,False,Protective Service Occupations
+First-Line Supervisors of Construction Trades and Extraction Workers,16.55,57.06,low,moderate,True,Construction and Extraction Occupations
+First-Line Supervisors of Correctional Officers,20.71,26.39,restructuring,restructuring,False,Protective Service Occupations
+"First-Line Supervisors of Entertainment and Recreation Workers, Except Gambling Services",25.44,25.44,restructuring,restructuring,False,Personal Care and Service Occupations
+"First-Line Supervisors of Farming, Fishing, and Forestry Workers",7.87,7.87,low,low,False,"Farming, Fishing, and Forestry Occupations"
+First-Line Supervisors of Firefighting and Prevention Workers,3.73,3.73,low,low,False,Protective Service Occupations
+First-Line Supervisors of Food Preparation and Serving Workers,26.19,36.45,restructuring,restructuring,False,Food Preparation and Serving Related Occupations
+First-Line Supervisors of Gambling Services Workers,37.61,37.61,restructuring,restructuring,False,Personal Care and Service Occupations
+"First-Line Supervisors of Helpers, Laborers, and Material Movers, Hand",25.84,34.58,restructuring,restructuring,False,Transportation and Material Moving Occupations
+First-Line Supervisors of Housekeeping and Janitorial Workers,21.43,45.60,restructuring,moderate,True,Building and Grounds Cleaning and Maintenance Occupations
+"First-Line Supervisors of Landscaping, Lawn Service, and Groundskeeping Workers",16.10,22.93,low,restructuring,True,Building and Grounds Cleaning and Maintenance Occupations
+First-Line Supervisors of Material-Moving Machine and Vehicle Operators,21.06,21.06,restructuring,restructuring,False,Transportation and Material Moving Occupations
+"First-Line Supervisors of Mechanics, Installers, and Repairers",23.24,48.72,restructuring,moderate,True,"Installation, Maintenance, and Repair Occupations"
+First-Line Supervisors of Non-Retail Sales Workers,23.61,67.92,restructuring,high,True,Sales and Related Occupations
+First-Line Supervisors of Office and Administrative Support Workers,23.83,68.43,restructuring,high,True,Office and Administrative Support Occupations
+First-Line Supervisors of Passenger Attendants,23.83,23.83,restructuring,restructuring,False,Transportation and Material Moving Occupations
+First-Line Supervisors of Personal Service Workers,22.92,27.95,restructuring,restructuring,False,Personal Care and Service Occupations
+First-Line Supervisors of Police and Detectives,12.51,18.41,low,low,False,Protective Service Occupations
+First-Line Supervisors of Production and Operating Workers,31.11,32.67,restructuring,restructuring,False,Production Occupations
+First-Line Supervisors of Retail Sales Workers,23.00,67.18,restructuring,high,True,Sales and Related Occupations
+First-Line Supervisors of Security Workers,21.55,21.55,restructuring,restructuring,False,Protective Service Occupations
+Fish and Game Wardens,17.84,37.81,low,restructuring,True,Protective Service Occupations
+Fishing and Hunting Workers,5.81,5.81,low,low,False,"Farming, Fishing, and Forestry Occupations"
+Fitness and Wellness Coordinators,22.56,38.38,restructuring,restructuring,False,Management Occupations
+Flight Attendants,33.30,36.73,restructuring,restructuring,False,Transportation and Material Moving Occupations
+"Floor Layers, Except Carpet, Wood, and Hard Tiles",9.90,9.90,low,low,False,Construction and Extraction Occupations
+Floor Sanders and Finishers,0.00,0.00,low,low,False,Construction and Extraction Occupations
+Floral Designers,33.91,33.92,restructuring,restructuring,False,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Food Batchmakers,10.01,25.16,low,restructuring,True,Production Occupations
+Food Cooking Machine Operators and Tenders,18.90,18.90,low,low,False,Production Occupations
+Food Preparation Workers,29.88,35.77,restructuring,restructuring,False,Food Preparation and Serving Related Occupations
+Food Science Technicians,18.45,35.68,low,restructuring,True,"Life, Physical, and Social Science Occupations"
+Food Scientists and Technologists,33.86,48.90,restructuring,moderate,True,"Life, Physical, and Social Science Occupations"
+"Food Servers, Nonrestaurant",19.01,22.31,low,restructuring,True,Food Preparation and Serving Related Occupations
+Food Service Managers,21.43,32.93,restructuring,restructuring,False,Management Occupations
+"Food and Tobacco Roasting, Baking, and Drying Machine Operators and Tenders",10.59,10.59,low,low,False,Production Occupations
+"Foreign Language and Literature Teachers, Postsecondary",33.13,70.20,restructuring,high,True,Educational Instruction and Library Occupations
+Forensic Science Technicians,42.74,50.01,moderate,moderate,False,"Life, Physical, and Social Science Occupations"
+Forest Fire Inspectors and Prevention Specialists,6.29,12.20,low,low,False,Protective Service Occupations
+Forest and Conservation Technicians,16.84,22.14,low,restructuring,True,"Life, Physical, and Social Science Occupations"
+Forest and Conservation Workers,11.78,11.78,low,low,False,"Farming, Fishing, and Forestry Occupations"
+Foresters,12.88,12.88,low,low,False,"Life, Physical, and Social Science Occupations"
+"Forestry and Conservation Science Teachers, Postsecondary",32.02,73.62,restructuring,high,True,Educational Instruction and Library Occupations
+"Forging Machine Setters, Operators, and Tenders, Metal and Plastic",20.06,20.06,restructuring,restructuring,False,Production Occupations
+Foundry Mold and Coremakers,0.00,0.00,low,low,False,Production Occupations
+"Fraud Examiners, Investigators and Analysts",33.57,68.45,restructuring,high,True,Business and Financial Operations Occupations
+Freight Forwarders,28.61,51.92,restructuring,moderate,True,Office and Administrative Support Occupations
+Fuel Cell Engineers,34.23,37.66,restructuring,restructuring,False,Architecture and Engineering Occupations
+Fundraisers,14.44,56.91,low,moderate,True,Business and Financial Operations Occupations
+Fundraising Managers,11.92,11.92,low,low,False,Management Occupations
+Funeral Attendants,34.07,40.19,restructuring,moderate,True,Personal Care and Service Occupations
+Funeral Home Managers,19.66,19.66,low,low,False,Management Occupations
+"Furnace, Kiln, Oven, Drier, and Kettle Operators and Tenders",19.72,25.77,low,restructuring,True,Production Occupations
+Furniture Finishers,16.17,16.17,low,low,False,Production Occupations
+Gambling Cage Workers,31.39,31.39,restructuring,restructuring,False,Office and Administrative Support Occupations
+Gambling Change Persons and Booth Cashiers,30.95,30.95,restructuring,restructuring,False,Sales and Related Occupations
+Gambling Dealers,47.20,47.20,moderate,moderate,False,Personal Care and Service Occupations
+Gambling Managers,21.88,21.88,restructuring,restructuring,False,Management Occupations
+Gambling Surveillance Officers and Gambling Investigators,37.15,37.15,restructuring,restructuring,False,Protective Service Occupations
+Gambling and Sports Book Writers and Runners,41.19,41.19,moderate,moderate,False,Personal Care and Service Occupations
+Gas Compressor and Gas Pumping Station Operators,0.83,0.83,low,low,False,Transportation and Material Moving Occupations
+Gas Plant Operators,10.63,21.18,low,restructuring,True,Production Occupations
+Gem and Diamond Workers,29.86,29.86,restructuring,restructuring,False,Production Occupations
+General Internal Medicine Physicians,16.70,16.70,low,low,False,Healthcare Practitioners and Technical Occupations
+General and Operations Managers,17.96,27.87,low,restructuring,True,Management Occupations
+Genetic Counselors,39.92,47.32,restructuring,moderate,True,Healthcare Practitioners and Technical Occupations
+Geneticists,29.21,47.63,restructuring,moderate,True,"Life, Physical, and Social Science Occupations"
+Geodetic Surveyors,15.85,19.55,low,low,False,Architecture and Engineering Occupations
+Geographers,49.50,67.97,moderate,high,True,"Life, Physical, and Social Science Occupations"
+Geographic Information Systems Technologists and Technicians,47.21,47.21,moderate,moderate,False,Computer and Mathematical Occupations
+"Geography Teachers, Postsecondary",34.33,73.45,restructuring,high,True,Educational Instruction and Library Occupations
+"Geological Technicians, Except Hydrologic Technicians",14.98,14.98,low,low,False,"Life, Physical, and Social Science Occupations"
+"Geoscientists, Except Hydrologists and Geographers",26.31,32.58,restructuring,restructuring,False,"Life, Physical, and Social Science Occupations"
+Geothermal Production Managers,8.75,10.04,low,low,False,Management Occupations
+Geothermal Technicians,24.12,33.35,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+"Glass Blowers, Molders, Benders, and Finishers",14.67,14.67,low,low,False,Production Occupations
+Glaziers,13.62,15.47,low,low,False,Construction and Extraction Occupations
+Government Property Inspectors and Investigators,38.27,50.14,restructuring,moderate,True,Business and Financial Operations Occupations
+"Graders and Sorters, Agricultural Products",10.06,10.06,low,low,False,"Farming, Fishing, and Forestry Occupations"
+Graphic Designers,44.15,81.02,moderate,high,True,"Arts, Design, Entertainment, Sports, and Media Occupations"
+"Grinding and Polishing Workers, Hand",14.29,14.29,low,low,False,Production Occupations
+"Grinding, Lapping, Polishing, and Buffing Machine Tool Setters, Operators, and Tenders, Metal and Plastic",22.17,22.17,restructuring,restructuring,False,Production Occupations
+"Hairdressers, Hairstylists, and Cosmetologists",14.61,47.20,low,moderate,True,Personal Care and Service Occupations
+Hazardous Materials Removal Workers,2.49,9.12,low,low,False,Construction and Extraction Occupations
+Health Education Specialists,25.86,25.86,restructuring,restructuring,False,Community and Social Service Occupations
+Health Informatics Specialists,52.85,52.85,moderate,moderate,False,Computer and Mathematical Occupations
+Health Information Technologists and Medical Registrars,38.11,38.11,restructuring,restructuring,False,Healthcare Practitioners and Technical Occupations
+"Health Specialties Teachers, Postsecondary",25.94,76.86,restructuring,high,True,Educational Instruction and Library Occupations
+"Health and Safety Engineers, Except Mining Safety Engineers and Inspectors",42.84,42.84,moderate,moderate,False,Architecture and Engineering Occupations
+Healthcare Social Workers,20.86,42.22,restructuring,moderate,True,Community and Social Service Occupations
+Hearing Aid Specialists,10.55,14.11,low,low,False,Healthcare Practitioners and Technical Occupations
+"Heat Treating Equipment Setters, Operators, and Tenders, Metal and Plastic",17.91,20.58,low,restructuring,True,Production Occupations
+"Heating, Air Conditioning, and Refrigeration Mechanics and Installers",27.05,27.05,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+Heavy and Tractor-Trailer Truck Drivers,16.19,21.53,low,restructuring,True,Transportation and Material Moving Occupations
+"Helpers--Brickmasons, Blockmasons, Stonemasons, and Tile and Marble Setters",12.51,14.28,low,low,False,Construction and Extraction Occupations
+Helpers--Carpenters,6.10,6.10,low,low,False,Construction and Extraction Occupations
+Helpers--Electricians,15.52,15.52,low,low,False,Construction and Extraction Occupations
+Helpers--Extraction Workers,3.66,3.66,low,low,False,Construction and Extraction Occupations
+"Helpers--Installation, Maintenance, and Repair Workers",14.13,18.07,low,low,False,"Installation, Maintenance, and Repair Occupations"
+"Helpers--Painters, Paperhangers, Plasterers, and Stucco Masons",7.60,7.60,low,low,False,Construction and Extraction Occupations
+"Helpers--Pipelayers, Plumbers, Pipefitters, and Steamfitters",19.66,22.66,low,restructuring,True,Construction and Extraction Occupations
+Helpers--Production Workers,5.39,12.12,low,low,False,Production Occupations
+Helpers--Roofers,2.34,2.34,low,low,False,Construction and Extraction Occupations
+Highway Maintenance Workers,3.21,3.21,low,low,False,Construction and Extraction Occupations
+Histology Technicians,4.99,4.99,low,low,False,Healthcare Practitioners and Technical Occupations
+Historians,48.25,76.04,moderate,high,True,"Life, Physical, and Social Science Occupations"
+"History Teachers, Postsecondary",35.30,79.93,restructuring,high,True,Educational Instruction and Library Occupations
+Histotechnologists,12.02,12.02,low,low,False,Healthcare Practitioners and Technical Occupations
+Hoist and Winch Operators,8.77,8.77,low,low,False,Transportation and Material Moving Occupations
+Home Appliance Repairers,23.90,27.39,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+Home Health Aides,9.91,29.25,low,restructuring,True,Healthcare Support Occupations
+Hospitalists,18.60,18.60,low,low,False,Healthcare Practitioners and Technical Occupations
+"Hosts and Hostesses, Restaurant, Lounge, and Coffee Shop",42.31,54.22,moderate,moderate,False,Food Preparation and Serving Related Occupations
+"Hotel, Motel, and Resort Desk Clerks",35.01,55.30,restructuring,moderate,True,Office and Administrative Support Occupations
+Human Factors Engineers and Ergonomists,42.38,48.44,moderate,moderate,False,Architecture and Engineering Occupations
+"Human Resources Assistants, Except Payroll and Timekeeping",21.97,82.15,restructuring,high,True,Office and Administrative Support Occupations
+Human Resources Managers,21.59,52.33,restructuring,moderate,True,Management Occupations
+Human Resources Specialists,22.37,75.84,restructuring,high,True,Business and Financial Operations Occupations
+Hydroelectric Plant Technicians,10.99,10.99,low,low,False,Production Occupations
+Hydroelectric Production Managers,9.16,10.08,low,low,False,Management Occupations
+Hydrologic Technicians,34.52,34.52,restructuring,restructuring,False,"Life, Physical, and Social Science Occupations"
+Hydrologists,26.50,35.11,restructuring,restructuring,False,"Life, Physical, and Social Science Occupations"
+Industrial Ecologists,21.19,23.49,restructuring,restructuring,False,"Life, Physical, and Social Science Occupations"
+Industrial Engineering Technologists and Technicians,30.38,30.38,restructuring,restructuring,False,Architecture and Engineering Occupations
+Industrial Engineers,39.94,49.94,restructuring,moderate,True,Architecture and Engineering Occupations
+Industrial Machinery Mechanics,26.99,30.86,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+Industrial Production Managers,17.07,19.54,low,low,False,Management Occupations
+Industrial Truck and Tractor Operators,5.43,5.43,low,low,False,Transportation and Material Moving Occupations
+Industrial-Organizational Psychologists,36.99,66.61,restructuring,high,True,"Life, Physical, and Social Science Occupations"
+Information Security Analysts,31.68,83.84,restructuring,high,True,Computer and Mathematical Occupations
+Information Security Engineers,35.06,35.06,restructuring,restructuring,False,Computer and Mathematical Occupations
+Information Technology Project Managers,21.80,67.85,restructuring,high,True,Computer and Mathematical Occupations
+"Inspectors, Testers, Sorters, Samplers, and Weighers",14.92,24.87,low,restructuring,True,Production Occupations
+Instructional Coordinators,42.62,49.99,moderate,moderate,False,Educational Instruction and Library Occupations
+"Insulation Workers, Floor, Ceiling, and Wall",13.62,13.62,low,low,False,Construction and Extraction Occupations
+"Insulation Workers, Mechanical",27.05,29.44,restructuring,restructuring,False,Construction and Extraction Occupations
+"Insurance Appraisers, Auto Damage",34.10,44.79,restructuring,moderate,True,Business and Financial Operations Occupations
+Insurance Claims and Policy Processing Clerks,36.27,36.27,restructuring,restructuring,False,Office and Administrative Support Occupations
+Insurance Sales Agents,31.37,64.14,restructuring,high,True,Sales and Related Occupations
+Insurance Underwriters,32.55,52.72,restructuring,moderate,True,Business and Financial Operations Occupations
+Intelligence Analysts,41.39,76.15,moderate,high,True,Protective Service Occupations
+Interior Designers,30.09,49.33,restructuring,moderate,True,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Interpreters and Translators,50.98,87.05,moderate,high,True,"Arts, Design, Entertainment, Sports, and Media Occupations"
+"Interviewers, Except Eligibility and Loan",36.34,68.81,restructuring,high,True,Office and Administrative Support Occupations
+Investment Fund Managers,21.33,89.34,restructuring,high,True,Management Occupations
+"Janitors and Cleaners, Except Maids and Housekeeping Cleaners",11.34,11.34,low,low,False,Building and Grounds Cleaning and Maintenance Occupations
+Jewelers and Precious Stone and Metal Workers,19.34,19.34,low,low,False,Production Occupations
+"Judges, Magistrate Judges, and Magistrates",10.97,24.47,low,restructuring,True,Legal Occupations
+Judicial Law Clerks,20.23,62.97,restructuring,high,True,Legal Occupations
+"Kindergarten Teachers, Except Special Education",26.89,56.91,restructuring,moderate,True,Educational Instruction and Library Occupations
+Labor Relations Specialists,9.64,37.62,low,restructuring,True,Business and Financial Operations Occupations
+"Laborers and Freight, Stock, and Material Movers, Hand",5.97,5.97,low,low,False,Transportation and Material Moving Occupations
+Landscape Architects,34.57,44.00,restructuring,moderate,True,Architecture and Engineering Occupations
+Landscaping and Groundskeeping Workers,5.83,5.83,low,low,False,Building and Grounds Cleaning and Maintenance Occupations
+"Lathe and Turning Machine Tool Setters, Operators, and Tenders, Metal and Plastic",28.63,28.63,restructuring,restructuring,False,Production Occupations
+Laundry and Dry-Cleaning Workers,13.23,13.23,low,low,False,Production Occupations
+"Law Teachers, Postsecondary",35.79,75.25,restructuring,high,True,Educational Instruction and Library Occupations
+Lawyers,27.45,41.80,restructuring,moderate,True,Legal Occupations
+"Layout Workers, Metal and Plastic",17.11,18.20,low,low,False,Production Occupations
+Legal Secretaries and Administrative Assistants,33.57,33.57,restructuring,restructuring,False,Office and Administrative Support Occupations
+Legislators,37.59,47.74,restructuring,moderate,True,Management Occupations
+Librarians and Media Collections Specialists,40.40,40.40,moderate,moderate,False,Educational Instruction and Library Occupations
+"Library Assistants, Clerical",25.78,41.44,restructuring,moderate,True,Office and Administrative Support Occupations
+"Library Science Teachers, Postsecondary",34.62,77.66,restructuring,high,True,Educational Instruction and Library Occupations
+Library Technicians,40.08,58.86,moderate,moderate,False,Educational Instruction and Library Occupations
+Licensed Practical and Licensed Vocational Nurses,14.11,28.83,low,restructuring,True,Healthcare Practitioners and Technical Occupations
+"Lifeguards, Ski Patrol, and Other Recreational Protective Service Workers",15.23,20.62,low,restructuring,True,Protective Service Occupations
+Light Truck Drivers,15.34,15.34,low,low,False,Transportation and Material Moving Occupations
+Lighting Technicians,33.91,33.91,restructuring,restructuring,False,"Arts, Design, Entertainment, Sports, and Media Occupations"
+"Loading and Moving Machine Operators, Underground Mining",7.19,7.19,low,low,False,Construction and Extraction Occupations
+Loan Interviewers and Clerks,33.99,59.14,restructuring,moderate,True,Office and Administrative Support Occupations
+Loan Officers,30.46,43.68,restructuring,moderate,True,Business and Financial Operations Occupations
+"Locker Room, Coatroom, and Dressing Room Attendants",29.11,31.45,restructuring,restructuring,False,Personal Care and Service Occupations
+Locksmiths and Safe Repairers,3.11,3.11,low,low,False,"Installation, Maintenance, and Repair Occupations"
+Locomotive Engineers,16.74,18.80,low,low,False,Transportation and Material Moving Occupations
+Lodging Managers,33.51,56.23,restructuring,moderate,True,Management Occupations
+Log Graders and Scalers,12.19,12.19,low,low,False,"Farming, Fishing, and Forestry Occupations"
+Logging Equipment Operators,3.97,3.97,low,low,False,"Farming, Fishing, and Forestry Occupations"
+Logisticians,26.78,58.84,restructuring,moderate,True,Business and Financial Operations Occupations
+Logistics Analysts,15.66,70.71,low,high,True,Business and Financial Operations Occupations
+Logistics Engineers,19.51,50.68,low,moderate,True,Business and Financial Operations Occupations
+Loss Prevention Managers,12.01,16.16,low,low,False,Management Occupations
+"Low Vision Therapists, Orientation and Mobility Specialists, and Vision Rehabilitation Therapists",32.41,44.60,restructuring,moderate,True,Healthcare Practitioners and Technical Occupations
+Machine Feeders and Offbearers,4.35,4.35,low,low,False,Transportation and Material Moving Occupations
+Machinists,26.61,31.89,restructuring,restructuring,False,Production Occupations
+Magnetic Resonance Imaging Technologists,16.48,22.02,low,restructuring,True,Healthcare Practitioners and Technical Occupations
+Maids and Housekeeping Cleaners,2.80,2.80,low,low,False,Building and Grounds Cleaning and Maintenance Occupations
+"Mail Clerks and Mail Machine Operators, Except Postal Service",17.72,22.21,low,restructuring,True,Office and Administrative Support Occupations
+"Maintenance Workers, Machinery",17.99,17.99,low,low,False,"Installation, Maintenance, and Repair Occupations"
+"Maintenance and Repair Workers, General",20.44,20.80,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+"Makeup Artists, Theatrical and Performance",13.92,17.67,low,low,False,Personal Care and Service Occupations
+Management Analysts,50.37,69.24,moderate,high,True,Business and Financial Operations Occupations
+Manicurists and Pedicurists,3.76,10.39,low,low,False,Personal Care and Service Occupations
+Manufactured Building and Mobile Home Installers,25.71,26.17,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+Manufacturing Engineers,39.97,53.38,restructuring,moderate,True,Architecture and Engineering Occupations
+Marine Engineers and Naval Architects,29.69,29.69,restructuring,restructuring,False,Architecture and Engineering Occupations
+Market Research Analysts and Marketing Specialists,39.84,89.50,restructuring,high,True,Business and Financial Operations Occupations
+Marketing Managers,26.75,76.80,restructuring,high,True,Management Occupations
+Marriage and Family Therapists,32.88,54.21,restructuring,moderate,True,Community and Social Service Occupations
+Massage Therapists,7.38,20.80,low,restructuring,True,Healthcare Support Occupations
+Materials Engineers,24.34,25.35,restructuring,restructuring,False,Architecture and Engineering Occupations
+Materials Scientists,25.58,54.28,restructuring,moderate,True,"Life, Physical, and Social Science Occupations"
+"Mathematical Science Teachers, Postsecondary",33.52,68.09,restructuring,high,True,Educational Instruction and Library Occupations
+Mathematicians,51.99,71.19,moderate,high,True,Computer and Mathematical Occupations
+"Meat, Poultry, and Fish Cutters and Trimmers",45.01,45.01,moderate,moderate,False,Production Occupations
+Mechanical Door Repairers,11.38,11.38,low,low,False,"Installation, Maintenance, and Repair Occupations"
+Mechanical Drafters,44.39,50.12,moderate,moderate,False,Architecture and Engineering Occupations
+Mechanical Engineering Technologists and Technicians,33.51,33.51,restructuring,restructuring,False,Architecture and Engineering Occupations
+Mechanical Engineers,36.62,45.83,restructuring,moderate,True,Architecture and Engineering Occupations
+Mechatronics Engineers,23.04,50.77,restructuring,moderate,True,Architecture and Engineering Occupations
+Media Programming Directors,21.73,21.73,restructuring,restructuring,False,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Media Technical Directors/Managers,23.92,23.92,restructuring,restructuring,False,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Medical Appliance Technicians,8.97,8.97,low,low,False,Production Occupations
+Medical Assistants,17.88,50.91,low,moderate,True,Healthcare Support Occupations
+Medical Dosimetrists,32.41,32.41,restructuring,restructuring,False,Healthcare Practitioners and Technical Occupations
+Medical Equipment Preparers,0.97,0.97,low,low,False,Healthcare Support Occupations
+Medical Equipment Repairers,29.43,37.28,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+Medical Records Specialists,38.67,38.67,restructuring,restructuring,False,Healthcare Practitioners and Technical Occupations
+"Medical Scientists, Except Epidemiologists",35.02,43.05,restructuring,moderate,True,"Life, Physical, and Social Science Occupations"
+Medical Secretaries and Administrative Assistants,31.36,31.36,restructuring,restructuring,False,Office and Administrative Support Occupations
+Medical Transcriptionists,16.39,75.29,low,high,True,Healthcare Support Occupations
+Medical and Clinical Laboratory Technicians,22.11,39.30,restructuring,restructuring,False,Healthcare Practitioners and Technical Occupations
+Medical and Clinical Laboratory Technologists,34.93,52.46,restructuring,moderate,True,Healthcare Practitioners and Technical Occupations
+Medical and Health Services Managers,33.34,47.27,restructuring,moderate,True,Management Occupations
+"Meeting, Convention, and Event Planners",21.11,60.62,restructuring,high,True,Business and Financial Operations Occupations
+Mental Health Counselors,28.78,57.59,restructuring,moderate,True,Community and Social Service Occupations
+Mental Health and Substance Abuse Social Workers,22.05,51.92,restructuring,moderate,True,Community and Social Service Occupations
+Merchandise Displayers and Window Trimmers,37.34,38.94,restructuring,restructuring,False,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Metal-Refining Furnace Operators and Tenders,17.97,17.97,low,low,False,Production Occupations
+"Meter Readers, Utilities",28.00,42.77,restructuring,moderate,True,Office and Administrative Support Occupations
+Microbiologists,30.33,55.44,restructuring,moderate,True,"Life, Physical, and Social Science Occupations"
+Microsystems Engineers,27.10,43.17,restructuring,moderate,True,Architecture and Engineering Occupations
+"Middle School Teachers, Except Special and Career/Technical Education",25.03,63.59,restructuring,high,True,Educational Instruction and Library Occupations
+Midwives,20.49,31.44,restructuring,restructuring,False,Healthcare Practitioners and Technical Occupations
+"Milling and Planing Machine Setters, Operators, and Tenders, Metal and Plastic",19.76,19.76,low,low,False,Production Occupations
+Millwrights,14.86,14.86,low,low,False,"Installation, Maintenance, and Repair Occupations"
+"Mining and Geological Engineers, Including Mining Safety Engineers",25.19,25.19,restructuring,restructuring,False,Architecture and Engineering Occupations
+"Mixing and Blending Machine Setters, Operators, and Tenders",13.84,22.50,low,restructuring,True,Production Occupations
+"Mobile Heavy Equipment Mechanics, Except Engines",18.43,21.83,low,restructuring,True,"Installation, Maintenance, and Repair Occupations"
+"Model Makers, Metal and Plastic",16.98,16.98,low,low,False,Production Occupations
+"Model Makers, Wood",20.86,24.17,restructuring,restructuring,False,Production Occupations
+Models,46.84,56.20,moderate,moderate,False,Sales and Related Occupations
+"Molders, Shapers, and Casters, Except Metal and Plastic",12.68,12.68,low,low,False,Production Occupations
+"Molding, Coremaking, and Casting Machine Setters, Operators, and Tenders, Metal and Plastic",14.58,15.06,low,low,False,Production Occupations
+Molecular and Cellular Biologists,23.06,48.60,restructuring,moderate,True,"Life, Physical, and Social Science Occupations"
+"Morticians, Undertakers, and Funeral Arrangers",22.38,22.38,restructuring,restructuring,False,Personal Care and Service Occupations
+Motion Picture Projectionists,5.02,9.83,low,low,False,Personal Care and Service Occupations
+Motorboat Mechanics and Service Technicians,12.95,12.95,low,low,False,"Installation, Maintenance, and Repair Occupations"
+Motorboat Operators,0.27,6.31,low,low,False,Transportation and Material Moving Occupations
+Motorcycle Mechanics,22.25,22.62,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+"Multiple Machine Tool Setters, Operators, and Tenders, Metal and Plastic",24.87,24.87,restructuring,restructuring,False,Production Occupations
+Museum Technicians and Conservators,36.93,57.94,restructuring,moderate,True,Educational Instruction and Library Occupations
+Music Directors and Composers,37.62,37.62,restructuring,restructuring,False,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Music Therapists,11.66,30.91,low,restructuring,True,Healthcare Practitioners and Technical Occupations
+Musical Instrument Repairers and Tuners,25.23,28.49,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+Musicians and Singers,14.12,14.12,low,low,False,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Nannies,26.14,37.78,restructuring,restructuring,False,Personal Care and Service Occupations
+Nanosystems Engineers,30.42,47.62,restructuring,moderate,True,Architecture and Engineering Occupations
+Nanotechnology Engineering Technologists and Technicians,23.23,23.23,restructuring,restructuring,False,Architecture and Engineering Occupations
+Natural Sciences Managers,14.84,41.41,low,moderate,True,Management Occupations
+Naturopathic Physicians,18.14,47.39,low,moderate,True,Healthcare Practitioners and Technical Occupations
+Network and Computer Systems Administrators,42.87,73.68,moderate,high,True,Computer and Mathematical Occupations
+Neurodiagnostic Technologists,12.74,21.05,low,restructuring,True,Healthcare Practitioners and Technical Occupations
+Neurologists,21.57,34.88,restructuring,restructuring,False,Healthcare Practitioners and Technical Occupations
+Neuropsychologists,25.94,25.94,restructuring,restructuring,False,"Life, Physical, and Social Science Occupations"
+New Accounts Clerks,42.12,46.31,moderate,moderate,False,Office and Administrative Support Occupations
+"News Analysts, Reporters, and Journalists",50.37,50.37,moderate,moderate,False,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Non-Destructive Testing Specialists,33.86,40.30,restructuring,moderate,True,Architecture and Engineering Occupations
+Nuclear Engineers,15.01,16.68,low,low,False,Architecture and Engineering Occupations
+Nuclear Medicine Technologists,21.95,39.32,restructuring,restructuring,False,Healthcare Practitioners and Technical Occupations
+Nuclear Monitoring Technicians,31.31,42.22,restructuring,moderate,True,"Life, Physical, and Social Science Occupations"
+Nuclear Power Reactor Operators,8.97,8.97,low,low,False,Production Occupations
+Nuclear Technicians,17.93,17.93,low,low,False,"Life, Physical, and Social Science Occupations"
+Nurse Anesthetists,16.64,16.64,low,low,False,Healthcare Practitioners and Technical Occupations
+Nurse Midwives,13.80,45.91,low,moderate,True,Healthcare Practitioners and Technical Occupations
+Nurse Practitioners,20.40,40.41,restructuring,moderate,True,Healthcare Practitioners and Technical Occupations
+Nursing Assistants,9.69,14.84,low,low,False,Healthcare Support Occupations
+"Nursing Instructors and Teachers, Postsecondary",26.16,59.60,restructuring,moderate,True,Educational Instruction and Library Occupations
+Obstetricians and Gynecologists,17.09,44.00,low,moderate,True,Healthcare Practitioners and Technical Occupations
+Occupational Health and Safety Specialists,24.88,29.38,restructuring,restructuring,False,"Life, Physical, and Social Science Occupations"
+Occupational Health and Safety Technicians,14.57,21.75,low,restructuring,True,"Life, Physical, and Social Science Occupations"
+Occupational Therapists,11.92,40.17,low,moderate,True,Healthcare Practitioners and Technical Occupations
+Occupational Therapy Aides,17.43,26.41,low,restructuring,True,Healthcare Support Occupations
+Occupational Therapy Assistants,14.51,16.83,low,low,False,Healthcare Support Occupations
+"Office Clerks, General",40.39,71.37,moderate,high,True,Office and Administrative Support Occupations
+"Office Machine Operators, Except Computer",40.17,46.41,moderate,moderate,False,Office and Administrative Support Occupations
+Online Merchants,42.62,84.04,moderate,high,True,Business and Financial Operations Occupations
+Operating Engineers and Other Construction Equipment Operators,9.22,9.22,low,low,False,Construction and Extraction Occupations
+Operations Research Analysts,48.09,70.69,moderate,high,True,Computer and Mathematical Occupations
+Ophthalmic Laboratory Technicians,12.58,12.58,low,low,False,Production Occupations
+Ophthalmic Medical Technicians,1.21,1.21,low,low,False,Healthcare Practitioners and Technical Occupations
+Ophthalmic Medical Technologists,7.17,7.17,low,low,False,Healthcare Practitioners and Technical Occupations
+"Ophthalmologists, Except Pediatric",10.96,10.96,low,low,False,Healthcare Practitioners and Technical Occupations
+"Opticians, Dispensing",20.21,20.21,restructuring,restructuring,False,Healthcare Practitioners and Technical Occupations
+Optometrists,18.26,30.19,low,restructuring,True,Healthcare Practitioners and Technical Occupations
+Oral and Maxillofacial Surgeons,9.98,13.47,low,low,False,Healthcare Practitioners and Technical Occupations
+Order Clerks,37.35,62.94,restructuring,high,True,Office and Administrative Support Occupations
+Orderlies,4.94,4.94,low,low,False,Healthcare Support Occupations
+Orthodontists,22.50,31.79,restructuring,restructuring,False,Healthcare Practitioners and Technical Occupations
+"Orthopedic Surgeons, Except Pediatric",13.62,13.62,low,low,False,Healthcare Practitioners and Technical Occupations
+Orthoptists,13.64,19.46,low,low,False,Healthcare Practitioners and Technical Occupations
+Orthotists and Prosthetists,12.99,12.99,low,low,False,Healthcare Practitioners and Technical Occupations
+Outdoor Power Equipment and Other Small Engine Mechanics,15.17,19.06,low,low,False,"Installation, Maintenance, and Repair Occupations"
+Packaging and Filling Machine Operators and Tenders,5.10,5.10,low,low,False,Production Occupations
+"Packers and Packagers, Hand",16.33,25.47,low,restructuring,True,Transportation and Material Moving Occupations
+"Painters, Construction and Maintenance",9.33,19.74,low,low,False,Construction and Extraction Occupations
+"Painting, Coating, and Decorating Workers",13.39,13.39,low,low,False,Production Occupations
+"Paper Goods Machine Setters, Operators, and Tenders",15.45,15.45,low,low,False,Production Occupations
+Paperhangers,21.12,22.39,restructuring,restructuring,False,Construction and Extraction Occupations
+Paralegals and Legal Assistants,22.01,41.59,restructuring,moderate,True,Legal Occupations
+Paramedics,11.11,11.11,low,low,False,Healthcare Practitioners and Technical Occupations
+Park Naturalists,52.26,52.82,moderate,moderate,False,"Life, Physical, and Social Science Occupations"
+Parking Attendants,17.80,17.80,low,low,False,Transportation and Material Moving Occupations
+Parking Enforcement Workers,17.96,18.67,low,low,False,Protective Service Occupations
+Parts Salespersons,34.53,45.85,restructuring,moderate,True,Sales and Related Occupations
+Passenger Attendants,47.01,47.01,moderate,moderate,False,Transportation and Material Moving Occupations
+Patient Representatives,41.53,80.85,moderate,high,True,Healthcare Practitioners and Technical Occupations
+"Patternmakers, Metal and Plastic",26.99,34.89,restructuring,restructuring,False,Production Occupations
+"Patternmakers, Wood",27.09,31.98,restructuring,restructuring,False,Production Occupations
+"Paving, Surfacing, and Tamping Equipment Operators",0.90,0.90,low,low,False,Construction and Extraction Occupations
+Payroll and Timekeeping Clerks,35.66,54.70,restructuring,moderate,True,Office and Administrative Support Occupations
+Pediatric Surgeons,13.12,13.12,low,low,False,Healthcare Practitioners and Technical Occupations
+"Pediatricians, General",12.25,50.52,low,moderate,True,Healthcare Practitioners and Technical Occupations
+Penetration Testers,50.76,50.76,moderate,moderate,False,Computer and Mathematical Occupations
+Personal Care Aides,21.95,44.45,restructuring,moderate,True,Healthcare Support Occupations
+Personal Financial Advisors,44.46,79.29,moderate,high,True,Business and Financial Operations Occupations
+Pest Control Workers,7.97,33.67,low,restructuring,True,Building and Grounds Cleaning and Maintenance Occupations
+"Pesticide Handlers, Sprayers, and Applicators, Vegetation",14.94,14.94,low,low,False,Building and Grounds Cleaning and Maintenance Occupations
+Petroleum Engineers,19.94,20.42,low,restructuring,True,Architecture and Engineering Occupations
+"Petroleum Pump System Operators, Refinery Operators, and Gaugers",10.04,21.79,low,restructuring,True,Production Occupations
+Pharmacists,38.24,64.86,restructuring,high,True,Healthcare Practitioners and Technical Occupations
+Pharmacy Aides,34.04,50.04,restructuring,moderate,True,Healthcare Support Occupations
+Pharmacy Technicians,38.22,50.59,restructuring,moderate,True,Healthcare Practitioners and Technical Occupations
+"Philosophy and Religion Teachers, Postsecondary",31.73,75.68,restructuring,high,True,Educational Instruction and Library Occupations
+Phlebotomists,6.61,17.06,low,low,False,Healthcare Support Occupations
+Photographers,41.86,60.56,moderate,high,True,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Photographic Process Workers and Processing Machine Operators,16.00,20.87,low,restructuring,True,Production Occupations
+Photonics Engineers,35.54,54.71,restructuring,moderate,True,Architecture and Engineering Occupations
+Photonics Technicians,28.92,33.69,restructuring,restructuring,False,Architecture and Engineering Occupations
+Physical Medicine and Rehabilitation Physicians,2.39,16.03,low,low,False,Healthcare Practitioners and Technical Occupations
+Physical Therapist Aides,7.47,10.07,low,low,False,Healthcare Support Occupations
+Physical Therapist Assistants,12.47,13.17,low,low,False,Healthcare Support Occupations
+Physical Therapists,20.87,48.91,restructuring,moderate,True,Healthcare Practitioners and Technical Occupations
+Physician Assistants,11.55,48.10,low,moderate,True,Healthcare Practitioners and Technical Occupations
+"Physicians, Pathologists",22.36,22.36,restructuring,restructuring,False,Healthcare Practitioners and Technical Occupations
+Physicists,40.77,64.12,moderate,high,True,"Life, Physical, and Social Science Occupations"
+"Physics Teachers, Postsecondary",30.93,80.44,restructuring,high,True,Educational Instruction and Library Occupations
+Pile Driver Operators,0.00,0.00,low,low,False,Construction and Extraction Occupations
+Pipelayers,11.09,11.09,low,low,False,Construction and Extraction Occupations
+Plasterers and Stucco Masons,29.14,29.14,restructuring,restructuring,False,Construction and Extraction Occupations
+"Plating Machine Setters, Operators, and Tenders, Metal and Plastic",14.60,14.60,low,low,False,Production Occupations
+"Plumbers, Pipefitters, and Steamfitters",19.99,19.99,low,low,False,Construction and Extraction Occupations
+Podiatrists,23.08,23.08,restructuring,restructuring,False,Healthcare Practitioners and Technical Occupations
+"Poets, Lyricists and Creative Writers",56.01,87.44,moderate,high,True,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Police Identification and Records Officers,21.44,22.07,restructuring,restructuring,False,Protective Service Occupations
+Police and Sheriff's Patrol Officers,26.44,26.44,restructuring,restructuring,False,Protective Service Occupations
+"Political Science Teachers, Postsecondary",34.49,79.99,restructuring,high,True,Educational Instruction and Library Occupations
+Political Scientists,45.43,72.79,moderate,high,True,"Life, Physical, and Social Science Occupations"
+Postal Service Clerks,28.64,28.78,restructuring,restructuring,False,Office and Administrative Support Occupations
+Postal Service Mail Carriers,20.99,21.06,restructuring,restructuring,False,Office and Administrative Support Occupations
+"Postal Service Mail Sorters, Processors, and Processing Machine Operators",12.92,18.89,low,low,False,Office and Administrative Support Occupations
+Postmasters and Mail Superintendents,12.59,17.28,low,low,False,Management Occupations
+"Potters, Manufacturing",16.83,17.30,low,low,False,Production Occupations
+"Pourers and Casters, Metal",17.06,17.06,low,low,False,Production Occupations
+Power Distributors and Dispatchers,17.55,36.17,low,restructuring,True,Production Occupations
+Power Plant Operators,11.94,15.78,low,low,False,Production Occupations
+Precision Agriculture Technicians,19.21,37.75,low,restructuring,True,"Life, Physical, and Social Science Occupations"
+Prepress Technicians and Workers,23.41,36.67,restructuring,restructuring,False,Production Occupations
+"Preschool Teachers, Except Special Education",19.60,46.74,low,moderate,True,Educational Instruction and Library Occupations
+"Pressers, Textile, Garment, and Related Materials",10.75,10.75,low,low,False,Production Occupations
+Preventive Medicine Physicians,8.25,19.43,low,low,False,Healthcare Practitioners and Technical Occupations
+Print Binding and Finishing Workers,7.26,8.02,low,low,False,Production Occupations
+Printing Press Operators,21.59,22.24,restructuring,restructuring,False,Production Occupations
+Private Detectives and Investigators,38.15,60.57,restructuring,high,True,Protective Service Occupations
+Probation Officers and Correctional Treatment Specialists,36.82,36.82,restructuring,restructuring,False,Community and Social Service Occupations
+Procurement Clerks,42.02,69.39,moderate,high,True,Office and Administrative Support Occupations
+Producers and Directors,28.12,28.12,restructuring,restructuring,False,"Arts, Design, Entertainment, Sports, and Media Occupations"
+"Production, Planning, and Expediting Clerks",34.78,46.06,restructuring,moderate,True,Office and Administrative Support Occupations
+Project Management Specialists,24.05,24.05,restructuring,restructuring,False,Business and Financial Operations Occupations
+Proofreaders and Copy Markers,46.09,54.18,moderate,moderate,False,Office and Administrative Support Occupations
+"Property, Real Estate, and Community Association Managers",17.98,61.50,low,high,True,Management Occupations
+Prosthodontists,5.07,18.35,low,low,False,Healthcare Practitioners and Technical Occupations
+Psychiatric Aides,15.86,22.92,low,restructuring,True,Healthcare Support Occupations
+Psychiatric Technicians,12.21,15.72,low,low,False,Healthcare Practitioners and Technical Occupations
+Psychiatrists,16.78,44.56,low,moderate,True,Healthcare Practitioners and Technical Occupations
+"Psychology Teachers, Postsecondary",31.63,75.88,restructuring,high,True,Educational Instruction and Library Occupations
+Public Relations Managers,26.43,26.43,restructuring,restructuring,False,Management Occupations
+Public Relations Specialists,40.13,83.21,moderate,high,True,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Public Safety Telecommunicators,34.51,34.51,restructuring,restructuring,False,Office and Administrative Support Occupations
+"Pump Operators, Except Wellhead Pumpers",20.64,20.64,restructuring,restructuring,False,Transportation and Material Moving Occupations
+"Purchasing Agents, Except Wholesale, Retail, and Farm Products",42.35,71.60,moderate,high,True,Business and Financial Operations Occupations
+Purchasing Managers,18.88,46.97,low,moderate,True,Management Occupations
+Quality Control Analysts,18.88,25.72,low,restructuring,True,"Life, Physical, and Social Science Occupations"
+Quality Control Systems Managers,16.85,17.89,low,low,False,Management Occupations
+Radiation Therapists,13.57,19.52,low,low,False,Healthcare Practitioners and Technical Occupations
+Radio Frequency Identification Device Specialists,41.85,50.09,moderate,moderate,False,Architecture and Engineering Occupations
+"Radio, Cellular, and Tower Equipment Installers and Repairers",27.43,36.76,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+Radiologic Technologists and Technicians,20.21,20.21,restructuring,restructuring,False,Healthcare Practitioners and Technical Occupations
+Radiologists,22.03,46.77,restructuring,moderate,True,Healthcare Practitioners and Technical Occupations
+Rail Car Repairers,7.40,7.40,low,low,False,"Installation, Maintenance, and Repair Occupations"
+"Rail Yard Engineers, Dinkey Operators, and Hostlers",15.94,18.05,low,low,False,Transportation and Material Moving Occupations
+Rail-Track Laying and Maintenance Equipment Operators,0.00,0.00,low,low,False,Construction and Extraction Occupations
+"Railroad Brake, Signal, and Switch Operators and Locomotive Firers",5.52,5.52,low,low,False,Transportation and Material Moving Occupations
+Railroad Conductors and Yardmasters,16.01,18.88,low,low,False,Transportation and Material Moving Occupations
+Range Managers,13.80,13.80,low,low,False,"Life, Physical, and Social Science Occupations"
+Real Estate Brokers,18.64,90.16,low,high,True,Sales and Related Occupations
+Real Estate Sales Agents,33.61,78.11,restructuring,high,True,Sales and Related Occupations
+Receptionists and Information Clerks,32.72,73.83,restructuring,high,True,Office and Administrative Support Occupations
+Recreation Workers,29.24,31.95,restructuring,restructuring,False,Personal Care and Service Occupations
+"Recreation and Fitness Studies Teachers, Postsecondary",32.73,69.59,restructuring,high,True,Educational Instruction and Library Occupations
+Recreational Therapists,15.02,44.55,low,moderate,True,Healthcare Practitioners and Technical Occupations
+Recreational Vehicle Service Technicians,27.11,29.04,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+Recycling Coordinators,13.88,19.89,low,low,False,Transportation and Material Moving Occupations
+Recycling and Reclamation Workers,0.00,0.00,low,low,False,Transportation and Material Moving Occupations
+"Refractory Materials Repairers, Except Brickmasons",12.88,12.88,low,low,False,"Installation, Maintenance, and Repair Occupations"
+Refuse and Recyclable Material Collectors,6.26,8.35,low,low,False,Transportation and Material Moving Occupations
+Registered Nurses,9.30,33.36,low,restructuring,True,Healthcare Practitioners and Technical Occupations
+Regulatory Affairs Managers,29.06,46.00,restructuring,moderate,True,Management Occupations
+Regulatory Affairs Specialists,28.82,40.69,restructuring,moderate,True,Business and Financial Operations Occupations
+Rehabilitation Counselors,23.16,38.06,restructuring,restructuring,False,Community and Social Service Occupations
+Reinforcing Iron and Rebar Workers,11.47,11.47,low,low,False,Construction and Extraction Occupations
+Remote Sensing Scientists and Technologists,14.75,39.16,low,restructuring,True,"Life, Physical, and Social Science Occupations"
+Remote Sensing Technicians,24.08,29.17,restructuring,restructuring,False,"Life, Physical, and Social Science Occupations"
+Reservation and Transportation Ticket Agents and Travel Clerks,42.51,50.48,moderate,moderate,False,Office and Administrative Support Occupations
+Residential Advisors,28.27,42.88,restructuring,moderate,True,Personal Care and Service Occupations
+Respiratory Therapists,13.55,15.65,low,low,False,Healthcare Practitioners and Technical Occupations
+Retail Loss Prevention Specialists,9.32,43.59,low,moderate,True,Protective Service Occupations
+Retail Salespersons,39.99,57.36,restructuring,moderate,True,Sales and Related Occupations
+Riggers,29.83,29.83,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+Robotics Engineers,38.76,57.70,restructuring,moderate,True,Architecture and Engineering Occupations
+Robotics Technicians,27.68,40.31,restructuring,moderate,True,Architecture and Engineering Occupations
+"Rock Splitters, Quarry",6.41,6.41,low,low,False,Construction and Extraction Occupations
+"Rolling Machine Setters, Operators, and Tenders, Metal and Plastic",20.34,20.34,restructuring,restructuring,False,Production Occupations
+"Roof Bolters, Mining",10.08,10.08,low,low,False,Construction and Extraction Occupations
+Roofers,2.77,5.61,low,low,False,Construction and Extraction Occupations
+"Rotary Drill Operators, Oil and Gas",9.33,9.33,low,low,False,Construction and Extraction Occupations
+"Roustabouts, Oil and Gas",2.46,2.46,low,low,False,Construction and Extraction Occupations
+Sailors and Marine Oilers,8.72,8.72,low,low,False,Transportation and Material Moving Occupations
+Sales Engineers,38.02,72.01,restructuring,high,True,Sales and Related Occupations
+Sales Managers,26.17,53.40,restructuring,moderate,True,Management Occupations
+"Sales Representatives of Services, Except Advertising, Insurance, Financial Services, and Travel",38.31,38.31,restructuring,restructuring,False,Sales and Related Occupations
+"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products",44.84,81.81,moderate,high,True,Sales and Related Occupations
+"Sales Representatives, Wholesale and Manufacturing, Technical and Scientific Products",39.83,76.76,restructuring,high,True,Sales and Related Occupations
+"Sawing Machine Setters, Operators, and Tenders, Wood",25.45,27.59,restructuring,restructuring,False,Production Occupations
+School Bus Monitors,36.95,36.95,restructuring,restructuring,False,Protective Service Occupations
+School Psychologists,21.51,34.71,restructuring,restructuring,False,"Life, Physical, and Social Science Occupations"
+Search Marketing Strategists,54.21,89.65,moderate,high,True,Business and Financial Operations Occupations
+"Secondary School Teachers, Except Special and Career/Technical Education",24.53,59.76,restructuring,moderate,True,Educational Instruction and Library Occupations
+"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",44.57,75.10,moderate,high,True,Office and Administrative Support Occupations
+"Securities, Commodities, and Financial Services Sales Agents",29.00,29.00,restructuring,restructuring,False,Sales and Related Occupations
+Security Guards,26.75,54.66,restructuring,moderate,True,Protective Service Occupations
+Security Management Specialists,29.09,49.70,restructuring,moderate,True,Business and Financial Operations Occupations
+Security Managers,11.83,38.31,low,restructuring,True,Management Occupations
+Security and Fire Alarm Systems Installers,28.60,37.72,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+Segmental Pavers,5.39,5.39,low,low,False,Construction and Extraction Occupations
+Self-Enrichment Teachers,27.88,27.88,restructuring,restructuring,False,Educational Instruction and Library Occupations
+Semiconductor Processing Technicians,20.76,20.76,restructuring,restructuring,False,Production Occupations
+"Separating, Filtering, Clarifying, Precipitating, and Still Machine Setters, Operators, and Tenders",20.61,31.93,restructuring,restructuring,False,Production Occupations
+Septic Tank Servicers and Sewer Pipe Cleaners,20.54,21.23,restructuring,restructuring,False,Construction and Extraction Occupations
+"Service Unit Operators, Oil and Gas",6.07,6.07,low,low,False,Construction and Extraction Occupations
+Set and Exhibit Designers,38.84,44.77,restructuring,moderate,True,"Arts, Design, Entertainment, Sports, and Media Occupations"
+"Sewers, Hand",17.94,17.94,low,low,False,Production Occupations
+Sewing Machine Operators,11.19,11.19,low,low,False,Production Occupations
+Shampooers,0.73,14.82,low,low,False,Personal Care and Service Occupations
+Sheet Metal Workers,10.90,31.58,low,restructuring,True,Construction and Extraction Occupations
+Ship Engineers,4.44,7.43,low,low,False,Transportation and Material Moving Occupations
+"Shipping, Receiving, and Inventory Clerks",25.81,25.81,restructuring,restructuring,False,Office and Administrative Support Occupations
+Shoe Machine Operators and Tenders,8.17,8.17,low,low,False,Production Occupations
+Shoe and Leather Workers and Repairers,10.77,10.77,low,low,False,Production Occupations
+Shuttle Drivers and Chauffeurs,16.14,16.14,low,low,False,Transportation and Material Moving Occupations
+Signal and Track Switch Repairers,13.79,13.79,low,low,False,"Installation, Maintenance, and Repair Occupations"
+Skincare Specialists,8.09,52.96,low,moderate,True,Personal Care and Service Occupations
+Slaughterers and Meat Packers,32.66,32.66,restructuring,restructuring,False,Production Occupations
+Social Science Research Assistants,22.43,53.47,restructuring,moderate,True,"Life, Physical, and Social Science Occupations"
+"Social Work Teachers, Postsecondary",31.59,75.98,restructuring,high,True,Educational Instruction and Library Occupations
+Social and Community Service Managers,24.89,37.07,restructuring,restructuring,False,Management Occupations
+Social and Human Service Assistants,36.51,38.53,restructuring,restructuring,False,Community and Social Service Occupations
+Sociologists,32.33,70.51,restructuring,high,True,"Life, Physical, and Social Science Occupations"
+"Sociology Teachers, Postsecondary",29.97,72.41,restructuring,high,True,Educational Instruction and Library Occupations
+Software Developers,45.16,45.16,moderate,moderate,False,Computer and Mathematical Occupations
+Software Quality Assurance Analysts and Testers,49.63,49.63,moderate,moderate,False,Computer and Mathematical Occupations
+Soil and Plant Scientists,32.72,41.05,restructuring,moderate,True,"Life, Physical, and Social Science Occupations"
+Solar Energy Installation Managers,25.46,37.36,restructuring,restructuring,False,Construction and Extraction Occupations
+Solar Energy Systems Engineers,42.06,42.06,moderate,moderate,False,Architecture and Engineering Occupations
+Solar Photovoltaic Installers,22.26,37.91,restructuring,restructuring,False,Construction and Extraction Occupations
+Solar Sales Representatives and Assessors,35.67,74.57,restructuring,high,True,Sales and Related Occupations
+Solar Thermal Installers and Technicians,8.43,8.43,low,low,False,Construction and Extraction Occupations
+Sound Engineering Technicians,9.77,28.35,low,restructuring,True,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Spa Managers,9.86,46.13,low,moderate,True,Management Occupations
+"Special Education Teachers, Elementary School",19.90,19.90,low,low,False,Educational Instruction and Library Occupations
+"Special Education Teachers, Kindergarten",20.58,20.58,restructuring,restructuring,False,Educational Instruction and Library Occupations
+"Special Education Teachers, Middle School",21.99,44.16,restructuring,moderate,True,Educational Instruction and Library Occupations
+"Special Education Teachers, Preschool",23.26,32.51,restructuring,restructuring,False,Educational Instruction and Library Occupations
+"Special Education Teachers, Secondary School",24.50,48.57,restructuring,moderate,True,Educational Instruction and Library Occupations
+Special Effects Artists and Animators,41.87,41.87,moderate,moderate,False,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Speech-Language Pathologists,19.33,40.44,low,moderate,True,Healthcare Practitioners and Technical Occupations
+Speech-Language Pathology Assistants,9.45,28.83,low,restructuring,True,Healthcare Support Occupations
+Sports Medicine Physicians,19.06,25.31,low,restructuring,True,Healthcare Practitioners and Technical Occupations
+Stationary Engineers and Boiler Operators,19.66,20.10,low,restructuring,True,Production Occupations
+Statistical Assistants,40.51,84.01,moderate,high,True,Office and Administrative Support Occupations
+Statisticians,45.46,71.76,moderate,high,True,Computer and Mathematical Occupations
+Stockers and Order Fillers,23.26,23.26,restructuring,restructuring,False,Transportation and Material Moving Occupations
+"Stone Cutters and Carvers, Manufacturing",13.89,17.41,low,low,False,Production Occupations
+Stonemasons,10.30,10.30,low,low,False,Construction and Extraction Occupations
+Structural Iron and Steel Workers,5.17,9.69,low,low,False,Construction and Extraction Occupations
+Structural Metal Fabricators and Fitters,8.66,8.66,low,low,False,Production Occupations
+Substance Abuse and Behavioral Disorder Counselors,25.61,44.51,restructuring,moderate,True,Community and Social Service Occupations
+"Substitute Teachers, Short-Term",38.11,38.11,restructuring,restructuring,False,Educational Instruction and Library Occupations
+Subway and Streetcar Operators,12.41,16.84,low,low,False,Transportation and Material Moving Occupations
+Supply Chain Managers,24.36,37.24,restructuring,restructuring,False,Management Occupations
+Surgical Assistants,4.98,6.89,low,low,False,Healthcare Practitioners and Technical Occupations
+Surgical Technologists,4.87,7.70,low,low,False,Healthcare Practitioners and Technical Occupations
+Survey Researchers,21.39,60.41,restructuring,high,True,"Life, Physical, and Social Science Occupations"
+Surveying and Mapping Technicians,29.73,29.73,restructuring,restructuring,False,Architecture and Engineering Occupations
+Surveyors,23.85,33.39,restructuring,restructuring,False,Architecture and Engineering Occupations
+Sustainability Specialists,20.08,75.53,restructuring,high,True,Business and Financial Operations Occupations
+"Switchboard Operators, Including Answering Service",40.49,72.58,moderate,high,True,Office and Administrative Support Occupations
+"Tailors, Dressmakers, and Custom Sewers",8.85,14.52,low,low,False,Production Occupations
+Talent Directors,10.40,50.97,low,moderate,True,"Arts, Design, Entertainment, Sports, and Media Occupations"
+"Tank Car, Truck, and Ship Loaders",14.53,14.53,low,low,False,Transportation and Material Moving Occupations
+Tapers,6.94,9.44,low,low,False,Construction and Extraction Occupations
+"Tax Examiners and Collectors, and Revenue Agents",25.15,30.90,restructuring,restructuring,False,Business and Financial Operations Occupations
+Tax Preparers,46.11,62.90,moderate,high,True,Business and Financial Operations Occupations
+Taxi Drivers,22.94,22.94,restructuring,restructuring,False,Transportation and Material Moving Occupations
+"Teaching Assistants, Postsecondary",43.01,43.01,moderate,moderate,False,Educational Instruction and Library Occupations
+"Teaching Assistants, Preschool, Elementary, Middle, and Secondary School, Except Special Education",32.63,32.63,restructuring,restructuring,False,Educational Instruction and Library Occupations
+"Teaching Assistants, Special Education",26.69,26.69,restructuring,restructuring,False,Educational Instruction and Library Occupations
+Team Assemblers,13.85,13.85,low,low,False,Production Occupations
+Technical Writers,45.62,85.76,moderate,high,True,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Telecommunications Engineering Specialists,30.06,67.97,restructuring,high,True,Computer and Mathematical Occupations
+"Telecommunications Equipment Installers and Repairers, Except Line Installers",32.45,38.78,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+Telecommunications Line Installers and Repairers,35.28,39.03,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+Telemarketers,35.43,83.26,restructuring,high,True,Sales and Related Occupations
+Telephone Operators,47.26,52.49,moderate,moderate,False,Office and Administrative Support Occupations
+Tellers,40.87,45.63,moderate,moderate,False,Office and Administrative Support Occupations
+Terrazzo Workers and Finishers,18.47,20.46,low,restructuring,True,Construction and Extraction Occupations
+Textile Bleaching and Dyeing Machine Operators and Tenders,15.28,18.56,low,low,False,Production Occupations
+"Textile Cutting Machine Setters, Operators, and Tenders",14.70,17.74,low,low,False,Production Occupations
+"Textile Knitting and Weaving Machine Setters, Operators, and Tenders",10.23,12.11,low,low,False,Production Occupations
+"Textile Winding, Twisting, and Drawing Out Machine Setters, Operators, and Tenders",6.28,6.28,low,low,False,Production Occupations
+Tile and Stone Setters,16.11,16.11,low,low,False,Construction and Extraction Occupations
+Timing Device Assemblers and Adjusters,4.05,9.74,low,low,False,Production Occupations
+Tire Builders,1.99,1.99,low,low,False,Production Occupations
+Tire Repairers and Changers,4.86,8.09,low,low,False,"Installation, Maintenance, and Repair Occupations"
+"Title Examiners, Abstractors, and Searchers",28.02,66.18,restructuring,high,True,Legal Occupations
+"Tool Grinders, Filers, and Sharpeners",20.82,20.82,restructuring,restructuring,False,Production Occupations
+Tool and Die Makers,22.89,22.89,restructuring,restructuring,False,Production Occupations
+Tour Guides and Escorts,33.42,36.88,restructuring,restructuring,False,Personal Care and Service Occupations
+Traffic Technicians,21.51,26.05,restructuring,restructuring,False,Transportation and Material Moving Occupations
+Training and Development Managers,37.02,85.71,restructuring,high,True,Management Occupations
+Training and Development Specialists,41.60,60.20,moderate,high,True,Business and Financial Operations Occupations
+Transit and Railroad Police,13.96,24.91,low,restructuring,True,Protective Service Occupations
+Transportation Engineers,29.27,57.51,restructuring,moderate,True,Architecture and Engineering Occupations
+Transportation Inspectors,23.78,23.78,restructuring,restructuring,False,Transportation and Material Moving Occupations
+Transportation Planners,45.27,57.57,moderate,moderate,False,"Life, Physical, and Social Science Occupations"
+Transportation Security Screeners,39.67,44.68,restructuring,moderate,True,Protective Service Occupations
+"Transportation Vehicle, Equipment and Systems Inspectors, Except Aviation",16.96,21.75,low,restructuring,True,Transportation and Material Moving Occupations
+"Transportation, Storage, and Distribution Managers",27.35,27.35,restructuring,restructuring,False,Management Occupations
+Travel Agents,31.79,71.20,restructuring,high,True,Sales and Related Occupations
+Travel Guides,28.57,50.12,restructuring,moderate,True,Personal Care and Service Occupations
+Treasurers and Controllers,14.02,47.63,low,moderate,True,Management Occupations
+Tree Trimmers and Pruners,8.23,8.23,low,low,False,Building and Grounds Cleaning and Maintenance Occupations
+Tutors,32.33,71.38,restructuring,high,True,Educational Instruction and Library Occupations
+"Umpires, Referees, and Other Sports Officials",13.30,13.30,low,low,False,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Upholsterers,16.25,18.70,low,low,False,Production Occupations
+Urban and Regional Planners,35.58,41.57,restructuring,moderate,True,"Life, Physical, and Social Science Occupations"
+Urologists,12.78,27.09,low,restructuring,True,Healthcare Practitioners and Technical Occupations
+"Ushers, Lobby Attendants, and Ticket Takers",30.50,37.60,restructuring,restructuring,False,Personal Care and Service Occupations
+Validation Engineers,31.64,35.48,restructuring,restructuring,False,Architecture and Engineering Occupations
+Veterinarians,22.49,34.16,restructuring,restructuring,False,Healthcare Practitioners and Technical Occupations
+Veterinary Assistants and Laboratory Animal Caretakers,11.35,21.56,low,restructuring,True,Healthcare Support Occupations
+Veterinary Technologists and Technicians,12.57,23.55,low,restructuring,True,Healthcare Practitioners and Technical Occupations
+Video Game Designers,46.96,60.30,moderate,high,True,Computer and Mathematical Occupations
+Waiters and Waitresses,37.94,39.41,restructuring,restructuring,False,Food Preparation and Serving Related Occupations
+Watch and Clock Repairers,16.48,16.48,low,low,False,"Installation, Maintenance, and Repair Occupations"
+Water Resource Specialists,22.05,33.28,restructuring,restructuring,False,Management Occupations
+Water and Wastewater Treatment Plant and System Operators,0.00,0.00,low,low,False,Production Occupations
+Water/Wastewater Engineers,33.14,41.50,restructuring,moderate,True,Architecture and Engineering Occupations
+Weatherization Installers and Technicians,13.59,22.02,low,restructuring,True,Construction and Extraction Occupations
+Web Administrators,45.23,69.77,moderate,high,True,Computer and Mathematical Occupations
+Web Developers,47.34,84.52,moderate,high,True,Computer and Mathematical Occupations
+Web and Digital Interface Designers,51.24,51.24,moderate,moderate,False,Computer and Mathematical Occupations
+"Weighers, Measurers, Checkers, and Samplers, Recordkeeping",19.46,32.67,low,restructuring,True,Office and Administrative Support Occupations
+"Welders, Cutters, Solderers, and Brazers",16.18,16.18,low,low,False,Production Occupations
+"Welding, Soldering, and Brazing Machine Setters, Operators, and Tenders",15.25,15.25,low,low,False,Production Occupations
+Wellhead Pumpers,14.02,14.02,low,low,False,Transportation and Material Moving Occupations
+"Wholesale and Retail Buyers, Except Farm Products",44.49,66.18,moderate,high,True,Business and Financial Operations Occupations
+Wind Energy Development Managers,13.94,13.94,low,low,False,Management Occupations
+Wind Energy Engineers,31.40,31.40,restructuring,restructuring,False,Architecture and Engineering Occupations
+Wind Energy Operations Managers,9.98,18.02,low,low,False,Management Occupations
+Wind Turbine Service Technicians,29.01,29.01,restructuring,restructuring,False,"Installation, Maintenance, and Repair Occupations"
+"Woodworking Machine Setters, Operators, and Tenders, Except Sawing",23.36,23.36,restructuring,restructuring,False,Production Occupations
+Word Processors and Typists,43.94,75.09,moderate,high,True,Office and Administrative Support Occupations
+Writers and Authors,49.27,49.27,moderate,moderate,False,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Zoologists and Wildlife Biologists,30.15,39.16,restructuring,restructuring,False,"Life, Physical, and Social Science Occupations"

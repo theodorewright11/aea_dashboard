@@ -1,0 +1,924 @@
+title_current,trajectory,first_pct,last_pct,total_gain,early_gain,late_gain,major_occ_category
+Accountants and Auditors,laggard,28.09,28.09,0.00,0.00,0.00,Business and Financial Operations Occupations
+Actors,steady,14.19,79.37,65.18,49.45,15.73,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Actuaries,steady,27.11,45.67,18.57,15.16,3.41,Computer and Mathematical Occupations
+Acupuncturists,plateaued,7.33,21.71,14.38,14.30,0.08,Healthcare Practitioners and Technical Occupations
+Acute Care Nurses,plateaued,19.58,32.08,12.50,10.92,1.58,Healthcare Practitioners and Technical Occupations
+Adapted Physical Education Specialists,mixed,26.97,33.82,6.85,6.62,0.24,Educational Instruction and Library Occupations
+Adhesive Bonding Machine Operators and Tenders,laggard,19.24,21.57,2.34,0.00,2.34,Production Occupations
+"Administrative Law Judges, Adjudicators, and Hearing Officers",plateaued,24.41,40.53,16.12,13.93,2.19,Legal Occupations
+Administrative Services Managers,laggard,21.00,21.21,0.20,0.00,0.20,Management Occupations
+"Adult Basic Education, Adult Secondary Education, and English as a Second Language Instructors",laggard,24.89,24.89,0.00,0.00,0.00,Educational Instruction and Library Occupations
+Advanced Practice Psychiatric Nurses,steady,14.67,47.35,32.68,21.92,10.76,Healthcare Practitioners and Technical Occupations
+Advertising Sales Agents,steady,50.03,83.62,33.58,15.46,18.13,Sales and Related Occupations
+Advertising and Promotions Managers,steady,33.14,53.17,20.03,13.82,6.21,Management Occupations
+Aerospace Engineering and Operations Technologists and Technicians,laggard,36.82,36.82,0.00,0.00,0.00,Architecture and Engineering Occupations
+Aerospace Engineers,laggard,24.41,27.46,3.05,3.05,0.00,Architecture and Engineering Occupations
+"Agents and Business Managers of Artists, Performers, and Athletes",plateaued,28.24,53.06,24.82,24.11,0.71,Business and Financial Operations Occupations
+Agricultural Engineers,mixed,30.44,38.39,7.95,5.67,2.28,Architecture and Engineering Occupations
+Agricultural Equipment Operators,laggard,16.24,16.24,0.00,0.00,0.00,"Farming, Fishing, and Forestry Occupations"
+Agricultural Inspectors,steady,12.02,28.01,15.99,12.54,3.45,"Farming, Fishing, and Forestry Occupations"
+"Agricultural Sciences Teachers, Postsecondary",steady,33.02,75.45,42.43,35.59,6.84,Educational Instruction and Library Occupations
+Agricultural Technicians,mixed,16.92,26.56,9.64,2.49,7.15,"Life, Physical, and Social Science Occupations"
+Air Traffic Controllers,mixed,25.44,31.15,5.70,2.84,2.86,Transportation and Material Moving Occupations
+Aircraft Cargo Handling Supervisors,laggard,20.85,20.85,0.00,0.00,0.00,Transportation and Material Moving Occupations
+Aircraft Mechanics and Service Technicians,laggard,14.03,14.03,0.00,0.00,0.00,"Installation, Maintenance, and Repair Occupations"
+Aircraft Service Attendants,laggard,14.25,14.25,0.00,0.00,0.00,Transportation and Material Moving Occupations
+"Aircraft Structure, Surfaces, Rigging, and Systems Assemblers",laggard,10.52,13.39,2.87,2.87,0.00,Production Occupations
+Airfield Operations Specialists,laggard,27.12,29.10,1.99,1.95,0.04,Transportation and Material Moving Occupations
+"Airline Pilots, Copilots, and Flight Engineers",laggard,14.43,14.89,0.46,0.46,0.00,Transportation and Material Moving Occupations
+Allergists and Immunologists,steady,13.20,30.31,17.10,12.13,4.98,Healthcare Practitioners and Technical Occupations
+"Ambulance Drivers and Attendants, Except Emergency Medical Technicians",laggard,0.54,0.54,0.00,0.00,0.00,Transportation and Material Moving Occupations
+Amusement and Recreation Attendants,laggard,37.48,40.93,3.46,3.46,0.00,Personal Care and Service Occupations
+Anesthesiologist Assistants,laggard,10.13,10.49,0.35,0.00,0.35,Healthcare Practitioners and Technical Occupations
+Anesthesiologists,laggard,5.14,5.78,0.64,0.64,0.00,Healthcare Practitioners and Technical Occupations
+Animal Breeders,early_mover,42.89,47.23,4.34,4.34,0.00,"Farming, Fishing, and Forestry Occupations"
+Animal Caretakers,laggard,39.56,39.56,0.00,0.00,0.00,Personal Care and Service Occupations
+Animal Control Workers,early_mover,40.37,47.12,6.75,6.75,0.00,Protective Service Occupations
+Animal Scientists,steady,20.90,38.75,17.85,8.81,9.04,"Life, Physical, and Social Science Occupations"
+Animal Trainers,plateaued,5.59,14.76,9.17,8.70,0.47,Personal Care and Service Occupations
+Anthropologists and Archeologists,laggard,33.15,33.15,0.00,0.00,0.00,"Life, Physical, and Social Science Occupations"
+"Anthropology and Archeology Teachers, Postsecondary",steady,32.93,70.86,37.93,31.38,6.56,Educational Instruction and Library Occupations
+Appraisers and Assessors of Real Estate,laggard,26.63,26.63,0.00,0.00,0.00,Business and Financial Operations Occupations
+Appraisers of Personal and Business Property,early_mover,41.67,41.67,0.00,0.00,0.00,Business and Financial Operations Occupations
+"Arbitrators, Mediators, and Conciliators",plateaued,18.40,42.77,24.38,22.44,1.93,Legal Occupations
+"Architects, Except Landscape and Naval",steady,29.93,63.87,33.95,23.29,10.66,Architecture and Engineering Occupations
+Architectural and Civil Drafters,early_mover,45.47,45.47,0.00,0.00,0.00,Architecture and Engineering Occupations
+Architectural and Engineering Managers,steady,17.32,57.38,40.06,36.16,3.90,Management Occupations
+"Architecture Teachers, Postsecondary",steady,30.41,77.55,47.14,42.26,4.87,Educational Instruction and Library Occupations
+Archivists,steady,40.59,86.73,46.14,27.16,18.98,Educational Instruction and Library Occupations
+"Area, Ethnic, and Cultural Studies Teachers, Postsecondary",steady,33.29,76.37,43.07,36.70,6.37,Educational Instruction and Library Occupations
+Art Directors,steady,38.48,62.54,24.06,13.21,10.84,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Art Therapists,steady,21.03,52.25,31.22,26.61,4.61,Healthcare Practitioners and Technical Occupations
+"Art, Drama, and Music Teachers, Postsecondary",steady,30.88,72.25,41.37,37.28,4.09,Educational Instruction and Library Occupations
+Astronomers,plateaued,23.17,72.49,49.31,48.10,1.21,"Life, Physical, and Social Science Occupations"
+Athletes and Sports Competitors,mixed,37.03,46.65,9.61,0.00,9.61,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Athletic Trainers,plateaued,21.25,31.80,10.55,10.55,0.00,Healthcare Practitioners and Technical Occupations
+Atmospheric and Space Scientists,steady,32.43,58.78,26.36,21.89,4.47,"Life, Physical, and Social Science Occupations"
+"Atmospheric, Earth, Marine, and Space Sciences Teachers, Postsecondary",steady,31.14,64.56,33.42,28.13,5.29,Educational Instruction and Library Occupations
+Audio and Video Technicians,laggard,24.21,24.21,0.00,0.00,0.00,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Audiologists,laggard,20.68,21.24,0.56,0.56,0.00,Healthcare Practitioners and Technical Occupations
+Audiovisual Equipment Installers and Repairers,laggard,21.33,21.33,0.00,0.00,0.00,"Installation, Maintenance, and Repair Occupations"
+Automotive Body and Related Repairers,laggard,11.71,11.71,0.00,0.00,0.00,"Installation, Maintenance, and Repair Occupations"
+Automotive Engineering Technicians,steady,30.30,49.03,18.73,15.42,3.31,Architecture and Engineering Occupations
+Automotive Engineers,early_mover,40.34,49.06,8.72,8.72,0.00,Architecture and Engineering Occupations
+Automotive Glass Installers and Repairers,laggard,4.75,4.75,0.00,0.00,0.00,"Installation, Maintenance, and Repair Occupations"
+Automotive Service Technicians and Mechanics,laggard,18.91,18.91,0.00,0.00,0.00,"Installation, Maintenance, and Repair Occupations"
+Automotive and Watercraft Service Attendants,mixed,6.49,17.99,11.50,1.87,9.63,Transportation and Material Moving Occupations
+Aviation Inspectors,laggard,15.13,15.13,0.00,0.00,0.00,Transportation and Material Moving Occupations
+Avionics Technicians,mixed,24.26,29.42,5.16,3.42,1.74,"Installation, Maintenance, and Repair Occupations"
+Baggage Porters and Bellhops,laggard,24.50,28.74,4.24,4.24,0.00,Personal Care and Service Occupations
+Bailiffs,mixed,33.16,43.53,10.37,0.00,10.37,Protective Service Occupations
+Bakers,mixed,19.84,25.05,5.21,1.67,3.54,Production Occupations
+Barbers,laggard,9.94,12.75,2.81,0.71,2.10,Personal Care and Service Occupations
+Baristas,plateaued,35.90,47.64,11.73,11.02,0.71,Food Preparation and Serving Related Occupations
+Bartenders,mixed,21.63,28.74,7.10,4.85,2.25,Food Preparation and Serving Related Occupations
+Bicycle Repairers,laggard,25.44,25.44,0.00,0.00,0.00,"Installation, Maintenance, and Repair Occupations"
+Bill and Account Collectors,steady,26.84,71.85,45.02,26.02,18.99,Office and Administrative Support Occupations
+Billing and Posting Clerks,laggard,36.77,36.77,0.00,0.00,0.00,Office and Administrative Support Occupations
+Biochemists and Biophysicists,steady,39.07,53.57,14.50,6.80,7.70,"Life, Physical, and Social Science Occupations"
+Bioengineers and Biomedical Engineers,early_mover,40.11,40.11,0.00,0.00,0.00,Architecture and Engineering Occupations
+Biofuels Processing Technicians,mixed,6.74,13.88,7.13,7.13,0.00,Production Occupations
+Biofuels Production Managers,laggard,4.10,4.10,0.00,0.00,0.00,Management Occupations
+Biofuels/Biodiesel Technology and Product Development Managers,mixed,16.40,22.85,6.45,6.45,0.00,Management Occupations
+Bioinformatics Scientists,plateaued,40.62,72.19,31.57,28.60,2.97,"Life, Physical, and Social Science Occupations"
+Bioinformatics Technicians,plateaued,41.61,87.67,46.06,45.69,0.37,Computer and Mathematical Occupations
+"Biological Science Teachers, Postsecondary",steady,30.08,74.81,44.73,33.66,11.07,Educational Instruction and Library Occupations
+Biological Technicians,steady,27.12,50.27,23.15,18.69,4.45,"Life, Physical, and Social Science Occupations"
+Biologists,steady,40.25,58.37,18.12,14.53,3.59,"Life, Physical, and Social Science Occupations"
+Biomass Plant Technicians,laggard,8.87,8.87,0.00,0.00,0.00,Production Occupations
+Biomass Power Plant Managers,laggard,13.83,18.11,4.28,1.37,2.91,Management Occupations
+Biostatisticians,plateaued,40.80,59.69,18.89,17.75,1.15,Computer and Mathematical Occupations
+Blockchain Engineers,early_mover,48.02,48.02,0.00,0.00,0.00,Computer and Mathematical Occupations
+Boilermakers,mixed,10.26,15.52,5.26,0.00,5.26,Construction and Extraction Occupations
+"Bookkeeping, Accounting, and Auditing Clerks",steady,40.95,69.59,28.64,22.40,6.24,Office and Administrative Support Occupations
+Brickmasons and Blockmasons,laggard,15.65,18.68,3.03,3.03,0.00,Construction and Extraction Occupations
+Bridge and Lock Tenders,laggard,0.00,0.00,0.00,0.00,0.00,Transportation and Material Moving Occupations
+Broadcast Announcers and Radio Disc Jockeys,early_mover,42.82,42.82,0.00,0.00,0.00,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Broadcast Technicians,plateaued,22.23,32.93,10.70,10.70,0.00,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Brokerage Clerks,steady,46.55,71.34,24.79,12.14,12.65,Office and Administrative Support Occupations
+Brownfield Redevelopment Specialists and Site Managers,laggard,15.93,15.93,0.00,0.00,0.00,Management Occupations
+Budget Analysts,early_mover,41.32,53.93,12.62,12.62,0.00,Business and Financial Operations Occupations
+"Bus Drivers, School",laggard,14.64,14.64,0.00,0.00,0.00,Transportation and Material Moving Occupations
+"Bus Drivers, Transit and Intercity",laggard,22.47,22.47,0.00,0.00,0.00,Transportation and Material Moving Occupations
+Bus and Truck Mechanics and Diesel Engine Specialists,laggard,27.65,28.48,0.83,0.64,0.18,"Installation, Maintenance, and Repair Occupations"
+Business Continuity Planners,plateaued,35.39,56.03,20.64,19.38,1.26,Business and Financial Operations Occupations
+Business Intelligence Analysts,plateaued,46.81,92.34,45.53,44.00,1.53,Computer and Mathematical Occupations
+"Business Teachers, Postsecondary",steady,41.75,80.38,38.62,32.85,5.77,Educational Instruction and Library Occupations
+Butchers and Meat Cutters,early_mover,40.59,40.59,0.00,0.00,0.00,Production Occupations
+"Buyers and Purchasing Agents, Farm Products",steady,24.78,42.88,18.10,13.48,4.62,Business and Financial Operations Occupations
+Cabinetmakers and Bench Carpenters,laggard,22.01,23.19,1.18,0.00,1.18,Production Occupations
+Calibration Technologists and Technicians,laggard,33.22,33.22,0.00,0.00,0.00,Architecture and Engineering Occupations
+"Camera Operators, Television, Video, and Film",laggard,27.63,27.63,0.00,0.00,0.00,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Camera and Photographic Equipment Repairers,plateaued,25.96,34.18,8.23,8.23,0.00,"Installation, Maintenance, and Repair Occupations"
+"Captains, Mates, and Pilots of Water Vessels",laggard,20.14,20.14,0.00,0.00,0.00,Transportation and Material Moving Occupations
+Cardiologists,laggard,21.34,21.34,0.00,0.00,0.00,Healthcare Practitioners and Technical Occupations
+Cardiovascular Technologists and Technicians,steady,16.37,27.72,11.35,7.32,4.03,Healthcare Practitioners and Technical Occupations
+"Career/Technical Education Teachers, Middle School",steady,27.62,58.59,30.97,24.56,6.41,Educational Instruction and Library Occupations
+"Career/Technical Education Teachers, Postsecondary",laggard,32.38,32.38,0.00,0.00,0.00,Educational Instruction and Library Occupations
+"Career/Technical Education Teachers, Secondary School",steady,27.32,53.33,26.01,21.18,4.83,Educational Instruction and Library Occupations
+Cargo and Freight Agents,steady,21.55,51.94,30.38,18.25,12.13,Office and Administrative Support Occupations
+Carpenters,laggard,10.71,10.71,0.00,0.00,0.00,Construction and Extraction Occupations
+Carpet Installers,laggard,15.76,15.76,0.00,0.00,0.00,Construction and Extraction Occupations
+Cartographers and Photogrammetrists,mixed,34.43,39.70,5.27,5.27,0.00,Architecture and Engineering Occupations
+Cashiers,plateaued,37.18,46.94,9.75,9.56,0.19,Sales and Related Occupations
+Cement Masons and Concrete Finishers,plateaued,6.58,16.12,9.55,8.71,0.84,Construction and Extraction Occupations
+Chefs and Head Cooks,steady,24.58,44.75,20.17,11.80,8.37,Food Preparation and Serving Related Occupations
+Chemical Engineers,mixed,39.30,45.78,6.49,4.51,1.98,Architecture and Engineering Occupations
+Chemical Equipment Operators and Tenders,plateaued,14.71,22.80,8.09,8.09,0.00,Production Occupations
+Chemical Plant and System Operators,plateaued,7.17,17.22,10.04,10.04,0.00,Production Occupations
+Chemical Technicians,steady,26.80,52.62,25.82,20.26,5.57,"Life, Physical, and Social Science Occupations"
+"Chemistry Teachers, Postsecondary",steady,28.34,65.95,37.61,27.68,9.92,Educational Instruction and Library Occupations
+Chemists,plateaued,33.78,59.71,25.93,23.75,2.18,"Life, Physical, and Social Science Occupations"
+Chief Executives,steady,20.51,50.67,30.16,23.42,6.74,Management Occupations
+Chief Sustainability Officers,steady,14.93,32.17,17.24,11.85,5.39,Management Occupations
+"Child, Family, and School Social Workers",laggard,38.81,40.05,1.24,0.67,0.57,Community and Social Service Occupations
+Childcare Workers,steady,26.24,38.68,12.44,4.51,7.93,Personal Care and Service Occupations
+Chiropractors,late_mover,14.75,36.39,21.64,9.85,11.79,Healthcare Practitioners and Technical Occupations
+Choreographers,plateaued,37.41,52.52,15.11,12.96,2.15,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Civil Engineering Technologists and Technicians,laggard,32.67,32.67,0.00,0.00,0.00,Architecture and Engineering Occupations
+Civil Engineers,mixed,26.04,33.59,7.55,7.55,0.00,Architecture and Engineering Occupations
+"Claims Adjusters, Examiners, and Investigators",laggard,33.75,33.75,0.00,0.00,0.00,Business and Financial Operations Occupations
+Cleaners of Vehicles and Equipment,laggard,4.91,4.91,0.00,0.00,0.00,Transportation and Material Moving Occupations
+"Cleaning, Washing, and Metal Pickling Equipment Operators and Tenders",laggard,8.71,11.82,3.11,3.11,0.00,Production Occupations
+Clergy,steady,42.32,72.16,29.84,26.12,3.72,Community and Social Service Occupations
+Climate Change Policy Analysts,early_mover,43.62,43.62,0.00,0.00,0.00,"Life, Physical, and Social Science Occupations"
+Clinical Data Managers,plateaued,31.95,58.62,26.67,24.91,1.75,Computer and Mathematical Occupations
+Clinical Neuropsychologists,laggard,18.17,18.17,0.00,0.00,0.00,"Life, Physical, and Social Science Occupations"
+Clinical Nurse Specialists,steady,24.89,47.25,22.36,13.63,8.73,Healthcare Practitioners and Technical Occupations
+Clinical Research Coordinators,steady,27.39,46.49,19.10,6.84,12.26,Management Occupations
+Clinical and Counseling Psychologists,laggard,28.86,28.86,0.00,0.00,0.00,"Life, Physical, and Social Science Occupations"
+Coaches and Scouts,steady,24.05,55.07,31.03,12.51,18.52,"Arts, Design, Entertainment, Sports, and Media Occupations"
+"Coating, Painting, and Spraying Machine Setters, Operators, and Tenders",laggard,10.54,14.37,3.83,3.83,0.00,Production Occupations
+"Coil Winders, Tapers, and Finishers",laggard,16.19,16.19,0.00,0.00,0.00,Production Occupations
+"Coin, Vending, and Amusement Machine Servicers and Repairers",laggard,9.65,9.65,0.00,0.00,0.00,"Installation, Maintenance, and Repair Occupations"
+Commercial Divers,laggard,21.27,23.55,2.28,2.11,0.17,"Installation, Maintenance, and Repair Occupations"
+Commercial Pilots,laggard,23.39,26.52,3.13,0.84,2.29,Transportation and Material Moving Occupations
+Commercial and Industrial Designers,plateaued,39.24,58.71,19.47,18.07,1.40,"Arts, Design, Entertainment, Sports, and Media Occupations"
+"Communications Teachers, Postsecondary",steady,26.04,78.83,52.79,49.73,3.06,Educational Instruction and Library Occupations
+Community Health Workers,plateaued,27.17,41.39,14.22,12.00,2.22,Community and Social Service Occupations
+Compensation and Benefits Managers,steady,21.64,55.61,33.97,22.99,10.98,Management Occupations
+"Compensation, Benefits, and Job Analysis Specialists",steady,15.63,33.65,18.02,14.62,3.40,Business and Financial Operations Occupations
+Compliance Managers,steady,27.19,55.62,28.43,5.97,22.46,Management Occupations
+Compliance Officers,laggard,31.35,31.35,0.00,0.00,0.00,Business and Financial Operations Occupations
+Computer Hardware Engineers,steady,29.05,54.59,25.54,8.26,17.28,Architecture and Engineering Occupations
+Computer Network Architects,steady,43.94,71.56,27.62,23.99,3.63,Computer and Mathematical Occupations
+Computer Network Support Specialists,steady,42.28,81.36,39.08,31.16,7.92,Computer and Mathematical Occupations
+Computer Numerically Controlled Tool Operators,laggard,33.16,33.16,0.00,0.00,0.00,Production Occupations
+Computer Numerically Controlled Tool Programmers,early_mover,53.08,53.08,0.00,0.00,0.00,Production Occupations
+Computer Programmers,steady,47.94,78.84,30.90,25.30,5.60,Computer and Mathematical Occupations
+"Computer Science Teachers, Postsecondary",steady,31.80,79.16,47.36,39.01,8.35,Educational Instruction and Library Occupations
+Computer Systems Analysts,plateaued,43.79,70.69,26.90,25.44,1.46,Computer and Mathematical Occupations
+Computer Systems Engineers/Architects,steady,39.28,61.79,22.51,15.49,7.03,Computer and Mathematical Occupations
+Computer User Support Specialists,steady,44.63,81.76,37.13,25.36,11.77,Computer and Mathematical Occupations
+Computer and Information Research Scientists,steady,33.57,75.93,42.36,38.41,3.95,Computer and Mathematical Occupations
+Computer and Information Systems Managers,steady,30.89,77.59,46.69,27.17,19.52,Management Occupations
+"Computer, Automated Teller, and Office Machine Repairers",plateaued,33.13,48.83,15.70,15.70,0.01,"Installation, Maintenance, and Repair Occupations"
+Concierges,steady,44.52,65.83,21.31,15.94,5.37,Personal Care and Service Occupations
+Conservation Scientists,laggard,14.57,14.57,0.00,0.00,0.00,"Life, Physical, and Social Science Occupations"
+Construction Laborers,steady,3.87,11.96,8.09,4.50,3.60,Construction and Extraction Occupations
+Construction Managers,steady,17.16,42.49,25.34,19.55,5.79,Management Occupations
+Construction and Building Inspectors,plateaued,16.25,24.32,8.07,8.07,0.00,Construction and Extraction Occupations
+Continuous Mining Machine Operators,laggard,7.01,7.01,0.00,0.00,0.00,Construction and Extraction Occupations
+"Control and Valve Installers and Repairers, Except Mechanical Door",laggard,23.67,24.17,0.50,0.50,0.00,"Installation, Maintenance, and Repair Occupations"
+Conveyor Operators and Tenders,mixed,11.44,20.08,8.63,6.81,1.83,Transportation and Material Moving Occupations
+"Cooks, Fast Food",laggard,37.29,40.84,3.55,3.55,0.00,Food Preparation and Serving Related Occupations
+"Cooks, Institution and Cafeteria",laggard,14.96,16.33,1.37,0.84,0.53,Food Preparation and Serving Related Occupations
+"Cooks, Private Household",laggard,37.61,41.42,3.80,2.63,1.18,Food Preparation and Serving Related Occupations
+"Cooks, Restaurant",plateaued,33.88,46.27,12.39,12.31,0.08,Food Preparation and Serving Related Occupations
+"Cooks, Short Order",plateaued,32.42,49.64,17.22,15.43,1.79,Food Preparation and Serving Related Occupations
+Cooling and Freezing Equipment Operators and Tenders,laggard,24.18,24.18,0.00,0.00,0.00,Production Occupations
+Coroners,mixed,26.43,32.08,5.65,5.65,0.00,Business and Financial Operations Occupations
+Correctional Officers and Jailers,laggard,15.05,18.03,2.98,2.98,0.00,Protective Service Occupations
+Correspondence Clerks,plateaued,33.63,50.43,16.80,15.70,1.10,Office and Administrative Support Occupations
+Cost Estimators,plateaued,40.65,56.37,15.72,14.65,1.07,Business and Financial Operations Occupations
+Costume Attendants,mixed,24.61,30.36,5.75,5.51,0.24,Personal Care and Service Occupations
+Counter and Rental Clerks,steady,51.20,70.76,19.56,15.20,4.36,Sales and Related Occupations
+Couriers and Messengers,steady,15.51,33.87,18.36,8.69,9.67,Office and Administrative Support Occupations
+Court Reporters and Simultaneous Captioners,laggard,19.41,19.41,0.00,0.00,0.00,"Arts, Design, Entertainment, Sports, and Media Occupations"
+"Court, Municipal, and License Clerks",early_mover,40.28,40.28,0.00,0.00,0.00,Office and Administrative Support Occupations
+Craft Artists,steady,43.69,65.47,21.78,13.19,8.59,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Crane and Tower Operators,laggard,15.25,15.25,0.00,0.00,0.00,Transportation and Material Moving Occupations
+Credit Analysts,plateaued,33.24,54.05,20.81,18.59,2.22,Business and Financial Operations Occupations
+"Credit Authorizers, Checkers, and Clerks",laggard,35.11,35.11,0.00,0.00,0.00,Office and Administrative Support Occupations
+Credit Counselors,steady,34.26,57.22,22.96,19.32,3.63,Business and Financial Operations Occupations
+Crematory Operators,laggard,15.67,15.67,0.00,0.00,0.00,Personal Care and Service Occupations
+"Criminal Justice and Law Enforcement Teachers, Postsecondary",steady,33.36,71.01,37.65,31.36,6.29,Educational Instruction and Library Occupations
+Critical Care Nurses,plateaued,11.65,24.02,12.36,10.91,1.45,Healthcare Practitioners and Technical Occupations
+Crossing Guards and Flaggers,laggard,25.46,25.46,0.00,0.00,0.00,Protective Service Occupations
+"Crushing, Grinding, and Polishing Machine Setters, Operators, and Tenders",plateaued,9.08,18.72,9.63,9.63,0.00,Production Occupations
+Curators,steady,36.04,84.17,48.13,16.29,31.84,Educational Instruction and Library Occupations
+Customer Service Representatives,steady,45.08,84.08,39.01,35.11,3.89,Office and Administrative Support Occupations
+Customs Brokers,plateaued,24.39,43.21,18.82,18.82,0.00,Business and Financial Operations Occupations
+Customs and Border Protection Officers,early_mover,44.11,44.11,0.00,0.00,0.00,Protective Service Occupations
+"Cutters and Trimmers, Hand",laggard,10.93,10.93,0.00,0.00,0.00,Production Occupations
+"Cutting and Slicing Machine Setters, Operators, and Tenders",laggard,14.36,16.59,2.23,2.23,0.00,Production Occupations
+"Cutting, Punching, and Press Machine Setters, Operators, and Tenders, Metal and Plastic",laggard,15.77,18.57,2.80,1.93,0.87,Production Occupations
+Cytogenetic Technologists,plateaued,25.00,38.37,13.37,10.72,2.65,Healthcare Practitioners and Technical Occupations
+Cytotechnologists,steady,23.31,45.93,22.61,19.60,3.02,Healthcare Practitioners and Technical Occupations
+Dancers,laggard,21.71,21.71,0.00,0.00,0.00,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Data Entry Keyers,steady,38.17,65.89,27.71,15.36,12.35,Office and Administrative Support Occupations
+Data Scientists,early_mover,46.04,46.04,0.00,0.00,0.00,Computer and Mathematical Occupations
+Data Warehousing Specialists,plateaued,46.74,88.71,41.97,39.70,2.28,Computer and Mathematical Occupations
+Database Administrators,plateaued,46.31,75.35,29.05,26.19,2.86,Computer and Mathematical Occupations
+Database Architects,plateaued,38.92,68.69,29.77,29.20,0.57,Computer and Mathematical Occupations
+Demonstrators and Product Promoters,plateaued,41.67,57.43,15.76,15.76,0.00,Sales and Related Occupations
+Dental Assistants,plateaued,12.50,38.05,25.55,22.88,2.67,Healthcare Support Occupations
+Dental Hygienists,mixed,4.65,9.99,5.34,4.15,1.19,Healthcare Practitioners and Technical Occupations
+Dental Laboratory Technicians,laggard,10.16,14.43,4.27,0.00,4.27,Production Occupations
+"Dentists, General",steady,8.74,33.43,24.70,18.54,6.15,Healthcare Practitioners and Technical Occupations
+Dermatologists,late_mover,11.53,28.56,17.04,6.52,10.51,Healthcare Practitioners and Technical Occupations
+"Derrick Operators, Oil and Gas",laggard,19.38,19.38,0.00,0.00,0.00,Construction and Extraction Occupations
+Desktop Publishers,plateaued,43.24,69.89,26.65,24.06,2.59,Office and Administrative Support Occupations
+Detectives and Criminal Investigators,laggard,31.20,31.20,0.00,0.00,0.00,Protective Service Occupations
+Diagnostic Medical Sonographers,late_mover,19.30,37.23,17.92,3.03,14.89,Healthcare Practitioners and Technical Occupations
+Dietetic Technicians,steady,23.79,52.44,28.65,24.87,3.78,Healthcare Practitioners and Technical Occupations
+Dietitians and Nutritionists,early_mover,40.32,52.54,12.21,10.20,2.02,Healthcare Practitioners and Technical Occupations
+Digital Forensics Analysts,early_mover,45.34,45.34,0.00,0.00,0.00,Computer and Mathematical Occupations
+Dining Room and Cafeteria Attendants and Bartender Helpers,laggard,13.34,13.34,0.00,0.00,0.00,Food Preparation and Serving Related Occupations
+"Directors, Religious Activities and Education",steady,30.60,60.18,29.58,26.50,3.08,Community and Social Service Occupations
+"Disc Jockeys, Except Radio",laggard,25.07,25.07,0.00,0.00,0.00,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Dishwashers,laggard,5.27,5.27,0.00,0.00,0.00,Food Preparation and Serving Related Occupations
+"Dispatchers, Except Police, Fire, and Ambulance",steady,28.63,71.51,42.88,18.02,24.85,Office and Administrative Support Occupations
+Document Management Specialists,steady,44.31,76.79,32.48,15.52,16.96,Computer and Mathematical Occupations
+"Door-to-Door Sales Workers, News and Street Vendors, and Related Workers",early_mover,40.73,40.73,0.00,0.00,0.00,Sales and Related Occupations
+Dredge Operators,laggard,0.00,0.00,0.00,0.00,0.00,Transportation and Material Moving Occupations
+"Drilling and Boring Machine Tool Setters, Operators, and Tenders, Metal and Plastic",laggard,16.03,16.32,0.29,0.00,0.29,Production Occupations
+Driver/Sales Workers,plateaued,4.96,18.31,13.35,13.28,0.07,Transportation and Material Moving Occupations
+Drywall and Ceiling Tile Installers,mixed,10.18,15.59,5.40,3.09,2.31,Construction and Extraction Occupations
+"Earth Drillers, Except Oil and Gas",laggard,5.49,5.49,0.00,0.00,0.00,Construction and Extraction Occupations
+"Economics Teachers, Postsecondary",steady,33.90,81.89,48.00,41.70,6.30,Educational Instruction and Library Occupations
+Economists,plateaued,49.72,82.53,32.81,30.63,2.18,"Life, Physical, and Social Science Occupations"
+Editors,steady,42.04,63.22,21.18,10.28,10.90,"Arts, Design, Entertainment, Sports, and Media Occupations"
+"Education Administrators, Kindergarten through Secondary",laggard,22.43,22.43,0.00,0.00,0.00,Management Occupations
+"Education Administrators, Postsecondary",steady,12.62,42.28,29.66,16.80,12.86,Management Occupations
+"Education Teachers, Postsecondary",steady,29.57,83.15,53.58,43.02,10.56,Educational Instruction and Library Occupations
+"Education and Childcare Administrators, Preschool and Daycare",laggard,27.09,27.09,0.00,0.00,0.00,Management Occupations
+"Educational, Guidance, and Career Counselors and Advisors",early_mover,40.04,40.04,0.00,0.00,0.00,Community and Social Service Occupations
+"Electric Motor, Power Tool, and Related Repairers",laggard,19.63,21.61,1.97,1.88,0.09,"Installation, Maintenance, and Repair Occupations"
+Electrical Engineers,plateaued,32.95,46.76,13.81,11.89,1.92,Architecture and Engineering Occupations
+Electrical Power-Line Installers and Repairers,laggard,19.30,20.80,1.50,0.00,1.50,"Installation, Maintenance, and Repair Occupations"
+Electrical and Electronic Engineering Technologists and Technicians,early_mover,42.53,42.53,0.00,0.00,0.00,Architecture and Engineering Occupations
+Electrical and Electronic Equipment Assemblers,mixed,19.86,26.38,6.52,6.52,0.00,Production Occupations
+Electrical and Electronics Drafters,early_mover,46.56,46.56,0.00,0.00,0.00,Architecture and Engineering Occupations
+"Electrical and Electronics Installers and Repairers, Transportation Equipment",steady,23.50,32.01,8.51,5.18,3.33,"Installation, Maintenance, and Repair Occupations"
+"Electrical and Electronics Repairers, Commercial and Industrial Equipment",plateaued,32.29,43.74,11.45,11.45,0.00,"Installation, Maintenance, and Repair Occupations"
+"Electrical and Electronics Repairers, Powerhouse, Substation, and Relay",early_mover,40.69,41.62,0.93,0.93,0.00,"Installation, Maintenance, and Repair Occupations"
+Electricians,mixed,32.95,43.47,10.52,2.65,7.87,Construction and Extraction Occupations
+Electro-Mechanical and Mechatronics Technologists and Technicians,laggard,34.65,34.65,0.00,0.00,0.00,Architecture and Engineering Occupations
+Electromechanical Equipment Assemblers,laggard,12.58,15.62,3.04,3.04,0.00,Production Occupations
+"Electronic Equipment Installers and Repairers, Motor Vehicles",plateaued,23.09,34.64,11.55,9.56,1.99,"Installation, Maintenance, and Repair Occupations"
+"Electronics Engineers, Except Computer",steady,35.57,59.87,24.31,18.27,6.04,Architecture and Engineering Occupations
+"Elementary School Teachers, Except Special Education",steady,26.07,63.21,37.14,29.86,7.28,Educational Instruction and Library Occupations
+Elevator and Escalator Installers and Repairers,laggard,8.02,8.02,0.00,0.00,0.00,Construction and Extraction Occupations
+"Eligibility Interviewers, Government Programs",steady,37.08,55.87,18.79,12.36,6.43,Office and Administrative Support Occupations
+Embalmers,laggard,7.28,9.68,2.40,0.00,2.40,Personal Care and Service Occupations
+Emergency Management Directors,laggard,25.40,26.92,1.51,1.15,0.36,Management Occupations
+Emergency Medical Technicians,laggard,10.44,10.44,0.00,0.00,0.00,Healthcare Practitioners and Technical Occupations
+Emergency Medicine Physicians,laggard,16.51,16.51,0.00,0.00,0.00,Healthcare Practitioners and Technical Occupations
+Endoscopy Technicians,laggard,1.46,1.46,0.00,0.00,0.00,Healthcare Support Occupations
+Energy Auditors,steady,18.46,29.04,10.58,5.33,5.25,Construction and Extraction Occupations
+"Energy Engineers, Except Wind and Solar",laggard,34.01,34.01,0.00,0.00,0.00,Architecture and Engineering Occupations
+Engine and Other Machine Assemblers,laggard,15.25,18.72,3.48,3.06,0.41,Production Occupations
+"Engineering Teachers, Postsecondary",steady,32.46,82.86,50.40,39.42,10.98,Educational Instruction and Library Occupations
+"English Language and Literature Teachers, Postsecondary",steady,34.57,71.86,37.29,31.25,6.04,Educational Instruction and Library Occupations
+"Entertainment and Recreation Managers, Except Gambling",laggard,39.76,39.76,0.00,0.00,0.00,Management Occupations
+Environmental Compliance Inspectors,laggard,32.31,33.29,0.98,0.98,0.00,Business and Financial Operations Occupations
+Environmental Economists,plateaued,32.57,46.14,13.57,13.57,0.00,"Life, Physical, and Social Science Occupations"
+Environmental Engineering Technologists and Technicians,laggard,31.26,31.26,0.00,0.00,0.00,Architecture and Engineering Occupations
+Environmental Engineers,plateaued,24.74,37.92,13.18,12.17,1.01,Architecture and Engineering Occupations
+Environmental Restoration Planners,laggard,28.08,28.49,0.41,0.27,0.14,"Life, Physical, and Social Science Occupations"
+"Environmental Science Teachers, Postsecondary",steady,26.80,72.77,45.97,40.41,5.56,Educational Instruction and Library Occupations
+"Environmental Science and Protection Technicians, Including Health",mixed,21.88,29.56,7.68,7.41,0.28,"Life, Physical, and Social Science Occupations"
+"Environmental Scientists and Specialists, Including Health",plateaued,27.57,49.68,22.11,22.11,0.00,"Life, Physical, and Social Science Occupations"
+Epidemiologists,mixed,24.67,31.54,6.87,4.68,2.19,"Life, Physical, and Social Science Occupations"
+Equal Opportunity Representatives and Officers,mixed,26.00,31.77,5.77,5.41,0.36,Business and Financial Operations Occupations
+Etchers and Engravers,laggard,16.91,17.43,0.52,0.00,0.52,Production Occupations
+"Excavating and Loading Machine and Dragline Operators, Surface Mining",laggard,11.21,11.21,0.00,0.00,0.00,Construction and Extraction Occupations
+Executive Secretaries and Executive Administrative Assistants,steady,40.85,64.84,23.98,18.12,5.86,Office and Administrative Support Occupations
+Exercise Physiologists,steady,22.34,50.46,28.12,22.50,5.62,Healthcare Practitioners and Technical Occupations
+Exercise Trainers and Group Fitness Instructors,laggard,34.33,34.33,0.00,0.00,0.00,Personal Care and Service Occupations
+"Explosives Workers, Ordnance Handling Experts, and Blasters",laggard,5.05,5.05,0.00,0.00,0.00,Construction and Extraction Occupations
+"Extruding and Drawing Machine Setters, Operators, and Tenders, Metal and Plastic",laggard,20.75,20.75,0.00,0.00,0.00,Production Occupations
+"Extruding and Forming Machine Setters, Operators, and Tenders, Synthetic and Glass Fibers",mixed,12.03,19.09,7.05,0.00,7.05,Production Occupations
+"Extruding, Forming, Pressing, and Compacting Machine Setters, Operators, and Tenders",laggard,18.58,18.58,0.00,0.00,0.00,Production Occupations
+Fabric and Apparel Patternmakers,laggard,23.62,23.62,0.00,0.00,0.00,Production Occupations
+Facilities Managers,laggard,7.55,7.55,0.00,0.00,0.00,Management Occupations
+Fallers,laggard,15.08,15.08,0.00,0.00,0.00,"Farming, Fishing, and Forestry Occupations"
+Family Medicine Physicians,laggard,21.06,21.06,0.00,0.00,0.00,Healthcare Practitioners and Technical Occupations
+"Family and Consumer Sciences Teachers, Postsecondary",laggard,31.46,31.46,0.00,0.00,0.00,Educational Instruction and Library Occupations
+Farm Equipment Mechanics and Service Technicians,laggard,18.20,18.20,0.00,0.00,0.00,"Installation, Maintenance, and Repair Occupations"
+Farm Labor Contractors,laggard,19.80,19.80,0.00,0.00,0.00,Business and Financial Operations Occupations
+Farm and Home Management Educators,laggard,36.57,36.57,0.00,0.00,0.00,Educational Instruction and Library Occupations
+"Farmers, Ranchers, and Other Agricultural Managers",laggard,12.11,12.11,0.00,0.00,0.00,Management Occupations
+"Farmworkers and Laborers, Crop, Nursery, and Greenhouse",laggard,5.69,5.69,0.00,0.00,0.00,"Farming, Fishing, and Forestry Occupations"
+"Farmworkers, Farm, Ranch, and Aquacultural Animals",laggard,24.17,26.78,2.61,2.61,0.00,"Farming, Fishing, and Forestry Occupations"
+Fashion Designers,early_mover,40.95,55.70,14.75,13.96,0.79,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Fast Food and Counter Workers,laggard,29.37,29.37,0.00,0.00,0.00,Food Preparation and Serving Related Occupations
+Fence Erectors,laggard,8.90,8.90,0.00,0.00,0.00,Construction and Extraction Occupations
+Fiberglass Laminators and Fabricators,laggard,10.34,10.34,0.00,0.00,0.00,Production Occupations
+File Clerks,steady,38.45,56.14,17.69,10.13,7.56,Office and Administrative Support Occupations
+Film and Video Editors,steady,22.74,72.00,49.25,31.37,17.88,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Financial Examiners,mixed,13.44,19.16,5.73,5.73,0.00,Business and Financial Operations Occupations
+Financial Managers,laggard,25.11,25.11,0.00,0.00,0.00,Management Occupations
+Financial Quantitative Analysts,plateaued,46.70,84.89,38.19,36.16,2.03,Business and Financial Operations Occupations
+Financial Risk Specialists,laggard,33.64,33.64,0.00,0.00,0.00,Business and Financial Operations Occupations
+Financial and Investment Analysts,early_mover,50.47,50.47,0.00,0.00,0.00,Business and Financial Operations Occupations
+"Fine Artists, Including Painters, Sculptors, and Illustrators",steady,38.31,67.94,29.63,21.28,8.35,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Fire Inspectors and Investigators,laggard,21.51,21.51,0.00,0.00,0.00,Protective Service Occupations
+Fire-Prevention and Protection Engineers,laggard,33.64,33.79,0.15,0.10,0.05,Architecture and Engineering Occupations
+Firefighters,laggard,13.47,13.47,0.00,0.00,0.00,Protective Service Occupations
+First-Line Supervisors of Construction Trades and Extraction Workers,steady,16.55,57.06,40.51,19.72,20.80,Construction and Extraction Occupations
+First-Line Supervisors of Correctional Officers,mixed,20.71,26.39,5.69,5.69,0.00,Protective Service Occupations
+"First-Line Supervisors of Entertainment and Recreation Workers, Except Gambling Services",laggard,25.44,25.44,0.00,0.00,0.00,Personal Care and Service Occupations
+"First-Line Supervisors of Farming, Fishing, and Forestry Workers",laggard,7.87,7.87,0.00,0.00,0.00,"Farming, Fishing, and Forestry Occupations"
+First-Line Supervisors of Firefighting and Prevention Workers,laggard,3.73,3.73,0.00,0.00,0.00,Protective Service Occupations
+First-Line Supervisors of Food Preparation and Serving Workers,plateaued,26.19,36.45,10.26,8.89,1.37,Food Preparation and Serving Related Occupations
+First-Line Supervisors of Gambling Services Workers,laggard,37.61,37.61,0.00,0.00,0.00,Personal Care and Service Occupations
+"First-Line Supervisors of Helpers, Laborers, and Material Movers, Hand",plateaued,25.84,34.58,8.74,8.36,0.38,Transportation and Material Moving Occupations
+First-Line Supervisors of Housekeeping and Janitorial Workers,plateaued,21.43,45.60,24.18,21.80,2.38,Building and Grounds Cleaning and Maintenance Occupations
+"First-Line Supervisors of Landscaping, Lawn Service, and Groundskeeping Workers",mixed,16.10,22.93,6.84,5.95,0.89,Building and Grounds Cleaning and Maintenance Occupations
+First-Line Supervisors of Material-Moving Machine and Vehicle Operators,laggard,21.06,21.06,0.00,0.00,0.00,Transportation and Material Moving Occupations
+"First-Line Supervisors of Mechanics, Installers, and Repairers",plateaued,23.24,48.72,25.48,24.69,0.80,"Installation, Maintenance, and Repair Occupations"
+First-Line Supervisors of Non-Retail Sales Workers,steady,23.61,67.92,44.31,17.50,26.81,Sales and Related Occupations
+First-Line Supervisors of Office and Administrative Support Workers,steady,23.83,68.43,44.60,30.59,14.01,Office and Administrative Support Occupations
+First-Line Supervisors of Passenger Attendants,laggard,23.83,23.83,0.00,0.00,0.00,Transportation and Material Moving Occupations
+First-Line Supervisors of Personal Service Workers,mixed,22.92,27.95,5.03,2.35,2.68,Personal Care and Service Occupations
+First-Line Supervisors of Police and Detectives,mixed,12.51,18.41,5.90,4.66,1.24,Protective Service Occupations
+First-Line Supervisors of Production and Operating Workers,laggard,31.11,32.67,1.57,1.25,0.31,Production Occupations
+First-Line Supervisors of Retail Sales Workers,steady,23.00,67.18,44.18,23.69,20.49,Sales and Related Occupations
+First-Line Supervisors of Security Workers,laggard,21.55,21.55,0.00,0.00,0.00,Protective Service Occupations
+Fish and Game Wardens,late_mover,17.84,37.81,19.97,0.21,19.76,Protective Service Occupations
+Fishing and Hunting Workers,laggard,5.81,5.81,0.00,0.00,0.00,"Farming, Fishing, and Forestry Occupations"
+Fitness and Wellness Coordinators,steady,22.56,38.38,15.82,10.74,5.09,Management Occupations
+Flight Attendants,laggard,33.30,36.73,3.43,1.92,1.51,Transportation and Material Moving Occupations
+"Floor Layers, Except Carpet, Wood, and Hard Tiles",laggard,9.90,9.90,0.00,0.00,0.00,Construction and Extraction Occupations
+Floor Sanders and Finishers,laggard,0.00,0.00,0.00,0.00,0.00,Construction and Extraction Occupations
+Floral Designers,laggard,33.91,33.92,0.01,0.00,0.01,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Food Batchmakers,steady,10.01,25.16,15.15,10.94,4.21,Production Occupations
+Food Cooking Machine Operators and Tenders,laggard,18.90,18.90,0.00,0.00,0.00,Production Occupations
+Food Preparation Workers,mixed,29.88,35.77,5.89,3.44,2.45,Food Preparation and Serving Related Occupations
+Food Science Technicians,steady,18.45,35.68,17.23,8.57,8.66,"Life, Physical, and Social Science Occupations"
+Food Scientists and Technologists,plateaued,33.86,48.90,15.03,14.71,0.32,"Life, Physical, and Social Science Occupations"
+"Food Servers, Nonrestaurant",laggard,19.01,22.31,3.30,3.30,0.00,Food Preparation and Serving Related Occupations
+Food Service Managers,steady,21.43,32.93,11.50,7.07,4.42,Management Occupations
+"Food and Tobacco Roasting, Baking, and Drying Machine Operators and Tenders",laggard,10.59,10.59,0.00,0.00,0.00,Production Occupations
+"Foreign Language and Literature Teachers, Postsecondary",steady,33.13,70.20,37.07,33.46,3.61,Educational Instruction and Library Occupations
+Forensic Science Technicians,early_mover,42.74,50.01,7.27,6.59,0.68,"Life, Physical, and Social Science Occupations"
+Forest Fire Inspectors and Prevention Specialists,mixed,6.29,12.20,5.91,0.00,5.91,Protective Service Occupations
+Forest and Conservation Technicians,mixed,16.84,22.14,5.30,5.18,0.12,"Life, Physical, and Social Science Occupations"
+Forest and Conservation Workers,laggard,11.78,11.78,0.00,0.00,0.00,"Farming, Fishing, and Forestry Occupations"
+Foresters,laggard,12.88,12.88,0.00,0.00,0.00,"Life, Physical, and Social Science Occupations"
+"Forestry and Conservation Science Teachers, Postsecondary",steady,32.02,73.62,41.60,34.61,6.99,Educational Instruction and Library Occupations
+"Forging Machine Setters, Operators, and Tenders, Metal and Plastic",laggard,20.06,20.06,0.00,0.00,0.00,Production Occupations
+Foundry Mold and Coremakers,laggard,0.00,0.00,0.00,0.00,0.00,Production Occupations
+"Fraud Examiners, Investigators and Analysts",steady,33.57,68.45,34.88,8.88,26.00,Business and Financial Operations Occupations
+Freight Forwarders,steady,28.61,51.92,23.31,18.28,5.03,Office and Administrative Support Occupations
+Fuel Cell Engineers,laggard,34.23,37.66,3.42,2.98,0.45,Architecture and Engineering Occupations
+Fundraisers,steady,14.44,56.91,42.48,20.80,21.68,Business and Financial Operations Occupations
+Fundraising Managers,laggard,11.92,11.92,0.00,0.00,0.00,Management Occupations
+Funeral Attendants,mixed,34.07,40.19,6.12,6.12,0.00,Personal Care and Service Occupations
+Funeral Home Managers,laggard,19.66,19.66,0.00,0.00,0.00,Management Occupations
+"Furnace, Kiln, Oven, Drier, and Kettle Operators and Tenders",mixed,19.72,25.77,6.05,4.58,1.47,Production Occupations
+Furniture Finishers,laggard,16.17,16.17,0.00,0.00,0.00,Production Occupations
+Gambling Cage Workers,laggard,31.39,31.39,0.00,0.00,0.00,Office and Administrative Support Occupations
+Gambling Change Persons and Booth Cashiers,laggard,30.95,30.95,0.00,0.00,0.00,Sales and Related Occupations
+Gambling Dealers,early_mover,47.20,47.20,0.00,0.00,0.00,Personal Care and Service Occupations
+Gambling Managers,laggard,21.88,21.88,0.00,0.00,0.00,Management Occupations
+Gambling Surveillance Officers and Gambling Investigators,laggard,37.15,37.15,0.00,0.00,0.00,Protective Service Occupations
+Gambling and Sports Book Writers and Runners,early_mover,41.19,41.19,0.00,0.00,0.00,Personal Care and Service Occupations
+Gas Compressor and Gas Pumping Station Operators,laggard,0.83,0.83,0.00,0.00,0.00,Transportation and Material Moving Occupations
+Gas Plant Operators,plateaued,10.63,21.18,10.55,10.55,0.00,Production Occupations
+Gem and Diamond Workers,laggard,29.86,29.86,0.00,0.00,0.00,Production Occupations
+General Internal Medicine Physicians,laggard,16.70,16.70,0.00,0.00,0.00,Healthcare Practitioners and Technical Occupations
+General and Operations Managers,plateaued,17.96,27.87,9.92,8.70,1.22,Management Occupations
+Genetic Counselors,mixed,39.92,47.32,7.39,4.22,3.17,Healthcare Practitioners and Technical Occupations
+Geneticists,plateaued,29.21,47.63,18.42,17.25,1.17,"Life, Physical, and Social Science Occupations"
+Geodetic Surveyors,laggard,15.85,19.55,3.70,3.16,0.54,Architecture and Engineering Occupations
+Geographers,steady,49.50,67.97,18.47,12.21,6.26,"Life, Physical, and Social Science Occupations"
+Geographic Information Systems Technologists and Technicians,early_mover,47.21,47.21,0.00,0.00,0.00,Computer and Mathematical Occupations
+"Geography Teachers, Postsecondary",steady,34.33,73.45,39.12,33.93,5.20,Educational Instruction and Library Occupations
+"Geological Technicians, Except Hydrologic Technicians",laggard,14.98,14.98,0.00,0.00,0.00,"Life, Physical, and Social Science Occupations"
+"Geoscientists, Except Hydrologists and Geographers",mixed,26.31,32.58,6.27,4.91,1.36,"Life, Physical, and Social Science Occupations"
+Geothermal Production Managers,laggard,8.75,10.04,1.28,0.68,0.60,Management Occupations
+Geothermal Technicians,plateaued,24.12,33.35,9.23,8.41,0.82,"Installation, Maintenance, and Repair Occupations"
+"Glass Blowers, Molders, Benders, and Finishers",laggard,14.67,14.67,0.00,0.00,0.00,Production Occupations
+Glaziers,laggard,13.62,15.47,1.85,1.85,0.00,Construction and Extraction Occupations
+Government Property Inspectors and Investigators,plateaued,38.27,50.14,11.87,8.95,2.92,Business and Financial Operations Occupations
+"Graders and Sorters, Agricultural Products",laggard,10.06,10.06,0.00,0.00,0.00,"Farming, Fishing, and Forestry Occupations"
+Graphic Designers,steady,44.15,81.02,36.87,31.81,5.06,"Arts, Design, Entertainment, Sports, and Media Occupations"
+"Grinding and Polishing Workers, Hand",laggard,14.29,14.29,0.00,0.00,0.00,Production Occupations
+"Grinding, Lapping, Polishing, and Buffing Machine Tool Setters, Operators, and Tenders, Metal and Plastic",laggard,22.17,22.17,0.00,0.00,0.00,Production Occupations
+"Hairdressers, Hairstylists, and Cosmetologists",steady,14.61,47.20,32.59,26.80,5.79,Personal Care and Service Occupations
+Hazardous Materials Removal Workers,mixed,2.49,9.12,6.63,6.63,0.00,Construction and Extraction Occupations
+Health Education Specialists,laggard,25.86,25.86,0.00,0.00,0.00,Community and Social Service Occupations
+Health Informatics Specialists,early_mover,52.85,52.85,0.00,0.00,0.00,Computer and Mathematical Occupations
+Health Information Technologists and Medical Registrars,laggard,38.11,38.11,0.00,0.00,0.00,Healthcare Practitioners and Technical Occupations
+"Health Specialties Teachers, Postsecondary",steady,25.94,76.86,50.92,42.01,8.91,Educational Instruction and Library Occupations
+"Health and Safety Engineers, Except Mining Safety Engineers and Inspectors",early_mover,42.84,42.84,0.00,0.00,0.00,Architecture and Engineering Occupations
+Healthcare Social Workers,steady,20.86,42.22,21.36,12.42,8.93,Community and Social Service Occupations
+Hearing Aid Specialists,laggard,10.55,14.11,3.57,3.57,0.00,Healthcare Practitioners and Technical Occupations
+"Heat Treating Equipment Setters, Operators, and Tenders, Metal and Plastic",laggard,17.91,20.58,2.67,2.18,0.49,Production Occupations
+"Heating, Air Conditioning, and Refrigeration Mechanics and Installers",laggard,27.05,27.05,0.00,0.00,0.00,"Installation, Maintenance, and Repair Occupations"
+Heavy and Tractor-Trailer Truck Drivers,mixed,16.19,21.53,5.34,5.34,0.00,Transportation and Material Moving Occupations
+"Helpers--Brickmasons, Blockmasons, Stonemasons, and Tile and Marble Setters",laggard,12.51,14.28,1.76,1.76,0.00,Construction and Extraction Occupations
+Helpers--Carpenters,laggard,6.10,6.10,0.00,0.00,0.00,Construction and Extraction Occupations
+Helpers--Electricians,laggard,15.52,15.52,0.00,0.00,0.00,Construction and Extraction Occupations
+Helpers--Extraction Workers,laggard,3.66,3.66,0.00,0.00,0.00,Construction and Extraction Occupations
+"Helpers--Installation, Maintenance, and Repair Workers",laggard,14.13,18.07,3.94,0.00,3.94,"Installation, Maintenance, and Repair Occupations"
+"Helpers--Painters, Paperhangers, Plasterers, and Stucco Masons",laggard,7.60,7.60,0.00,0.00,0.00,Construction and Extraction Occupations
+"Helpers--Pipelayers, Plumbers, Pipefitters, and Steamfitters",laggard,19.66,22.66,3.00,0.00,3.00,Construction and Extraction Occupations
+Helpers--Production Workers,mixed,5.39,12.12,6.73,6.56,0.17,Production Occupations
+Helpers--Roofers,laggard,2.34,2.34,0.00,0.00,0.00,Construction and Extraction Occupations
+Highway Maintenance Workers,laggard,3.21,3.21,0.00,0.00,0.00,Construction and Extraction Occupations
+Histology Technicians,laggard,4.99,4.99,0.00,0.00,0.00,Healthcare Practitioners and Technical Occupations
+Historians,steady,48.25,76.04,27.79,24.13,3.66,"Life, Physical, and Social Science Occupations"
+"History Teachers, Postsecondary",steady,35.30,79.93,44.63,38.37,6.26,Educational Instruction and Library Occupations
+Histotechnologists,laggard,12.02,12.02,0.00,0.00,0.00,Healthcare Practitioners and Technical Occupations
+Hoist and Winch Operators,laggard,8.77,8.77,0.00,0.00,0.00,Transportation and Material Moving Occupations
+Home Appliance Repairers,laggard,23.90,27.39,3.49,0.32,3.16,"Installation, Maintenance, and Repair Occupations"
+Home Health Aides,steady,9.91,29.25,19.35,10.06,9.28,Healthcare Support Occupations
+Hospitalists,laggard,18.60,18.60,0.00,0.00,0.00,Healthcare Practitioners and Technical Occupations
+"Hosts and Hostesses, Restaurant, Lounge, and Coffee Shop",early_mover,42.31,54.22,11.91,5.51,6.40,Food Preparation and Serving Related Occupations
+"Hotel, Motel, and Resort Desk Clerks",plateaued,35.01,55.30,20.28,19.15,1.14,Office and Administrative Support Occupations
+Human Factors Engineers and Ergonomists,early_mover,42.38,48.44,6.05,5.76,0.29,Architecture and Engineering Occupations
+"Human Resources Assistants, Except Payroll and Timekeeping",steady,21.97,82.15,60.18,44.15,16.03,Office and Administrative Support Occupations
+Human Resources Managers,steady,21.59,52.33,30.74,16.55,14.19,Management Occupations
+Human Resources Specialists,steady,22.37,75.84,53.46,42.82,10.64,Business and Financial Operations Occupations
+Hydroelectric Plant Technicians,laggard,10.99,10.99,0.00,0.00,0.00,Production Occupations
+Hydroelectric Production Managers,laggard,9.16,10.08,0.92,0.92,0.00,Management Occupations
+Hydrologic Technicians,laggard,34.52,34.52,0.00,0.00,0.00,"Life, Physical, and Social Science Occupations"
+Hydrologists,mixed,26.50,35.11,8.60,7.34,1.26,"Life, Physical, and Social Science Occupations"
+Industrial Ecologists,laggard,21.19,23.49,2.29,2.13,0.16,"Life, Physical, and Social Science Occupations"
+Industrial Engineering Technologists and Technicians,laggard,30.38,30.38,0.00,0.00,0.00,Architecture and Engineering Occupations
+Industrial Engineers,steady,39.94,49.94,10.00,3.59,6.41,Architecture and Engineering Occupations
+Industrial Machinery Mechanics,laggard,26.99,30.86,3.87,2.25,1.62,"Installation, Maintenance, and Repair Occupations"
+Industrial Production Managers,laggard,17.07,19.54,2.47,2.47,0.00,Management Occupations
+Industrial Truck and Tractor Operators,laggard,5.43,5.43,0.00,0.00,0.00,Transportation and Material Moving Occupations
+Industrial-Organizational Psychologists,steady,36.99,66.61,29.62,14.70,14.92,"Life, Physical, and Social Science Occupations"
+Information Security Analysts,steady,31.68,83.84,52.16,39.90,12.26,Computer and Mathematical Occupations
+Information Security Engineers,laggard,35.06,35.06,0.00,0.00,0.00,Computer and Mathematical Occupations
+Information Technology Project Managers,steady,21.80,67.85,46.05,35.83,10.23,Computer and Mathematical Occupations
+"Inspectors, Testers, Sorters, Samplers, and Weighers",steady,14.92,24.87,9.95,5.53,4.41,Production Occupations
+Instructional Coordinators,early_mover,42.62,49.99,7.37,6.07,1.31,Educational Instruction and Library Occupations
+"Insulation Workers, Floor, Ceiling, and Wall",laggard,13.62,13.62,0.00,0.00,0.00,Construction and Extraction Occupations
+"Insulation Workers, Mechanical",laggard,27.05,29.44,2.40,0.00,2.40,Construction and Extraction Occupations
+"Insurance Appraisers, Auto Damage",steady,34.10,44.79,10.68,4.49,6.20,Business and Financial Operations Occupations
+Insurance Claims and Policy Processing Clerks,laggard,36.27,36.27,0.00,0.00,0.00,Office and Administrative Support Occupations
+Insurance Sales Agents,steady,31.37,64.14,32.77,27.68,5.09,Sales and Related Occupations
+Insurance Underwriters,steady,32.55,52.72,20.17,8.19,11.98,Business and Financial Operations Occupations
+Intelligence Analysts,steady,41.39,76.15,34.77,29.41,5.36,Protective Service Occupations
+Interior Designers,steady,30.09,49.33,19.25,9.64,9.61,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Interpreters and Translators,steady,50.98,87.05,36.07,26.32,9.75,"Arts, Design, Entertainment, Sports, and Media Occupations"
+"Interviewers, Except Eligibility and Loan",plateaued,36.34,68.81,32.47,30.83,1.64,Office and Administrative Support Occupations
+Investment Fund Managers,steady,21.33,89.34,68.01,64.00,4.01,Management Occupations
+"Janitors and Cleaners, Except Maids and Housekeeping Cleaners",laggard,11.34,11.34,0.00,0.00,0.00,Building and Grounds Cleaning and Maintenance Occupations
+Jewelers and Precious Stone and Metal Workers,laggard,19.34,19.34,0.00,0.00,0.00,Production Occupations
+"Judges, Magistrate Judges, and Magistrates",plateaued,10.97,24.47,13.50,13.42,0.08,Legal Occupations
+Judicial Law Clerks,plateaued,20.23,62.97,42.74,42.74,0.00,Legal Occupations
+"Kindergarten Teachers, Except Special Education",steady,26.89,56.91,30.02,25.46,4.56,Educational Instruction and Library Occupations
+Labor Relations Specialists,steady,9.64,37.62,27.98,21.40,6.58,Business and Financial Operations Occupations
+"Laborers and Freight, Stock, and Material Movers, Hand",laggard,5.97,5.97,0.00,0.00,0.00,Transportation and Material Moving Occupations
+Landscape Architects,plateaued,34.57,44.00,9.43,9.43,0.00,Architecture and Engineering Occupations
+Landscaping and Groundskeeping Workers,laggard,5.83,5.83,0.00,0.00,0.00,Building and Grounds Cleaning and Maintenance Occupations
+"Lathe and Turning Machine Tool Setters, Operators, and Tenders, Metal and Plastic",laggard,28.63,28.63,0.00,0.00,0.00,Production Occupations
+Laundry and Dry-Cleaning Workers,laggard,13.23,13.23,0.00,0.00,0.00,Production Occupations
+"Law Teachers, Postsecondary",steady,35.79,75.25,39.46,32.73,6.74,Educational Instruction and Library Occupations
+Lawyers,steady,27.45,41.80,14.35,8.30,6.05,Legal Occupations
+"Layout Workers, Metal and Plastic",laggard,17.11,18.20,1.08,1.08,0.00,Production Occupations
+Legal Secretaries and Administrative Assistants,laggard,33.57,33.57,0.00,0.00,0.00,Office and Administrative Support Occupations
+Legislators,steady,37.59,47.74,10.15,5.90,4.25,Management Occupations
+Librarians and Media Collections Specialists,early_mover,40.40,40.40,0.00,0.00,0.00,Educational Instruction and Library Occupations
+"Library Assistants, Clerical",plateaued,25.78,41.44,15.65,15.61,0.04,Office and Administrative Support Occupations
+"Library Science Teachers, Postsecondary",steady,34.62,77.66,43.04,38.89,4.15,Educational Instruction and Library Occupations
+Library Technicians,steady,40.08,58.86,18.78,14.22,4.56,Educational Instruction and Library Occupations
+Licensed Practical and Licensed Vocational Nurses,plateaued,14.11,28.83,14.72,14.72,0.00,Healthcare Practitioners and Technical Occupations
+"Lifeguards, Ski Patrol, and Other Recreational Protective Service Workers",mixed,15.23,20.62,5.40,4.43,0.97,Protective Service Occupations
+Light Truck Drivers,laggard,15.34,15.34,0.00,0.00,0.00,Transportation and Material Moving Occupations
+Lighting Technicians,laggard,33.91,33.91,0.00,0.00,0.00,"Arts, Design, Entertainment, Sports, and Media Occupations"
+"Loading and Moving Machine Operators, Underground Mining",laggard,7.19,7.19,0.00,0.00,0.00,Construction and Extraction Occupations
+Loan Interviewers and Clerks,steady,33.99,59.14,25.15,10.14,15.02,Office and Administrative Support Occupations
+Loan Officers,plateaued,30.46,43.68,13.21,11.84,1.37,Business and Financial Operations Occupations
+"Locker Room, Coatroom, and Dressing Room Attendants",laggard,29.11,31.45,2.34,0.78,1.56,Personal Care and Service Occupations
+Locksmiths and Safe Repairers,laggard,3.11,3.11,0.00,0.00,0.00,"Installation, Maintenance, and Repair Occupations"
+Locomotive Engineers,laggard,16.74,18.80,2.06,2.06,0.00,Transportation and Material Moving Occupations
+Lodging Managers,steady,33.51,56.23,22.72,11.98,10.75,Management Occupations
+Log Graders and Scalers,laggard,12.19,12.19,0.00,0.00,0.00,"Farming, Fishing, and Forestry Occupations"
+Logging Equipment Operators,laggard,3.97,3.97,0.00,0.00,0.00,"Farming, Fishing, and Forestry Occupations"
+Logisticians,plateaued,26.78,58.84,32.06,32.06,0.00,Business and Financial Operations Occupations
+Logistics Analysts,steady,15.66,70.71,55.05,40.64,14.41,Business and Financial Operations Occupations
+Logistics Engineers,plateaued,19.51,50.68,31.17,29.34,1.83,Business and Financial Operations Occupations
+Loss Prevention Managers,laggard,12.01,16.16,4.15,4.15,0.00,Management Occupations
+"Low Vision Therapists, Orientation and Mobility Specialists, and Vision Rehabilitation Therapists",plateaued,32.41,44.60,12.19,10.67,1.52,Healthcare Practitioners and Technical Occupations
+Machine Feeders and Offbearers,laggard,4.35,4.35,0.00,0.00,0.00,Transportation and Material Moving Occupations
+Machinists,mixed,26.61,31.89,5.28,2.40,2.88,Production Occupations
+Magnetic Resonance Imaging Technologists,mixed,16.48,22.02,5.54,5.54,0.00,Healthcare Practitioners and Technical Occupations
+Maids and Housekeeping Cleaners,laggard,2.80,2.80,0.00,0.00,0.00,Building and Grounds Cleaning and Maintenance Occupations
+"Mail Clerks and Mail Machine Operators, Except Postal Service",laggard,17.72,22.21,4.50,0.96,3.54,Office and Administrative Support Occupations
+"Maintenance Workers, Machinery",laggard,17.99,17.99,0.00,0.00,0.00,"Installation, Maintenance, and Repair Occupations"
+"Maintenance and Repair Workers, General",laggard,20.44,20.80,0.36,0.36,0.00,"Installation, Maintenance, and Repair Occupations"
+"Makeup Artists, Theatrical and Performance",laggard,13.92,17.67,3.75,1.84,1.91,Personal Care and Service Occupations
+Management Analysts,plateaued,50.37,69.24,18.87,18.47,0.40,Business and Financial Operations Occupations
+Manicurists and Pedicurists,mixed,3.76,10.39,6.63,6.63,0.00,Personal Care and Service Occupations
+Manufactured Building and Mobile Home Installers,laggard,25.71,26.17,0.46,0.00,0.46,"Installation, Maintenance, and Repair Occupations"
+Manufacturing Engineers,plateaued,39.97,53.38,13.41,12.83,0.58,Architecture and Engineering Occupations
+Marine Engineers and Naval Architects,laggard,29.69,29.69,0.00,0.00,0.00,Architecture and Engineering Occupations
+Market Research Analysts and Marketing Specialists,plateaued,39.84,89.50,49.66,46.75,2.91,Business and Financial Operations Occupations
+Marketing Managers,steady,26.75,76.80,50.04,42.59,7.45,Management Occupations
+Marriage and Family Therapists,plateaued,32.88,54.21,21.33,21.14,0.19,Community and Social Service Occupations
+Massage Therapists,steady,7.38,20.80,13.42,8.23,5.19,Healthcare Support Occupations
+Materials Engineers,laggard,24.34,25.35,1.01,1.01,0.00,Architecture and Engineering Occupations
+Materials Scientists,plateaued,25.58,54.28,28.70,27.84,0.86,"Life, Physical, and Social Science Occupations"
+"Mathematical Science Teachers, Postsecondary",steady,33.52,68.09,34.57,29.80,4.77,Educational Instruction and Library Occupations
+Mathematicians,plateaued,51.99,71.19,19.21,18.56,0.65,Computer and Mathematical Occupations
+"Meat, Poultry, and Fish Cutters and Trimmers",early_mover,45.01,45.01,0.00,0.00,0.00,Production Occupations
+Mechanical Door Repairers,laggard,11.38,11.38,0.00,0.00,0.00,"Installation, Maintenance, and Repair Occupations"
+Mechanical Drafters,early_mover,44.39,50.12,5.72,5.72,0.00,Architecture and Engineering Occupations
+Mechanical Engineering Technologists and Technicians,laggard,33.51,33.51,0.00,0.00,0.00,Architecture and Engineering Occupations
+Mechanical Engineers,plateaued,36.62,45.83,9.21,8.87,0.34,Architecture and Engineering Occupations
+Mechatronics Engineers,steady,23.04,50.77,27.73,21.41,6.32,Architecture and Engineering Occupations
+Media Programming Directors,laggard,21.73,21.73,0.00,0.00,0.00,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Media Technical Directors/Managers,laggard,23.92,23.92,0.00,0.00,0.00,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Medical Appliance Technicians,laggard,8.97,8.97,0.00,0.00,0.00,Production Occupations
+Medical Assistants,steady,17.88,50.91,33.03,15.80,17.24,Healthcare Support Occupations
+Medical Dosimetrists,laggard,32.41,32.41,0.00,0.00,0.00,Healthcare Practitioners and Technical Occupations
+Medical Equipment Preparers,laggard,0.97,0.97,0.00,0.00,0.00,Healthcare Support Occupations
+Medical Equipment Repairers,mixed,29.43,37.28,7.86,7.42,0.43,"Installation, Maintenance, and Repair Occupations"
+Medical Records Specialists,laggard,38.67,38.67,0.00,0.00,0.00,Healthcare Practitioners and Technical Occupations
+"Medical Scientists, Except Epidemiologists",mixed,35.02,43.05,8.04,6.18,1.86,"Life, Physical, and Social Science Occupations"
+Medical Secretaries and Administrative Assistants,laggard,31.36,31.36,0.00,0.00,0.00,Office and Administrative Support Occupations
+Medical Transcriptionists,steady,16.39,75.29,58.90,51.63,7.27,Healthcare Support Occupations
+Medical and Clinical Laboratory Technicians,steady,22.11,39.30,17.19,5.95,11.25,Healthcare Practitioners and Technical Occupations
+Medical and Clinical Laboratory Technologists,plateaued,34.93,52.46,17.52,15.39,2.13,Healthcare Practitioners and Technical Occupations
+Medical and Health Services Managers,plateaued,33.34,47.27,13.93,13.22,0.71,Management Occupations
+"Meeting, Convention, and Event Planners",plateaued,21.11,60.62,39.51,37.02,2.49,Business and Financial Operations Occupations
+Mental Health Counselors,steady,28.78,57.59,28.80,23.57,5.23,Community and Social Service Occupations
+Mental Health and Substance Abuse Social Workers,steady,22.05,51.92,29.88,15.04,14.84,Community and Social Service Occupations
+Merchandise Displayers and Window Trimmers,laggard,37.34,38.94,1.60,1.46,0.14,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Metal-Refining Furnace Operators and Tenders,laggard,17.97,17.97,0.00,0.00,0.00,Production Occupations
+"Meter Readers, Utilities",plateaued,28.00,42.77,14.77,14.19,0.57,Office and Administrative Support Occupations
+Microbiologists,plateaued,30.33,55.44,25.11,22.12,2.99,"Life, Physical, and Social Science Occupations"
+Microsystems Engineers,plateaued,27.10,43.17,16.07,14.73,1.34,Architecture and Engineering Occupations
+"Middle School Teachers, Except Special and Career/Technical Education",plateaued,25.03,63.59,38.56,35.97,2.59,Educational Instruction and Library Occupations
+Midwives,mixed,20.49,31.44,10.95,2.07,8.88,Healthcare Practitioners and Technical Occupations
+"Milling and Planing Machine Setters, Operators, and Tenders, Metal and Plastic",laggard,19.76,19.76,0.00,0.00,0.00,Production Occupations
+Millwrights,laggard,14.86,14.86,0.00,0.00,0.00,"Installation, Maintenance, and Repair Occupations"
+"Mining and Geological Engineers, Including Mining Safety Engineers",laggard,25.19,25.19,0.00,0.00,0.00,Architecture and Engineering Occupations
+"Mixing and Blending Machine Setters, Operators, and Tenders",mixed,13.84,22.50,8.66,6.18,2.48,Production Occupations
+"Mobile Heavy Equipment Mechanics, Except Engines",laggard,18.43,21.83,3.39,3.08,0.31,"Installation, Maintenance, and Repair Occupations"
+"Model Makers, Metal and Plastic",laggard,16.98,16.98,0.00,0.00,0.00,Production Occupations
+"Model Makers, Wood",laggard,20.86,24.17,3.32,3.21,0.11,Production Occupations
+Models,early_mover,46.84,56.20,9.36,9.36,0.00,Sales and Related Occupations
+"Molders, Shapers, and Casters, Except Metal and Plastic",laggard,12.68,12.68,0.00,0.00,0.00,Production Occupations
+"Molding, Coremaking, and Casting Machine Setters, Operators, and Tenders, Metal and Plastic",laggard,14.58,15.06,0.48,0.00,0.48,Production Occupations
+Molecular and Cellular Biologists,steady,23.06,48.60,25.54,17.36,8.18,"Life, Physical, and Social Science Occupations"
+"Morticians, Undertakers, and Funeral Arrangers",laggard,22.38,22.38,0.00,0.00,0.00,Personal Care and Service Occupations
+Motion Picture Projectionists,laggard,5.02,9.83,4.81,0.00,4.81,Personal Care and Service Occupations
+Motorboat Mechanics and Service Technicians,laggard,12.95,12.95,0.00,0.00,0.00,"Installation, Maintenance, and Repair Occupations"
+Motorboat Operators,mixed,0.27,6.31,6.03,6.03,0.00,Transportation and Material Moving Occupations
+Motorcycle Mechanics,laggard,22.25,22.62,0.36,0.00,0.36,"Installation, Maintenance, and Repair Occupations"
+"Multiple Machine Tool Setters, Operators, and Tenders, Metal and Plastic",laggard,24.87,24.87,0.00,0.00,0.00,Production Occupations
+Museum Technicians and Conservators,plateaued,36.93,57.94,21.01,18.61,2.41,Educational Instruction and Library Occupations
+Music Directors and Composers,laggard,37.62,37.62,0.00,0.00,0.00,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Music Therapists,plateaued,11.66,30.91,19.25,16.40,2.85,Healthcare Practitioners and Technical Occupations
+Musical Instrument Repairers and Tuners,laggard,25.23,28.49,3.26,3.26,0.00,"Installation, Maintenance, and Repair Occupations"
+Musicians and Singers,laggard,14.12,14.12,0.00,0.00,0.00,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Nannies,steady,26.14,37.78,11.63,3.28,8.35,Personal Care and Service Occupations
+Nanosystems Engineers,steady,30.42,47.62,17.19,11.90,5.30,Architecture and Engineering Occupations
+Nanotechnology Engineering Technologists and Technicians,laggard,23.23,23.23,0.00,0.00,0.00,Architecture and Engineering Occupations
+Natural Sciences Managers,steady,14.84,41.41,26.57,22.45,4.12,Management Occupations
+Naturopathic Physicians,steady,18.14,47.39,29.25,14.07,15.18,Healthcare Practitioners and Technical Occupations
+Network and Computer Systems Administrators,steady,42.87,73.68,30.81,25.65,5.16,Computer and Mathematical Occupations
+Neurodiagnostic Technologists,plateaued,12.74,21.05,8.32,8.32,0.00,Healthcare Practitioners and Technical Occupations
+Neurologists,plateaued,21.57,34.88,13.31,13.31,0.00,Healthcare Practitioners and Technical Occupations
+Neuropsychologists,laggard,25.94,25.94,0.00,0.00,0.00,"Life, Physical, and Social Science Occupations"
+New Accounts Clerks,early_mover,42.12,46.31,4.19,4.19,0.00,Office and Administrative Support Occupations
+"News Analysts, Reporters, and Journalists",early_mover,50.37,50.37,0.00,0.00,0.00,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Non-Destructive Testing Specialists,mixed,33.86,40.30,6.44,6.44,0.00,Architecture and Engineering Occupations
+Nuclear Engineers,laggard,15.01,16.68,1.67,1.07,0.60,Architecture and Engineering Occupations
+Nuclear Medicine Technologists,plateaued,21.95,39.32,17.37,17.05,0.32,Healthcare Practitioners and Technical Occupations
+Nuclear Monitoring Technicians,plateaued,31.31,42.22,10.90,10.90,0.00,"Life, Physical, and Social Science Occupations"
+Nuclear Power Reactor Operators,laggard,8.97,8.97,0.00,0.00,0.00,Production Occupations
+Nuclear Technicians,laggard,17.93,17.93,0.00,0.00,0.00,"Life, Physical, and Social Science Occupations"
+Nurse Anesthetists,laggard,16.64,16.64,0.00,0.00,0.00,Healthcare Practitioners and Technical Occupations
+Nurse Midwives,plateaued,13.80,45.91,32.11,29.98,2.13,Healthcare Practitioners and Technical Occupations
+Nurse Practitioners,steady,20.40,40.41,20.01,13.84,6.17,Healthcare Practitioners and Technical Occupations
+Nursing Assistants,mixed,9.69,14.84,5.15,4.12,1.03,Healthcare Support Occupations
+"Nursing Instructors and Teachers, Postsecondary",steady,26.16,59.60,33.44,28.99,4.45,Educational Instruction and Library Occupations
+Obstetricians and Gynecologists,steady,17.09,44.00,26.91,14.03,12.88,Healthcare Practitioners and Technical Occupations
+Occupational Health and Safety Specialists,laggard,24.88,29.38,4.50,0.21,4.29,"Life, Physical, and Social Science Occupations"
+Occupational Health and Safety Technicians,mixed,14.57,21.75,7.18,3.66,3.52,"Life, Physical, and Social Science Occupations"
+Occupational Therapists,plateaued,11.92,40.17,28.25,28.17,0.08,Healthcare Practitioners and Technical Occupations
+Occupational Therapy Aides,plateaued,17.43,26.41,8.98,8.98,0.00,Healthcare Support Occupations
+Occupational Therapy Assistants,laggard,14.51,16.83,2.32,2.32,0.00,Healthcare Support Occupations
+"Office Clerks, General",plateaued,40.39,71.37,30.98,29.98,0.99,Office and Administrative Support Occupations
+"Office Machine Operators, Except Computer",early_mover,40.17,46.41,6.24,6.24,0.00,Office and Administrative Support Occupations
+Online Merchants,steady,42.62,84.04,41.42,26.07,15.35,Business and Financial Operations Occupations
+Operating Engineers and Other Construction Equipment Operators,laggard,9.22,9.22,0.00,0.00,0.00,Construction and Extraction Occupations
+Operations Research Analysts,plateaued,48.09,70.69,22.60,22.39,0.21,Computer and Mathematical Occupations
+Ophthalmic Laboratory Technicians,laggard,12.58,12.58,0.00,0.00,0.00,Production Occupations
+Ophthalmic Medical Technicians,laggard,1.21,1.21,0.00,0.00,0.00,Healthcare Practitioners and Technical Occupations
+Ophthalmic Medical Technologists,laggard,7.17,7.17,0.00,0.00,0.00,Healthcare Practitioners and Technical Occupations
+"Ophthalmologists, Except Pediatric",laggard,10.96,10.96,0.00,0.00,0.00,Healthcare Practitioners and Technical Occupations
+"Opticians, Dispensing",laggard,20.21,20.21,0.00,0.00,0.00,Healthcare Practitioners and Technical Occupations
+Optometrists,plateaued,18.26,30.19,11.93,9.31,2.62,Healthcare Practitioners and Technical Occupations
+Oral and Maxillofacial Surgeons,laggard,9.98,13.47,3.49,3.49,0.00,Healthcare Practitioners and Technical Occupations
+Order Clerks,steady,37.35,62.94,25.59,20.13,5.45,Office and Administrative Support Occupations
+Orderlies,laggard,4.94,4.94,0.00,0.00,0.00,Healthcare Support Occupations
+Orthodontists,plateaued,22.50,31.79,9.29,9.29,0.00,Healthcare Practitioners and Technical Occupations
+"Orthopedic Surgeons, Except Pediatric",laggard,13.62,13.62,0.00,0.00,0.00,Healthcare Practitioners and Technical Occupations
+Orthoptists,mixed,13.64,19.46,5.82,3.34,2.47,Healthcare Practitioners and Technical Occupations
+Orthotists and Prosthetists,laggard,12.99,12.99,0.00,0.00,0.00,Healthcare Practitioners and Technical Occupations
+Outdoor Power Equipment and Other Small Engine Mechanics,laggard,15.17,19.06,3.89,3.89,0.00,"Installation, Maintenance, and Repair Occupations"
+Packaging and Filling Machine Operators and Tenders,laggard,5.10,5.10,0.00,0.00,0.00,Production Occupations
+"Packers and Packagers, Hand",mixed,16.33,25.47,9.14,0.00,9.14,Transportation and Material Moving Occupations
+"Painters, Construction and Maintenance",plateaued,9.33,19.74,10.41,9.58,0.83,Construction and Extraction Occupations
+"Painting, Coating, and Decorating Workers",laggard,13.39,13.39,0.00,0.00,0.00,Production Occupations
+"Paper Goods Machine Setters, Operators, and Tenders",laggard,15.45,15.45,0.00,0.00,0.00,Production Occupations
+Paperhangers,laggard,21.12,22.39,1.27,0.00,1.27,Construction and Extraction Occupations
+Paralegals and Legal Assistants,plateaued,22.01,41.59,19.58,19.58,0.00,Legal Occupations
+Paramedics,laggard,11.11,11.11,0.00,0.00,0.00,Healthcare Practitioners and Technical Occupations
+Park Naturalists,early_mover,52.26,52.82,0.57,0.57,0.00,"Life, Physical, and Social Science Occupations"
+Parking Attendants,laggard,17.80,17.80,0.00,0.00,0.00,Transportation and Material Moving Occupations
+Parking Enforcement Workers,laggard,17.96,18.67,0.71,0.71,0.00,Protective Service Occupations
+Parts Salespersons,plateaued,34.53,45.85,11.31,11.29,0.02,Sales and Related Occupations
+Passenger Attendants,early_mover,47.01,47.01,0.00,0.00,0.00,Transportation and Material Moving Occupations
+Patient Representatives,steady,41.53,80.85,39.33,33.65,5.67,Healthcare Practitioners and Technical Occupations
+"Patternmakers, Metal and Plastic",mixed,26.99,34.89,7.91,5.34,2.57,Production Occupations
+"Patternmakers, Wood",laggard,27.09,31.98,4.89,4.75,0.14,Production Occupations
+"Paving, Surfacing, and Tamping Equipment Operators",laggard,0.90,0.90,0.00,0.00,0.00,Construction and Extraction Occupations
+Payroll and Timekeeping Clerks,plateaued,35.66,54.70,19.04,17.23,1.81,Office and Administrative Support Occupations
+Pediatric Surgeons,laggard,13.12,13.12,0.00,0.00,0.00,Healthcare Practitioners and Technical Occupations
+"Pediatricians, General",steady,12.25,50.52,38.27,27.38,10.89,Healthcare Practitioners and Technical Occupations
+Penetration Testers,early_mover,50.76,50.76,0.00,0.00,0.00,Computer and Mathematical Occupations
+Personal Care Aides,plateaued,21.95,44.45,22.50,22.50,0.00,Healthcare Support Occupations
+Personal Financial Advisors,plateaued,44.46,79.29,34.83,34.07,0.76,Business and Financial Operations Occupations
+Pest Control Workers,plateaued,7.97,33.67,25.70,22.87,2.83,Building and Grounds Cleaning and Maintenance Occupations
+"Pesticide Handlers, Sprayers, and Applicators, Vegetation",laggard,14.94,14.94,0.00,0.00,0.00,Building and Grounds Cleaning and Maintenance Occupations
+Petroleum Engineers,laggard,19.94,20.42,0.47,0.47,0.00,Architecture and Engineering Occupations
+"Petroleum Pump System Operators, Refinery Operators, and Gaugers",plateaued,10.04,21.79,11.75,11.75,0.00,Production Occupations
+Pharmacists,steady,38.24,64.86,26.62,20.46,6.16,Healthcare Practitioners and Technical Occupations
+Pharmacy Aides,plateaued,34.04,50.04,16.00,14.78,1.22,Healthcare Support Occupations
+Pharmacy Technicians,steady,38.22,50.59,12.37,8.73,3.64,Healthcare Practitioners and Technical Occupations
+"Philosophy and Religion Teachers, Postsecondary",steady,31.73,75.68,43.95,39.35,4.59,Educational Instruction and Library Occupations
+Phlebotomists,plateaued,6.61,17.06,10.45,10.45,0.00,Healthcare Support Occupations
+Photographers,plateaued,41.86,60.56,18.70,17.35,1.34,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Photographic Process Workers and Processing Machine Operators,laggard,16.00,20.87,4.87,4.87,0.00,Production Occupations
+Photonics Engineers,steady,35.54,54.71,19.17,9.62,9.56,Architecture and Engineering Occupations
+Photonics Technicians,laggard,28.92,33.69,4.77,4.42,0.35,Architecture and Engineering Occupations
+Physical Medicine and Rehabilitation Physicians,plateaued,2.39,16.03,13.64,13.64,0.00,Healthcare Practitioners and Technical Occupations
+Physical Therapist Aides,laggard,7.47,10.07,2.60,2.59,0.01,Healthcare Support Occupations
+Physical Therapist Assistants,laggard,12.47,13.17,0.71,0.70,0.00,Healthcare Support Occupations
+Physical Therapists,steady,20.87,48.91,28.04,22.52,5.52,Healthcare Practitioners and Technical Occupations
+Physician Assistants,steady,11.55,48.10,36.55,29.00,7.55,Healthcare Practitioners and Technical Occupations
+"Physicians, Pathologists",laggard,22.36,22.36,0.00,0.00,0.00,Healthcare Practitioners and Technical Occupations
+Physicists,plateaued,40.77,64.12,23.35,20.35,3.00,"Life, Physical, and Social Science Occupations"
+"Physics Teachers, Postsecondary",steady,30.93,80.44,49.50,40.96,8.55,Educational Instruction and Library Occupations
+Pile Driver Operators,laggard,0.00,0.00,0.00,0.00,0.00,Construction and Extraction Occupations
+Pipelayers,laggard,11.09,11.09,0.00,0.00,0.00,Construction and Extraction Occupations
+Plasterers and Stucco Masons,laggard,29.14,29.14,0.00,0.00,0.00,Construction and Extraction Occupations
+"Plating Machine Setters, Operators, and Tenders, Metal and Plastic",laggard,14.60,14.60,0.00,0.00,0.00,Production Occupations
+"Plumbers, Pipefitters, and Steamfitters",laggard,19.99,19.99,0.00,0.00,0.00,Construction and Extraction Occupations
+Podiatrists,laggard,23.08,23.08,0.00,0.00,0.00,Healthcare Practitioners and Technical Occupations
+"Poets, Lyricists and Creative Writers",steady,56.01,87.44,31.43,27.52,3.92,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Police Identification and Records Officers,laggard,21.44,22.07,0.64,0.64,0.00,Protective Service Occupations
+Police and Sheriff's Patrol Officers,laggard,26.44,26.44,0.00,0.00,0.00,Protective Service Occupations
+"Political Science Teachers, Postsecondary",steady,34.49,79.99,45.50,39.43,6.07,Educational Instruction and Library Occupations
+Political Scientists,steady,45.43,72.79,27.35,16.24,11.12,"Life, Physical, and Social Science Occupations"
+Postal Service Clerks,laggard,28.64,28.78,0.14,0.14,0.00,Office and Administrative Support Occupations
+Postal Service Mail Carriers,laggard,20.99,21.06,0.07,0.07,0.00,Office and Administrative Support Occupations
+"Postal Service Mail Sorters, Processors, and Processing Machine Operators",mixed,12.92,18.89,5.97,5.97,0.00,Office and Administrative Support Occupations
+Postmasters and Mail Superintendents,laggard,12.59,17.28,4.69,4.14,0.55,Management Occupations
+"Potters, Manufacturing",laggard,16.83,17.30,0.47,0.14,0.33,Production Occupations
+"Pourers and Casters, Metal",laggard,17.06,17.06,0.00,0.00,0.00,Production Occupations
+Power Distributors and Dispatchers,plateaued,17.55,36.17,18.62,16.75,1.88,Production Occupations
+Power Plant Operators,laggard,11.94,15.78,3.84,3.84,0.00,Production Occupations
+Precision Agriculture Technicians,plateaued,19.21,37.75,18.54,17.22,1.32,"Life, Physical, and Social Science Occupations"
+Prepress Technicians and Workers,plateaued,23.41,36.67,13.26,11.94,1.32,Production Occupations
+"Preschool Teachers, Except Special Education",steady,19.60,46.74,27.14,21.32,5.82,Educational Instruction and Library Occupations
+"Pressers, Textile, Garment, and Related Materials",laggard,10.75,10.75,0.00,0.00,0.00,Production Occupations
+Preventive Medicine Physicians,plateaued,8.25,19.43,11.18,10.83,0.35,Healthcare Practitioners and Technical Occupations
+Print Binding and Finishing Workers,laggard,7.26,8.02,0.75,0.75,0.00,Production Occupations
+Printing Press Operators,laggard,21.59,22.24,0.65,0.65,0.00,Production Occupations
+Private Detectives and Investigators,plateaued,38.15,60.57,22.41,21.69,0.73,Protective Service Occupations
+Probation Officers and Correctional Treatment Specialists,laggard,36.82,36.82,0.00,0.00,0.00,Community and Social Service Occupations
+Procurement Clerks,steady,42.02,69.39,27.37,24.35,3.02,Office and Administrative Support Occupations
+Producers and Directors,laggard,28.12,28.12,0.00,0.00,0.00,"Arts, Design, Entertainment, Sports, and Media Occupations"
+"Production, Planning, and Expediting Clerks",plateaued,34.78,46.06,11.28,10.44,0.84,Office and Administrative Support Occupations
+Project Management Specialists,laggard,24.05,24.05,0.00,0.00,0.00,Business and Financial Operations Occupations
+Proofreaders and Copy Markers,early_mover,46.09,54.18,8.09,8.09,0.00,Office and Administrative Support Occupations
+"Property, Real Estate, and Community Association Managers",steady,17.98,61.50,43.52,40.47,3.05,Management Occupations
+Prosthodontists,plateaued,5.07,18.35,13.27,13.27,0.00,Healthcare Practitioners and Technical Occupations
+Psychiatric Aides,mixed,15.86,22.92,7.06,7.06,0.00,Healthcare Support Occupations
+Psychiatric Technicians,laggard,12.21,15.72,3.52,0.00,3.52,Healthcare Practitioners and Technical Occupations
+Psychiatrists,plateaued,16.78,44.56,27.78,27.78,0.00,Healthcare Practitioners and Technical Occupations
+"Psychology Teachers, Postsecondary",steady,31.63,75.88,44.25,34.83,9.42,Educational Instruction and Library Occupations
+Public Relations Managers,laggard,26.43,26.43,0.00,0.00,0.00,Management Occupations
+Public Relations Specialists,steady,40.13,83.21,43.08,38.34,4.74,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Public Safety Telecommunicators,laggard,34.51,34.51,0.00,0.00,0.00,Office and Administrative Support Occupations
+"Pump Operators, Except Wellhead Pumpers",laggard,20.64,20.64,0.00,0.00,0.00,Transportation and Material Moving Occupations
+"Purchasing Agents, Except Wholesale, Retail, and Farm Products",steady,42.35,71.60,29.25,23.92,5.33,Business and Financial Operations Occupations
+Purchasing Managers,plateaued,18.88,46.97,28.09,27.08,1.01,Management Occupations
+Quality Control Analysts,mixed,18.88,25.72,6.83,4.67,2.17,"Life, Physical, and Social Science Occupations"
+Quality Control Systems Managers,laggard,16.85,17.89,1.03,0.94,0.09,Management Occupations
+Radiation Therapists,mixed,13.57,19.52,5.95,1.69,4.26,Healthcare Practitioners and Technical Occupations
+Radio Frequency Identification Device Specialists,early_mover,41.85,50.09,8.24,6.73,1.51,Architecture and Engineering Occupations
+"Radio, Cellular, and Tower Equipment Installers and Repairers",mixed,27.43,36.76,9.33,0.00,9.33,"Installation, Maintenance, and Repair Occupations"
+Radiologic Technologists and Technicians,laggard,20.21,20.21,0.00,0.00,0.00,Healthcare Practitioners and Technical Occupations
+Radiologists,plateaued,22.03,46.77,24.74,23.52,1.23,Healthcare Practitioners and Technical Occupations
+Rail Car Repairers,laggard,7.40,7.40,0.00,0.00,0.00,"Installation, Maintenance, and Repair Occupations"
+"Rail Yard Engineers, Dinkey Operators, and Hostlers",laggard,15.94,18.05,2.11,2.11,0.00,Transportation and Material Moving Occupations
+Rail-Track Laying and Maintenance Equipment Operators,laggard,0.00,0.00,0.00,0.00,0.00,Construction and Extraction Occupations
+"Railroad Brake, Signal, and Switch Operators and Locomotive Firers",laggard,5.52,5.52,0.00,0.00,0.00,Transportation and Material Moving Occupations
+Railroad Conductors and Yardmasters,laggard,16.01,18.88,2.87,2.87,0.00,Transportation and Material Moving Occupations
+Range Managers,laggard,13.80,13.80,0.00,0.00,0.00,"Life, Physical, and Social Science Occupations"
+Real Estate Brokers,steady,18.64,90.16,71.52,50.98,20.54,Sales and Related Occupations
+Real Estate Sales Agents,steady,33.61,78.11,44.51,34.64,9.87,Sales and Related Occupations
+Receptionists and Information Clerks,plateaued,32.72,73.83,41.11,39.09,2.02,Office and Administrative Support Occupations
+Recreation Workers,laggard,29.24,31.95,2.71,2.43,0.27,Personal Care and Service Occupations
+"Recreation and Fitness Studies Teachers, Postsecondary",steady,32.73,69.59,36.86,26.96,9.91,Educational Instruction and Library Occupations
+Recreational Therapists,steady,15.02,44.55,29.53,13.80,15.73,Healthcare Practitioners and Technical Occupations
+Recreational Vehicle Service Technicians,laggard,27.11,29.04,1.94,0.00,1.94,"Installation, Maintenance, and Repair Occupations"
+Recycling Coordinators,mixed,13.88,19.89,6.01,2.30,3.71,Transportation and Material Moving Occupations
+Recycling and Reclamation Workers,laggard,0.00,0.00,0.00,0.00,0.00,Transportation and Material Moving Occupations
+"Refractory Materials Repairers, Except Brickmasons",laggard,12.88,12.88,0.00,0.00,0.00,"Installation, Maintenance, and Repair Occupations"
+Refuse and Recyclable Material Collectors,laggard,6.26,8.35,2.09,0.00,2.09,Transportation and Material Moving Occupations
+Registered Nurses,plateaued,9.30,33.36,24.06,22.83,1.24,Healthcare Practitioners and Technical Occupations
+Regulatory Affairs Managers,steady,29.06,46.00,16.94,12.63,4.31,Management Occupations
+Regulatory Affairs Specialists,plateaued,28.82,40.69,11.86,10.47,1.40,Business and Financial Operations Occupations
+Rehabilitation Counselors,late_mover,23.16,38.06,14.90,3.91,10.99,Community and Social Service Occupations
+Reinforcing Iron and Rebar Workers,laggard,11.47,11.47,0.00,0.00,0.00,Construction and Extraction Occupations
+Remote Sensing Scientists and Technologists,plateaued,14.75,39.16,24.41,24.41,0.00,"Life, Physical, and Social Science Occupations"
+Remote Sensing Technicians,mixed,24.08,29.17,5.09,5.04,0.05,"Life, Physical, and Social Science Occupations"
+Reservation and Transportation Ticket Agents and Travel Clerks,early_mover,42.51,50.48,7.97,5.59,2.38,Office and Administrative Support Occupations
+Residential Advisors,steady,28.27,42.88,14.61,10.29,4.32,Personal Care and Service Occupations
+Respiratory Therapists,laggard,13.55,15.65,2.10,2.10,0.00,Healthcare Practitioners and Technical Occupations
+Retail Loss Prevention Specialists,steady,9.32,43.59,34.27,29.74,4.53,Protective Service Occupations
+Retail Salespersons,steady,39.99,57.36,17.37,14.09,3.28,Sales and Related Occupations
+Riggers,laggard,29.83,29.83,0.00,0.00,0.00,"Installation, Maintenance, and Repair Occupations"
+Robotics Engineers,plateaued,38.76,57.70,18.95,18.14,0.80,Architecture and Engineering Occupations
+Robotics Technicians,steady,27.68,40.31,12.64,8.24,4.40,Architecture and Engineering Occupations
+"Rock Splitters, Quarry",laggard,6.41,6.41,0.00,0.00,0.00,Construction and Extraction Occupations
+"Rolling Machine Setters, Operators, and Tenders, Metal and Plastic",laggard,20.34,20.34,0.00,0.00,0.00,Production Occupations
+"Roof Bolters, Mining",laggard,10.08,10.08,0.00,0.00,0.00,Construction and Extraction Occupations
+Roofers,laggard,2.77,5.61,2.84,2.84,0.00,Construction and Extraction Occupations
+"Rotary Drill Operators, Oil and Gas",laggard,9.33,9.33,0.00,0.00,0.00,Construction and Extraction Occupations
+"Roustabouts, Oil and Gas",laggard,2.46,2.46,0.00,0.00,0.00,Construction and Extraction Occupations
+Sailors and Marine Oilers,laggard,8.72,8.72,0.00,0.00,0.00,Transportation and Material Moving Occupations
+Sales Engineers,plateaued,38.02,72.01,33.99,33.79,0.20,Sales and Related Occupations
+Sales Managers,steady,26.17,53.40,27.23,15.52,11.71,Management Occupations
+"Sales Representatives of Services, Except Advertising, Insurance, Financial Services, and Travel",laggard,38.31,38.31,0.00,0.00,0.00,Sales and Related Occupations
+"Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products",steady,44.84,81.81,36.97,32.87,4.11,Sales and Related Occupations
+"Sales Representatives, Wholesale and Manufacturing, Technical and Scientific Products",plateaued,39.83,76.76,36.93,35.00,1.93,Sales and Related Occupations
+"Sawing Machine Setters, Operators, and Tenders, Wood",laggard,25.45,27.59,2.14,0.00,2.14,Production Occupations
+School Bus Monitors,laggard,36.95,36.95,0.00,0.00,0.00,Protective Service Occupations
+School Psychologists,steady,21.51,34.71,13.19,7.58,5.61,"Life, Physical, and Social Science Occupations"
+Search Marketing Strategists,steady,54.21,89.65,35.43,32.22,3.22,Business and Financial Operations Occupations
+"Secondary School Teachers, Except Special and Career/Technical Education",steady,24.53,59.76,35.22,29.09,6.14,Educational Instruction and Library Occupations
+"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",plateaued,44.57,75.10,30.54,28.13,2.41,Office and Administrative Support Occupations
+"Securities, Commodities, and Financial Services Sales Agents",laggard,29.00,29.00,0.00,0.00,0.00,Sales and Related Occupations
+Security Guards,steady,26.75,54.66,27.91,16.76,11.15,Protective Service Occupations
+Security Management Specialists,plateaued,29.09,49.70,20.61,20.61,0.00,Business and Financial Operations Occupations
+Security Managers,plateaued,11.83,38.31,26.48,23.94,2.54,Management Occupations
+Security and Fire Alarm Systems Installers,plateaued,28.60,37.72,9.13,9.10,0.02,"Installation, Maintenance, and Repair Occupations"
+Segmental Pavers,laggard,5.39,5.39,0.00,0.00,0.00,Construction and Extraction Occupations
+Self-Enrichment Teachers,laggard,27.88,27.88,0.00,0.00,0.00,Educational Instruction and Library Occupations
+Semiconductor Processing Technicians,laggard,20.76,20.76,0.00,0.00,0.00,Production Occupations
+"Separating, Filtering, Clarifying, Precipitating, and Still Machine Setters, Operators, and Tenders",plateaued,20.61,31.93,11.32,11.32,0.00,Production Occupations
+Septic Tank Servicers and Sewer Pipe Cleaners,laggard,20.54,21.23,0.70,0.70,0.00,Construction and Extraction Occupations
+"Service Unit Operators, Oil and Gas",laggard,6.07,6.07,0.00,0.00,0.00,Construction and Extraction Occupations
+Set and Exhibit Designers,mixed,38.84,44.77,5.93,5.28,0.66,"Arts, Design, Entertainment, Sports, and Media Occupations"
+"Sewers, Hand",laggard,17.94,17.94,0.00,0.00,0.00,Production Occupations
+Sewing Machine Operators,laggard,11.19,11.19,0.00,0.00,0.00,Production Occupations
+Shampooers,plateaued,0.73,14.82,14.09,14.09,0.00,Personal Care and Service Occupations
+Sheet Metal Workers,steady,10.90,31.58,20.68,17.29,3.38,Construction and Extraction Occupations
+Ship Engineers,laggard,4.44,7.43,2.99,0.00,2.99,Transportation and Material Moving Occupations
+"Shipping, Receiving, and Inventory Clerks",laggard,25.81,25.81,0.00,0.00,0.00,Office and Administrative Support Occupations
+Shoe Machine Operators and Tenders,laggard,8.17,8.17,0.00,0.00,0.00,Production Occupations
+Shoe and Leather Workers and Repairers,laggard,10.77,10.77,0.00,0.00,0.00,Production Occupations
+Shuttle Drivers and Chauffeurs,laggard,16.14,16.14,0.00,0.00,0.00,Transportation and Material Moving Occupations
+Signal and Track Switch Repairers,laggard,13.79,13.79,0.00,0.00,0.00,"Installation, Maintenance, and Repair Occupations"
+Skincare Specialists,late_mover,8.09,52.96,44.88,12.04,32.83,Personal Care and Service Occupations
+Slaughterers and Meat Packers,laggard,32.66,32.66,0.00,0.00,0.00,Production Occupations
+Social Science Research Assistants,plateaued,22.43,53.47,31.03,30.28,0.75,"Life, Physical, and Social Science Occupations"
+"Social Work Teachers, Postsecondary",steady,31.59,75.98,44.39,38.34,6.05,Educational Instruction and Library Occupations
+Social and Community Service Managers,plateaued,24.89,37.07,12.18,11.03,1.15,Management Occupations
+Social and Human Service Assistants,laggard,36.51,38.53,2.02,0.96,1.06,Community and Social Service Occupations
+Sociologists,steady,32.33,70.51,38.17,31.40,6.78,"Life, Physical, and Social Science Occupations"
+"Sociology Teachers, Postsecondary",steady,29.97,72.41,42.45,37.32,5.13,Educational Instruction and Library Occupations
+Software Developers,early_mover,45.16,45.16,0.00,0.00,0.00,Computer and Mathematical Occupations
+Software Quality Assurance Analysts and Testers,early_mover,49.63,49.63,0.00,0.00,0.00,Computer and Mathematical Occupations
+Soil and Plant Scientists,plateaued,32.72,41.05,8.34,8.33,0.01,"Life, Physical, and Social Science Occupations"
+Solar Energy Installation Managers,plateaued,25.46,37.36,11.89,11.89,0.00,Construction and Extraction Occupations
+Solar Energy Systems Engineers,early_mover,42.06,42.06,0.00,0.00,0.00,Architecture and Engineering Occupations
+Solar Photovoltaic Installers,steady,22.26,37.91,15.65,10.17,5.48,Construction and Extraction Occupations
+Solar Sales Representatives and Assessors,steady,35.67,74.57,38.89,29.48,9.41,Sales and Related Occupations
+Solar Thermal Installers and Technicians,laggard,8.43,8.43,0.00,0.00,0.00,Construction and Extraction Occupations
+Sound Engineering Technicians,late_mover,9.77,28.35,18.58,6.06,12.52,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Spa Managers,plateaued,9.86,46.13,36.27,33.71,2.56,Management Occupations
+"Special Education Teachers, Elementary School",laggard,19.90,19.90,0.00,0.00,0.00,Educational Instruction and Library Occupations
+"Special Education Teachers, Kindergarten",laggard,20.58,20.58,0.00,0.00,0.00,Educational Instruction and Library Occupations
+"Special Education Teachers, Middle School",plateaued,21.99,44.16,22.17,20.59,1.58,Educational Instruction and Library Occupations
+"Special Education Teachers, Preschool",plateaued,23.26,32.51,9.25,8.56,0.69,Educational Instruction and Library Occupations
+"Special Education Teachers, Secondary School",steady,24.50,48.57,24.07,20.69,3.39,Educational Instruction and Library Occupations
+Special Effects Artists and Animators,early_mover,41.87,41.87,0.00,0.00,0.00,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Speech-Language Pathologists,steady,19.33,40.44,21.12,14.73,6.39,Healthcare Practitioners and Technical Occupations
+Speech-Language Pathology Assistants,plateaued,9.45,28.83,19.38,18.41,0.97,Healthcare Support Occupations
+Sports Medicine Physicians,mixed,19.06,25.31,6.25,3.44,2.81,Healthcare Practitioners and Technical Occupations
+Stationary Engineers and Boiler Operators,laggard,19.66,20.10,0.44,0.44,0.00,Production Occupations
+Statistical Assistants,plateaued,40.51,84.01,43.49,43.03,0.47,Office and Administrative Support Occupations
+Statisticians,plateaued,45.46,71.76,26.30,26.30,0.00,Computer and Mathematical Occupations
+Stockers and Order Fillers,laggard,23.26,23.26,0.00,0.00,0.00,Transportation and Material Moving Occupations
+"Stone Cutters and Carvers, Manufacturing",laggard,13.89,17.41,3.52,3.52,0.00,Production Occupations
+Stonemasons,laggard,10.30,10.30,0.00,0.00,0.00,Construction and Extraction Occupations
+Structural Iron and Steel Workers,laggard,5.17,9.69,4.52,4.52,0.00,Construction and Extraction Occupations
+Structural Metal Fabricators and Fitters,laggard,8.66,8.66,0.00,0.00,0.00,Production Occupations
+Substance Abuse and Behavioral Disorder Counselors,steady,25.61,44.51,18.89,14.96,3.93,Community and Social Service Occupations
+"Substitute Teachers, Short-Term",laggard,38.11,38.11,0.00,0.00,0.00,Educational Instruction and Library Occupations
+Subway and Streetcar Operators,laggard,12.41,16.84,4.43,4.43,0.00,Transportation and Material Moving Occupations
+Supply Chain Managers,steady,24.36,37.24,12.87,8.72,4.15,Management Occupations
+Surgical Assistants,laggard,4.98,6.89,1.92,1.92,0.00,Healthcare Practitioners and Technical Occupations
+Surgical Technologists,laggard,4.87,7.70,2.84,2.84,0.00,Healthcare Practitioners and Technical Occupations
+Survey Researchers,steady,21.39,60.41,39.01,31.90,7.12,"Life, Physical, and Social Science Occupations"
+Surveying and Mapping Technicians,laggard,29.73,29.73,0.00,0.00,0.00,Architecture and Engineering Occupations
+Surveyors,mixed,23.85,33.39,9.54,6.62,2.92,Architecture and Engineering Occupations
+Sustainability Specialists,steady,20.08,75.53,55.45,27.99,27.47,Business and Financial Operations Occupations
+"Switchboard Operators, Including Answering Service",steady,40.49,72.58,32.08,20.06,12.03,Office and Administrative Support Occupations
+"Tailors, Dressmakers, and Custom Sewers",mixed,8.85,14.52,5.66,5.23,0.43,Production Occupations
+Talent Directors,steady,10.40,50.97,40.57,26.82,13.75,"Arts, Design, Entertainment, Sports, and Media Occupations"
+"Tank Car, Truck, and Ship Loaders",laggard,14.53,14.53,0.00,0.00,0.00,Transportation and Material Moving Occupations
+Tapers,laggard,6.94,9.44,2.50,2.50,0.00,Construction and Extraction Occupations
+"Tax Examiners and Collectors, and Revenue Agents",mixed,25.15,30.90,5.75,0.70,5.05,Business and Financial Operations Occupations
+Tax Preparers,plateaued,46.11,62.90,16.79,14.29,2.50,Business and Financial Operations Occupations
+Taxi Drivers,laggard,22.94,22.94,0.00,0.00,0.00,Transportation and Material Moving Occupations
+"Teaching Assistants, Postsecondary",early_mover,43.01,43.01,0.00,0.00,0.00,Educational Instruction and Library Occupations
+"Teaching Assistants, Preschool, Elementary, Middle, and Secondary School, Except Special Education",laggard,32.63,32.63,0.00,0.00,0.00,Educational Instruction and Library Occupations
+"Teaching Assistants, Special Education",laggard,26.69,26.69,0.00,0.00,0.00,Educational Instruction and Library Occupations
+Team Assemblers,laggard,13.85,13.85,0.00,0.00,0.00,Production Occupations
+Technical Writers,steady,45.62,85.76,40.14,27.19,12.95,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Telecommunications Engineering Specialists,steady,30.06,67.97,37.91,33.02,4.90,Computer and Mathematical Occupations
+"Telecommunications Equipment Installers and Repairers, Except Line Installers",mixed,32.45,38.78,6.33,6.03,0.31,"Installation, Maintenance, and Repair Occupations"
+Telecommunications Line Installers and Repairers,laggard,35.28,39.03,3.75,0.00,3.75,"Installation, Maintenance, and Repair Occupations"
+Telemarketers,steady,35.43,83.26,47.83,35.26,12.57,Sales and Related Occupations
+Telephone Operators,early_mover,47.26,52.49,5.23,2.33,2.90,Office and Administrative Support Occupations
+Tellers,early_mover,40.87,45.63,4.77,2.29,2.47,Office and Administrative Support Occupations
+Terrazzo Workers and Finishers,laggard,18.47,20.46,1.99,1.38,0.61,Construction and Extraction Occupations
+Textile Bleaching and Dyeing Machine Operators and Tenders,laggard,15.28,18.56,3.27,3.20,0.07,Production Occupations
+"Textile Cutting Machine Setters, Operators, and Tenders",laggard,14.70,17.74,3.05,2.72,0.32,Production Occupations
+"Textile Knitting and Weaving Machine Setters, Operators, and Tenders",laggard,10.23,12.11,1.89,1.69,0.20,Production Occupations
+"Textile Winding, Twisting, and Drawing Out Machine Setters, Operators, and Tenders",laggard,6.28,6.28,0.00,0.00,0.00,Production Occupations
+Tile and Stone Setters,laggard,16.11,16.11,0.00,0.00,0.00,Construction and Extraction Occupations
+Timing Device Assemblers and Adjusters,mixed,4.05,9.74,5.68,5.68,0.00,Production Occupations
+Tire Builders,laggard,1.99,1.99,0.00,0.00,0.00,Production Occupations
+Tire Repairers and Changers,laggard,4.86,8.09,3.23,0.00,3.23,"Installation, Maintenance, and Repair Occupations"
+"Title Examiners, Abstractors, and Searchers",steady,28.02,66.18,38.16,22.17,16.00,Legal Occupations
+"Tool Grinders, Filers, and Sharpeners",laggard,20.82,20.82,0.00,0.00,0.00,Production Occupations
+Tool and Die Makers,laggard,22.89,22.89,0.00,0.00,0.00,Production Occupations
+Tour Guides and Escorts,laggard,33.42,36.88,3.46,3.46,0.00,Personal Care and Service Occupations
+Traffic Technicians,laggard,21.51,26.05,4.53,4.53,0.00,Transportation and Material Moving Occupations
+Training and Development Managers,steady,37.02,85.71,48.70,42.71,5.99,Management Occupations
+Training and Development Specialists,steady,41.60,60.20,18.60,12.45,6.15,Business and Financial Operations Occupations
+Transit and Railroad Police,plateaued,13.96,24.91,10.95,10.95,0.00,Protective Service Occupations
+Transportation Engineers,steady,29.27,57.51,28.24,11.63,16.61,Architecture and Engineering Occupations
+Transportation Inspectors,laggard,23.78,23.78,0.00,0.00,0.00,Transportation and Material Moving Occupations
+Transportation Planners,early_mover,45.27,57.57,12.29,10.44,1.85,"Life, Physical, and Social Science Occupations"
+Transportation Security Screeners,mixed,39.67,44.68,5.01,1.97,3.04,Protective Service Occupations
+"Transportation Vehicle, Equipment and Systems Inspectors, Except Aviation",laggard,16.96,21.75,4.79,1.27,3.52,Transportation and Material Moving Occupations
+"Transportation, Storage, and Distribution Managers",laggard,27.35,27.35,0.00,0.00,0.00,Management Occupations
+Travel Agents,plateaued,31.79,71.20,39.41,38.64,0.77,Sales and Related Occupations
+Travel Guides,plateaued,28.57,50.12,21.54,18.98,2.56,Personal Care and Service Occupations
+Treasurers and Controllers,steady,14.02,47.63,33.61,27.58,6.03,Management Occupations
+Tree Trimmers and Pruners,laggard,8.23,8.23,0.00,0.00,0.00,Building and Grounds Cleaning and Maintenance Occupations
+Tutors,steady,32.33,71.38,39.04,28.99,10.05,Educational Instruction and Library Occupations
+"Umpires, Referees, and Other Sports Officials",laggard,13.30,13.30,0.00,0.00,0.00,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Upholsterers,laggard,16.25,18.70,2.45,2.45,0.00,Production Occupations
+Urban and Regional Planners,mixed,35.58,41.57,6.00,2.33,3.66,"Life, Physical, and Social Science Occupations"
+Urologists,late_mover,12.78,27.09,14.31,2.86,11.45,Healthcare Practitioners and Technical Occupations
+"Ushers, Lobby Attendants, and Ticket Takers",mixed,30.50,37.60,7.10,3.80,3.30,Personal Care and Service Occupations
+Validation Engineers,laggard,31.64,35.48,3.83,3.50,0.34,Architecture and Engineering Occupations
+Veterinarians,steady,22.49,34.16,11.67,8.13,3.55,Healthcare Practitioners and Technical Occupations
+Veterinary Assistants and Laboratory Animal Caretakers,steady,11.35,21.56,10.21,7.01,3.20,Healthcare Support Occupations
+Veterinary Technologists and Technicians,steady,12.57,23.55,10.97,4.79,6.18,Healthcare Practitioners and Technical Occupations
+Video Game Designers,early_mover,46.96,60.30,13.34,13.27,0.06,Computer and Mathematical Occupations
+Waiters and Waitresses,laggard,37.94,39.41,1.47,0.19,1.29,Food Preparation and Serving Related Occupations
+Watch and Clock Repairers,laggard,16.48,16.48,0.00,0.00,0.00,"Installation, Maintenance, and Repair Occupations"
+Water Resource Specialists,steady,22.05,33.28,11.23,6.98,4.25,Management Occupations
+Water and Wastewater Treatment Plant and System Operators,laggard,0.00,0.00,0.00,0.00,0.00,Production Occupations
+Water/Wastewater Engineers,mixed,33.14,41.50,8.37,6.41,1.95,Architecture and Engineering Occupations
+Weatherization Installers and Technicians,mixed,13.59,22.02,8.44,5.60,2.83,Construction and Extraction Occupations
+Web Administrators,plateaued,45.23,69.77,24.54,23.60,0.94,Computer and Mathematical Occupations
+Web Developers,steady,47.34,84.52,37.19,28.58,8.60,Computer and Mathematical Occupations
+Web and Digital Interface Designers,early_mover,51.24,51.24,0.00,0.00,0.00,Computer and Mathematical Occupations
+"Weighers, Measurers, Checkers, and Samplers, Recordkeeping",plateaued,19.46,32.67,13.21,13.21,0.00,Office and Administrative Support Occupations
+"Welders, Cutters, Solderers, and Brazers",laggard,16.18,16.18,0.00,0.00,0.00,Production Occupations
+"Welding, Soldering, and Brazing Machine Setters, Operators, and Tenders",laggard,15.25,15.25,0.00,0.00,0.00,Production Occupations
+Wellhead Pumpers,laggard,14.02,14.02,0.00,0.00,0.00,Transportation and Material Moving Occupations
+"Wholesale and Retail Buyers, Except Farm Products",steady,44.49,66.18,21.68,7.64,14.04,Business and Financial Operations Occupations
+Wind Energy Development Managers,laggard,13.94,13.94,0.00,0.00,0.00,Management Occupations
+Wind Energy Engineers,laggard,31.40,31.40,0.00,0.00,0.00,Architecture and Engineering Occupations
+Wind Energy Operations Managers,steady,9.98,18.02,8.05,3.84,4.21,Management Occupations
+Wind Turbine Service Technicians,laggard,29.01,29.01,0.00,0.00,0.00,"Installation, Maintenance, and Repair Occupations"
+"Woodworking Machine Setters, Operators, and Tenders, Except Sawing",laggard,23.36,23.36,0.00,0.00,0.00,Production Occupations
+Word Processors and Typists,steady,43.94,75.09,31.14,21.66,9.48,Office and Administrative Support Occupations
+Writers and Authors,early_mover,49.27,49.27,0.00,0.00,0.00,"Arts, Design, Entertainment, Sports, and Media Occupations"
+Zoologists and Wildlife Biologists,plateaued,30.15,39.16,9.02,8.77,0.25,"Life, Physical, and Social Science Occupations"

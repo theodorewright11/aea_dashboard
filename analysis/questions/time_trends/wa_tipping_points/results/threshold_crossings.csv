@@ -1,0 +1,997 @@
+iwa,threshold,crossed_date,pct_last,pct_first
+Adjust equipment to ensure adequate performance.,10.00,2024-09-30,56.27,54.70
+Adjust equipment to ensure adequate performance.,33.00,2024-09-30,56.27,54.70
+Adjust equipment to ensure adequate performance.,66.00,,56.27,54.70
+Adjust medical equipment to ensure adequate performance.,10.00,2025-08-11,10.59,2.96
+Adjust medical equipment to ensure adequate performance.,33.00,,10.59,2.96
+Adjust medical equipment to ensure adequate performance.,66.00,,10.59,2.96
+Administer basic health care or medical treatments.,10.00,,8.52,2.20
+Administer basic health care or medical treatments.,33.00,,8.52,2.20
+Administer basic health care or medical treatments.,66.00,,8.52,2.20
+Administer diagnostic tests to assess patient health.,10.00,,7.85,1.07
+Administer diagnostic tests to assess patient health.,33.00,,7.85,1.07
+Administer diagnostic tests to assess patient health.,66.00,,7.85,1.07
+Administer emergency medical treatment.,10.00,,1.18,0.00
+Administer emergency medical treatment.,33.00,,1.18,0.00
+Administer emergency medical treatment.,66.00,,1.18,0.00
+Administer therapeutic treatments.,10.00,,6.66,1.00
+Administer therapeutic treatments.,33.00,,6.66,1.00
+Administer therapeutic treatments.,66.00,,6.66,1.00
+Advise others on business or operational matters.,10.00,2024-09-30,61.01,49.74
+Advise others on business or operational matters.,33.00,2024-09-30,61.01,49.74
+Advise others on business or operational matters.,66.00,,61.01,49.74
+Advise others on educational or vocational matters.,10.00,2024-09-30,69.04,50.79
+Advise others on educational or vocational matters.,33.00,2024-09-30,69.04,50.79
+Advise others on educational or vocational matters.,66.00,2025-11-13,69.04,50.79
+Advise others on environmental sustainability or green practices.,10.00,2024-09-30,48.23,45.23
+Advise others on environmental sustainability or green practices.,33.00,2024-09-30,48.23,45.23
+Advise others on environmental sustainability or green practices.,66.00,,48.23,45.23
+Advise others on financial matters.,10.00,2024-09-30,73.44,50.22
+Advise others on financial matters.,33.00,2024-09-30,73.44,50.22
+Advise others on financial matters.,66.00,2025-08-11,73.44,50.22
+Advise others on healthcare or wellness issues.,10.00,2024-09-30,49.89,47.82
+Advise others on healthcare or wellness issues.,33.00,2024-09-30,49.89,47.82
+Advise others on healthcare or wellness issues.,66.00,,49.89,47.82
+Advise others on legal or regulatory matters.,10.00,2024-09-30,55.14,49.92
+Advise others on legal or regulatory matters.,33.00,2024-09-30,55.14,49.92
+Advise others on legal or regulatory matters.,66.00,,55.14,49.92
+Advise others on products or services.,10.00,2024-09-30,75.82,53.91
+Advise others on products or services.,33.00,2024-09-30,75.82,53.91
+Advise others on products or services.,66.00,2025-08-11,75.82,53.91
+Advise others on the design or use of technologies.,10.00,2024-09-30,67.61,51.54
+Advise others on the design or use of technologies.,33.00,2024-09-30,67.61,51.54
+Advise others on the design or use of technologies.,66.00,2025-08-11,67.61,51.54
+Advise others on workplace health or safety issues.,10.00,2024-09-30,47.31,41.73
+Advise others on workplace health or safety issues.,33.00,2024-09-30,47.31,41.73
+Advise others on workplace health or safety issues.,66.00,,47.31,41.73
+Advise patients or clients on medical issues.,10.00,2024-09-30,62.86,45.56
+Advise patients or clients on medical issues.,33.00,2024-09-30,62.86,45.56
+Advise patients or clients on medical issues.,66.00,,62.86,45.56
+Advocate for individual or community needs.,10.00,2024-09-30,45.02,44.98
+Advocate for individual or community needs.,33.00,2024-09-30,45.02,44.98
+Advocate for individual or community needs.,66.00,,45.02,44.98
+Alter audio or video recordings.,10.00,2025-03-06,50.94,9.30
+Alter audio or video recordings.,33.00,2025-08-11,50.94,9.30
+Alter audio or video recordings.,66.00,,50.94,9.30
+Analyze biological or chemical substances or related data.,10.00,2024-09-30,65.14,49.78
+Analyze biological or chemical substances or related data.,33.00,2024-09-30,65.14,49.78
+Analyze biological or chemical substances or related data.,66.00,,65.14,49.78
+Analyze business or financial data.,10.00,2024-09-30,69.26,51.58
+Analyze business or financial data.,33.00,2024-09-30,69.26,51.58
+Analyze business or financial data.,66.00,2025-08-11,69.26,51.58
+Analyze business or financial risks.,10.00,2024-09-30,43.05,21.84
+Analyze business or financial risks.,33.00,2025-08-11,43.05,21.84
+Analyze business or financial risks.,66.00,,43.05,21.84
+Analyze data to improve operations.,10.00,2025-03-06,40.74,9.74
+Analyze data to improve operations.,33.00,2025-08-11,40.74,9.74
+Analyze data to improve operations.,66.00,,40.74,9.74
+Analyze environmental or geospatial data.,10.00,2025-08-11,16.58,4.16
+Analyze environmental or geospatial data.,33.00,,16.58,4.16
+Analyze environmental or geospatial data.,66.00,,16.58,4.16
+Analyze health or medical data.,10.00,2024-09-30,63.08,51.32
+Analyze health or medical data.,33.00,2024-09-30,63.08,51.32
+Analyze health or medical data.,66.00,,63.08,51.32
+Analyze market or industry conditions.,10.00,2024-09-30,76.51,51.34
+Analyze market or industry conditions.,33.00,2024-09-30,76.51,51.34
+Analyze market or industry conditions.,66.00,2025-08-11,76.51,51.34
+Analyze performance of systems or equipment.,10.00,2024-09-30,63.78,53.31
+Analyze performance of systems or equipment.,33.00,2024-09-30,63.78,53.31
+Analyze performance of systems or equipment.,66.00,,63.78,53.31
+Analyze scientific or applied data using mathematical principles.,10.00,2024-09-30,79.42,51.27
+Analyze scientific or applied data using mathematical principles.,33.00,2024-09-30,79.42,51.27
+Analyze scientific or applied data using mathematical principles.,66.00,2025-08-11,79.42,51.27
+Apply decorative finishes.,10.00,2024-09-30,51.61,47.27
+Apply decorative finishes.,33.00,2024-09-30,51.61,47.27
+Apply decorative finishes.,66.00,,51.61,47.27
+Apply hygienic or cosmetic agents to skin or hair.,10.00,2026-02-12,10.88,0.00
+Apply hygienic or cosmetic agents to skin or hair.,33.00,,10.88,0.00
+Apply hygienic or cosmetic agents to skin or hair.,66.00,,10.88,0.00
+Apply materials to fill gaps or imperfections.,10.00,2025-11-13,10.72,7.34
+Apply materials to fill gaps or imperfections.,33.00,,10.72,7.34
+Apply materials to fill gaps or imperfections.,66.00,,10.72,7.34
+Apply protective solutions or coatings.,10.00,,3.85,2.68
+Apply protective solutions or coatings.,33.00,,3.85,2.68
+Apply protective solutions or coatings.,66.00,,3.85,2.68
+Arrange displays or decorations.,10.00,2024-09-30,61.34,49.63
+Arrange displays or decorations.,33.00,2024-09-30,61.34,49.63
+Arrange displays or decorations.,66.00,,61.34,49.63
+Assemble equipment or components.,10.00,,8.07,7.82
+Assemble equipment or components.,33.00,,8.07,7.82
+Assemble equipment or components.,66.00,,8.07,7.82
+Assemble products or work aids.,10.00,,0.87,0.73
+Assemble products or work aids.,33.00,,0.87,0.73
+Assemble products or work aids.,66.00,,0.87,0.73
+Assess characteristics of land or property.,10.00,,5.53,2.56
+Assess characteristics of land or property.,33.00,,5.53,2.56
+Assess characteristics of land or property.,66.00,,5.53,2.56
+Assess characteristics or impacts of regulations or policies.,10.00,2024-09-30,65.61,51.17
+Assess characteristics or impacts of regulations or policies.,33.00,2024-09-30,65.61,51.17
+Assess characteristics or impacts of regulations or policies.,66.00,,65.61,51.17
+Assess compliance with environmental standards or regulations.,10.00,2024-09-30,19.85,18.12
+Assess compliance with environmental standards or regulations.,33.00,,19.85,18.12
+Assess compliance with environmental standards or regulations.,66.00,,19.85,18.12
+"Assess living, work, or social needs or status of individuals or communities.",10.00,2024-09-30,46.53,44.67
+"Assess living, work, or social needs or status of individuals or communities.",33.00,2024-09-30,46.53,44.67
+"Assess living, work, or social needs or status of individuals or communities.",66.00,,46.53,44.67
+"Assess student capabilities, needs, or performance.",10.00,2024-09-30,67.46,13.88
+"Assess student capabilities, needs, or performance.",33.00,2025-03-06,67.46,13.88
+"Assess student capabilities, needs, or performance.",66.00,2025-11-13,67.46,13.88
+Assign work to others.,10.00,2025-11-13,27.81,3.12
+Assign work to others.,33.00,,27.81,3.12
+Assign work to others.,66.00,,27.81,3.12
+Assist healthcare practitioners during medical procedures.,10.00,2025-08-11,11.02,5.94
+Assist healthcare practitioners during medical procedures.,33.00,,11.02,5.94
+Assist healthcare practitioners during medical procedures.,66.00,,11.02,5.94
+Assist individuals with paperwork.,10.00,2024-09-30,67.98,53.38
+Assist individuals with paperwork.,33.00,2024-09-30,67.98,53.38
+Assist individuals with paperwork.,66.00,2026-02-12,67.98,53.38
+Assist individuals with special needs.,10.00,,7.54,1.07
+Assist individuals with special needs.,33.00,,7.54,1.07
+Assist individuals with special needs.,66.00,,7.54,1.07
+Assist others to access additional services or resources.,10.00,2024-09-30,55.90,48.25
+Assist others to access additional services or resources.,33.00,2024-09-30,55.90,48.25
+Assist others to access additional services or resources.,66.00,,55.90,48.25
+"Assist scientists, scholars, or technical specialists with projects or research.",10.00,2024-09-30,62.96,47.26
+"Assist scientists, scholars, or technical specialists with projects or research.",33.00,2024-09-30,62.96,47.26
+"Assist scientists, scholars, or technical specialists with projects or research.",66.00,,62.96,47.26
+Authorize business activities or transactions.,10.00,2025-03-06,42.20,5.22
+Authorize business activities or transactions.,33.00,2025-11-13,42.20,5.22
+Authorize business activities or transactions.,66.00,,42.20,5.22
+Build structures.,10.00,,1.47,0.70
+Build structures.,33.00,,1.47,0.70
+Build structures.,66.00,,1.47,0.70
+Calculate financial data.,10.00,2024-09-30,64.87,53.38
+Calculate financial data.,33.00,2024-09-30,64.87,53.38
+Calculate financial data.,66.00,,64.87,53.38
+Care for plants or animals.,10.00,2024-09-30,54.50,54.50
+Care for plants or animals.,33.00,2024-09-30,54.50,54.50
+Care for plants or animals.,66.00,,54.50,54.50
+Clean medical equipment or facilities.,10.00,,6.53,0.77
+Clean medical equipment or facilities.,33.00,,6.53,0.77
+Clean medical equipment or facilities.,66.00,,6.53,0.77
+"Clean tools, equipment, facilities, or work areas.",10.00,,3.35,2.76
+"Clean tools, equipment, facilities, or work areas.",33.00,,3.35,2.76
+"Clean tools, equipment, facilities, or work areas.",66.00,,3.35,2.76
+"Clean workpieces, finished products, or other objects.",10.00,,3.28,3.28
+"Clean workpieces, finished products, or other objects.",33.00,,3.28,3.28
+"Clean workpieces, finished products, or other objects.",66.00,,3.28,3.28
+Climb equipment or structures.,10.00,,0.00,0.00
+Climb equipment or structures.,33.00,,0.00,0.00
+Climb equipment or structures.,66.00,,0.00,0.00
+Coach others.,10.00,2024-09-30,67.15,42.58
+Coach others.,33.00,2024-09-30,67.15,42.58
+Coach others.,66.00,2026-02-12,67.15,42.58
+Collaborate in the development of educational programs.,10.00,2025-03-06,38.22,1.53
+Collaborate in the development of educational programs.,33.00,2025-11-13,38.22,1.53
+Collaborate in the development of educational programs.,66.00,,38.22,1.53
+Collect data about consumer needs or opinions.,10.00,2024-09-30,54.01,17.71
+Collect data about consumer needs or opinions.,33.00,2025-08-11,54.01,17.71
+Collect data about consumer needs or opinions.,66.00,,54.01,17.71
+Collect environmental or biological samples.,10.00,2025-11-13,14.86,3.64
+Collect environmental or biological samples.,33.00,,14.86,3.64
+Collect environmental or biological samples.,66.00,,14.86,3.64
+Collect fares or payments.,10.00,2024-09-30,14.06,11.49
+Collect fares or payments.,33.00,,14.06,11.49
+Collect fares or payments.,66.00,,14.06,11.49
+Collect information about patients or clients.,10.00,2025-08-11,29.11,5.24
+Collect information about patients or clients.,33.00,,29.11,5.24
+Collect information about patients or clients.,66.00,,29.11,5.24
+Collect samples of products or materials.,10.00,2025-08-11,13.67,3.92
+Collect samples of products or materials.,33.00,,13.67,3.92
+Collect samples of products or materials.,66.00,,13.67,3.92
+Communicate environmental or sustainability information.,10.00,2024-09-30,53.79,50.52
+Communicate environmental or sustainability information.,33.00,2024-09-30,53.79,50.52
+Communicate environmental or sustainability information.,66.00,,53.79,50.52
+Communicate with others about business strategies.,10.00,2024-09-30,62.48,50.28
+Communicate with others about business strategies.,33.00,2024-09-30,62.48,50.28
+Communicate with others about business strategies.,66.00,,62.48,50.28
+Communicate with others about operational plans or activities.,10.00,2024-09-30,57.75,49.83
+Communicate with others about operational plans or activities.,33.00,2024-09-30,57.75,49.83
+Communicate with others about operational plans or activities.,66.00,,57.75,49.83
+Communicate with others about specifications or project details.,10.00,2024-09-30,62.87,51.50
+Communicate with others about specifications or project details.,33.00,2024-09-30,62.87,51.50
+Communicate with others about specifications or project details.,66.00,,62.87,51.50
+"Compile records, documentation, or other data.",10.00,2024-09-30,72.51,53.39
+"Compile records, documentation, or other data.",33.00,2024-09-30,72.51,53.39
+"Compile records, documentation, or other data.",66.00,2025-08-11,72.51,53.39
+Conduct amusement or gaming activities.,10.00,2024-09-30,54.92,54.92
+Conduct amusement or gaming activities.,33.00,2024-09-30,54.92,54.92
+Conduct amusement or gaming activities.,66.00,,54.92,54.92
+Confer with clients to determine needs or order specifications.,10.00,2024-09-30,57.20,43.07
+Confer with clients to determine needs or order specifications.,33.00,2024-09-30,57.20,43.07
+Confer with clients to determine needs or order specifications.,66.00,,57.20,43.07
+Confer with healthcare or other professionals about patient care.,10.00,2025-03-06,16.95,6.92
+Confer with healthcare or other professionals about patient care.,33.00,,16.95,6.92
+Confer with healthcare or other professionals about patient care.,66.00,,16.95,6.92
+Connect components or supply lines to equipment or tools.,10.00,2024-09-30,55.16,54.87
+Connect components or supply lines to equipment or tools.,33.00,2024-09-30,55.16,54.87
+Connect components or supply lines to equipment or tools.,66.00,,55.16,54.87
+Consult legal materials or public records.,10.00,2024-09-30,73.34,47.29
+Consult legal materials or public records.,33.00,2024-09-30,73.34,47.29
+Consult legal materials or public records.,66.00,2025-11-13,73.34,47.29
+"Coordinate activities with clients, agencies, or organizations.",10.00,2024-09-30,33.80,14.44
+"Coordinate activities with clients, agencies, or organizations.",33.00,2026-02-12,33.80,14.44
+"Coordinate activities with clients, agencies, or organizations.",66.00,,33.80,14.44
+Coordinate artistic or entertainment activities.,10.00,2025-03-06,24.36,4.76
+Coordinate artistic or entertainment activities.,33.00,,24.36,4.76
+Coordinate artistic or entertainment activities.,66.00,,24.36,4.76
+"Coordinate group, community, or public activities.",10.00,2025-03-06,35.26,3.78
+"Coordinate group, community, or public activities.",33.00,2026-02-12,35.26,3.78
+"Coordinate group, community, or public activities.",66.00,,35.26,3.78
+Coordinate regulatory compliance activities.,10.00,2025-03-06,14.07,2.19
+Coordinate regulatory compliance activities.,33.00,,14.07,2.19
+Coordinate regulatory compliance activities.,66.00,,14.07,2.19
+Coordinate with others to resolve problems.,10.00,2024-09-30,56.73,49.89
+Coordinate with others to resolve problems.,33.00,2024-09-30,56.73,49.89
+Coordinate with others to resolve problems.,66.00,,56.73,49.89
+Counsel others about personal matters.,10.00,2024-09-30,50.39,47.30
+Counsel others about personal matters.,33.00,2024-09-30,50.39,47.30
+Counsel others about personal matters.,66.00,,50.39,47.30
+Create artistic designs or performances.,10.00,2024-09-30,54.86,47.16
+Create artistic designs or performances.,33.00,2024-09-30,54.86,47.16
+Create artistic designs or performances.,66.00,,54.86,47.16
+Create decorative objects or parts of objects.,10.00,2024-09-30,59.74,44.99
+Create decorative objects or parts of objects.,33.00,2024-09-30,59.74,44.99
+Create decorative objects or parts of objects.,66.00,,59.74,44.99
+Create visual designs or displays.,10.00,2024-09-30,61.16,47.37
+Create visual designs or displays.,33.00,2024-09-30,61.16,47.37
+Create visual designs or displays.,66.00,,61.16,47.37
+Cut materials.,10.00,,7.48,7.48
+Cut materials.,33.00,,7.48,7.48
+Cut materials.,66.00,,7.48,7.48
+Cut trees or other vegetation.,10.00,,5.25,5.25
+Cut trees or other vegetation.,33.00,,5.25,5.25
+Cut trees or other vegetation.,66.00,,5.25,5.25
+Design computer or information systems or applications.,10.00,2024-09-30,73.78,53.40
+Design computer or information systems or applications.,33.00,2024-09-30,73.78,53.40
+Design computer or information systems or applications.,66.00,2025-08-11,73.78,53.40
+Design databases.,10.00,2024-09-30,55.00,14.08
+Design databases.,33.00,2025-03-06,55.00,14.08
+Design databases.,66.00,,55.00,14.08
+Design electrical or electronic systems or equipment.,10.00,2024-09-30,36.96,16.18
+Design electrical or electronic systems or equipment.,33.00,2025-11-13,36.96,16.18
+Design electrical or electronic systems or equipment.,66.00,,36.96,16.18
+Design industrial systems or equipment.,10.00,2025-03-06,16.00,7.77
+Design industrial systems or equipment.,33.00,,16.00,7.77
+Design industrial systems or equipment.,66.00,,16.00,7.77
+Design materials or devices.,10.00,2024-09-30,51.90,49.44
+Design materials or devices.,33.00,2024-09-30,51.90,49.44
+Design materials or devices.,66.00,,51.90,49.44
+Design structures or facilities.,10.00,2024-09-30,35.46,14.19
+Design structures or facilities.,33.00,2025-11-13,35.46,14.19
+Design structures or facilities.,66.00,,35.46,14.19
+Determine operational methods or procedures.,10.00,2024-09-30,62.85,56.67
+Determine operational methods or procedures.,33.00,2024-09-30,62.85,56.67
+Determine operational methods or procedures.,66.00,,62.85,56.67
+Determine resource needs of projects or operations.,10.00,2024-09-30,54.36,49.77
+Determine resource needs of projects or operations.,33.00,2024-09-30,54.36,49.77
+Determine resource needs of projects or operations.,66.00,,54.36,49.77
+Determine values or prices of goods or services.,10.00,2024-09-30,65.47,53.26
+Determine values or prices of goods or services.,33.00,2024-09-30,65.47,53.26
+Determine values or prices of goods or services.,66.00,,65.47,53.26
+Develop business or marketing plans.,10.00,2025-03-06,58.58,9.97
+Develop business or marketing plans.,33.00,2025-08-11,58.58,9.97
+Develop business or marketing plans.,66.00,,58.58,9.97
+Develop contingency or emergency response plans.,10.00,,9.15,7.08
+Develop contingency or emergency response plans.,33.00,,9.15,7.08
+Develop contingency or emergency response plans.,66.00,,9.15,7.08
+"Develop educational programs, plans, or procedures.",10.00,2025-03-06,36.69,8.08
+"Develop educational programs, plans, or procedures.",33.00,2025-08-11,36.69,8.08
+"Develop educational programs, plans, or procedures.",66.00,,36.69,8.08
+Develop financial or business plans.,10.00,2025-03-06,46.27,6.07
+Develop financial or business plans.,33.00,2025-08-11,46.27,6.07
+Develop financial or business plans.,66.00,,46.27,6.07
+Develop health assessment methods or programs.,10.00,,2.63,2.63
+Develop health assessment methods or programs.,33.00,,2.63,2.63
+Develop health assessment methods or programs.,66.00,,2.63,2.63
+Develop marketing or promotional materials.,10.00,2024-09-30,85.16,53.42
+Develop marketing or promotional materials.,33.00,2024-09-30,85.16,53.42
+Develop marketing or promotional materials.,66.00,2025-03-06,85.16,53.42
+"Develop models of systems, processes, or products.",10.00,2024-09-30,61.32,51.05
+"Develop models of systems, processes, or products.",33.00,2024-09-30,61.32,51.05
+"Develop models of systems, processes, or products.",66.00,,61.32,51.05
+"Develop news, entertainment, or artistic content.",10.00,2024-09-30,67.64,53.41
+"Develop news, entertainment, or artistic content.",33.00,2024-09-30,67.64,53.41
+"Develop news, entertainment, or artistic content.",66.00,2025-11-13,67.64,53.41
+Develop operational or technical procedures or standards.,10.00,2024-09-30,66.44,53.63
+Develop operational or technical procedures or standards.,33.00,2024-09-30,66.44,53.63
+Develop operational or technical procedures or standards.,66.00,2026-02-12,66.44,53.63
+Develop organizational or program goals or objectives.,10.00,2025-03-06,44.15,8.35
+Develop organizational or program goals or objectives.,33.00,2025-08-11,44.15,8.35
+Develop organizational or program goals or objectives.,66.00,,44.15,8.35
+"Develop organizational policies, systems, or processes.",10.00,2024-09-30,36.62,17.09
+"Develop organizational policies, systems, or processes.",33.00,2025-08-11,36.62,17.09
+"Develop organizational policies, systems, or processes.",66.00,,36.62,17.09
+Develop patient or client care or treatment plans.,10.00,2025-03-06,48.22,6.37
+Develop patient or client care or treatment plans.,33.00,2025-03-06,48.22,6.37
+Develop patient or client care or treatment plans.,66.00,,48.22,6.37
+Develop plans for managing or preserving natural resources.,10.00,,4.14,3.41
+Develop plans for managing or preserving natural resources.,33.00,,4.14,3.41
+Develop plans for managing or preserving natural resources.,66.00,,4.14,3.41
+Develop professional relationships or networks.,10.00,2024-09-30,59.56,46.39
+Develop professional relationships or networks.,33.00,2024-09-30,59.56,46.39
+Develop professional relationships or networks.,66.00,,59.56,46.39
+Develop public or community health programs.,10.00,2025-03-06,31.16,7.54
+Develop public or community health programs.,33.00,,31.16,7.54
+Develop public or community health programs.,66.00,,31.16,7.54
+Develop recipes or menus.,10.00,2024-09-30,62.86,56.84
+Develop recipes or menus.,33.00,2024-09-30,62.86,56.84
+Develop recipes or menus.,66.00,,62.86,56.84
+Develop research plans or methodologies.,10.00,2024-09-30,43.62,11.26
+Develop research plans or methodologies.,33.00,2025-08-11,43.62,11.26
+Develop research plans or methodologies.,66.00,,43.62,11.26
+"Develop safety standards, policies, or procedures.",10.00,,7.76,1.66
+"Develop safety standards, policies, or procedures.",33.00,,7.76,1.66
+"Develop safety standards, policies, or procedures.",66.00,,7.76,1.66
+Develop scientific or mathematical theories or models.,10.00,2024-09-30,66.02,49.50
+Develop scientific or mathematical theories or models.,33.00,2024-09-30,66.02,49.50
+Develop scientific or mathematical theories or models.,66.00,2026-02-12,66.02,49.50
+Develop sustainable organizational or business policies or practices.,10.00,2024-09-30,20.98,14.52
+Develop sustainable organizational or business policies or practices.,33.00,,20.98,14.52
+Develop sustainable organizational or business policies or practices.,66.00,,20.98,14.52
+Develop systems or practices to mitigate or resolve environmental problems.,10.00,,8.21,0.00
+Develop systems or practices to mitigate or resolve environmental problems.,33.00,,8.21,0.00
+Develop systems or practices to mitigate or resolve environmental problems.,66.00,,8.21,0.00
+Develop technical specifications for products or operations.,10.00,2024-09-30,64.53,54.92
+Develop technical specifications for products or operations.,33.00,2024-09-30,64.53,54.92
+Develop technical specifications for products or operations.,66.00,,64.53,54.92
+Diagnose health conditions or disorders.,10.00,2025-08-11,15.08,5.65
+Diagnose health conditions or disorders.,33.00,,15.08,5.65
+Diagnose health conditions or disorders.,66.00,,15.08,5.65
+Diagnose system or equipment problems.,10.00,2024-09-30,60.03,54.51
+Diagnose system or equipment problems.,33.00,2024-09-30,60.03,54.51
+Diagnose system or equipment problems.,66.00,,60.03,54.51
+Direct construction or extraction activities.,10.00,2025-08-11,28.91,6.34
+Direct construction or extraction activities.,33.00,,28.91,6.34
+Direct construction or extraction activities.,66.00,,28.91,6.34
+Direct legal activities.,10.00,,8.40,1.78
+Direct legal activities.,33.00,,8.40,1.78
+Direct legal activities.,66.00,,8.40,1.78
+"Direct organizational operations, activities, or procedures.",10.00,2025-03-06,20.66,3.86
+"Direct organizational operations, activities, or procedures.",33.00,,20.66,3.86
+"Direct organizational operations, activities, or procedures.",66.00,,20.66,3.86
+Direct scientific or technical activities.,10.00,2025-03-06,21.89,6.55
+Direct scientific or technical activities.,33.00,,21.89,6.55
+Direct scientific or technical activities.,66.00,,21.89,6.55
+Direct security or safety activities or operations.,10.00,,7.43,7.43
+Direct security or safety activities or operations.,33.00,,7.43,7.43
+Direct security or safety activities or operations.,66.00,,7.43,7.43
+Direct vehicle traffic.,10.00,,4.25,4.25
+Direct vehicle traffic.,33.00,,4.25,4.25
+Direct vehicle traffic.,66.00,,4.25,4.25
+Disassemble equipment.,10.00,,0.88,0.88
+Disassemble equipment.,33.00,,0.88,0.88
+Disassemble equipment.,66.00,,0.88,0.88
+"Discuss legal matters with clients, disputants, or legal professionals or staff.",10.00,2025-11-13,25.09,1.40
+"Discuss legal matters with clients, disputants, or legal professionals or staff.",33.00,,25.09,1.40
+"Discuss legal matters with clients, disputants, or legal professionals or staff.",66.00,,25.09,1.40
+Dispose of waste or debris.,10.00,,0.14,0.14
+Dispose of waste or debris.,33.00,,0.14,0.14
+Dispose of waste or debris.,66.00,,0.14,0.14
+"Distribute materials, supplies, or resources.",10.00,2024-09-30,57.85,50.53
+"Distribute materials, supplies, or resources.",33.00,2024-09-30,57.85,50.53
+"Distribute materials, supplies, or resources.",66.00,,57.85,50.53
+"Document technical designs, procedures, or activities.",10.00,2024-09-30,65.68,51.31
+"Document technical designs, procedures, or activities.",33.00,2024-09-30,65.68,51.31
+"Document technical designs, procedures, or activities.",66.00,,65.68,51.31
+Draft legislation or regulations.,10.00,2025-03-06,21.43,0.00
+Draft legislation or regulations.,33.00,,21.43,0.00
+Draft legislation or regulations.,66.00,,21.43,0.00
+Drill holes in earth or materials.,10.00,,3.73,3.73
+Drill holes in earth or materials.,33.00,,3.73,3.73
+Drill holes in earth or materials.,66.00,,3.73,3.73
+Edit written materials or documents.,10.00,2024-09-30,77.87,57.66
+Edit written materials or documents.,33.00,2024-09-30,77.87,57.66
+Edit written materials or documents.,66.00,2025-08-11,77.87,57.66
+Embalm corpses.,10.00,,0.00,0.00
+Embalm corpses.,33.00,,0.00,0.00
+Embalm corpses.,66.00,,0.00,0.00
+Engrave objects.,10.00,,0.00,0.00
+Engrave objects.,33.00,,0.00,0.00
+Engrave objects.,66.00,,0.00,0.00
+Escort others.,10.00,2024-09-30,21.35,18.01
+Escort others.,33.00,,21.35,18.01
+Escort others.,66.00,,21.35,18.01
+Estimate project development or operational costs.,10.00,2024-09-30,25.20,15.32
+Estimate project development or operational costs.,33.00,,25.20,15.32
+Estimate project development or operational costs.,66.00,,25.20,15.32
+"Evaluate condition of financial assets, property, or other resources.",10.00,2024-09-30,26.80,11.20
+"Evaluate condition of financial assets, property, or other resources.",33.00,,26.80,11.20
+"Evaluate condition of financial assets, property, or other resources.",66.00,,26.80,11.20
+"Evaluate designs, specifications, or other technical data.",10.00,2024-09-30,59.23,53.23
+"Evaluate designs, specifications, or other technical data.",33.00,2024-09-30,59.23,53.23
+"Evaluate designs, specifications, or other technical data.",66.00,,59.23,53.23
+Evaluate green technologies or processes.,10.00,,9.86,0.00
+Evaluate green technologies or processes.,33.00,,9.86,0.00
+Evaluate green technologies or processes.,66.00,,9.86,0.00
+Evaluate patient or client condition or treatment options.,10.00,2025-03-06,25.34,5.86
+Evaluate patient or client condition or treatment options.,33.00,,25.34,5.86
+Evaluate patient or client condition or treatment options.,66.00,,25.34,5.86
+Evaluate personnel capabilities or performance.,10.00,2024-09-30,25.97,11.81
+Evaluate personnel capabilities or performance.,33.00,,25.97,11.81
+Evaluate personnel capabilities or performance.,66.00,,25.97,11.81
+Evaluate production inputs or outputs.,10.00,,4.87,0.90
+Evaluate production inputs or outputs.,33.00,,4.87,0.90
+Evaluate production inputs or outputs.,66.00,,4.87,0.90
+"Evaluate programs, practices, or processes.",10.00,2024-09-30,73.85,53.36
+"Evaluate programs, practices, or processes.",33.00,2024-09-30,73.85,53.36
+"Evaluate programs, practices, or processes.",66.00,2025-08-11,73.85,53.36
+Evaluate project feasibility.,10.00,2024-09-30,30.66,20.56
+Evaluate project feasibility.,33.00,,30.66,20.56
+Evaluate project feasibility.,66.00,,30.66,20.56
+Evaluate scholarly work.,10.00,2024-09-30,87.96,11.26
+Evaluate scholarly work.,33.00,2025-03-06,87.96,11.26
+Evaluate scholarly work.,66.00,2025-08-11,87.96,11.26
+"Evaluate the characteristics, usefulness, or performance of products or technologies.",10.00,2024-09-30,61.35,54.77
+"Evaluate the characteristics, usefulness, or performance of products or technologies.",33.00,2024-09-30,61.35,54.77
+"Evaluate the characteristics, usefulness, or performance of products or technologies.",66.00,,61.35,54.77
+Evaluate the quality or accuracy of data.,10.00,2024-09-30,54.83,47.40
+Evaluate the quality or accuracy of data.,33.00,2024-09-30,54.83,47.40
+Evaluate the quality or accuracy of data.,66.00,,54.83,47.40
+"Examine financial activities, operations, or systems.",10.00,2024-09-30,16.99,10.72
+"Examine financial activities, operations, or systems.",33.00,,16.99,10.72
+"Examine financial activities, operations, or systems.",66.00,,16.99,10.72
+Examine materials or documentation for accuracy or compliance.,10.00,2024-09-30,61.96,49.60
+Examine materials or documentation for accuracy or compliance.,33.00,2024-09-30,61.96,49.60
+Examine materials or documentation for accuracy or compliance.,66.00,,61.96,49.60
+Examine people or animals to assess health conditions or physical characteristics.,10.00,2025-08-11,15.16,1.02
+Examine people or animals to assess health conditions or physical characteristics.,33.00,,15.16,1.02
+Examine people or animals to assess health conditions or physical characteristics.,66.00,,15.16,1.02
+Execute financial transactions.,10.00,2024-09-30,62.95,53.14
+Execute financial transactions.,33.00,2024-09-30,62.95,53.14
+Execute financial transactions.,66.00,,62.95,53.14
+Explain financial information.,10.00,2024-09-30,74.51,56.85
+Explain financial information.,33.00,2024-09-30,74.51,56.85
+Explain financial information.,66.00,2025-08-11,74.51,56.85
+Explain medical information to patients or family members.,10.00,2024-09-30,63.35,53.32
+Explain medical information to patients or family members.,33.00,2024-09-30,63.35,53.32
+Explain medical information to patients or family members.,66.00,,63.35,53.32
+"Explain regulations, policies, or procedures.",10.00,2024-09-30,67.28,57.86
+"Explain regulations, policies, or procedures.",33.00,2024-09-30,67.28,57.86
+"Explain regulations, policies, or procedures.",66.00,2025-11-13,67.28,57.86
+Explain technical details of products or services.,10.00,2024-09-30,81.90,60.87
+Explain technical details of products or services.,33.00,2024-09-30,81.90,60.87
+Explain technical details of products or services.,66.00,2025-08-11,81.90,60.87
+Fabricate devices or components.,10.00,,6.47,5.83
+Fabricate devices or components.,33.00,,6.47,5.83
+Fabricate devices or components.,66.00,,6.47,5.83
+Fabricate medical devices.,10.00,,5.26,4.82
+Fabricate medical devices.,33.00,,5.26,4.82
+Fabricate medical devices.,66.00,,5.26,4.82
+Fit assistive devices to patients or clients.,10.00,2024-09-30,14.15,14.15
+Fit assistive devices to patients or clients.,33.00,,14.15,14.15
+Fit assistive devices to patients or clients.,66.00,,14.15,14.15
+Follow standard healthcare safety procedures to protect patient and staff members.,10.00,2024-09-30,13.12,13.12
+Follow standard healthcare safety procedures to protect patient and staff members.,33.00,,13.12,13.12
+Follow standard healthcare safety procedures to protect patient and staff members.,66.00,,13.12,13.12
+Gather data about operational or development activities.,10.00,2024-09-30,58.82,54.92
+Gather data about operational or development activities.,33.00,2024-09-30,58.82,54.92
+Gather data about operational or development activities.,66.00,,58.82,54.92
+Gather information for news stories.,10.00,2024-09-30,53.38,53.38
+Gather information for news stories.,33.00,2024-09-30,53.38,53.38
+Gather information for news stories.,66.00,,53.38,53.38
+Gather information from physical or electronic sources.,10.00,2024-09-30,70.70,58.16
+Gather information from physical or electronic sources.,33.00,2024-09-30,70.70,58.16
+Gather information from physical or electronic sources.,66.00,2025-08-11,70.70,58.16
+Groom or style hair.,10.00,2025-11-13,12.52,0.00
+Groom or style hair.,33.00,,12.52,0.00
+Groom or style hair.,66.00,,12.52,0.00
+Hunt animals.,10.00,,0.00,0.00
+Hunt animals.,33.00,,0.00,0.00
+Hunt animals.,66.00,,0.00,0.00
+Identify business or organizational opportunities.,10.00,2024-09-30,66.33,49.44
+Identify business or organizational opportunities.,33.00,2024-09-30,66.33,49.44
+Identify business or organizational opportunities.,66.00,2026-02-12,66.33,49.44
+Implement procedures or processes.,10.00,2024-09-30,71.76,60.43
+Implement procedures or processes.,33.00,2024-09-30,71.76,60.43
+Implement procedures or processes.,66.00,2025-08-11,71.76,60.43
+Implement security measures for computer or information systems.,10.00,2024-09-30,72.78,23.06
+Implement security measures for computer or information systems.,33.00,2025-03-06,72.78,23.06
+Implement security measures for computer or information systems.,66.00,2025-11-13,72.78,23.06
+Inspect characteristics or conditions of materials or products.,10.00,2024-09-30,54.36,51.30
+Inspect characteristics or conditions of materials or products.,33.00,2024-09-30,54.36,51.30
+Inspect characteristics or conditions of materials or products.,66.00,,54.36,51.30
+"Inspect commercial, industrial, or production systems or equipment.",10.00,2025-11-13,10.98,6.47
+"Inspect commercial, industrial, or production systems or equipment.",33.00,,10.98,6.47
+"Inspect commercial, industrial, or production systems or equipment.",66.00,,10.98,6.47
+Inspect completed work or finished products.,10.00,2025-08-11,11.26,7.28
+Inspect completed work or finished products.,33.00,,11.26,7.28
+Inspect completed work or finished products.,66.00,,11.26,7.28
+Inspect facilities or equipment.,10.00,,9.28,5.02
+Inspect facilities or equipment.,33.00,,9.28,5.02
+Inspect facilities or equipment.,66.00,,9.28,5.02
+Inspect vehicles.,10.00,,6.05,4.52
+Inspect vehicles.,33.00,,6.05,4.52
+Inspect vehicles.,66.00,,6.05,4.52
+Install commercial or production equipment.,10.00,2024-09-30,14.82,12.70
+Install commercial or production equipment.,33.00,,14.82,12.70
+Install commercial or production equipment.,66.00,,14.82,12.70
+Install energy or heating equipment.,10.00,,7.61,7.61
+Install energy or heating equipment.,33.00,,7.61,7.61
+Install energy or heating equipment.,66.00,,7.61,7.61
+Install plumbing or piping equipment or systems.,10.00,,7.06,7.06
+Install plumbing or piping equipment or systems.,33.00,,7.06,7.06
+Install plumbing or piping equipment or systems.,66.00,,7.06,7.06
+"Interpret language, cultural, or religious information for others.",10.00,2024-09-30,82.80,53.38
+"Interpret language, cultural, or religious information for others.",33.00,2024-09-30,82.80,53.38
+"Interpret language, cultural, or religious information for others.",66.00,2025-03-06,82.80,53.38
+Intervene in crisis situations or emergencies.,10.00,2024-09-30,10.23,10.23
+Intervene in crisis situations or emergencies.,33.00,,10.23,10.23
+Intervene in crisis situations or emergencies.,66.00,,10.23,10.23
+Interview people to obtain information.,10.00,2024-09-30,50.46,40.88
+Interview people to obtain information.,33.00,2024-09-30,50.46,40.88
+Interview people to obtain information.,66.00,,50.46,40.88
+Investigate criminal or legal matters.,10.00,2024-09-30,56.27,49.44
+Investigate criminal or legal matters.,33.00,2024-09-30,56.27,49.44
+Investigate criminal or legal matters.,66.00,,56.27,49.44
+Investigate incidents or accidents.,10.00,2024-09-30,55.57,51.13
+Investigate incidents or accidents.,33.00,2024-09-30,55.57,51.13
+Investigate incidents or accidents.,66.00,,55.57,51.13
+"Investigate individuals' background, behavior, or activities.",10.00,2024-09-30,59.90,52.95
+"Investigate individuals' background, behavior, or activities.",33.00,2024-09-30,59.90,52.95
+"Investigate individuals' background, behavior, or activities.",66.00,,59.90,52.95
+Investigate organizational or operational problems.,10.00,2024-09-30,54.41,53.38
+Investigate organizational or operational problems.,33.00,2024-09-30,54.41,53.38
+Investigate organizational or operational problems.,66.00,,54.41,53.38
+Investigate the environmental impact of industrial or development activities.,10.00,2024-09-30,18.25,10.49
+Investigate the environmental impact of industrial or development activities.,33.00,,18.25,10.49
+Investigate the environmental impact of industrial or development activities.,66.00,,18.25,10.49
+Issue documentation.,10.00,2024-09-30,56.93,53.74
+Issue documentation.,33.00,2024-09-30,56.93,53.74
+Issue documentation.,66.00,,56.93,53.74
+"Join parts using soldering, welding, or brazing techniques.",10.00,,5.59,5.59
+"Join parts using soldering, welding, or brazing techniques.",33.00,,5.59,5.59
+"Join parts using soldering, welding, or brazing techniques.",66.00,,5.59,5.59
+"Load products, materials, or equipment for transportation or further processing.",10.00,,5.52,5.52
+"Load products, materials, or equipment for transportation or further processing.",33.00,,5.52,5.52
+"Load products, materials, or equipment for transportation or further processing.",66.00,,5.52,5.52
+Maintain current knowledge in area of expertise.,10.00,2024-09-30,72.04,54.81
+Maintain current knowledge in area of expertise.,33.00,2024-09-30,72.04,54.81
+Maintain current knowledge in area of expertise.,66.00,2025-11-13,72.04,54.81
+"Maintain electronic, computer, or other technical equipment.",10.00,2024-09-30,61.98,54.35
+"Maintain electronic, computer, or other technical equipment.",33.00,2024-09-30,61.98,54.35
+"Maintain electronic, computer, or other technical equipment.",66.00,,61.98,54.35
+Maintain facilities or equipment.,10.00,2024-09-30,55.23,54.80
+Maintain facilities or equipment.,33.00,2024-09-30,55.23,54.80
+Maintain facilities or equipment.,66.00,,55.23,54.80
+Maintain health or medical records.,10.00,2025-03-06,33.32,6.13
+Maintain health or medical records.,33.00,2026-02-12,33.32,6.13
+Maintain health or medical records.,66.00,,33.32,6.13
+Maintain medical equipment or instruments.,10.00,,4.03,1.17
+Maintain medical equipment or instruments.,33.00,,4.03,1.17
+Maintain medical equipment or instruments.,66.00,,4.03,1.17
+Maintain operational records.,10.00,2025-08-11,21.23,4.04
+Maintain operational records.,33.00,,21.23,4.04
+Maintain operational records.,66.00,,21.23,4.04
+Maintain safety or security.,10.00,2024-09-30,46.96,42.62
+Maintain safety or security.,33.00,2024-09-30,46.96,42.62
+Maintain safety or security.,66.00,,46.96,42.62
+Maintain sales or financial records.,10.00,2024-09-30,28.09,10.55
+Maintain sales or financial records.,33.00,,28.09,10.55
+Maintain sales or financial records.,66.00,,28.09,10.55
+Maintain tools or equipment.,10.00,,6.36,5.38
+Maintain tools or equipment.,33.00,,6.36,5.38
+Maintain tools or equipment.,66.00,,6.36,5.38
+Maintain vehicles in working condition.,10.00,,6.01,2.77
+Maintain vehicles in working condition.,33.00,,6.01,2.77
+Maintain vehicles in working condition.,66.00,,6.01,2.77
+Make legal decisions.,10.00,2025-03-06,22.26,3.20
+Make legal decisions.,33.00,,22.26,3.20
+Make legal decisions.,66.00,,22.26,3.20
+Manage agricultural or forestry operations.,10.00,,2.65,1.76
+Manage agricultural or forestry operations.,33.00,,2.65,1.76
+Manage agricultural or forestry operations.,66.00,,2.65,1.76
+Manage budgets or finances.,10.00,2025-03-06,42.79,4.61
+Manage budgets or finances.,33.00,2025-08-11,42.79,4.61
+Manage budgets or finances.,66.00,,42.79,4.61
+Manage control systems or activities.,10.00,,0.00,0.00
+Manage control systems or activities.,33.00,,0.00,0.00
+Manage control systems or activities.,66.00,,0.00,0.00
+Manage human resources activities.,10.00,2025-03-06,30.74,9.55
+Manage human resources activities.,33.00,,30.74,9.55
+Manage human resources activities.,66.00,,30.74,9.55
+Mark materials or objects for identification.,10.00,2026-02-12,10.63,5.44
+Mark materials or objects for identification.,33.00,,10.63,5.44
+Mark materials or objects for identification.,66.00,,10.63,5.44
+"Measure physical characteristics of materials, products, or equipment.",10.00,2024-09-30,53.59,49.49
+"Measure physical characteristics of materials, products, or equipment.",33.00,2024-09-30,53.59,49.49
+"Measure physical characteristics of materials, products, or equipment.",66.00,,53.59,49.49
+Mediate disputes.,10.00,2024-09-30,18.73,12.24
+Mediate disputes.,33.00,,18.73,12.24
+Mediate disputes.,66.00,,18.73,12.24
+Monitor environmental conditions.,10.00,,9.94,9.76
+Monitor environmental conditions.,33.00,,9.94,9.76
+Monitor environmental conditions.,66.00,,9.94,9.76
+Monitor equipment operation.,10.00,,7.18,5.05
+Monitor equipment operation.,33.00,,7.18,5.05
+Monitor equipment operation.,66.00,,7.18,5.05
+"Monitor external affairs, trends, or events.",10.00,2024-09-30,64.13,51.30
+"Monitor external affairs, trends, or events.",33.00,2024-09-30,64.13,51.30
+"Monitor external affairs, trends, or events.",66.00,,64.13,51.30
+Monitor financial data or activities.,10.00,2025-03-06,52.22,3.58
+Monitor financial data or activities.,33.00,2025-11-13,52.22,3.58
+Monitor financial data or activities.,66.00,,52.22,3.58
+Monitor health conditions of humans or animals.,10.00,2025-08-11,19.06,4.63
+Monitor health conditions of humans or animals.,33.00,,19.06,4.63
+Monitor health conditions of humans or animals.,66.00,,19.06,4.63
+Monitor individual behavior or performance.,10.00,2024-09-30,57.29,47.17
+Monitor individual behavior or performance.,33.00,2024-09-30,57.29,47.17
+Monitor individual behavior or performance.,66.00,,57.29,47.17
+Monitor operation of computer or information technologies.,10.00,2024-09-30,67.21,49.44
+Monitor operation of computer or information technologies.,33.00,2024-09-30,67.21,49.44
+Monitor operation of computer or information technologies.,66.00,2025-11-13,67.21,49.44
+Monitor operations to ensure adequate performance.,10.00,2026-02-12,12.22,3.40
+Monitor operations to ensure adequate performance.,33.00,,12.22,3.40
+Monitor operations to ensure adequate performance.,66.00,,12.22,3.40
+Monitor operations to ensure compliance with regulations or standards.,10.00,2025-03-06,22.81,8.38
+Monitor operations to ensure compliance with regulations or standards.,33.00,,22.81,8.38
+Monitor operations to ensure compliance with regulations or standards.,66.00,,22.81,8.38
+Monitor resources or inventories.,10.00,2025-03-06,20.80,9.35
+Monitor resources or inventories.,33.00,,20.80,9.35
+Monitor resources or inventories.,66.00,,20.80,9.35
+"Monitor safety or security of work areas, facilities, or properties.",10.00,2025-03-06,13.27,8.55
+"Monitor safety or security of work areas, facilities, or properties.",33.00,,13.27,8.55
+"Monitor safety or security of work areas, facilities, or properties.",66.00,,13.27,8.55
+Monitor traffic conditions.,10.00,,3.80,3.80
+Monitor traffic conditions.,33.00,,3.80,3.80
+Monitor traffic conditions.,66.00,,3.80,3.80
+"Move materials, equipment, or supplies.",10.00,,6.22,4.29
+"Move materials, equipment, or supplies.",33.00,,6.22,4.29
+"Move materials, equipment, or supplies.",66.00,,6.22,4.29
+Negotiate contracts or agreements.,10.00,2025-03-06,30.13,6.50
+Negotiate contracts or agreements.,33.00,,30.13,6.50
+Negotiate contracts or agreements.,66.00,,30.13,6.50
+Notify others of emergencies or problems.,10.00,,8.80,7.81
+Notify others of emergencies or problems.,33.00,,8.80,7.81
+Notify others of emergencies or problems.,66.00,,8.80,7.81
+Obtain formal documentation or authorization.,10.00,2024-09-30,54.98,54.92
+Obtain formal documentation or authorization.,33.00,2024-09-30,54.98,54.92
+Obtain formal documentation or authorization.,66.00,,54.98,54.92
+Obtain information about goods or services.,10.00,2024-09-30,77.84,64.44
+Obtain information about goods or services.,33.00,2024-09-30,77.84,64.44
+Obtain information about goods or services.,66.00,2025-08-11,77.84,64.44
+Operate agricultural or forestry equipment.,10.00,,1.73,1.73
+Operate agricultural or forestry equipment.,33.00,,1.73,1.73
+Operate agricultural or forestry equipment.,66.00,,1.73,1.73
+Operate audiovisual or related equipment.,10.00,2025-03-06,26.61,9.92
+Operate audiovisual or related equipment.,33.00,,26.61,9.92
+Operate audiovisual or related equipment.,66.00,,26.61,9.92
+Operate communications equipment or systems.,10.00,2024-09-30,56.16,51.30
+Operate communications equipment or systems.,33.00,2024-09-30,56.16,51.30
+Operate communications equipment or systems.,66.00,,56.16,51.30
+Operate computer systems or computerized equipment.,10.00,2024-09-30,76.50,49.65
+Operate computer systems or computerized equipment.,33.00,2024-09-30,76.50,49.65
+Operate computer systems or computerized equipment.,66.00,2025-08-11,76.50,49.65
+Operate construction or excavation equipment.,10.00,,0.91,0.91
+Operate construction or excavation equipment.,33.00,,0.91,0.91
+Operate construction or excavation equipment.,66.00,,0.91,0.91
+Operate cutting or grinding equipment.,10.00,,3.05,3.05
+Operate cutting or grinding equipment.,33.00,,3.05,3.05
+Operate cutting or grinding equipment.,66.00,,3.05,3.05
+Operate energy production or distribution equipment.,10.00,,6.70,1.13
+Operate energy production or distribution equipment.,33.00,,6.70,1.13
+Operate energy production or distribution equipment.,66.00,,6.70,1.13
+Operate industrial processing or production equipment.,10.00,,8.01,5.39
+Operate industrial processing or production equipment.,33.00,,8.01,5.39
+Operate industrial processing or production equipment.,66.00,,8.01,5.39
+Operate laboratory or field equipment.,10.00,2024-09-30,18.63,10.20
+Operate laboratory or field equipment.,33.00,,18.63,10.20
+Operate laboratory or field equipment.,66.00,,18.63,10.20
+Operate lifting or moving equipment.,10.00,,0.87,0.87
+Operate lifting or moving equipment.,33.00,,0.87,0.87
+Operate lifting or moving equipment.,66.00,,0.87,0.87
+Operate medical equipment.,10.00,2025-03-06,16.85,6.27
+Operate medical equipment.,33.00,,16.85,6.27
+Operate medical equipment.,66.00,,16.85,6.27
+Operate office equipment.,10.00,2024-09-30,63.06,51.30
+Operate office equipment.,33.00,2024-09-30,63.06,51.30
+Operate office equipment.,66.00,,63.06,51.30
+Operate pumping systems or equipment.,10.00,,6.63,6.63
+Operate pumping systems or equipment.,33.00,,6.63,6.63
+Operate pumping systems or equipment.,66.00,,6.63,6.63
+Operate transportation equipment or vehicles.,10.00,,1.41,1.26
+Operate transportation equipment or vehicles.,33.00,,1.41,1.26
+Operate transportation equipment or vehicles.,66.00,,1.41,1.26
+Order medical tests or procedures.,10.00,2024-09-30,37.90,29.98
+Order medical tests or procedures.,33.00,2025-08-11,37.90,29.98
+Order medical tests or procedures.,66.00,,37.90,29.98
+Package objects.,10.00,,4.92,3.77
+Package objects.,33.00,,4.92,3.77
+Package objects.,66.00,,4.92,3.77
+Perform administrative or clerical activities.,10.00,2024-09-30,69.62,51.59
+Perform administrative or clerical activities.,33.00,2024-09-30,69.62,51.59
+Perform administrative or clerical activities.,66.00,2025-11-13,69.62,51.59
+Perform agricultural activities.,10.00,,2.70,2.70
+Perform agricultural activities.,33.00,,2.70,2.70
+Perform agricultural activities.,66.00,,2.70,2.70
+"Perform athletic activities for fitness, competition, or artistic purposes.",10.00,2024-09-30,49.81,47.47
+"Perform athletic activities for fitness, competition, or artistic purposes.",33.00,2024-09-30,49.81,47.47
+"Perform athletic activities for fitness, competition, or artistic purposes.",66.00,,49.81,47.47
+Perform court-related or other legal administrative activities.,10.00,2024-09-30,11.97,11.97
+Perform court-related or other legal administrative activities.,33.00,,11.97,11.97
+Perform court-related or other legal administrative activities.,66.00,,11.97,11.97
+Perform general construction or extraction activities.,10.00,,4.20,2.79
+Perform general construction or extraction activities.,33.00,,4.20,2.79
+Perform general construction or extraction activities.,66.00,,4.20,2.79
+Perform human resources activities.,10.00,2024-09-30,25.79,15.10
+Perform human resources activities.,33.00,,25.79,15.10
+Perform human resources activities.,66.00,,25.79,15.10
+Perform recruiting or hiring activities.,10.00,2025-03-06,40.90,5.78
+Perform recruiting or hiring activities.,33.00,2025-08-11,40.90,5.78
+Perform recruiting or hiring activities.,66.00,,40.90,5.78
+Plan events or programs.,10.00,2024-09-30,67.44,53.38
+Plan events or programs.,33.00,2024-09-30,67.44,53.38
+Plan events or programs.,66.00,2025-03-06,67.44,53.38
+Plan work activities.,10.00,2024-09-30,54.18,51.54
+Plan work activities.,33.00,2024-09-30,54.18,51.54
+Plan work activities.,66.00,,54.18,51.54
+Position materials or components for assembly.,10.00,,9.40,7.80
+Position materials or components for assembly.,33.00,,9.40,7.80
+Position materials or components for assembly.,66.00,,9.40,7.80
+Position tools or equipment.,10.00,,6.81,6.81
+Position tools or equipment.,33.00,,6.81,6.81
+Position tools or equipment.,66.00,,6.81,6.81
+Position workpieces or materials on equipment.,10.00,,7.66,7.66
+Position workpieces or materials on equipment.,33.00,,7.66,7.66
+Position workpieces or materials on equipment.,66.00,,7.66,7.66
+"Prepare documentation for contracts, applications, or permits.",10.00,2024-09-30,71.62,54.39
+"Prepare documentation for contracts, applications, or permits.",33.00,2024-09-30,71.62,54.39
+"Prepare documentation for contracts, applications, or permits.",66.00,2025-08-11,71.62,54.39
+"Prepare financial documents, reports, or budgets.",10.00,2025-03-06,30.22,5.23
+"Prepare financial documents, reports, or budgets.",33.00,,30.22,5.23
+"Prepare financial documents, reports, or budgets.",66.00,,30.22,5.23
+Prepare foods or beverages.,10.00,2024-09-30,59.49,54.83
+Prepare foods or beverages.,33.00,2024-09-30,59.49,54.83
+Prepare foods or beverages.,66.00,,59.49,54.83
+Prepare health or medical documents.,10.00,2025-03-06,47.63,5.47
+Prepare health or medical documents.,33.00,2025-03-06,47.63,5.47
+Prepare health or medical documents.,66.00,,47.63,5.47
+Prepare industrial materials for processing or use.,10.00,,4.68,3.65
+Prepare industrial materials for processing or use.,33.00,,4.68,3.65
+Prepare industrial materials for processing or use.,66.00,,4.68,3.65
+Prepare informational or instructional materials.,10.00,2024-09-30,76.56,54.80
+Prepare informational or instructional materials.,33.00,2024-09-30,76.56,54.80
+Prepare informational or instructional materials.,66.00,2025-08-11,76.56,54.80
+Prepare legal or regulatory documents.,10.00,2024-09-30,41.77,11.02
+Prepare legal or regulatory documents.,33.00,2025-08-11,41.77,11.02
+Prepare legal or regulatory documents.,66.00,,41.77,11.02
+Prepare medical equipment or work areas for use.,10.00,2024-09-30,17.12,10.40
+Prepare medical equipment or work areas for use.,33.00,,17.12,10.40
+Prepare medical equipment or work areas for use.,66.00,,17.12,10.40
+Prepare mixtures or solutions.,10.00,2024-09-30,56.19,53.96
+Prepare mixtures or solutions.,33.00,2024-09-30,56.19,53.96
+Prepare mixtures or solutions.,66.00,,56.19,53.96
+Prepare proposals or grant applications.,10.00,2024-09-30,52.55,17.13
+Prepare proposals or grant applications.,33.00,2025-03-06,52.55,17.13
+Prepare proposals or grant applications.,66.00,,52.55,17.13
+Prepare reports of operational or procedural activities.,10.00,2025-03-06,22.49,4.02
+Prepare reports of operational or procedural activities.,33.00,,22.49,4.02
+Prepare reports of operational or procedural activities.,66.00,,22.49,4.02
+Prepare schedules for services or facilities.,10.00,2024-09-30,31.22,14.89
+Prepare schedules for services or facilities.,33.00,,31.22,14.89
+Prepare schedules for services or facilities.,66.00,,31.22,14.89
+Prepare specimens or materials for testing.,10.00,2025-08-11,22.51,3.72
+Prepare specimens or materials for testing.,33.00,,22.51,3.72
+Prepare specimens or materials for testing.,66.00,,22.51,3.72
+Prescribe medical treatments or devices.,10.00,2025-08-11,13.25,0.53
+Prescribe medical treatments or devices.,33.00,,13.25,0.53
+Prescribe medical treatments or devices.,66.00,,13.25,0.53
+Present arts or entertainment performances.,10.00,2025-03-06,28.02,8.09
+Present arts or entertainment performances.,33.00,,28.02,8.09
+Present arts or entertainment performances.,66.00,,28.02,8.09
+Present information in legal proceedings.,10.00,2024-09-30,14.16,14.16
+Present information in legal proceedings.,33.00,,14.16,14.16
+Present information in legal proceedings.,66.00,,14.16,14.16
+Present research or technical information.,10.00,2024-09-30,70.06,54.17
+Present research or technical information.,33.00,2024-09-30,70.06,54.17
+Present research or technical information.,66.00,2025-08-11,70.06,54.17
+Process animal carcasses.,10.00,2024-09-30,24.51,24.51
+Process animal carcasses.,33.00,,24.51,24.51
+Process animal carcasses.,66.00,,24.51,24.51
+Process digital or online data.,10.00,2024-09-30,65.96,50.08
+Process digital or online data.,33.00,2024-09-30,65.96,50.08
+Process digital or online data.,66.00,,65.96,50.08
+Process forensic or legal evidence.,10.00,2024-09-30,10.02,10.02
+Process forensic or legal evidence.,33.00,,10.02,10.02
+Process forensic or legal evidence.,66.00,,10.02,10.02
+Process shipments or mail.,10.00,2024-09-30,18.18,11.31
+Process shipments or mail.,33.00,,18.18,11.31
+Process shipments or mail.,66.00,,18.18,11.31
+Program computer systems or production equipment.,10.00,2024-09-30,70.69,57.61
+Program computer systems or production equipment.,33.00,2024-09-30,70.69,57.61
+Program computer systems or production equipment.,66.00,2025-08-11,70.69,57.61
+"Promote products, services, or programs.",10.00,2024-09-30,72.71,52.39
+"Promote products, services, or programs.",33.00,2024-09-30,72.71,52.39
+"Promote products, services, or programs.",66.00,2025-08-11,72.71,52.39
+Protect people or property from threats such as fires or flooding.,10.00,,0.00,0.00
+Protect people or property from threats such as fires or flooding.,33.00,,0.00,0.00
+Protect people or property from threats such as fires or flooding.,66.00,,0.00,0.00
+Provide food or beverage services.,10.00,2024-09-30,18.79,16.50
+Provide food or beverage services.,33.00,,18.79,16.50
+Provide food or beverage services.,66.00,,18.79,16.50
+"Provide general assistance to others, such as customers, patrons, or motorists.",10.00,2024-09-30,63.49,52.05
+"Provide general assistance to others, such as customers, patrons, or motorists.",33.00,2024-09-30,63.49,52.05
+"Provide general assistance to others, such as customers, patrons, or motorists.",66.00,,63.49,52.05
+Provide information or assistance to the public.,10.00,2024-09-30,66.50,58.18
+Provide information or assistance to the public.,33.00,2024-09-30,66.50,58.18
+Provide information or assistance to the public.,66.00,2026-02-12,66.50,58.18
+"Provide information to guests, clients, or customers.",10.00,2024-09-30,71.73,58.53
+"Provide information to guests, clients, or customers.",33.00,2024-09-30,71.73,58.53
+"Provide information to guests, clients, or customers.",66.00,2025-08-11,71.73,58.53
+Provide support or encouragement to others.,10.00,2024-09-30,51.11,41.35
+Provide support or encouragement to others.,33.00,2024-09-30,51.11,41.35
+Provide support or encouragement to others.,66.00,,51.11,41.35
+Purchase goods or services.,10.00,2024-09-30,57.82,53.18
+Purchase goods or services.,33.00,2024-09-30,57.82,53.18
+Purchase goods or services.,66.00,,57.82,53.18
+Read documents or materials to inform work processes.,10.00,2024-09-30,61.94,53.38
+Read documents or materials to inform work processes.,33.00,2024-09-30,61.94,53.38
+Read documents or materials to inform work processes.,66.00,,61.94,53.38
+Reconcile financial data.,10.00,2025-03-06,12.16,9.29
+Reconcile financial data.,33.00,,12.16,9.29
+Reconcile financial data.,66.00,,12.16,9.29
+Record images with photographic or audiovisual equipment.,10.00,2025-03-06,21.05,5.87
+Record images with photographic or audiovisual equipment.,33.00,,21.05,5.87
+Record images with photographic or audiovisual equipment.,66.00,,21.05,5.87
+Record information about environmental conditions.,10.00,2026-02-12,14.43,0.00
+Record information about environmental conditions.,33.00,,14.43,0.00
+Record information about environmental conditions.,66.00,,14.43,0.00
+Record information about legal matters.,10.00,2025-03-06,26.54,1.03
+Record information about legal matters.,33.00,,26.54,1.03
+Record information about legal matters.,66.00,,26.54,1.03
+Remove workpieces from production equipment.,10.00,,1.66,1.66
+Remove workpieces from production equipment.,33.00,,1.66,1.66
+Remove workpieces from production equipment.,66.00,,1.66,1.66
+Repair electrical or electronic equipment.,10.00,2024-09-30,22.50,15.09
+Repair electrical or electronic equipment.,33.00,,22.50,15.09
+Repair electrical or electronic equipment.,66.00,,22.50,15.09
+Repair tools or equipment.,10.00,2024-09-30,12.73,11.34
+Repair tools or equipment.,33.00,,12.73,11.34
+Repair tools or equipment.,66.00,,12.73,11.34
+Repair vehicle components.,10.00,,3.55,3.55
+Repair vehicle components.,33.00,,3.55,3.55
+Repair vehicle components.,66.00,,3.55,3.55
+Repair workpieces or products.,10.00,,1.74,1.74
+Repair workpieces or products.,33.00,,1.74,1.74
+Repair workpieces or products.,66.00,,1.74,1.74
+"Replenish inventories of materials, equipment, or products.",10.00,2024-09-30,15.89,12.53
+"Replenish inventories of materials, equipment, or products.",33.00,,15.89,12.53
+"Replenish inventories of materials, equipment, or products.",66.00,,15.89,12.53
+Research agricultural processes or practices.,10.00,2025-03-06,19.96,0.00
+Research agricultural processes or practices.,33.00,,19.96,0.00
+Research agricultural processes or practices.,66.00,,19.96,0.00
+Research biological or ecological phenomena.,10.00,2024-09-30,71.94,53.38
+Research biological or ecological phenomena.,33.00,2024-09-30,71.94,53.38
+Research biological or ecological phenomena.,66.00,2025-11-13,71.94,53.38
+Research healthcare issues.,10.00,2024-09-30,59.13,54.92
+Research healthcare issues.,33.00,2024-09-30,59.13,54.92
+Research healthcare issues.,66.00,,59.13,54.92
+Research historical or social issues.,10.00,2024-09-30,89.14,53.40
+Research historical or social issues.,33.00,2024-09-30,89.14,53.40
+Research historical or social issues.,66.00,2025-08-11,89.14,53.40
+Research issues related to earth sciences.,10.00,2024-09-30,63.38,53.38
+Research issues related to earth sciences.,33.00,2024-09-30,63.38,53.38
+Research issues related to earth sciences.,66.00,,63.38,53.38
+"Research laws, precedents, or other legal data.",10.00,2024-09-30,92.52,49.02
+"Research laws, precedents, or other legal data.",33.00,2024-09-30,92.52,49.02
+"Research laws, precedents, or other legal data.",66.00,2025-08-11,92.52,49.02
+"Research organizational behavior, processes, or performance.",10.00,2024-09-30,66.69,51.30
+"Research organizational behavior, processes, or performance.",33.00,2024-09-30,66.69,51.30
+"Research organizational behavior, processes, or performance.",66.00,2025-08-11,66.69,51.30
+Research technology designs or applications.,10.00,2024-09-30,70.03,56.61
+Research technology designs or applications.,33.00,2024-09-30,70.03,56.61
+Research technology designs or applications.,66.00,2025-11-13,70.03,56.61
+Resolve computer problems.,10.00,2024-09-30,71.61,55.70
+Resolve computer problems.,33.00,2024-09-30,71.61,55.70
+Resolve computer problems.,66.00,2025-08-11,71.61,55.70
+Resolve personnel or operational problems.,10.00,2025-03-06,16.16,2.85
+Resolve personnel or operational problems.,33.00,,16.16,2.85
+Resolve personnel or operational problems.,66.00,,16.16,2.85
+Respond to customer problems or inquiries.,10.00,2024-09-30,75.18,59.58
+Respond to customer problems or inquiries.,33.00,2024-09-30,75.18,59.58
+Respond to customer problems or inquiries.,66.00,2025-08-11,75.18,59.58
+Schedule appointments.,10.00,2024-09-30,57.54,20.32
+Schedule appointments.,33.00,2025-08-11,57.54,20.32
+Schedule appointments.,66.00,,57.54,20.32
+Schedule operational activities.,10.00,2025-03-06,26.07,7.98
+Schedule operational activities.,33.00,,26.07,7.98
+Schedule operational activities.,66.00,,26.07,7.98
+Select materials or equipment for operations or projects.,10.00,2024-09-30,56.05,53.49
+Select materials or equipment for operations or projects.,33.00,2024-09-30,56.05,53.49
+Select materials or equipment for operations or projects.,66.00,,56.05,53.49
+Sell products or services.,10.00,2025-03-06,20.26,8.59
+Sell products or services.,33.00,,20.26,8.59
+Sell products or services.,66.00,,20.26,8.59
+Serve on organizational committees.,10.00,2025-03-06,39.24,2.95
+Serve on organizational committees.,33.00,2025-03-06,39.24,2.95
+Serve on organizational committees.,66.00,,39.24,2.95
+"Set up classrooms, facilities, educational materials, or equipment.",10.00,2025-03-06,49.74,0.00
+"Set up classrooms, facilities, educational materials, or equipment.",33.00,2025-08-11,49.74,0.00
+"Set up classrooms, facilities, educational materials, or equipment.",66.00,,49.74,0.00
+"Set up computer systems, networks, or other information systems.",10.00,2024-09-30,71.55,53.55
+"Set up computer systems, networks, or other information systems.",33.00,2024-09-30,71.55,53.55
+"Set up computer systems, networks, or other information systems.",66.00,2025-08-11,71.55,53.55
+Set up equipment.,10.00,2024-09-30,59.54,57.95
+Set up equipment.,33.00,2024-09-30,59.54,57.95
+Set up equipment.,66.00,,59.54,57.95
+Set up protective structures or coverings near work areas.,10.00,,0.00,0.00
+Set up protective structures or coverings near work areas.,33.00,,0.00,0.00
+Set up protective structures or coverings near work areas.,66.00,,0.00,0.00
+Sew garments or materials.,10.00,,1.75,0.00
+Sew garments or materials.,33.00,,1.75,0.00
+Sew garments or materials.,66.00,,1.75,0.00
+Shape materials to create products.,10.00,,0.00,0.00
+Shape materials to create products.,33.00,,0.00,0.00
+Shape materials to create products.,66.00,,0.00,0.00
+Signal others to coordinate work activities.,10.00,,1.79,1.79
+Signal others to coordinate work activities.,33.00,,1.79,1.79
+Signal others to coordinate work activities.,66.00,,1.79,1.79
+Smooth surfaces of objects or equipment.,10.00,,0.00,0.00
+Smooth surfaces of objects or equipment.,33.00,,0.00,0.00
+Smooth surfaces of objects or equipment.,66.00,,0.00,0.00
+Sort materials or products.,10.00,2024-09-30,23.87,17.24
+Sort materials or products.,33.00,,23.87,17.24
+Sort materials or products.,66.00,,23.87,17.24
+Stock supplies or products.,10.00,2026-02-12,12.73,4.61
+Stock supplies or products.,33.00,,12.73,4.61
+Stock supplies or products.,66.00,,12.73,4.61
+Study details of artistic productions.,10.00,2024-09-30,73.37,53.38
+Study details of artistic productions.,33.00,2024-09-30,73.37,53.38
+Study details of artistic productions.,66.00,2025-11-13,73.37,53.38
+Supervise activities in correctional facilities.,10.00,,0.00,0.00
+Supervise activities in correctional facilities.,33.00,,0.00,0.00
+Supervise activities in correctional facilities.,66.00,,0.00,0.00
+Supervise personnel activities.,10.00,2025-08-11,18.70,6.88
+Supervise personnel activities.,33.00,,18.70,6.88
+Supervise personnel activities.,66.00,,18.70,6.88
+Take physical measurements of patients or clients.,10.00,2024-09-30,14.50,14.50
+Take physical measurements of patients or clients.,33.00,,14.50,14.50
+Take physical measurements of patients or clients.,66.00,,14.50,14.50
+Teach academic or vocational subjects.,10.00,2024-09-30,58.57,47.51
+Teach academic or vocational subjects.,33.00,2024-09-30,58.57,47.51
+Teach academic or vocational subjects.,66.00,,58.57,47.51
+Teach life skills.,10.00,2024-09-30,57.71,44.98
+Teach life skills.,33.00,2024-09-30,57.71,44.98
+Teach life skills.,66.00,,57.71,44.98
+Teach safety procedures or standards to others.,10.00,2024-09-30,41.50,41.33
+Teach safety procedures or standards to others.,33.00,2024-09-30,41.50,41.33
+Teach safety procedures or standards to others.,66.00,,41.50,41.33
+Tend watercraft.,10.00,,0.00,0.00
+Tend watercraft.,33.00,,0.00,0.00
+Tend watercraft.,66.00,,0.00,0.00
+Test characteristics of materials or products.,10.00,2025-03-06,24.22,3.06
+Test characteristics of materials or products.,33.00,,24.22,3.06
+Test characteristics of materials or products.,66.00,,24.22,3.06
+Test performance of computer or information systems.,10.00,2024-09-30,67.40,49.74
+Test performance of computer or information systems.,33.00,2024-09-30,67.40,49.74
+Test performance of computer or information systems.,66.00,2025-08-11,67.40,49.74
+Test performance of equipment or systems.,10.00,2024-09-30,57.37,51.31
+Test performance of equipment or systems.,33.00,2024-09-30,57.37,51.31
+Test performance of equipment or systems.,66.00,,57.37,51.31
+Test sites or materials for environmental hazards.,10.00,,0.07,0.00
+Test sites or materials for environmental hazards.,33.00,,0.07,0.00
+Test sites or materials for environmental hazards.,66.00,,0.07,0.00
+Train animals.,10.00,,9.27,0.00
+Train animals.,33.00,,9.27,0.00
+Train animals.,66.00,,9.27,0.00
+Train others on health or medical topics.,10.00,2024-09-30,45.25,42.68
+Train others on health or medical topics.,33.00,2024-09-30,45.25,42.68
+Train others on health or medical topics.,66.00,,45.25,42.68
+Train others on operational or work procedures.,10.00,2024-09-30,53.36,45.27
+Train others on operational or work procedures.,33.00,2024-09-30,53.36,45.27
+Train others on operational or work procedures.,66.00,,53.36,45.27
+Train others to use equipment or products.,10.00,2024-09-30,48.63,44.39
+Train others to use equipment or products.,33.00,2024-09-30,48.63,44.39
+Train others to use equipment or products.,66.00,,48.63,44.39
+Transport patients or clients.,10.00,2025-08-11,13.40,0.00
+Transport patients or clients.,33.00,,13.40,0.00
+Transport patients or clients.,66.00,,13.40,0.00
+"Treat injuries, illnesses, or diseases.",10.00,2026-02-12,10.27,1.91
+"Treat injuries, illnesses, or diseases.",33.00,,10.27,1.91
+"Treat injuries, illnesses, or diseases.",66.00,,10.27,1.91
+Verify personal information.,10.00,2024-09-30,49.64,48.75
+Verify personal information.,33.00,2024-09-30,49.64,48.75
+Verify personal information.,66.00,,49.64,48.75
+Write material for artistic or commercial purposes.,10.00,2024-09-30,81.32,56.76
+Write material for artistic or commercial purposes.,33.00,2024-09-30,81.32,56.76
+Write material for artistic or commercial purposes.,66.00,2025-08-11,81.32,56.76
