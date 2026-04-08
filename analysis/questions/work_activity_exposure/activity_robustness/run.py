@@ -297,9 +297,16 @@ def _make_next_wave_chart(next_wave: pd.DataFrame) -> go.Figure:
     )
     fig.update_layout(
         barmode="stack",
-        margin=dict(l=20, r=80, t=80, b=80),
+        margin=dict(l=20, r=80, t=80, b=140),
         yaxis=dict(showgrid=False, tickfont=dict(size=9)),
         bargap=0.25,
+        legend=dict(
+            orientation="h",
+            yanchor="top",
+            y=-0.12,
+            xanchor="center",
+            x=0.5,
+        ),
     )
     return fig
 
@@ -340,10 +347,23 @@ def _make_gwa_robustness(gwa_df: pd.DataFrame) -> go.Figure:
 
 
 def _make_stability_chart(stability_all: pd.DataFrame) -> go.Figure:
-    """Box plot showing the spread of pct across configs per IWA."""
-    # Get IWAs ordered by median pct
-    order = (
+    """Dot plot showing the spread of pct across configs, filtered to IWAs with meaningful disagreement."""
+    # Compute per-IWA spread across configs
+    spread = (
         stability_all.groupby("category")["pct_tasks_affected"]
+        .agg(["min", "max"])
+        .reset_index()
+    )
+    spread["range_pp"] = spread["max"] - spread["min"]
+
+    # Keep only IWAs where configs disagree by more than 3pp (meaningful uncertainty)
+    SPREAD_THRESHOLD = 3.0
+    contested = spread[spread["range_pp"] > SPREAD_THRESHOLD]["category"].tolist()
+    stability_filtered = stability_all[stability_all["category"].isin(contested)].copy()
+
+    # Order by median pct descending
+    order = (
+        stability_filtered.groupby("category")["pct_tasks_affected"]
         .median()
         .sort_values(ascending=False)
         .index.tolist()
@@ -351,7 +371,7 @@ def _make_stability_chart(stability_all: pd.DataFrame) -> go.Figure:
 
     fig = go.Figure()
     for i, key in enumerate(ANALYSIS_CONFIGS.keys()):
-        sub = stability_all[stability_all["config_key"] == key]
+        sub = stability_filtered[stability_filtered["config_key"] == key]
         fig.add_trace(go.Scatter(
             x=sub["pct_tasks_affected"],
             y=sub["category"],
@@ -360,25 +380,34 @@ def _make_stability_chart(stability_all: pd.DataFrame) -> go.Figure:
             marker=dict(
                 color=CATEGORY_PALETTE[i % len(CATEGORY_PALETTE)],
                 size=6,
-                opacity=0.7,
+                opacity=0.75,
             ),
         ))
 
     style_figure(
         fig,
-        "Cross-Config Spread per IWA",
-        subtitle="Each dot = one config's pct_tasks_affected for that IWA | spread = uncertainty",
+        "Cross-Config Stability — Where Configs Disagree",
+        subtitle=f"IWAs with >3pp spread across 5 configs ({len(contested)} of 332) | each dot = one config | spread = uncertainty",
         x_title="% Tasks Affected",
-        height=max(600, len(order) * 14),
-        width=1100,
+        height=max(600, len(order) * 13),
+        width=1200,
     )
     fig.update_layout(
+        showlegend=True,
+        legend=dict(
+            orientation="h",
+            yanchor="top",
+            y=-0.05,
+            xanchor="center",
+            x=0.5,
+            font=dict(size=10),
+        ),
         yaxis=dict(
             categoryorder="array",
             categoryarray=list(reversed(order)),
             tickfont=dict(size=8),
         ),
-        margin=dict(l=20, r=40, t=80, b=80),
+        margin=dict(l=20, r=40, t=80, b=120),
     )
     return fig
 

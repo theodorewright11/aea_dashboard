@@ -192,10 +192,15 @@ def main() -> None:
     fig_gwa = _make_gwa_config_comparison(gwa_all)
     _save(fig_gwa, results / "figures" / "gwa_config_comparison.png", figs_dir / "gwa_config_comparison.png")
 
-    # 6d. IWA trends (top 8 IWAs by primary config pct)
+    # 6d. IWA trends — top 8 by absolute growth (first to last date)
     if not trend_df.empty:
-        top_iwas = prim_iwa.head(8)["category"].tolist()
-        fig_trends = _make_iwa_trends(trend_df, top_iwas)
+        first_date = trend_df["date"].min()
+        last_date = trend_df["date"].max()
+        first_vals = trend_df[trend_df["date"] == first_date].set_index("iwa")["pct_tasks_affected"]
+        last_vals = trend_df[trend_df["date"] == last_date].set_index("iwa")["pct_tasks_affected"]
+        growth = (last_vals - first_vals.reindex(last_vals.index).fillna(0)).sort_values(ascending=False)
+        top_8_growers = growth.head(8).index.tolist()
+        fig_trends = _make_iwa_trends(trend_df, top_8_growers)
         _save(fig_trends, results / "figures" / "iwa_trends.png", figs_dir / "iwa_trends.png")
 
     # 6e. Confirmed vs ceiling scatter
@@ -355,36 +360,66 @@ def _make_iwa_trends(trend_df: pd.DataFrame, top_iwas: list[str]) -> go.Figure:
 
     style_figure(
         fig,
-        "Work Activity Exposure Over Time — Top IWAs",
-        subtitle="All Confirmed Usage series (AEI Both + Micro) | % tasks affected | IWA level",
+        "Work Activity Exposure Over Time — Top 8 Growers",
+        subtitle="Top 8 IWAs by absolute growth (first → last date) | All Confirmed Usage series (AEI Both + Micro)",
         x_title="Date",
         y_title="% Tasks Affected",
         height=600,
         width=1200,
     )
-    fig.update_layout(margin=dict(l=60, r=40, t=80, b=120))
+    fig.update_layout(margin=dict(l=60, r=40, t=80, b=140))
     return fig
 
 
 def _make_cv_scatter(cv_df: pd.DataFrame) -> go.Figure:
     fig = go.Figure()
 
-    # Color by gap size
+    # All IWAs: markers only with hover text (no text labels — too crowded at 332 points)
     fig.add_trace(go.Scatter(
         x=cv_df["confirmed_pct"],
         y=cv_df["ceiling_pct"],
-        mode="markers+text",
-        text=cv_df["category"],
-        textposition="top center",
-        textfont=dict(size=8, color=COLORS["neutral"]),
+        mode="markers",
+        hovertext=cv_df.apply(
+            lambda r: f"{r['category']}<br>Confirmed: {r['confirmed_pct']:.1f}%<br>Ceiling: {r['ceiling_pct']:.1f}%<br>Gap: {r['gap']:.1f}pp",
+            axis=1,
+        ),
+        hoverinfo="text",
         marker=dict(
             color=cv_df["gap"],
             colorscale=[[0, COLORS["primary"]], [1, COLORS["accent"]]],
-            size=cv_df["confirmed_workers"].apply(lambda w: max(6, min(25, w / 4e5))),
+            size=cv_df["confirmed_workers"].apply(lambda w: max(5, min(22, w / 4e5))),
             showscale=True,
             colorbar=dict(title="Gap (pp)", thickness=12, len=0.6),
             line=dict(width=0.5, color="white"),
+            opacity=0.75,
         ),
+        showlegend=False,
+    ))
+
+    # Label only the top-10 by gap + top-5 by ceiling pct (to anchor the chart)
+    top_gap = cv_df.nlargest(10, "gap")
+    top_ceil = cv_df.nlargest(5, "ceiling_pct")
+    labeled = pd.concat([top_gap, top_ceil]).drop_duplicates("category")
+    fig.add_trace(go.Scatter(
+        x=labeled["confirmed_pct"],
+        y=labeled["ceiling_pct"],
+        mode="markers+text",
+        text=labeled["category"].apply(
+            lambda s: s[:35] + "…" if len(s) > 35 else s
+        ),
+        textposition="top center",
+        textfont=dict(size=8, color=COLORS["neutral"]),
+        marker=dict(
+            color=COLORS["accent"],
+            size=labeled["confirmed_workers"].apply(lambda w: max(5, min(22, w / 4e5))),
+            line=dict(width=1, color=COLORS["neutral"]),
+        ),
+        hovertext=labeled.apply(
+            lambda r: f"{r['category']}<br>Confirmed: {r['confirmed_pct']:.1f}%<br>Ceiling: {r['ceiling_pct']:.1f}%<br>Gap: {r['gap']:.1f}pp",
+            axis=1,
+        ),
+        hoverinfo="text",
+        showlegend=False,
     ))
 
     # Diagonal reference line
@@ -399,12 +434,12 @@ def _make_cv_scatter(cv_df: pd.DataFrame) -> go.Figure:
     style_figure(
         fig,
         "Confirmed vs Ceiling Exposure — All IWAs",
-        subtitle="X = All Confirmed usage | Y = All Ceiling | Marker size ∝ workers affected | Color = gap (pp)",
+        subtitle="X = All Confirmed | Y = All Ceiling | Marker size ∝ workers | Color = gap (pp) | Highlighted = top gaps",
         x_title="Confirmed % Tasks Affected",
         y_title="Ceiling % Tasks Affected",
         show_legend=False,
-        height=700,
-        width=900,
+        height=750,
+        width=950,
     )
     return fig
 

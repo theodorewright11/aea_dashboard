@@ -1,6 +1,6 @@
 # Work Activity Robustness
 
-**TLDR:** 164 of 332 IWAs are robust (confirmed exposure < 33%) across all five configs. Only 10 are fragile (≥66%) in all five configs — these are the activities where every data source agrees AI is deeply embedded. The "next wave" is 42 IWAs currently below 33% confirmed but where the ceiling already puts them at or above 33%. At the GWA level, only the physically-intensive categories are robust; everything involving information, coordination, or communication is moderate to fragile.
+**TLDR:** 164 of 332 IWAs are robust (confirmed exposure < 33%) across all five configs. Only 4 are fragile (≥66%) in all five configs — activities where every data source agrees AI is deeply embedded. The "next wave" is 42 IWAs currently below 33% confirmed but where the ceiling already puts them at or above 33%. At the GWA level, only the physically-intensive categories are robust; everything involving information, coordination, or communication is moderate to fragile.
 
 ---
 
@@ -16,24 +16,20 @@
 
 ---
 
-## The 10 Stably-Fragile Activities
+## The 4 Stably-Fragile Activities
 
-Ten IWAs are classified as fragile in every one of the five configs. These are the activities where confirmed usage, ceiling capability, conversational AI, and agentic AI all agree:
+Four IWAs are classified as fragile in every one of the five configs — including the agentic configs where scores are generally lower. These are the activities where confirmed usage, ceiling capability, conversational AI, and agentic AI all agree:
 
 | IWA | Confirmed % |
 |-----|------------|
 | Research laws, precedents, or other legal data | 92.5% |
-| Research historical or social issues | 89.1% |
-| Evaluate scholarly work | 88.0% |
-| Develop marketing or promotional materials | 85.2% |
-| Write material for artistic or commercial purposes | 81.3% |
 | Edit written materials or documents | 77.9% |
-| Respond to customer problems or inquiries | 75.2% |
-| Analyze market or industry conditions | 76.5% |
 | Explain technical details of products or services | 81.9% |
-| Design computer or information systems or applications | 73.8% |
+| Analyze market or industry conditions | 76.5% |
 
-These are activities where the AI exposure signal is robust to data source, methodology, and time period. Legal research at 92.5% is the highest single IWA in the dataset — not just in one config, but in all of them. Marketing content, editing, customer service, software design, market analysis: the same pattern in every view.
+Four activities, not ten. The more demanding criterion here is that all five configs include the agentic_confirmed config (AEI API only), which typically shows lower percentages than combined usage configs. For an activity to be fragile in all five configs, it needs to be deeply AI-reached even in tool-use and API patterns, not just conversational AI. Legal research, technical explanation, market analysis, and document editing clear that bar. Other activities that look fragile in three or four configs still show moderate agentic exposure.
+
+Many more activities are fragile in 3–4 configs (the cross-config stability chart shows where configs agree vs. disagree). The four stably fragile are the most robust signal.
 
 ---
 
@@ -69,13 +65,17 @@ The top 10 by confirmed-to-ceiling gap:
 | Prepare schedules for services or facilities | 31.2% | 82.1% | +50.9pp |
 | Assign work to others | 27.8% | 75.3% | +47.5pp |
 | Maintain sales or financial records | 28.1% | 75.2% | +47.1pp |
-| Schedule operational activities | 26.1% | 66.9% | +40.9pp |
+| Test sites or materials for environmental hazards | 0.1% | 46.2% | +46.1pp |
+| Remove workpieces from production equipment | 1.7% | 47.1% | +45.4pp |
 | Record images with photographic/audiovisual equipment | 21.1% | 64.3% | +43.2pp |
+| Schedule operational activities | 26.1% | 66.9% | +40.9pp |
 | Analyze environmental or geospatial data | 16.6% | 56.6% | +40.0pp |
 
 The biggest gaps are in record-keeping, scheduling, and assignment work. These aren't creative or analytical activities — they're operational. The reason the ceiling is so much higher than confirmed is that agentic AI (MCP + API) is very good at structured data entry, scheduling, and record management, even though conversational AI usage doesn't show up strongly in these categories. The ceiling is being driven by the agentic configs.
 
 This is actually an important observation about what "confirmed usage" captures vs. what it misses. Conversational AI (Claude, Copilot) shows up in analytical and communication work. Agentic AI shows up in operational and systems work. Activities where the two patterns diverge strongly are where the deployment gap is largest.
+
+![Next Wave — Confirmed-to-Ceiling Gaps](../questions/work_activity_exposure/activity_robustness/figures/next_wave_gaps.png)
 
 ---
 
@@ -106,11 +106,19 @@ Four fragile GWAs, and they're all about information and communication. "Communi
 
 ## Cross-Config Stability
 
-How stable are these tier assignments across data sources? For the fragile activities at the top, very stable — legal research, scholarly evaluation, marketing content development all show tight grouping across all five configs. For activities in the 30–60% range, there's more spread — some configs put them in moderate, others in robust, depending on which AI behaviors each config captures.
+The dot chart below shows IWAs where configs disagree — filtered to activities with more than 3pp spread across the five configs (roughly two-thirds of all IWAs pass this). Each dot is one config's pct_tasks_affected value; the horizontal spread shows how much uncertainty exists for that activity.
 
-The biggest spread is on "Scheduling Work and Activities" — 45% confirmed vs 85% ceiling, a 40pp range. This is the GWA where agentic and conversational AI diverge most dramatically. Agentic AI is very capable at scheduling; conversational AI isn't being used for it much. Any tier assignment for this GWA depends heavily on which data source you look at.
+The chart legend shows which color corresponds to which config. Activities at the top (high confirmed pct, tight grouping) are where configs agree on high exposure. Activities in the middle with wide spread are where the answer depends heavily on which AI measurement lens you use — often because conversational and agentic AI have different signatures in those activities.
 
-![Cross-Config Spread per IWA](../questions/work_activity_exposure/activity_robustness/figures/cross_config_stability.png)
+The activities with the widest spread are where the training and workforce implications are most uncertain:
+
+- **"Scheduling Work and Activities"**: confirmed 45%, ceiling 85%. Agentic AI can automate scheduling; conversational AI usage doesn't show it yet. The mode of AI deployment determines the exposure level.
+- **"Coaching and Developing Others"**: conversational configs show ~52%; agentic configs show ~10%. Coaching happens through conversation, not through automated pipelines.
+- **"Documenting/Recording Information"**: confirmed 37%, ceiling 67%. The gap is agentic deployment of documentation systems.
+
+These aren't errors in the data — they're architecturally specific signals about which AI deployment model reaches each activity type.
+
+![Cross-Config Stability — Where Configs Disagree](../questions/work_activity_exposure/activity_robustness/figures/cross_config_stability.png)
 
 ---
 

@@ -4,7 +4,7 @@
 
 ---
 
-The activity-level picture of AI exposure is more useful for education and workforce planning than the occupation-level picture. At the IWA level, 52 activities are fragile (≥66% AI exposure), 116 are moderate (33–66%), and 164 are robust (<33%). The robust activities are almost entirely physical, caregiving, and operational work — everything requiring presence in a physical environment, situational judgment in real time, or direct care for people and systems. 82% of affected workers are doing moderate-or-fragile activities. AI's footprint is expanding: 284 of 332 IWAs grew in exposure over 15 months. The education system's core work — evaluating students, developing materials, assessing capabilities — is growing fastest.
+The activity-level picture of AI exposure is more useful for education and workforce planning than the occupation-level picture. At the IWA level, 52 activities are fragile (≥66% AI exposure), 116 are moderate (33–66%), and 164 are robust (<33%). The robust activities are almost entirely physical, caregiving, and operational work — everything requiring presence in a physical environment, situational judgment in real time, or direct care for people and systems. 82% of affected workers are doing moderate-or-fragile activities. AI's footprint is expanding: 284 of 332 IWAs grew in exposure over 15 months. The education system's core work — evaluating students, developing materials, assessing capabilities — is growing fastest. A three-category training framework maps this into actionable investment targets: Durable (robust + educationally relevant), AI × Human pair (moderate tier), and Delegation/Oversight (fragile + next-wave).
 
 ---
 
@@ -47,9 +47,9 @@ There's also an interesting config split on "Scheduling Work and Activities": 44
 
 The tier distribution across all 332 IWAs: 52 fragile (≥66% confirmed), 116 moderate (33–66%), 164 robust (<33%). Half the universe is below the meaningful-change threshold — but the worker distribution is very different from the activity count, because robust activities tend to be physical and operational work with different employment concentrations than information work.
 
-Ten IWAs are fragile in every one of the five configs. These are the activities where confirmed usage, ceiling capability, conversational AI, and agentic AI all agree: legal research (92.5%), historical research (89.1%), scholarly evaluation (88.0%), marketing content (85.2%), writing (81.3%), editing (77.9%), market analysis (76.5%), explaining technical details (81.9%), customer inquiry response (75.2%), and software design (73.8%). You can change the dataset, the methodology, or the time period — these activities stay fragile.
+**Only 4 IWAs are fragile in every one of the five configs.** These are the activities where confirmed usage, ceiling capability, conversational AI, and agentic AI all agree: legal research (92.5%), editing (77.9%), explaining technical details (81.9%), and market analysis (76.5%). The more demanding criterion here is that all five configs include the agentic_confirmed config (AEI API only), which typically shows lower percentages than combined usage configs. For an activity to be fragile in all five, it needs to be deeply AI-reached even in tool-use and API patterns, not just conversational AI. Many activities are fragile in 3–4 configs; these four are the most robust signal.
 
-122 IWAs are robust in all five configs. The common thread: activities requiring physical presence, real-time environmental awareness, or direct care and oversight of people and physical systems. Direct organizational operations (21%), assisting individuals with special needs (7.5%), food and beverage services (18.8%), personnel supervision (18.7%), health condition monitoring (19.1%), equipment inspection (11%), and compliance monitoring (22.8%) are the durable tier. These aren't unimportant activities — they're things that happen in a specific place at a specific time with a specific person.
+122 IWAs are robust in all five configs. The common thread: activities requiring physical presence, real-time environmental awareness, or direct care and oversight of people and physical systems. Direct organizational operations (21%), assisting individuals with special needs (7.5%), personnel supervision (18.7%), health condition monitoring (19.1%), equipment inspection (11%), and compliance monitoring (22.8%) are the durable tier. These aren't unimportant activities — they're things that happen in a specific place at a specific time with a specific person.
 
 The "next wave" is 42 IWAs currently below 33% confirmed but where the ceiling already puts them at or above 33%. The top cases by confirmed-to-ceiling gap:
 
@@ -66,13 +66,13 @@ These are operational activities — record-keeping, scheduling, assignment — 
 
 This reveals something important about what "confirmed usage" captures vs. what it misses. Conversational AI shows up in analytical and communication work. Agentic AI shows up in operational and systems work. Activities where these two patterns diverge sharply are where the deployment gap is largest — and where the risk is least visible in the current data.
 
-![IWA Robustness Tier Distribution](../questions/work_activity_exposure/activity_robustness/figures/iwa_robustness_tiers.png)
+The cross-config stability chart filters to IWAs where configs disagree by more than 3pp (roughly two-thirds of all IWAs pass this threshold). Activities with wide spread — particularly "Scheduling Work and Activities" (45% confirmed vs. 85% ceiling) and "Coaching and Developing Others" (52% conversational vs. 10% agentic) — are where the answer depends on which AI deployment model you're measuring. These disagreements are architecturally specific, not random noise.
 
 ![GWA Robustness Overview](../questions/work_activity_exposure/activity_robustness/figures/gwa_robustness.png)
 
 ![Next Wave — Confirmed-to-Ceiling Gaps](../questions/work_activity_exposure/activity_robustness/figures/next_wave_gaps.png)
 
-![Cross-Config Stability per IWA](../questions/work_activity_exposure/activity_robustness/figures/cross_config_stability.png)
+![Cross-Config Stability — IWAs with Meaningful Uncertainty](../questions/work_activity_exposure/activity_robustness/figures/cross_config_stability.png)
 
 ---
 
@@ -88,6 +88,42 @@ This reveals something important about what "confirmed usage" captures vs. what 
 | Moderate (33–66%) | 116 | 40.8M | 52% |
 | Robust (< 33%) | 164 | 14.1M | 18% |
 
+### Three-Category Training Framework
+
+The tier structure provides the foundation, but the training implications differ within tiers. A practical planning framework:
+
+**Category 1 — Durable: Train Directly.** Robust activities (<33%) in all five configs AND associated with occupations requiring meaningful education or training (mean job zone ≥2.5). 68 IWAs, 5.2M workers. These activities will hold value as AI reshapes adjacent work — healthcare work, supervisory and management activities, compliance and safety inspection, financial examination. The right investment is in the activity itself, not primarily in AI tools.
+
+**Category 2 — AI × Human Pair: Train for Collaboration.** The moderate tier (33–66%), 116 IWAs, 40.9M workers. Human judgment combined with AI is still better than AI alone. This category splits by trend:
+- *Stable moderate* (slow-growing, <15pp since Sept 2024): 84 IWAs, 32.7M workers. Likely to remain AI-human partnership for the medium term.
+- *Rising moderate* (fast-growing, ≥15pp): 32 IWAs, 8.2M workers. Moving toward the delegation category — "analyze data to improve operations" (+31pp to 41%), "maintain health or medical records" (+27pp to 33%), "develop educational programs" (+29pp to 37%). Prioritize oversight skills now.
+
+**Category 3 — Delegate/Oversight: Train for Direction and Review.** Fragile activities (≥66%, 52 IWAs, 23.6M workers) plus next-wave activities (confirmed <33% but ceiling ≥33%, 42 IWAs, 7.0M workers). The human role here is increasingly setup, quality review, exception handling, and accountability — not execution.
+
+| Category | Sub-type | IWAs | Workers |
+|----------|----------|------|---------|
+| 1 — Durable | — | 68 | 5.2M |
+| 2 — AI × Human | Stable moderate | 84 | 32.7M |
+| 2 — AI × Human | Rising moderate | 32 | 8.2M |
+| 3 — Delegate/Oversight | Fragile | 52 | 23.6M |
+| 3 — Delegate/Oversight | Next wave | 42 | 7.0M |
+
+**Uncertainty caveat:** this is a directional map, not a fixed one. Activities move across categories as AI capabilities and usage expand. The framework needs regular updating as datasets refresh.
+
+### Is AI a Fad?
+
+The quantitative answer: no. 284 of 332 IWAs grew in exposure between September 2024 and February 2026. 72 IWAs crossed the 10% threshold for the first time. The fastest-growing:
+
+| IWA | Sept 2024 | Feb 2026 | Growth |
+|-----|-----------|----------|--------|
+| Evaluate scholarly work | 11.3% | 88.0% | +76.7pp |
+| Assess student capabilities | 13.9% | 67.5% | +53.6pp |
+| Set up classrooms or educational materials | 0.0% | 49.7% | +49.7pp |
+| Implement security measures for computer systems | 23.1% | 72.8% | +49.7pp |
+| Monitor financial data or activities | 3.6% | 52.2% | +48.6pp |
+
+The educational activities deserve attention. Evaluating student work went from 11% to 88% in 15 months. The activities that define instructional work — evaluating student submissions, developing lesson materials, assessing capabilities — are exactly where AI adoption is growing fastest.
+
 The domain breakdown confirms where exposure concentrates:
 
 | Domain | GWAs | Avg % Exposed |
@@ -98,27 +134,13 @@ The domain breakdown confirms where exposure concentrates:
 | Management/Coordination | 4 | 32.7% |
 | Physical/Operational | 6 | 13.1% |
 
-The gap between 53% (Cognitive/Technical) and 13% (Physical/Operational) is the distance between what AI can do and what a person has to be physically present to do. Management/Coordination at 33% is interesting — managing work, coordinating activities, and staffing are already 30%+ AI-exposed on confirmed usage, and the agentic configs push coordination work substantially higher.
-
-Is AI a fad? The quantitative answer: no. 284 of 332 IWAs grew in exposure between September 2024 and February 2026. 72 IWAs crossed the 10% threshold for the first time — going from essentially unaffected to meaningfully AI-touched in roughly 15 months. The fastest-growing:
-
-| IWA | Sept 2024 | Feb 2026 | Growth |
-|-----|-----------|----------|--------|
-| Evaluate scholarly work | 11.3% | 88.0% | +76.7pp |
-| Assess student capabilities | 13.9% | 67.5% | +53.6pp |
-| Set up classrooms or educational materials | 0.0% | 49.7% | +49.7pp |
-| Implement security measures for computer systems | 23.1% | 72.8% | +49.7pp |
-| Monitor financial data or activities | 3.6% | 52.2% | +48.6pp |
-
-The educational activities deserve attention. Evaluating student work went from 11% to 88% in 15 months. The activities that define instructional work — evaluating student submissions, developing lesson materials, assessing capabilities — are exactly where AI adoption is growing fastest. The education system's resistance to change is happening as the work that defines education gets increasingly AI-exposed.
-
-What should training programs actually build? The durable activities are robustly AI-resistant AND have large workforces: direct organizational operations (1.15M workers, 20.7% exposure), assisting individuals with special needs (549K, 7.5%), food and beverage services (521K, 18.8%), personnel supervision (496K, 18.7%), health condition monitoring (303K, 19.1%), equipment inspection (244K, 11%), compliance monitoring (239K, 22.8%). These share two characteristics: they happen in physical environments, and they require situational judgment in real time.
-
-A note on "prompting" as a training target: operating computer systems (77%) and working with computers (69%) are both in the fragile zone. Prompting AI is itself an AI-reached skill. Teaching people to prompt is valuable today; calling it the durable skill set is not supported by this data. What is supported: teaching the layer above prompting — judgment about when AI is wrong, evaluation of AI-generated output, physical and operational competencies that provide the context AI assists with but doesn't replace.
+The gap between 53% (Cognitive/Technical) and 13% (Physical/Operational) is the distance between what AI can do and what a person has to be physically present to do.
 
 ![Workforce by Exposure Tier](../questions/work_activity_exposure/education_lens/figures/workforce_by_tier.png)
 
-![Durable Training Targets — Robust Across All Configs](../questions/work_activity_exposure/education_lens/figures/durable_training_targets.png)
+![Three-Category Training Framework](../questions/work_activity_exposure/education_lens/figures/training_framework.png)
+
+![Durable Training Targets — Educationally Relevant](../questions/work_activity_exposure/education_lens/figures/durable_training_targets.png)
 
 ![AI Exposure by Work Domain](../questions/work_activity_exposure/education_lens/figures/domain_exposure.png)
 
@@ -130,21 +152,25 @@ A note on "prompting" as a training target: operating computer systems (77%) and
 
 *Full detail: [audience_framing/audience_framing_report.md](audience_framing/audience_framing_report.md)*
 
-The same data looks different depending on who's reading it. The sub-report frames findings specifically for policymakers, workforce developers and educators, researchers, and laypeople.
+The same data looks different depending on who's reading it. The sub-report frames findings specifically for policymakers, workforce developers and educators, researchers, and laypeople. The three-category framework (Durable / AI × Human / Delegation) runs through all four framings as the unifying structure.
 
-**For policymakers:** the investment question is where workforce development funding has the highest return. The 23.6M workers in fragile activities (≥66% exposure) are the immediate policy targets: customer service, legal documentation, marketing, software design, data analysis, instructional design. The 40.8M in moderate activities (33–66%) are likely to see restructuring rather than elimination. Training dollars should flow toward the durable activities — physical supervision, caregiving, inspection, compliance monitoring. But the ceiling data is the forward indicator: "Scheduling Work and Activities" is 45% confirmed but 85% ceiling; "Documenting/Recording Information" is 37% confirmed but 67% ceiling. Programs built around administrative efficiency should be time-limited with clear transition pathways. The most important policy signal: the education system's core activities are growing fastest. Policy intervention in how schools are adapting to AI shouldn't wait for educators to self-report.
+**For policymakers:** the investment question is where workforce development funding has the highest return. The three-category framework maps directly onto three types of policy investment: fund toward the 68 durable IWAs (healthcare, supervision, compliance, financial examination — 5.2M workers, mean job zone 3+); support AI × human pair transitions for the 40.9M workers in the moderate tier, with special urgency for the 32 rising-moderate IWAs (8.2M workers) whose activities are trending toward delegation; prepare for disruption in the 52 fragile IWAs (23.6M workers) and 42 next-wave IWAs (7.0M workers). The ceiling data is the forward indicator: "Scheduling Work and Activities" is 45% confirmed but 85% ceiling; "Documenting/Recording Information" is 37% confirmed but 67% ceiling. Programs built around administrative efficiency should include transition pathways from the start. The most important policy signal: the education system's own core activities (evaluating student work, developing lesson materials, assessing capabilities) are growing fastest.
 
-**For workforce developers and educators:** build training programs around the robustly AI-resistant activities with large workforces. Stop building programs centered on activities with confirmed exposure ≥66% and a strong trend line — legal research (93%), marketing content (85%), data analysis (79%), customer inquiry response (75%), technical explanation (82%) are activities training people for work that's already heavily AI-reached. The question isn't whether to include AI tools in the curriculum; it's what human contribution these roles need after AI handles the baseline.
+**For workforce developers and educators:** the three-category framework is the practical planning tool. Build training around the 68 durable IWAs where training dollars hold their value. Teach AI collaboration for the moderate tier — not how to do the activity, but how to direct AI doing the activity, evaluate its outputs, and maintain the contextual judgment AI lacks. For delegation-category activities (customer service, legal documentation, marketing, data analysis, technical explanation), train toward what the human role looks like after AI handles the baseline execution: setting context, validating outputs, handling exceptions, maintaining accountability. A note on prompting: "Working with Computers" (69%) and "Operate computer systems" (77%) are both fragile. Prompting is a useful skill today, but it's in the delegation category — the durable investment is in the judgment layer above prompting.
 
-**For researchers:** mapping AI exposure at the IWA level rather than occupation level reveals within-occupation variation that occupation-level analysis misses. A registered nurse's task set spans activities from "monitor health conditions" (19% — robust) to "respond to customer inquiries" (75% — fragile). Occupation-level analysis averages over that variation. The widest cross-config disagreements at the GWA level — Scheduling (45% confirmed vs. 85% ceiling), Coaching and Developing Others (52% conversational vs. 10% agentic), Documentation (37% confirmed vs. 67% ceiling) — are architecturally specific: they reflect which AI interface is being used, not uncertainty about whether AI can do the work.
+**For researchers:** mapping AI exposure at the IWA level rather than occupation level reveals within-occupation variation that occupation-level analysis misses. A registered nurse's task set spans activities from "monitor health conditions" (19% — robust) to "respond to customer inquiries" (75% — fragile). The widest cross-config disagreements at the GWA level — Scheduling (45% confirmed vs. 85% ceiling), Coaching and Developing Others (52% conversational vs. 10% agentic), Documentation (37% confirmed vs. 67% ceiling) — are architecturally specific: they reflect which AI interface is being used, not uncertainty about whether AI can do the work.
 
-**For laypeople:** 86% of activity types grew in exposure in 15 months. Software design is 74% AI-exposed — specific programming tasks are highly AI-reachable. The durable activities requiring physical presence, situational judgment in real time, and direct care for people are what the data says is hard to replace. Kids who will be hardest to replace can do physical work, care for people, supervise operations in real environments, and evaluate AI output rather than just generate it. Prompting and spreadsheets are inside the exposed zone, not outside it.
+The eco_2015 vs. eco_2025 baseline comparison shows what changes when you switch from raw AEI data (eco_2015 baseline) to pre-combined datasets (eco_2025 baseline). Key caveat: the comparison is directional, not calibrated — the two baselines use different O*NET task inventories, and eco_2025 adds Microsoft Copilot scores. The largest eco_2025 > eco_2015 gaps: "Organizing, Planning, and Prioritizing Work" (+35.9pp), "Estimating Quantifiable Characteristics" (+33.6pp), "Performing Administrative Activities" (+26.8pp). Two GWAs where eco_2015 ≥ eco_2025: "Resolving Conflicts and Negotiating" (-5.2pp), "Documenting/Recording Information" (-3.1pp). The large upward shift in organizational/administrative GWAs primarily reflects Microsoft Copilot coverage.
+
+**For laypeople:** 86% of activity types grew in exposure in 15 months. The three-category frame translates directly: Is your job primarily in physical, care, or oversight activities (Category 1)? Train toward the activity itself. Primarily in activities where human + AI collaboration is the current norm (Category 2)? Build AI fluency alongside substantive skills. Primarily in high-exposure activities like customer service, legal documentation, or data analysis (Category 3)? The investment is in the judgment and oversight layer — knowing what AI got wrong, setting it up correctly, maintaining accountability. Kids don't need to be programmers; they need to be able to evaluate what the AI produced.
 
 ![Workers at Risk by Activity Category](../questions/work_activity_exposure/audience_framing/figures/policy_gwa_workers.png)
 
-![Training Sweet Spot — Large Workforce, AI-Resistant](../questions/work_activity_exposure/audience_framing/figures/workforce_training_targets.png)
+![Workforce by Training Category](../questions/work_activity_exposure/audience_framing/figures/workforce_training_targets.png)
 
 ![Config Agreement at GWA Level](../questions/work_activity_exposure/audience_framing/figures/researcher_config_comparison.png)
+
+![GWA Exposure: eco_2015 vs eco_2025 Baseline](../questions/work_activity_exposure/audience_framing/figures/researcher_eco_baseline_comparison.png)
 
 ![AI Exposure Over Time — Is It Growing?](../questions/work_activity_exposure/audience_framing/figures/layperson_ai_trend.png)
 
@@ -153,6 +179,8 @@ The same data looks different depending on who's reading it. The sub-report fram
 ## 5. Cross-Cutting Findings
 
 **The physical/cognitive boundary is the defining line.** Every robust GWA is a physical-operations category. Every fragile GWA is information and communication. That boundary has been stable across all five configs, over time, and at every level of the hierarchy from GWA down to DWA. It's not an artifact of one data source or methodology.
+
+**The three-category framework is the unifying structure.** Durable (robust + educationally relevant), AI × Human pair (moderate, split by trend rate), and Delegation/Oversight (fragile + next-wave) — these categories map onto distinct training strategies, policy investments, and research questions. The framework is directional, not deterministic: activities move across categories as AI capabilities expand.
 
 **Config disagreements are architecturally specific, not random.** The activities with the widest spread across configs are the ones where conversational and agentic AI have fundamentally different deployment patterns: scheduling (agentic leads), coaching (conversational leads), documentation (narrow now, wide ceiling). Where configs agree tightly — legal, writing, market analysis, scholarly work — the exposure signal is robust to data source.
 
@@ -172,12 +200,15 @@ The same data looks different depending on who's reading it. The sub-report fram
 | Fragile IWAs (≥66% confirmed) | 52 |
 | Moderate IWAs (33–66%) | 116 |
 | Robust IWAs (<33%) | 164 |
-| Stably fragile (all 5 configs) | 10 |
+| Stably fragile (all 5 configs) | 4 |
 | Stably robust (all 5 configs) | 122 |
 | Next wave (robust confirmed, ceiling ≥33%) | 42 |
 | Workers in fragile activities | 23.6M (30%) |
 | Workers in moderate activities | 40.8M (52%) |
 | Workers in robust activities | 14.1M (18%) |
+| Cat 1 durable IWAs (educationally relevant) | 68 (5.2M workers) |
+| Cat 2 AI × Human IWAs | 116 (40.9M workers) |
+| Cat 3 Delegate/Oversight IWAs | 94 (30.6M workers) |
 | IWAs that grew in exposure (15 mo.) | 284 / 332 (86%) |
 | IWAs newly above 10% exposure | 72 |
 | Highest-penetration IWA | Research laws/legal data (92.5%) |
