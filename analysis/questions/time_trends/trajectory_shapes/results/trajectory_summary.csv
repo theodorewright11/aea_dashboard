@@ -1,7 +1,0 @@
-trajectory,n_occs,avg_first_pct,avg_last_pct,avg_total_gain
-laggard,406,18.31,19.06,0.75
-steady,222,29.00,59.70,30.70
-plateaued,153,27.19,47.11,19.91
-mixed,77,20.87,27.68,6.81
-early_mover,57,44.42,47.56,3.14
-late_mover,8,14.65,35.81,21.16

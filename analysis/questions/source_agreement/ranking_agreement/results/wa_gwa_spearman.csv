@@ -1,4 +1,0 @@
-source_a,source_b,label_a,label_b,pair,rho,pval,n,level
-human_conv,microsoft,Human Conv.,Microsoft,Human Conv. vs Microsoft,0.92,0.00,37,gwa
-human_conv,mcp,Human Conv.,MCP,Human Conv. vs MCP,0.59,0.00,37,gwa
-microsoft,mcp,Microsoft,MCP,Microsoft vs MCP,0.38,0.02,37,gwa
