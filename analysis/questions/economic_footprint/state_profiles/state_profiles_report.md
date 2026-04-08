@@ -12,6 +12,8 @@ What does vary by state is: how many workers are in high-exposure vs. low-exposu
 
 The meaningful state variation is in sector composition — the share of each state's affected workforce that works in each major sector. That's what the clustering captures.
 
+![State Economic Cluster Map](figures/state_cluster_map.png)
+
 ---
 
 ## Five State Clusters
@@ -30,6 +32,8 @@ These states have the highest Office/Administrative Support shares (~14.7%), the
 
 **Cluster 5 — Tourism and service economies** (GU, HI, NM, NV, PR, VI):
 These are geographies built on hospitality, tourism, and services. They show the highest Office/Administrative shares among all clusters (~16.1%) and elevated Protective Services (~3.65%), which likely reflects casino security (Nevada), military bases (Guam, Hawaii), and public safety roles. The Personal Care and Service share is also elevated. The exposed workforce here is more service-sector concentrated than any other cluster, which actually means more volatility — these are sectors where AI and automation have historically had uneven effects.
+
+![Sector Composition by Cluster](figures/cluster_heatmap.png)
 
 ---
 

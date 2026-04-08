@@ -36,6 +36,8 @@ At the other end: Farming/Forestry (13.7%), Construction and Extraction (13.9%),
 
 ![Workers Affected by Major Sector](sector_footprint/figures/major_workers.png)
 
+![Wages Affected by Sector](sector_footprint/figures/treemap_wages.png)
+
 ![Confirmed vs Ceiling Range by Sector](sector_footprint/figures/floor_ceiling_range.png)
 
 ---

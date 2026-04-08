@@ -25,6 +25,10 @@ These are the activities where AI is most deeply capable relative to what the ty
 
 **Operating Vehicles, Mechanized Devices, or Equipment** is at the bottom by penetration: 1.4%. Physical operation of vehicles and machinery is still largely beyond AI's current reach in any embodied sense.
 
+![GWA Workers Affected](figures/gwa_workers.png)
+
+![GWA Task Penetration — All Confirmed](figures/gwa_pct.png)
+
 ---
 
 ## The Agentic Shift in GWAs
@@ -42,6 +46,10 @@ The mode comparison reveals how confirmed agentic tool-use (AEI API only) differ
 **Documenting/Recording Information**: 29.6% (conversational) vs. 31.3% (agentic). Nearly identical between modes. Documentation work appears at similar rates in both conversational and API-based agentic deployment.
 
 The agentic ceiling (MCP + AEI API) tells a different story from agentic confirmed: scheduling, administrative, and documenting activities all show much higher ceiling penetration, which is where the "agentic dramatically boosts action-taking activities" observation holds. But the *confirmed* agentic footprint is currently more concentrated in analytical and data-intensive tasks than in broad administrative workflow automation.
+
+![Agentic vs. Conversational at GWA Level](figures/gwa_mode_butterfly.png)
+
+![GWA Config Comparison Heatmap](figures/gwa_config_heatmap.png)
 
 ---
 
@@ -68,6 +76,8 @@ The IWA view confirms what the GWA view suggests: customer-facing information wo
 ## GWA Trends
 
 Across the All Confirmed time series, the GWAs showing the largest gains in pct_tasks_affected are generally consistent with the overall sector growth story — the activities embedded in Legal, Educational, and Sales work have grown most. Working with Computers and activities related to information processing and communication have been among the more stable high-exposure GWAs throughout the full window.
+
+![GWA Exposure Trend Over Time](figures/gwa_trend.png)
 
 ---
 

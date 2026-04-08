@@ -261,7 +261,7 @@ def main() -> None:
 
     # 6a. GWA by workers affected
     if not primary_gwa.empty:
-        pm_sorted_w = primary_gwa.sort_values("workers_affected", ascending=True)
+        pm_sorted_w = primary_gwa.sort_values("workers_affected", ascending=False)
         fig_w = make_horizontal_bar(
             pm_sorted_w, "category", "workers_affected",
             "General Work Activities by Workers Affected",
@@ -275,7 +275,7 @@ def main() -> None:
         print("  gwa_workers.png")
 
         # 6b. GWA by % tasks affected
-        pm_sorted_pct = primary_gwa.sort_values("pct_tasks_affected", ascending=True)
+        pm_sorted_pct = primary_gwa.sort_values("pct_tasks_affected", ascending=False)
         fig_pct = make_horizontal_bar(
             pm_sorted_pct, "category", "pct_tasks_affected",
             "General Work Activities by % Tasks Affected",

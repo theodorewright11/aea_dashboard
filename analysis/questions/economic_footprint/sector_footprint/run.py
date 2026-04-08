@@ -171,6 +171,7 @@ def _build_aggregate_bar(totals_df: pd.DataFrame) -> go.Figure:
         text=[f"{w:.1f}M" for w in workers_m],
         textposition="outside",
         textfont=dict(size=11, color=COLORS["neutral"], family=FONT_FAMILY),
+        cliponaxis=False,
         yaxis="y1",
     ))
     fig.add_trace(go.Bar(
@@ -181,6 +182,7 @@ def _build_aggregate_bar(totals_df: pd.DataFrame) -> go.Figure:
         text=[f"{p:.1f}%" for p in pct],
         textposition="outside",
         textfont=dict(size=11, color=COLORS["neutral"], family=FONT_FAMILY),
+        cliponaxis=False,
         yaxis="y2",
     ))
 
@@ -277,6 +279,51 @@ def _build_config_heatmap(all_major: pd.DataFrame) -> go.Figure:
     return fig
 
 
+def _build_treemap_wages(major_df: pd.DataFrame) -> go.Figure:
+    """Treemap: sector block sizes = wages affected; color = % tasks affected."""
+    df = major_df.copy()
+    df = df[df["wages_affected"] > 0]
+
+    labels = df["category"].tolist()
+    values = df["wages_affected"].tolist()
+    pct = df["pct_tasks_affected"].tolist()
+
+    # Custom text: sector + wages + pct
+    custom_text = [
+        f"<b>{lab}</b><br>${w / 1e9:.1f}B<br>{p:.1f}% tasks"
+        for lab, w, p in zip(labels, values, pct)
+    ]
+
+    fig = go.Figure(go.Treemap(
+        labels=labels,
+        values=values,
+        parents=[""] * len(labels),
+        text=custom_text,
+        textinfo="text",
+        hovertemplate="<b>%{label}</b><br>Wages: $%{value:.2s}<br>%{customdata:.1f}% tasks affected<extra></extra>",
+        customdata=pct,
+        marker=dict(
+            colors=pct,
+            colorscale=[[0, "#f0f4f8"], [0.5, COLORS["primary"]], [1.0, "#0d2b45"]],
+            showscale=True,
+            colorbar=dict(
+                title="% Tasks<br>Affected",
+                tickfont=dict(size=10, family=FONT_FAMILY),
+                len=0.8,
+            ),
+        ),
+        textfont=dict(size=12, family=FONT_FAMILY),
+    ))
+
+    style_figure(
+        fig, "Wages Affected by Sector",
+        subtitle="Block size = wages affected | Color = % tasks affected | All Confirmed | National",
+        show_legend=False, height=700, width=1200,
+    )
+    fig.update_layout(margin=dict(l=10, r=10, t=90, b=60))
+    return fig
+
+
 # ── Main ───────────────────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -357,7 +404,7 @@ def main() -> None:
     print("  aggregate_totals.png")
 
     # 5b. Major categories — workers
-    pm_sorted_workers = primary_major.sort_values("workers_affected", ascending=True)
+    pm_sorted_workers = primary_major.sort_values("workers_affected", ascending=False)
     fig_w = make_horizontal_bar(
         pm_sorted_workers, "category", "workers_affected",
         "Top Sectors by Workers Affected",
@@ -371,7 +418,7 @@ def main() -> None:
     print("  major_workers.png")
 
     # 5c. Major categories — wages
-    pm_sorted_wages = primary_major.sort_values("wages_affected", ascending=True)
+    pm_sorted_wages = primary_major.sort_values("wages_affected", ascending=False)
     fig_wages = make_horizontal_bar(
         pm_sorted_wages, "category", "wages_affected",
         "Top Sectors by Wages Affected",
@@ -385,7 +432,7 @@ def main() -> None:
     print("  major_wages.png")
 
     # 5d. Major categories — % tasks affected
-    pm_sorted_pct = primary_major.sort_values("pct_tasks_affected", ascending=True)
+    pm_sorted_pct = primary_major.sort_values("pct_tasks_affected", ascending=False)
     fig_pct = make_horizontal_bar(
         pm_sorted_pct, "category", "pct_tasks_affected",
         "Top Sectors by % Tasks Affected",
@@ -410,6 +457,12 @@ def main() -> None:
     save_figure(fig_heat, results / "figures" / "config_heatmap.png")
     shutil.copy(results / "figures" / "config_heatmap.png", figs_dir / "config_heatmap.png")
     print("  config_heatmap.png")
+
+    # 5g. Treemap: wages by sector
+    fig_treemap = _build_treemap_wages(primary_major)
+    save_figure(fig_treemap, results / "figures" / "treemap_wages.png")
+    shutil.copy(results / "figures" / "treemap_wages.png", figs_dir / "treemap_wages.png")
+    print("  treemap_wages.png")
 
     # ── 6. Print summary ──────────────────────────────────────────────────────
     primary_totals = totals_df[totals_df["config_key"] == PRIMARY_KEY].iloc[0]
