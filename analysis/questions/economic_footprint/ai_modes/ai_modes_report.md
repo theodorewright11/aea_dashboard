@@ -38,6 +38,8 @@ The GWA-level data shows where the modes diverge most sharply.
 
 The broad pattern: activities that are communicative, interpretive, and analytical are currently higher under conversational AI. Activities requiring multi-step workflows or direct system access (scheduling, some documentation) are where agentic modestly leads. The confirmation data from AEI API reflects where agentic has been specifically deployed — high-complexity technical contexts — not the full breadth of what agentic could reach.
 
+![Agentic vs. Conversational Worker Counts by Sector](figures/agentic_vs_conversational.png)
+
 ---
 
 ## Auto-Augmentability
@@ -54,6 +56,10 @@ The score is on a 1-5 scale, where 1 means minimal augmentation potential and 5 
 A score of 2.82 out of 5 means we're at roughly mid-range augmentation potential across the board. There's substantial room to move up the scale as AI systems improve — particularly for the tasks currently at the boundary between "AI can assist" and "AI can complete autonomously." That boundary has been moving toward the latter for the past two years.
 
 The by-major-sector breakdown of auto-augmentability scores generally tracks the task penetration findings: Computer/Mathematical and Business/Financial show the highest augmentability scores; physically-grounded sectors like Transportation and Construction show lower scores. But the within-sector variance is worth noting — even in sectors with lower average exposure, there are high-augmentability occupations. The administrative and information-processing layer of every sector carries higher augmentability than the hands-on layer.
+
+![Auto-Augmentability Distribution Across Affected Workforce](figures/autoaug_distribution.png)
+
+![Auto-Augmentability by Major Sector](figures/autoaug_by_major.png)
 
 ---
 

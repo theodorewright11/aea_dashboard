@@ -18,6 +18,8 @@ Across 120 SKA elements, AI leads on 23. All of them are knowledge or skills dom
 
 The pattern across the AI-leading domains is clear: knowledge that can be encoded, retrieved, and synthesized from text — especially domains with structured bodies of accumulated content. AI does well where the task is "know things and communicate them." It does less well where the task requires physical presence, real-time environmental perception, or fine motor control.
 
+![Elements Where AI Leads](figures/ska_leads_ai.png)
+
 ---
 
 ## Where Humans Still Have a Strong Advantage
@@ -32,6 +34,8 @@ The 97 human-leading elements cluster almost entirely in physical and perceptual
 The human advantage domains divide into two rough categories. First, physical/perceptual abilities that AI simply doesn't have in any meaningful embodied sense — reaction time, peripheral vision, multilimb coordination. These are hard limits, not just gaps. Second, applied physical knowledge — construction, mechanics, repairing — where human embodied expertise still clearly outstrips AI's textbook-level knowledge.
 
 What's not in the top human-advantage list: most cognitive skills. Written comprehension, reading comprehension, mathematical reasoning — AI is essentially at parity or slight AI advantage on those. The cognitive frontier has moved further than most people realize.
+
+![Elements Where Humans Lead](figures/ska_leads_human.png)
 
 ---
 
@@ -54,6 +58,10 @@ Weighted by `pct_tasks_affected × employment`, the top technology categories by
 The top 10 categories are all enterprise software categories — ERP, CRM, accounting, medical records, word processing, web development. This is the technology layer of the knowledge economy. The occupations that use this software heavily are the same ones showing the highest task penetration rates.
 
 Further down the list: geographic information systems, industrial control software, CAD/CAM — these appear but with a fraction of the exposure weight, because the occupations using them tend to have lower overall task penetration.
+
+![Top Technology Categories by AI-Exposure Footprint](figures/tech_top_economy.png)
+
+![SKA Gaps by Major Sector](figures/ska_major_heatmap.png)
 
 ---
 

@@ -20,6 +20,8 @@ The Zone 4 peak is striking. These are managers, accountants, engineers, analyst
 
 Zone 5 actually shows slightly lower average exposure than Zone 4. These are researchers, physicians, attorneys, professors — jobs where a significant fraction of work involves judgment, originality, and domain expertise that AI hasn't fully cracked. The tasks in Zone 5 roles that AI *can* do are a smaller share of the total workload.
 
+![AI Exposure Distribution by Job Zone](../questions/economic_footprint/job_structure/figures/zone_exposure_violin.png)
+
 ---
 
 ## The Worker Counts
@@ -36,6 +38,8 @@ Almost all Zone 4 workers — about 35 million total — are in the moderate-to-
 Zone 2 shows a very different distribution. 18.8 million Zone 2 workers are in the Low exposure tier — these are the physically-grounded service and trade jobs where AI capability drops off. But Zone 2 also has 10.4 million in High exposure. Those are likely the administrative, sales, and data-entry roles within Zone 2 — jobs that require some training but are heavily task-automated.
 
 Zone 5 has 2.4 million in High exposure and 6.6 million in Moderate — significant numbers, but a larger fraction in the Restructuring tier (1.5M) and Low tier (0.4M) than Zone 4. Consistent with the pattern that Zone 5 work is more defended against full task penetration.
+
+![Workers by Job Zone and Exposure Tier](../questions/economic_footprint/job_structure/figures/zone_tier_heatmap.png)
 
 ---
 
@@ -55,6 +59,10 @@ The Rating 1 occupations — the ones with high wages and strong demand — actu
 
 What this doesn't tell us is whether AI exposure is *causing* the poor outlook or just correlated with it. Probably both — some occupations are declining because automation is already happening; others are AI-exposed and the market hasn't repriced them yet. The dataset can't distinguish these cases.
 
+![AI Exposure Distribution by Job Outlook Rating](../questions/economic_footprint/job_structure/figures/outlook_exposure_violin.png)
+
+![Workers by Outlook Rating and Exposure Tier](../questions/economic_footprint/job_structure/figures/outlook_tier_heatmap.png)
+
 ---
 
 ## Sector × Zone Interactions
@@ -64,6 +72,8 @@ Looking at average pct_tasks_affected broken out by major sector and job zone gi
 The Computer and Mathematical sector is high-exposure across all zones, but particularly in Zone 3-4 where most of those jobs sit. Sales is similarly high across zones. Education shows interesting variation — Zone 3 and 4 educational roles (community college instructors, high school teachers) have moderate exposure, but Zone 5 (university professors, researchers) show more mixed results.
 
 Healthcare shows the largest within-sector zone variation: healthcare support roles (Zone 2-3) have substantially lower exposure than healthcare practitioners (Zone 4), which is partly counterintuitive — the higher-paid clinical roles are more task-penetrated by AI than the support roles, because the AI capability assessment captures the information-processing components of clinical work (documentation, diagnostics, knowledge retrieval) better than the physical patient care components.
+
+![Average % Tasks Affected by Sector and Job Zone](../questions/economic_footprint/job_structure/figures/major_zone_heatmap.png)
 
 ---
 

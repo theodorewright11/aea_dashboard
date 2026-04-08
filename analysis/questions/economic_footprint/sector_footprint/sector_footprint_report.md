@@ -14,6 +14,8 @@ So the honest answer to "how many workers are AI-affected?" is somewhere in the 
 
 The average percentage of tasks affected per worker (employment-weighted across all occupations) is 36.1% under All Confirmed, rising to 45.1% at the ceiling. So we're not talking about jobs where AI touches one or two tasks at the margin — the average affected worker has more than a third of their tasks in scope.
 
+![Aggregate Totals Across Five Configs](figures/aggregate_totals.png)
+
 ---
 
 ## Where the Workers Are
@@ -25,6 +27,10 @@ The largest sectors by raw workers affected are mostly where you'd expect if you
 - **Business and Financial Operations**: 5.5 million workers, 50.7% tasks affected. These are analysts, accountants, consultants — the knowledge workers who've dominated the "AI will transform white-collar work" narrative. The numbers back that framing.
 - **Food Preparation and Serving**: 4.9 million workers, 35.6% tasks affected. Large employment base drives this number. The task exposure is lower than the knowledge sectors, but there's enough administrative, communication, and information-processing work embedded in food service roles to put 4.9 million workers in scope.
 - **Management Occupations**: 4.8 million workers, 35.5% tasks affected. Managers do more varied work than most, which dilutes the percentage — but the worker count is high and the wages are enormous ($613.8 billion in wages affected).
+
+![Top Sectors by Workers Affected](figures/major_workers.png)
+
+![Wages Affected by Sector](figures/treemap_wages.png)
 
 ---
 
@@ -42,6 +48,8 @@ At the other end: **Farming, Fishing, and Forestry** (13.7%), **Construction and
 
 Healthcare is interesting — **Healthcare Practitioners** at 29.3% and **Healthcare Support** at 25.1% have substantial exposure but are moderated by the physical and perceptual demands of clinical work. The affected tasks are the information-processing, documentation, and communication components, not the hands-on care.
 
+![Top Sectors by % Tasks Affected](figures/major_pct.png)
+
 ---
 
 ## Floor vs. Ceiling: What's in Dispute
@@ -49,6 +57,10 @@ Healthcare is interesting — **Healthcare Practitioners** at 29.3% and **Health
 The confirmed-vs-ceiling gap varies a lot by sector. For sectors with a lot of knowledge-intensive, creative, or communication-heavy work, the ceiling can be meaningfully higher than confirmed — there are tasks where some AI systems demonstrate capability but others don't yet. For physically-grounded work, the gap is narrower because there are fewer contested claims.
 
 This variation in the floor/ceiling spread is itself a meaningful signal. A sector with a wide spread is one where AI capability is actively contested — where the next generation of models could shift the numbers substantially. A sector with a narrow spread is one where the current capability assessment is relatively stable.
+
+![Confirmed vs. Ceiling Range by Sector](figures/floor_ceiling_range.png)
+
+![% Tasks Affected by Sector and Config](figures/config_heatmap.png)
 
 ---
 
