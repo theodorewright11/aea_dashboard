@@ -1,6 +1,0 @@
-scheme,sector_composition,risk_profile,activity_signature,agentic_profile,adoption_gap
-sector_composition,1.00,0.24,0.26,0.12,0.19
-risk_profile,0.24,1.00,0.12,0.04,0.08
-activity_signature,0.26,0.12,1.00,0.13,0.12
-agentic_profile,0.12,0.04,0.13,1.00,0.03
-adoption_gap,0.19,0.08,0.12,0.03,1.00

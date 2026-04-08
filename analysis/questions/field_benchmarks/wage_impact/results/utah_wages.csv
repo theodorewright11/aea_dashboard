@@ -1,6 +1,0 @@
-config_key,config_label,geo,workers_affected,wages_affected,pct_of_seampoint_total
-all_ceiling,All Sources (Ceiling),ut,1141645.08,76964030257.83,74.00
-human_conversation,Human Conversation,ut,803021.07,53661505622.98,51.60
-agentic_confirmed,Agentic Confirmed,ut,481338.17,34036699131.64,32.73
-all_confirmed,All Confirmed,ut,921333.30,62626064655.83,60.22
-agentic_ceiling,Agentic Ceiling,ut,901695.77,61824359157.77,59.45
