@@ -79,13 +79,22 @@ The five configs tell a consistent story at the GWA level, with some important d
 
 ## Trend: Is This Growing?
 
-The All Confirmed series runs from September 2024 to February 2026. Across the top IWAs, most trends are upward — the exposure of high-exposure activities is increasing.
+The chart below shows the top 8 IWAs by absolute growth since September 2024 — not the activities with the highest current exposure, but the ones that grew the most to get there.
 
-The most dramatic growth: "Evaluate scholarly work" went from 11% to 88% (+77pp). "Assess student capabilities" went from 14% to 67% (+54pp). These were not top-of-the-list activities at the start of the series — they became so over roughly 15 months.
+| IWA | Sept 2024 | Feb 2026 | Growth |
+|-----|-----------|----------|--------|
+| Evaluate scholarly work | 11.3% | 88.0% | +76.7pp |
+| Assess student capabilities, needs, or performance | 13.9% | 67.5% | +53.6pp |
+| Set up classrooms, facilities, or educational materials | 0.0% | 49.7% | +49.7pp |
+| Implement security measures for computer systems | 23.1% | 72.8% | +49.7pp |
+| Monitor financial data or activities | 3.6% | 52.2% | +48.6pp |
+| Develop business or marketing plans | 10.0% | 58.6% | +48.6pp |
+| Research laws, precedents, or other legal data | 49.0% | 92.5% | +43.5pp |
+| Prepare health or medical documents | 2.6% | 44.8% | +42.2pp |
 
-This is important context for interpreting the current rankings. The top activities at the end of the series are not the same activities that were at the top at the start. The exposure landscape is shifting, not just deepening.
+The educational activities in this list deserve attention. "Evaluate scholarly work" went from 11% to 88% in 15 months — grading, assessment, and evaluation of academic work is where AI is being adopted fastest. Educational and medical document work is where the fastest new adoption is happening.
 
-![Top IWA Exposure Trends Over Time](../questions/work_activity_exposure/exposure_state/figures/iwa_trends.png)
+![Top IWA Exposure Trends — Top 8 Growers](../questions/work_activity_exposure/exposure_state/figures/iwa_trends.png)
 
 ---
 
@@ -105,7 +114,7 @@ These are not small occupations with interesting AI exposure stories. They're th
 
 The scatter below maps every IWA's confirmed exposure against its ceiling exposure. Points above the diagonal have higher capability than current usage suggests. Almost every IWA is above the line — the ceiling consistently exceeds the confirmed average.
 
-The activities closest to the diagonal (small gap) are the ones where current usage has nearly caught up to capability. Legal research and scholarly evaluation sit essentially on the line — AI is being used for these at near-maximal capability. The activities with the biggest gaps are where the next wave of deployment will hit.
+The activities closest to the diagonal (small gap) are the ones where current usage has nearly caught up to capability. Legal research and scholarly evaluation sit essentially on the line — AI is being used for these at near-maximal capability. Highlighted points (orange) show the activities with the largest gaps and highest ceiling — these are where the next wave of deployment will hit.
 
 ![Confirmed vs Ceiling Exposure — All IWAs](../questions/work_activity_exposure/exposure_state/figures/iwa_confirmed_vs_ceiling.png)
 
@@ -115,7 +124,7 @@ The activities closest to the diagonal (small gap) are the ones where current us
 
 - **Primary**: AEI Both + Micro 2026-02-12 | freq | auto-aug on | national | IWA level
 - **Ceiling**: All 2026-02-18 | freq | auto-aug on | national
-- **Trend**: AEI Both + Micro series (2024-09-30 → 2026-02-12)
+- **Trend**: AEI Both + Micro series (2024-09-30 → 2026-02-12), top 8 by absolute growth
 - **All five configs**: compared at GWA level
 
 ## Files

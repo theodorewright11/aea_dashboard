@@ -1,6 +1,6 @@
 # Work Activity Exposure: Education Lens
 
-**TLDR:** 82% of affected workers are in activities with at least 33% AI exposure — the workforce is not split between an AI-affected minority and a safe majority. The robust activities (< 33%) have 14M workers vs 64M in moderate-or-fragile territory. The Cognitive/Technical domain is the most exposed at 53% avg. AI's footprint is expanding, not plateauing: 284 of 332 IWAs grew in exposure between Sept 2024 and Feb 2026, and 72 IWAs crossed the 10% threshold for the first time. The answer to "is AI a fad?" from the data is no — the exposure curve is moving.
+**TLDR:** 82% of affected workers are in activities with ≥33% AI exposure — the workforce is not split between an AI-affected minority and a safe majority. Thinking about what to teach and train requires a three-category framework: (1) Durable activities where training directly builds lasting value, (2) AI × Human pair activities where training should focus on AI collaboration and judgment, and (3) Delegation activities where the human role is shifting to oversight and direction. All three categories have large workforces. The right training strategy depends on which category each activity falls into — and given that trend data shows many activities moving between categories, that judgment needs updating regularly.
 
 ---
 
@@ -16,46 +16,98 @@ The first education question is: who is actually doing the exposed activities? I
 | Moderate (33–66%) | 116 | 40.8M | 52% |
 | Robust (< 33%) | 164 | 14.1M | 18% |
 
-18% of affected workers are in robust activities. 82% are in activities with meaningful AI exposure. This isn't a story about a small group of tech-adjacent workers. The moderate tier alone — 40.8M workers — is where the restructuring will happen for the majority of the U.S. workforce.
-
-The fragile tier (23.6M workers) is where the most intensive AI overlap exists. These are workers doing legal research, marketing content, data analysis, software design, and customer service at scale. Instructional design, scholarly work, medical documentation.
+18% of affected workers are in robust activities. 82% are in activities with meaningful AI exposure. The moderate tier alone — 40.8M workers — is where the restructuring will happen for the majority of the U.S. workforce.
 
 ![Workforce by Activity Exposure Tier](../questions/work_activity_exposure/education_lens/figures/workforce_by_tier.png)
 
 ---
 
-## Durable Training Targets
+## Three-Category Training Framework
 
-Which activities should education and workforce development programs invest in? The criteria for "durable" here is simple: below 33% exposure in every one of the five configs. These activities are AI-resistant across data source, methodology, and over time.
+The tier structure gives us a starting point, but the training implications differ within tiers. A useful framework for education and workforce planning:
 
-The top 10 durable targets by workers affected:
+**Category 1 — Durable: Train Directly.** Robust activities (<33%) in all five configs AND associated with occupations requiring meaningful education or training (mean job zone ≥2.5). These activities will hold value as AI reshapes adjacent work. The right training investment here is in the activity itself — the skills and judgment it requires — not primarily in AI tools.
 
-| IWA | Workers | Confirmed % |
-|-----|---------|------------|
-| Direct organizational operations, activities, or procedures | 1.15M | 20.7% |
-| Assist individuals with special needs | 549K | 7.5% |
-| Provide food or beverage services | 521K | 18.8% |
-| Supervise personnel activities | 496K | 18.7% |
-| Monitor health conditions of humans or animals | 303K | 19.1% |
-| Inspect commercial, industrial, or production systems | 244K | 11.0% |
-| Monitor operations for regulatory compliance | 239K | 22.8% |
-| Stock supplies or products | 221K | 12.7% |
-| Clean tools, equipment, facilities, or work areas | 184K | 3.4% |
-| Examine financial activities, operations, or systems | 183K | 17.0% |
+**Category 2 — AI × Human Pair: Train for AI Collaboration.** Moderate tier (33–66%). Human judgment combined with AI is still better than AI alone here. The right investment is developing the judgment layer above what AI produces: evaluating AI outputs, directing AI effectively, and building the deeper contextual knowledge that makes AI more useful rather than less reliable. This category splits by trend:
+- *Stable moderate* (slow-growing, <15pp since Sept 2024): likely to remain AI-human partnership for the medium term. Build AI literacy alongside substantive skills.
+- *Rising moderate* (fast-growing, ≥15pp): moving toward the delegation category. Prioritize oversight and quality-review skills alongside AI fluency.
 
-This list is dominated by supervisory, caregiving, physical maintenance, and compliance work. What they share: real-time physical presence, hands-on evaluation, and context that doesn't reduce cleanly to information in a document. A supervisor managing a team on a shop floor cannot be replaced by an AI that writes a good summary of what a supervisor does.
+**Category 3 — Delegate to AI / Oversight: Train for Direction and Review.** Fragile activities (≥66%) and "next wave" activities (confirmed <33% but ceiling ≥33%). The human role here is increasingly setup, quality review, exception handling, and accountability. Training should build: setting AI context effectively, reviewing AI outputs for accuracy and appropriateness, managing the edge cases AI misses, and maintaining the judgment needed to catch errors.
 
-There's also a cluster of inspection and monitoring activities — inspecting equipment, monitoring compliance, examining financial operations. These are not "low-skilled" activities; they require trained judgment about physical and regulatory conditions. Their exposure is low because the judgment required is embodied and context-specific.
+**Uncertainty caveat:** This is not a fixed map. Activities move across categories as AI capabilities and usage expand. Rising moderate activities will likely enter the delegation category as agentic AI deploys at scale. Some activities may stay in the AI × human category for a long time if the human contribution remains genuinely valuable — or if regulatory, ethical, or relationship constraints limit AI replacement. The framework is directional, not deterministic.
 
-The financial-inspection activities (examining financial activities at 17%) deserve a note: financial *analysis* is highly exposed, but financial *examination* — the physical audit, the regulatory inspection, the hands-on review — is in the durable tier.
+### Workers by Training Category
 
-![Durable Training Targets — Robust Across All Configs](../questions/work_activity_exposure/education_lens/figures/durable_training_targets.png)
+| Category | Sub-type | IWAs | Workers |
+|----------|----------|------|---------|
+| 1 — Durable | — | 68 | 5.2M |
+| 2 — AI × Human | Stable moderate | 84 | 32.7M |
+| 2 — AI × Human | Rising moderate | 32 | 8.2M |
+| 3 — Delegate/Oversight | Fragile | 52 | 23.6M |
+| 3 — Delegate/Oversight | Next wave | 42 | 7.0M |
+
+The largest group by far is stable moderate (32.7M workers, 84 IWAs) — this is the core of the AI × human pair category where human + AI collaboration is the likely near-term reality.
+
+![Three-Category Training Framework](../questions/work_activity_exposure/education_lens/figures/training_framework.png)
+
+---
+
+## Durable Training Targets (Educationally Relevant)
+
+Not all robust activities are relevant to what education systems actually train people for. Food service, stocking shelves, and cleaning equipment are all AI-resistant — but they're not typically the focus of workforce development programs. Filtering the stable-robust set to activities associated with occupations requiring meaningful education or training (mean job zone ≥2.5) gives a more useful target list.
+
+The top educationally-relevant durable targets by workers affected:
+
+| IWA | Workers | Confirmed % | Mean Job Zone |
+|-----|---------|------------|--------------|
+| Direct organizational operations, activities, or procedures | 1.15M | 20.7% | 3.51 |
+| Assist individuals with special needs | 549K | 7.5% | 3.04 |
+| Supervise personnel activities | 496K | 18.7% | 4.07 |
+| Monitor health conditions of humans or animals | 303K | 19.1% | 3.91 |
+| Inspect commercial, industrial, or production systems | 244K | 11.0% | 2.65 |
+| Monitor operations for regulatory compliance | 239K | 22.8% | 3.48 |
+| Examine financial activities, operations, or systems | 183K | 17.0% | 3.62 |
+| Monitor safety or security of work areas | 174K | 13.3% | 2.57 |
+| Confer with healthcare or other professionals about patient care | 157K | 16.9% | 4.22 |
+| Assist healthcare practitioners during medical procedures | 135K | 11.0% | 3.09 |
+
+This is a more useful list. Healthcare work, supervisory and management activities, financial examination, safety and compliance monitoring — these are activities that require training, that education programs can build toward, and that the data says will remain valuable.
+
+The job zone filter matters here: mean job zone 3–4 means these activities are associated with occupations requiring medium-level preparation (vocational training to bachelor's degree). They're not "anyone can do this tomorrow" activities — they require real training — and they're AI-resistant.
+
+![Durable Training Targets — Educationally Relevant](../questions/work_activity_exposure/education_lens/figures/durable_training_targets.png)
+
+---
+
+## AI × Human Pair: The Moderate Tier
+
+116 IWAs are in the moderate tier (33–66%), covering 40.9M workers. These are the activities where human + AI partnership is the current and likely near-term reality. The training question is: what does the human bring to this partnership?
+
+**Stable moderate examples** (slow-growing, <15pp growth): "Execute financial transactions" (63%, 2.7M workers), "Communicate with others about operational plans" (58%, 1.9M), "Read documents or materials to inform work processes" (62%, 1.3M). These activities are AI-reached but growing slowly — the human judgment layer remains important for the foreseeable future.
+
+**Rising moderate examples** (fast-growing, ≥15pp growth): "Analyze data to improve operations" (+31pp to 41%, 637K workers), "Develop educational programs and procedures" (+29pp to 37%, 628K), "Schedule appointments" (+37pp to 58%, 607K), "Maintain health or medical records" (+27pp to 33%, 671K). These are growing quickly and may move into the delegation category as AI capabilities expand.
+
+For training programs targeting this tier: the core investment is not "how to do the activity" (AI handles more and more of that) but "how to direct AI doing the activity" — setting context, validating outputs, handling exceptions, maintaining accountability. The growing exposure in rising moderate activities means this training investment needs to happen now, not after the transition.
+
+---
+
+## Delegation Territory: Fragile and Next Wave
+
+The fragile tier (52 IWAs, 23.6M workers) is where the human role has already shifted substantially. Top examples: "Provide information to guests/clients" (72%, 3.3M workers), "Respond to customer inquiries" (75%, 2.2M), "Explain technical details" (82%, 1.3M), "Prepare documentation for contracts" (72%, 1.2M).
+
+Training for this category is less about the activity itself and more about:
+- Knowing when AI output requires human review vs. can be passed through
+- Understanding the failure modes of AI doing this work
+- Maintaining the domain knowledge needed to catch errors
+- Managing the accountability that remains with humans even when AI does the execution
+
+The next-wave IWAs (42 activities, 7.0M workers) are the upcoming delegation cases — currently below 33% confirmed but heading there when agentic AI deploys at scale. "Maintain operational records," "prepare schedules," "assign work to others" — the workflow and administrative infrastructure of organizations. Training programs built around these activities should be building toward oversight and direction skills, not just execution skills.
 
 ---
 
 ## Domain Exposure
 
-Classifying GWAs into broad domains gives a cleaner picture of where AI exposure concentrates:
+Classifying GWAs into broad domains:
 
 | Domain | GWAs | Avg % Exposed |
 |--------|------|--------------|
@@ -65,13 +117,7 @@ Classifying GWAs into broad domains gives a cleaner picture of where AI exposure
 | Management/Coordination | 4 | 32.7% |
 | Physical/Operational | 6 | 13.1% |
 
-Cognitive/Technical is the most exposed domain at 53% average. This includes working with computers, data analysis, problem-solving, creative thinking, and estimating quantitative characteristics — the analytic core of professional knowledge work.
-
-Information/Documentation (50%) is the second-highest. Getting information, recording it, organizing and prioritizing work — the information-management layer of almost every job. AI is very good at exactly this.
-
-Physical/Operational (13%) is the floor. The gap between 13% and 53% is the distance between what AI can do and what a person has to be physically present to do.
-
-Management/Coordination (33%) is interesting because it sits in the moderate range, not the robust range. Managing work, coordinating activities, and staffing are already 30%+ AI-exposed on confirmed usage — not fragile, but not safe either. The agentic configs push this higher (scheduling automation, task assignment AI), so the ceiling for coordination work is substantially above 33%.
+Physical/Operational (13%) is the floor. The gap between 13% and 53% is the distance between what AI can do and what a person has to be physically present to do. Management/Coordination at 33% is notable — coordination and scheduling activities are already in the moderate range, and the agentic configs push coordination work substantially higher toward the delegation end.
 
 ![AI Exposure by Work Domain](../questions/work_activity_exposure/education_lens/figures/domain_exposure.png)
 
@@ -79,9 +125,9 @@ Management/Coordination (33%) is interesting because it sits in the moderate ran
 
 ## Is AI a Fad?
 
-The quantitative answer: no. 284 of 332 IWAs (86%) grew in exposure between September 2024 and February 2026. 72 IWAs newly crossed the 10% threshold during that period, meaning they went from essentially unaffected to meaningfully AI-touched in roughly 15 months.
+The quantitative answer: no. 284 of 332 IWAs (86%) grew in exposure between September 2024 and February 2026. 72 IWAs crossed the 10% threshold for the first time.
 
-The growth is not uniform. The fastest-growing IWAs include:
+The top growers are in education and healthcare documentation:
 
 | IWA | Sept 2024 | Feb 2026 | Growth |
 |-----|-----------|----------|--------|
@@ -90,29 +136,11 @@ The growth is not uniform. The fastest-growing IWAs include:
 | Set up classrooms, facilities, or educational materials | 0.0% | 49.7% | +49.7pp |
 | Implement security measures for computer systems | 23.1% | 72.8% | +49.7pp |
 | Monitor financial data or activities | 3.6% | 52.2% | +48.6pp |
-| Develop business or marketing plans | 10.0% | 58.6% | +48.6pp |
+| Prepare health or medical documents | 2.6% | 44.8% | +42.2pp |
 
-The educational activities in this list deserve attention. "Evaluate scholarly work" went from 11% to 88% in 15 months — grading, assessment, and evaluation of academic work is where AI is being adopted fastest, at least by the data's measure. "Assess student capabilities" nearly quintupled. "Set up classrooms and educational materials" went from zero to 50%.
-
-This is the "educators who won't change because they're clueless" problem, made quantitative. The activities that define instructional work — evaluating student work, developing lesson materials, assessing capabilities — are exactly where AI adoption is growing fastest. The education system's resistance to change is happening as the work that defines education gets increasingly AI-exposed.
-
-The "is it just deepening in areas already exposed" question: yes, somewhat, but not only. The 72 IWAs newly above 10% represent activity types that were essentially untouched in September 2024 and are now meaningfully AI-exposed. The footprint is genuinely expanding.
+Education and healthcare documentation dominate the top growers. If AI were a fad, these activities would not be showing up in the top growth categories — and the education system's own activities (evaluating student work, developing lesson materials) would not be the fastest-growing.
 
 ![Is AI's Footprint Expanding? Top-Climbing Activity Types](../questions/work_activity_exposure/education_lens/figures/exposure_growth_trend.png)
-
----
-
-## What This Means for Education
-
-A few concrete implications from the data:
-
-**What to emphasize:** The durable activities are physical, supervisory, caregiving, inspection-based, and compliance-focused. Training programs that build competence in these areas are training toward something that will remain valuable as AI reshapes adjacent work. This is not "learn to prompt" advice — it's about building the skills that sit at the bottom of the activity exposure ranking.
-
-**What level of technical skill matters:** The data suggests the answer is not "everyone needs to be a programmer." Software design is fragile (74% exposed), meaning the specific technical tasks are highly AI-reachable. What matters more is judgment, physical presence, and coordination — activities in the moderate and robust tiers. "Prompting" and spreadsheet work sit within the fragile tier (working with computers at 69%, operating computer equipment at 77%). These are not the durable skills.
-
-**The next generation needs the following:** ability to operate in physical environments, supervise and coordinate work in real-time, provide direct care and service, and inspect physical systems. Also: the analytical and interpersonal judgment that AI assists with but doesn't replace — deciding, not just analyzing. The interpersonal domain is 47% exposed, meaning roughly half of interpersonal work is AI-adjacent. But the half that isn't is the hard part.
-
-**The education system's own exposure:** Evaluating student work, developing learning materials, assessing capabilities — these are growing the fastest of any IWA category. Education institutions should probably lead with this data, not be the last to see it.
 
 ---
 
@@ -121,13 +149,16 @@ A few concrete implications from the data:
 - **Primary**: AEI Both + Micro 2026-02-12 | freq | auto-aug on | national
 - **Stability check**: All five configs for durable targets
 - **Trend**: AEI Both + Micro series (2024-09-30 → 2026-02-12)
+- **Job zone filter**: mean job zone ≥2.5 from eco_2025
 
 ## Files
 
 | File | Description |
 |------|-------------|
 | `results/workforce_by_tier.csv` | Workers in each exposure tier |
-| `results/durable_training_targets.csv` | 122 IWAs robust in all 5 configs, ranked |
+| `results/durable_training_targets.csv` | 68 IWAs robust in all 5 configs AND job zone ≥2.5 |
+| `results/durable_training_targets_all.csv` | All 122 stably-robust IWAs (unfiltered) |
+| `results/training_framework_categories.csv` | All IWAs with category/subcategory assignment |
 | `results/gwa_domain_classified.csv` | GWAs with domain classification |
 | `results/iwa_growth.csv` | Per-IWA growth first → last date |
 | `results/domain_exposure_summary.csv` | Domain avg pct and workers |
