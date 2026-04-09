@@ -111,14 +111,6 @@ When new sub-question results are produced or an existing bucket report is updat
 
 Figure path convention from `report/`: `../questions/{bucket}/{sub-folder}/figures/{filename}.png`
 
-## Reference-Only Scripts
-
-The following question scripts are kept for reference but are **broken** due to dataset renames in the backend (e.g., old names like `"AEI Cumul. (Both) v4"` no longer exist). Do not attempt to run or fix them unless explicitly asked:
-- `questions/economic_footprint/run.py`
-- `questions/job_exposure/run.py` (old flat version, superseded by sub-folders)
-
----
-
 ## Data and Compute Rules
 
 - **SKA is real-time.** Never pre-save SKA outputs as static CSVs and load them later. Always call `compute_ska(pct, ska_data)` fresh from `analysis.data.compute_ska`. The five configs in `ANALYSIS_CONFIGS` produce different pct inputs → different AI capability scores.
