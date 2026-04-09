@@ -4,8 +4,6 @@
 
 ---
 
-## TLDR
-
 Every single work activity currently in the high-exposure zone (>=66%) crossed that threshold during the measurement window — there were zero IWAs at >=66% in September 2024. By February 2026, 52 IWAs are there. Another 32 IWAs crossed the 33% threshold for the first time, and 72 are currently in the 10–33% active expansion zone, growing consistently. The fastest-growing IWA by total gain is "Evaluate scholarly work" (+76.7pp), which went from a niche AI application to near-ubiquitous in 16 months. Three of the top-five fastest-growing IWAs are education-adjacent. The next wave — 10 IWAs currently between 25-33% and growing — includes financial planning, legal document work, and patient data management.
 
 ---

@@ -162,6 +162,9 @@ def _build_aggregate_bar(totals_df: pd.DataFrame) -> go.Figure:
     workers_m = [w / 1e6 for w in totals_df["workers_affected"]]
     pct = totals_df["pct_of_employment"].tolist()
 
+    max_workers = max(workers_m)
+    max_pct = max(pct)
+
     fig = go.Figure()
     fig.add_trace(go.Bar(
         name="Workers Affected (M)",
@@ -170,7 +173,7 @@ def _build_aggregate_bar(totals_df: pd.DataFrame) -> go.Figure:
         marker_color=COLORS["primary"],
         text=[f"{w:.1f}M" for w in workers_m],
         textposition="outside",
-        textfont=dict(size=11, color=COLORS["neutral"], family=FONT_FAMILY),
+        textfont=dict(size=12, color=COLORS["neutral"], family=FONT_FAMILY),
         cliponaxis=False,
         yaxis="y1",
     ))
@@ -181,20 +184,33 @@ def _build_aggregate_bar(totals_df: pd.DataFrame) -> go.Figure:
         marker_color=COLORS["secondary"],
         text=[f"{p:.1f}%" for p in pct],
         textposition="outside",
-        textfont=dict(size=11, color=COLORS["neutral"], family=FONT_FAMILY),
+        textfont=dict(size=12, color=COLORS["neutral"], family=FONT_FAMILY),
         cliponaxis=False,
         yaxis="y2",
     ))
 
     fig.update_layout(
         barmode="group",
-        yaxis=dict(title="Workers Affected (millions)", side="left", showgrid=True, gridcolor=COLORS["grid"]),
-        yaxis2=dict(title="% of Employment", side="right", overlaying="y", showgrid=False),
-        bargap=0.2,
+        yaxis=dict(
+            title="Workers Affected (millions)",
+            side="left",
+            showgrid=True,
+            gridcolor=COLORS["grid"],
+            range=[0, max_workers * 1.25],
+        ),
+        yaxis2=dict(
+            title="% of Employment",
+            side="right",
+            overlaying="y",
+            showgrid=False,
+            range=[0, max_pct * 1.25],
+        ),
+        bargap=0.25,
+        margin=dict(l=80, r=80, t=100, b=120),
     )
     style_figure(fig, "Aggregate AI Economic Footprint — Five Configs",
                  subtitle="National | Freq method | Auto-aug ON | All tasks",
-                 height=550, width=1200)
+                 height=620, width=1200)
     return fig
 
 

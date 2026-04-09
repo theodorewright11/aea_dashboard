@@ -1,6 +1,6 @@
 *Primary config: Four sources compared — AEI Conv + Micro 2026-02-12 | AEI API 2026-02-12 | Microsoft | MCP Cumul. v4 | Method: freq | Auto-aug ON | National*
 
-**TLDR:** Each source has a distinctive "fingerprint" of which occupations it rates highest. Human Conv. uniquely emphasizes tutoring, creative, and lab-science roles. AEI API uniquely hits healthcare education, production-adjacent office roles, and some postsecondary teaching. Microsoft doesn't have distinctive highs — it's the most generic rater, consistent but undifferentiated. MCP is the wild card: it uniquely scores GIS technicians, infrastructure operators, and a set of white-collar roles that no other source flags. The result is that no single source is "right" — each captures a different slice of AI's actual reach.
+Each source has a distinctive "fingerprint" of which occupations it rates highest. Human Conv. uniquely emphasizes tutoring, creative, and lab-science roles. AEI API uniquely hits healthcare education, production-adjacent office roles, and some postsecondary teaching. Microsoft doesn't have distinctive highs — it's the most generic rater, consistent but undifferentiated. MCP is the wild card: it uniquely scores GIS technicians, infrastructure operators, and a set of white-collar roles that no other source flags. The result is that no single source is "right" — each captures a different slice of AI's actual reach.
 
 ## Human Conv. Portrait
 

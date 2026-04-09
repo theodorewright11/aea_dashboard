@@ -1,6 +1,6 @@
 # Occupations of Interest: 27 Jobs That Tell the AI Exposure Story
 
-**TLDR:** Market Research Analysts top the exposure list at 89.5% confirmed, but the new weighted risk scoring drops them to moderate risk (score 7) -- properly separating "this job is changing" from "this job is at risk." The real high-risk population is everyday jobs: Secretaries (score 11, 1.7M workers), Customer Service Reps (score 11, 2.7M workers), Retail Salespersons (score 11), Cashiers (score 10). Software Developers sit at 45.2% confirmed with a moderate score of 5, and their ceiling gap (+19.5pp) is one of the largest in the list. The biggest single ceiling gap belongs to General/Ops Managers at +24.4pp -- a signal that their exposure floor has a lot of room to rise. Construction Laborers at 12.0% remain the physical-work safe harbor.
+Market Research Analysts top the exposure list at 89.5% confirmed, but the new weighted risk scoring drops them to moderate risk (score 7) -- properly separating "this job is changing" from "this job is at risk." The real high-risk population is everyday jobs: Secretaries (score 11, 1.7M workers), Customer Service Reps (score 11, 2.7M workers), Retail Salespersons (score 11), Cashiers (score 10). Software Developers sit at 45.2% confirmed with a moderate score of 5, and their ceiling gap (+19.5pp) is one of the largest in the list. The biggest single ceiling gap belongs to General/Ops Managers at +24.4pp -- a signal that their exposure floor has a lot of room to rise. Construction Laborers at 12.0% remain the physical-work safe harbor.
 
 ---
 

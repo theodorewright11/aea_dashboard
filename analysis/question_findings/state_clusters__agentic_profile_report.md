@@ -2,7 +2,7 @@
 
 *Primary config: Agentic Confirmed (AEI API 2026-02-12) vs. All Confirmed (AEI Both + Micro 2026-02-12) | freq method | auto-aug on*
 
-**TLDR:** When you cluster states by how much of their AI exposure is agentic (tool-use API) versus conversational, the variation is strikingly narrow. Nationally, about 50.7% of confirmed exposure comes from agentic sources. No state deviates from that by more than ~7 percentage points, and most states are within 1-2pp of the national average. DC is the outlier at 57.1% agentic intensity. The five agentic clusters are largely driven by tiny differences — this is the weakest clustering in the analysis.
+When you cluster states by how much of their AI exposure is agentic (tool-use API) versus conversational, the variation is strikingly narrow. Nationally, about 50.7% of confirmed exposure comes from agentic sources. No state deviates from that by more than ~7 percentage points, and most states are within 1-2pp of the national average. DC is the outlier at 57.1% agentic intensity. The five agentic clusters are largely driven by tiny differences — this is the weakest clustering in the analysis.
 
 ---
 

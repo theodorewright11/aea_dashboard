@@ -1,6 +1,6 @@
 # Audience Framing: Finding the Jobs That Don't Know They're Next
 
-**TLDR:** We replaced cosine similarity with projection-based methods for identifying hidden at-risk occupations -- jobs with low current AI exposure but high alignment with AI's capability vector. The result: 150 occupations flagged by AI projection, 140 by exposure projection, with heavy representation from healthcare specialties. Preventive Medicine Physicians, Urologists, Nurse Anesthetists, and Nuclear Engineers all show up. Over half of these occupations have *rising* exposure trajectories, meaning the "hidden" part of hidden at-risk is temporary. The dominant skill domains in high-exposure/low-outlook jobs are uniformly knowledge-based -- skills don't crack the top 15 even though they're now included in the analysis.
+We replaced cosine similarity with projection-based methods for identifying hidden at-risk occupations -- jobs with low current AI exposure but high alignment with AI's capability vector. The result: 150 occupations flagged by AI projection, 140 by exposure projection, with heavy representation from healthcare specialties. Preventive Medicine Physicians, Urologists, Nurse Anesthetists, and Nuclear Engineers all show up. Over half of these occupations have *rising* exposure trajectories, meaning the "hidden" part of hidden at-risk is temporary. The dominant skill domains in high-exposure/low-outlook jobs are uniformly knowledge-based -- skills don't crack the top 15 even though they're now included in the analysis.
 
 ---
 

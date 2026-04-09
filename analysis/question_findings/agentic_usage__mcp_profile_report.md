@@ -1,6 +1,6 @@
 *Primary config: MCP Cumul. v4 (MCP Only) | AEI API 2026-02-12 | AEI Both + Micro 2026-02-12 (Conv. Baseline) | Method: freq | Auto-aug ON | National*
 
-**TLDR:** MCP's footprint is distinct and in some cases surprising. The top MCP occupations — Telemarketers, Online Merchants, Web Developers, Computer Network Support Specialists — cluster around digital communication and system management. Where MCP leads most over AEI API, the gap is huge: Data Scientists (+72pp), certain Sales reps (+71pp), Penetration Testers (+61pp). Where AEI API leads, the occupations are more people-intensive: Patient Representatives, Actors, Industrial-Organizational Psychologists. MCP is fundamentally measuring AI that can interact with systems; AEI API is measuring AI that has been used in human-intensive workflows. The two signals are complementary, not redundant.
+MCP's footprint is distinct and in some cases surprising. The top MCP occupations — Telemarketers, Online Merchants, Web Developers, Computer Network Support Specialists — cluster around digital communication and system management. Where MCP leads most over AEI API, the gap is huge: Data Scientists (+72pp), certain Sales reps (+71pp), Penetration Testers (+61pp). Where AEI API leads, the occupations are more people-intensive: Patient Representatives, Actors, Industrial-Organizational Psychologists. MCP is fundamentally measuring AI that can interact with systems; AEI API is measuring AI that has been used in human-intensive workflows. The two signals are complementary, not redundant.
 
 ## MCP's Top Occupations
 

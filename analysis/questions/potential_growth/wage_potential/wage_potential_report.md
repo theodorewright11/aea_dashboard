@@ -4,8 +4,6 @@
 
 ---
 
-## TLDR
-
 The adoption gap isn't just a count of workers. It's $980 billion in wages associated with AI capabilities that exist and demonstrably work but aren't being deployed. That figure is the difference between the $3.99T in wages currently reached by confirmed AI tools and the $4.97T the ceiling suggests is AI-accessible. The distribution is concentrated: Management occupations and Office/Admin carry the biggest absolute wage gaps, but the hotspot picture — occupations that are both high-wage and have large adoption gaps — tells a different story, pointing at specific, high-value roles where the economic leverage of closing the gap is largest.
 
 ---

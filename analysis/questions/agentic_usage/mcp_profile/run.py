@@ -202,7 +202,7 @@ def main() -> None:
 
     # Fig 1: Top 30 MCP occupations — horizontal bar
     fig1 = make_horizontal_bar(
-        top30_mcp.sort_values("pct_mcp_only", ascending=True),
+        top30_mcp.sort_values("pct_mcp_only", ascending=False),
         category_col="category",
         value_col="pct_mcp_only",
         title="Top 30 Occupations by MCP Exposure",
@@ -251,7 +251,7 @@ def main() -> None:
 
     # Fig 3: MCP signature IWAs — top 20
     if not mcp_iwa.empty and "pct_tasks_affected" in mcp_iwa.columns:
-        top20_iwa = mcp_iwa.nlargest(20, "pct_tasks_affected").sort_values("pct_tasks_affected", ascending=True)
+        top20_iwa = mcp_iwa.nlargest(20, "pct_tasks_affected").sort_values("pct_tasks_affected", ascending=False)
         fig3 = make_horizontal_bar(
             top20_iwa,
             category_col="category",

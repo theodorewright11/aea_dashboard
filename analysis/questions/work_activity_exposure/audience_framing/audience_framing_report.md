@@ -1,6 +1,6 @@
 # Work Activity Exposure: Audience Framing
 
-**TLDR:** Four audiences need four different framings. The core framework running through all of them: AI exposure isn't a single signal, it's three different situations — activities where training directly builds durable value, activities where the AI × human pair is where investment belongs, and activities where the human role is shifting to oversight and direction of AI. Where any given activity falls depends on the tier and trend. 82% of affected workers are in moderate-or-fragile activities. The physical/cognitive boundary is the defining line.
+Four audiences need four different framings. The core framework running through all of them: AI exposure isn't a single signal, it's three different situations — activities where training directly builds durable value, activities where the AI × human pair is where investment belongs, and activities where the human role is shifting to oversight and direction of AI. Where any given activity falls depends on the tier and trend. 82% of affected workers are in moderate-or-fragile activities. The physical/cognitive boundary is the defining line.
 
 ---
 

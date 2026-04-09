@@ -4,8 +4,6 @@
 
 ---
 
-## TLDR
-
 The 29 named occupations tell a heterogeneous story. Human Resources Specialists grew 53.5 percentage points — the largest gain of any named occupation. Market Research Analysts grew 49.7pp. These are not the occupations anyone would have identified as the primary AI disruption targets in 2024. Meanwhile, Software Developers (45.2%), Data Scientists (46.0%), and Accountants and Auditors (28.1%) are completely flat — literally the same confirmed value across all 6 dates. The biggest jumps were concentrated in March 2025 and August 2025, with most occupations seeing their largest single-step gain at one of those two dates. Registered Nurses, at 9.3% in September 2024, ended at 33.4% — just crossing the 33% risk gate by the final date.
 
 ---

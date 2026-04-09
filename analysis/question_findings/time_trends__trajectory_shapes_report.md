@@ -4,8 +4,6 @@
 
 ---
 
-## TLDR
-
 Nearly half of all occupations — 406 of 923 — went basically nowhere over 16 months: their confirmed AI exposure moved less than 5 percentage points. The action was concentrated in a 222-occupation "steady grower" group that moved from an average of 29% to 60% confirmed exposure over the period, and a 153-occupation "plateaued" group that grew strongly in the first half and then stalled. The occupations you'd most expect to see growing — Computer and Mathematical, Architecture and Engineering — largely didn't. They were early movers that were already high and stayed high. The sectors that grew most consistently were Educational Instruction and Library (44 steady growers), Management (26), and Healthcare (23).
 
 ---

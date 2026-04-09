@@ -6,8 +6,6 @@
 
 ---
 
-## TLDR
-
 Your body is your moat. Every one of the top 15 human-advantage elements is a physical or perceptual ability — reaction time, spatial orientation, limb coordination, strength. The single exception is Building and Construction knowledge, which is itself deeply embodied. On the other side, AI's advantages are almost entirely knowledge domains: sales and marketing, history, philosophy, foreign language. Skills sit in the middle, roughly balanced. The structural message is clear: AI commoditized the information layer. What it cannot touch is the physical one. But the gap is narrowing — confirmed-usage AI capabilities are growing across all configs, with median gap deltas ranging from +3.38 to +6.52. Workers who understand where they lead and where AI leads can make sharper decisions about what to invest in and what to delegate.
 
 ---

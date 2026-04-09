@@ -2,7 +2,7 @@
 
 *Primary config: All Confirmed (AEI Both + Micro 2026-02-12) | Risk tiers from job_risk_scoring | freq method | auto-aug on*
 
-**TLDR:** When you cluster states by the risk-tier composition of their AI-exposed workforce, the resulting groups have only modest overlap with the sector-composition clusters from state_profiles (ARI = 0.24). The biggest surprise: the territories (Puerto Rico, U.S. Virgin Islands) have the highest concentrations of high-risk workers — not the tech-heavy states — and the large northeastern industrial states have the lowest. DC falls in the middle tier despite being the most knowledge-economy-intensive place in the country.
+When you cluster states by the risk-tier composition of their AI-exposed workforce, the resulting groups have only modest overlap with the sector-composition clusters from state_profiles (ARI = 0.24). The biggest surprise: the territories (Puerto Rico, U.S. Virgin Islands) have the highest concentrations of high-risk workers — not the tech-heavy states — and the large northeastern industrial states have the lowest. DC falls in the middle tier despite being the most knowledge-economy-intensive place in the country.
 
 ---
 

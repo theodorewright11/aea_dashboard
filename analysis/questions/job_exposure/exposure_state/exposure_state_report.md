@@ -4,8 +4,6 @@
 
 ---
 
-## TLDR
-
 Across 923 U.S. occupations, confirmed AI usage already touches a meaningful share of tasks for most of the workforce: 145 occupations (31.4M workers) have 60% or more of their tasks affected by tools people are actually using today. But the ceiling -- what current AI systems can demonstrably do -- puts that number at 249 occupations and 54.2M workers. The gap between those two figures is where the next wave of adoption lives. Exposure is growing almost everywhere: two-thirds of occupations saw positive growth in confirmed task coverage, and the median gain was 5.7 percentage points. The occupations climbing fastest are not the ones that dominate headlines.
 
 ---

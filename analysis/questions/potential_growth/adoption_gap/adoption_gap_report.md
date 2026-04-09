@@ -4,8 +4,6 @@
 
 ---
 
-## TLDR
-
 Confirmed AI usage (61.3M workers affected) sits roughly 15.8M workers below the demonstrated capability ceiling (77.1M). That gap isn't uniformly distributed. Office and Administrative Support carries the largest absolute shortfall — 2.6M workers — but Transportation and Material Moving has the steepest percentage climb from where it is to where AI can demonstrably reach. The activity-level picture tells a particularly clean story: "Documenting/Recording Information" alone has a 4.4M worker gap, and adoption on that GWA has barely moved relative to what the ceiling says is possible. The trend is moving in the right direction — confirmed grew by 21.8M workers over 16 months — but it's not catching the ceiling.
 
 ---

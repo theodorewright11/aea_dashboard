@@ -1,6 +1,6 @@
 # Work Activity Exposure: Current State
 
-**TLDR:** The highest-exposed work activities are information-dense, cognitive tasks — legal research, marketing, scholarly evaluation, data analysis, software design. These sit at 70–93% confirmed exposure. At the GWA level, four categories are already fragile: Working with Computers, Communicating with People Outside the Organization, Interpreting Information for Others, and Updating and Using Relevant Knowledge. The bottom of the exposure ranking is almost entirely physical: vehicle operation, general physical activities, machine control. The distance between those two poles is what tells you where AI's capabilities actually are.
+The highest-exposed work activities are information-dense, cognitive tasks — legal research, marketing, scholarly evaluation, data analysis, software design. These sit at 70–93% confirmed exposure. At the GWA level, four categories are already fragile: Working with Computers, Communicating with People Outside the Organization, Interpreting Information for Others, and Updating and Using Relevant Knowledge. The bottom of the exposure ranking is almost entirely physical: vehicle operation, general physical activities, machine control. The distance between those two poles is what tells you where AI's capabilities actually are.
 
 ---
 

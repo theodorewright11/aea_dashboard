@@ -1,6 +1,6 @@
 # Economic Footprint: State Profiles
 
-**TLDR:** Every state has essentially the same average AI task exposure (~36.1%), because exposure is a function of occupational task structure, not geography. What varies across states is the sector composition of their affected workforce — and that variation is real, meaningful, and clusters into five recognizable economic types. The clustering captures the structure of state economies better than it captures AI risk per se.
+Every state has essentially the same average AI task exposure (~36.1%), because exposure is a function of occupational task structure, not geography. What varies across states is the sector composition of their affected workforce — and that variation is real, meaningful, and clusters into five recognizable economic types. The clustering captures the structure of state economies better than it captures AI risk per se.
 
 ---
 

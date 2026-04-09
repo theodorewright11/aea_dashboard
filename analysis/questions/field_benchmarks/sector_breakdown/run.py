@@ -254,64 +254,91 @@ def _build_cross_source_sectors(sector_df: pd.DataFrame) -> go.Figure:
 def _build_external_task_breakdown() -> go.Figure:
     """
     Two-panel overview of how external sources slice tasks:
-    AEI task categories and ChatGPT work-use categories.
+    AEI task categories (left) and ChatGPT work-use categories (right).
+    Rendered as separate subplots so labels don't crowd each other.
     """
-    fig = go.Figure()
+    from plotly.subplots import make_subplots
 
-    # AEI task categories
     aei_labels = list(AEI_TOP_TASK_CATEGORIES.keys())
     aei_vals   = list(AEI_TOP_TASK_CATEGORIES.values())
+    cgpt_labels = list(CHATGPT_WORK_CATEGORIES.keys())
+    cgpt_vals   = list(CHATGPT_WORK_CATEGORIES.values())
+
+    fig = make_subplots(
+        rows=1, cols=2,
+        subplot_titles=[
+            "AEI (Humlum & Vestergaard 2024)<br><sup>% of Claude conversation task-attempts</sup>",
+            "ChatGPT (Weidinger et al. 2025)<br><sup>% of work-related sessions by use type</sup>",
+        ],
+        horizontal_spacing=0.12,
+    )
 
     fig.add_trace(go.Bar(
-        name="AEI: Task-Attempt Distribution",
         x=aei_labels,
         y=aei_vals,
         marker=dict(color=COLORS["primary"], line=dict(width=0)),
         text=[f"{v:.1f}%" for v in aei_vals],
         textposition="outside",
-        textfont=dict(size=10, color=COLORS["neutral"], family=FONT_FAMILY),
-    ))
+        textfont=dict(size=11, color=COLORS["neutral"], family=FONT_FAMILY),
+        cliponaxis=False,
+        showlegend=False,
+    ), row=1, col=1)
 
-    # ChatGPT work categories
-    cgpt_labels = list(CHATGPT_WORK_CATEGORIES.keys())
-    cgpt_vals   = list(CHATGPT_WORK_CATEGORIES.values())
     fig.add_trace(go.Bar(
-        name="ChatGPT: Work-Session Distribution",
         x=cgpt_labels,
         y=cgpt_vals,
         marker=dict(
             color=COLORS["secondary"],
-            pattern=dict(shape="/", size=6, fgcolor="white"),
-            line=dict(width=0.5, color=COLORS["border"]),
+            line=dict(width=0),
         ),
         text=[f"{v:.1f}%" for v in cgpt_vals],
         textposition="outside",
-        textfont=dict(size=10, color=COLORS["neutral"], family=FONT_FAMILY),
-    ))
+        textfont=dict(size=11, color=COLORS["neutral"], family=FONT_FAMILY),
+        cliponaxis=False,
+        showlegend=False,
+    ), row=1, col=2)
 
-    all_vals = aei_vals + cgpt_vals
-    style_figure(
-        fig,
-        "How External Studies Slice AI Task Use: AEI & ChatGPT",
-        subtitle=(
-            "AEI (Humlum & Vestergaard 2024): % of Claude conversation task-attempts | "
-            "ChatGPT (Weidinger et al. 2025): % of work-related sessions by use type"
-        ),
-        y_title="Share of AI Task Use (%)",
-        height=480, width=1050,
-        show_legend=True,
-    )
+    max_aei  = max(aei_vals)
+    max_cgpt = max(cgpt_vals)
+
     fig.update_layout(
-        barmode="group",
-        bargap=0.25,
-        yaxis=dict(showgrid=True, gridcolor=COLORS["grid"],
-                   ticksuffix="%", range=[0, max(all_vals) * 1.30]),
-        xaxis=dict(showgrid=False, tickfont=dict(size=10, family=FONT_FAMILY)),
-        legend=dict(
-            orientation="h", yanchor="top", y=-0.12, xanchor="center", x=0.5,
-            font=dict(size=10, color=COLORS["neutral"], family=FONT_FAMILY),
+        height=520, width=1150,
+        title=dict(
+            text="How External Studies Slice AI Task Use: AEI & ChatGPT",
+            font=dict(size=16, family=FONT_FAMILY, color=COLORS["neutral"]),
+            x=0.5, xanchor="center",
         ),
-        margin=dict(l=60, r=40, t=80, b=120),
+        margin=dict(l=60, r=60, t=120, b=140),
+        plot_bgcolor=COLORS.get("bg", "white"),
+        paper_bgcolor=COLORS.get("bg", "white"),
+    )
+    fig.update_xaxes(
+        tickfont=dict(size=10, family=FONT_FAMILY),
+        tickangle=-30,
+        showgrid=False,
+        row=1, col=1,
+    )
+    fig.update_xaxes(
+        tickfont=dict(size=10, family=FONT_FAMILY),
+        tickangle=-30,
+        showgrid=False,
+        row=1, col=2,
+    )
+    fig.update_yaxes(
+        ticksuffix="%",
+        showgrid=True,
+        gridcolor=COLORS["grid"],
+        range=[0, max_aei * 1.30],
+        tickfont=dict(size=10, family=FONT_FAMILY),
+        row=1, col=1,
+    )
+    fig.update_yaxes(
+        ticksuffix="%",
+        showgrid=True,
+        gridcolor=COLORS["grid"],
+        range=[0, max_cgpt * 1.30],
+        tickfont=dict(size=10, family=FONT_FAMILY),
+        row=1, col=2,
     )
     return fig
 

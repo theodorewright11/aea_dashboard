@@ -11,6 +11,7 @@ analysis/
 ├── ANALYSIS_CLAUDE.md       — Agent rules for analysis work
 ├── ANALYSIS_PRD.md          — Question catalog, audiences, five configs
 ├── ANALYSIS_ARCHITECTURE.md — This file
+├── charts.md                — Dashboard reproduction guide for all committed figures (all buckets)
 ├── config.py                — Shared paths, ANALYSIS_CONFIGS, ANALYSIS_CONFIG_SERIES,
 │                              OCCS_OF_INTEREST, get_pct_tasks_affected(), helpers
 ├── utils.py                 — Chart styling, PDF generation, save helpers

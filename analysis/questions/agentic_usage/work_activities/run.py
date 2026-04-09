@@ -140,7 +140,7 @@ def main() -> None:
 
     # Fig 1: Top 20 IWAs by pct (Agentic Ceiling, eco_2025)
     if not iwa_wide.empty and "pct_mcp_ceiling" in iwa_wide.columns:
-        top20_ceiling = iwa_wide.nlargest(20, "pct_mcp_ceiling").sort_values("pct_mcp_ceiling", ascending=True)
+        top20_ceiling = iwa_wide.nlargest(20, "pct_mcp_ceiling").sort_values("pct_mcp_ceiling", ascending=False)
         fig1 = make_horizontal_bar(
             top20_ceiling,
             category_col="category",
@@ -158,7 +158,7 @@ def main() -> None:
 
     # Fig 2: Top 20 IWA delta (ceiling - conv baseline)
     if not delta_df.empty:
-        top20_delta = delta_df.head(20).sort_values("delta", ascending=True)
+        top20_delta = delta_df.head(20).sort_values("delta", ascending=False)
         fig2 = make_horizontal_bar(
             top20_delta,
             category_col="category",
@@ -213,7 +213,7 @@ def main() -> None:
 
     # Fig 4: Top 20 IWAs for AEI API (eco_2015)
     if not aei_iwa_df.empty:
-        top20_aei = aei_iwa_df.nlargest(20, "pct_aei_api").sort_values("pct_aei_api", ascending=True)
+        top20_aei = aei_iwa_df.nlargest(20, "pct_aei_api").sort_values("pct_aei_api", ascending=False)
         fig4 = make_horizontal_bar(
             top20_aei,
             category_col="category",

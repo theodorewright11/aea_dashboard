@@ -1,6 +1,6 @@
 # Work Activity Exposure: Education Lens
 
-**TLDR:** 82% of affected workers are in activities with ≥33% AI exposure — the workforce is not split between an AI-affected minority and a safe majority. Thinking about what to teach and train requires a three-category framework: (1) Durable activities where training directly builds lasting value, (2) AI × Human pair activities where training should focus on AI collaboration and judgment, and (3) Delegation activities where the human role is shifting to oversight and direction. All three categories have large workforces. The right training strategy depends on which category each activity falls into — and given that trend data shows many activities moving between categories, that judgment needs updating regularly.
+82% of affected workers are in activities with ≥33% AI exposure — the workforce is not split between an AI-affected minority and a safe majority. Thinking about what to teach and train requires a three-category framework: (1) Durable activities where training directly builds lasting value, (2) AI × Human pair activities where training should focus on AI collaboration and judgment, and (3) Delegation activities where the human role is shifting to oversight and direction. All three categories have large workforces. The right training strategy depends on which category each activity falls into — and given that trend data shows many activities moving between categories, that judgment needs updating regularly.
 
 ---
 

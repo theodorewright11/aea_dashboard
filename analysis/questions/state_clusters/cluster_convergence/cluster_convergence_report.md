@@ -2,7 +2,7 @@
 
 *Five clustering schemes compared: sector composition | risk profile | activity signature | agentic profile | adoption gap*
 
-**TLDR:** The five state clustering schemes largely disagree with each other (all pairwise ARI values are low, max 0.26). This is not a failure — it means each lens is measuring something genuinely different about state economies, not just restating the same underlying structure. States that cluster together by sector composition don't reliably cluster together by risk tier, agentic intensity, or adoption gap. DC is the most unstable state (ARI = 0.07), consistently an outlier by every metric but not the same outlier each time. Most stable states are rural/industrial Midwest and Northeast.
+The five state clustering schemes largely disagree with each other (all pairwise ARI values are low, max 0.26). This is not a failure — it means each lens is measuring something genuinely different about state economies, not just restating the same underlying structure. States that cluster together by sector composition don't reliably cluster together by risk tier, agentic intensity, or adoption gap. DC is the most unstable state (ARI = 0.07), consistently an outlier by every metric but not the same outlier each time. Most stable states are rural/industrial Midwest and Northeast.
 
 ---
 

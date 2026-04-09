@@ -2,7 +2,7 @@
 
 *Primary config: All Confirmed (AEI Both + Micro 2026-02-12) | eco_2025 GWA classifications | freq method | auto-aug on*
 
-**TLDR:** When you cluster states by the General Work Activity (GWA) fingerprint of their AI-exposed workforce — what types of work AI is actually touching in each state — you get five activity groups with low overlap with the sector-composition clusters (ARI = 0.26). The biggest finding is that most states look nearly identical by GWA share (differences of <1pp on any given activity), and one state is completely unlike everyone else: DC, where analytical, creative, and leadership work account for a dramatically larger share of the AI-exposed workforce.
+When you cluster states by the General Work Activity (GWA) fingerprint of their AI-exposed workforce — what types of work AI is actually touching in each state — you get five activity groups with low overlap with the sector-composition clusters (ARI = 0.26). The biggest finding is that most states look nearly identical by GWA share (differences of <1pp on any given activity), and one state is completely unlike everyone else: DC, where analytical, creative, and leadership work account for a dramatically larger share of the AI-exposed workforce.
 
 ---
 
