@@ -157,60 +157,46 @@ def compute_aggregate_total(occ_df: pd.DataFrame, config_key: str, config_label:
 # ── Figure builders ────────────────────────────────────────────────────────────
 
 def _build_aggregate_bar(totals_df: pd.DataFrame) -> go.Figure:
-    """Grouped bar: workers/pct across 5 configs."""
+    """Bar: workers affected (M) across 5 configs, annotated with % of employment."""
     configs = totals_df["config_label"].tolist()
     workers_m = [w / 1e6 for w in totals_df["workers_affected"]]
     pct = totals_df["pct_of_employment"].tolist()
-
     max_workers = max(workers_m)
-    max_pct = max(pct)
 
-    fig = go.Figure()
-    fig.add_trace(go.Bar(
-        name="Workers Affected (M)",
+    palette = CATEGORY_PALETTE
+    bar_colors = [palette[i % len(palette)] for i in range(len(configs))]
+
+    # Single bar per config showing workers; % of employment shown as inside label
+    bar_labels = [f"{w:.1f}M<br>({p:.1f}%)" for w, p in zip(workers_m, pct)]
+
+    fig = go.Figure(go.Bar(
         x=configs,
         y=workers_m,
-        marker_color=COLORS["primary"],
-        text=[f"{w:.1f}M" for w in workers_m],
+        marker=dict(color=bar_colors, line=dict(width=0)),
+        text=bar_labels,
         textposition="outside",
-        textfont=dict(size=12, color=COLORS["neutral"], family=FONT_FAMILY),
+        textfont=dict(size=13, color=COLORS["neutral"], family=FONT_FAMILY),
         cliponaxis=False,
-        yaxis="y1",
-    ))
-    fig.add_trace(go.Bar(
-        name="% of Employment",
-        x=configs,
-        y=pct,
-        marker_color=COLORS["secondary"],
-        text=[f"{p:.1f}%" for p in pct],
-        textposition="outside",
-        textfont=dict(size=12, color=COLORS["neutral"], family=FONT_FAMILY),
-        cliponaxis=False,
-        yaxis="y2",
     ))
 
     fig.update_layout(
-        barmode="group",
         yaxis=dict(
             title="Workers Affected (millions)",
-            side="left",
             showgrid=True,
             gridcolor=COLORS["grid"],
-            range=[0, max_workers * 1.25],
+            range=[0, max_workers * 1.35],
         ),
-        yaxis2=dict(
-            title="% of Employment",
-            side="right",
-            overlaying="y",
-            showgrid=False,
-            range=[0, max_pct * 1.25],
-        ),
-        bargap=0.25,
-        margin=dict(l=80, r=80, t=100, b=120),
+        xaxis=dict(tickfont=dict(size=12, family=FONT_FAMILY)),
+        bargap=0.35,
+        showlegend=False,
+        margin=dict(l=80, r=60, t=110, b=80),
     )
-    style_figure(fig, "Aggregate AI Economic Footprint — Five Configs",
-                 subtitle="National | Freq method | Auto-aug ON | All tasks",
-                 height=620, width=1200)
+    style_figure(
+        fig,
+        "Aggregate AI Economic Footprint — Five Configs",
+        subtitle="Workers Affected (M) | Labels show % of total national employment | National | Freq | Auto-aug ON",
+        height=580, width=1200,
+    )
     return fig
 
 
