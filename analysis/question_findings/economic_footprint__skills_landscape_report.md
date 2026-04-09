@@ -1,6 +1,6 @@
 # Economic Footprint: Skills Landscape
 
-**TLDR:** Of 120 O*NET skills, knowledge, and abilities elements, 23 show higher AI capability scores than economy-wide averages — meaning AI currently leads humans in those domains across the affected workforce. Ninety-seven elements show human advantage, concentrated almost entirely in physical, perceptual, and sensorimotor abilities. The technology landscape tells a complementary story: database management, ERP, and CRM software categories carry the highest AI-exposure-weighted footprint in the economy, meaning those tools sit at the intersection of high AI capability and high employment concentration.
+Of 120 O*NET skills, knowledge, and abilities elements, 23 show higher AI capability scores than economy-wide averages — meaning AI currently leads humans in those domains across the affected workforce. Ninety-seven elements show human advantage, concentrated almost entirely in physical, perceptual, and sensorimotor abilities. The technology landscape tells a complementary story: database management, ERP, and CRM software categories carry the highest AI-exposure-weighted footprint in the economy, meaning those tools sit at the intersection of high AI capability and high employment concentration.
 
 ---
 

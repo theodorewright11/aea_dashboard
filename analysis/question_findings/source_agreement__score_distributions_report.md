@@ -1,6 +1,6 @@
 *Primary config: Four sources — AEI Conv + Micro 2026-02-12 | AEI API 2026-02-12 | Microsoft | MCP Cumul. v4 | Method: freq | Auto-aug ON | National*
 
-**TLDR:** The four sources produce dramatically different score distributions across 923 occupations. Human Conv. is the most aggressive rater, with a mean of 32% and 81 occupations in the high tier. AEI API is the most conservative — median of just 8.6%, with 626 of 923 occupations scoring below 20%. Microsoft bunches in the middle. MCP spreads more widely than either but still leaves 445 occupations below 20%. The sources most disagree on knowledge-intensive white-collar roles like Data Scientists and Penetration Testers; they most agree on physical, low-cognitive roles like floor sanders and rail workers.
+The four sources produce dramatically different score distributions across 923 occupations. Human Conv. is the most aggressive rater, with a mean of 32% and 81 occupations in the high tier. AEI API is the most conservative — median of just 8.6%, with 626 of 923 occupations scoring below 20%. Microsoft bunches in the middle. MCP spreads more widely than either but still leaves 445 occupations below 20%. The sources most disagree on knowledge-intensive white-collar roles like Data Scientists and Penetration Testers; they most agree on physical, low-cognitive roles like floor sanders and rail workers.
 
 ## Distribution Overview
 

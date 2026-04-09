@@ -1,6 +1,6 @@
 # Economic Footprint: Sector Breakdown
 
-**TLDR:** Under our primary configuration (All Confirmed), approximately 61.3 million workers — 40% of total U.S. employment — work in occupations where a meaningful share of tasks are AI-affected. That translates to roughly $4 trillion in wages in scope. The ceiling estimate puts the number at 77 million workers and $5 trillion in wages. Office/Admin and Sales together account for nearly a third of the affected workforce, though by percentage of tasks affected, Computer & Math and Sales are the most deeply exposed sectors.
+Under our primary configuration (All Confirmed), approximately 61.3 million workers — 40% of total U.S. employment — work in occupations where a meaningful share of tasks are AI-affected. That translates to roughly $4 trillion in wages in scope. The ceiling estimate puts the number at 77 million workers and $5 trillion in wages. Office/Admin and Sales together account for nearly a third of the affected workforce, though by percentage of tasks affected, Computer & Math and Sales are the most deeply exposed sectors.
 
 ---
 

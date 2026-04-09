@@ -2,7 +2,7 @@
 
 *Primary config: All Confirmed (AEI Both + Micro 2026-02-12) vs. All Ceiling (All 2026-02-18) | freq method | auto-aug on*
 
-**TLDR:** When you cluster states by the shape of their adoption gap — how much further AI could spread beyond current confirmed usage, broken down by sector — the resulting clusters are nearly random relative to every other clustering scheme (ARI < 0.20 vs. all others). The adoption gap is geographically uniform: virtually every state has an overall ceiling/confirmed gap ratio of roughly 0.24–0.25. The exceptions are Kentucky (highest gap, 0.277) and DC (lowest gap, 0.216). Within that narrow range, the sectoral *shape* of the gap differs slightly, but not in ways that cleanly map to any other state typology.
+When you cluster states by the shape of their adoption gap — how much further AI could spread beyond current confirmed usage, broken down by sector — the resulting clusters are nearly random relative to every other clustering scheme (ARI < 0.20 vs. all others). The adoption gap is geographically uniform: virtually every state has an overall ceiling/confirmed gap ratio of roughly 0.24–0.25. The exceptions are Kentucky (highest gap, 0.277) and DC (lowest gap, 0.216). Within that narrow range, the sectoral *shape* of the gap differs slightly, but not in ways that cleanly map to any other state typology.
 
 ---
 

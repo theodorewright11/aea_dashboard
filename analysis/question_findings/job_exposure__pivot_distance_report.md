@@ -1,6 +1,6 @@
 # Pivot Distance: The Cost of Crossing the AI Risk Line
 
-**TLDR:** Zone 3 workers -- office clerks, bookkeepers, billing specialists -- face the most expensive reskilling path in the entire labor market (303.79 total cost across 36 skill/knowledge elements). The gaps are mechanical, physical, and construction-related, not the soft-skill deficits that workforce programs typically target. But here's the new wrinkle: AI itself can help close many of these gaps. In Zone 2, AI tools can assist with 99.5% of the gap elements. Even in Zone 3, the number is 98.4%. The reskilling problem is real, but the reskilling toolkit just got a lot more powerful.
+Zone 3 workers -- office clerks, bookkeepers, billing specialists -- face the most expensive reskilling path in the entire labor market (303.79 total cost across 36 skill/knowledge elements). The gaps are mechanical, physical, and construction-related, not the soft-skill deficits that workforce programs typically target. But here's the new wrinkle: AI itself can help close many of these gaps. In Zone 2, AI tools can assist with 99.5% of the gap elements. Even in Zone 3, the number is 98.4%. The reskilling problem is real, but the reskilling toolkit just got a lot more powerful.
 
 ---
 

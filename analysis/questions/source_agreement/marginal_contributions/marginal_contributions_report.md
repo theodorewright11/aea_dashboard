@@ -1,6 +1,6 @@
 *Primary config: Human Conv. (AEI Conv + Micro 2026-02-12) | All Confirmed (AEI Both + Micro 2026-02-12) | All Ceiling (All 2026-02-18) | Method: freq | Auto-aug ON | National*
 
-**TLDR:** Adding each new data layer changes the picture meaningfully. The AEI API layer (Human Conv. -> All Confirmed) is more surgical: it pushes 64 occupations into the high tier (>=60%) and concentrates gains in Computer/Mathematical, Sales, and Business/Financial. The MCP layer (All Confirmed -> All Ceiling) is more sweeping: 104 new high-tier entrants, with Office/Admin, Management, and Sales all jumping 15+ percentage points. At the work-activity level, MCP causes 42 IWAs to cross the 33% threshold — four times more than the API addition. Each layer reveals a structurally different part of AI's footprint.
+Adding each new data layer changes the picture meaningfully. The AEI API layer (Human Conv. -> All Confirmed) is more surgical: it pushes 64 occupations into the high tier (>=60%) and concentrates gains in Computer/Mathematical, Sales, and Business/Financial. The MCP layer (All Confirmed -> All Ceiling) is more sweeping: 104 new high-tier entrants, with Office/Admin, Management, and Sales all jumping 15+ percentage points. At the work-activity level, MCP causes 42 IWAs to cross the 33% threshold — four times more than the API addition. Each layer reveals a structurally different part of AI's footprint.
 
 ## Tier Structure at Baseline
 

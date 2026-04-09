@@ -1,6 +1,6 @@
 *Primary config: Agentic Ceiling (MCP + API series) | Conv. Baseline (AEI Both + Micro series) | AEI API series | MCP Cumul. series | Method: freq | Auto-aug ON | National*
 
-**TLDR:** The agentic ceiling has grown from 33.4M exposed workers in April 2025 to 60.4M in February 2026 — an 81% increase in under a year. The growth is not linear: there was a sharp jump from July to August 2025 (+9.4M workers in one version update) and a much slower pace in late 2025 and early 2026. AEI API has grown more steadily (+33% from Aug 2025 to Feb 2026). MCP growth plateaued after v3 — v3 to v4 added less than 1M workers. The sectors that grew fastest over the agentic ceiling's history are Sales (+28.7pp), Education (+27.3pp), and Legal (+24.6pp) — a mix of commercial, knowledge, and professional service sectors.
+The agentic ceiling has grown from 33.4M exposed workers in April 2025 to 60.4M in February 2026 — an 81% increase in under a year. The growth is not linear: there was a sharp jump from July to August 2025 (+9.4M workers in one version update) and a much slower pace in late 2025 and early 2026. AEI API has grown more steadily (+33% from Aug 2025 to Feb 2026). MCP growth plateaued after v3 — v3 to v4 added less than 1M workers. The sectors that grew fastest over the agentic ceiling's history are Sales (+28.7pp), Education (+27.3pp), and Legal (+24.6pp) — a mix of commercial, knowledge, and professional service sectors.
 
 ## Agentic Ceiling Growth Trajectory
 

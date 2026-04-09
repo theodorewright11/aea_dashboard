@@ -4,8 +4,6 @@
 
 ---
 
-## TLDR
-
 Four independent AI scoring sources — human conversational usage, agentic API usage, Microsoft Copilot, and MCP tool-use — agree strongly on which major occupation groups are most AI-exposed (mean Spearman rho = 0.875), but that consensus collapses almost entirely by the time you reach individual occupations (rho = 0.676, and 91% of occupations have zero cross-source consensus in the top 30). Six major categories are genuine bedrock findings, supported by all four sources. The rest of the occupational hierarchy is where each source's distinct measurement philosophy produces divergent pictures.
 
 ---

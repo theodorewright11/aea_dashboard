@@ -135,6 +135,20 @@ Follow project `CLAUDE.md` Python rules, plus:
 - Use `COLORS`, `FONT_FAMILY`, `CATEGORY_PALETTE` from `analysis.utils` for all charts. Never hardcode colors in question scripts.
 - Every `run.py` must copy key figures to a committed `figures/` dir and call `generate_pdf()` at the end.
 
+## Charts and Dashboard Reproduction
+
+**`analysis/charts.md`** is the single consolidated reference for all committed analysis figures and how to reproduce them (or not) on the live dashboard. It covers every sub-question across all nine active buckets.
+
+When adding a new figure to a `run.py`:
+- Add an entry in `analysis/charts.md` under the appropriate bucket/sub-question section.
+- Specify the chart type, what it shows, and either the dashboard reproduction steps or "Not reproducible" with the reason.
+
+**Chart formatting rules:**
+- Horizontal bar charts using `make_horizontal_bar` must pass the DataFrame sorted `ascending=False` (largest first). `make_horizontal_bar` uses `autorange="reversed"` on the y-axis — passing ascending=True will render smallest at top.
+- For raw `go.Figure` horizontal bars (without `make_horizontal_bar`), sort `ascending=True` (smallest first) so the largest value renders at the top of the chart.
+- Reports use opening paragraphs (no `## TLDR` heading and no `**TLDR:**` prefix). Just a plain paragraph immediately after the config line and `---` divider.
+- State/geo labels should be uppercase in all bar charts.
+
 ## Pitfalls
 
 - `pct_tasks_affected` from `get_pct_tasks_affected()` is already a ratio-of-totals (0-100). Never average it across occupations to get a group pct — re-derive from task_comps.

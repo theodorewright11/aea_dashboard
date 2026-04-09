@@ -218,6 +218,7 @@ def _build_tier_bars(
     """Stacked horizontal bar: states sorted by pct_high, colored bar outlines by cluster."""
     merged = features.merge(assignments[["geo", "risk_cluster"]], on="geo")
     merged = merged.sort_values("pct_high", ascending=True)
+    merged["geo_label"] = merged["geo"].str.upper()
 
     fig = go.Figure()
     for tier, col, color in [
@@ -227,7 +228,7 @@ def _build_tier_bars(
     ]:
         fig.add_trace(go.Bar(
             x=merged[col],
-            y=merged["geo"],
+            y=merged["geo_label"],
             orientation="h",
             name=tier,
             marker_color=color,

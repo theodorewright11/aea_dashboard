@@ -138,7 +138,7 @@ def main() -> None:
     # Fig 2: pct_tasks_affected by major category (agentic ceiling)
     pct_sorted = major_wide.sort_values("pct_agentic_ceiling", ascending=False).head(20)
     fig_pct = make_horizontal_bar(
-        pct_sorted.sort_values("pct_agentic_ceiling", ascending=True),
+        pct_sorted,
         category_col="category",
         value_col="pct_agentic_ceiling",
         title="% Tasks Affected by Major Category — Agentic Ceiling",

@@ -1,6 +1,6 @@
 # Economic Footprint: Work Activities
 
-**TLDR:** Looking through the work activity lens, the most broadly-affected GWAs by worker count are Documenting/Recording Information (5.9M workers), Handling and Moving Objects (4.7M), and Getting Information (4.0M). But those raw counts include a lot of incidental exposure. The highest percentage-penetration GWAs — Working with Computers (69.3%), Interpreting the Meaning of Information (70.0%), Communicating with People Outside the Organization (69.6%) — point more precisely at where AI is most deeply embedded in work. The agentic/conversational split reveals that action-taking activities (Scheduling, Administrative, Documenting) jump dramatically under agentic AI.
+Looking through the work activity lens, the most broadly-affected GWAs by worker count are Documenting/Recording Information (5.9M workers), Handling and Moving Objects (4.7M), and Getting Information (4.0M). But those raw counts include a lot of incidental exposure. The highest percentage-penetration GWAs — Working with Computers (69.3%), Interpreting the Meaning of Information (70.0%), Communicating with People Outside the Organization (69.6%) — point more precisely at where AI is most deeply embedded in work. The agentic/conversational split reveals that action-taking activities (Scheduling, Administrative, Documenting) jump dramatically under agentic AI.
 
 ---
 

@@ -4,8 +4,6 @@
 
 ---
 
-## TLDR
-
 248 occupations (out of 893 analyzed) fall into Q1: AI capability already exceeds typical occupational skill need (SKA gap > median) AND the adoption gap is large (ceiling minus confirmed > median 7.3pp). These are the highest-value automation targets available with today's tools. 102 of those 248 also carry a high risk tier from the job risk scoring analysis, meaning they're not just automation opportunities — they're occupations where the combination of AI capability, deployment gap, and structural vulnerability signals likely job transformation rather than just augmentation. The rest (146 occupations in Q1 without high risk) are more straightforwardly opportunity: AI can reach them, the tools aren't deployed, and transformation pressure is lower.
 
 ---

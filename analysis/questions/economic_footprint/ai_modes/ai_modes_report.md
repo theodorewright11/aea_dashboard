@@ -1,6 +1,6 @@
 # Economic Footprint: AI Modes
 
-**TLDR:** Confirmed agentic tool-use (AEI API only) reaches 31.1 million workers — narrower than the 54.1 million reached by conversational AI. The gap reflects a real difference in deployment patterns: API-based agentic usage is currently more specialized than broad conversational AI adoption. But the agentic ceiling — adding MCP server capability data — pushes the count to 60.4 million, which exceeds conversational. The gap between confirmed agentic (31.1M) and ceiling agentic (60.4M) is where the next wave lives. Auto-augmentability scores are uniformly high: 97.7% of workers are in occupations with meaningful AI augmentation potential (score >= 2 on a 5-point scale), with a weighted mean of 2.82 across the full workforce.
+Confirmed agentic tool-use (AEI API only) reaches 31.1 million workers — narrower than the 54.1 million reached by conversational AI. The gap reflects a real difference in deployment patterns: API-based agentic usage is currently more specialized than broad conversational AI adoption. But the agentic ceiling — adding MCP server capability data — pushes the count to 60.4 million, which exceeds conversational. The gap between confirmed agentic (31.1M) and ceiling agentic (60.4M) is where the next wave lives. Auto-augmentability scores are uniformly high: 97.7% of workers are in occupations with meaningful AI augmentation potential (score >= 2 on a 5-point scale), with a weighted mean of 2.82 across the full workforce.
 
 ---
 

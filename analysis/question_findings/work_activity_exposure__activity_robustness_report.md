@@ -1,6 +1,6 @@
 # Work Activity Robustness
 
-**TLDR:** 164 of 332 IWAs are robust (confirmed exposure < 33%) across all five configs. Only 4 are fragile (≥66%) in all five configs — activities where every data source agrees AI is deeply embedded. The "next wave" is 42 IWAs currently below 33% confirmed but where the ceiling already puts them at or above 33%. At the GWA level, only the physically-intensive categories are robust; everything involving information, coordination, or communication is moderate to fragile.
+164 of 332 IWAs are robust (confirmed exposure < 33%) across all five configs. Only 4 are fragile (≥66%) in all five configs — activities where every data source agrees AI is deeply embedded. The "next wave" is 42 IWAs currently below 33% confirmed but where the ceiling already puts them at or above 33%. At the GWA level, only the physically-intensive categories are robust; everything involving information, coordination, or communication is moderate to fragile.
 
 ---
 

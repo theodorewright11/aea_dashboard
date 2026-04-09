@@ -1,6 +1,6 @@
 # Economic Footprint: Time Trends
 
-**TLDR:** The All Confirmed worker count has roughly doubled since the first available dataset date, with most of the growth coming from a sustained expansion of confirmed AI capability claims rather than changes in the labor market. At the sector level, Legal, Educational, and Sales occupations have seen the largest absolute gains in task exposure — Legal nearly doubled from 22.8% to 48.3%. The ceiling estimates have grown in parallel, meaning the confirmed/ceiling gap hasn't meaningfully narrowed — new capabilities keep expanding both bounds simultaneously.
+The All Confirmed worker count has roughly doubled since the first available dataset date, with most of the growth coming from a sustained expansion of confirmed AI capability claims rather than changes in the labor market. At the sector level, Legal, Educational, and Sales occupations have seen the largest absolute gains in task exposure — Legal nearly doubled from 22.8% to 48.3%. The ceiling estimates have grown in parallel, meaning the confirmed/ceiling gap hasn't meaningfully narrowed — new capabilities keep expanding both bounds simultaneously.
 
 ---
 

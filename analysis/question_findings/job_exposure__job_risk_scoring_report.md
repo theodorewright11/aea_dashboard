@@ -4,8 +4,6 @@
 
 ---
 
-## TLDR
-
 A seven-flag weighted scoring system separates 923 occupations into three risk tiers. 195 occupations employing 50.7 million workers land in the high tier (scores 8--11), where both direct AI exposure and structural vulnerability converge. The moderate tier is the largest at 504 occupations and 82.5 million workers -- and the most internally diverse, ranging from structurally vulnerable jobs with almost no AI exposure to highly exposed jobs protected by education requirements or strong demand. The most useful finding: what drives a score of 4 is completely different from what drives a score of 7, and that distinction matters more than the tier label.
 
 ---

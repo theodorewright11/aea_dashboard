@@ -1,6 +1,6 @@
 # Economic Footprint: Job Structure
 
-**TLDR:** AI exposure increases with job preparation level up through Zone 4, then plateaus or slightly dips for Zone 5. The most highly-credentialed jobs (Zone 4 — bachelor's plus significant work experience) carry the highest average task exposure, which cuts against the simple story that AI replaces low-skill work. The Utah DWS job outlook data adds another wrinkle: jobs classified as declining or below-average (Rating 3) have higher average AI exposure than bright-outlook jobs, suggesting some correlation between precarity and exposure — but the relationship isn't clean.
+AI exposure increases with job preparation level up through Zone 4, then plateaus or slightly dips for Zone 5. The most highly-credentialed jobs (Zone 4 — bachelor's plus significant work experience) carry the highest average task exposure, which cuts against the simple story that AI replaces low-skill work. The Utah DWS job outlook data adds another wrinkle: jobs classified as declining or below-average (Rating 3) have higher average AI exposure than bright-outlook jobs, suggesting some correlation between precarity and exposure — but the relationship isn't clean.
 
 ---
 

@@ -4,8 +4,6 @@
 
 ---
 
-## TLDR
-
 There was no confirmed/ceiling gap before April 2025 — because MCP (the main thing that makes the ceiling larger than confirmed) didn't exist yet. The gap opened in August 2025 when MCP data was incorporated, putting the confirmed/ceiling ratio at 77%. Since then, the ratio has crept upward: 77% in August 2025, 79% in November 2025, 80% in February 2026. The gap is not closing dramatically, but confirmed exposure is growing slightly faster than ceiling exposure at the national level. The sectors where confirmed is furthest below ceiling (Transportation at 59%, Production at 68%) are precisely the sectors where MCP adds the most exposure — tool-use AI has a different occupational footprint than conversational AI, and those sectors are where the gap lives.
 
 ---

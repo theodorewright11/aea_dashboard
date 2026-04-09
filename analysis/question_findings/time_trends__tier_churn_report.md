@@ -4,8 +4,6 @@
 
 ---
 
-## TLDR
-
 In September 2024, zero occupations had >= 60% confirmed AI exposure. By February 2026, 145 did. That's the single most striking number in this analysis: the entire high-exposure tier was created during the measurement window. Alongside that, 41% of all occupations changed tier over the period — mostly moving upward from the "restructuring" (20–39%) band toward moderate (40–59%) and high (>=60%). Legal Occupations was the most unstable sector, with 100% of its occupations changing tier. Transportation and Material Moving was the most stable — 92% stayed put.
 
 ---
