@@ -297,13 +297,13 @@ def _make_next_wave_chart(next_wave: pd.DataFrame) -> go.Figure:
     )
     fig.update_layout(
         barmode="stack",
-        margin=dict(l=20, r=80, t=80, b=140),
+        margin=dict(l=20, r=80, t=80, b=180),
         yaxis=dict(showgrid=False, tickfont=dict(size=9)),
         bargap=0.25,
         legend=dict(
             orientation="h",
             yanchor="top",
-            y=-0.12,
+            y=-0.30,
             xanchor="center",
             x=0.5,
         ),
