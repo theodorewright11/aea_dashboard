@@ -24,7 +24,7 @@ All dashboard reproductions use: Method = Time, Physical = All, Auto-aug = ON, G
 
 ### 1.1 Sector Footprint (`economic_footprint/sector_footprint/`)
 
-**`aggregate_totals.png`** — Grouped vertical bar: workers affected (M) and % of employment across all five configs.
+**`aggregate_totals.png`** — Vertical bar: one bar per config showing workers affected (M), annotated with % of national employment. Each bar is a distinct color.
 - Not directly reproducible. The dashboard shows bar charts per category, not aggregate economy totals. Use tooltips in Occupation Categories to read individual sector totals.
 
 **`major_workers.png`** — Horizontal bar: top major occupational categories by workers affected (all_confirmed).
