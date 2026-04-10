@@ -16,9 +16,9 @@ The ceiling and confirmed trajectories have moved together rather than convergin
 
 The worker count growth is almost entirely driven by new capability claims being added — the labor market itself isn't changing quickly. What's changing is the assessed reach of AI into existing occupational tasks. The same jobs are there; AI keeps finding new footholds in them.
 
-![Aggregate Worker Count Trend Over Time](../questions/economic_footprint/trends/figures/aggregate_trend.png)
+![Aggregate Worker Count Trend Over Time](figures/aggregate_trend.png)
 
-![Aggregate Task Penetration Trend Over Time](../questions/economic_footprint/trends/figures/aggregate_trend_pct.png)
+![Aggregate Task Penetration Trend Over Time](figures/aggregate_trend_pct.png)
 
 ---
 
@@ -41,9 +41,9 @@ Education shows a similar pattern. The tasks embedded in educational work — co
 
 At the bottom of the growth table: Farming/Forestry (+1.9 pp), Transportation (+2.3 pp), Production (+2.6 pp). Physical, equipment-dependent work where the task frontier hasn't moved much.
 
-![Major Sector Exposure Growth (All Confirmed)](../questions/economic_footprint/trends/figures/major_growth_bar.png)
+![Major Sector Exposure Growth (All Confirmed)](figures/major_growth_bar.png)
 
-![Sector-Level Trends Over Time](../questions/economic_footprint/trends/figures/major_trends_confirmed.png)
+![Sector-Level Trends Over Time](figures/major_trends_confirmed.png)
 
 ---
 

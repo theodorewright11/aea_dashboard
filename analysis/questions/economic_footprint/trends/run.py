@@ -72,7 +72,21 @@ def get_major_data(dataset_name: str) -> pd.DataFrame:
     return data["df"].rename(columns={"major_occ_category": "category"})
 
 
-def get_occ_totals(dataset_name: str) -> dict:
+def _get_total_employment() -> float:
+    """Return total national employment from eco_2025 (fixed across dates)."""
+    from backend.compute import get_explorer_occupations
+
+    return sum(o.get("emp") or 0 for o in get_explorer_occupations())
+
+
+def get_occ_totals(dataset_name: str, total_emp: float) -> dict:
+    """Return aggregate national totals for a single dataset.
+
+    Parameters
+    ----------
+    dataset_name : dataset key, e.g. "AEI Both + Micro 2026-02-12"
+    total_emp    : total national employment (constant across dates)
+    """
     from backend.compute import get_group_data
 
     config = {
@@ -94,9 +108,9 @@ def get_occ_totals(dataset_name: str) -> dict:
     df = data["df"]
     workers = df["workers_affected"].sum()
     wages = df["wages_affected"].sum()
-    emp = df["emp"].sum() if "emp" in df.columns else 0
-    pct_emp = workers / emp * 100 if emp > 0 else 0
-    wtd_pct = (df["pct_tasks_affected"] * df["emp"]).sum() / df["emp"].sum() if "emp" in df.columns else 0
+    pct_emp = workers / total_emp * 100 if total_emp > 0 else 0
+    # Employment-weighted avg pct_tasks_affected = total_workers / total_emp * 100
+    wtd_pct = workers / total_emp * 100 if total_emp > 0 else 0
     return {
         "workers_affected": workers,
         "wages_affected": wages,
@@ -118,13 +132,17 @@ def main() -> None:
     figs_dir.mkdir(exist_ok=True)
 
     # -- 1. Aggregate trend — all configs --------------------------------------
+    print("trends: loading total employment...")
+    total_emp = _get_total_employment()
+    print(f"  total employment: {total_emp/1e6:.1f}M")
+
     print("trends: aggregate series...")
     agg_rows: list[dict] = []
     for config_key, series in ANALYSIS_CONFIG_SERIES.items():
         label = ANALYSIS_CONFIG_LABELS[config_key]
         for ds_name in series:
             print(f"  {label} {_parse_date(ds_name)}...")
-            totals = get_occ_totals(ds_name)
+            totals = get_occ_totals(ds_name, total_emp)
             if not totals:
                 continue
             agg_rows.append({

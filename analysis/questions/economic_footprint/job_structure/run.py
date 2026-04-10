@@ -74,10 +74,15 @@ ZONE_LABELS = {
 }
 
 OUTLOOK_LABELS = {
-    1: "Rating 1\n(Bright/High-wage)",
-    2: "Rating 2\n(Average outlook)",
-    3: "Rating 3\n(Below average)",
+    5: "5 — Strongest outlook\n+ high wages",
+    4: "4 — Good outlook\n+ relatively high wages",
+    3: "3 — Moderate outlook\n+ low-mod wages",
+    2: "2 — High wages\n+ limited outlook",
+    1: "1 — Low wages\n+ strong outlook",
+    0: "0 — Limited outlook\n+ low wages",
 }
+
+MCP_DATASET = "MCP Cumul. v4"
 
 
 # -- Data helpers ---------------------------------------------------------------
@@ -105,6 +110,22 @@ def assign_tier(pct: float) -> str:
         if lo <= pct < hi:
             return label
     return "Low (<20%)"
+
+
+def _load_task_level(dataset_name: str) -> pd.DataFrame:
+    """Load task-level rows from a dataset CSV with job_zone, freq_mean, pct_normalized."""
+    from backend.config import DATASETS
+
+    meta = DATASETS.get(dataset_name)
+    assert meta is not None, f"Unknown dataset: {dataset_name}"
+    df = pd.read_csv(meta["file"], usecols=[
+        "title_current", "task_normalized", "job_zone",
+        "freq_mean", "pct_normalized", "major_occ_category",
+    ])
+    df["job_zone"] = pd.to_numeric(df["job_zone"], errors="coerce")
+    df["freq_mean"] = pd.to_numeric(df["freq_mean"], errors="coerce")
+    df["pct_normalized"] = pd.to_numeric(df["pct_normalized"], errors="coerce")
+    return df[df["job_zone"].notna()].copy()
 
 
 # -- Figure builders ------------------------------------------------------------
@@ -177,6 +198,76 @@ def _build_tier_heatmap(dist_df: pd.DataFrame, group_col: str,
         xaxis=dict(showgrid=False, showline=False, tickangle=-15),
         yaxis=dict(showgrid=False, showline=False),
         margin=dict(l=200, r=80, t=90, b=80),
+    )
+    return fig
+
+
+def _build_zone_metric_violin(task_df: pd.DataFrame, metric_col: str,
+                               title: str, subtitle: str,
+                               y_title: str) -> go.Figure:
+    """Violin of a task-level metric (freq_mean or pct_normalized) by job_zone."""
+    fig = go.Figure()
+    colors = [COLORS["primary"], COLORS["secondary"], COLORS["accent"],
+              COLORS["positive"], COLORS["negative"]]
+
+    valid = task_df[task_df[metric_col].notna()].copy()
+    valid["job_zone"] = valid["job_zone"].astype(int)
+    zones = sorted(valid["job_zone"].unique())
+
+    for i, z in enumerate(zones):
+        sub = valid[valid["job_zone"] == z]
+        label = ZONE_LABELS.get(z, str(z)).replace("\n", " ")
+        fig.add_trace(go.Violin(
+            x=[label] * len(sub),
+            y=sub[metric_col],
+            name=label,
+            box_visible=True,
+            meanline_visible=True,
+            fillcolor=colors[i % len(colors)],
+            opacity=0.7,
+            line_color=colors[i % len(colors)],
+            points=False,
+        ))
+
+    style_figure(fig, title, subtitle=subtitle, y_title=y_title,
+                 show_legend=False, height=600, width=1100)
+    fig.update_layout(
+        xaxis=dict(showgrid=False, showline=False),
+        yaxis=dict(showgrid=True, gridcolor=COLORS["grid"]),
+        violinmode="group",
+    )
+    return fig
+
+
+def _build_zone_metric_bar(task_df: pd.DataFrame, metric_col: str,
+                            title: str, subtitle: str,
+                            y_title: str) -> go.Figure:
+    """Bar chart of average task-level metric by job_zone."""
+    valid = task_df[task_df[metric_col].notna()].copy()
+    valid["job_zone"] = valid["job_zone"].astype(int)
+    zone_avg = valid.groupby("job_zone")[metric_col].mean().reset_index()
+    zone_avg["label"] = zone_avg["job_zone"].map(
+        {k: v.replace("\n", " ") for k, v in ZONE_LABELS.items()}
+    )
+    zone_avg = zone_avg.sort_values("job_zone")
+
+    colors = [COLORS["primary"], COLORS["secondary"], COLORS["accent"],
+              COLORS["positive"], COLORS["negative"]]
+
+    fig = go.Figure(go.Bar(
+        x=zone_avg["label"],
+        y=zone_avg[metric_col],
+        marker_color=[colors[i % len(colors)] for i in range(len(zone_avg))],
+        text=[f"{v:.2f}" for v in zone_avg[metric_col]],
+        textposition="outside",
+        textfont=dict(size=11, color=COLORS["neutral"], family=FONT_FAMILY),
+    ))
+
+    style_figure(fig, title, subtitle=subtitle, y_title=y_title,
+                 show_legend=False, height=500, width=900)
+    fig.update_layout(
+        xaxis=dict(showgrid=False, showline=False),
+        yaxis=dict(showgrid=True, gridcolor=COLORS["grid"]),
     )
     return fig
 
@@ -289,7 +380,7 @@ def main() -> None:
     fig_outlook_v = _build_violin(
         df, "outlook", {k: v.replace("\n", " ") for k, v in OUTLOOK_LABELS.items()},
         "AI Exposure Distribution by Job Outlook Rating",
-        subtitle=f"{ANALYSIS_CONFIG_LABELS[PRIMARY_KEY]} | Employment-weighted violin | Utah DWS ratings",
+        subtitle=f"{ANALYSIS_CONFIG_LABELS[PRIMARY_KEY]} | Employment-weighted violin | ECO 2025 DWS ratings (0-5, non-linear)",
     )
     save_figure(fig_outlook_v, results / "figures" / "outlook_exposure_violin.png")
     shutil.copy(results / "figures" / "outlook_exposure_violin.png", figs_dir / "outlook_exposure_violin.png")
@@ -319,7 +410,88 @@ def main() -> None:
     shutil.copy(results / "figures" / "major_zone_heatmap.png", figs_dir / "major_zone_heatmap.png")
     print("  major_zone_heatmap.png")
 
-    # -- 6. Summary stats ------------------------------------------------------
+    # -- 6. MCP-only zone analysis --------------------------------------------
+    print("\njob_structure: MCP-only zone analysis...")
+    pct_mcp = get_pct_tasks_affected(MCP_DATASET)
+    df_mcp = structural.copy()
+    df_mcp["pct"] = df_mcp["title_current"].map(pct_mcp).fillna(0.0)
+    df_mcp["tier"] = df_mcp["pct"].apply(assign_tier)
+
+    # 6a. MCP zone violin
+    fig_mcp_zone_v = _build_violin(
+        df_mcp, "job_zone", {k: v.replace("\n", " ") for k, v in ZONE_LABELS.items()},
+        "AI Exposure by Job Zone — MCP Only",
+        subtitle="MCP Cumul. v4 | Employment-weighted violin | Removes user self-selection bias",
+    )
+    save_figure(fig_mcp_zone_v, results / "figures" / "zone_exposure_violin_mcp.png")
+    shutil.copy(results / "figures" / "zone_exposure_violin_mcp.png", figs_dir / "zone_exposure_violin_mcp.png")
+    print("  zone_exposure_violin_mcp.png")
+
+    # 6b. MCP zone × tier heatmap
+    mcp_zone_tier = (
+        df_mcp[df_mcp["job_zone"].notna()]
+        .groupby(["job_zone", "tier"])
+        .agg(n_occs=("title_current", "count"), workers=("emp", "sum"))
+        .reset_index()
+    )
+    mcp_zone_tier["workers_m"] = mcp_zone_tier["workers"] / 1e6
+    fig_mcp_zone_heat = _build_tier_heatmap(
+        mcp_zone_tier, "job_zone", {k: v.replace("\n", " ") for k, v in ZONE_LABELS.items()},
+        "Workers by Job Zone and Exposure Tier — MCP Only",
+    )
+    save_figure(fig_mcp_zone_heat, results / "figures" / "zone_tier_heatmap_mcp.png")
+    shutil.copy(results / "figures" / "zone_tier_heatmap_mcp.png", figs_dir / "zone_tier_heatmap_mcp.png")
+    print("  zone_tier_heatmap_mcp.png")
+
+    # -- 7. Task freq and pct_norm by zone ------------------------------------
+    print("\njob_structure: task-level freq/pct_norm by zone...")
+    task_df = _load_task_level(ANALYSIS_CONFIGS[PRIMARY_KEY])
+
+    # 7a. Freq by zone — bar
+    fig_freq_bar = _build_zone_metric_bar(
+        task_df, "freq_mean",
+        "Average Task Frequency by Job Zone",
+        subtitle=f"{ANALYSIS_CONFIG_LABELS[PRIMARY_KEY]} | Mean freq_mean per task row",
+        y_title="Avg freq_mean",
+    )
+    save_figure(fig_freq_bar, results / "figures" / "zone_freq_bar.png")
+    shutil.copy(results / "figures" / "zone_freq_bar.png", figs_dir / "zone_freq_bar.png")
+    print("  zone_freq_bar.png")
+
+    # 7b. Freq by zone — violin
+    fig_freq_violin = _build_zone_metric_violin(
+        task_df, "freq_mean",
+        "Task Frequency Distribution by Job Zone",
+        subtitle=f"{ANALYSIS_CONFIG_LABELS[PRIMARY_KEY]} | Each point = one task row",
+        y_title="freq_mean",
+    )
+    save_figure(fig_freq_violin, results / "figures" / "zone_freq_violin.png")
+    shutil.copy(results / "figures" / "zone_freq_violin.png", figs_dir / "zone_freq_violin.png")
+    print("  zone_freq_violin.png")
+
+    # 7c. Pct norm by zone — bar
+    fig_pct_bar = _build_zone_metric_bar(
+        task_df, "pct_normalized",
+        "Average pct_normalized by Job Zone",
+        subtitle=f"{ANALYSIS_CONFIG_LABELS[PRIMARY_KEY]} | Mean pct_normalized per task row",
+        y_title="Avg pct_normalized",
+    )
+    save_figure(fig_pct_bar, results / "figures" / "zone_pct_norm_bar.png")
+    shutil.copy(results / "figures" / "zone_pct_norm_bar.png", figs_dir / "zone_pct_norm_bar.png")
+    print("  zone_pct_norm_bar.png")
+
+    # 7d. Pct norm by zone — violin
+    fig_pct_violin = _build_zone_metric_violin(
+        task_df, "pct_normalized",
+        "pct_normalized Distribution by Job Zone",
+        subtitle=f"{ANALYSIS_CONFIG_LABELS[PRIMARY_KEY]} | Each point = one task row",
+        y_title="pct_normalized",
+    )
+    save_figure(fig_pct_violin, results / "figures" / "zone_pct_norm_violin.png")
+    shutil.copy(results / "figures" / "zone_pct_norm_violin.png", figs_dir / "zone_pct_norm_violin.png")
+    print("  zone_pct_norm_violin.png")
+
+    # -- 8. Summary stats ------------------------------------------------------
     print("\n-- Zone breakdown (primary config) --")
     for zone in range(1, 6):
         sub = df[df["job_zone"] == zone]
@@ -329,8 +501,8 @@ def main() -> None:
         print(f"  Zone {zone}: {len(sub)} occs, {format_workers(sub['emp'].sum())} workers, "
               f"avg pct = {avg_pct:.1f}%")
 
-    print("\n-- Outlook breakdown --")
-    for olk in range(1, 4):
+    print("\n-- Outlook breakdown (0-5 scale) --")
+    for olk in range(6):
         sub = df[df["outlook"] == olk]
         if sub.empty:
             continue
@@ -338,7 +510,16 @@ def main() -> None:
         print(f"  Outlook {olk}: {len(sub)} occs, {format_workers(sub['emp'].sum())} workers, "
               f"avg pct = {avg_pct:.1f}%")
 
-    # -- 7. PDF ----------------------------------------------------------------
+    print("\n-- Zone breakdown (MCP only) --")
+    for zone in range(1, 6):
+        sub = df_mcp[df_mcp["job_zone"] == zone]
+        if sub.empty:
+            continue
+        avg_pct = np.average(sub["pct"], weights=sub["emp"].clip(1)) if sub["emp"].sum() > 0 else 0
+        print(f"  Zone {zone}: {len(sub)} occs, {format_workers(sub['emp'].sum())} workers, "
+              f"avg pct = {avg_pct:.1f}%")
+
+    # -- 9. PDF ----------------------------------------------------------------
     report_path = HERE / "job_structure_report.md"
     if report_path.exists():
         generate_pdf(report_path, results / "job_structure_report.pdf")

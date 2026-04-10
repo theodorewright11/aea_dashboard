@@ -42,6 +42,18 @@ The broad pattern: activities that are communicative, interpretive, and analytic
 
 ---
 
+## Where the Deployment Gap Is Largest
+
+The drop in workers affected from conversational to agentic — ranked by sector — shows where agentic deployment most lags conversational reach. Sectors with the largest drops are where conversational AI is broadly embedded but agentic tool-use hasn't followed.
+
+![Worker Reach Drop: Conversational to Agentic](figures/agentic_workers_drop.png)
+
+The same pattern through the lens of task penetration: the drop in pct_tasks_affected from conversational to agentic shows which sectors lose the most task coverage when moving to tool-use-only.
+
+![Task Penetration Drop: Conversational to Agentic](figures/agentic_pct_drop.png)
+
+---
+
 ## Auto-Augmentability
 
 Auto-augmentability is a different angle. Rather than asking "can AI do this task," it asks "how well can AI assist a worker doing this task" — a measure of collaboration potential rather than replacement risk.
@@ -60,6 +72,19 @@ The by-major-sector breakdown of auto-augmentability scores generally tracks the
 ![Auto-Augmentability Distribution Across Affected Workforce](figures/autoaug_distribution.png)
 
 ![Auto-Augmentability by Major Sector](figures/autoaug_by_major.png)
+
+### Auto-Aug Across Dataset Configs
+
+Auto-augmentability scores vary by which dataset config is used, because each config's dataset includes different tasks. Two metrics are shown per major sector across all five configs:
+
+1. **Tasks with values**: average auto_aug_mean of tasks that have a score (excludes tasks with no auto-aug assessment)
+2. **All tasks (missing=0)**: average auto_aug_mean across all tasks in that major, treating missing values as 0
+
+The first metric shows how automatable the assessed tasks are; the second shows overall automation potential including coverage gaps.
+
+![Auto-Aug by Sector and Config — Tasks With Values](figures/autoaug_by_config_with_vals.png)
+
+![Auto-Aug by Sector and Config — All Tasks](figures/autoaug_by_config_all.png)
 
 ---
 
