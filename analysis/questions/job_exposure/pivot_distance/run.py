@@ -368,6 +368,70 @@ def _element_cost_heatmap(
     return fig
 
 
+def _element_cost_distribution(
+    element_costs_by_zone: list[tuple[int, pd.DataFrame]],
+    calib: dict,
+) -> go.Figure:
+    """Box + strip plot: distribution of per-element pivot costs within each job zone.
+
+    Only includes elements with pivot_cost > 0. Shows median, IQR, and outlier
+    elements so the reader can see whether zone cost is driven by a few extreme
+    gaps or spread across many elements.
+    """
+    zone_colors = {
+        1: COLORS["neutral"],
+        2: COLORS["secondary"],
+        3: COLORS["negative"],
+        4: COLORS["primary"],
+        5: "#6b7280",
+    }
+    fig = go.Figure()
+
+    for zone, df in element_costs_by_zone:
+        gap_df = df[df["pivot_cost"] > 0].copy()
+        if gap_df.empty:
+            continue
+        color = zone_colors.get(zone, COLORS["primary"])
+        x_label = f"Zone {zone}<br>({len(gap_df)} elements)"
+
+        # Box trace
+        fig.add_trace(go.Box(
+            y=gap_df["pivot_cost"],
+            name=x_label,
+            marker=dict(color=color, opacity=0.8, size=5),
+            line=dict(color=color),
+            boxmean=True,
+            boxpoints="all",
+            jitter=0.3,
+            pointpos=-1.6,
+            text=gap_df["element_name"],
+            hovertemplate="<b>%{text}</b><br>Cost: %{y:.2f}<extra></extra>",
+        ))
+
+    # Build calibration footnote
+    med = calib.get("empirical_median", "?")
+    mx = calib.get("empirical_max", "?")
+    subtitle = (
+        f"Distribution of per-element pivot costs within each zone (gap elements only) | "
+        f"Reference: occupation skill+knowledge mass — median {med:.0f}, max {mx:.0f} imp×level units"
+    )
+
+    style_figure(
+        fig,
+        "Reskilling Cost Distribution by Job Zone",
+        subtitle=subtitle,
+        x_title=None,
+        y_title="Element pivot cost (imp × level units)",
+        height=580, width=820, show_legend=False,
+    )
+    fig.update_layout(
+        margin=dict(l=60, r=40, t=110, b=80),
+        yaxis=dict(showgrid=True, gridcolor=COLORS["border"], zeroline=True),
+        xaxis=dict(showgrid=False),
+    )
+    return fig
+
+
 def _ai_assisted_reskilling_bar(element_costs_all: pd.DataFrame, top_n: int = 15) -> go.Figure:
     """Bar chart: elements with highest pivot cost where AI can help close the gap."""
     ai_helped = element_costs_all[element_costs_all["ai_can_help"]].copy()
@@ -540,6 +604,11 @@ def main() -> None:
         save_figure(fig, fig_dir / "element_cost_heatmap.png")
         print("  element_cost_heatmap.png")
 
+        fig = _element_cost_distribution(element_costs_by_zone, calib)
+        if fig.data:
+            save_figure(fig, fig_dir / "element_cost_distribution.png")
+            print("  element_cost_distribution.png")
+
     if all_element_costs:
         combined_elem = pd.concat(all_element_costs)
         fig = _ai_assisted_reskilling_bar(combined_elem)
@@ -599,7 +668,7 @@ def main() -> None:
 
     # ── Copy key figures ──────────────────────────────────────────────────────
     for fname in ["pivot_cost_by_zone.png", "element_cost_heatmap.png",
-                  "ai_assisted_reskilling.png"]:
+                  "element_cost_distribution.png", "ai_assisted_reskilling.png"]:
         src = fig_dir / fname
         if src.exists():
             shutil.copy2(src, committed / fname)

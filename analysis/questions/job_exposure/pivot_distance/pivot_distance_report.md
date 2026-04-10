@@ -20,6 +20,12 @@ The total pivot cost -- the L1 rectified distance (sum of positive skill and kno
 | 4 | 262.91 | 47.1% | 39 | 91.2% |
 | 5 | 234.61 | 47.9% | 32 | 86.0% |
 
+**Scale reference:** The pivot cost numbers are in importance × level units — the same scale as O*NET occupational skill profiles. Across 893 occupations and 68 skill+knowledge elements (35 skills + 33 knowledge), the empirical distribution of total skill+knowledge mass: mean 292, median 296, std 146, p25 171, p75 411, max 692 (Chief Executives). The theoretical ceiling (all elements at max importance and level) is 2,380. Zone 3's 359-unit pivot cost is larger than the mean and median occupation's entire profile — it represents 123% of the median total mass. Zone 1's 59 units represents about 20% of the median. Zone 2's 181 units is 61%. These aren't small adjustments — they're structural knowledge transformations.
+
+The distribution chart below shows how element-level costs spread within each zone, revealing whether the burden is concentrated in a few outlier elements or distributed broadly:
+
+![Reskilling Cost Distribution by Job Zone](figures/element_cost_distribution.png)
+
 Zone 1 is cheap because both sides of the risk spectrum have shallow profiles. A barista pivoting to logging equipment operation doesn't need deep technical expertise -- the knowledge floor on both ends is low, and only 13 elements register a gap at all.
 
 Zone 3 is a different story. HR assistants, tutors, and brokerage clerks face a 41-element deficit to reach occupations like solar thermal installers, nuclear power reactor operators, and geothermal production managers. This is not a narrow certification gap. It is a broad-spectrum knowledge restructuring that no single program covers. Zone 4 has a comparable number of gap elements (39), but each individual gap is smaller on average. Zone 3 concentrates its cost in a handful of brutal technical deficits.
@@ -73,3 +79,11 @@ Primary: `all_confirmed`. Comparison: `all_ceiling`. Risk scores from `job_risk_
 | `results/high_risk_profiles.csv` | Avg skill+knowledge profile of high-risk occs per zone |
 | `results/low_risk_profiles.csv` | Same for low-risk |
 | `zone_breakdowns/` | Per-zone charts: top skills/knowledge gained and dropped in the pivot |
+
+---
+
+## Zone-Level Detail
+
+All 20 charts — top skills gained, top knowledge gained, top skills dropped, and top knowledge dropped for each of the five job zones — are collected in the zone breakdowns report:
+
+[Zone Breakdowns Report](zone_breakdowns/zone_breakdowns_report.md)
