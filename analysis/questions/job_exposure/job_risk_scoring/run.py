@@ -380,6 +380,120 @@ def _flag_breakdown_by_score(df: pd.DataFrame) -> go.Figure:
     return fig
 
 
+def _tier_top_occs_bar(df: pd.DataFrame, tier: str, top_n: int = 20) -> go.Figure:
+    """Horizontal bar: top occupations in a single tier, sized by workers affected,
+    labeled with pct, risk_score, and active flag count."""
+    sub = df[df["risk_tier"] == tier].copy()
+    if sub.empty:
+        return go.Figure()
+    sub["workers_affected"] = sub["pct"] / 100.0 * sub["emp_nat"]
+
+    # Sort by workers_affected descending, take top N
+    top = sub.nlargest(top_n, "workers_affected").sort_values("workers_affected", ascending=True)
+
+    flag_cols = [c for c in top.columns if c.startswith("flag")]
+    top["n_flags"] = top[flag_cols].sum(axis=1).astype(int)
+
+    labels = [
+        f"{r['pct']:.0f}% tasks | score {r['risk_score']:.0f} | "
+        f"{r['n_flags']}/{len(flag_cols)} flags | "
+        f"{r['workers_affected']/1e6:.1f}M workers"
+        for _, r in top.iterrows()
+    ]
+
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        y=top["title_current"],
+        x=top["workers_affected"],
+        orientation="h",
+        marker=dict(color=TIER_COLORS[tier], line=dict(width=0)),
+        text=labels,
+        textposition="outside",
+        textfont=dict(size=9, color=COLORS["neutral"], family=FONT_FAMILY),
+        cliponaxis=False,
+    ))
+    n_total = len(sub)
+    total_workers = sub["workers_affected"].sum()
+    chart_h = max(500, len(top) * 28 + 200)
+    style_figure(
+        fig,
+        f"{TIER_LABELS[tier]} — Top {len(top)} by Workers Affected",
+        subtitle=(
+            f"{n_total} total occupations in tier | "
+            f"{total_workers/1e6:.1f}M total workers affected"
+        ),
+        x_title=None, height=chart_h, width=1050, show_legend=False,
+    )
+    fig.update_layout(
+        margin=dict(l=20, r=260, t=80, b=80),
+        xaxis=dict(showgrid=False, showticklabels=False, showline=False, zeroline=False),
+        yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=9, family=FONT_FAMILY)),
+        bargap=0.25,
+    )
+    return fig
+
+
+def _tier_flag_profile_heatmap(df: pd.DataFrame) -> go.Figure:
+    """Heatmap: for each tier, show the average activation rate of each flag.
+    Rows = tiers, columns = flags. Cell = % of occs in that tier with the flag active."""
+    flag_cols = list(FLAG_WEIGHTS.keys())
+    flag_labels = {
+        "flag1_pct":        "% Tasks\n> 50%",
+        "flag2_ska":        "SKA pct\n> median",
+        "flag3_pct_trend":  "Pct\ntrend ↑",
+        "flag4_ska_trend":  "SKA\ntrend ↑",
+        "flag5_job_zone":   "Job zone\n1-3",
+        "flag6_outlook":    "Outlook\n2-3",
+        "flag7_n_software": "Software\n> median",
+        "flag8_auto_aug":   "Auto-aug\n> median",
+    }
+
+    rows_data = []
+    for tier in TIER_ORDER:
+        sub = df[df["risk_tier"] == tier]
+        if sub.empty:
+            continue
+        row = {"tier": TIER_LABELS[tier]}
+        for fc in flag_cols:
+            row[fc] = sub[fc].mean() * 100
+        row["n_occs"] = len(sub)
+        row["avg_pct"] = sub["pct"].mean()
+        rows_data.append(row)
+    summary = pd.DataFrame(rows_data)
+
+    z = summary[flag_cols].values
+    y_labels = [f"{r['tier']} ({r['n_occs']} occs, avg {r['avg_pct']:.0f}%)"
+                for _, r in summary.iterrows()]
+    x_labels = [flag_labels[fc] for fc in flag_cols]
+
+    fig = go.Figure(go.Heatmap(
+        z=z,
+        x=x_labels,
+        y=y_labels,
+        colorscale=[[0, "#f5f5f0"], [0.5, COLORS["accent"]], [1.0, COLORS["negative"]]],
+        zmin=0, zmax=100,
+        text=[[f"{v:.0f}%" for v in row] for row in z],
+        texttemplate="%{text}",
+        textfont=dict(size=11, family=FONT_FAMILY),
+        hovertemplate="%{y}<br>%{x}: %{z:.0f}%<extra></extra>",
+        showscale=True,
+        colorbar=dict(title="% with<br>flag active", ticksuffix="%", tickfont=dict(size=10)),
+    ))
+    style_figure(
+        fig,
+        "Flag Activation Profile by Risk Tier",
+        subtitle="What percentage of occupations in each tier have each flag active?",
+        x_title=None, y_title=None,
+        height=400, width=900, show_legend=False,
+    )
+    fig.update_layout(
+        margin=dict(l=20, r=80, t=80, b=100),
+        xaxis=dict(tickfont=dict(size=9, family=FONT_FAMILY), tickangle=0),
+        yaxis=dict(autorange="reversed", tickfont=dict(size=10, family=FONT_FAMILY)),
+    )
+    return fig
+
+
 def _cross_config_volatility(risk_all: pd.DataFrame, primary_df: pd.DataFrame) -> go.Figure:
     """
     Show occupations that change tiers across configs.
@@ -656,11 +770,28 @@ def main() -> None:
     save_figure(fig, fig_dir / "cross_config_volatility.png")
     print("  cross_config_volatility.png")
 
+    # Flag activation profile heatmap (tier × flag)
+    fig = _tier_flag_profile_heatmap(primary_df)
+    save_figure(fig, fig_dir / "tier_flag_profile.png")
+    print("  tier_flag_profile.png")
+
+    # Top occupations per tier
+    for tier in TIER_ORDER:
+        fig = _tier_top_occs_bar(primary_df, tier, top_n=20)
+        if fig.data:
+            fname = f"tier_top_occs_{tier}.png"
+            save_figure(fig, fig_dir / fname)
+            print(f"  {fname}")
+
     # ── Copy key figures ──────────────────────────────────────────────────────
     committed = HERE / "figures"
     committed.mkdir(exist_ok=True)
-    for fname in ["risk_tier_distribution.png", "risk_vs_pct_scatter.png",
-                  "flag_breakdown_by_score.png", "cross_config_volatility.png"]:
+    key_figs = [
+        "risk_tier_distribution.png", "risk_vs_pct_scatter.png",
+        "flag_breakdown_by_score.png", "cross_config_volatility.png",
+        "tier_flag_profile.png",
+    ] + [f"tier_top_occs_{t}.png" for t in TIER_ORDER]
+    for fname in key_figs:
         src = fig_dir / fname
         if src.exists():
             shutil.copy2(src, committed / fname)
