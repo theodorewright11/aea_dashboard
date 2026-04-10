@@ -4,7 +4,7 @@
 
 ---
 
-Confirmed AI usage (61.3M workers affected) sits roughly 15.8M workers below the demonstrated capability ceiling (77.1M). That gap isn't uniformly distributed. Office and Administrative Support carries the largest absolute shortfall — 2.6M workers — but Transportation and Material Moving has the steepest percentage climb from where it is to where AI can demonstrably reach. The activity-level picture tells a particularly clean story: "Documenting/Recording Information" alone has a 4.4M worker gap, and adoption on that GWA has barely moved relative to what the ceiling says is possible. The trend is moving in the right direction — confirmed grew by 21.8M workers over 16 months — but it's not catching the ceiling.
+Confirmed AI usage (61.3M workers affected) sits roughly 15.8M workers below the demonstrated capability ceiling (77.1M). That gap isn't uniformly distributed. Office and Administrative Support carries the largest absolute shortfall — 2.6M workers — but Transportation and Material Moving has the steepest percentage climb from where it is to where AI can demonstrably reach. The activity-level picture tells a particularly clean story: "Documenting/Recording Information" alone has a 4.4M worker gap, and adoption on that GWA has barely moved relative to what the ceiling says is possible. The trend is moving in the right direction — confirmed grew by 14.7M workers over 11 months (March 2025 → February 2026) — but it's not catching the ceiling.
 
 ---
 
@@ -75,11 +75,11 @@ DWA standouts: **Record operational or production data** (+883K, +52pp), **Maint
 
 ## Is the Gap Closing?
 
-The trend shows confirmed usage growing substantially: from 39.5M workers in September 2024 to 61.3M in February 2026 — an 21.8M worker increase over 16 months.
+The trend shows confirmed usage growing substantially: from 46.6M workers in March 2025 to 61.3M in February 2026 — a 14.7M worker increase over 11 months.
 
 ![Confirmed Growth vs Ceiling](figures/gap_trend.png)
 
-The ceiling is a moving target too, but the data suggests the gap isn't closing as fast as confirmed is growing. The ceiling in February 2026 is 77.1M; confirmed has grown from 39.5M to 61.3M, covering a meaningful share of the initial gap. But the growth in confirmed (21.8M) outpaced the starting gap; the ceiling likely grew too as MCP and API capabilities expanded. The shaded area in the chart represents the range between where we are and where we could be.
+The ceiling is a moving target too. The ceiling in February 2026 is 77.1M; confirmed has grown from 46.6M (March 2025) to 61.3M, a 14.7M increase. The ceiling also started at 46.6M in March 2025 (before MCP was incorporated) and grew to 77.1M — so the gap opened in August 2025 when MCP data arrived and has held at roughly 15-16M workers since. The shaded area in the chart represents the range between where we are and where we could be.
 
 ---
 

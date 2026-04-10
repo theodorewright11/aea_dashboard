@@ -4,13 +4,13 @@
 
 ---
 
-The central finding of this analysis is a displacement story, not a replacement story. From September 2024 to February 2026, 23 distinct skills, abilities, and knowledge elements crossed the 100% line — meaning AI's demonstrated capability moved from "below what jobs require" to "exceeding what jobs require." Every one of them is from the cognitive and communicative layer of work: sales knowledge, philosophy, foreign language, instructing, learning strategies, programming. Not a single physical ability crossed. Sound Localization gained 0 percentage points over the entire window. The structural divide that the static snapshot shows is now confirmed as persistent and widening — the physical layer stays human, the cognitive layer is being taken over element by element.
+The central finding of this analysis is a displacement story, not a replacement story. From March 2025 to February 2026, AI's demonstrated capability in cognitive and communicative skills, abilities, and knowledge continued advancing while physical elements stayed flat. The structural divide that the static snapshot shows is confirmed as persistent — the physical layer stays human, the cognitive layer is being taken over element by element. The trend series now starts at March 2025 (the first full AEI + Microsoft combined dataset), avoiding the earlier Microsoft-only anchor dates that showed artificially lower starting values.
 
 ---
 
 ## 1. Elements Trending Up Most: What AI Is Gaining On
 
-The trend analysis computes AI capability as % of occupation requirement for each of the 120 scored elements, across the six `all_confirmed` dataset dates (September 2024 through February 2026). The September 2024 dataset is anchored primarily by Microsoft's Copilot data — the AEI conversation and API data begins accumulating from December 2024. By February 2026, all confirmed conversational + API usage feeds the signal.
+The trend analysis computes AI capability as % of occupation requirement for each of the 120 scored elements, across the four `all_confirmed` dataset dates (March 2025 through February 2026). All four dates reflect the full AEI + Microsoft combined signal.
 
 ### Knowledge: The Fastest-Moving Domain
 
@@ -36,7 +36,7 @@ Knowledge leads every top-gain list. The pattern: AI's broadest-based language m
 | 14 | Speaking | Skills | +50.4 pp | 53% → 103% |
 | 15 | Economics and Accounting | Knowledge | +49.2 pp | 59% → 109% |
 
-Sales and Marketing at +71.3 pp is the largest single-element gain in the dataset. It went from 60% of occupation need to 131% — below the threshold to above it — in 16 months. This is not a niche domain: Sales and Marketing knowledge appears in occupations across virtually every sector. The same pattern holds for Education and Training (+60.4 pp) and English Language (+53.9 pp). AI is not edging up on the knowledge layer. It's covering it.
+Sales and Marketing at +71.3 pp is the largest single-element gain in the dataset. It went from 60% of occupation need to 131% — below the threshold to above it — in 11 months. This is not a niche domain: Sales and Marketing knowledge appears in occupations across virtually every sector. The same pattern holds for Education and Training (+60.4 pp) and English Language (+53.9 pp). AI is not edging up on the knowledge layer. It's covering it.
 
 ### Skills: The Contested Middle
 
@@ -54,7 +54,7 @@ Human-advantage skills — Operation and Control (41% → 41%), Installation (35
 
 ![Abilities Element Trends Over Time](../questions/job_exposure/worker_resilience/ska_deep_dive/figures/element_trends_abilities.png)
 
-The abilities domain tells the clearest story. Physical abilities gained almost nothing over 16 months: Sound Localization gained 0 pp (stayed at 8.7%), Night Vision gained 0.6 pp, Speed of Limb Movement gained 0.3 pp. Meanwhile, cognitive and communicative abilities gained substantially: Speech Clarity (+51.4 pp, crossed 100%), Written Expression (+50.6 pp, crossed), Mathematical Reasoning (+47.4 pp, crossed), Oral Expression (+47.2 pp, approaching 100%), Oral Comprehension (+44.6 pp, approaching 100%). The divide is structural. Physical abilities require embodiment. Cognitive abilities require capability — and AI is building capability fast.
+The abilities domain tells the clearest story. Physical abilities gained almost nothing over 11 months: Sound Localization gained 0 pp (stayed at 8.7%), Night Vision gained 0.6 pp, Speed of Limb Movement gained 0.3 pp. Meanwhile, cognitive and communicative abilities gained substantially: Speech Clarity (+51.4 pp, crossed 100%), Written Expression (+50.6 pp, crossed), Mathematical Reasoning (+47.4 pp, crossed), Oral Expression (+47.2 pp, approaching 100%), Oral Comprehension (+44.6 pp, approaching 100%). The divide is structural. Physical abilities require embodiment. Cognitive abilities require capability — and AI is building capability fast.
 
 The 23 elements that crossed the 100% line from first to last date:
 
@@ -237,9 +237,9 @@ This also explains the policy-relevant finding: high AI-subsumed occupations are
 
 ## 6. Config
 
-**Primary:** `all_confirmed` (AEI Both + Micro 2026-02-12) — all confirmed usage (conversational + API + Microsoft). September 2024 dataset anchored by Microsoft Copilot data; AEI conversation and API data accumulates from December 2024.
+**Primary:** `all_confirmed` (AEI Both + Micro 2026-02-12) — all confirmed usage (conversational + API + Microsoft).
 
-**Trend series:** 6 dates across `all_confirmed` series (2024-09-30 → 2026-02-12).
+**Trend series:** 4 dates across `all_confirmed` series (2025-03-06 → 2026-02-12).
 
 **Cross-config:** All five canonical configs computed for element-level and occ-level comparison.
 

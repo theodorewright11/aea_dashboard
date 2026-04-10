@@ -1,6 +1,6 @@
 *Primary config: all_confirmed (AEI Both + Micro 2026-02-12) | Ceiling: all_ceiling (All 2026-02-18) | Method: freq | Auto-aug ON | National*
 
-The adoption gap between confirmed AI usage and demonstrated capability is $980 billion in annual wages and 15.8 million additional workers. That number is not hypothetical future capability — it's the difference between what confirmed deployments currently reach and what tools that already exist have been shown to handle. The gap lives in specific places: Office and Administrative Support (2.6M workers), Transportation (2.4M), Sales (2.1M), and Management (1.8M) carry the largest absolute shortfalls. At the activity level, documenting and recording work alone accounts for 4.4M workers in the gap. 248 occupations are in Q1 — AI already leads on skills AND the adoption gap is large — and 102 of those also carry structural risk signals that make them candidates for significant job transformation rather than just augmentation. The gap is closing, confirmed usage grew 21.8M workers over 16 months, but the ceiling moved too.
+The adoption gap between confirmed AI usage and demonstrated capability is $980 billion in annual wages and 15.8 million additional workers. That number is not hypothetical future capability — it's the difference between what confirmed deployments currently reach and what tools that already exist have been shown to handle. The gap lives in specific places: Office and Administrative Support (2.6M workers), Transportation (2.4M), Sales (2.1M), and Management (1.8M) carry the largest absolute shortfalls. At the activity level, documenting and recording work alone accounts for 4.4M workers in the gap. 248 occupations are in Q1 — AI already leads on skills AND the adoption gap is large — and 102 of those also carry structural risk signals that make them candidates for significant job transformation rather than just augmentation. The gap is closing, confirmed usage grew 14.7M workers over 11 months, but the ceiling moved too.
 
 ---
 
@@ -22,7 +22,7 @@ At the work activity level, **Documenting/Recording Information** (GWA: 37% → 
 
 ![Top IWAs by Workers Gap](adoption_gap/figures/wa_gap_iwa.png)
 
-The trend confirms that the gap is being addressed but not at ceiling pace: confirmed grew from 39.5M to 61.3M workers (September 2024 → February 2026), adding 21.8M in 16 months. The ceiling also grew as MCP and API capabilities expanded. The gap is moving, but it hasn't closed.
+The trend confirms that the gap is being addressed but not at ceiling pace: confirmed grew from 46.6M to 61.3M workers (March 2025 → February 2026), adding 14.7M in 11 months. The ceiling also grew as MCP and API capabilities expanded. The gap is moving, but it hasn't closed.
 
 ![Confirmed Growth vs Ceiling](adoption_gap/figures/gap_trend.png)
 
@@ -104,7 +104,7 @@ The gap analysis translates differently depending on what you're trying to decid
 
 **The transformation signal (Q1 + high risk) is concentrated in low-to-mid job zones.** The 33 transformation-signal occupations (under the updated 8-flag model with the natural 100% SKA threshold) are predominantly in job zones 1–3. This means they're accessible jobs — relatively lower barriers to entry, often less formal training required — that are simultaneously most exposed to AI capability and least insulated from its effects. The tighter Q1 definition (pct > 100%, not just above median) and the more conservative high-risk tier (115 vs. 195 occupations) make this a more selective set.
 
-**The gap is not closing at ceiling pace, but confirmed growth is real.** 21.8M additional workers entered confirmed AI usage in 16 months (Sep 2024 → Feb 2026), a nearly 55% increase. The gap persists because the ceiling also grew. The technology and the adoption are both moving — adoption just isn't keeping up.
+**The gap is not closing at ceiling pace, but confirmed growth is real.** 14.7M additional workers entered confirmed AI usage in 11 months (Mar 2025 → Feb 2026), a 31.5% increase. The gap persists because the ceiling also grew (the MCP-driven ceiling jump in August 2025 opened the gap). The technology and the adoption are both moving — adoption just isn't keeping up.
 
 ---
 
@@ -120,7 +120,7 @@ The gap analysis translates differently depending on what you're trying to decid
 
 5. **The wage hotspot set (59 occupations) is distinct from the worker-count leaders.** High-wage + big-gap occupations (software QA, health services managers, supply chain managers) need different interventions than high-worker + big-gap occupations (cashiers, stockers, sales workers).
 
-6. **Confirmed usage grew 21.8M workers (+55%) in 16 months.** The adoption curve is steep. The gap isn't static — it's being closed — but not at ceiling pace.
+6. **Confirmed usage grew 14.7M workers (+31.5%) in 11 months.** The adoption curve is real. The gap isn't static — it's being closed — but not at ceiling pace.
 
 7. **The framing matters for each audience.** The same $980B gap is an investment opportunity for policy, a tool-literacy priority for workforce development, a measurement challenge for researchers, and a statement about which jobs are changing for everyone else.
 

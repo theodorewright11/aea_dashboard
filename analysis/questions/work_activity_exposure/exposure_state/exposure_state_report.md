@@ -79,20 +79,20 @@ The five configs tell a consistent story at the GWA level, with some important d
 
 ## Trend: Is This Growing?
 
-The chart below shows the top 8 IWAs by absolute growth since September 2024 — not the activities with the highest current exposure, but the ones that grew the most to get there.
+The chart below shows the top 8 IWAs by absolute growth since March 2025 — not the activities with the highest current exposure, but the ones that grew the most to get there.
 
-| IWA | Sept 2024 | Feb 2026 | Growth |
-|-----|-----------|----------|--------|
-| Evaluate scholarly work | 11.3% | 88.0% | +76.7pp |
-| Assess student capabilities, needs, or performance | 13.9% | 67.5% | +53.6pp |
-| Set up classrooms, facilities, or educational materials | 0.0% | 49.7% | +49.7pp |
-| Implement security measures for computer systems | 23.1% | 72.8% | +49.7pp |
-| Monitor financial data or activities | 3.6% | 52.2% | +48.6pp |
-| Develop business or marketing plans | 10.0% | 58.6% | +48.6pp |
-| Research laws, precedents, or other legal data | 49.0% | 92.5% | +43.5pp |
-| Prepare health or medical documents | 2.6% | 44.8% | +42.2pp |
+| IWA | Mar 2025 | Feb 2026 | Growth |
+|-----|----------|----------|--------|
+| Monitor financial data or activities | 10.9% | 52.2% | +41.3pp |
+| Research laws, precedents, or other legal data | 55.1% | 92.5% | +37.5pp |
+| Research historical or social issues | 57.1% | 89.1% | +32.0pp |
+| Implement security measures for computer systems | 43.1% | 72.8% | +29.7pp |
+| Schedule appointments | 28.1% | 57.5% | +29.5pp |
+| Alter audio or video recordings | 21.5% | 50.9% | +29.5pp |
+| Collect data about consumer needs or opinions | 25.3% | 54.0% | +28.7pp |
+| Evaluate scholarly work | 61.3% | 88.0% | +26.6pp |
 
-The educational activities in this list deserve attention. "Evaluate scholarly work" went from 11% to 88% in 15 months — grading, assessment, and evaluation of academic work is where AI is being adopted fastest. Educational and medical document work is where the fastest new adoption is happening.
+Financial monitoring (+41.3pp) leads this window's growth table — it started at 10.9% in March 2025 and more than quintupled by February 2026. Legal research and historical research are close behind. The educational IWAs that dominated the growth table in earlier windows were already at high exposure by March 2025 and grew more modestly from that base.
 
 ![Top IWA Exposure Trends — Top 8 Growers](figures/iwa_trends.png)
 
@@ -124,7 +124,7 @@ The activities closest to the diagonal (small gap) are the ones where current us
 
 - **Primary**: AEI Both + Micro 2026-02-12 | freq | auto-aug on | national | IWA level
 - **Ceiling**: All 2026-02-18 | freq | auto-aug on | national
-- **Trend**: AEI Both + Micro series (2024-09-30 → 2026-02-12), top 8 by absolute growth
+- **Trend**: AEI Both + Micro series (2025-03-06 → 2026-02-12), top 8 by absolute growth
 - **All five configs**: compared at GWA level
 
 ## Files

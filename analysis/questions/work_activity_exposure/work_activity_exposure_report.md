@@ -4,7 +4,7 @@
 
 ---
 
-The activity-level picture of AI exposure is more useful for education and workforce planning than the occupation-level picture. At the IWA level, 52 activities are fragile (≥66% AI exposure), 116 are moderate (33–66%), and 164 are robust (<33%). The robust activities are almost entirely physical, caregiving, and operational work — everything requiring presence in a physical environment, situational judgment in real time, or direct care for people and systems. 82% of affected workers are doing moderate-or-fragile activities. AI's footprint is expanding: 284 of 332 IWAs grew in exposure over 15 months. The education system's core work — evaluating students, developing materials, assessing capabilities — is growing fastest. A three-category training framework maps this into actionable investment targets: Durable (robust + educationally relevant), AI × Human pair (moderate tier), and Delegation/Oversight (fragile + next-wave).
+The activity-level picture of AI exposure is more useful for education and workforce planning than the occupation-level picture. At the IWA level, 52 activities are fragile (≥66% AI exposure), 116 are moderate (33–66%), and 164 are robust (<33%). The robust activities are almost entirely physical, caregiving, and operational work — everything requiring presence in a physical environment, situational judgment in real time, or direct care for people and systems. 82% of affected workers are doing moderate-or-fragile activities. AI's footprint is expanding: 275 of 332 IWAs grew in exposure over 11 months (March 2025 → February 2026). Financial monitoring, legal research, and security implementation led the fastest-growth table within this window. A three-category training framework maps this into actionable investment targets: Durable (robust + educationally relevant), AI × Human pair (moderate tier), and Delegation/Oversight (fragile + next-wave).
 
 ---
 
@@ -95,7 +95,7 @@ The tier structure provides the foundation, but the training implications differ
 **Category 1 — Durable: Train Directly.** Robust activities (<33%) in all five configs AND associated with occupations requiring meaningful education or training (mean job zone ≥2.5). 68 IWAs, 5.2M workers. These activities will hold value as AI reshapes adjacent work — healthcare work, supervisory and management activities, compliance and safety inspection, financial examination. The right investment is in the activity itself, not primarily in AI tools.
 
 **Category 2 — AI × Human Pair: Train for Collaboration.** The moderate tier (33–66%), 116 IWAs, 40.9M workers. Human judgment combined with AI is still better than AI alone. This category splits by trend:
-- *Stable moderate* (slow-growing, <15pp since Sept 2024): 84 IWAs, 32.7M workers. Likely to remain AI-human partnership for the medium term.
+- *Stable moderate* (slow-growing, <15pp since Mar 2025): 84 IWAs, 32.7M workers. Likely to remain AI-human partnership for the medium term.
 - *Rising moderate* (fast-growing, ≥15pp): 32 IWAs, 8.2M workers. Moving toward the delegation category — "analyze data to improve operations" (+31pp to 41%), "maintain health or medical records" (+27pp to 33%), "develop educational programs" (+29pp to 37%). Prioritize oversight skills now.
 
 **Category 3 — Delegate/Oversight: Train for Direction and Review.** Fragile activities (≥66%, 52 IWAs, 23.6M workers) plus next-wave activities (confirmed <33% but ceiling ≥33%, 42 IWAs, 7.0M workers). The human role here is increasingly setup, quality review, exception handling, and accountability — not execution.
@@ -112,17 +112,17 @@ The tier structure provides the foundation, but the training implications differ
 
 ### Is AI a Fad?
 
-The quantitative answer: no. 284 of 332 IWAs grew in exposure between September 2024 and February 2026. 72 IWAs crossed the 10% threshold for the first time. The fastest-growing:
+The quantitative answer: no. 275 of 332 IWAs grew in exposure between March 2025 and February 2026. 27 IWAs crossed the 10% threshold for the first time during the window. The fastest-growing:
 
-| IWA | Sept 2024 | Feb 2026 | Growth |
-|-----|-----------|----------|--------|
-| Evaluate scholarly work | 11.3% | 88.0% | +76.7pp |
-| Assess student capabilities | 13.9% | 67.5% | +53.6pp |
-| Set up classrooms or educational materials | 0.0% | 49.7% | +49.7pp |
-| Implement security measures for computer systems | 23.1% | 72.8% | +49.7pp |
-| Monitor financial data or activities | 3.6% | 52.2% | +48.6pp |
+| IWA | Mar 2025 | Feb 2026 | Growth |
+|-----|----------|----------|--------|
+| Monitor financial data or activities | 10.9% | 52.2% | +41.3pp |
+| Research laws, precedents, or other legal data | 55.1% | 92.5% | +37.5pp |
+| Research historical or social issues | 57.1% | 89.1% | +32.0pp |
+| Implement security measures for computer systems | 43.1% | 72.8% | +29.7pp |
+| Schedule appointments | 28.1% | 57.5% | +29.5pp |
 
-The educational activities deserve attention. Evaluating student work went from 11% to 88% in 15 months. The activities that define instructional work — evaluating student submissions, developing lesson materials, assessing capabilities — are exactly where AI adoption is growing fastest.
+Financial monitoring, legal research, and security implementation lead the growth table for this window. Note that educational IWAs like "Evaluate scholarly work" (already at 61.3% in March 2025) had most of their growth before the window opens — they're still growing, just from a higher starting base.
 
 The domain breakdown confirms where exposure concentrates:
 
@@ -162,7 +162,7 @@ The same data looks different depending on who's reading it. The sub-report fram
 
 The eco_2015 vs. eco_2025 baseline comparison shows what changes when you switch from raw AEI data (eco_2015 baseline) to pre-combined datasets (eco_2025 baseline). Key caveat: the comparison is directional, not calibrated — the two baselines use different O*NET task inventories, and eco_2025 adds Microsoft Copilot scores. The largest eco_2025 > eco_2015 gaps: "Organizing, Planning, and Prioritizing Work" (+35.9pp), "Estimating Quantifiable Characteristics" (+33.6pp), "Performing Administrative Activities" (+26.8pp). Two GWAs where eco_2015 ≥ eco_2025: "Resolving Conflicts and Negotiating" (-5.2pp), "Documenting/Recording Information" (-3.1pp). The large upward shift in organizational/administrative GWAs primarily reflects Microsoft Copilot coverage.
 
-**For laypeople:** 86% of activity types grew in exposure in 15 months. The three-category frame translates directly: Is your job primarily in physical, care, or oversight activities (Category 1)? Train toward the activity itself. Primarily in activities where human + AI collaboration is the current norm (Category 2)? Build AI fluency alongside substantive skills. Primarily in high-exposure activities like customer service, legal documentation, or data analysis (Category 3)? The investment is in the judgment and oversight layer — knowing what AI got wrong, setting it up correctly, maintaining accountability. Kids don't need to be programmers; they need to be able to evaluate what the AI produced.
+**For laypeople:** 83% of activity types grew in exposure in 11 months. The three-category frame translates directly: Is your job primarily in physical, care, or oversight activities (Category 1)? Train toward the activity itself. Primarily in activities where human + AI collaboration is the current norm (Category 2)? Build AI fluency alongside substantive skills. Primarily in high-exposure activities like customer service, legal documentation, or data analysis (Category 3)? The investment is in the judgment and oversight layer — knowing what AI got wrong, setting it up correctly, maintaining accountability. Kids don't need to be programmers; they need to be able to evaluate what the AI produced.
 
 ![Workers at Risk by Activity Category](audience_framing/figures/policy_gwa_workers.png)
 
@@ -209,10 +209,10 @@ The eco_2015 vs. eco_2025 baseline comparison shows what changes when you switch
 | Cat 1 durable IWAs (educationally relevant) | 68 (5.2M workers) |
 | Cat 2 AI × Human IWAs | 116 (40.9M workers) |
 | Cat 3 Delegate/Oversight IWAs | 94 (30.6M workers) |
-| IWAs that grew in exposure (15 mo.) | 284 / 332 (86%) |
-| IWAs newly above 10% exposure | 72 |
+| IWAs that grew in exposure (11 mo.) | 275 / 332 (83%) |
+| IWAs newly above 10% exposure | 27 |
 | Highest-penetration IWA | Research laws/legal data (92.5%) |
-| Fastest-growing IWA | Evaluate scholarly work (+76.7pp) |
+| Fastest-growing IWA (within window) | Monitor financial data or activities (+41.3pp) |
 
 ---
 

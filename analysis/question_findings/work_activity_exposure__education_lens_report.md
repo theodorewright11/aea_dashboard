@@ -29,7 +29,7 @@ The tier structure gives us a starting point, but the training implications diff
 **Category 1 — Durable: Train Directly.** Robust activities (<33%) in all five configs AND associated with occupations requiring meaningful education or training (mean job zone ≥2.5). These activities will hold value as AI reshapes adjacent work. The right training investment here is in the activity itself — the skills and judgment it requires — not primarily in AI tools.
 
 **Category 2 — AI × Human Pair: Train for AI Collaboration.** Moderate tier (33–66%). Human judgment combined with AI is still better than AI alone here. The right investment is developing the judgment layer above what AI produces: evaluating AI outputs, directing AI effectively, and building the deeper contextual knowledge that makes AI more useful rather than less reliable. This category splits by trend:
-- *Stable moderate* (slow-growing, <15pp since Sept 2024): likely to remain AI-human partnership for the medium term. Build AI literacy alongside substantive skills.
+- *Stable moderate* (slow-growing, <15pp since Mar 2025): likely to remain AI-human partnership for the medium term. Build AI literacy alongside substantive skills.
 - *Rising moderate* (fast-growing, ≥15pp): moving toward the delegation category. Prioritize oversight and quality-review skills alongside AI fluency.
 
 **Category 3 — Delegate to AI / Oversight: Train for Direction and Review.** Fragile activities (≥66%) and "next wave" activities (confirmed <33% but ceiling ≥33%). The human role here is increasingly setup, quality review, exception handling, and accountability. Training should build: setting AI context effectively, reviewing AI outputs for accuracy and appropriateness, managing the edge cases AI misses, and maintaining the judgment needed to catch errors.
@@ -125,20 +125,20 @@ Physical/Operational (13%) is the floor. The gap between 13% and 53% is the dist
 
 ## Is AI a Fad?
 
-The quantitative answer: no. 284 of 332 IWAs (86%) grew in exposure between September 2024 and February 2026. 72 IWAs crossed the 10% threshold for the first time.
+The quantitative answer: no. 275 of 332 IWAs (83%) grew in exposure between March 2025 and February 2026. 27 IWAs crossed the 10% threshold for the first time during the window.
 
-The top growers are in education and healthcare documentation:
+The top growers within the window:
 
-| IWA | Sept 2024 | Feb 2026 | Growth |
-|-----|-----------|----------|--------|
-| Evaluate scholarly work | 11.3% | 88.0% | +76.7pp |
-| Assess student capabilities, needs, or performance | 13.9% | 67.5% | +53.6pp |
-| Set up classrooms, facilities, or educational materials | 0.0% | 49.7% | +49.7pp |
-| Implement security measures for computer systems | 23.1% | 72.8% | +49.7pp |
-| Monitor financial data or activities | 3.6% | 52.2% | +48.6pp |
-| Prepare health or medical documents | 2.6% | 44.8% | +42.2pp |
+| IWA | Mar 2025 | Feb 2026 | Growth |
+|-----|----------|----------|--------|
+| Monitor financial data or activities | 10.9% | 52.2% | +41.3pp |
+| Research laws, precedents, or other legal data | 55.1% | 92.5% | +37.5pp |
+| Research historical or social issues | 57.1% | 89.1% | +32.0pp |
+| Implement security measures for computer systems | 43.1% | 72.8% | +29.7pp |
+| Schedule appointments | 28.1% | 57.5% | +29.5pp |
+| Evaluate scholarly work | 61.3% | 88.0% | +26.6pp |
 
-Education and healthcare documentation dominate the top growers. If AI were a fad, these activities would not be showing up in the top growth categories — and the education system's own activities (evaluating student work, developing lesson materials) would not be the fastest-growing.
+Financial monitoring, legal research, and security implementation lead the growth table for this window. Note that IWAs like "Evaluate scholarly work" (already at 61.3% in March 2025) had most of their growth before the window opens — they're still growing, just from a higher base. If AI were a fad, we would expect growth to slow as novelty wears off. Instead, 83% of IWAs continued growing through February 2026.
 
 ![Is AI's Footprint Expanding? Top-Climbing Activity Types](../questions/work_activity_exposure/education_lens/figures/exposure_growth_trend.png)
 
@@ -148,7 +148,7 @@ Education and healthcare documentation dominate the top growers. If AI were a fa
 
 - **Primary**: AEI Both + Micro 2026-02-12 | freq | auto-aug on | national
 - **Stability check**: All five configs for durable targets
-- **Trend**: AEI Both + Micro series (2024-09-30 → 2026-02-12)
+- **Trend**: AEI Both + Micro series (2025-03-06 → 2026-02-12)
 - **Job zone filter**: mean job zone ≥2.5 from eco_2025
 
 ## Files

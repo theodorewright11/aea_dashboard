@@ -88,7 +88,7 @@ Organized around IWA (Intermediate Work Activity) level as primary lens. No SKA 
 **Key findings:**
 - 164 robust / 116 moderate / 52 fragile IWAs (out of 332 total)
 - 82% of affected workers in activities with ≥33% exposure (64.5M out of 78.6M)
-- 284/332 IWAs grew in exposure over 15 months (Sept 2024 → Feb 2026); 72 newly above 10%
+- 275/332 IWAs grew in exposure over 11 months (Mar 2025 → Feb 2026); 27 newly above 10%
 - Fastest-growing IWAs are educational: evaluate scholarly work (+77pp), assess student capabilities (+54pp)
 - Robust activities are almost entirely physical/operational; fragile ones are informational/cognitive
 
@@ -113,7 +113,7 @@ Organized around IWA (Intermediate Work Activity) level as primary lens. No SKA 
 - Ceiling estimate: 77.1M workers, $4.97T wages, 50.3% of employment
 - Top sectors by workers: Office/Admin (11.2M, 51.1%), Sales (7.6M, 59.5%), Business/Finance (5.5M, 50.7%)
 - Confirmed agentic (AEI API only) reaches 31.1M workers, $2.16T wages, 20.3% of employment; agentic ceiling (MCP + AEI API) reaches 60.4M workers
-- Legal (+25.5 pp) and Education (+24.8 pp) saw the largest task penetration gains over the dataset window
+- Sales (+18.6 pp) and Computer/Math (+16.0 pp) saw the largest task penetration gains over the dataset window (Mar 2025 → Feb 2026)
 - Zone 4 (considerable prep) has the highest average AI exposure (~50.9%); Zone 1 the lowest (~26.9%)
 - 5 state clusters by sector composition; pct_tasks_affected is uniform (~36.1%) across all states
 - 97.7% of affected workers are in occupations with meaningful AI augmentation potential (auto-aug score >= 2)
@@ -140,7 +140,7 @@ Organized around IWA (Intermediate Work Activity) level as primary lens. No SKA 
 - 248 occupations in Q1 (AI leads on SKA AND large adoption gap); 102 also carry high risk tier (transformation signal)
 - Wage hotspots: 59 occupations in top quartile on both median wage (≥$90,845) and adoption gap (≥12.6pp)
 - General and Operations Managers alone: $90.2B wage gap from a single occupation category
-- Confirmed growth: +21.8M workers in 16 months (Sep 2024 → Feb 2026); ceiling also grew
+- Confirmed growth: +14.7M workers in 11 months (Mar 2025 → Feb 2026); ceiling also grew
 
 **Note:** `ai_transformative_potential/` (old folder) has been replaced by this analysis. Do not reference it.
 
@@ -243,7 +243,7 @@ Organized around IWA (Intermediate Work Activity) level as primary lens. No SKA 
 
 **Overarching question:** What does the temporal dimension reveal that static snapshots miss — how did AI exposure evolve, which occupations followed which growth patterns, and what's the trajectory of the confirmed/ceiling gap?
 
-Primary lens: `all_confirmed` series (AEI Both + Micro, Sep 2024 – Feb 2026). Ceiling comparison uses `all_ceiling` series.
+Primary lens: `all_confirmed` series (AEI Both + Micro, Mar 2025 – Feb 2026, 4 dates). Ceiling comparison uses `all_ceiling` series (8 dates).
 
 | Sub-folder | Question |
 |------------|----------|
@@ -254,12 +254,12 @@ Primary lens: `all_confirmed` series (AEI Both + Micro, Sep 2024 – Feb 2026). 
 | `occs_timeline/` | Full time-series for the 29 named occupations of interest |
 
 **Key findings:**
-- Zero occupations at >=60% confirmed in Sep 2024; 145 by Feb 2026 — the entire high-exposure tier was created during the window
-- 44% of occupations (406) are "laggards" with <5pp total gain — AI expansion is concentrated, not universal
-- March 2025 and August 2025 are the two inflection-point dataset dates; confirmed exposure advances in discrete jumps
-- Confirmed/ceiling gap opened in Aug 2025 (MCP incorporation), sitting at ~10pp nationally; confirmed growing slightly faster than ceiling
-- Software Developers and Data Scientists: literally zero confirmed growth across all 6 dates; HR Specialists and Market Research Analysts: +53pp and +50pp respectively
-- 72 IWAs in active expansion zone (10–33%, growing); financial/legal/healthcare documentation IWAs approaching 33% threshold
+- 12 occupations at >=60% confirmed in Mar 2025; 145 by Feb 2026 — 133 new high-tier entrants in 11 months
+- 51% of occupations (468) are "laggards" with <5pp total gain — AI expansion is concentrated, not universal
+- August 2025 is the dominant inflection-point dataset date within this window; confirmed exposure advances in discrete jumps
+- Confirmed/ceiling gap opened in Aug 2025 (MCP incorporation), sitting at ~10pp nationally; confirmed growing slightly faster than ceiling (ratio improved 77% → 80%)
+- Software Developers and Data Scientists: zero confirmed growth across all 4 dates; Customer Service Representatives +35.0pp, Technical Writers +30.6pp, Network Admins +26.8pp
+- 60 IWAs in active expansion zone (10–33%, growing); financial/legal/healthcare documentation IWAs approaching 33% threshold
 
 ### Planned (future sessions)
 

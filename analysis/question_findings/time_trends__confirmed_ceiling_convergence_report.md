@@ -1,23 +1,21 @@
 # Confirmed vs. Ceiling Convergence: Is Deployment Catching Up?
 
-*Config: all_confirmed (AEI Both + Micro) vs. all_ceiling (All Sources) series | 6 shared dates Sep 2024 – Feb 2026 | Method: freq | Auto-aug ON | National*
+*Config: all_confirmed (AEI Both + Micro) vs. all_ceiling (All Sources) series | 4 shared dates Mar 2025 – Feb 2026 | Method: freq | Auto-aug ON | National*
 
 ---
 
-There was no confirmed/ceiling gap before April 2025 — because MCP (the main thing that makes the ceiling larger than confirmed) didn't exist yet. The gap opened in August 2025 when MCP data was incorporated, putting the confirmed/ceiling ratio at 77%. Since then, the ratio has crept upward: 77% in August 2025, 79% in November 2025, 80% in February 2026. The gap is not closing dramatically, but confirmed exposure is growing slightly faster than ceiling exposure at the national level. The sectors where confirmed is furthest below ceiling (Transportation at 59%, Production at 68%) are precisely the sectors where MCP adds the most exposure — tool-use AI has a different occupational footprint than conversational AI, and those sectors are where the gap lives.
+The series starts in March 2025, when confirmed and ceiling were identical (30.4%) — MCP data wasn't yet incorporated. The gap opened in August 2025 when MCP was added, putting the confirmed/ceiling ratio at 77%. Since then, the ratio has crept upward: 77% in August 2025, 79% in November 2025, 80% in February 2026. The gap is not closing dramatically, but confirmed exposure is growing slightly faster than ceiling exposure at the national level. The sectors where confirmed is furthest below ceiling (Transportation at 59%, Production at 68%) are precisely the sectors where MCP adds the most exposure — tool-use AI has a different occupational footprint than conversational AI, and those sectors are where the gap lives.
 
 ---
 
-## The Gap That Didn't Exist Until Mid-2025
+## The Gap That Opened With MCP
 
-The confirmed/ceiling comparison has a structural quirk that shapes every finding: MCP data — the primary source that makes the ceiling larger than confirmed — only started in April 2025. The "All Sources" ceiling series and the "AEI Both + Micro" confirmed series are effectively the same dataset for all dates before that. The gap is entirely a post-April 2025 phenomenon.
+The confirmed/ceiling comparison has a structural point: MCP data — the primary source that makes the ceiling larger than confirmed — only started in April 2025. The trend series begins at March 2025 when confirmed and ceiling were identical. The gap opened in August 2025 when MCP was incorporated.
 
-What this means: the "adoption gap" isn't a gap that has been widening since 2024 while organizations fail to keep up with AI capability. It's a gap that was created by new measurement — by the addition of MCP benchmarks that showed AI capability in areas where confirmed usage hadn't been documented. Before MCP, there was no measurable ceiling-confirmed divergence.
+What this means: the "adoption gap" isn't a gap that was widening for years while organizations failed to keep up. It's a gap created by new measurement — the addition of MCP benchmarks showing AI capability in areas where confirmed usage hadn't been documented. Before MCP, there was no measurable ceiling-confirmed divergence.
 
 | Date | Confirmed | Ceiling | Gap | Ratio |
 |------|-----------|---------|-----|-------|
-| Sep 2024 | 25.8% | 25.8% | 0.0pp | 100% |
-| Dec 2024 | 25.8% | 25.8% | 0.0pp | 100% |
 | Mar 2025 | 30.4% | 30.4% | 0.0pp | 100% |
 | Aug 2025 | 37.0% | 47.8% | 10.8pp | 77% |
 | Nov 2025 | 39.2% | 49.4% | 10.2pp | 79% |
@@ -69,7 +67,7 @@ The narrowing at the national level (77% → 80% since August 2025) is the more 
 
 ## Config
 
-Confirmed series: `AEI Both + Micro` (2024-09-30, 2024-12-23, 2025-03-06, 2025-08-11, 2025-11-13, 2026-02-12) | Ceiling series: `All` (same dates subset) | Employment-weighted average at national level | Major category pct from backend groupby
+Confirmed series: `AEI Both + Micro` (2025-03-06, 2025-08-11, 2025-11-13, 2026-02-12) | Ceiling series: `All` (same dates subset) | Employment-weighted average at national level | Major category pct from backend groupby
 
 ## Files
 

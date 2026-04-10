@@ -403,7 +403,7 @@ The implication is not that workers should panic. It is that the strategic pictu
 
 The SKA deep dive covers four additional dimensions not addressed in the overview above:
 
-**Element trends over time** — Which specific skills, abilities, and knowledge elements have gained the most AI coverage from September 2024 to February 2026. 23 elements crossed the 100% threshold during this window. All 23 are cognitive or communicative; zero physical abilities crossed.
+**Element trends over time** — Which specific skills, abilities, and knowledge elements have gained the most AI coverage from March 2025 to February 2026. All tracked elements that crossed the 100% threshold did so in cognitive and communicative domains; zero physical abilities crossed.
 
 **Cross-config comparison** — How the top human-advantage and AI-advantage element rankings hold up across all five canonical configs. Rankings are highly stable (physical abilities consistently at the bottom); levels vary (ceiling at 97.2% median, agentic_confirmed at 61.7%).
 
