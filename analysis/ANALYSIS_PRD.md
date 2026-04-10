@@ -51,7 +51,7 @@ The agentic configs show how much architectural investment would be needed to de
 |------------|----------|
 | `exposure_state/` | What is the current state of AI task exposure? (national, time-weighted, all five configs, trend over time) |
 | `job_risk_scoring/` | What is the probability that a job gets replaced rather than just changed? (7-factor composite risk score) |
-| `worker_resilience/` | What can a worker do to make their job more resilient? (SKA gap: where human advantage is largest vs. where AI leads) |
+| `worker_resilience/` | What can a worker do to make their job more resilient? (SKA gap: where human advantage is largest vs. where AI leads) — includes `ska_deep_dive/` sub-report covering element trends, cross-config comparison, category breakdown, and most AI-subsumed occupations |
 | `pivot_distance/` | Where is it cheap to pivot, and where is it expensive? (average reskill cost from high-risk to low-risk by job zone) |
 | `audience_framing/` | How do findings translate across audiences? (skill profile overlaps, dominant domains in high-risk/low-outlook jobs) |
 | `occs_of_interest/` | How do findings land for the named occupation list? |

@@ -151,10 +151,10 @@ The occupation-level heatmap shows the full picture for occupations of interest.
 
 This is the section that matters most for individual workers. The aggregate findings tell you the shape of the landscape. What follows tells you what to actually do about it.
 
-For each occupation, we show the key SKA elements where humans lead and where AI leads, then the specific tasks ranked by AI automation capability. The framework:
+For each occupation, we show the key SKA elements where humans lead and where AI leads, then the specific tasks ranked by AI automation capability. The framework (all percentages = AI capability as % of this occupation's own requirement):
 
-- **Invest in yourself** where the gap is negative — your human capabilities exceed what AI can do here
-- **Learn to leverage AI** where the gap is positive — AI already exceeds what the job requires
+- **Invest in yourself** where AI is below 100% — your human capabilities exceed what AI can do here
+- **Learn to leverage AI** where AI is above 100% — AI already exceeds what the job requires
 - **Let AI handle** tasks with high automation scores
 - **Do it yourself** tasks with low automation scores where the work is inherently human
 
@@ -168,27 +168,27 @@ Three-quarters of the task portfolio. That is a big number. But it hides somethi
 
 #### Where You Lead
 
-| Element | Type | Gap | Interpretation |
-|---------|------|-----|----------------|
-| Administrative | Knowledge | -12.76 | Your institutional knowledge — who handles what, how things actually work in this specific office, which vendor to call on Tuesdays. Not "administration" in the generic sense. The accumulated, context-specific understanding of how your particular organization runs. |
-| Near Vision | Abilities | -4.20 | Catching the misprint on the physical form. Reading the fine print on the contract that just arrived. Proofreading under fluorescent lights. |
-| Speech Recognition | Abilities | -3.38 | Understanding the mumbled voicemail, the request shouted across an open office, the caller with a thick accent on a bad connection. |
-| Service Orientation | Skills | -2.21 | Reading what someone actually needs versus what they said they need. Anticipating the follow-up question before it is asked. |
-| Active Listening | Skills | -1.95 | Full-attention, context-aware listening — the kind that catches the important thing someone almost did not say. |
-| Time Management | Skills | -1.88 | Juggling competing demands from multiple people in real time. Not scheduling — triaging. |
-| Selective Attention | Abilities | -1.66 | Staying focused on a task while the phone rings, someone walks up, and an email pings simultaneously. |
+| Element | Type | AI as % of Occ Need | Interpretation |
+|---------|------|---------------------|----------------|
+| Administrative | Knowledge | 51% | Your institutional knowledge — who handles what, how things actually work in this specific office, which vendor to call on Tuesdays. Not "administration" in the generic sense. The accumulated, context-specific understanding of how your particular organization runs. |
+| Near Vision | Abilities | 72% | Catching the misprint on the physical form. Reading the fine print on the contract that just arrived. Proofreading under fluorescent lights. |
+| Speech Recognition | Abilities | 76% | Understanding the mumbled voicemail, the request shouted across an open office, the caller with a thick accent on a bad connection. |
+| Service Orientation | Skills | 80% | Reading what someone actually needs versus what they said they need. Anticipating the follow-up question before it is asked. |
+| Active Listening | Skills | 87% | Full-attention, context-aware listening — the kind that catches the important thing someone almost did not say. |
+| Time Management | Skills | 82% | Juggling competing demands from multiple people in real time. Not scheduling — triaging. |
+| Selective Attention | Abilities | 81% | Staying focused on a task while the phone rings, someone walks up, and an email pings simultaneously. |
 
-The Administrative knowledge gap of -12.76 is enormous — the largest single element gap for this occupation by a wide margin. This is the "you can't replace the person who knows where everything is" effect. AI can draft a memo. It cannot know that the VP prefers Thursday meetings at 2pm, that the third-floor printer jams on heavy stock, or that the new hire in accounting needs extra reminders about expense reports. This knowledge is not in any document. It is in you.
+The Administrative knowledge score sits at just 51% of what this role requires — the largest human advantage for this occupation by a wide margin. This is the "you can't replace the person who knows where everything is" effect. AI can draft a memo. It cannot know that the VP prefers Thursday meetings at 2pm, that the third-floor printer jams on heavy stock, or that the new hire in accounting needs extra reminders about expense reports. This knowledge is not in any document. It is in you.
 
 #### Where AI Leads
 
-| Element | Type | Gap | Interpretation |
-|---------|------|-----|----------------|
-| Deductive Reasoning | Abilities | +3.68 | Working through logical implications of policies, rules, procedures. |
-| Inductive Reasoning | Abilities | +3.41 | Pattern recognition — spotting trends in data, drawing general conclusions from specific cases. |
-| Judgment and Decision Making | Skills | +2.99 | Evaluating options against defined criteria for routine, well-specified decisions. |
-| Administration and Management | Knowledge | +1.67 | General management concepts and best practices. Not your office — offices in general. |
-| Critical Thinking | Skills | +1.51 | Analyzing structured, text-based information for validity and consistency. |
+| Element | Type | AI as % of Occ Need | Interpretation |
+|---------|------|---------------------|----------------|
+| Deductive Reasoning | Abilities | 143% | Working through logical implications of policies, rules, procedures. |
+| Inductive Reasoning | Abilities | 139% | Pattern recognition — spotting trends in data, drawing general conclusions from specific cases. |
+| Judgment and Decision Making | Skills | 138% | Evaluating options against defined criteria for routine, well-specified decisions. |
+| Administration and Management | Knowledge | 115% | General management concepts and best practices. Not your office — offices in general. |
+| Critical Thinking | Skills | 114% | Analyzing structured, text-based information for validity and consistency. |
 
 A subtle point: AI leads in Deductive and Inductive Reasoning for this role not because AI is smarter than you, but because the occupation's formal requirement for these abilities is modest relative to AI's general capability. An admin does not need deep logical analysis most days. But when they do — comparing policy options, analyzing a vendor proposal, assessing whether a new system meets requirements — AI can handle the analytical heavy lifting.
 
@@ -237,34 +237,34 @@ Nursing is far less exposed than administrative work. The reason is structural: 
 
 #### Where You Lead
 
-| Element | Type | Gap | Interpretation |
-|---------|------|-----|----------------|
-| Psychology | Knowledge | -13.31 | Understanding human behavior, motivation, emotional states, fear responses, coping mechanisms. The single deepest human advantage — by far. |
-| Problem Sensitivity | Abilities | -9.81 | Recognizing that something is wrong before it becomes clinically obvious. The "something feels off about this patient" instinct that experienced nurses develop and that no checklist fully captures. |
-| Customer and Personal Service | Knowledge | -9.23 | The entire patient-centered care framework: reading needs, managing expectations, providing comfort in frightening situations. |
-| Social Perceptiveness | Skills | -7.88 | Picking up on nonverbal cues, emotional states, family dynamics, the things a patient will not put into words. |
-| Inductive Reasoning | Abilities | -7.47 | Drawing clinical conclusions from observations. Not textbook reasoning — the pattern recognition grounded in physical presence and accumulated experience. |
-| Coordination | Skills | -7.31 | Coordinating care across teams, shifts, departments, and specialists in real time. |
-| Service Orientation | Skills | -7.29 | The deep orientation toward helping that defines the profession. |
-| Arm-Hand Steadiness | Abilities | -6.35 | IV insertions, wound care, injections. The physical precision of clinical work. |
-| Medicine and Dentistry | Knowledge | -6.07 | Applied medical knowledge — not the textbook part, but the clinical-judgment part that comes from seeing thousands of patients. |
+| Element | Type | AI as % of Occ Need | Interpretation |
+|---------|------|---------------------|----------------|
+| Psychology | Knowledge | 52% | Understanding human behavior, motivation, emotional states, fear responses, coping mechanisms. The single deepest human advantage — by far. |
+| Problem Sensitivity | Abilities | 52% | Recognizing that something is wrong before it becomes clinically obvious. The "something feels off about this patient" instinct that experienced nurses develop and that no checklist fully captures. |
+| Customer and Personal Service | Knowledge | 62% | The entire patient-centered care framework: reading needs, managing expectations, providing comfort in frightening situations. |
+| Social Perceptiveness | Skills | 56% | Picking up on nonverbal cues, emotional states, family dynamics, the things a patient will not put into words. |
+| Inductive Reasoning | Abilities | 62% | Drawing clinical conclusions from observations. Not textbook reasoning — the pattern recognition grounded in physical presence and accumulated experience. |
+| Coordination | Skills | 54% | Coordinating care across teams, shifts, departments, and specialists in real time. |
+| Service Orientation | Skills | 54% | The deep orientation toward helping that defines the profession. |
+| Arm-Hand Steadiness | Abilities | 44% | IV insertions, wound care, injections. The physical precision of clinical work. |
+| Medicine and Dentistry | Knowledge | 69% | Applied medical knowledge — not the textbook part, but the clinical-judgment part that comes from seeing thousands of patients. |
 
-The Psychology gap of -13.31 is the largest element gap across all three occupations profiled here. Nursing demands a depth of understanding of human psychology — how people respond to pain, fear, bad news, uncertainty, loss of autonomy — that AI is nowhere close to matching. This is not about being nice. It is about being able to read a patient who insists they are fine but is not, or knowing when a family member's question is really about something else entirely. Problem Sensitivity at -9.81 is the clinical instinct that separates good from adequate. These gaps are not closing anytime soon.
+Psychology at 52% is the largest human advantage across all three occupations profiled here. Nursing demands a depth of understanding of human psychology — how people respond to pain, fear, bad news, uncertainty, loss of autonomy — that AI is nowhere close to matching. This is not about being nice. It is about being able to read a patient who insists they are fine but is not, or knowing when a family member's question is really about something else entirely. Problem Sensitivity at 52% is the clinical instinct that separates good from adequate. These gaps are not closing anytime soon.
 
 #### Where AI Leads
 
-| Element | Type | Gap | Interpretation |
-|---------|------|-----|----------------|
-| Biology | Knowledge | +8.48 | AI's biological knowledge far exceeds what the nursing role demands day-to-day. A powerful reference tool, not a replacement for clinical practice. |
-| Education and Training | Knowledge | +8.01 | Designing patient education materials, training content, discharge instructions. AI can generate these faster and more comprehensively than any individual nurse. |
-| Therapy and Counseling | Knowledge | +3.56 | The theoretical knowledge base of therapeutic approaches — evidence summaries, intervention frameworks. Not the delivery. |
-| Mathematical Reasoning | Abilities | +3.48 | Drug dosage calculations, statistical interpretation of lab results, risk scoring. |
-| Administration and Management | Knowledge | +2.97 | Scheduling optimization, resource allocation, management frameworks. |
-| Mathematics | Knowledge | +2.86 | Quantitative analysis for clinical and administrative tasks. |
+| Element | Type | AI as % of Occ Need | Interpretation |
+|---------|------|---------------------|----------------|
+| Biology | Knowledge | 209% | AI's biological knowledge far exceeds what the nursing role demands day-to-day. A powerful reference tool, not a replacement for clinical practice. |
+| Education and Training | Knowledge | 174% | Designing patient education materials, training content, discharge instructions. AI can generate these faster and more comprehensively than any individual nurse. |
+| Therapy and Counseling | Knowledge | 129% | The theoretical knowledge base of therapeutic approaches — evidence summaries, intervention frameworks. Not the delivery. |
+| Mathematical Reasoning | Abilities | 139% | Drug dosage calculations, statistical interpretation of lab results, risk scoring. |
+| Administration and Management | Knowledge | 131% | Scheduling optimization, resource allocation, management frameworks. |
+| Mathematics | Knowledge | 125% | Quantitative analysis for clinical and administrative tasks. |
 
-The Biology gap (+8.48) deserves unpacking. Nursing requires biological knowledge, but the daily requirement sits well below AI's capacity. What this means in practice: AI is an excellent reference tool for drug interactions, pathophysiology refreshers, evidence summaries, and protocol lookups. Nurses who learn to use AI for quick reference — "what are the contraindications for X in a patient with Y" — reclaim minutes that compound across a shift.
+The Biology score (209%) deserves unpacking. Nursing requires biological knowledge, but the daily requirement sits well below AI's capacity. What this means in practice: AI is an excellent reference tool for drug interactions, pathophysiology refreshers, evidence summaries, and protocol lookups. Nurses who learn to use AI for quick reference — "what are the contraindications for X in a patient with Y" — reclaim minutes that compound across a shift.
 
-The Education and Training gap (+8.01) is similarly actionable. Patient education is time-consuming and often templated. AI can draft discharge instructions, generate condition-specific educational materials, and create training documents, freeing nurses for direct patient care.
+The Education and Training score (174%) is similarly actionable. Patient education is time-consuming and often templated. AI can draft discharge instructions, generate condition-specific educational materials, and create training documents, freeing nurses for direct patient care.
 
 #### Task Recommendations
 
@@ -308,31 +308,31 @@ The least exposed of the three. And it is easy to see why. Construction labor is
 
 #### Where You Lead
 
-| Element | Type | Gap | Interpretation |
-|---------|------|-----|----------------|
-| Static Strength | Abilities | -11.26 | Lifting, carrying, holding heavy materials in position. Brute physical capacity. |
-| Manual Dexterity | Abilities | -9.91 | Precise hand movements with tools, fasteners, and materials in unpredictable conditions. |
-| Building and Construction | Knowledge | -8.92 | Hands-on, site-specific knowledge of how structures go together. The kind of knowledge that cannot be learned from a screen. |
-| Multilimb Coordination | Abilities | -8.56 | Coordinating arms, legs, and torso while working on scaffolding, uneven surfaces, or in confined spaces. |
-| Trunk Strength | Abilities | -8.02 | Core stability for lifting, bending, reaching in positions that would be awkward if you had not done them a thousand times before. |
-| Control Precision | Abilities | -6.58 | Fine control of tools and equipment — cutting, fastening, aligning to specification. |
-| Arm-Hand Steadiness | Abilities | -5.97 | Steady hands for work that requires precision under physical strain. |
-| Stamina | Abilities | -5.84 | Sustained physical effort across a full shift, in heat, cold, wind, dust. |
-| Depth Perception | Abilities | -5.63 | Judging distances in three-dimensional space. Essential for alignment, placement, and not falling off things. |
-| Extent Flexibility | Abilities | -5.37 | Reaching into tight spaces, working at unusual angles, contorting to get the tool where it needs to go. |
+| Element | Type | AI as % of Occ Need | Interpretation |
+|---------|------|---------------------|----------------|
+| Static Strength | Abilities | 25% | Lifting, carrying, holding heavy materials in position. Brute physical capacity. |
+| Manual Dexterity | Abilities | 32% | Precise hand movements with tools, fasteners, and materials in unpredictable conditions. |
+| Building and Construction | Knowledge | 53% | Hands-on, site-specific knowledge of how structures go together. The kind of knowledge that cannot be learned from a screen. |
+| Multilimb Coordination | Abilities | 30% | Coordinating arms, legs, and torso while working on scaffolding, uneven surfaces, or in confined spaces. |
+| Trunk Strength | Abilities | 34% | Core stability for lifting, bending, reaching in positions that would be awkward if you had not done them a thousand times before. |
+| Control Precision | Abilities | 40% | Fine control of tools and equipment — cutting, fastening, aligning to specification. |
+| Arm-Hand Steadiness | Abilities | 45% | Steady hands for work that requires precision under physical strain. |
+| Stamina | Abilities | 40% | Sustained physical effort across a full shift, in heat, cold, wind, dust. |
+| Depth Perception | Abilities | 37% | Judging distances in three-dimensional space. Essential for alignment, placement, and not falling off things. |
+| Extent Flexibility | Abilities | 45% | Reaching into tight spaces, working at unusual angles, contorting to get the tool where it needs to go. |
 
 Ten out of ten are physical abilities (with Building and Construction knowledge as the lone knowledge domain). The gaps are large and structurally permanent for software-only AI systems. Static Strength at -11.26 and Manual Dexterity at -9.91 require a body — and specifically a body with years of conditioned physical capability. These are not gaps that a software update closes.
 
 #### Where AI Leads
 
-| Element | Type | Gap | Interpretation |
-|---------|------|-----|----------------|
-| Oral Expression | Abilities | +4.66 | Clear verbal communication. |
-| Deductive Reasoning | Abilities | +4.46 | Logical analysis and inference. |
-| Speaking | Skills | +4.38 | Verbal communication skill. |
-| Speech Clarity | Abilities | +4.11 | Producing clear, understandable speech. |
-| Active Listening | Skills | +3.69 | Processing and understanding verbal information. |
-| Oral Comprehension | Abilities | +3.36 | Understanding spoken language. |
+| Element | Type | AI as % of Occ Need | Interpretation |
+|---------|------|---------------------|----------------|
+| Oral Expression | Abilities | 146% | Clear verbal communication. |
+| Deductive Reasoning | Abilities | 157% | Logical analysis and inference. |
+| Speaking | Skills | 147% | Verbal communication skill. |
+| Speech Clarity | Abilities | 148% | Producing clear, understandable speech. |
+| Active Listening | Skills | 139% | Processing and understanding verbal information. |
+| Oral Comprehension | Abilities | 131% | Understanding spoken language. |
 
 Every AI-advantage element for construction laborers is communication-related. This is not a commentary on construction workers' communication abilities. It reflects the fact that the job's formal requirements for verbal and analytical skills are modest relative to AI's baseline capability. The job is physical. The AI advantages are cognitive. These two do not compete with each other — they complement.
 
@@ -394,6 +394,26 @@ The implication is not that workers should panic. It is that the strategic pictu
 **SKA formula:** AI capability = 95th percentile of (pct/100 × importance × level) across occupations per element. Percentage framing = AI capability / occupation's own requirement score × 100. Above 100% = AI leads. Per-occ overall = ratio-of-sums across all qualifying elements with importance >= 3.
 
 **Trend configs (median pct delta):** all_ceiling (+46.5pp), all_confirmed (+37.8pp), agentic_ceiling (+33.8pp), human_conversation (+23.9pp), agentic_confirmed (+13.7pp).
+
+---
+
+## 8. SKA Deep Dive Sub-Report
+
+*Full detail: [ska_deep_dive/ska_deep_dive_report.md](ska_deep_dive/ska_deep_dive_report.md)*
+
+The SKA deep dive covers four additional dimensions not addressed in the overview above:
+
+**Element trends over time** — Which specific skills, abilities, and knowledge elements have gained the most AI coverage from September 2024 to February 2026. 23 elements crossed the 100% threshold during this window. All 23 are cognitive or communicative; zero physical abilities crossed.
+
+**Cross-config comparison** — How the top human-advantage and AI-advantage element rankings hold up across all five canonical configs. Rankings are highly stable (physical abilities consistently at the bottom); levels vary (ceiling at 97.2% median, agentic_confirmed at 61.7%).
+
+**By occupation category** — Average AI coverage of SKA requirements by major SOC category. Food Prep (113%) and Personal Care (108%) rank highest — not because they are high-tech, but because AI's general capability exceeds their modest formal requirements. Computer/Math ranks 12th (88%). Legal occupations rank last (81%).
+
+**Top elements within categories** — Where sector-level SKA profiles differ from the overall rankings. Computer/Math's biggest human advantage is Operation and Control; Healthcare Practitioners' is Reaction Time. Food Prep's biggest AI lead is Sales and Marketing at 204%.
+
+**Most AI-subsumed occupations** — Fast Food and Counter Workers top the list at 139%. No Computer/Math occupation appears in the top 25 — their formal technical requirements remain high enough to anchor human advantage.
+
+---
 
 ## Files
 

@@ -42,7 +42,8 @@ analysis/
 │   │   ├── job_exposure_report.md
 │   │   ├── exposure_state/
 │   │   ├── job_risk_scoring/
-│   │   ├── worker_resilience/
+│   │   ├── worker_resilience/          — SKA gap analysis; tips for 3 occupations
+│   │   │   └── ska_deep_dive/          — Element trends, cross-config, category breakdown, most-subsumed occs
 │   │   ├── pivot_distance/
 │   │   ├── audience_framing/
 │   │   └── occs_of_interest/
@@ -284,3 +285,5 @@ Computed per occupation, based on the primary config (`all_confirmed`) unless ot
 - **n_software from tech_skills_simple.csv**: joined by `title` not `soc_code`, since title_current is what we have at the occ level.
 - **Outlook is a non-linear 0-5 scale**: ECO 2025 DWS star rating is NOT ordered severity. 5=strongest outlook+high wages, 4=good outlook+high wages, 3=moderate outlook+low-mod wages, 2=high wages+limited outlook, 1=low wages+strong outlook, 0=limited outlook+low wages. Ratings 1 and 2 represent different tradeoffs, not ordered severity. Based on Utah projected openings (90%), growth rate (10%), and median wages.
 - **MCP standalone for bias testing**: `"MCP Cumul. v4"` can be used to test zone/sector exposure patterns without user self-selection bias (it's tool specs, not usage data). Note that MCP has its own bias: tools are built for higher-zone workflows.
+- **SKA category analysis uses ai_pct_occ (not ai_pct_eco_mean)**: When computing SKA averages by occupation category, use `ai_pct_occ` (per-occ: ai_score / occ_score × 100) averaged across occupations. Do not use `ai_pct_eco_mean` (which divides by the mean occ_score across all occupations, not the specific occupation's score). The two are different and produce different category rankings.
+- **all_confirmed 2024-09-30 is anchored by Microsoft only**: AEI conversation and API data starts accumulating from December 2024. The first date in the all_confirmed series reflects Microsoft Copilot signals, not full AEI coverage. SKA trends that start from this date will show a larger apparent gain because the baseline captures only Microsoft's narrower scope.
