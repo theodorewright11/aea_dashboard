@@ -302,34 +302,28 @@ def _build_autoaug_distribution(occ_df: pd.DataFrame) -> go.Figure:
     return fig
 
 
-def _build_autoaug_by_major(occ_df: pd.DataFrame) -> go.Figure:
-    """Employment-weighted average auto-aug score per major category."""
-    valid = occ_df[occ_df["auto_avg"].notna() & (occ_df["emp"] > 0)].copy()
-    _vw = valid[["major", "auto_avg", "emp"]].copy()
-    _vw["_weighted"] = _vw["auto_avg"] * _vw["emp"]
+def _build_autoaug_by_major(config_df: pd.DataFrame) -> go.Figure:
+    """Average auto-aug score per major category (task-level, primary config)."""
     major_avg = (
-        _vw.groupby("major")[["_weighted", "emp"]].sum()
-        .assign(auto_avg_wtd=lambda d: d["_weighted"] / d["emp"])
-        .drop(columns=["_weighted", "emp"])
-        .reset_index()
-        .sort_values("auto_avg_wtd", ascending=True)
+        config_df[config_df["avg_auto_aug_with_vals"].notna()]
+        .sort_values("avg_auto_aug_with_vals", ascending=True)
     )
 
     fig = go.Figure(go.Bar(
-        x=major_avg["auto_avg_wtd"],
+        x=major_avg["avg_auto_aug_with_vals"],
         y=major_avg["major"],
         orientation="h",
         marker_color=COLORS["primary"],
-        text=[f"{v:.2f}" for v in major_avg["auto_avg_wtd"]],
+        text=[f"{v:.2f}" for v in major_avg["avg_auto_aug_with_vals"]],
         textposition="outside",
         textfont=dict(size=10, color=COLORS["neutral"], family=FONT_FAMILY),
         cliponaxis=False,
     ))
-    fig.add_vline(x=major_avg["auto_avg_wtd"].mean(), line_dash="dash",
-                  line_color=COLORS["muted"], annotation_text="Economy avg")
+    fig.add_vline(x=major_avg["avg_auto_aug_with_vals"].mean(), line_dash="dash",
+                  line_color=COLORS["muted"], annotation_text="Sector avg")
 
-    style_figure(fig, "Employment-Weighted Auto-Aug Score by Sector",
-                 subtitle="Score 0–5 | Higher = tasks more automatable by AI | Employment-weighted average",
+    style_figure(fig, "Avg Auto-Aug Score by Sector (Task-Level)",
+                 subtitle=f"All Confirmed config | Mean auto_aug_mean across unique tasks per sector | Tasks with values only",
                  x_title="Auto-Aug Score (0–5)", show_legend=False, height=700, width=1100)
     fig.update_layout(
         margin=dict(l=20, r=100),
@@ -370,13 +364,13 @@ def _build_autoaug_by_config(all_config_df: pd.DataFrame, metric: str,
         ))
 
     style_figure(fig, title, subtitle=subtitle,
-                 x_title="Auto-Aug Score (0–5)", height=800, width=1300)
+                 x_title="Auto-Aug Score (0–5)", height=1600, width=1400)
     fig.update_layout(
         barmode="group",
-        margin=dict(l=20, r=120),
+        margin=dict(l=20, r=140),
         xaxis=dict(showgrid=True, gridcolor=COLORS["grid"]),
-        yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=10)),
-        bargap=0.2,
+        yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=11)),
+        bargap=0.25,
         bargroupgap=0.05,
     )
     return fig
@@ -540,11 +534,8 @@ def main() -> None:
                 figs_dir / "autoaug_distribution.png")
     print("  autoaug_distribution.png")
 
-    # 3c. Auto-aug by major
-    fig_major = _build_autoaug_by_major(occ_autoaug)
-    save_figure(fig_major, results / "figures" / "autoaug_by_major.png")
-    shutil.copy(results / "figures" / "autoaug_by_major.png", figs_dir / "autoaug_by_major.png")
-    print("  autoaug_by_major.png")
+    # 3c. Auto-aug by major (task-level, primary config — computed below with config loop)
+    # Built after config_autoaug_dfs so we can reuse the primary config slice.
 
     # 3d. Mode scatter
     fig_scatter = _build_mode_scatter(conv_major, agentic_major)
@@ -581,25 +572,25 @@ def main() -> None:
     all_config_autoaug = pd.concat(config_autoaug_dfs, ignore_index=True)
     save_csv(all_config_autoaug, results / "autoaug_by_major_config.csv")
 
+    # 3c (continued). Auto-aug by major — primary config slice (task-level, no emp weighting)
+    primary_autoaug = all_config_autoaug[all_config_autoaug["config_key"] == PRIMARY_KEY].copy()
+    fig_major = _build_autoaug_by_major(primary_autoaug)
+    save_figure(fig_major, results / "figures" / "autoaug_by_major.png")
+    shutil.copy(results / "figures" / "autoaug_by_major.png", figs_dir / "autoaug_by_major.png")
+    print("  autoaug_by_major.png")
+
+    # 3g. Auto-aug by major across all configs (grouped bar, with-values metric only)
+    # The "all tasks (missing=0)" metric is nearly identical (99%+ tasks have values)
+    # so only the "with values" chart is produced.
     fig_aa_with = _build_autoaug_by_config(
         all_config_autoaug, "avg_auto_aug_with_vals",
-        "Avg Auto-Aug by Sector × Config (Tasks With Values)",
-        subtitle="Average auto_aug_mean across unique tasks that have a value | By dataset config",
+        "Avg Auto-Aug Score by Sector × Config",
+        subtitle="Mean auto_aug_mean across unique tasks with a value | One bar per dataset config",
     )
     save_figure(fig_aa_with, results / "figures" / "autoaug_by_config_with_vals.png")
     shutil.copy(results / "figures" / "autoaug_by_config_with_vals.png",
                 figs_dir / "autoaug_by_config_with_vals.png")
     print("  autoaug_by_config_with_vals.png")
-
-    fig_aa_all = _build_autoaug_by_config(
-        all_config_autoaug, "avg_auto_aug_all",
-        "Avg Auto-Aug by Sector × Config (All Tasks, Missing=0)",
-        subtitle="Average auto_aug_mean across all unique tasks, NaN treated as 0 | By dataset config",
-    )
-    save_figure(fig_aa_all, results / "figures" / "autoaug_by_config_all.png")
-    shutil.copy(results / "figures" / "autoaug_by_config_all.png",
-                figs_dir / "autoaug_by_config_all.png")
-    print("  autoaug_by_config_all.png")
 
     # -- 4. Summary ------------------------------------------------------------
     print("\n-- Mode totals --")
