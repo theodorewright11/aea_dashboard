@@ -198,27 +198,11 @@ def main() -> None:
 
     # -- 3. Figures ------------------------------------------------------------
 
-    # 3a. Aggregate trend — workers affected
+    # 3a. Aggregate trend — % of employment
+    # Note: pct_tasks_wtd = workers_affected / total_emp * 100, so workers and
+    # pct charts are proportional and look identical. Keep only the pct chart
+    # (more interpretable) and drop the redundant workers chart.
     if not agg_df.empty:
-        agg_workers = agg_df.pivot_table(
-            index="date", columns="config_label", values="workers_affected"
-        ).reset_index()
-        agg_workers_long = agg_workers.melt(id_vars="date", var_name="config_label", value_name="workers_affected")
-        agg_workers_long["workers_m"] = agg_workers_long["workers_affected"] / 1e6
-        agg_workers_long = agg_workers_long.dropna()
-
-        fig_agg = make_line_chart(
-            agg_workers_long, "date", "workers_m", "config_label",
-            "Workers Affected Over Time — All Configs",
-            subtitle="National | Freq method | Auto-aug ON | All major sectors combined",
-            y_title="Workers Affected (millions)",
-            x_title="Dataset date",
-        )
-        save_figure(fig_agg, results / "figures" / "aggregate_trend.png")
-        shutil.copy(results / "figures" / "aggregate_trend.png", figs_dir / "aggregate_trend.png")
-        print("  aggregate_trend.png")
-
-        # 3b. Aggregate trend — pct of employment
         agg_pct = agg_df.pivot_table(
             index="date", columns="config_label", values="pct_tasks_wtd"
         ).reset_index()
@@ -227,9 +211,9 @@ def main() -> None:
 
         fig_agg_pct = make_line_chart(
             agg_pct_long, "date", "pct_tasks_wtd", "config_label",
-            "Average % Tasks Affected Over Time — All Configs",
-            subtitle="National | Employment-weighted average across all occupations",
-            y_title="Avg % Tasks Affected (wtd)",
+            "% of Employment Reached Over Time — All Configs",
+            subtitle="National | Workers affected / total employment | Freq method | Auto-aug ON",
+            y_title="% of Employment Reached",
             x_title="Dataset date",
         )
         save_figure(fig_agg_pct, results / "figures" / "aggregate_trend_pct.png")

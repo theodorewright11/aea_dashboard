@@ -16,9 +16,9 @@ The ceiling and confirmed trajectories have moved together rather than convergin
 
 The worker count growth is almost entirely driven by new capability claims being added — the labor market itself isn't changing quickly. What's changing is the assessed reach of AI into existing occupational tasks. The same jobs are there; AI keeps finding new footholds in them.
 
-![Aggregate Worker Count Trend Over Time](figures/aggregate_trend.png)
+![% of Employment Reached Over Time — All Configs](figures/aggregate_trend_pct.png)
 
-![Aggregate Task Penetration Trend Over Time](figures/aggregate_trend_pct.png)
+Note: the workers-affected trend and this chart are proportional by construction — pct of employment = workers affected / total employment, a fixed scalar. The workers chart is redundant and has been removed. The pct framing is more interpretable.
 
 ---
 
