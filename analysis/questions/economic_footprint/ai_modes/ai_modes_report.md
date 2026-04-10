@@ -71,20 +71,13 @@ The by-major-sector breakdown of auto-augmentability scores generally tracks the
 
 ![Auto-Augmentability Distribution Across Affected Workforce](figures/autoaug_distribution.png)
 
-![Auto-Augmentability by Major Sector](figures/autoaug_by_major.png)
+![Avg Auto-Aug Score by Sector — All Confirmed](figures/autoaug_by_major.png)
 
 ### Auto-Aug Across Dataset Configs
 
-Auto-augmentability scores vary by which dataset config is used, because each config's dataset includes different tasks. Two metrics are shown per major sector across all five configs:
+Auto-augmentability scores vary by which dataset config is used, because each config's dataset includes different tasks. The chart below shows the average auto_aug_mean per sector across all five configs (tasks with a score only; 99%+ of tasks have values so an "all tasks" chart would look essentially identical).
 
-1. **Tasks with values**: average auto_aug_mean of tasks that have a score (excludes tasks with no auto-aug assessment)
-2. **All tasks (missing=0)**: average auto_aug_mean across all tasks in that major, treating missing values as 0
-
-The first metric shows how automatable the assessed tasks are; the second shows overall automation potential including coverage gaps.
-
-![Auto-Aug by Sector and Config — Tasks With Values](figures/autoaug_by_config_with_vals.png)
-
-![Auto-Aug by Sector and Config — All Tasks](figures/autoaug_by_config_all.png)
+![Avg Auto-Aug Score by Sector × Config](figures/autoaug_by_config_with_vals.png)
 
 ---
 
