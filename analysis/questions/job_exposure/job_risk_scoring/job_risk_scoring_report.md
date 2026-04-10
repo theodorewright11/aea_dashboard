@@ -88,6 +88,36 @@ The flag breakdown chart shows, for each score from 0 to 10, what percentage of 
 
 ---
 
+## Flag Activation Profile by Tier
+
+The heatmap below compresses the flag-breakdown story into a single view: for each tier, what share of its occupations trigger each flag? The gradient makes the tier separation visible at a glance — high-risk occupations light up across nearly every flag, while low-risk occupations are dark everywhere except the structural flags.
+
+![Flag Activation Profile by Tier](figures/tier_flag_profile.png)
+
+---
+
+## Who's in Each Tier?
+
+The charts below show the top 20 occupations by workers affected in each tier. The labels include % tasks affected, risk score, flag count, and worker count — everything needed to understand why a specific occupation landed where it did.
+
+### High Risk (8–10)
+
+![High Risk Top Occupations](figures/tier_top_occs_high.png)
+
+### Mod-High Risk (5–7)
+
+![Mod-High Risk Top Occupations](figures/tier_top_occs_mod_high.png)
+
+### Mod-Low Risk (3–4)
+
+![Mod-Low Risk Top Occupations](figures/tier_top_occs_mod_low.png)
+
+### Low Risk (0–2)
+
+![Low Risk Top Occupations](figures/tier_top_occs_low.png)
+
+---
+
 ## Cross-Config Robustness
 
 The scoring framework runs identically across all five analysis configurations. 306 occupations change tier in at least one config. With four tiers, this is expected -- the boundaries are more numerous, so tier transitions near thresholds are more common.
