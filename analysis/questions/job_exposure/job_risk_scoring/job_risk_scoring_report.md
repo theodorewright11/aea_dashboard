@@ -1,32 +1,37 @@
 # Job Risk Scoring: Which Jobs Are Most at Risk?
 
-*Config: all_confirmed (primary) | all_ceiling (comparison) | Weighted scoring, max 11 | Exposure gate at 33%*
+*Config: all_confirmed (primary) | all_ceiling (comparison) | 8-flag weighted scoring, max 10 | 4 tiers | Exposure gate at 33%*
 
 ---
 
-A seven-flag weighted scoring system separates 923 occupations into three risk tiers. 195 occupations employing 50.7 million workers land in the high tier (scores 8--11), where both direct AI exposure and structural vulnerability converge. The moderate tier is the largest at 504 occupations and 82.5 million workers -- and the most internally diverse, ranging from structurally vulnerable jobs with almost no AI exposure to highly exposed jobs protected by education requirements or strong demand. The most useful finding: what drives a score of 4 is completely different from what drives a score of 7, and that distinction matters more than the tier label.
+An eight-flag weighted scoring system separates 923 occupations into four risk tiers. 115 occupations employing 34.4 million workers land in the high tier (scores 8--10), where both deep AI exposure and structural vulnerability converge. The two moderate tiers split what was previously a single catch-all category: mod-high (356 occupations, 64.6M workers) captures jobs where exposure or structural signals are substantial but not yet overwhelming, while mod-low (214 occupations, 31.0M workers) captures jobs with early signals that haven't compounded. This four-tier structure resolves the biggest interpretive problem from the old three-tier model -- a score-3 occupation and a score-7 occupation are now properly separated instead of wearing the same "moderate" label.
 
 ---
 
 ## How the Scoring Works
 
-Seven binary flags, split into two categories. Flags 1--4 measure direct exposure signal: is AI already handling this job's tasks, does AI capability exceed the job's skill requirements, and are both of those trends accelerating? Flags 5--7 measure structural vulnerability: low preparation barrier (job zone 1--3), below-average labor market outlook, and commoditized software tooling.
+Eight binary flags across three categories. Flags 1--2 measure exposure depth: is AI covering more than half the job's tasks, and does AI's demonstrated capability exceed what the job requires on skills/abilities/knowledge? These carry double weight (2x each) because they represent the core "AI is actually reaching this job" signal. Flags 3--4 measure exposure velocity: are task coverage and capability both trending upward? These carry standard weight (1x each) -- still signal, but noisier over the current 15-month measurement window. Flag 8 measures auto-augmentability depth: are the job's exposed tasks rated as highly automatable? Flags 5--7 measure structural vulnerability: low preparation barrier, below-average labor market outlook, and commoditized software tooling (all 1x).
 
 | Flag | What it measures | Weight |
 |------|------------------|--------|
-| 1. pct_tasks_affected > median | Breadth of AI task coverage | 2x |
-| 2. SKA gap > median | AI capability exceeds job's skill needs | 2x |
-| 3. pct trend positive + above-median growth | Task exposure is accelerating | 2x |
-| 4. SKA gap trend positive + above-median growth | Skill coverage is accelerating | 2x |
+| 1. pct_tasks_affected > 50% | More than half the job's tasks are AI-affected (absolute threshold) | 2x |
+| 2. SKA overall_pct > median | AI capability exceeds the job's skill requirements (ratio-of-sums) | 2x |
+| 3. pct trend positive + above-median growth | Task exposure is accelerating | 1x |
+| 4. SKA pct trend positive + above-median growth | Skill coverage is accelerating | 1x |
 | 5. job_zone in {1, 2, 3} | Low-to-moderate preparation barrier | 1x |
 | 6. outlook in {2, 3} | Below-average labor market outlook | 1x |
 | 7. n_software > median | Commoditized tooling | 1x |
+| 8. auto_avg_with_vals > median | Tasks are highly automatable | 1x |
 
-The exposure flags carry double weight because they measure what AI is actually doing to the job right now, while structural flags measure how defensible the job is against disruption. Maximum possible score: 11 (four exposure flags at 2x = 8, plus three structural flags at 1x = 3).
+The depth flags carry double weight because they measure whether AI has actually reached this job -- not whether it might, or whether the trend suggests it could. Maximum possible score: 10 (two depth flags at 2x = 4, plus six flags at 1x = 6).
 
-One guard rail: the **exposure gate**. Any occupation scoring 8+ but with less than 33% of tasks affected gets downgraded from high to moderate. The logic is simple -- if AI isn't touching a third of your tasks, calling you "high risk" based on structural factors alone would be misleading. 13 occupations triggered this gate.
+Key change from the previous version: flag 1 now uses an absolute 50% threshold rather than the population median. The old median (~33%) was nearly identical to the exposure gate, making flag 1 redundant with the gate itself. The 50% threshold means flag 1 now captures a genuinely different signal: "more than half the job is exposed," not just "above average."
 
-**Tiers:** 8--11 = High Risk, 4--7 = Moderate, 0--3 = Low.
+Flag 2 uses `overall_pct` from the updated SKA formula: sum(AI capability scores) / sum(occupation requirement scores) x 100, across all skills, abilities, and knowledge elements with importance >= 3. Values above 100% mean AI's demonstrated frontier exceeds what the job needs. The median overall_pct sits around 88%, so roughly half of occupations have AI covering less than 88% of their skill requirement.
+
+One guard rail: the **exposure gate**. Any occupation scoring 8+ but with less than 33% of tasks affected gets downgraded from high to mod-high. 2 occupations triggered this gate (Sound Engineering Technicians and Food Service Managers).
+
+**Tiers:** 8--10 = High, 5--7 = Mod-High, 3--4 = Mod-Low, 0--2 = Low.
 
 ---
 
@@ -34,15 +39,18 @@ One guard rail: the **exposure gate**. Any occupation scoring 8+ but with less t
 
 | Tier | Occupations | Total Employment | Avg % Tasks Affected | Avg Risk Score | Workers Affected | Wages Affected |
 |------|-------------|------------------|----------------------|----------------|------------------|----------------|
-| **High (8--11)** | 195 | 50.7M | 56.4% | 9.08 | 28.9M | $1.39T |
-| **Moderate (4--7)** | 504 | 82.5M | 35.9% | 5.62 | 28.1M | $2.28T |
-| **Low (0--3)** | 224 | 20.1M | 19.0% | 2.10 | 4.3M | $321B |
+| **High (8--10)** | 115 | 34.4M | 65.4% | 8.77 | 22.9M | $1.23T |
+| **Mod-High (5--7)** | 356 | 64.6M | 39.4% | 5.73 | 24.5M | $1.57T |
+| **Mod-Low (3--4)** | 214 | 31.0M | 29.0% | 3.50 | 8.3M | $719B |
+| **Low (0--2)** | 238 | 23.3M | 23.5% | 1.61 | 5.5M | $475B |
 
-The high-risk tier contains just 21% of scored occupations but accounts for 33% of total employment -- 50.7 million workers in jobs where multiple replacement signals line up. Average task exposure in this tier is 56.4%, roughly triple the low tier's 19.0%.
+The high-risk tier is more concentrated and more conservative than the old version: 115 occupations (down from 195 in the three-tier model) with an average task exposure of 65.4%. These are jobs where AI has crossed the 50% task threshold, the skill profile AI can cover exceeds what the job needs, and multiple other signals converge. The tighter criteria mean "high risk" now requires the core exposure signal to be present, not just structural vulnerability.
 
-But the moderate tier is where the action is, at least in terms of economic scale. It covers 504 occupations, 82.5 million workers, and $2.28 trillion in affected wages -- more than the high tier on every dimension except average exposure intensity. The moderate tier's workers-affected count (28.1M) nearly matches the high tier's (28.9M). That's because the moderate tier is enormous and heterogeneous: it contains both the "exposed but protected" occupations (high task coverage, high job zone, good outlook) and the "structurally vulnerable but not yet exposed" occupations (low task coverage, low job zone, poor outlook). These are fundamentally different situations wearing the same label.
+The mod-high tier is the largest at 356 occupations and 64.6M workers. These are jobs with genuine exposure or structural signals -- but not the full convergence of the high tier. The mod-high tier's workers-affected count (24.5M) is comparable to the high tier's (22.9M) because this tier contains many large-employment occupations with moderate-but-real AI overlap.
 
-The low tier is small -- 224 occupations, 20.1 million workers. These jobs either have minimal AI task overlap, sit behind substantial preparation barriers, or both.
+The mod-low tier (214 occupations, 31.0M workers) is the early-signal zone. Score 3 occupations typically trigger one structural flag plus one trend or auto-aug flag. Score 4 occupations often have moderate SKA coverage or one depth flag with a structural flag. These jobs have some signals but nothing compounding yet.
+
+The low tier (238 occupations, 23.3M workers) has minimal overlap with AI on any measured dimension.
 
 ![Risk Tier Distribution](figures/risk_tier_distribution.png)
 
@@ -50,29 +58,31 @@ The low tier is small -- 224 occupations, 20.1 million workers. These jobs eithe
 
 ## What Drives Each Score Level
 
-This is the section that reveals what the composite score actually means at each level. The flag breakdown chart shows, for each score from 0 to 11, what percentage of occupations at that score have each flag active. The patterns are striking.
+The flag breakdown chart shows, for each score from 0 to 10, what percentage of occupations at that score have each flag active.
 
 ![Flag Breakdown by Score](figures/flag_breakdown_by_score.png)
 
-**Score 0 (9 occupations, avg pct 13.2%):** No flags triggered. These are occupations like Anesthesiologists, Emergency Medicine Physicians, and Pediatric Surgeons -- high job zone, strong outlook, minimal AI task overlap, skill requirements AI doesn't meet. The absence of every signal is itself a signal: these jobs sit outside AI's current reach on every measured dimension.
+**Score 0 (8 occupations, avg pct 15.5%):** No flags triggered. Anesthesiologists, Emergency Medicine Physicians, Pediatric Surgeons -- high job zone, strong outlook, minimal AI task overlap, skill requirements AI doesn't meet.
 
-**Scores 1--3 (Low tier):** Flags appear sparsely and without clustering. A score of 1 might mean just a single structural flag (e.g., low job zone) or one exposure flag at 2x. A score of 3 could be one exposure flag plus one structural, or three structural flags. There's no dominant pattern here -- low-risk occupations are low-risk for varied reasons.
+**Scores 1--2 (Low tier):** Flags appear sparsely. Score 1 (77 occupations) might mean a single structural flag or one trend flag. Score 2 (153 occupations) typically shows two non-exposure flags -- often job zone + outlook, or job zone + n_software. The depth flags (1 and 2) are almost never triggered.
 
-**Score 4 (141 occupations, avg pct 17.2%):** This is where it gets interesting. Score 4 sits at the bottom of the moderate tier, and its flag profile is almost entirely structural. 89% of score-4 occupations trigger the job zone flag. 87% trigger the outlook flag. But only 6% trigger the pct_tasks_affected flag, and trend flags are similarly rare. These are jobs that look vulnerable on paper -- low preparation barrier, weak labor market position, commoditized tools -- but where AI isn't yet doing much of the actual work. Think of it as latent risk: the structural conditions for displacement exist, but the technology hasn't arrived in these tasks yet.
+**Score 3 (108 occupations, avg pct 27.5%):** The entry point of mod-low. Structural flags dominate -- 54% trigger job zone, 56% trigger outlook. But flag 8 (auto-aug) starts appearing at 59%, and trend flags at 47%. Depth flags remain rare (2% for flag 1, 6% for flag 2). These are jobs where the trend and auto-aug signals are showing up before the depth signal arrives.
 
-**Score 5 (101 occupations, avg pct 29.8%):** The transition zone. Exposure flags start appearing alongside structural ones, but coverage is uneven. You see occupations where one exposure signal is strong (maybe high task percentage at 2x, pushing the score to 5 with one structural flag) mixed with occupations where moderate exposure meets moderate structural vulnerability.
+**Score 4 (106 occupations, avg pct 30.4%):** The top of mod-low. Flag 2 (SKA pct > median) jumps to 63% -- occupations are starting to show AI capability alignment. Flag 1 (pct > 50%) is at 22%, still uncommon. The mix of structural + early exposure signals is what separates mod-low from low: these jobs have some AI relevance, but it hasn't crossed the depth threshold.
 
-**Score 6 (102 occupations, avg pct 33.3%):** Exposure flags become more common. Roughly half the occupations at this level trigger the pct flag, and trend flags start appearing with regularity. The balance between exposure-driven and structure-driven starts shifting toward exposure.
+**Score 5 (156 occupations, avg pct 38.5%):** Entry into mod-high. Exposure and structural flags are roughly balanced. Flag 1 at 35%, flag 2 at 65%, trend flags around 50%. Investment Fund Managers sit here at 89.3% task exposure -- extremely high coverage, but job zone 5 and strong outlook zero out the structural flags. The mod-high tier catches this: highly exposed but structurally protected.
 
-**Score 7 (160 occupations, avg pct 55.0%):** The crossover point. Score 7 is dominated by exposure signal: 91% trigger the pct flag, 88--89% trigger both trend flags. Structural flags are still present but they're no longer doing the heavy lifting. Market Research Analysts sit here -- 89.5% task exposure, but zone 4 and a favorable outlook (rating 4) keep them from triggering structural flags. Software Developers land at score 5 with 45.2% task exposure -- moderate AI overlap, but job zone 4 and strong outlook (rating 5) push their structural flags to zero.
+**Score 6 (143 occupations, avg pct 40.2%):** SKA flag at 75%, trend flags at 59--85%, structural flags at 71%. Auto-aug at 66%. The signals are converging.
 
-**Score 8 (139 occupations, avg pct 52.4%):** The low end of the high tier. These occupations clear the exposure gate (pct >= 33%) and have all or nearly all exposure flags active, plus enough structural flags to cross the threshold. Waiters and Waitresses (39.4% pct, 2.3M workers) sit right at score 8, barely above the exposure gate. Economists score 8 too, at 82.5% task exposure -- they hit all four exposure flags at 2x = 8, but their high job zone means none of the structural flags trigger.
+**Score 7 (55 occupations, avg pct 40.0%):** The top of mod-high. Flag 2 at 87%, flag 4 (SKA trend) at 100%, structural flags at 78--87%. Flag 1 at 20% -- task exposure hasn't crossed 50% for most, keeping them out of high. These occupations have deep trend and capability signals but haven't hit the task coverage threshold.
 
-**Score 9--10:** Nearly all flags active, with one or two missing. The occupations that score 10 but not 11 typically miss one structural flag -- either they have adequate outlook, or their software count falls below the median.
+**Score 8 (52 occupations, avg pct 64.2%):** Entry into high. Flag 1 at 87%, flag 2 at 100%, both trend flags near-universal, auto-aug at 100%. Flag 5 (job zone) at 33% and flag 6 (outlook) at 21% -- many score-8 occupations are in higher job zones with decent outlooks, but the depth and velocity signals are so strong they cross into high anyway. Business Intelligence Analysts (92.3% pct), Real Estate Brokers (90.2%), Technical Writers (85.8%).
 
-**Score 11 (28 occupations, avg pct 64.7%):** Every flag active. The "perfect storm" occupations. Customer Service Representatives (84.1% pct, 2.7M workers, $113B in affected wages). Secretaries and Administrative Assistants (75.1% pct, 1.7M workers). Bookkeeping Clerks (69.6% pct, 1.5M workers). Data Entry Keyers (65.9%). These occupations combine broad AI task coverage, a skill profile AI already exceeds, accelerating trends on both dimensions, low preparation barriers, poor labor market outlook, and heavy commoditized tooling. Every measurable signal points the same direction.
+**Score 9 (41 occupations, avg pct 63.7%):** All exposure flags universally active. Structural flags at 68--71%. Nearly full convergence.
 
-**The key pattern across all of this:** the moderate tier contains two fundamentally different populations. Score 4 is structural vulnerability without exposure -- latent risk. Score 7 is exposure-driven risk that structural factors partially mitigate. Lumping these together under "moderate" obscures the distinction. The score-4 occupation might never face displacement if AI doesn't penetrate its task domain. The score-7 occupation is already exposed and is only held back by education requirements or demand conditions that could shift.
+**Score 10 (24 occupations, avg pct 68.0%):** Every flag active. Customer Service Representatives (84.1% pct, 2.7M workers). Secretaries and Administrative Assistants (75.1% pct, 1.7M workers). Receptionists and Information Clerks (73.8%, 1.0M workers). Bill and Account Collectors (71.8%). These occupations combine deep AI task coverage, a skill profile AI already exceeds, accelerating trends, high auto-augmentability, low preparation barriers, poor labor market outlook, and heavy commoditized tooling.
+
+**The structural insight from four tiers:** the old "moderate" tier lumped score-3 and score-7 occupations together. Now they're properly separated. A mod-low score-3 occupation has early structural signals but no depth -- it needs monitoring. A mod-high score-7 occupation has deep capability alignment and accelerating trends -- it needs active workforce transition planning. The four-tier structure makes this distinction visible.
 
 ![Risk Score vs Task Exposure](figures/risk_vs_pct_scatter.png)
 
@@ -80,21 +90,17 @@ This is the section that reveals what the composite score actually means at each
 
 ## Cross-Config Robustness
 
-The scoring framework runs identically across all five analysis configurations -- from All Confirmed (our primary, using only confirmed AI capabilities) to All Sources Ceiling (including theoretical maximum capabilities). The question: how stable are the tier assignments?
+The scoring framework runs identically across all five analysis configurations. 306 occupations change tier in at least one config. With four tiers, this is expected -- the boundaries are more numerous, so tier transitions near thresholds are more common.
 
-272 occupations change tier in at least one config. Most of these shifts are single-tier moves (moderate to high or low to moderate) driven by exposure flags flipping near the thresholds. Structural flags (job zone, outlook, software count) don't change between configs because they're properties of the occupation, not of the AI measurement source. So cross-config volatility is concentrated entirely in flags 1--4.
+149 occupations make jumps of 3+ tiers (e.g., low to high or mod-low to high across different configs). These are occupations where the AI measurement source matters enormously:
 
-Four occupations make big jumps -- low to high or vice versa:
+- **Writers and Authors:** mod-low under Human Conversation and All Confirmed, high under Agentic Confirmed and Agentic Ceiling. The agentic AI sources see substantial task overlap that conversational data doesn't capture.
 
-- **Geothermal Technicians:** Low risk under All Ceiling, high risk under Human Conversation and All Confirmed. The ceiling model doesn't think AI has penetrated their tasks much (they still land at 33.4% pct under all_confirmed, barely clearing the gate). But human conversational AI data tells a different story. Same job, dramatically different risk assessment depending on which AI capability source you trust.
+- **Technical Writers:** high under Human Conversation and Agentic Confirmed, mod-high under All Ceiling and Agentic Ceiling. Different AI modalities produce different assessments.
 
-- **First-Line Supervisors of Security Workers:** High risk under All Ceiling and Agentic Confirmed, low risk under Human Conversation. The pattern is reversed. Agentic AI sources see significant task overlap; conversational sources don't.
+- **Telemarketers:** high under most configs, mod-high under Human Conversation. Consistently high-exposure with minor config sensitivity.
 
-- **Insurance Appraisers, Auto Damage:** Low in Agentic Confirmed and Agentic Ceiling, high in Human Conversation and All Confirmed. Another case where the AI modality matters.
-
-- **Non-Destructive Testing Specialists:** Low in All Ceiling, high in Human Conversation. Moderate everywhere else.
-
-These examples are useful because they show where the analysis is genuinely uncertain. An occupation that stays in the same tier across all five configs is a robust finding. An occupation that swings from low to high depending on the capability source is telling you something about the limits of the measurement, not just about the job.
+Occupations that stay in the same tier across all five configs are the most robust findings. Those that swing 3+ tiers are telling you about measurement limits, not job fundamentals.
 
 ![Cross-Config Volatility](figures/cross_config_volatility.png)
 
@@ -102,27 +108,23 @@ These examples are useful because they show where the analysis is genuinely unce
 
 ## What "High Risk" Actually Means
 
-The label "high risk" invites a specific interpretation: these jobs are going away. But that's not quite what the scoring captures.
+Score 8--10 says: AI can do more than half this job's tasks, AI's demonstrated skill coverage exceeds the occupation's requirement, both trends are accelerating, and the auto-augmentability of the exposed tasks is high. Most high-risk occupations also have structural vulnerabilities (low job zone, poor outlook, commoditized tools), but the tier assignment is driven primarily by the depth and velocity of AI exposure.
 
-What score 8--11 actually says is: AI can already do a substantial share of this job's tasks, AI's capabilities meet or exceed the skill requirements, both of those trends are accelerating, and the job has few structural defenses -- low preparation barrier, weak demand, commoditized tools. All of that can be true and the job can still persist for years, because task exposure doesn't automatically translate to job elimination. Firms have to decide to automate. Workers have to not find adjacent tasks to absorb. Regulatory and institutional friction has to be low enough.
+The tighter criteria (115 occupations vs. the old 195) mean the high-risk label now carries more weight. Every occupation in this tier has cleared the 50% task threshold and the SKA capability threshold. The mod-high tier absorbs the occupations that the old system would have called "high risk" based on structural signals alone -- jobs where AI is relevant but hasn't crossed the depth floor.
 
-That said, the convergence of all seven signals in the score-11 occupations is hard to dismiss. Customer Service Representatives at 84.1% task exposure with every structural vulnerability flag active -- that's not "might be affected someday." That's a job where the technology exists, the economics favor substitution, and the trend line is accelerating. The question is timing, not direction.
-
-The more interesting interpretive challenge is the moderate tier. A score-4 occupation and a score-7 occupation have the same tier label but face completely different situations. Policy responses should differ too: score-4 occupations need monitoring, while score-7 occupations need active workforce transition planning. The three-layer framing (exposure signal vs. structural vulnerability vs. composite) matters more than the tier label itself.
-
-And the exposure gate does real work here. Without it, 13 more occupations would be labeled high risk despite having less than a third of their tasks exposed to AI. The gate ensures that "high risk" retains a minimum level of face validity -- you can't be high risk if AI isn't actually doing much of your work, no matter how structurally vulnerable you look.
+The exposure gate remains essential. Without it, Sound Engineering Technicians (28.4% pct) and Food Service Managers (32.9% pct) would be labeled high risk despite AI touching less than a third of their tasks. The gate ensures face validity.
 
 ---
 
 ## Config
 
-**Primary:** All Confirmed (all_confirmed). This uses only confirmed AI capabilities across all source types -- the most conservative measure of what AI can demonstrably do today.
+**Primary:** All Confirmed (all_confirmed). Confirmed AI capabilities across all source types.
 
-**Comparison:** All Sources Ceiling (all_ceiling) is shown as the upper bound throughout, representing what AI could theoretically handle given maximum capability assumptions.
+**Comparison:** All Sources Ceiling (all_ceiling) as the upper bound.
 
-**Three-layer framing:** The analysis separates exposure signal (flags 1--4, weighted 2x) from structural vulnerability (flags 5--7, weighted 1x) and composite score, allowing each dimension to be examined independently.
+**Two-layer framing:** Exposure depth (flags 1--2, weighted 2x) vs. exposure velocity (flags 3--4, 1x) vs. auto-aug depth (flag 8, 1x) vs. structural vulnerability (flags 5--7, 1x). The composite score integrates all three dimensions.
 
-**Scoring:** Flags 1--4 weighted 2x each (max 8), flags 5--7 weighted 1x each (max 3), total max 11. Exposure gate at 33% pct_tasks_affected prevents structural-only high-risk assignments. Tiers: 8--11 High, 4--7 Moderate, 0--3 Low.
+**Scoring:** Flags 1--2 weighted 2x each (max 4), flags 3--8 weighted 1x each (max 6), total max 10. Exposure gate at 33% pct_tasks_affected prevents structural-only high-risk assignments. Tiers: 8--10 High, 5--7 Mod-High, 3--4 Mod-Low, 0--2 Low.
 
 **Trend:** Computed as last minus first date across the full time series for each config. Cross-config comparison uses all five configs.
 
@@ -132,7 +134,7 @@ And the exposure gate does real work here. Without it, 13 more occupations would
 
 | File | Description |
 |------|-------------|
-| `results/risk_scores_primary.csv` | All 923 occs: 7 flags, risk_score, risk_tier (all_confirmed) |
+| `results/risk_scores_primary.csv` | All 923 occs: 8 flags, risk_score, risk_tier (all_confirmed) |
 | `results/risk_scores_all_configs.csv` | Risk scores for all five configs |
 | `results/risk_tier_summary.csv` | Tier counts, employment, wages |
 | `results/flags_breakdown.csv` | How often each flag is triggered |

@@ -1,12 +1,12 @@
 # Worker Resilience: Where You Still Lead, and Where AI Already Does
 
-*What the gap between human capability and AI capability looks like — element by element, occupation by occupation.*
+*Where AI's demonstrated capability sits relative to what each occupation needs — element by element, occupation by occupation. All numbers are AI capability as a percentage of the typical occupation's requirement. Below 100% = human advantage; above 100% = AI leads.*
 
 *Config: all_confirmed | Comparison: ceiling | Method: freq | Auto-aug ON | National | S + A + K, importance >= 3*
 
 ---
 
-Your body is your moat. Every one of the top 15 human-advantage elements is a physical or perceptual ability — reaction time, spatial orientation, limb coordination, strength. The single exception is Building and Construction knowledge, which is itself deeply embodied. On the other side, AI's advantages are almost entirely knowledge domains: sales and marketing, history, philosophy, foreign language. Skills sit in the middle, roughly balanced. The structural message is clear: AI commoditized the information layer. What it cannot touch is the physical one. But the gap is narrowing — confirmed-usage AI capabilities are growing across all configs, with median gap deltas ranging from +3.38 to +6.52. Workers who understand where they lead and where AI leads can make sharper decisions about what to invest in and what to delegate.
+Your body is your moat. Every one of the top 10 human-advantage elements is a physical or perceptual ability — sound localization (AI at just 9% of what jobs need), night vision (21%), peripheral vision (24%), limb speed (25%). On the other side, AI's advantages are almost entirely knowledge domains: sales and marketing (131%), history (125%), philosophy (121%), foreign language (118%). Skills sit in the middle, roughly balanced. The structural message is clear: AI commoditized the information layer. What it cannot touch is the physical one. But the percentage is climbing — confirmed-usage AI capabilities are growing across all configs, with median percentage-point gains ranging from +13.7 to +46.5. Workers who understand where they lead and where AI leads can make sharper decisions about what to invest in and what to delegate.
 
 ---
 
@@ -30,18 +30,18 @@ The top of the human-advantage list reads like a catalog of embodiment.
 
 ![Human Advantage — Abilities](../questions/job_exposure/worker_resilience/figures/human_advantage_abilities.png)
 
-| Rank | Element | Mean Gap |
-|------|---------|----------|
-| 1 | Sound Localization | -7.89 |
-| 2 | Reaction Time | -7.85 |
-| 3 | Peripheral Vision | -7.69 |
-| 4 | Response Orientation | -7.57 |
-| 5 | Speed of Limb Movement | -7.49 |
-| 6 | Glare Sensitivity | -7.48 |
-| 7 | Night Vision | -7.35 |
-| 8 | Spatial Orientation | -7.26 |
-| 9 | Multilimb Coordination | -7.23 |
-| 10 | Rate Control | -7.18 |
+| Rank | Element | AI as % of Occ Need |
+|------|---------|---------------------|
+| 1 | Sound Localization | 9% |
+| 2 | Night Vision | 21% |
+| 3 | Peripheral Vision | 24% |
+| 4 | Speed of Limb Movement | 25% |
+| 5 | Glare Sensitivity | 26% |
+| 6 | Rate Control | 28% |
+| 7 | Response Orientation | 31% |
+| 8 | Reaction Time | 31% |
+| 9 | Depth Perception | 32% |
+| 10 | Multilimb Coordination | 34% |
 
 These are not niche abilities. Multilimb Coordination appears in 250 occupations. Control Precision in 319. Manual Dexterity in 368. Arm-Hand Steadiness in 399. The physical demands of work are far more widespread than people tend to think when they picture "manual labor." A dental hygienist needs arm-hand steadiness. A firefighter needs spatial orientation. A surgeon needs control precision and reaction time. These are the abilities where AI has the furthest to go, and many of them are structurally inaccessible to software-only systems.
 
@@ -51,13 +51,13 @@ These are not niche abilities. Multilimb Coordination appears in 250 occupations
 
 The human-advantage skills are less dramatic in magnitude but cover a huge surface area of occupations:
 
-| Rank | Element | Mean Gap |
-|------|---------|----------|
-| 1 | Operation and Control | -6.58 |
-| 2 | Repairing | -5.90 |
-| 3 | Operations Monitoring | -5.72 |
-| 4 | Installation | -5.65 |
-| 5 | Equipment Maintenance | -5.59 |
+| Rank | Element | AI as % of Occ Need |
+|------|---------|---------------------|
+| 1 | Operation and Control | 41% |
+| 2 | Installation | 46% |
+| 3 | Equipment Selection | 48% |
+| 4 | Operations Monitoring | 49% |
+| 5 | Repairing | 50% |
 
 These are hands-on skills — operating equipment, repairing things, monitoring physical systems. But further down the list you also find Coordination, Service Orientation, Social Perceptiveness, and Active Listening. The pattern: skills that require either physical interaction with the world or real-time interpersonal responsiveness stay in human territory.
 
@@ -67,12 +67,12 @@ These are hands-on skills — operating equipment, repairing things, monitoring 
 
 Only a handful of knowledge domains favor humans, and they share a common thread: they are knowledge that lives in places, not in texts.
 
-| Rank | Element | Mean Gap |
-|------|---------|----------|
-| 1 | Building and Construction | -7.11 |
-| 2 | Mechanical | -6.36 |
+| Rank | Element | AI as % of Occ Need |
+|------|---------|---------------------|
+| 1 | Building and Construction | 58% |
+| 2 | Mechanical | 61% |
 
-Building and Construction shows a mean gap of -7.11 across 113 occupations. Mechanical knowledge, -6.36 across 276. These are the knowledge domains where "knowing" is inseparable from "having been there and done it." You can read about load-bearing walls. You cannot learn to assess one from a textbook alone.
+Building and Construction shows AI at just 58% of what the typical job requires, across 113 occupations. Mechanical knowledge, 61% across 276. These are the knowledge domains where "knowing" is inseparable from "having been there and done it." You can read about load-bearing walls. You cannot learn to assess one from a textbook alone.
 
 ---
 
@@ -84,20 +84,20 @@ AI's strongest suit, and it is not close.
 
 ![AI Advantage — Knowledge](../questions/job_exposure/worker_resilience/figures/ai_advantage_knowledge.png)
 
-| Rank | Element | Mean Gap |
-|------|---------|----------|
-| 1 | Sales and Marketing | +4.64 |
-| 2 | History and Archeology | +4.44 |
-| 3 | Philosophy and Theology | +3.28 |
-| 4 | Foreign Language | +3.28 |
-| 5 | Education and Training | +2.47 |
-| 6 | Fine Arts | +2.21 |
-| 7 | Telecommunications | +1.77 |
-| 8 | Communications and Media | +1.60 |
-| 9 | English Language | +1.43 |
-| 10 | Economics and Accounting | +1.14 |
+| Rank | Element | AI as % of Occ Need |
+|------|---------|---------------------|
+| 1 | Sales and Marketing | 131% |
+| 2 | History and Archeology | 125% |
+| 3 | Philosophy and Theology | 121% |
+| 4 | Foreign Language | 118% |
+| 5 | Education and Training | 115% |
+| 6 | Telecommunications | 114% |
+| 7 | Communications and Media | 112% |
+| 8 | Fine Arts | 112% |
+| 9 | English Language | 109% |
+| 10 | Economics and Accounting | 109% |
 
-These are domains where the job requires less than what AI can deliver. A marketing coordinator needs to know sales and marketing concepts — but AI already exceeds what the role demands, by a margin of +4.64. A historian's job requires historical knowledge — but AI's recall and synthesis capacity exceeds that threshold by +4.44.
+These are domains where AI's demonstrated capability exceeds what the typical job requires. A marketing coordinator needs to know sales and marketing concepts — but AI already covers 131% of what the role demands. A historian's job requires historical knowledge — but AI's recall and synthesis capacity covers 125% of that threshold.
 
 This does not mean AI can do the historian's job. It means the *knowledge retrieval* part of the job is covered. The judgment, interpretation, and argument parts — those live in skills and abilities, not in knowledge scores.
 
@@ -105,19 +105,19 @@ This does not mean AI can do the historian's job. It means the *knowledge retrie
 
 ![AI Advantage — Skills](../questions/job_exposure/worker_resilience/figures/ai_advantage_skills.png)
 
-| Rank | Element | Mean Gap |
-|------|---------|----------|
-| 1 | Instructing | +1.76 |
-| 2 | Learning Strategies | +1.39 |
-| 3 | Programming | +1.00 |
+| Rank | Element | AI as % of Occ Need |
+|------|---------|---------------------|
+| 1 | Instructing | 115% |
+| 2 | Learning Strategies | 112% |
+| 3 | Programming | 108% |
 
-The AI-advantage skills are smaller in magnitude and fewer in number. Instructing (+1.76) reflects AI's capacity to deliver structured explanations — not its ability to read a room, motivate a struggling student, or adapt on the fly to an emotional response. Learning Strategies and Programming round out the list. The skills gap is narrow enough that many of these are effectively contested territory.
+The AI-advantage skills are smaller in magnitude and fewer in number. Instructing (115% of occ need) reflects AI's capacity to deliver structured explanations — not its ability to read a room, motivate a struggling student, or adapt on the fly to an emotional response. Learning Strategies and Programming round out the list. The skills gap is narrow enough that many of these are effectively contested territory.
 
 ### Abilities
 
 ![AI Advantage — Abilities](../questions/job_exposure/worker_resilience/figures/ai_advantage_abilities.png)
 
-Only one ability appears with a meaningful AI advantage: Speech Clarity (+0.54). Even that is marginal. AI systems can produce clear speech output, but the ability domain as a whole is overwhelmingly human. This is the domain where AI's structural limitations are most visible.
+Only a few abilities appear with a meaningful AI advantage: Speech Clarity (104%), Mathematical Reasoning (104%), Number Facility (103%). Even these barely exceed the 100% threshold. AI systems can produce clear speech output, but the ability domain as a whole is overwhelmingly human. This is the domain where AI's structural limitations are most visible.
 
 ---
 
@@ -361,22 +361,23 @@ The physical work itself is yours. All of it. The body is the moat, and in const
 
 ## 6. Trends: AI Capability Is Growing
 
-The gap between what AI can do and what jobs require is not static. It is shifting — and it is shifting in one direction.
+The ratio of AI capability to occupational requirement is not static. It is climbing — and it is climbing in one direction.
 
-Across all configurations tested, the median gap delta is positive. AI capabilities are growing relative to prior assessments.
+Across all configurations tested, the median percentage-point change in overall_pct (AI as % of occ requirement) from first to last date is positive. AI capabilities are growing relative to prior assessments.
 
-| Config | Median Gap Delta |
+| Config | Median pct delta |
 |--------|-----------------|
-| all_ceiling | +6.52 |
-| all_confirmed | +5.33 |
-| agentic_confirmed | +4.70 |
-| human_conversation | +3.38 |
+| all_ceiling | +46.5 pp |
+| all_confirmed | +37.8 pp |
+| agentic_ceiling | +33.8 pp |
+| human_conversation | +23.9 pp |
+| agentic_confirmed | +13.7 pp |
 
-The all_ceiling config — which measures the theoretical upper bound of what AI systems could do — shows the largest shift at +6.52. But the all_confirmed config, which tracks only what AI has been demonstrably shown to do, still shows +5.33. Even human_conversation, the most conservative estimate (only what AI can do through a chat interface, directed by a human), registers +3.38.
+The all_ceiling config — which measures the theoretical upper bound of what AI systems could do — shows the largest shift at +46.5 pp. But the all_confirmed config, which tracks only what AI has been demonstrably shown to do, still shows +37.8 pp. Even agentic_confirmed, the narrowest scope (only confirmed tool-use AI), registers +13.7 pp.
 
-What does a positive gap delta mean concretely? Elements where AI already led are seeing AI pull further ahead. And some elements that were human advantages are eroding. The knowledge domains are seeing the fastest AI gains. Physical abilities, by contrast, show minimal movement — Speed of Limb Movement has a gap delta of exactly zero between confirmed and ceiling, meaning the upper bound of AI capability is the same as the confirmed capability. AI is not gaining ground on your body.
+What does a positive percentage delta mean concretely? AI's coverage of occupational requirements is climbing toward and past the 100% line. Elements where AI already led are seeing AI pull further ahead. And some elements that were human advantages are eroding. The knowledge domains are seeing the fastest gains. Physical abilities, by contrast, show minimal movement — AI is not gaining ground on your body.
 
-The implication is not that workers should panic. It is that the strategic picture has a time component. The tasks AI can assist with today, it will be able to handle outright tomorrow. Workers who learn to leverage AI now — rather than waiting until the gap is so wide that adoption becomes mandatory — position themselves as the ones who know how to use the tools, not the ones scrambling to learn.
+The implication is not that workers should panic. It is that the strategic picture has a time component. The tasks AI can assist with today, it will be able to handle outright tomorrow. Workers who learn to leverage AI now — rather than waiting until coverage climbs so high that adoption becomes mandatory — position themselves as the ones who know how to use the tools, not the ones scrambling to learn.
 
 ---
 
@@ -390,9 +391,9 @@ The implication is not that workers should panic. It is that the strategic pictu
 
 **Domains:** Skills + Abilities + Knowledge, filtered to importance >= 3.
 
-**Gap formula:** AI capability score (95th percentile across occupations) minus the occupation's own requirement score (importance x level).
+**SKA formula:** AI capability = 95th percentile of (pct/100 × importance × level) across occupations per element. Percentage framing = AI capability / occupation's own requirement score × 100. Above 100% = AI leads. Per-occ overall = ratio-of-sums across all qualifying elements with importance >= 3.
 
-**Trend configs:** all_ceiling (+6.52), all_confirmed (+5.33), agentic_confirmed (+4.70), human_conversation (+3.38).
+**Trend configs (median pct delta):** all_ceiling (+46.5pp), all_confirmed (+37.8pp), agentic_ceiling (+33.8pp), human_conversation (+23.9pp), agentic_confirmed (+13.7pp).
 
 ## Files
 

@@ -1,24 +1,30 @@
 """
 run.py — Potential Growth: Automation Opportunity
 
-Where does AI capability already exceed human occupational need (SKA gap > 0)
+Where does AI capability already exceed human occupational need (SKA pct > 100%)
 AND the adoption gap is large — signaling where automation could happen right now?
 
 Two input dimensions per occupation:
-  1. SKA overall_gap  — positive = AI capability exceeds what the occupation needs;
-                        negative = humans still have the skills advantage.
+  1. SKA overall_pct  — AI capability as a % of the occupation's skill+knowledge
+                        requirement (ratio of sums per occ). >100% means AI exceeds
+                        the occupation's need; <100% means humans still lead.
   2. Adoption gap     — pct_tasks_affected(ceiling) − pct_tasks_affected(confirmed).
 
-Quadrant framing (each split at median):
-  Q1: AI leads + Big gap   = Automation opportunity (AI can do it, nobody's deployed it)
-  Q2: AI leads + Small gap = Already adopted
-  Q3: Humans lead + Big gap = Tool gap (humans have edge, but AI exists and isn't used)
-  Q4: Humans lead + Small gap = Low priority
+Quadrant framing:
+  - Split on SKA pct at the natural threshold of 100% (AI leads ↔ humans lead),
+    not the median — this aligns with the "AI surpasses human requirement"
+    semantic of the new percentage framing.
+  - Split on adoption gap at the median.
+
+  Q1: AI leads (>100%)  + Big gap   = Automation opportunity (AI can do it, nobody's deployed it)
+  Q2: AI leads (>100%)  + Small gap = Already adopted
+  Q3: Humans lead (<100%) + Big gap = Tool gap (humans have edge, but AI exists and isn't used)
+  Q4: Humans lead (<100%) + Small gap = Low priority
 
 When Q1 occupations also carry a high risk tier (from job_risk_scoring), that's a
 signal for job transformation — not just upside opportunity.
 
-SKA formula: compute_ska(all_confirmed pct) → per-occupation overall_gap.
+SKA formula: compute_ska(all_confirmed pct) → per-occupation overall_pct.
 Risk tiers: loaded from job_risk_scoring/results/risk_scores_primary.csv if available;
 falls back to recomputing from exposure flags if not.
 
@@ -78,7 +84,8 @@ QUADRANT_COLORS = {
 
 RISK_TIER_COLORS = {
     "high":     COLORS["negative"],
-    "moderate": COLORS["accent"],
+    "mod_high": COLORS["accent"],
+    "mod_low":  COLORS["secondary"],
     "low":      COLORS["primary"],
     "unknown":  COLORS["muted"],
 }
@@ -135,9 +142,17 @@ def _load_risk_tiers() -> pd.DataFrame:
     return pd.DataFrame(columns=["title_current", "risk_tier", "risk_score"])
 
 
-def _assign_quadrant(ska_gap: float, adoption_gap: float,
-                     ska_median: float, gap_median: float) -> str:
-    ai_leads = ska_gap > ska_median
+SKA_THRESHOLD = 100.0  # AI leads vs humans lead — natural threshold on overall_pct
+
+
+def _assign_quadrant(ska_pct: float, adoption_gap: float,
+                     gap_median: float) -> str:
+    """Quadrant assignment.
+
+    Note: SKA axis splits at 100% (the natural "AI matches occupation need"
+    line), NOT at the median. The adoption gap axis still splits at the median.
+    """
+    ai_leads = ska_pct > SKA_THRESHOLD
     big_gap = adoption_gap > gap_median
     if ai_leads and big_gap:
         return "Q1: Automation opportunity"
@@ -155,18 +170,18 @@ def _opportunity_scatter(df: pd.DataFrame) -> go.Figure:
     fig = go.Figure()
 
     risk_tiers = df["risk_tier"].unique().tolist()
-    for tier in ["high", "moderate", "low", "unknown"]:
+    # 4-tier risk taxonomy from the new job_risk_scoring
+    for tier in ["high", "mod_high", "mod_low", "low", "unknown"]:
         if tier not in risk_tiers:
             continue
         sub = df[df["risk_tier"] == tier]
-        # Size by workers
         max_emp = df["emp_nat"].max() if df["emp_nat"].max() > 0 else 1
         sizes = (sub["emp_nat"] / max_emp * 20 + 4).clip(upper=22).tolist()
         fig.add_trace(go.Scatter(
-            x=sub["ska_overall_gap"],
+            x=sub["ska_overall_pct"],
             y=sub["adoption_gap"],
             mode="markers",
-            name=f"{tier.title()} risk",
+            name=f"{tier.replace('_', '-').title()} risk",
             marker=dict(
                 color=RISK_TIER_COLORS.get(tier, COLORS["muted"]),
                 size=sizes,
@@ -175,21 +190,20 @@ def _opportunity_scatter(df: pd.DataFrame) -> go.Figure:
             ),
             text=sub["title_current"],
             hovertemplate=(
-                "<b>%{text}</b><br>SKA gap: %{x:.2f}<br>"
+                "<b>%{text}</b><br>SKA pct: %{x:.0f}%<br>"
                 "Adoption gap: %{y:.1f}pp<extra></extra>"
             ),
         ))
 
-    # Median crosshair lines
-    fig.add_vline(x=df["ska_overall_gap"].median(), line_dash="dot",
+    # Crosshair lines: SKA at 100%, adoption gap at median
+    fig.add_vline(x=SKA_THRESHOLD, line_dash="dot",
                   line_color=COLORS["muted"], line_width=1)
     fig.add_hline(y=df["adoption_gap"].median(), line_dash="dot",
                   line_color=COLORS["muted"], line_width=1)
 
     # Quadrant labels
-    x_range = df["ska_overall_gap"].quantile([0.05, 0.95])
+    x_range = df["ska_overall_pct"].quantile([0.05, 0.95])
     y_range = df["adoption_gap"].quantile([0.05, 0.95])
-    ska_med = df["ska_overall_gap"].median()
     gap_med = df["adoption_gap"].median()
 
     fig.add_annotation(x=x_range[0.95] * 0.7, y=y_range[0.95] * 0.85,
@@ -213,10 +227,10 @@ def _opportunity_scatter(df: pd.DataFrame) -> go.Figure:
         fig,
         "Automation Opportunity Landscape",
         subtitle=(
-            "x = SKA gap (AI capability − human occupational need) | "
+            "x = AI capability as % of occ need (>100% = AI leads) | "
             "y = adoption gap (ceiling − confirmed %) | color = risk tier | size = employment"
         ),
-        x_title="SKA Overall Gap (AI leads → right)",
+        x_title="SKA Overall % (AI as % of occ need; 100% = AI matches)",
         y_title="Adoption Gap (pp)",
         height=720, width=1100,
         show_legend=True,
@@ -291,7 +305,7 @@ def _q1_bar(q1_df: pd.DataFrame, title: str, subtitle: str, top_n: int = 25) -> 
     df = q1_df.sort_values("opportunity_score", ascending=False).head(top_n)
     df = df.sort_values("opportunity_score", ascending=True)
 
-    labels = [f"{row['adoption_gap']:.1f}pp | SKA: {row['ska_overall_gap']:+.2f}"
+    labels = [f"{row['adoption_gap']:.1f}pp | SKA: {row['ska_overall_pct']:.0f}%"
               for _, row in df.iterrows()]
 
     fig = go.Figure(go.Bar(
@@ -320,12 +334,12 @@ def _q1_bar(q1_df: pd.DataFrame, title: str, subtitle: str, top_n: int = 25) -> 
 
 
 def _sector_opportunity_scatter(major_df: pd.DataFrame) -> go.Figure:
-    """Sector-level: mean SKA gap vs mean adoption gap, sized by total workers."""
-    df = major_df.dropna(subset=["mean_ska_gap", "mean_adoption_gap"])
+    """Sector-level: mean SKA pct vs mean adoption gap, sized by total workers."""
+    df = major_df.dropna(subset=["mean_ska_pct", "mean_adoption_gap"])
     max_emp = df["total_workers"].max() if df["total_workers"].max() > 0 else 1
 
     fig = go.Figure(go.Scatter(
-        x=df["mean_ska_gap"],
+        x=df["mean_ska_pct"],
         y=df["mean_adoption_gap"],
         mode="markers+text",
         marker=dict(
@@ -338,20 +352,22 @@ def _sector_opportunity_scatter(major_df: pd.DataFrame) -> go.Figure:
         textposition="top center",
         textfont=dict(size=8, color=COLORS["neutral"], family=FONT_FAMILY),
         hovertemplate=(
-            "<b>%{text}</b><br>Mean SKA gap: %{x:.2f}<br>"
+            "<b>%{text}</b><br>Mean SKA pct: %{x:.0f}%<br>"
             "Mean adoption gap: %{y:.1f}pp<extra></extra>"
         ),
     ))
 
-    fig.add_vline(x=0, line_dash="solid", line_color=COLORS["border"], line_width=1)
+    fig.add_vline(x=SKA_THRESHOLD, line_dash="solid",
+                  line_color=COLORS["border"], line_width=1)
     fig.add_hline(y=df["mean_adoption_gap"].median(), line_dash="dot",
                   line_color=COLORS["muted"], line_width=1)
 
     style_figure(
         fig,
         "Sector Opportunity Landscape",
-        subtitle="x = mean SKA gap per sector | y = mean adoption gap | size = total workers",
-        x_title="Mean SKA Gap (AI advantage →)",
+        subtitle=("x = mean SKA pct per sector (>100% = AI leads) | "
+                  "y = mean adoption gap | size = total workers"),
+        x_title="Mean SKA Overall % (100% = AI matches occ need)",
         y_title="Mean Adoption Gap (pp)",
         height=650, width=1000,
         show_legend=False,
@@ -380,7 +396,8 @@ def main() -> None:
     pct_confirmed = get_pct_tasks_affected(primary_ds)
     ska_result = compute_ska(pct_confirmed, ska_data)
     occ_gaps = ska_result.occ_gaps.copy()
-    # occ_gaps columns: title_current, skills_gap, abilities_gap, knowledge_gap, overall_gap
+    # occ_gaps columns: title_current, skills_gap/pct, abilities_gap/pct,
+    # knowledge_gap/pct, overall_gap, overall_pct
     print(f"  SKA computed for {len(occ_gaps)} occupations")
 
     # ── 2. Get adoption gap per occupation ────────────────────────────────────
@@ -412,7 +429,7 @@ def main() -> None:
         print("  WARNING: risk scores not found — risk tier will be 'unknown'")
 
     df = merged_occ.merge(
-        occ_gaps[["title_current", "overall_gap"]].rename(columns={"overall_gap": "ska_overall_gap"}),
+        occ_gaps[["title_current", "overall_pct"]].rename(columns={"overall_pct": "ska_overall_pct"}),
         on="title_current", how="left",
     )
     df = df.merge(emp_lookup, on="title_current", how="left")
@@ -424,18 +441,16 @@ def main() -> None:
 
     df["risk_tier"] = df["risk_tier"].fillna("unknown")
     df["emp_nat"] = df["emp_nat"].fillna(0.0)
-    df = df.dropna(subset=["ska_overall_gap", "adoption_gap"])
+    df = df.dropna(subset=["ska_overall_pct", "adoption_gap"])
     print(f"  Combined dataset: {len(df)} occupations")
 
     # ── 4. Assign quadrants ───────────────────────────────────────────────────
 
-    ska_median = df["ska_overall_gap"].median()
     gap_median = df["adoption_gap"].median()
-    print(f"  Medians: SKA gap = {ska_median:.3f} | Adoption gap = {gap_median:.1f}pp")
+    print(f"  SKA threshold: {SKA_THRESHOLD}% (natural) | Adoption gap median: {gap_median:.1f}pp")
 
     df["quadrant"] = df.apply(
-        lambda r: _assign_quadrant(r["ska_overall_gap"], r["adoption_gap"],
-                                   ska_median, gap_median),
+        lambda r: _assign_quadrant(r["ska_overall_pct"], r["adoption_gap"], gap_median),
         axis=1,
     )
 
@@ -481,7 +496,7 @@ def main() -> None:
     sector_df = (
         df.groupby("major")
         .agg(
-            mean_ska_gap=("ska_overall_gap", "mean"),
+            mean_ska_pct=("ska_overall_pct", "mean"),
             mean_adoption_gap=("adoption_gap", "mean"),
             total_workers=("emp_nat", "sum"),
             n_occs=("title_current", "count"),
@@ -507,9 +522,9 @@ def main() -> None:
         fig = _q1_bar(
             q1, "Top Automation Opportunity Occupations (Q1)",
             subtitle=(
-                "AI leads on SKA + large adoption gap | "
+                "AI leads on SKA (>100%) + large adoption gap | "
                 "Score = workers × adoption gap | "
-                f"Medians: SKA {ska_median:.2f}, Gap {gap_median:.1f}pp"
+                f"Adoption gap median: {gap_median:.1f}pp"
             ),
         )
         save_figure(fig, fig_dir / "q1_top_occupations.png")

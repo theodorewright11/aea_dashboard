@@ -76,21 +76,21 @@ The Utah DWS job outlook data adds another layer. Jobs with poorer labor market 
 
 *Full detail: [skills_landscape/skills_landscape_report.md](skills_landscape/skills_landscape_report.md)*
 
-Of 120 O*NET skills, knowledge, and abilities elements, AI currently leads on 23. All in knowledge or skills domains — none in physical or sensorimotor abilities. The top AI-leading elements: Sales and Marketing (+4.6), History and Archeology (+4.4), Philosophy and Theology (+3.3), Foreign Language (+3.3). The pattern is clear: knowledge that can be encoded, retrieved, and synthesized from text, especially domains with structured accumulated content.
+Of 120 O*NET skills, knowledge, and abilities elements, AI currently exceeds the typical occupation's requirement (>100%) on 23 — all in knowledge or skills domains, none in physical abilities. The top AI-leading elements: Sales and Marketing (131% of occ need), History and Archeology (125%), Philosophy and Theology (121%), Foreign Language (118%). The pattern is clear: knowledge that can be encoded, retrieved, and synthesized from text, especially domains with structured accumulated content.
 
-Human advantages are concentrated in physical and perceptual abilities. Sound Localization (-7.9), Reaction Time (-7.8), Peripheral Vision (-7.7) — these are hard limits, not gaps that will close through better prompting. AI scores near zero on them because they're embodied capabilities AI simply doesn't have.
+Human advantages are concentrated in physical and perceptual abilities. AI sits at just 9% of typical need for Sound Localization, 21% for Night Vision, 24% for Peripheral Vision — these are hard limits, not gaps that will close through better prompting. AI scores near zero because these are embodied capabilities software simply doesn't have.
 
 What's absent from the top human-advantage list is telling. Most cognitive skills — written comprehension, reading comprehension, mathematical reasoning — show near-parity or slight AI advantage. The cognitive frontier has moved further than most people realize.
 
-The technology data gives a different angle — not what AI can do, but what technology infrastructure the affected workforce is built around. Weighted by pct_tasks_affected × employment, the highest-footprint categories are database user interface software (by far the largest), ERP software, and CRM software. These are the technology layers of the knowledge economy. The occupations that use this software heavily are the same ones showing the highest task penetration rates.
+The technology data gives a different angle — not what AI can do, but what technology infrastructure the affected workforce is built around. Three views: by mean percentage of usage that is automatable (how much of the software's use is AI-affected), by exposed workers (how many workers using the software are in AI-affected roles), and by exposed wages (with per-commodity wage allocation to prevent double-counting). Database user interface software, ERP software, and CRM software dominate across all three views. These are the technology layers of the knowledge economy.
 
 The combined picture: AI is strong where work is information-intensive, communication-heavy, and tool-mediated. The skills it leads on are precisely the skills needed to operate the technology infrastructure with the highest exposure footprint. The workers most at risk of displacement aren't workers who lack skills — many have substantial knowledge and communication skills that AI can now match. The workers with the most durable competitive advantage are those whose value comes from embodied, physical, or relational work that can't be replicated from text.
 
-![Elements Where AI Leads](../questions/economic_footprint/skills_landscape/figures/ska_leads_ai.png)
+![Elements Where AI Leads (vs typical occ need)](../questions/economic_footprint/skills_landscape/figures/ska_leads_ai_eco_mean.png)
 
-![Elements Where Humans Lead](../questions/economic_footprint/skills_landscape/figures/ska_leads_human.png)
+![Elements Where Humans Lead (vs typical occ need)](../questions/economic_footprint/skills_landscape/figures/ska_leads_human_eco_mean.png)
 
-![Top Technology Categories by AI-Exposure Footprint](../questions/economic_footprint/skills_landscape/figures/tech_top_economy.png)
+![Top Technology Categories by Exposed Workers](../questions/economic_footprint/skills_landscape/figures/tech_workers_affected.png)
 
 ---
 
@@ -210,7 +210,7 @@ The GWA trend over the All Confirmed series is consistent with the sector trends
 
 **The sector composition typology matters more than state-level geography.** Because every state has roughly the same average exposure (~36.1%), aggregate state-level risk rankings are not meaningful. What's meaningful is which sectors dominate each state's exposed workforce and how those sectors are likely to evolve.
 
-**The physical/cognitive split is the defining boundary.** AI leads on 23 of 120 SKA elements, all of them knowledge or skills domains. Humans lead on 97, concentrated almost entirely in physical and perceptual abilities. The cognitive frontier has moved further than most people realize — near-parity on written comprehension, reading comprehension, and mathematical reasoning. The reliable human moat is embodied.
+**The physical/cognitive split is the defining boundary.** AI exceeds the typical occupation's requirement (>100%) on 23 of 120 SKA elements, all of them knowledge or skills domains. Humans lead on 97, concentrated almost entirely in physical and perceptual abilities where AI sits at 9–34% of need. The cognitive frontier has moved further than most people realize — near-parity on written comprehension, reading comprehension, and mathematical reasoning. The reliable human moat is embodied.
 
 **Everything is trending in the same direction.** The All Confirmed series roughly doubled over 18 months. Ceiling and confirmed trajectories are moving together, not converging. The sector gainers (Legal, Education, Sales, Computer/Math) are the same ones with the highest current penetration. The physical sectors at the bottom of the trend table are the same ones at the bottom of the penetration ranking.
 

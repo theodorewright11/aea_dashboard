@@ -4,7 +4,7 @@
 
 ---
 
-The short version: confirmed AI usage already reaches a meaningful share of the task load in 364 occupations covering 73.2 million workers. The ceiling — what AI *could* do if fully deployed — pushes that to 508 occupations and 101.5 million workers. Risk isn't just about exposure: a seven-factor weighted model that gates on actual task penetration identifies 195 occupations (50.7M workers) as genuinely high-risk. Workers' durable advantage is physical, not cognitive. And the next wave of disruption — 150 occupations with high AI-capability overlap but low current exposure — is already showing rising trends.
+The short version: confirmed AI usage already reaches a meaningful share of the task load in 364 occupations covering 73.2 million workers. The ceiling — what AI *could* do if fully deployed — pushes that to 508 occupations and 101.5 million workers. Risk isn't just about exposure: an eight-factor weighted model (max score 10) that gates on actual task penetration identifies 115 occupations (34.4M workers) as genuinely high-risk under a more conservative four-tier framework. Workers' durable advantage is physical, not cognitive — AI has reached just 9–34% of the typical occupation's requirement for physical abilities, versus 109–131% for knowledge domains. And the next wave of disruption — 150 occupations with high AI-capability overlap but low current exposure — is already showing rising trends.
 
 ---
 
@@ -28,13 +28,13 @@ Some surprises in the hierarchy. Training and Development Managers sit at 85.7% 
 
 *Full detail: [job_risk_scoring/job_risk_scoring_report.md](job_risk_scoring/job_risk_scoring_report.md)*
 
-High exposure alone doesn't tell you whether a job is at risk of being fundamentally restructured. A 90% task exposure score for Market Research Analysts means something different than 90% for a low-zone clerical job with poor labor market outlook. The seven-factor composite risk score addresses this by weighting direct exposure signals (task percentage, SKA gap, and their trends) at 2x and structural vulnerability factors (job zone, outlook, software density) at 1x. An exposure gate at 33% prevents structurally vulnerable but low-exposure jobs from being labeled high-risk.
+High exposure alone doesn't tell you whether a job is at risk of being fundamentally restructured. A 90% task exposure score for Market Research Analysts means something different than 90% for a low-zone clerical job with poor labor market outlook. The eight-factor composite risk score (max 10) addresses this by weighting exposure depth (task percentage > 50%, SKA overall_pct > median) at 2x each, and velocity, auto-augmentability, and structural vulnerability at 1x each. An exposure gate at 33% prevents structurally vulnerable but low-exposure jobs from being labeled high-risk.
 
-The result: 195 occupations (50.7M workers) score 8–11 as high risk, with an average task exposure of 56.4%. These are occupations where both the exposure signal and the structural context converge. 504 occupations (82.5M workers) sit at moderate risk (score 4–7), and 224 occupations (20.1M workers) are low risk. The gate downgraded 13 occupations that would have otherwise scored high — occupations that are structurally vulnerable but haven't yet been significantly reached by AI.
+The result under the new four-tier framework: 115 occupations (34.4M workers) score 8–10 as high risk, with an average task exposure of 65.4%. This is more conservative than the old three-tier model (which found 195 high-risk occupations) because the 50% absolute threshold on flag 1 and the tighter tier boundaries mean "high risk" now requires deep, not just above-median, exposure. 356 occupations (64.6M workers) sit at mod-high risk (score 5–7), 214 (31.0M workers) at mod-low (score 3–4), and 238 (23.3M workers) at low. The gate downgraded 2 occupations that would have otherwise scored high.
 
-The flag composition tells the real story. Score 4 occupations (141 of them, avg pct just 17.2%) are almost entirely structural: 89% have the job zone flag, 87% have poor outlook, but only 6% have the pct flag. These are vulnerable but not yet hit. Score 7 occupations (160, avg pct 55.0%) flip the pattern: 91% have the pct flag, 88-89% have trend flags. Score 11 — the 28 "perfect storm" occupations averaging 64.7% exposure — have every single flag active.
+The flag composition tells the real story. Score 3 occupations (108, avg pct 27.5%) are structural-plus-trend: 54% have the job zone flag, 56% have poor outlook, but just 2% have the pct flag. Score 7 occupations (55, avg pct 40.0%) have the SKA flag at 87% and SKA trend at 100%, but flag 1 (pct > 50%) at only 20% — deep capability alignment without crossing the task coverage threshold. Score 10 — the 24 "all flags active" occupations averaging 68.0% exposure — have every single flag triggered.
 
-272 occupations change risk tier depending on which AI capability source you use. Four make big jumps. Geothermal Technicians land in low risk under ceiling but high risk under human conversation. The instability is useful information — it tells you which jobs' risk profile depends on which AI modality actually gets deployed.
+306 occupations change risk tier depending on which AI capability source you use (more common under 4 tiers). 149 make jumps of 3+ tiers. Writers and Authors swing from mod-low under Human Conversation to high under Agentic. The instability is useful information — it tells you which jobs' risk profile depends on which AI modality actually gets deployed.
 
 ![Risk vs Pct Scatter](job_risk_scoring/figures/risk_vs_pct_scatter.png)
 
@@ -44,15 +44,15 @@ The flag composition tells the real story. Score 4 occupations (141 of them, avg
 
 *Full detail: [worker_resilience/worker_resilience_report.md](worker_resilience/worker_resilience_report.md)*
 
-The SKA gap analysis reveals a clean three-way split. Abilities — almost entirely physical and perceptual — are overwhelmingly human-advantaged. Something like 285 ability elements favor humans versus 65 that favor AI. The top 15 human-advantage elements across all domains are all abilities: Sound Localization (-7.89), Reaction Time (-7.85), Peripheral Vision (-7.69), down through Extent Flexibility (-6.70). The only non-ability in the top 15 is Building and Construction knowledge (-7.11).
+The SKA analysis — now expressed as AI capability as a percentage of what each occupation needs (100% = AI matches the job's requirement) — reveals a clean three-way split. Abilities are overwhelmingly human territory: the top human-advantage elements are all physical, with AI reaching just 9% (Sound Localization), 21% (Night Vision), 24% (Peripheral Vision), and 25% (Speed of Limb Movement) of typical occupational requirements.
 
-Knowledge domains tell the opposite story. Roughly 285 knowledge elements favor AI versus just 15 where humans lead. AI's top advantages: Sales and Marketing (+4.64), History and Archeology (+4.44), Philosophy and Theology (+3.28), Foreign Language (+3.28). The practical translation: if your job's value comes primarily from knowing things, AI already exceeds the typical occupational need.
+Knowledge domains tell the opposite story. AI's top advantages: Sales and Marketing (131% of occ need), History and Archeology (125%), Philosophy and Theology (121%), Foreign Language (118%). The practical translation: if your job's value comes primarily from knowing things, AI already exceeds the typical occupational need.
 
-Skills sit in the middle. About 212 favor humans, 185 favor AI — a genuine contest. This is where the actionable guidance lives: skills are trainable, and the human-advantage skills (service orientation, active listening, coordination) can be deliberately developed.
+Skills sit in the middle — a genuine contest. Instructing (115%), Learning Strategies (112%), and Programming (108%) favor AI. Operation and Control (41%), Installation (46%), and Equipment Selection (48%) favor humans. This is where the actionable guidance lives: skills are trainable, and the human-advantage skills can be deliberately developed.
 
-AI capability gaps are growing across all configs. The median SKA gap delta was +5.33 for confirmed usage and +6.52 for ceiling. AI isn't standing still.
+AI capability percentages are growing across all configs. The median overall_pct delta was +37.8pp for confirmed usage and +46.5pp for ceiling. AI isn't standing still.
 
-The tips-and-tricks analysis for three occupations makes this concrete. Secretaries should invest in administrative judgment and service orientation (human advantages at -12.76 and -2.21) while letting AI handle calendars, scheduling, and information lookup (auto_aug 4.5–5.0). Registered Nurses' deepest moat is Psychology (-13.31) and Problem Sensitivity (-9.81) — the clinical judgment that AI can't replicate — while documentation and protocol tasks are prime AI candidates. Construction Laborers are the physical-work safe harbor: their top advantages are all physical (Static Strength -11.26, Manual Dexterity -9.91), and AI's modest advantages in their role are cognitive tasks like reading plans.
+The tips-and-tricks analysis for three occupations makes this concrete. Secretaries should invest in administrative judgment and service orientation (deep human advantages) while letting AI handle calendars, scheduling, and information lookup (auto_aug 4.5–5.0). Registered Nurses' deepest moat is Psychology and Problem Sensitivity — the clinical judgment that AI can't replicate — while documentation and protocol tasks are prime AI candidates. Construction Laborers are the physical-work safe harbor: their top advantages are all physical abilities where AI sits at 9–34% of need.
 
 ![Human Advantage Elements](worker_resilience/figures/human_advantage_bar.png)
 
@@ -62,9 +62,9 @@ The tips-and-tricks analysis for three occupations makes this concrete. Secretar
 
 *Full detail: [pivot_distance/pivot_distance_report.md](pivot_distance/pivot_distance_report.md)*
 
-Pivot cost — the total skill and knowledge gap between high-risk and low-risk occupations within the same job zone — varies from 55.7 in Zone 1 to 303.8 in Zone 3. Zone 3 is the crisis point: mid-level office and clerical workers face the longest pivot distance because low-risk occupations in their zone require technical knowledge they don't have (Mechanical at 24.0 gap, Physics at 16.4, Building and Construction at 15.8). Zone 5 at 230.9 has a different profile — Psychology (23.1) and Therapy/Counseling (18.9) drive the cost, reflecting the specialized knowledge needed to move from high-risk professional roles to protected ones.
+Pivot cost — the total skill and knowledge gap (L1 rectified distance) between high-risk and low-risk occupations within the same job zone — varies from 58.6 in Zone 1 (43% new ground) to 359.2 in Zone 3 (64% new ground). Zone 3 is the crisis point: mid-level office and clerical workers face the longest pivot distance because low-risk occupations in their zone require technical knowledge they don't have. Zone 2 is notable at 181.1 (91% new ground), meaning almost the entire destination skill profile is unfamiliar territory. For scale: the median occupation's total skill+knowledge mass is 296, so a pivot cost of 359 represents more than a full occupation's worth of learning.
 
-The actionable finding: across all zones, AI can help close the reskilling gap for the majority of cost-driving elements. Zone 2 shows 99.5% of pivot cost in elements where AI capability exceeds the high-risk worker's current level, and even Zone 1 shows 78.4%. This means AI isn't just the cause of displacement — it's potentially the best tool for the reskilling response.
+The actionable finding: across all zones, AI can help close the reskilling gap for the majority of cost-driving elements. Per-zone breakdowns now show the specific top-10 skills and knowledge elements that drive the cost, plus the top-5 elements that would be "left behind" in the pivot. See [zone_breakdowns/](pivot_distance/zone_breakdowns/) for the full per-zone detail.
 
 ![Pivot Cost by Zone](pivot_distance/figures/pivot_cost_by_zone.png)
 
@@ -88,17 +88,17 @@ Among the worst-case occupations (high exposure AND poor outlook), the dominant 
 
 *Full detail: [occs_of_interest/occs_of_interest_report.md](occs_of_interest/occs_of_interest_report.md)*
 
-Across 27 matched occupations, confirmed exposure ranges from 12.0% (Construction Laborers) to 89.5% (Market Research Analysts). The new weighted risk scoring properly separates exposure from risk: Market Research Analysts at 89.5% score only 7 (moderate risk) because they're zone 4 with good outlook, while Customer Service Representatives at 84.1% and Secretaries at 75.1% both score 11 (high risk) because every flag converges.
+Across 27 matched occupations, confirmed exposure ranges from 12.0% (Construction Laborers) to 89.5% (Market Research Analysts). The weighted risk scoring (now 8 flags, max 10, 4 tiers) properly separates exposure from risk: Market Research Analysts at 89.5% score mod-high because they're zone 4 with good outlook, while Customer Service Representatives at 84.1% and Secretaries at 75.1% both score 10 (high risk) because every flag converges.
 
 The ceiling delta shows where MCP/agentic AI would hit hardest if deployed. Cashiers would jump from 46.9% to 68.2% (+21.3pp). General and Operations Managers from 27.9% to 52.3% (+24.4pp). Software Developers from 45.2% to 64.7% (+19.5pp). But some occupations barely change: Technical Writers go from 85.8% to 85.9% — conversational AI already covers almost their entire task load.
 
-Registered Nurses (33.4% confirmed, moderate risk) are worth watching. They're not in crisis today, but their skill profile projects strongly onto the AI capabilities vector, and the ceiling pushes them to 40.2%. General and Operations Managers and Accountants both carry hidden-at-risk flags.
+Registered Nurses (33.4% confirmed, mod-high risk) are worth watching. They're not in crisis today, but their skill profile projects strongly onto the AI capabilities vector, and the ceiling pushes them to 40.2%. General and Operations Managers and Accountants both carry hidden-at-risk flags.
 
 ---
 
 ## 7. Cross-Cutting Findings
 
-**Exposure does not equal risk, and the scoring now reflects that.** The weighted model with an exposure gate ensures that "high risk" means both significant task penetration AND structural vulnerability. Market Research Analysts are the poster child: 89.5% exposure, moderate risk. The new scoring matches the intuition better — when someone reads "high risk," the data supports the reading that this job is genuinely under threat, not just that AI can do some of its tasks.
+**Exposure does not equal risk, and the four-tier scoring reflects that.** The eight-flag model with an exposure gate ensures that "high risk" means deep task penetration (>50%), AI capability exceeding the job's skill needs, AND typically structural vulnerability. Market Research Analysts are the poster child: 89.5% exposure, mod-high risk. The new four-tier system separates mod-high from mod-low, resolving the old three-tier model's problem of lumping score-3 and score-7 occupations together under a single "moderate" label.
 
 **The three-layer framing matters.** Confirmed usage (all_confirmed) is what AI is doing today. The ceiling (all_ceiling) is where it could reach. The gap between them — 104 additional high-tier occupations and 22.8M more workers — is the deployment opportunity. For some occupations (Technical Writers, Market Research Analysts), the gap is nearly closed. For others (Cashiers, General Managers, Software Developers), the agentic frontier would significantly change the picture.
 
@@ -106,7 +106,7 @@ Registered Nurses (33.4% confirmed, moderate risk) are worth watching. They're n
 
 **AI is both the cause of and the best tool for reskilling.** Across all job zones, the majority of pivot-cost-driving elements are ones where AI capability exceeds the at-risk worker's current level. AI can be deployed as a learning accelerator for the very skills workers need to acquire to move out of at-risk occupations.
 
-**Everything is trending in the same direction.** 612 of 923 occupations grew in confirmed exposure. AI capability gaps (SKA delta) are positive across all configs, with medians between +3.4 and +6.5. This is an economy-wide trajectory, not an isolated disruption.
+**Everything is trending in the same direction.** 612 of 923 occupations grew in confirmed exposure. AI capability as a percentage of occupational requirements (SKA overall_pct) is climbing across all configs, with median gains between +13.7 and +46.5 percentage points. This is an economy-wide trajectory, not an isolated disruption.
 
 ---
 
@@ -114,15 +114,15 @@ Registered Nurses (33.4% confirmed, moderate risk) are worth watching. They're n
 
 1. **73.2 million workers** are in occupations where confirmed AI usage affects 40%+ of their tasks. Under ceiling, that rises to 101.5 million.
 
-2. **195 occupations (50.7M workers)** score high risk under the weighted model with exposure gate. "High risk" now reliably means both high exposure AND structural vulnerability.
+2. **115 occupations (34.4M workers)** score high risk under the eight-flag model (max 10) with exposure gate. "High risk" now requires deep exposure (>50% of tasks) plus convergence of capability and structural signals. Another 356 occupations (64.6M workers) sit at mod-high.
 
-3. **Workers' durable advantage is physical, not cognitive.** The top 15 human-advantage elements are all physical abilities. Knowledge recall is AI's strongest domain. Workers should leverage AI for knowledge tasks and invest in the judgment, coordination, and physical skills that remain human.
+3. **Workers' durable advantage is physical, not cognitive.** AI sits at 9–34% of occupational need for top physical abilities, but 109–131% for top knowledge domains. Workers should leverage AI for knowledge tasks and invest in the judgment, coordination, and physical skills that remain human.
 
 4. **150 occupations are hidden at-risk** — their skill profiles project strongly onto AI capabilities but confirmed usage hasn't reached them. Healthcare specialties dominate. 53% already show rising exposure.
 
 5. **AI is the best reskilling tool available** for the displacement it causes. In Zone 2, 99.5% of pivot cost is in elements where AI capability exceeds the at-risk worker's current level.
 
-6. **Zone 3 workers face the highest reskilling cost** (303.8 total gap). Mid-level office/clerical workers pivoting to low-risk occupations need technical knowledge — Mechanical, Physics, Building and Construction — that generic training programs don't address.
+6. **Zone 3 workers face the highest reskilling cost** (359.2 total, 64% new ground). Mid-level office/clerical workers pivoting to low-risk occupations need technical knowledge that generic training programs don't address. For context, the median occupation's total skill+knowledge mass is 296, so a Zone 3 pivot cost of 359 represents more than a full occupation's worth of learning.
 
 ---
 

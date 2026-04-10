@@ -201,7 +201,7 @@ def _workforce_targets(opp_scores: pd.DataFrame) -> go.Figure:
     """
     if opp_scores.empty:
         return go.Figure()
-    needed = ["title_current", "quadrant", "emp_nat", "median_wage", "adoption_gap", "ska_overall_gap"]
+    needed = ["title_current", "quadrant", "emp_nat", "median_wage", "adoption_gap", "ska_overall_pct"]
     if not all(c in opp_scores.columns for c in needed):
         return go.Figure()
 

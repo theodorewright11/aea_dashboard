@@ -1,6 +1,6 @@
 # Occupations of Interest: 27 Jobs That Tell the AI Exposure Story
 
-Market Research Analysts top the exposure list at 89.5% confirmed, but the new weighted risk scoring drops them to moderate risk (score 7) -- properly separating "this job is changing" from "this job is at risk." The real high-risk population is everyday jobs: Secretaries (score 11, 1.7M workers), Customer Service Reps (score 11, 2.7M workers), Retail Salespersons (score 11), Cashiers (score 10). Software Developers sit at 45.2% confirmed with a moderate score of 5, and their ceiling gap (+19.5pp) is one of the largest in the list. The biggest single ceiling gap belongs to General/Ops Managers at +24.4pp -- a signal that their exposure floor has a lot of room to rise. Construction Laborers at 12.0% remain the physical-work safe harbor.
+Market Research Analysts top the exposure list at 89.5% confirmed, but the new weighted risk scoring drops them to mod-high risk (score 7) -- properly separating "this job is changing" from "this job is at risk." The real high-risk population is everyday jobs: Secretaries (score 10, 1.7M workers), Customer Service Reps (score 10, 2.7M workers), Retail Salespersons (score 10), Cashiers (score 10). Software Developers sit at 45.2% confirmed with a mod-high score of 5, and their ceiling gap (+19.5pp) is one of the largest in the list. The biggest single ceiling gap belongs to General/Ops Managers at +24.4pp -- a signal that their exposure floor has a lot of room to rise. Construction Laborers at 12.0% remain the physical-work safe harbor.
 
 ---
 
@@ -49,15 +49,15 @@ Software Developers at +19.5pp are in a similar position. The confirmed 45.2% un
 
 ![Risk Tier Summary](../questions/job_exposure/occs_of_interest/figures/risk_tier_summary.png)
 
-The new weighted risk scoring replaces the binary flag system. Scores range from 0-15+ based on weighted factors: AI capability exceeding skill requirements, adoption trend direction, job zone (lower = more vulnerable), labor market outlook, exposure level, and hidden-at-risk status. The weighting means these factors aren't treated as equal -- job zone and outlook carry more weight than raw exposure.
+The new weighted risk scoring replaces the binary flag system. Scores range from 0-10 based on 8 flags with weighted factors: AI capability exceeding skill requirements (as percentage of occupation need), adoption trend direction, job zone (lower = more vulnerable), labor market outlook, exposure level, and hidden-at-risk status. The weighting means these factors aren't treated as equal -- job zone and outlook carry more weight than raw exposure.
 
-**High Risk (score 8+):**
+**High Risk (score 8-10):**
 
 | Occupation | Score | Key Drivers |
 |-----------|-------|-------------|
-| Secretaries | 11 | Zone 3, high exposure, poor outlook |
-| Customer Service Reps | 11 | Zone 2, high exposure, poor outlook |
-| Retail Salespersons | 11 | Zone 2, moderate exposure, poor outlook |
+| Secretaries | 10 | Zone 3, high exposure, poor outlook |
+| Customer Service Reps | 10 | Zone 2, high exposure, poor outlook |
+| Retail Salespersons | 10 | Zone 2, moderate exposure, poor outlook |
 | Cashiers | 10 | Zone 2, rising trend, massive ceiling gap |
 | Web Developers | 10 | High exposure, rising trend |
 | Interpreters | 10 | High exposure, rising trend |
@@ -66,13 +66,17 @@ The new weighted risk scoring replaces the binary flag system. Scores range from
 | Editors | 8 | Moderate exposure, rising trend |
 | Waiters/Waitresses | 8 | Zone 2, poor outlook |
 
-**Moderate (score 4-7):**
+**Mod-High (score 5-7):**
 
 Market Research Analysts (7), Technical Writers (7), HR Specialists (7), Elementary Teachers (7), Sales Reps (7), Medical/Health Managers (7), Lawyers (7), Computer Systems Analysts (6), Network Admins (5), Software Developers (5), General/Ops Managers (5)
 
-**Low Risk (score 1-3):**
+**Mod-Low (score 3-4):**
 
-Accountants (3), Data Scientists (3), Truck Drivers (2)
+Accountants (3), Data Scientists (3)
+
+**Low Risk (score 0-2):**
+
+Truck Drivers (2)
 
 **Hidden at-risk flagged:** General/Ops Managers and Accountants. Both have low confirmed exposure but profile characteristics that align with AI's capability direction. General/Ops Managers are the more concerning case -- their 24.4pp ceiling gap says the capabilities are there, adoption just hasn't hit yet.
 
@@ -80,25 +84,25 @@ Accountants (3), Data Scientists (3), Truck Drivers (2)
 
 ### The Workforce Volume Story
 
-Secretaries and Customer Service Reps both score 11 -- the highest risk scores in the set. Between them, they employ about 4.4 million workers. These are not the occupations that dominate AI media coverage. Nobody writes breathless articles about administrative assistants being disrupted. But the numbers are unambiguous: Secretaries at 75.1% confirmed exposure with a 15.8pp ceiling gap, Customer Service Reps at 84.1% confirmed. Both in low-to-mid job zones. Both with poor labor market outlook.
+Secretaries and Customer Service Reps both score 10 -- the highest risk scores in the set. Between them, they employ about 4.4 million workers. These are not the occupations that dominate AI media coverage. Nobody writes breathless articles about administrative assistants being disrupted. But the numbers are unambiguous: Secretaries at 75.1% confirmed exposure with a 15.8pp ceiling gap, Customer Service Reps at 84.1% confirmed. Both in low-to-mid job zones. Both with poor labor market outlook.
 
-Registered Nurses are the "next wave" signal. At 33.4% confirmed, they look safe. The risk score is moderate. But the hidden-at-risk flag should make healthcare workforce planners uncomfortable. The confirmed-to-ceiling gap is 6.8pp, which is modest, but the occupation's skill profile projects heavily onto AI's capability direction. Documentation, care coordination, patient education, treatment protocol management -- these are tasks where AI deployment is accelerating. Nursing is not at risk today. The question is how long "today" lasts.
+Registered Nurses are the "next wave" signal. At 33.4% confirmed, they look safe. The risk score is mod-high. But the hidden-at-risk flag should make healthcare workforce planners uncomfortable. The confirmed-to-ceiling gap is 6.8pp, which is modest, but the occupation's skill profile projects heavily onto AI's capability direction. Documentation, care coordination, patient education, treatment protocol management -- these are tasks where AI deployment is accelerating. Nursing is not at risk today. The question is how long "today" lasts.
 
 Cashiers at 46.9% confirmed but 68.2% ceiling (a 21.3pp gap!) are the sleeper. Their confirmed exposure looks middling, but the ceiling says AI can already handle significantly more of the job than current adoption reflects. Self-checkout, AI-powered point-of-sale systems, automated inventory queries -- the technology exists, deployment is the constraint, and deployment constraints erode.
 
 ### The AI-Controversial Group
 
-Market Research Analysts at 89.5% confirmed exposure but score 7 (moderate risk). This is the new scoring system working exactly as designed. Nearly every task in the role -- data collection, survey design, trend analysis, report writing -- falls within AI's demonstrated capability. But Zone 4 classification (typically requiring a bachelor's degree and analytical training) and reasonable labor market outlook provide structural protection. The job will transform. The workers will adapt within their roles rather than being displaced from them. "High exposure, moderate risk" is the right call, and it's a distinction the old binary system couldn't make.
+Market Research Analysts at 89.5% confirmed exposure but score 7 (mod-high risk). This is the new scoring system working exactly as designed. Nearly every task in the role -- data collection, survey design, trend analysis, report writing -- falls within AI's demonstrated capability. But Zone 4 classification (typically requiring a bachelor's degree and analytical training) and reasonable labor market outlook provide structural protection. The job will transform. The workers will adapt within their roles rather than being displaced from them. "High exposure, mod-high risk" is the right call, and it's a distinction the old binary system couldn't make.
 
-Software Developers at 45.2% confirmed, score 5, with that 19.5pp ceiling gap. The gap is the story here. AI code generation, testing, review, and documentation tools exist and are improving fast. Confirmed adoption at 45.2% represents the state of play circa the analysis date. The ceiling at 64.7% represents what's already technically possible. The trajectory is clear, but job zone 4 and strong demand keep the risk moderate. Software developers aren't being displaced -- they're being augmented, and the ones who lean into AI tooling will be more productive than those who don't.
+Software Developers at 45.2% confirmed, score 5, with that 19.5pp ceiling gap. The gap is the story here. AI code generation, testing, review, and documentation tools exist and are improving fast. Confirmed adoption at 45.2% represents the state of play circa the analysis date. The ceiling at 64.7% represents what's already technically possible. The trajectory is clear, but job zone 4 and strong demand keep the risk mod-high. Software developers aren't being displaced -- they're being augmented, and the ones who lean into AI tooling will be more productive than those who don't.
 
-Data Scientists at 46.0% confirmed, score 3 (low risk). Similar logic to Market Research but with even stronger structural protection -- high job zone, strong demand, and the core of the role (framing the right question, designing the analysis, interpreting results for stakeholders) remains firmly human.
+Data Scientists at 46.0% confirmed, score 3 (mod-low). Similar logic to Market Research but with even stronger structural protection -- high job zone, strong demand, and the core of the role (framing the right question, designing the analysis, interpreting results for stakeholders) remains firmly human.
 
 ### The Utah Story
 
 Construction Laborers at 12.0% are the physical-work safe harbor. The ceiling is 12.6% -- a 0.6pp gap, meaning AI has essentially zero unrealized capability in this task space. Physical dexterity, environmental adaptation, and site-specific judgment are the moat, and it is wide.
 
-Sales Reps (Wholesale/Manufacturing) at 81.8% confirmed are the surprise for anyone who thinks of sales as a relationship-driven, AI-resistant profession. The task inventory tells a different story: product research, customer profiling, proposal generation, pricing analysis, CRM management -- these are all tasks AI tools handle well. The score of 7 (moderate) reflects that the relationship and judgment layers provide protection, but the exposure is real.
+Sales Reps (Wholesale/Manufacturing) at 81.8% confirmed are the surprise for anyone who thinks of sales as a relationship-driven, AI-resistant profession. The task inventory tells a different story: product research, customer profiling, proposal generation, pricing analysis, CRM management -- these are all tasks AI tools handle well. The score of 7 (mod-high) reflects that the relationship and judgment layers provide protection, but the exposure is real.
 
 Medical/Health Services Managers at 47.3% confirmed but 65.1% ceiling (+17.8pp gap). For Utah's growing healthcare sector, this is the administrative-side AI story. Scheduling optimization, compliance documentation, resource allocation modeling, reporting -- all high-AI-capability tasks. The role won't disappear, but the ratio of managers to managed systems will shift.
 
@@ -116,7 +120,7 @@ The ceiling trends show the same pattern but steeper, as expected. The gap betwe
 
 ## Config
 
-Primary: `all_confirmed`. Comparison: `all_ceiling`. 27 of 29 named occupations matched. Risk scoring: weighted composite (job zone weight, outlook weight, exposure level, AI capability gap, trend direction, hidden-at-risk flag). Trend: first and last date per config series. SKA gaps: per-element difference between AI capability and occupation requirement.
+Primary: `all_confirmed`. Comparison: `all_ceiling`. 27 of 29 named occupations matched. Risk scoring (0-10): weighted composite of 8 flags (job zone weight, outlook weight, exposure level, AI capability gap, trend direction, hidden-at-risk flag). Tiers: 8-10 = high, 5-7 = mod-high, 3-4 = mod-low, 0-2 = low. Trend: first and last date per config series. SKA gaps: AI capability as a percentage of occupation requirement per element (e.g., AI at 80% of occ need).
 
 ## Files
 

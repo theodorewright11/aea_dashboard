@@ -151,8 +151,16 @@ def build_state_risk_features() -> pd.DataFrame:
             continue
 
         tier_workers = merged.groupby("risk_tier")["workers_affected"].sum()
+        # job_risk_scoring now produces 4 tiers: high / mod_high / mod_low / low.
+        # For state-level clustering we collapse mod_high+mod_low back into a
+        # single "moderate" feature to keep the 3-feature [high, moderate, low]
+        # design that the rest of this script (and the report) expects.
         pct_high     = tier_workers.get("high",     0.0) / total_wa * 100
-        pct_moderate = tier_workers.get("moderate", 0.0) / total_wa * 100
+        pct_moderate = (
+            tier_workers.get("moderate", 0.0)
+            + tier_workers.get("mod_high", 0.0)
+            + tier_workers.get("mod_low",  0.0)
+        ) / total_wa * 100
         pct_low      = tier_workers.get("low",      0.0) / total_wa * 100
 
         rows.append({

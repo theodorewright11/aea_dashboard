@@ -113,7 +113,7 @@ from analysis.config import (
 
 # SKA computation (real-time, not cached)
 from analysis.data.compute_ska import load_ska_data, compute_ska
-# SKAResult fields: .ai_capability, .eco_baseline, .occ_gaps, .occ_element_scores
+# SKAResult fields: .ai_capability, .eco_baseline, .eco_baseline_p95, .occ_gaps, .occ_element_scores
 
 # Backend compute (same engine as the dashboard)
 from backend.compute import get_group_data, get_explorer_occupations, load_eco_raw
@@ -196,15 +196,22 @@ for config_key, dataset_name in ANALYSIS_CONFIGS.items():
   - `gap > 0` → AI exceeds this occupation's need (leverage AI here)
   - `gap < 0` → Human advantage (focus training here)
 
+**Per (occ, element) — percentage framing:**
+- `ai_pct_occ = ai_score / occ_score × 100`
+
 **Per occupation:**
 - `skills_gap = mean(gap) across all skills elements`
 - `abilities_gap = mean(gap) across all abilities elements`
 - `knowledge_gap = mean(gap) across all knowledge elements`
 - `overall_gap = mean(skills_gap, abilities_gap, knowledge_gap)`
+- `overall_pct = sum(ai_score) / sum(occ_score) × 100` (ratio-of-sums across all elements)
+- `skills_pct, abilities_pct, knowledge_pct` — same ratio-of-sums pattern per element type
 
 **Worker resilience ranking:** sort by `gap` ascending (most negative = biggest human advantage = where to invest).
 
 **SKA trend:** recompute at first and last date of `ANALYSIS_CONFIG_SERIES[config_key]` only; compute `delta_gap = last_overall_gap − first_overall_gap`.
+
+**Note:** The 95th percentile threshold for `ai_capability` is defended in the notebook `analysis/data/ai_capability_method_comparison.ipynb`.
 
 ---
 
@@ -212,21 +219,22 @@ for config_key, dataset_name in ANALYSIS_CONFIGS.items():
 
 Computed per occupation, based on the primary config (`all_confirmed`) unless otherwise noted.
 
-**Weighted scoring:** Flags 1–4 (direct exposure signal) get weight 2. Flags 5–7 (structural vulnerability) get weight 1. Maximum possible score = 11.
+**Weighted scoring:** Flags 1–2 (strongest exposure signals) get weight 2. Flags 3–8 (supporting signals) get weight 1. Maximum possible score = 10.
 
-| Flag | Weight | Condition | Notes |
-|------|--------|-----------|-------|
-| 1 | 2 | `pct_tasks_affected > median(all occs)` | Varies by config |
-| 2 | 2 | `overall_gap > median(all occs)` | SKA gap; varies by config |
-| 3 | 2 | `pct_delta > 0 AND pct_delta > median(pct_delta)` | pct trend; median is of ALL growth (incl. negative) |
-| 4 | 2 | `ska_delta > 0 AND ska_delta > median(ska_delta)` | SKA gap trend |
-| 5 | 1 | `job_zone ∈ {1, 2, 3}` | From eco_2025 |
-| 6 | 1 | `outlook ∈ {2, 3}` | DWS star rating; 1 = good outlook/low wages |
-| 7 | 1 | `n_software > median(all occs)` | From tech_skills_simple.csv |
+| Flag | Weight | Condition |
+|------|--------|-----------|
+| 1 | 2 | `pct_tasks_affected > 50%` (absolute threshold) |
+| 2 | 2 | `overall_pct > median` (SKA percentage) |
+| 3 | 1 | `pct_delta > 0 AND > median(pct_delta)` |
+| 4 | 1 | `ska_delta > 0 AND > median(ska_delta)` |
+| 5 | 1 | `job_zone ∈ {1, 2, 3}` |
+| 6 | 1 | `outlook ∈ {2, 3}` |
+| 7 | 1 | `n_software > median` |
+| 8 | 1 | `auto_avg_with_vals > median` |
 
-**Exposure gate:** If `pct_tasks_affected < 33%`, the occupation cannot be classified as high risk regardless of weighted score.
+**Exposure gate:** If `pct_tasks_affected < 33%`, the occupation cannot be classified as high risk regardless of weighted score — downgrades to Mod-High.
 
-**Tiers:** 8–11 = high risk, 4–7 = moderate, 0–3 = low.
+**Tiers:** 8–10 = High, 5–7 = Mod-High, 3–4 = Mod-Low, 0–2 = Low.
 
 ---
 
