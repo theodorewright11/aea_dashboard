@@ -38,7 +38,19 @@ The GWA-level data shows where the modes diverge most sharply.
 
 The broad pattern: activities that are communicative, interpretive, and analytical are currently higher under conversational AI. Activities requiring multi-step workflows or direct system access (scheduling, some documentation) are where agentic modestly leads. The confirmation data from AEI API reflects where agentic has been specifically deployed — high-complexity technical contexts — not the full breadth of what agentic could reach.
 
-![Agentic vs. Conversational Worker Counts by Sector](../questions/economic_footprint/ai_modes/figures/agentic_vs_conversational.png)
+![Agentic vs. Conversational Worker Counts by Sector](figures/agentic_vs_conversational.png)
+
+---
+
+## Where the Deployment Gap Is Largest
+
+The drop in workers affected from conversational to agentic — ranked by sector — shows where agentic deployment most lags conversational reach. Sectors with the largest drops are where conversational AI is broadly embedded but agentic tool-use hasn't followed.
+
+![Worker Reach Drop: Conversational to Agentic](figures/agentic_workers_drop.png)
+
+The same pattern through the lens of task penetration: the drop in pct_tasks_affected from conversational to agentic shows which sectors lose the most task coverage when moving to tool-use-only.
+
+![Task Penetration Drop: Conversational to Agentic](figures/agentic_pct_drop.png)
 
 ---
 
@@ -57,9 +69,22 @@ A score of 2.82 out of 5 means we're at roughly mid-range augmentation potential
 
 The by-major-sector breakdown of auto-augmentability scores generally tracks the task penetration findings: Computer/Mathematical and Business/Financial show the highest augmentability scores; physically-grounded sectors like Transportation and Construction show lower scores. But the within-sector variance is worth noting — even in sectors with lower average exposure, there are high-augmentability occupations. The administrative and information-processing layer of every sector carries higher augmentability than the hands-on layer.
 
-![Auto-Augmentability Distribution Across Affected Workforce](../questions/economic_footprint/ai_modes/figures/autoaug_distribution.png)
+![Auto-Augmentability Distribution Across Affected Workforce](figures/autoaug_distribution.png)
 
-![Auto-Augmentability by Major Sector](../questions/economic_footprint/ai_modes/figures/autoaug_by_major.png)
+![Auto-Augmentability by Major Sector](figures/autoaug_by_major.png)
+
+### Auto-Aug Across Dataset Configs
+
+Auto-augmentability scores vary by which dataset config is used, because each config's dataset includes different tasks. Two metrics are shown per major sector across all five configs:
+
+1. **Tasks with values**: average auto_aug_mean of tasks that have a score (excludes tasks with no auto-aug assessment)
+2. **All tasks (missing=0)**: average auto_aug_mean across all tasks in that major, treating missing values as 0
+
+The first metric shows how automatable the assessed tasks are; the second shows overall automation potential including coverage gaps.
+
+![Auto-Aug by Sector and Config — Tasks With Values](figures/autoaug_by_config_with_vals.png)
+
+![Auto-Aug by Sector and Config — All Tasks](figures/autoaug_by_config_all.png)
 
 ---
 

@@ -1,6 +1,6 @@
 # Economic Footprint: Job Structure
 
-AI exposure increases with job preparation level up through Zone 4, then plateaus or slightly dips for Zone 5. The most highly-credentialed jobs (Zone 4 — bachelor's plus significant work experience) carry the highest average task exposure, which cuts against the simple story that AI replaces low-skill work. The Utah DWS job outlook data adds another wrinkle: jobs classified as declining or below-average (Rating 3) have higher average AI exposure than bright-outlook jobs, suggesting some correlation between precarity and exposure — but the relationship isn't clean.
+AI exposure increases with job preparation level up through Zone 4, then plateaus or slightly dips for Zone 5. The most highly-credentialed jobs (Zone 4 — bachelor's plus significant work experience) carry the highest average task exposure, which cuts against the simple story that AI replaces low-skill work. The ECO 2025 DWS outlook data (a non-linear 0-5 scale combining projected openings, growth, and wages) shows that higher-rated occupations — those with strong outlook and high wages — actually carry the highest AI exposure, inverting the precarity narrative.
 
 ---
 
@@ -11,16 +11,16 @@ O*NET's job zone classification runs from Zone 1 (little or no preparation) to Z
 The answer from the data: exposure generally rises with zone, peaking at Zone 4. Average pct_tasks_affected by zone:
 
 - **Zone 1** (little prep): ~26.9%
-- **Zone 2** (some prep, typically high school): ~30.6%
-- **Zone 3** (medium prep, some post-secondary): ~35.0%
+- **Zone 2** (some prep, typically high school): ~35.5%
+- **Zone 3** (medium prep, some post-secondary): ~37.6%
 - **Zone 4** (considerable prep, bachelor's + experience): ~50.9%
-- **Zone 5** (extensive prep, advanced degree): ~45.9%
+- **Zone 5** (extensive prep, advanced degree): ~49.3%
 
 The Zone 4 peak is striking. These are managers, accountants, engineers, analysts, healthcare practitioners — jobs that require real education and experience. The fact that they carry the highest average exposure is not a claim that AI will replace them wholesale. It is a claim that a larger share of what they do on a given day is AI-capable than for someone in Zone 1.
 
 Zone 5 actually shows slightly lower average exposure than Zone 4. These are researchers, physicians, attorneys, professors — jobs where a significant fraction of work involves judgment, originality, and domain expertise that AI hasn't fully cracked. The tasks in Zone 5 roles that AI *can* do are a smaller share of the total workload.
 
-![AI Exposure Distribution by Job Zone](../questions/economic_footprint/job_structure/figures/zone_exposure_violin.png)
+![AI Exposure Distribution by Job Zone](figures/zone_exposure_violin.png)
 
 ---
 
@@ -39,29 +39,43 @@ Zone 2 shows a very different distribution. 18.8 million Zone 2 workers are in t
 
 Zone 5 has 2.4 million in High exposure and 6.6 million in Moderate — significant numbers, but a larger fraction in the Restructuring tier (1.5M) and Low tier (0.4M) than Zone 4. Consistent with the pattern that Zone 5 work is more defended against full task penetration.
 
-![Workers by Job Zone and Exposure Tier](../questions/economic_footprint/job_structure/figures/zone_tier_heatmap.png)
+![Workers by Job Zone and Exposure Tier](figures/zone_tier_heatmap.png)
 
 ---
 
 ## Job Outlook and Exposure
 
-The Utah DWS star ratings classify occupations into three tiers: Rating 1 (bright outlook / high-wage), Rating 2 (average), Rating 3 (below average / declining). These are forward-looking assessments based on labor market conditions.
+The ECO 2025 DWS outlook rating is a non-linear 0-5 scale. It is **not** an ordered severity scale — different ratings represent different tradeoffs between labor market outlook and wages. The rating is based on Utah projected openings (90%), growth rate (10%), and median wages:
+
+| Rating | Meaning |
+|--------|---------|
+| **5** | Strongest outlook + high wages |
+| **4** | Good outlook + relatively high wages |
+| **3** | Moderate-to-strong outlook + low-to-moderate wages |
+| **2** | High wages + limited outlook |
+| **1** | Low wages + strong outlook |
+| **0** | Limited outlook + low wages |
+
+Ratings 1 and 2 in particular are not ordered — they represent opposite tradeoffs (1 = strong demand but low pay; 2 = high pay but limited openings). This matters for interpretation: a jump from 1 to 2 is not an improvement, it's a completely different labor market profile.
 
 Average AI task exposure by rating:
 
-- **Rating 1** (bright/high-wage): ~29.8%
-- **Rating 2** (average): ~36.1%  
-- **Rating 3** (below average): ~39.2%
+- **Rating 0** (limited outlook + low wages): ~31.9% — 307K workers
+- **Rating 1** (low wages + strong outlook): ~29.8% — 2.7M workers
+- **Rating 2** (high wages + limited outlook): ~33.9% — 62.8M workers
+- **Rating 3** (moderate outlook + low-mod wages): ~39.2% — 28.9M workers
+- **Rating 4** (good outlook + high wages): ~47.1% — 26.5M workers
+- **Rating 5** (strongest outlook + high wages): ~47.8% — 32.0M workers
 
-So jobs with poorer labor market outlooks have higher average AI exposure. That's a signal worth taking seriously — it suggests the occupational categories showing both secular decline in the labor market and high AI exposure are the same ones. The correlation is imperfect and partly mechanical (low-wage service jobs that were already losing ground to automation tend to score higher on AI exposure), but it's a real pattern.
+The pattern is the opposite of what a simple automation-replaces-bad-jobs story would predict. The highest-rated occupations — those with the strongest labor market outlook *and* the highest wages — carry the highest AI exposure. Rating 4 and 5 occupations average 47-48% tasks affected, nearly double the exposure of Rating 0-1 occupations. These are the professional, technical, and managerial roles where AI capability has penetrated deeply into information-processing tasks, but the jobs themselves remain in high demand precisely because the remaining tasks (judgment, leadership, client relationships) are durable.
 
-The Rating 1 occupations — the ones with high wages and strong demand — actually have the lowest average AI exposure. These tend to be healthcare practitioners, specialized engineers, trades workers in demand, and management roles. Their outlook is bright partly because their work is harder to automate.
+Ratings 0 and 1 cluster at the low end of both exposure and employment. These are small-population occupations with either weak markets or low compensation — and low AI exposure suggests they're in sectors where AI capability hasn't arrived or the tasks are physically grounded.
 
-What this doesn't tell us is whether AI exposure is *causing* the poor outlook or just correlated with it. Probably both — some occupations are declining because automation is already happening; others are AI-exposed and the market hasn't repriced them yet. The dataset can't distinguish these cases.
+Rating 2 is the largest bucket (62.8M workers) with moderate exposure (33.9%). These are high-wage roles with limited projected openings — potentially the most vulnerable segment, as AI exposure could further constrain already-limited growth.
 
-![AI Exposure Distribution by Job Outlook Rating](../questions/economic_footprint/job_structure/figures/outlook_exposure_violin.png)
+![AI Exposure Distribution by Job Outlook Rating](figures/outlook_exposure_violin.png)
 
-![Workers by Outlook Rating and Exposure Tier](../questions/economic_footprint/job_structure/figures/outlook_tier_heatmap.png)
+![Workers by Outlook Rating and Exposure Tier](figures/outlook_tier_heatmap.png)
 
 ---
 
@@ -73,7 +87,49 @@ The Computer and Mathematical sector is high-exposure across all zones, but part
 
 Healthcare shows the largest within-sector zone variation: healthcare support roles (Zone 2-3) have substantially lower exposure than healthcare practitioners (Zone 4), which is partly counterintuitive — the higher-paid clinical roles are more task-penetrated by AI than the support roles, because the AI capability assessment captures the information-processing components of clinical work (documentation, diagnostics, knowledge retrieval) better than the physical patient care components.
 
-![Average % Tasks Affected by Sector and Job Zone](../questions/economic_footprint/job_structure/figures/major_zone_heatmap.png)
+![Average % Tasks Affected by Sector and Job Zone](figures/major_zone_heatmap.png)
+
+---
+
+## MCP-Only Zone Analysis
+
+The primary config (All Confirmed) combines AEI conversational data, AEI API data, and Microsoft data. One concern is user self-selection bias: the occupations showing high exposure in Zone 4 might simply be the ones whose workers are more likely to use AI tools like Copilot or Claude, causing them to appear in the AEI usage data. To test this, we can look at MCP-only data — capability assessments derived from tool server specifications rather than user interaction logs.
+
+MCP-only average pct_tasks_affected by zone:
+
+- **Zone 1**: ~14.0%
+- **Zone 2**: ~31.7%
+- **Zone 3**: ~26.3%
+- **Zone 4**: ~38.0%
+- **Zone 5**: ~22.7%
+
+The Zone 4 peak persists in MCP data, though at lower absolute levels (38% vs 51% in All Confirmed). The Zone 4 concentration is not purely an artifact of user selection bias — MCP servers are tool specifications, not user interaction logs. However, MCP carries its own bias: the tools built as MCP servers are likely built for the workflows of higher-zone professionals (code, analysis, document management), so the Zone 4 signal may be partly a reflection of which tools have been built, not which jobs are inherently most exposed.
+
+The drop from Zone 4 to Zone 5 is sharper in MCP (38% → 23%) than in All Confirmed (51% → 49%), suggesting that Zone 5 work benefits more from conversational AI than from agentic tooling.
+
+Zone 1 occupations show 14% exposure under MCP — lower than any other zone. This could mean Zone 1 tasks are genuinely less AI-capable, or it could mean the MCP tool ecosystem simply hasn't targeted those workflows. The fact that Zone 1 exposure is also low in All Confirmed (27%) — where user-driven data should pick up ChatGPT-style usage if it were happening — suggests the signal is real rather than a gap in tool coverage.
+
+![AI Exposure by Job Zone — MCP Only](figures/zone_exposure_violin_mcp.png)
+
+![Workers by Job Zone and Exposure Tier — MCP Only](figures/zone_tier_heatmap_mcp.png)
+
+---
+
+## Task Frequency and Normalized Penetration by Zone
+
+To understand *why* certain zones show higher exposure, we can look at the underlying task-level data in the All Confirmed dataset.
+
+**Task frequency (freq_mean)** measures how frequently each task appears in the AI capability data. Higher freq_mean means the task has been assessed as AI-capable more consistently across sources.
+
+**Pct normalized (pct_normalized)** measures the normalized penetration level of each task — how deeply the AI capability claim penetrates that task.
+
+![Average Task Frequency by Job Zone](figures/zone_freq_bar.png)
+
+![Task Frequency Distribution by Job Zone](figures/zone_freq_violin.png)
+
+![Average pct_normalized by Job Zone](figures/zone_pct_norm_bar.png)
+
+![pct_normalized Distribution by Job Zone](figures/zone_pct_norm_violin.png)
 
 ---
 
@@ -83,4 +139,4 @@ The standard policy frame on automation is to focus on low-skill workers — the
 
 Zone 1 and 2 workers carry lower average exposure but are far less buffered. Their jobs are exposed primarily through specific high-penetration pockets within otherwise lower-exposure sectors — the administrative layer embedded in physically-grounded work. When that layer gets automated, those workers have fewer alternatives.
 
-The outlook data adds a final layer: the labor market is already pricing in some of this. Bright-outlook jobs — the ones the market believes have a future — are carrying lower AI exposure. That's either reassuring (the market is correctly identifying durable roles) or concerning (the market is pricing exposure *because* it sees displacement risk, and the workers in Rating 3 jobs are already doubly vulnerable).
+The outlook data shows that the highest-rated jobs (Rating 4-5, strong outlook + high wages) carry the highest AI exposure. This inverts the simple automation-replaces-vulnerable-jobs narrative: the jobs the market values most are also the ones most penetrated by AI capability claims. Whether this means those jobs will be augmented (higher productivity, higher wages) or disrupted (fewer needed) is the open question.

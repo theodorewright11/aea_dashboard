@@ -85,6 +85,48 @@ def get_major_data(dataset_name: str) -> pd.DataFrame:
     return data["df"].rename(columns={"major_occ_category": "category"})
 
 
+def get_autoaug_by_major_config(config_key: str) -> pd.DataFrame:
+    """
+    Load task-level auto_aug for a config's dataset, grouped by major occ category.
+
+    Returns DataFrame with columns:
+        major, avg_auto_aug_with_vals, avg_auto_aug_all, config_key
+    """
+    from backend.config import DATASETS
+
+    dataset_name = ANALYSIS_CONFIGS[config_key]
+    meta = DATASETS.get(dataset_name)
+    assert meta is not None, f"Unknown dataset: {dataset_name}"
+
+    # Read just the columns we need — AEI files use 'title', others use 'title_current'
+    all_cols = pd.read_csv(meta["file"], nrows=0).columns.tolist()
+    need_cols = ["task_normalized", "major_occ_category", "auto_aug_mean"]
+    title_col = "title_current" if "title_current" in all_cols else "title"
+    need_cols.append(title_col)
+    df = pd.read_csv(meta["file"], usecols=need_cols)
+    df["auto_aug_mean"] = pd.to_numeric(df["auto_aug_mean"], errors="coerce")
+
+    # Dedup to unique (major, task_normalized) pairs
+    deduped = df.groupby(["major_occ_category", "task_normalized"]).agg(
+        auto_aug_mean=("auto_aug_mean", "mean"),
+    ).reset_index()
+
+    # Per major: avg of tasks with values, avg of all tasks (NaN -> 0)
+    rows: list[dict] = []
+    for major, grp in deduped.groupby("major_occ_category"):
+        with_vals = grp[grp["auto_aug_mean"].notna()]
+        avg_with = with_vals["auto_aug_mean"].mean() if len(with_vals) > 0 else 0.0
+        avg_all = grp["auto_aug_mean"].fillna(0.0).mean()
+        rows.append({
+            "major": major,
+            "avg_auto_aug_with_vals": avg_with,
+            "avg_auto_aug_all": avg_all,
+            "config_key": config_key,
+            "config_label": ANALYSIS_CONFIG_LABELS[config_key],
+        })
+    return pd.DataFrame(rows)
+
+
 def get_autoaug_by_occ() -> pd.DataFrame:
     """
     Return per-occ auto-aug stats from the explorer.
@@ -109,22 +151,33 @@ def get_autoaug_by_occ() -> pd.DataFrame:
 # -- Figure builders ------------------------------------------------------------
 
 def _build_butterfly(conv_df: pd.DataFrame, agentic_df: pd.DataFrame) -> go.Figure:
-    """Butterfly chart: agentic (left) vs conversational (right) workers by major."""
-    merged = conv_df[["category", "workers_affected"]].merge(
-        agentic_df[["category", "workers_affected"]].rename(
-            columns={"workers_affected": "workers_agentic"}
+    """Butterfly chart: agentic (left) vs conversational (right) workers by major.
+
+    Y-axis labels include pct_tasks_affected for each mode in parentheses.
+    """
+    merged = conv_df[["category", "workers_affected", "pct_tasks_affected"]].merge(
+        agentic_df[["category", "workers_affected", "pct_tasks_affected"]].rename(
+            columns={"workers_affected": "workers_agentic",
+                     "pct_tasks_affected": "pct_agentic"}
         ),
         on="category",
     )
     merged["workers_conv"] = merged["workers_affected"]
+    merged["pct_conv"] = merged["pct_tasks_affected"]
     merged = merged.sort_values("workers_conv", ascending=True)
+
+    # Y-axis labels with pct_tasks_affected
+    y_labels = [
+        f"{cat} (Conv: {pc:.1f}% | Agt: {pa:.1f}%)"
+        for cat, pc, pa in zip(merged["category"], merged["pct_conv"], merged["pct_agentic"])
+    ]
 
     fig = go.Figure()
 
     # Left bars: conversational (negative x for butterfly)
     fig.add_trace(go.Bar(
         x=[-v for v in merged["workers_conv"] / 1e6],
-        y=merged["category"],
+        y=y_labels,
         orientation="h",
         name="Conversational (human chat)",
         marker_color=COLORS["primary"],
@@ -137,7 +190,7 @@ def _build_butterfly(conv_df: pd.DataFrame, agentic_df: pd.DataFrame) -> go.Figu
     # Right bars: agentic
     fig.add_trace(go.Bar(
         x=[v / 1e6 for v in merged["workers_agentic"]],
-        y=merged["category"],
+        y=y_labels,
         orientation="h",
         name="Agentic (tool-use)",
         marker_color=COLORS["secondary"],
@@ -148,16 +201,56 @@ def _build_butterfly(conv_df: pd.DataFrame, agentic_df: pd.DataFrame) -> go.Figu
     ))
 
     style_figure(fig, "Agentic vs Conversational AI Reach by Sector",
-                 subtitle="Left = conversational (human_conversation config) | Right = agentic (agentic_confirmed config) | Workers affected (M)",
-                 x_title="Workers Affected (millions)", height=700, width=1200)
+                 subtitle="Left = conversational | Right = agentic | Parentheses = % tasks affected per mode",
+                 x_title="Workers Affected (millions)", height=800, width=1300)
     fig.update_layout(
         barmode="relative",
         xaxis=dict(showgrid=True, gridcolor=COLORS["grid"],
                    tickvals=[-60, -40, -20, 0, 20, 40, 60],
                    ticktext=["60M", "40M", "20M", "0", "20M", "40M", "60M"]),
-        yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=10)),
+        yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=9)),
         margin=dict(l=20, r=100),
         bargap=0.15,
+    )
+    return fig
+
+
+def _build_drop_chart(conv_df: pd.DataFrame, agentic_df: pd.DataFrame,
+                      metric: str, title: str, x_label: str) -> go.Figure:
+    """Ranked bar chart showing drop from conversational to agentic per major."""
+    merged = conv_df[["category", metric]].merge(
+        agentic_df[["category", metric]].rename(columns={metric: f"{metric}_agentic"}),
+        on="category",
+    )
+    merged["drop"] = merged[metric] - merged[f"{metric}_agentic"]
+    if metric == "workers_affected":
+        merged["drop_display"] = merged["drop"] / 1e6
+        fmt = lambda v: f"{v:.1f}M"
+    else:
+        merged["drop_display"] = merged["drop"]
+        fmt = lambda v: f"{v:.1f}pp"
+    merged = merged.sort_values("drop_display", ascending=True)
+
+    fig = go.Figure(go.Bar(
+        x=merged["drop_display"],
+        y=merged["category"],
+        orientation="h",
+        marker_color=[COLORS["negative"] if v > 0 else COLORS["positive"]
+                      for v in merged["drop_display"]],
+        text=[fmt(v) for v in merged["drop_display"]],
+        textposition="outside",
+        textfont=dict(size=10, color=COLORS["neutral"], family=FONT_FAMILY),
+        cliponaxis=False,
+    ))
+
+    style_figure(fig, title,
+                 subtitle="Conversational minus Agentic | Larger bar = bigger deployment gap",
+                 x_title=x_label, show_legend=False, height=700, width=1100)
+    fig.update_layout(
+        margin=dict(l=20, r=100),
+        xaxis=dict(showgrid=True, gridcolor=COLORS["grid"]),
+        yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=10)),
+        bargap=0.25,
     )
     return fig
 
@@ -243,6 +336,48 @@ def _build_autoaug_by_major(occ_df: pd.DataFrame) -> go.Figure:
         xaxis=dict(showgrid=True, gridcolor=COLORS["grid"]),
         yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=10)),
         bargap=0.25,
+    )
+    return fig
+
+
+def _build_autoaug_by_config(all_config_df: pd.DataFrame, metric: str,
+                              title: str, subtitle: str) -> go.Figure:
+    """Grouped bar chart: auto-aug metric per major across all configs."""
+    config_palette = [COLORS["primary"], COLORS["secondary"], COLORS["accent"],
+                      COLORS["positive"], COLORS["negative"]]
+
+    # Sort majors by avg across configs
+    major_order = (
+        all_config_df.groupby("major")[metric].mean()
+        .sort_values(ascending=True).index.tolist()
+    )
+    configs = all_config_df["config_label"].unique()
+
+    fig = go.Figure()
+    for i, cfg_label in enumerate(configs):
+        cfg_data = all_config_df[all_config_df["config_label"] == cfg_label]
+        cfg_data = cfg_data.set_index("major").reindex(major_order).reset_index()
+        fig.add_trace(go.Bar(
+            x=cfg_data[metric],
+            y=cfg_data["major"],
+            orientation="h",
+            name=cfg_label,
+            marker_color=config_palette[i % len(config_palette)],
+            text=[f"{v:.2f}" if pd.notna(v) else "" for v in cfg_data[metric]],
+            textposition="outside",
+            textfont=dict(size=8, color=COLORS["neutral"], family=FONT_FAMILY),
+            cliponaxis=False,
+        ))
+
+    style_figure(fig, title, subtitle=subtitle,
+                 x_title="Auto-Aug Score (0–5)", height=800, width=1300)
+    fig.update_layout(
+        barmode="group",
+        margin=dict(l=20, r=120),
+        xaxis=dict(showgrid=True, gridcolor=COLORS["grid"]),
+        yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=10)),
+        bargap=0.2,
+        bargroupgap=0.05,
     )
     return fig
 
@@ -416,6 +551,55 @@ def main() -> None:
     save_figure(fig_scatter, results / "figures" / "mode_workers_scatter.png")
     shutil.copy(results / "figures" / "mode_workers_scatter.png", figs_dir / "mode_workers_scatter.png")
     print("  mode_workers_scatter.png")
+
+    # 3e. Workers drop: conversational -> agentic
+    fig_workers_drop = _build_drop_chart(
+        conv_major, agentic_major, "workers_affected",
+        "Worker Reach Drop: Conversational → Agentic",
+        x_label="Drop in Workers Affected (millions)",
+    )
+    save_figure(fig_workers_drop, results / "figures" / "agentic_workers_drop.png")
+    shutil.copy(results / "figures" / "agentic_workers_drop.png", figs_dir / "agentic_workers_drop.png")
+    print("  agentic_workers_drop.png")
+
+    # 3f. Pct tasks drop: conversational -> agentic
+    fig_pct_drop = _build_drop_chart(
+        conv_major, agentic_major, "pct_tasks_affected",
+        "Task Penetration Drop: Conversational → Agentic",
+        x_label="Drop in % Tasks Affected (pp)",
+    )
+    save_figure(fig_pct_drop, results / "figures" / "agentic_pct_drop.png")
+    shutil.copy(results / "figures" / "agentic_pct_drop.png", figs_dir / "agentic_pct_drop.png")
+    print("  agentic_pct_drop.png")
+
+    # 3g. Auto-aug by major across all configs (task-level)
+    print("\n  Auto-aug by config (task-level)...")
+    config_autoaug_dfs = []
+    for ck in ANALYSIS_CONFIGS:
+        print(f"    {ANALYSIS_CONFIG_LABELS[ck]}...")
+        config_autoaug_dfs.append(get_autoaug_by_major_config(ck))
+    all_config_autoaug = pd.concat(config_autoaug_dfs, ignore_index=True)
+    save_csv(all_config_autoaug, results / "autoaug_by_major_config.csv")
+
+    fig_aa_with = _build_autoaug_by_config(
+        all_config_autoaug, "avg_auto_aug_with_vals",
+        "Avg Auto-Aug by Sector × Config (Tasks With Values)",
+        subtitle="Average auto_aug_mean across unique tasks that have a value | By dataset config",
+    )
+    save_figure(fig_aa_with, results / "figures" / "autoaug_by_config_with_vals.png")
+    shutil.copy(results / "figures" / "autoaug_by_config_with_vals.png",
+                figs_dir / "autoaug_by_config_with_vals.png")
+    print("  autoaug_by_config_with_vals.png")
+
+    fig_aa_all = _build_autoaug_by_config(
+        all_config_autoaug, "avg_auto_aug_all",
+        "Avg Auto-Aug by Sector × Config (All Tasks, Missing=0)",
+        subtitle="Average auto_aug_mean across all unique tasks, NaN treated as 0 | By dataset config",
+    )
+    save_figure(fig_aa_all, results / "figures" / "autoaug_by_config_all.png")
+    shutil.copy(results / "figures" / "autoaug_by_config_all.png",
+                figs_dir / "autoaug_by_config_all.png")
+    print("  autoaug_by_config_all.png")
 
     # -- 4. Summary ------------------------------------------------------------
     print("\n-- Mode totals --")

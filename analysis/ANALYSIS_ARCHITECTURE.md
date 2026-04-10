@@ -27,6 +27,16 @@ analysis/
 │   └── old_scripts/             — Reference only (notebook + old ratio script)
 ├── questions/
 │   ├── _template/
+│   ├── economic_footprint/      — Active question bucket
+│   │   ├── README.md
+│   │   ├── economic_footprint_report.md
+│   │   ├── sector_footprint/
+│   │   ├── skills_landscape/
+│   │   ├── job_structure/
+│   │   ├── ai_modes/
+│   │   ├── trends/
+│   │   ├── state_profiles/
+│   │   └── work_activities/
 │   ├── job_exposure/            — Active question bucket
 │   │   ├── README.md
 │   │   ├── job_exposure_report.md
@@ -272,4 +282,5 @@ Computed per occupation, based on the primary config (`all_confirmed`) unless ot
 - **Trend flags need at least 2 dates**: configs with only one date (e.g., Microsoft) cannot produce trend flags.
 - **Pivot distance**: use `min(10, n)` if a job zone has fewer than 10 high-risk or low-risk occupations.
 - **n_software from tech_skills_simple.csv**: joined by `title` not `soc_code`, since title_current is what we have at the occ level.
-- **Outlook 1 = good outcome**: BLS DWS rating 1 means "bright outlook, high wages" — it is NOT the worst category. Flag only outlook 2 and 3 as at-risk.
+- **Outlook is a non-linear 0-5 scale**: ECO 2025 DWS star rating is NOT ordered severity. 5=strongest outlook+high wages, 4=good outlook+high wages, 3=moderate outlook+low-mod wages, 2=high wages+limited outlook, 1=low wages+strong outlook, 0=limited outlook+low wages. Ratings 1 and 2 represent different tradeoffs, not ordered severity. Based on Utah projected openings (90%), growth rate (10%), and median wages.
+- **MCP standalone for bias testing**: `"MCP Cumul. v4"` can be used to test zone/sector exposure patterns without user self-selection bias (it's tool specs, not usage data). Note that MCP has its own bias: tools are built for higher-zone workflows.
