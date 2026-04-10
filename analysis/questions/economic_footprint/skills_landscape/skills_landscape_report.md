@@ -18,7 +18,15 @@ Across 121 SKA elements, AI leads on 23 (pct > 100%). All of them are knowledge 
 
 The pattern across the AI-leading domains is clear: knowledge that can be encoded, retrieved, and synthesized from text — especially domains with structured bodies of accumulated content. AI does well where the task is "know things and communicate them." It does less well where the task requires physical presence, real-time environmental perception, or fine motor control.
 
-![Elements Where AI Leads](figures/ska_leads_ai.png)
+The first chart below shows AI capability vs. the economy-average occupational need. The second uses a harder benchmark: the 95th-percentile occupational score per element — roughly what a top-practitioner human needs. Against the average worker, AI leads on 23 elements; against elite practitioners, the set is smaller. Both views are informative: the first shows where AI has surpassed typical job requirements, the second shows how far AI capability extends toward the upper bound of human expertise.
+
+![Elements Where AI Leads (vs Economy-Average Occ Need)](figures/ska_leads_ai_eco_mean.png)
+
+![Elements Where AI Leads (vs Top-Practitioner Occ Need)](figures/ska_leads_ai_eco_p95.png)
+
+The sector heatmap below shows how AI capability as a percentage of occupation need distributes across major sectors and the five analysis configs. Sectors near or above 100% are those where AI's demonstrated ability approaches or exceeds what the typical worker in that sector is actually required to know and do.
+
+![Average AI Capability as % of Occupation Need, by Sector and Config](figures/ska_major_heatmap.png)
 
 ---
 
@@ -35,7 +43,11 @@ The human advantage domains divide into two rough categories. First, physical/pe
 
 What's not in the top human-advantage list: most cognitive skills. Written comprehension (101%), reading comprehension (100%), mathematical reasoning (104%) — AI is essentially at parity or slight AI advantage on those. The cognitive frontier has moved further than most people realize.
 
-![Elements Where Humans Lead](figures/ska_leads_human.png)
+Against the economy-average baseline, humans lead on 98 elements. The second chart uses the 95th-percentile human baseline: at the top-practitioner level, human advantage is even more pronounced, especially in applied technical and clinical domains where elite expertise runs well ahead of AI's current demonstrated capability.
+
+![Elements Where Humans Lead (vs Economy-Average Occ Need)](figures/ska_leads_human_eco_mean.png)
+
+![Elements Where Humans Lead (vs Top-Practitioner Occ Need)](figures/ska_leads_human_eco_p95.png)
 
 ---
 
@@ -68,11 +80,11 @@ These are small-n categories. The signal here is about the *intensity* of AI exp
 
 The workers ranking and the wages ranking tell different stories about where displacement costs hit: the workers view identifies the largest populations at risk, while the wages view identifies where the economic value at stake is greatest.
 
-![Top Technology Categories: Mean % Tasks Affected](figures/tech_top_economy.png)
+![Top Technology Categories: Mean % Tasks Affected](figures/tech_pct_affected.png)
 
-![SKA Landscape by Major Sector](figures/ska_major_heatmap.png)
+![Top Technology Categories: Exposed Workers](figures/tech_workers_affected.png)
 
-The tech major heatmap is ordered by exposed workers ranking, so the sectors with the largest AI-exposed workforce appear first. An additional baseline chart shows the 95th-percentile occupation score per element, providing context for how far the best-case AI capability extends beyond the economy-wide mean.
+![Top Technology Categories: Exposed Wages](figures/tech_wages_affected.png)
 
 ---
 
