@@ -563,6 +563,54 @@ Audience-specific charts for policy, workforce practitioners, researchers. All a
 
 ---
 
+## 10. Workforce Meeting (`workforce_meeting/`)
+
+14 presentation-quality charts for a Utah workforce meeting. All use Utah geo, All Confirmed, freq, auto-aug ON unless noted.
+
+**`01_utah_headline.png`** — Stacked bar: Utah workers with AI-exposed tasks (921K, 54%) vs rest.
+- **Page:** Occupation Categories | Agg = Major | Geo = Utah | then sum Workers Affected across all categories. The stacked-bar proportion visual is analysis-only.
+
+**`02_sector_scope.png`** — Horizontal bar: top 7 Utah sectors by workers affected, labels include % tasks + wages.
+- **Page:** Occupation Categories | Agg = Major | Geo = Utah | Sort = Workers Affected | Top N = 7. Compound labels are analysis-only.
+
+**`03_gwa_scope.png`** — Horizontal bar: top 7 GWAs by % tasks affected (Utah), labels include workers + wages.
+- **Page:** Work Activities | GWA | Geo = Utah | Sort = % Tasks Affected | Top N = 7. Compound labels are analysis-only.
+
+**`04_sector_trend.png`** — Horizontal bar: top 7 sector delta workers (Mar 2025 → Feb 2026).
+- Not reproducible. Dashboard Trends page shows time-series lines, not delta bars.
+
+**`05_gwa_trend.png`** — Horizontal bar: top 7 GWA delta % tasks (Mar 2025 → Feb 2026).
+- Not reproducible. Same reason as 04.
+
+**`06_sector_adoption_gap.png`** — Horizontal bar: top 7 sector confirmed→ceiling gap (workers).
+- **Page:** Occupation Categories | Group A = All Confirmed, Group B = All Sources | Geo = Utah. Use tooltip deltas. Ranked gap view is analysis-only.
+
+**`07_gwa_adoption_gap.png`** — Horizontal bar: top 7 GWA confirmed→ceiling gap (% tasks).
+- Same approach as 06 but on Work Activities page. Ranked gap view is analysis-only.
+
+**`08_ai_modes_gap.png`** — Horizontal bar: top 7 sector conversational→agentic worker drop.
+- **Page:** Occupation Categories | Group A = Human Conversation, Group B = Agentic Confirmed | Geo = Utah. Use tooltip deltas. Ranked view is analysis-only.
+
+**`09_autoaug_by_sector.png`** — Horizontal bar: top 7 sectors by avg auto-aug (tasks with value).
+- Not reproducible. Auto-aug averaging requires task-level computation from raw dataset files.
+
+**`10_pivot_cost.png`** — Vertical bar: reskilling cost (L1 distance) by job zone.
+- Not reproducible. Pivot cost computation is analysis-only (loaded from job_exposure/pivot_distance results).
+
+**`11_ska_human_skills.png`** — Horizontal bar: top 7 skills where humans lead AI, with 100% parity line.
+- Not reproducible. SKA gap computation is analysis-only.
+
+**`12_ska_human_knowledge.png`** — Same as 11 for knowledge domains.
+- Not reproducible.
+
+**`13_ska_ai_skills.png`** — Horizontal bar: top 7 skills where AI leads, with 100% parity line.
+- Not reproducible.
+
+**`14_ska_ai_knowledge.png`** — Same as 13 for knowledge domains.
+- Not reproducible.
+
+---
+
 ## Charts Not Reproducible on Dashboard (Summary)
 
 The following chart types produced by the analysis scripts have no dashboard equivalent:
