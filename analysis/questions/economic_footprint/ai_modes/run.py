@@ -91,31 +91,57 @@ def get_autoaug_by_major_config(config_key: str) -> pd.DataFrame:
 
     Returns DataFrame with columns:
         major, avg_auto_aug_with_vals, avg_auto_aug_all, config_key
+
+    Metrics:
+        avg_auto_aug_with_vals — mean auto_aug_mean of AI tasks that have a score
+        avg_auto_aug_all       — mean auto_aug_mean over ALL unique tasks in the eco
+                                 baseline (eco_2025, or eco_2015 for agentic_confirmed);
+                                 tasks not in the AI dataset count as 0
     """
-    from backend.config import DATASETS
+    from backend.config import DATASETS, ECO_BASELINE_FILE, ECO_2015_FILE
+    from backend.compute import load_eco_raw, load_eco2015_raw
 
     dataset_name = ANALYSIS_CONFIGS[config_key]
     meta = DATASETS.get(dataset_name)
     assert meta is not None, f"Unknown dataset: {dataset_name}"
+    is_aei = meta.get("is_aei", False)
 
-    # Read just the columns we need — AEI files use 'title', others use 'title_current'
+    # Load the appropriate eco baseline (same logic as the dashboard)
+    if is_aei:
+        eco_raw = load_eco2015_raw()
+    else:
+        eco_raw = load_eco_raw()
+    assert eco_raw is not None, "Eco baseline not found"
+
+    # All unique (major, task_normalized) pairs in the baseline
+    eco_tasks = (
+        eco_raw[["major_occ_category", "task_normalized"]]
+        .drop_duplicates()
+        .copy()
+    )
+
+    # Read AI dataset — AEI files use 'title', others use 'title_current'
     all_cols = pd.read_csv(meta["file"], nrows=0).columns.tolist()
     need_cols = ["task_normalized", "major_occ_category", "auto_aug_mean"]
-    title_col = "title_current" if "title_current" in all_cols else "title"
-    need_cols.append(title_col)
+    need_cols.append("title_current" if "title_current" in all_cols else "title")
     df = pd.read_csv(meta["file"], usecols=need_cols)
     df["auto_aug_mean"] = pd.to_numeric(df["auto_aug_mean"], errors="coerce")
 
-    # Dedup to unique (major, task_normalized) pairs
-    deduped = df.groupby(["major_occ_category", "task_normalized"]).agg(
+    # Dedup AI dataset to unique (major, task_normalized) pairs
+    ai_tasks = df.groupby(["major_occ_category", "task_normalized"]).agg(
         auto_aug_mean=("auto_aug_mean", "mean"),
     ).reset_index()
 
-    # Per major: avg of tasks with values, avg of all tasks (NaN -> 0)
+    # Join eco tasks with AI scores (left join — eco is the universe)
+    merged = eco_tasks.merge(
+        ai_tasks, on=["major_occ_category", "task_normalized"], how="left"
+    )
+
     rows: list[dict] = []
-    for major, grp in deduped.groupby("major_occ_category"):
+    for major, grp in merged.groupby("major_occ_category"):
         with_vals = grp[grp["auto_aug_mean"].notna()]
         avg_with = with_vals["auto_aug_mean"].mean() if len(with_vals) > 0 else 0.0
+        # avg_all: all eco tasks for this major, AI score or 0 if not in dataset
         avg_all = grp["auto_aug_mean"].fillna(0.0).mean()
         rows.append({
             "major": major,
@@ -579,18 +605,28 @@ def main() -> None:
     shutil.copy(results / "figures" / "autoaug_by_major.png", figs_dir / "autoaug_by_major.png")
     print("  autoaug_by_major.png")
 
-    # 3g. Auto-aug by major across all configs (grouped bar, with-values metric only)
-    # The "all tasks (missing=0)" metric is nearly identical (99%+ tasks have values)
-    # so only the "with values" chart is produced.
+    # 3g. Auto-aug by major across all configs (grouped bar)
+    # with_vals: avg over AI tasks that have a score
+    # avg_all:   avg over ALL eco baseline tasks (eco_2025 or eco_2015 for agentic_confirmed)
     fig_aa_with = _build_autoaug_by_config(
         all_config_autoaug, "avg_auto_aug_with_vals",
-        "Avg Auto-Aug Score by Sector × Config",
-        subtitle="Mean auto_aug_mean across unique tasks with a value | One bar per dataset config",
+        "Avg Auto-Aug by Sector × Config — Tasks With AI Score",
+        subtitle="Mean auto_aug_mean across unique tasks that have a value in the AI dataset | One bar per config",
     )
     save_figure(fig_aa_with, results / "figures" / "autoaug_by_config_with_vals.png")
     shutil.copy(results / "figures" / "autoaug_by_config_with_vals.png",
                 figs_dir / "autoaug_by_config_with_vals.png")
     print("  autoaug_by_config_with_vals.png")
+
+    fig_aa_all = _build_autoaug_by_config(
+        all_config_autoaug, "avg_auto_aug_all",
+        "Avg Auto-Aug by Sector × Config — Over All Eco Tasks",
+        subtitle="Mean auto_aug_mean over all unique eco baseline tasks | Missing (not in AI dataset) = 0 | eco_2015 for Agentic Confirmed",
+    )
+    save_figure(fig_aa_all, results / "figures" / "autoaug_by_config_all.png")
+    shutil.copy(results / "figures" / "autoaug_by_config_all.png",
+                figs_dir / "autoaug_by_config_all.png")
+    print("  autoaug_by_config_all.png")
 
     # -- 4. Summary ------------------------------------------------------------
     print("\n-- Mode totals --")
