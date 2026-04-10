@@ -89,7 +89,12 @@ OCC_GROUPS: dict[str, str] = {
     "Network and Computer Systems Administrators": "utah_relevant",
 }
 
-TIER_COLORS_RISK = {"high": COLORS["negative"], "moderate": COLORS["accent"], "low": COLORS["muted"]}
+TIER_COLORS_RISK = {
+    "high":     COLORS["negative"],
+    "mod_high": COLORS["accent"],
+    "mod_low":  COLORS["secondary"],
+    "low":      COLORS["muted"],
+}
 
 
 def _find_occ(title: str, available: set[str]) -> str | None:
@@ -180,13 +185,13 @@ def _risk_tier_chart(occ_df: pd.DataFrame) -> go.Figure:
     style_figure(
         fig,
         "Composite Risk Score — Occupations of Interest",
-        subtitle=f"Weighted scoring (0–11) | Red = high, Orange = moderate, Gray = low | {ANALYSIS_CONFIG_LABELS[PRIMARY_KEY]}",
+        subtitle=f"Weighted scoring (0–10) | Red = high, Orange = mod-high, Olive = mod-low, Gray = low | {ANALYSIS_CONFIG_LABELS[PRIMARY_KEY]}",
         x_title=None, height=chart_h, show_legend=False,
     )
     fig.update_layout(
         margin=dict(l=20, r=160, t=80, b=100),
         xaxis=dict(showgrid=False, showticklabels=False, showline=False, zeroline=False,
-                   range=[0, 13]),
+                   range=[0, 12]),
         yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=9, family=FONT_FAMILY)),
         bargap=0.25,
     )
@@ -194,10 +199,10 @@ def _risk_tier_chart(occ_df: pd.DataFrame) -> go.Figure:
 
 
 def _ska_gap_heatmap(occ_df: pd.DataFrame) -> go.Figure:
-    """Heatmap: occ × SKA type gap."""
-    pivot = occ_df[["title_current", "skills_gap", "abilities_gap", "knowledge_gap"]].copy()
+    """Heatmap: occ × SKA type as % of occ need."""
+    pivot = occ_df[["title_current", "skills_pct", "abilities_pct", "knowledge_pct"]].copy()
     pivot = pivot.set_index("title_current")
-    pivot.columns = ["Skills Gap", "Abilities Gap", "Knowledge Gap"]
+    pivot.columns = ["Skills %", "Abilities %", "Knowledge %"]
 
     fig = go.Figure(go.Heatmap(
         z=pivot.values,
@@ -208,16 +213,16 @@ def _ska_gap_heatmap(occ_df: pd.DataFrame) -> go.Figure:
             [0.5, "#f5f5f0"],
             [1.0, COLORS["negative"]],
         ],
-        zmid=0,
-        text=np.round(pivot.values, 2),
-        texttemplate="%{text:.2f}",
-        hovertemplate="<b>%{y}</b><br>%{x}<br>Gap: %{z:.2f}<extra></extra>",
+        zmid=100,
+        text=np.round(pivot.values, 0),
+        texttemplate="%{text:.0f}%",
+        hovertemplate="<b>%{y}</b><br>%{x}<br>AI at %{z:.0f}% of occ need<extra></extra>",
     ))
     chart_h = max(600, len(pivot) * 24 + 250)
     style_figure(
         fig,
-        "SKA Gap by Type — Occupations of Interest",
-        subtitle=f"Blue = human advantage | Red = AI leads | {ANALYSIS_CONFIG_LABELS[PRIMARY_KEY]}",
+        "AI as % of Occ Need by SKA Type — Occupations of Interest",
+        subtitle=f"<100% = human advantage | >100% = AI leads | {ANALYSIS_CONFIG_LABELS[PRIMARY_KEY]}",
         x_title=None, y_title=None, height=chart_h, width=650, show_legend=False,
     )
     fig.update_layout(
@@ -347,7 +352,9 @@ def main() -> None:
     ska_gaps = ska_result.occ_gaps
 
     occ_df = occ_df.merge(
-        ska_gaps[["title_current", "skills_gap", "abilities_gap", "knowledge_gap", "overall_gap"]],
+        ska_gaps[["title_current",
+                  "skills_gap", "abilities_gap", "knowledge_gap", "overall_gap",
+                  "skills_pct", "abilities_pct", "knowledge_pct", "overall_pct"]],
         on="title_current", how="left",
     )
 
@@ -395,7 +402,9 @@ def main() -> None:
         ["title_current", "group", "major", "emp_nat", "wage_nat", "job_zone", "outlook"] +
         pct_cols + workers_cols + ["ceiling_delta_pct"] +
         ["risk_score", "risk_tier"] + flag_cols +
-        ["skills_gap", "abilities_gap", "knowledge_gap", "overall_gap", "hidden_at_risk"]
+        ["skills_gap", "abilities_gap", "knowledge_gap", "overall_gap",
+         "skills_pct", "abilities_pct", "knowledge_pct", "overall_pct",
+         "hidden_at_risk"]
     )
     full_out = occ_df[[c for c in out_cols if c in occ_df.columns]].copy()
     save_csv(full_out.sort_values(f"pct_{PRIMARY_KEY}", ascending=False),

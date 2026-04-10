@@ -1,20 +1,20 @@
 # Economic Footprint: Skills Landscape
 
-Of 120 O*NET skills, knowledge, and abilities elements, 23 show higher AI capability scores than economy-wide averages — meaning AI currently leads humans in those domains across the affected workforce. Ninety-seven elements show human advantage, concentrated almost entirely in physical, perceptual, and sensorimotor abilities. The technology landscape tells a complementary story: database management, ERP, and CRM software categories carry the highest AI-exposure-weighted footprint in the economy, meaning those tools sit at the intersection of high AI capability and high employment concentration.
+Of 121 O*NET skills, knowledge, and abilities elements, 23 show AI capability above 100% of the economy-wide average occupational need — meaning AI currently leads humans in those domains across the affected workforce. Ninety-eight elements show human advantage (AI below 100%), concentrated almost entirely in physical, perceptual, and sensorimotor abilities. The technology landscape tells a complementary story: database management, ERP, and CRM software categories carry the highest AI-exposure-weighted footprint in the economy, meaning those tools sit at the intersection of high AI capability and high employment concentration.
 
 ---
 
 ## The AI vs. Human Capability Map
 
-The question here isn't whether AI is better than any individual expert at any given skill — it's whether AI capability, on average across affected occupations, exceeds what the average worker in those jobs actually brings. That's a different and more economically meaningful question.
+The question here isn't whether AI is better than any individual expert at any given skill — it's whether AI capability, as a percentage of what the average worker in those jobs actually needs, exceeds 100%. That's a different and more economically meaningful question.
 
-Across 120 SKA elements, AI leads on 23. All of them are knowledge or skills domains — none of the physical or sensorimotor abilities show AI advantage. The top AI-leading elements:
+Across 121 SKA elements, AI leads on 23 (pct > 100%). All of them are knowledge or skills domains — none of the physical or sensorimotor abilities show AI advantage. The top AI-leading elements:
 
-- **Sales and Marketing** (gap: +4.6): AI systems score meaningfully higher than economy-average humans on sales and marketing knowledge. This is consistent with the broad finding that Sales occupations are among the most task-penetrated sectors — the knowledge base for selling is something AI can absorb and replicate.
-- **History and Archeology** (+4.4): Less economically central, but notable — this is a knowledge domain where AI excels at retrieval and synthesis.
-- **Philosophy and Theology** (+3.3): Same story — structured reasoning over accumulated text.
-- **Foreign Language** (+3.3): Multilingual capability is a genuine AI strength.
-- **Education and Training** (+2.5): AI leads on the knowledge *of* pedagogy, even if it can't replicate the relational craft of teaching.
+- **Sales and Marketing** (AI at 131% of typical occ need): AI systems score meaningfully higher than economy-average humans on sales and marketing knowledge. This is consistent with the broad finding that Sales occupations are among the most task-penetrated sectors — the knowledge base for selling is something AI can absorb and replicate.
+- **History and Archeology** (125%): Less economically central, but notable — this is a knowledge domain where AI excels at retrieval and synthesis.
+- **Philosophy and Theology** (121%): Same story — structured reasoning over accumulated text.
+- **Foreign Language** (118%): Multilingual capability is a genuine AI strength.
+- **Education and Training** (115%): AI leads on the knowledge *of* pedagogy, even if it can't replicate the relational craft of teaching.
 
 The pattern across the AI-leading domains is clear: knowledge that can be encoded, retrieved, and synthesized from text — especially domains with structured bodies of accumulated content. AI does well where the task is "know things and communicate them." It does less well where the task requires physical presence, real-time environmental perception, or fine motor control.
 
@@ -24,16 +24,16 @@ The pattern across the AI-leading domains is clear: knowledge that can be encode
 
 ## Where Humans Still Have a Strong Advantage
 
-The 97 human-leading elements cluster almost entirely in physical and perceptual abilities. The largest gaps:
+The 98 human-leading elements cluster almost entirely in physical and perceptual abilities. The largest deficits:
 
-- **Sound Localization** (human lead: -7.9): The ability to identify where a sound is coming from. AI has no physical presence.
-- **Reaction Time** (-7.8), **Peripheral Vision** (-7.7), **Response Orientation** (-7.6): These are all reflexive sensorimotor abilities — the gap is large because AI currently scores very low on all of them, not because humans score especially high.
-- **Building and Construction** knowledge (-7.1): A physical domain where AI's abstract knowledge doesn't translate to real-world competence.
-- **Operation and Control** (-6.6), **Repairing** (-5.9): Hands-on technical skill.
+- **Sound Localization** (AI at 9% of occ need): The ability to identify where a sound is coming from. AI has no physical presence.
+- **Peripheral Vision** (24%), **Night Vision** (21%), **Speed of Limb Movement** (25%): These are all reflexive sensorimotor abilities — AI scores far below 100% because it currently has near-zero capability on all of them, not because humans score especially high.
+- **Building and Construction** knowledge (58%): A physical domain where AI's abstract knowledge doesn't translate to real-world competence.
+- **Operation and Control** (41%), **Repairing** (50%): Hands-on technical skill.
 
-The human advantage domains divide into two rough categories. First, physical/perceptual abilities that AI simply doesn't have in any meaningful embodied sense — reaction time, peripheral vision, multilimb coordination. These are hard limits, not just gaps. Second, applied physical knowledge — construction, mechanics, repairing — where human embodied expertise still clearly outstrips AI's textbook-level knowledge.
+The human advantage domains divide into two rough categories. First, physical/perceptual abilities that AI simply doesn't have in any meaningful embodied sense — reaction time, peripheral vision, multilimb coordination. These are hard limits, not just capability gaps. Second, applied physical knowledge — construction, mechanics, repairing — where human embodied expertise still clearly outstrips AI's textbook-level knowledge.
 
-What's not in the top human-advantage list: most cognitive skills. Written comprehension, reading comprehension, mathematical reasoning — AI is essentially at parity or slight AI advantage on those. The cognitive frontier has moved further than most people realize.
+What's not in the top human-advantage list: most cognitive skills. Written comprehension (101%), reading comprehension (100%), mathematical reasoning (104%) — AI is essentially at parity or slight AI advantage on those. The cognitive frontier has moved further than most people realize.
 
 ![Elements Where Humans Lead](../questions/economic_footprint/skills_landscape/figures/ska_leads_human.png)
 
@@ -41,27 +41,38 @@ What's not in the top human-advantage list: most cognitive skills. Written compr
 
 ## The Technology Footprint
 
-The 137 O*NET technology commodity categories give a different angle on the skills story — not what AI can do, but what technology infrastructure the affected workforce is built around.
+The 138 O*NET technology commodity categories give a different angle on the skills story — not what AI can do, but what technology infrastructure the affected workforce is built around. Three separate views break this apart: mean % tasks affected per commodity, exposed workers, and exposed wages (with an n_commodities divisor for wages to avoid double-counting workers who use multiple tools).
 
-Weighted by `pct_tasks_affected × employment`, the top technology categories by AI-exposure footprint:
+**By mean % tasks affected**, the top commodities are niche but telling:
 
-1. **Database user interface and query software** — by far the largest footprint. This is the bread-and-butter of information work across virtually every sector: querying databases, pulling reports, interacting with structured data. The fact that this tops the list is significant — it's exactly the kind of tool use where AI copilots and agents are being deployed right now.
+1. **Foreign language software** (86.0% mean tasks affected) — a narrow category, but the occupations using it are heavily AI-penetrated.
+2. **Contact center software** (84.1%) — call-center automation is among the most mature AI deployment stories.
+3. **Fax software** (84.1%), **Dictionary software** (77.6%) — legacy tool categories attached to heavily-exposed clerical roles.
+4. **Network operating system enhancement software** (73.2%) — IT administration tools in high-exposure technical roles.
 
-2. **ERP software** — the operational backbone of mid-to-large enterprises. Finance, HR, supply chain — all running through platforms where AI integration is accelerating.
+These are small-n categories. The signal here is about the *intensity* of AI exposure for the occupations that use these tools, not the breadth of their economic footprint.
 
-3. **CRM software** — sales and customer relationship management. Consistent with Sales being one of the most task-penetrated major sectors.
+**By exposed workers**, the ranking shifts to the enterprise software backbone:
 
-4. **Point of Sale software** (14.7T weighted) — retail, food service, hospitality. Surprisingly high given the physical-service nature of those sectors, but the transaction and information management layer is large.
+1. **Database user interface and query software** — 316M exposed workers, by far the largest footprint. This is the bread-and-butter of information work across virtually every sector: querying databases, pulling reports, interacting with structured data. It's exactly the kind of tool use where AI copilots and agents are being deployed right now.
+2. **ERP software** (240M) — the operational backbone of mid-to-large enterprises. Finance, HR, supply chain — all running through platforms where AI integration is accelerating.
+3. **CRM software** (152M) — sales and customer relationship management. Consistent with Sales being one of the most task-penetrated major sectors.
+4. **Point of sale POS software** (147M) — retail, food service, hospitality. Surprisingly high given the physical-service nature of those sectors, but the transaction and information management layer is large.
+5. **Development environment software** (141M) — developers and technical workers. AI coding tools are already transforming this space.
 
-5. **Development environment software** (14.1T) — developers and technical workers. AI coding tools are already transforming this space.
+**By exposed wages**, the ranking diverges slightly because wage levels vary across occupations:
 
-The top 10 categories are all enterprise software categories — ERP, CRM, accounting, medical records, word processing, web development. This is the technology layer of the knowledge economy. The occupations that use this software heavily are the same ones showing the highest task penetration rates.
+1. **Database user interface and query software** ($329B) — still dominant.
+2. **Medical software** ($260B) — jumps to #2 because healthcare practitioner wages are high even though worker counts are lower.
+3. **ERP software** ($201B), **Word processing software** ($187B), **Electronic mail software** ($164B) — the broad enterprise layer.
 
-Further down the list: geographic information systems, industrial control software, CAD/CAM — these appear but with a fraction of the exposure weight, because the occupations using them tend to have lower overall task penetration.
+The workers ranking and the wages ranking tell different stories about where displacement costs hit: the workers view identifies the largest populations at risk, while the wages view identifies where the economic value at stake is greatest.
 
-![Top Technology Categories by AI-Exposure Footprint](../questions/economic_footprint/skills_landscape/figures/tech_top_economy.png)
+![Top Technology Categories: Mean % Tasks Affected](../questions/economic_footprint/skills_landscape/figures/tech_top_economy.png)
 
-![SKA Gaps by Major Sector](../questions/economic_footprint/skills_landscape/figures/ska_major_heatmap.png)
+![SKA Landscape by Major Sector](../questions/economic_footprint/skills_landscape/figures/ska_major_heatmap.png)
+
+The tech major heatmap is ordered by exposed workers ranking, so the sectors with the largest AI-exposed workforce appear first. An additional baseline chart shows the 95th-percentile occupation score per element, providing context for how far the best-case AI capability extends beyond the economy-wide mean.
 
 ---
 
@@ -73,4 +84,4 @@ This isn't a coincidence — it reflects the structure of AI's current capabilit
 
 The implication: the workers most at risk of displacement aren't workers who lack skills — many of them have substantial knowledge and communication skills that AI can now match. The workers with the most durable competitive advantage are those whose value comes from embodied, physical, or relational work that can't be replicated from text.
 
-That said, "relational work" — coaching, motivating subordinates, interpersonal relationships — doesn't show a large AI gap in either direction. The AI capability scores for social skills sit near the economy average. That's worth watching. The last moat may be narrower than people assume.
+That said, "relational work" — coaching, motivating subordinates, interpersonal relationships — doesn't show AI far from 100% in either direction. The AI capability scores for social skills sit near the economy average. That's worth watching. The last moat may be narrower than people assume.

@@ -54,15 +54,15 @@ At the work activity level, **Maintain operational records** (IWA) carries $144B
 
 *Full detail: [automation_opportunity_report.md](automation_opportunity/automation_opportunity_report.md)*
 
-248 occupations fall in Q1: AI capability (by the SKA measure) already exceeds occupational need AND the adoption gap is large. This is the set of occupations where the economic opportunity is most legible — tools exist, humans are capable, the gap is deployment.
+96 occupations fall in Q1: AI capability (by the SKA overall_pct measure) already exceeds the occupation's skill/knowledge requirement (>100%) AND the adoption gap is large. The quadrant now splits on the natural 100% threshold — not the median — making Q1 "AI literally covers more than the job needs" rather than just "above average." This is the set of occupations where the economic opportunity is most legible — tools exist, the capability exceeds the requirement, the gap is deployment.
 
-![2D Scatter: SKA Gap × Adoption Gap](automation_opportunity/figures/opportunity_scatter.png)
+![2D Scatter: SKA Pct × Adoption Gap](automation_opportunity/figures/opportunity_scatter.png)
 
-102 of those 248 also carry a high risk tier from job_risk_scoring. These are the transformation signal occupations — where capability, deployment gap, and structural vulnerability converge. The list is dominated by Office/Admin and Sales: Cashiers (+3.56 SKA, 21pp gap, high risk), Retail Salespersons, Bookkeeping Clerks, Office Clerks, Billing Clerks, Executive Secretaries.
+33 of those 96 also carry a high risk tier from the updated job_risk_scoring (eight-flag model, max 10, four tiers). These are the transformation signal occupations — where capability exceeds requirement, deployment gap is large, and structural vulnerability converges.
 
 ![Transformation Signal: Q1 + High Risk](automation_opportunity/figures/transformation_signal.png)
 
-The remaining 146 Q1 occupations (without high risk tier) are more purely opportunity-framed. Software QA Analysts, Project Management Specialists, Medical Secretaries (moderate risk), and various management specialists appear here. For these occupations, the story is augmentation and productivity, not displacement pressure.
+The remaining 63 Q1 occupations (without high risk tier) are more purely opportunity-framed. For these occupations, the story is augmentation and productivity, not displacement pressure.
 
 The quadrant distribution by sector shows that Sales and Office/Admin have the highest Q1 concentration (roughly 40% of employment in those sectors falls in Q1). Healthcare Practitioners and Construction skew heavily toward Q3 and Q4 — limited AI capability and human advantage intact.
 
@@ -102,7 +102,7 @@ The gap analysis translates differently depending on what you're trying to decid
 
 **High-wage and high-gap occupations are not the same set.** The wage hotspot analysis finds 59 occupations in the top quartile on both dimensions, but the list looks very different from the worker-count leaders. Software developers and health services managers appear in hotspots but not in raw worker-gap rankings; stockers and cashiers appear in worker-gap leaders but not in hotspots. Policy and workforce interventions that conflate these two populations will miss half the picture in each direction.
 
-**The transformation signal (Q1 + high risk) is concentrated in low-to-mid job zones.** Nearly all of the 102 transformation-signal occupations are in job zones 1–3. This means they're accessible jobs — relatively lower barriers to entry, often less formal training required — that are simultaneously most exposed to AI capability and least insulated from its effects. The workers in these roles are least positioned to absorb displacement if it happens.
+**The transformation signal (Q1 + high risk) is concentrated in low-to-mid job zones.** The 33 transformation-signal occupations (under the updated 8-flag model with the natural 100% SKA threshold) are predominantly in job zones 1–3. This means they're accessible jobs — relatively lower barriers to entry, often less formal training required — that are simultaneously most exposed to AI capability and least insulated from its effects. The tighter Q1 definition (pct > 100%, not just above median) and the more conservative high-risk tier (115 vs. 195 occupations) make this a more selective set.
 
 **The gap is not closing at ceiling pace, but confirmed growth is real.** 21.8M additional workers entered confirmed AI usage in 16 months (Sep 2024 → Feb 2026), a nearly 55% increase. The gap persists because the ceiling also grew. The technology and the adoption are both moving — adoption just isn't keeping up.
 
@@ -116,7 +116,7 @@ The gap analysis translates differently depending on what you're trying to decid
 
 3. **Documentation and record-keeping alone accounts for 4.4M workers in the gap.** "Documenting/Recording Information" (GWA) has the largest worker gap of any activity type. The tools exist; deployment hasn't reached the majority of jobs where this task exists.
 
-4. **248 occupations are in Q1: AI leads on skills AND adoption is lagging.** These are the highest-value automation opportunities. 102 of them also carry high structural risk signals — making them transformation candidates, not just augmentation candidates.
+4. **96 occupations are in Q1: AI exceeds the job's skill requirement (>100% overall_pct) AND adoption is lagging.** The tighter Q1 definition (natural 100% threshold vs. old median split) identifies the most clear-cut automation opportunities. 33 of them also carry high structural risk signals — making them transformation candidates, not just augmentation candidates.
 
 5. **The wage hotspot set (59 occupations) is distinct from the worker-count leaders.** High-wage + big-gap occupations (software QA, health services managers, supply chain managers) need different interventions than high-worker + big-gap occupations (cashiers, stockers, sales workers).
 

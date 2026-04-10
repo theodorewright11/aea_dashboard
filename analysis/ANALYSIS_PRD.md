@@ -56,18 +56,19 @@ The agentic configs show how much architectural investment would be needed to de
 | `audience_framing/` | How do findings translate across audiences? (skill profile overlaps, dominant domains in high-risk/low-outlook jobs) |
 | `occs_of_interest/` | How do findings land for the named occupation list? |
 
-**Risk scoring factors** (job_risk_scoring) — 7 binary flags with weighted scoring + exposure gate:
-- **Flags 1–4 (exposure signal, weight = 2 each):**
-  1. `pct_tasks_affected > median`
-  2. `SKA gap > median` (AI capability exceeds typical job need)
+**Risk scoring factors** (job_risk_scoring) — 8 binary flags with weighted scoring + exposure gate:
+- **Flags 1–2 (strongest exposure signals, weight = 2 each):**
+  1. `pct_tasks_affected > 50%` (absolute threshold)
+  2. `SKA percentage > median` (AI capability as % of job need)
+- **Flags 3–8 (supporting signals, weight = 1 each):**
   3. `pct trend: positive AND above-median growth` (median of ALL growth, not just positive)
   4. `SKA gap trend: positive AND above-median growth`
-- **Flags 5–7 (structural vulnerability, weight = 1 each):**
   5. `job_zone ∈ {1, 2, 3}`
   6. `outlook ∈ {2, 3}` (below-average; note: 1 = good outlook but low wages)
   7. `n_software > median`
-- **Exposure gate:** occupations with `pct_tasks_affected < 33%` cannot be classified as high risk regardless of score.
-- **Tiers:** max score = 11. `8–11 = high risk`, `4–7 = moderate`, `0–3 = low`.
+  8. `auto_avg_with_vals > median`
+- **Exposure gate:** occupations with `pct_tasks_affected < 33%` cannot be classified as high risk regardless of score (downgrades to Mod-High).
+- **Tiers:** max score = 10. `8–10 = high`, `5–7 = mod-high`, `3–4 = mod-low`, `0–2 = low`.
 
 **SKA formula** — see `ANALYSIS_ARCHITECTURE.md` for the locked-in spec.
 
