@@ -261,6 +261,32 @@ Primary lens: `all_confirmed` series (AEI Both + Micro, Mar 2025 – Feb 2026, 4
 - Software Developers and Data Scientists: zero confirmed growth across all 4 dates; Customer Service Representatives +35.0pp, Technical Writers +30.6pp, Network Admins +26.8pp
 - 60 IWAs in active expansion zone (10–33%, growing); financial/legal/healthcare documentation IWAs approaching 33% threshold
 
+### Active: Workforce Meeting (`questions/workforce_meeting/`)
+
+**Overarching question:** What are the key charts a workforce meeting audience (business and education leaders) needs to see to understand AI's impact on Utah's workforce and make decisions about reskilling, durable skills, and AI adoption?
+
+Not a research bucket — a presentation deliverable. 14 charts designed for slide decks, ordered by "lose 10% of audience per slide" logic. All charts use Utah employment, All Confirmed config, freq method, auto-aug ON.
+
+| Chart | What It Shows |
+|-------|--------------|
+| `01_utah_headline` | Utah workers with AI-exposed tasks (stacked proportion bar) |
+| `02_sector_scope` | Top 7 sectors by workers affected (+ %tasks, wages) |
+| `03_gwa_scope` | Top 7 GWAs by % tasks affected (+ workers, wages) |
+| `04_sector_trend` | Top 7 sector growers: Δworkers Mar 2025 → Feb 2026 |
+| `05_gwa_trend` | Top 7 GWA growers: Δ% tasks Mar 2025 → Feb 2026 |
+| `06_sector_adoption_gap` | Top 7 sectors: confirmed→ceiling worker gap |
+| `07_gwa_adoption_gap` | Top 7 GWAs: confirmed→ceiling %tasks gap |
+| `08_ai_modes_gap` | Top 7 sectors: conversational→agentic worker drop |
+| `09_autoaug_by_sector` | Top 7 sectors by avg auto-aug score |
+| `10_pivot_cost` | Reskilling cost by job zone |
+| `11–14_ska_*` | Human vs AI advantage in skills and knowledge (4 charts) |
+
+**Key numbers (Utah, All Confirmed):**
+- 921K workers affected (54% of Utah workforce), $62.6B wages in scope
+- Top sectors by workers: Office/Admin (146K), Business/Finance (109K), Management (87K)
+- Top GWAs by % tasks: Updating Knowledge (72%), Interpreting Information (70%), External Communication (70%)
+- Zone 3 workers face the most expensive reskilling path (359 L1 distance)
+
 ### Planned (future sessions)
 
 | Bucket | Core question |
