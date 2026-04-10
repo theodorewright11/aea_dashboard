@@ -75,9 +75,15 @@ The by-major-sector breakdown of auto-augmentability scores generally tracks the
 
 ### Auto-Aug Across Dataset Configs
 
-Auto-augmentability scores vary by which dataset config is used, because each config's dataset includes different tasks. The chart below shows the average auto_aug_mean per sector across all five configs (tasks with a score only; 99%+ of tasks have values so an "all tasks" chart would look essentially identical).
+Two ways to look at auto-augmentability across configs:
 
-![Avg Auto-Aug Score by Sector × Config](figures/autoaug_by_config_with_vals.png)
+**Tasks with AI score**: average auto_aug_mean across unique tasks that appear in the AI dataset and have a score. This shows how automatable the tasks AI has actually assessed are.
+
+**Over all eco tasks**: average auto_aug_mean across all unique tasks in the eco baseline (eco_2025 for most configs; eco_2015 for Agentic Confirmed, which uses the AEI baseline). Tasks not in the AI dataset count as 0. This shows AI's coverage footprint — a sector with many tasks untouched by AI will score lower here even if its assessed tasks are highly automatable.
+
+![Avg Auto-Aug by Sector × Config — Tasks With AI Score](figures/autoaug_by_config_with_vals.png)
+
+![Avg Auto-Aug by Sector × Config — Over All Eco Tasks](figures/autoaug_by_config_all.png)
 
 ---
 
