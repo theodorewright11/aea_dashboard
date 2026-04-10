@@ -86,6 +86,10 @@ The workers ranking and the wages ranking tell different stories about where dis
 
 ![Top Technology Categories: Exposed Wages](figures/tech_wages_affected.png)
 
+The heatmap below shows how each technology category's presence distributes across major sectors — what share of occupations in each sector lists that commodity. Columns are ordered by the exposed-workers ranking above, so the most AI-affected commodities sit on the left.
+
+![Technology Category Penetration by Sector](figures/tech_major_heatmap.png)
+
 ---
 
 ## What the Combined Picture Says

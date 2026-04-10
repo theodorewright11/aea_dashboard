@@ -20,9 +20,13 @@ The total pivot cost -- the L1 rectified distance (sum of positive skill and kno
 | 4 | 262.91 | 47.1% | 39 | 91.2% |
 | 5 | 234.61 | 47.9% | 32 | 86.0% |
 
-**Scale reference:** The pivot cost numbers are in importance × level units — the same scale as O*NET occupational skill profiles. Across 893 occupations and 68 skill+knowledge elements (35 skills + 33 knowledge), the empirical distribution of total skill+knowledge mass: mean 292, median 296, std 146, p25 171, p75 411, max 692 (Chief Executives). The theoretical ceiling (all elements at max importance and level) is 2,380. Zone 3's 359-unit pivot cost is larger than the mean and median occupation's entire profile — it represents 123% of the median total mass. Zone 1's 59 units represents about 20% of the median. Zone 2's 181 units is 61%. These aren't small adjustments — they're structural knowledge transformations.
+The chart below puts the raw numbers in context by overlaying each zone's pivot cost against the empirical distribution of total skill+knowledge mass across all ~893 occupations. Any bar above the median reference line represents a reskilling load larger than the typical occupation's entire skill+knowledge profile.
 
-The distribution chart below shows how element-level costs spread within each zone, revealing whether the burden is concentrated in a few outlier elements or distributed broadly:
+![Zone Pivot Cost vs. Typical Occupation Skill Mass](figures/pivot_cost_calibration.png)
+
+Zone 3's 359 units sits between the median (296) and the 75th-percentile occupation (411) — meaning the reskilling load for Zone 3 workers is bigger than what a typical occupation's entire profile contains, and approaches what a high-complexity occupation accumulates over a career. Zone 2's 181 units is between p25 (171) and the median. Zone 1's 59 units is well below the p25.
+
+The distribution chart below shows how the cost spreads across individual skill/knowledge elements within each zone — whether the burden is concentrated in a few heavy outliers or spread across many moderate gaps:
 
 ![Reskilling Cost Distribution by Job Zone](figures/element_cost_distribution.png)
 
