@@ -162,12 +162,11 @@ ANALYSIS_CONFIG_LABELS: dict[str, str] = {
 # Full time series for each config (for trend analysis)
 ANALYSIS_CONFIG_SERIES: dict[str, list[str]] = {
     "all_ceiling": [
-        "All 2024-09-30", "All 2024-12-23", "All 2025-03-06", "All 2025-04-24",
+        "All 2025-03-06", "All 2025-04-24",
         "All 2025-05-24", "All 2025-07-23", "All 2025-08-11", "All 2025-11-13",
         "All 2026-02-12", "All 2026-02-18",
     ],
     "human_conversation": [
-        "AEI Conv + Micro 2024-09-30", "AEI Conv + Micro 2024-12-23",
         "AEI Conv + Micro 2025-03-06", "AEI Conv + Micro 2025-08-11",
         "AEI Conv + Micro 2025-11-13", "AEI Conv + Micro 2026-02-12",
     ],
@@ -175,7 +174,6 @@ ANALYSIS_CONFIG_SERIES: dict[str, list[str]] = {
         "AEI API 2025-08-11", "AEI API 2025-11-13", "AEI API 2026-02-12",
     ],
     "all_confirmed": [
-        "AEI Both + Micro 2024-09-30", "AEI Both + Micro 2024-12-23",
         "AEI Both + Micro 2025-03-06", "AEI Both + Micro 2025-08-11",
         "AEI Both + Micro 2025-11-13", "AEI Both + Micro 2026-02-12",
     ],

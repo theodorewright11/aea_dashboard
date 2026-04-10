@@ -1,28 +1,30 @@
 # Occupations of Interest Timeline
 
-*Config: all_confirmed series (AEI Both + Micro, 6 dates Sep 2024 – Feb 2026) | all_ceiling series (All Sources, 10 dates) for comparison | Method: freq | Auto-aug ON | National*
+*Config: all_confirmed series (AEI Both + Micro, 4 dates Mar 2025 – Feb 2026) | all_ceiling series (All Sources, 8 dates Mar 2025 – Feb 2026) for comparison | Method: freq | Auto-aug ON | National*
 
 ---
 
-The 29 named occupations tell a heterogeneous story. Human Resources Specialists grew 53.5 percentage points — the largest gain of any named occupation. Market Research Analysts grew 49.7pp. These are not the occupations anyone would have identified as the primary AI disruption targets in 2024. Meanwhile, Software Developers (45.2%), Data Scientists (46.0%), and Accountants and Auditors (28.1%) are completely flat — literally the same confirmed value across all 6 dates. The biggest jumps were concentrated in March 2025 and August 2025, with most occupations seeing their largest single-step gain at one of those two dates. Registered Nurses, at 9.3% in September 2024, ended at 33.4% — just crossing the 33% risk gate by the final date.
+The 29 named occupations tell a heterogeneous story. Customer Service Representatives grew 35.0 percentage points from March 2025 to February 2026 — the largest gain of any named occupation in the window. Technical Writers grew 30.6pp. The biggest single-step jumps were concentrated in August 2025, with most occupations seeing their largest gain at that date. Software Developers (45.2%), Data Scientists (46.0%), and Accountants and Auditors (28.1%) are completely flat — literally the same confirmed value across all 4 dates. Registered Nurses, at 10.0% in March 2025, ended at 33.4% — just crossing the 33% risk gate by the final date.
 
 ---
 
-## The Top Gainers Are Surprising
+## The Top Gainers
 
-The five highest-gaining occupations by total confirmed pct gain (September 2024 to February 2026):
+The five highest-gaining occupations by total confirmed pct gain (March 2025 to February 2026):
 
-| Occupation | Group | Start | End | Gain | Biggest Jump |
-|------------|-------|-------|-----|------|-------------|
-| Human Resources Specialists | AI-Controversial | 22.4% | 75.8% | +53.5pp | Mar 2025 (+34.1pp) |
-| Market Research Analysts | AI-Controversial | 39.8% | 89.5% | +49.7pp | Mar 2025 (+27.1pp) |
-| Technical Writers | AI-Controversial | 45.6% | 85.8% | +40.1pp | Aug 2025 (+17.7pp) |
-| Customer Service Reps | High-Profile | 45.1% | 84.1% | +39.0pp | Aug 2025 (+31.1pp) |
-| Web Developers | AI-Controversial | 47.3% | 84.5% | +37.2pp | Aug 2025 (+15.7pp) |
+| Occupation | Group | Mar 2025 | Feb 2026 | Gain | Biggest Jump |
+|------------|-------|----------|----------|------|-------------|
+| Customer Service Representatives | High-Profile | 49.1% | 84.1% | +35.0pp | Aug 2025 (+31.1pp) |
+| Technical Writers | AI-Controversial | 55.2% | 85.8% | +30.6pp | Aug 2025 (+17.7pp) |
+| Network and Computer Systems Administrators | Utah-Relevant | 46.8% | 73.7% | +26.8pp | Aug 2025 (+21.7pp) |
+| Sales Representatives (Wholesale/Mfg) | Utah-Relevant | 56.5% | 81.8% | +25.3pp | Aug 2025 (+21.2pp) |
+| Web Developers | AI-Controversial | 60.2% | 84.5% | +24.3pp | Aug 2025 (+15.7pp) |
 
-Human Resources Specialists at 22.4% in September 2024 is low-ish and unremarkable. By March 2025, a single dataset update added 34.1pp — the largest single step for any named occupation. HR work involves writing job descriptions, preparing performance reviews, drafting policies, analyzing survey data, and handling communications — exactly the task types where AI has been making rapid confirmed inroads. But the speed of the jump is striking. Something happened in the March 2025 dataset that dramatically expanded confirmed AI coverage of HR tasks specifically.
+Customer Service Representatives' 35pp gain over the window is anchored almost entirely in the August 2025 update (+31.1pp at that single step). CSR work — conversational AI, email handling, knowledge base lookup, escalation routing — is the core of what AI systems have demonstrably taken on.
 
-Market Research Analysts went from 39.8% to 89.5%. At 89.5%, this is one of the most AI-exposed occupations of interest — nearly 9 in 10 of their weighted task profile is confirmed AI-exposed. The Mar 2025 jump (+27.1pp) was followed by continued steady growth through the end of the series.
+Technical Writers went from 55.2% to 85.8%. Like CSR, the August 2025 update was the inflection point. Web Developers and Network Admins show a similar pattern: large single-step jump at August 2025, with smaller gains before and after.
+
+Note: Human Resources Specialists (+53.5pp) and Market Research Analysts (+49.7pp) showed larger total historical gains, but their biggest jump occurred before March 2025 — before this window opens. Their March 2025 starting values (56.5% and 66.9% respectively) already reflect those gains.
 
 ![All Occupations of Interest — Confirmed](../questions/time_trends/occs_timeline/figures/all_occs_confirmed.png)
 
@@ -30,34 +32,30 @@ Market Research Analysts went from 39.8% to 89.5%. At 89.5%, this is one of the 
 
 ## The Flat Ones Are Equally Surprising
 
-Four occupations showed essentially zero growth across all 6 dates:
+Four occupations showed essentially zero growth across all 4 dates:
 
-| Occupation | Group | Sep 2024 | Feb 2026 | Gain |
+| Occupation | Group | Mar 2025 | Feb 2026 | Gain |
 |------------|-------|----------|----------|------|
-| Software Developers | High-Profile | 45.16% | 45.16% | 0.0pp |
-| Data Scientists | AI-Controversial | 46.04% | 46.04% | 0.0pp |
-| Accountants and Auditors | High-Profile | 28.09% | 28.09% | 0.0pp |
-| Janitors and Cleaners | High-Profile | 11.27% | 11.27% | 0.0pp |
+| Software Developers | High-Profile | 45.2% | 45.2% | 0.0pp |
+| Data Scientists | AI-Controversial | 46.0% | 46.0% | 0.0pp |
+| Accountants and Auditors | High-Profile | 28.1% | 28.1% | 0.0pp |
+| Janitors and Cleaners | High-Profile | 11.3% | 11.3% | 0.0pp |
 
-These aren't rounding artifacts — these occupations have the exact same confirmed AI exposure value across all six dataset snapshots spanning 16 months. No new tasks were confirmed, and no previously-confirmed tasks were removed.
+These aren't rounding artifacts — confirmed AI exposure is identical across all four dates. No new tasks were confirmed, no previously-confirmed tasks were removed.
 
-The Software Developers and Data Scientists cases are particularly notable. Both are "obviously" AI-adjacent: they work alongside AI tools daily, use them for code generation, data analysis, and documentation. They're at 45–46% confirmed exposure — substantial. But the confirmed picture hasn't moved. The tasks that AI was confirmed doing for software and data science work in September 2024 are the same tasks it was confirmed doing in February 2026. The frontier of confirmed capability for these occupations stabilized early.
-
-One interpretation: the confirmed dataset had essentially captured the full extent of AI's role in software and data science work by its first measurement date. Subsequent updates didn't find new confirmed capability for these occupation-task combinations.
-
-Accountants and Auditors (28.1%, flat) is different. The exposure is moderate and stable. Accounting involves a lot of structured data work that AI could plausibly expand into, but the confirmed footprint has been frozen. Janitors and Cleaners (11.3%, flat) makes sense — physical cleaning work.
+Software Developers and Data Scientists are the notable ones. Both are AI-adjacent, work with AI tools daily, and sit at 45–46% confirmed exposure — substantial. But the frontier of confirmed capability for these occupations had fully stabilized before March 2025 and hasn't moved. Accountants and Auditors (28.1%, flat) is similar: moderate, frozen exposure. Janitors and Cleaners (11.3%, flat) makes sense — physical cleaning work.
 
 ---
 
-## The Jump Pattern: March and August 2025
+## The Jump Pattern: August 2025
 
-Most named occupations that grew saw their largest single step at one of two dates:
+Within this window, virtually every named occupation that grew saw its largest single step at August 2025 (AEI Both + Micro 2025-08-11):
 
-- **March 2025** (AEI Both + Micro 2025-03-06): Human Resources Specialists (+34.1pp), Market Research Analysts (+27.1pp), Elementary School Teachers (+21.4pp), Sales Representatives (+21.2pp), Graphic Designers (+26.0pp), Network and Computer Systems Administrators (+21.7pp)
+Customer Service Representatives (+31.1pp), Network and Computer Systems Administrators (+21.7pp), Sales Representatives (+21.2pp), Registered Nurses (+22.1pp), Secretaries and Administrative Assistants (+17.8pp), Technical Writers (+17.7pp), Computer Systems Analysts (+17.1pp), Web Developers (+15.7pp).
 
-- **August 2025** (AEI Both + Micro 2025-08-11): Customer Service Representatives (+31.1pp), Technical Writers (+17.7pp), Web Developers (+15.7pp), Secretaries and Administrative Assistants (+17.8pp), Computer Systems Analysts (+17.1pp), Registered Nurses (+22.1pp)
+August 2025 is the dominant inflection point for this window. It's a step-function pattern — confirmed exposure advances in discrete jumps as dataset updates validate new capabilities across clusters of related occupations.
 
-These two dates appear to be the moments of largest confirmed capability expansion across the series. It's a step-function pattern, not smooth growth — confirmed exposure advances in discrete jumps as dataset updates validate new capabilities across clusters of related occupations.
+Note: March 2025 was also a major jump date, but those gains are already baked into the starting values of this window (HR Specialists, Market Research Analysts, and others had their largest jumps at March 2025).
 
 ![Occupations by Group](../questions/time_trends/occs_timeline/figures/occs_faceted_by_group.png)
 
@@ -65,11 +63,11 @@ These two dates appear to be the moments of largest confirmed capability expansi
 
 ## Registered Nurses: Just Crossing the Gate
 
-Registered Nurses (RNs) deserve specific attention. At 9.3% confirmed exposure in September 2024, nursing was deep in the Low tier. The August 2025 update added 22.1pp — the single largest jump for any named occupation relative to where it started. By February 2026, RNs are at 33.4% — just at the 33% risk gate.
+Registered Nurses (RNs) deserve specific attention. At 10.0% confirmed exposure in March 2025, nursing was in the Low tier. The August 2025 update added 22.1pp — the largest single jump for RNs and one of the largest across all named occupations. By February 2026, RNs are at 33.4% — just at the 33% risk gate.
 
-That 22pp jump in a single dataset update is worth interrogating. It likely reflects the expansion of confirmed AI coverage in healthcare documentation and care planning (consistent with the WA tipping points analysis, which showed "Prepare health or medical documents" and "Develop patient or client care or treatment plans" both crossing thresholds in 2025). Nursing involves a lot of documentation work, and the tasks in that domain may have received broader confirmed coverage in the August 2025 dataset update.
+That 22pp jump in a single dataset update likely reflects the expansion of confirmed AI coverage in healthcare documentation and care planning (consistent with the WA tipping points analysis). Nursing involves a lot of documentation work, and the tasks in that domain received broader confirmed coverage in the August 2025 dataset update.
 
-At 33.4%, RNs are now risk-gate-eligible — they weren't before. Whether they score as high-risk depends on the other factors (SKA gap, outlook, job zone), but they've entered the zone where the analysis applies.
+At 33.4%, RNs are now risk-gate-eligible. Whether they score as high-risk depends on the other factors (SKA gap, outlook, job zone), but they've entered the zone where the analysis applies.
 
 ---
 
@@ -77,17 +75,17 @@ At 33.4%, RNs are now risk-gate-eligible — they weren't before. Whether they s
 
 The 12 high-profile/high-employment occupations vary from explosive growth to complete flatness:
 
-| Occupation | Final Level | Change |
-|------------|-------------|--------|
-| Customer Service Representatives | 84.1% | +39.0pp |
-| Secretaries and Administrative Assistants | 75.1% | +30.5pp |
-| Elementary School Teachers | 63.2% | +37.1pp |
-| Registered Nurses | 33.4% | +24.1pp |
-| Retail Salespersons | 57.4% | +17.4pp |
-| Cashiers | 46.9% | +9.8pp |
-| Heavy Truck Drivers | 21.5% | +5.3pp |
+| Occupation | Final Level | Change (Mar 2025–Feb 2026) |
+|------------|-------------|---------------------------|
+| Customer Service Representatives | 84.1% | +35.0pp |
+| Secretaries and Administrative Assistants | 75.1% | +20.2pp |
+| Elementary School Teachers | 63.2% | +15.7pp |
+| Registered Nurses | 33.4% | +23.3pp |
+| Retail Salespersons | 57.4% | +16.8pp |
+| Cashiers | 46.9% | +8.8pp |
+| Heavy Truck Drivers | 21.5% | +4.8pp |
 | Waiters and Waitresses | 39.4% | +1.5pp |
-| General and Operations Managers | 27.9% | +9.9pp |
+| General and Operations Managers | 27.9% | +4.2pp |
 | Accountants and Auditors | 28.1% | 0.0pp |
 | Software Developers | 45.2% | 0.0pp |
 | Janitors and Cleaners | 11.3% | 0.0pp |
@@ -110,7 +108,7 @@ For the six highest-gaining confirmed occupations, the ceiling sits considerably
 
 ## Config
 
-Confirmed: `AEI Both + Micro` series (6 dates 2024-09-30 → 2026-02-12) | Ceiling: `All` series (10 dates 2024-09-30 → 2026-02-18) | 29 OCCS_OF_INTEREST occupations
+Confirmed: `AEI Both + Micro` series (4 dates 2025-03-06 → 2026-02-12) | Ceiling: `All` series (8 dates 2025-03-06 → 2026-02-18) | 29 OCCS_OF_INTEREST occupations
 
 ## Files
 

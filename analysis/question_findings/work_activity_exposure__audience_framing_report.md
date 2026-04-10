@@ -91,7 +91,7 @@ The plain-language version of what this data says.
 
 **Is AI a fad?**
 
-No. 284 out of 332 work activity categories got more AI-exposed between September 2024 and February 2026. That's 86% of the activity spectrum moving in the same direction. 72 activity types went from essentially zero AI impact to meaningfully impacted in 15 months.
+No. 275 out of 332 work activity categories got more AI-exposed between March 2025 and February 2026. That's 83% of the activity spectrum moving in the same direction. 27 activity types crossed the 10% threshold for the first time during that 11-month window.
 
 **What should I think about my own job?**
 
@@ -121,7 +121,7 @@ The data points toward: physical competency and situational judgment, caregiving
 
 - **Primary**: AEI Both + Micro 2026-02-12 | freq | auto-aug on | national
 - **Ceiling**: All 2026-02-18 | freq | auto-aug on | national
-- **Trend**: AEI Both + Micro series (2024-09-30 → 2026-02-12)
+- **Trend**: AEI Both + Micro series (2025-03-06 → 2026-02-12)
 - **eco_2015 comparison**: AEI Both 2026-02-12 (is_aei=True) vs AEI Both + Micro 2026-02-12 (is_aei=False)
 
 ## Files

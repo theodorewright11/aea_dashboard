@@ -1,48 +1,46 @@
 # Work Activity Tipping Points: What Crossed the Threshold
 
-*Config: all_confirmed series (AEI Both + Micro, 6 dates Sep 2024 – Feb 2026) | IWA level | eco_2025 baseline | Method: freq | Auto-aug ON | National*
+*Config: all_confirmed series (AEI Both + Micro, 4 dates Mar 2025 – Feb 2026) | IWA level | eco_2025 baseline | Method: freq | Auto-aug ON | National*
 
 ---
 
-Every single work activity currently in the high-exposure zone (>=66%) crossed that threshold during the measurement window — there were zero IWAs at >=66% in September 2024. By February 2026, 52 IWAs are there. Another 32 IWAs crossed the 33% threshold for the first time, and 72 are currently in the 10–33% active expansion zone, growing consistently. The fastest-growing IWA by total gain is "Evaluate scholarly work" (+76.7pp), which went from a niche AI application to near-ubiquitous in 16 months. Three of the top-five fastest-growing IWAs are education-adjacent. The next wave — 10 IWAs currently between 25-33% and growing — includes financial planning, legal document work, and patient data management.
+The series starts in March 2025 with just 3 IWAs already above the 66% threshold. By February 2026, 52 are there — 49 new high-exposure IWAs in 11 months. Another 24 IWAs crossed the 33% threshold for the first time, and 60 are currently in the 10–33% active expansion zone, growing consistently. The fastest-growing IWA by total gain within the window is "Evaluate scholarly work" (+26.6pp), extending an already high base. Three of the top-five fastest-growing IWAs are education-adjacent. The next wave — IWAs currently between 25-33% and growing — includes financial planning, legal document work, and patient data management.
 
 ---
 
-## The High Zone Was Empty in September 2024
+## Starting Conditions in March 2025
 
-The 66% threshold is the tipping point where a majority of an IWA's associated task weight is confirmed AI-exposed. In September 2024, no IWA was above it. By February 2026, 52 are.
+The 66% threshold is the tipping point where a majority of an IWA's associated task weight is confirmed AI-exposed. In March 2025, just 3 IWAs were above it. By February 2026, 52 are — 49 IWAs crossed the threshold during the 11-month window.
 
-This is a stronger version of the same pattern seen in the tier churn analysis at the occupation level: the high-exposure zone as a category didn't exist in the first dataset. Everything that's now "high exposure" at the IWA level made that transition during observation.
-
-| Zone | Count (Sep 2024) | Count (Feb 2026) | Change |
+| Zone | Count (Mar 2025) | Count (Feb 2026) | Change |
 |------|-----------------|-----------------|--------|
-| High (>=66%) | 0 | 52 | +52 |
-| Moderate (33–66%) | 84 | 116 | +32 |
-| Emerging (10–33%) | 127 | 86 | -41 |
-| Low (<10%) | 121 | 78 | -43 |
+| High (>=66%) | 3 | 52 | +49 |
+| Moderate (33–66%) | 141 | 116 | -25 |
+| Emerging (10–33%) | 83 | 86 | +3 |
+| Low (<10%) | 105 | 78 | -27 |
 
-The Emerging zone shrank (127 → 86) because its members graduated to Moderate or High. The Low zone also shrank (121 → 78). Both directions of flow are visible: Low → Emerging, Emerging → Moderate, Moderate → High. The high zone wasn't seeded from outside — it was created by activity moving through the pipeline.
+The Moderate zone shrank (141 → 116) because many of its members graduated to High. The Low zone shrank (105 → 78) as activities moved into the Emerging band. The dominant flow during this window was Moderate → High: the activities that had already crossed 33% continued accelerating.
 
 ---
 
 ## The Fastest Growers
 
-The top IWAs by total gain over the 16-month window reflect a concentrated story in education and professional information work:
+The top IWAs by total gain over the 11-month window reflect a concentrated story in education and professional information work:
 
 | IWA | Gain | Final Level |
 |-----|------|-------------|
-| Evaluate scholarly work | +76.7pp | 88.0% |
-| Assess student capabilities, needs, or performance | +53.6pp | 67.5% |
-| Implement security measures for computer or information systems | +49.7pp | 72.8% |
-| Set up classrooms, facilities, educational materials, or equipment | +49.7pp | 49.7% |
-| Monitor financial data or activities | +48.6pp | 52.2% |
-| Develop business or marketing plans | +48.6pp | 58.6% |
-| Research laws, precedents, or other legal data | +43.5pp | 92.5% |
-| Prepare health or medical documents | +42.2pp | 47.6% |
-| Develop patient or client care or treatment plans | +41.8pp | 48.2% |
-| Alter audio or video recordings | +41.6pp | 50.9% |
+| Monitor financial data or activities | +41.3pp | 52.2% |
+| Research laws, precedents, or other legal data | +37.5pp | 92.5% |
+| Research historical or social issues | +32.0pp | 89.1% |
+| Implement security measures for computer or information systems | +29.7pp | 72.8% |
+| Schedule appointments | +29.5pp | 57.5% |
+| Alter audio or video recordings | +29.5pp | 50.9% |
+| Collect data about consumer needs or opinions | +28.7pp | 54.0% |
+| Evaluate scholarly work | +26.6pp | 88.0% |
+| Develop business or marketing plans | +26.5pp | 58.6% |
+| Analyze scientific or applied data using mathematical principles | +24.8pp | 79.4% |
 
-Three education IWAs in the top four. Legal research is at 92.5% — the highest final level of any fast grower. Healthcare documentation and care planning appear twice. The pattern is consistent with what other analyses have found: AI's expanding confirmed footprint is heaviest in knowledge work involving document creation, analysis, and evaluation.
+Legal research and historical research lead on absolute gain within the window. Financial monitoring (+41.3pp) shows the largest raw gain — starting at 10.9% in March 2025 and ending at 52.2%. Legal research was already at 55% and reached 92.5% — very high final level. Security implementation, scheduling, and audio/video work all gained 29+ pp during the window. The pattern is consistent: AI's expanding confirmed footprint is heaviest in legal, financial, and knowledge work.
 
 ![Top 20 Fastest-Growing IWAs](../questions/time_trends/wa_tipping_points/figures/top20_iwa_growth.png)
 
@@ -50,15 +48,15 @@ Three education IWAs in the top four. Legal research is at 92.5% — the highest
 
 ## When IWAs Crossed 33%
 
-The 33% threshold matters as the level at which AI exposure becomes meaningful rather than marginal for an IWA. 32 IWAs crossed it for the first time during the window.
+The 33% threshold matters as the level at which AI exposure becomes meaningful rather than marginal for an IWA. 24 IWAs crossed it for the first time during the window (March 2025 – February 2026).
 
-The timing clusters around two major transition dates:
+The timing clusters strongly around one major transition date:
 
-- **March 2025**: 18 IWAs crossed 33% for the first time. This is the largest single-date batch. It includes "Evaluate scholarly work" (now 88%), "Implement security measures" (73%), "Assess student capabilities" (67%), and several healthcare and legal IWAs.
+- **August 2025**: The dominant crossing date. "Develop business or marketing plans" (59%), "Schedule appointments" (58%), "Collect data about consumer needs" (54%), and "Alter audio or video recordings" (51%) all crossed here. Financial and healthcare IWAs — "Manage budgets" and "Order medical tests" — also crossed in August 2025.
 
-- **August 2025**: Another significant batch. "Develop business or marketing plans" (59%), "Schedule appointments" (58%), and "Alter audio or video recordings" (51%) crossed here.
+- **November 2025 and February 2026**: Smaller batches of crossings. Healthcare coordination and community health IWAs crossed in these later updates.
 
-March 2025 and August 2025 appear to be the two moments where AI capability made the biggest jumps in confirmed coverage at the IWA level. These dates correspond to specific AEI dataset updates (AEI Both + Micro 2025-03-06 and 2025-08-11).
+Note: IWAs that crossed 33% in March 2025 already appear in the dataset at their post-crossing value — those crossings occurred before the window opens.
 
 ![IWA 33% Crossing Dates](../questions/time_trends/wa_tipping_points/figures/iwa_33pct_crossing_dates.png)
 
@@ -66,7 +64,7 @@ March 2025 and August 2025 appear to be the two moments where AI capability made
 
 ## The Active Expansion Zone: What's Coming Next
 
-The 72 IWAs currently between 10% and 33%, with positive growth over the window, represent the next potential wave. These are activities where confirmed AI exposure has been building but hasn't yet crossed the meaningful-presence threshold.
+The 60 IWAs currently between 10% and 33%, with positive growth over the window, represent the next potential wave. These are activities where confirmed AI exposure has been building but hasn't yet crossed the meaningful-presence threshold.
 
 The top approaching IWAs by total gain, currently between 25-33%:
 
@@ -80,7 +78,7 @@ The top approaching IWAs by total gain, currently between 25-33%:
 | Negotiate contracts or agreements | 30.1% | +23.6pp |
 | Develop public or community health programs | 31.2% | +23.6pp |
 
-Several of these IWAs involve routine professional documentation — legal recording, financial document preparation, patient intake, contract management. If the growth rates observed over the past 16 months continue, activities like "Prepare financial documents" (currently 30%) and "Negotiate contracts" (30%) could cross the 33% threshold in the next dataset update.
+Several of these IWAs involve routine professional documentation — legal recording, financial document preparation, patient intake, contract management. If the growth rates observed over the past 11 months continue, activities like "Prepare financial documents" (currently 30%) and "Negotiate contracts" (30%) could cross the 33% threshold in the next dataset update.
 
 Healthcare work appears repeatedly in this zone: patient intake, care planning, health program development. This is consistent with healthcare being a sector with high confirmed-exposure growth but still trailing the top sectors.
 
@@ -100,7 +98,7 @@ What's notable is how much the Moderate zone has grown (84 → 116 IWAs) while t
 
 ## Config
 
-Dataset: `AEI Both + Micro` series (6 dates: 2024-09-30, 2024-12-23, 2025-03-06, 2025-08-11, 2025-11-13, 2026-02-12) | IWA level | eco_2025 baseline (mcp_group) | Method: freq | Auto-aug ON | National | Thresholds: Low <10%, Emerging 10-33%, Moderate 33-66%, High >=66%
+Dataset: `AEI Both + Micro` series (4 dates: 2025-03-06, 2025-08-11, 2025-11-13, 2026-02-12) | IWA level | eco_2025 baseline (mcp_group) | Method: freq | Auto-aug ON | National | Thresholds: Low <10%, Emerging 10-33%, Moderate 33-66%, High >=66%
 
 ## Files
 

@@ -4,7 +4,7 @@
 
 ---
 
-Confirmed AI usage already reaches 61.3 million workers — 40% of total US employment — representing $3.99 trillion in annual wages. The ceiling estimate puts it at 77.1 million workers and $4.97 trillion, 50.3% of all employment. The footprint has roughly doubled since late 2024. It is concentrated in knowledge work, heaviest in Zone 4 (credentialed professional jobs), driven by information-processing and communication activities. Conversational AI currently has broader confirmed reach than agentic deployment, but the agentic ceiling already exceeds conversational confirmed — the potential is there once agentic infrastructure matures. Every state has essentially the same task exposure rate (~36.1%); what varies is sector composition.
+Confirmed AI usage already reaches 61.3 million workers — 40% of total US employment — representing $3.99 trillion in annual wages. The ceiling estimate puts it at 77.1 million workers and $4.97 trillion, 50.3% of all employment. The confirmed footprint grew 31% in the 11-month window from March 2025 to February 2026 — from 46.6M to 61.3M workers. It is concentrated in knowledge work, heaviest in Zone 4 (credentialed professional jobs), driven by information-processing and communication activities. Conversational AI currently has broader confirmed reach than agentic deployment, but the agentic ceiling already exceeds conversational confirmed — the potential is there once agentic infrastructure matures. Every state has essentially the same task exposure rate (~36.1%); what varies is sector composition.
 
 ---
 
@@ -124,21 +124,19 @@ The confirmed agentic number (31.1M) captures deployments where agentic tooling 
 
 *Full detail: [trends/trends_report.md](trends/trends_report.md)*
 
-The All Confirmed estimate has roughly doubled since the first available dataset date (late September 2024). The ceiling configuration went from 39.5M workers to 77.1M over an 18-month window. That kind of growth in assessed exposure isn't primarily a labor market story — the occupational mix hasn't changed much. What changed is how much of existing work AI can demonstrably do.
+The All Confirmed estimate grew from 46.6M to 61.3M workers over the 11-month window (March 2025 → February 2026) — a 31% increase. The ceiling configuration went from 46.6M to 77.1M over the same window, driven by MCP data incorporated in August 2025. That kind of growth in assessed exposure isn't primarily a labor market story — the occupational mix hasn't changed much. What changed is how much of existing work AI can demonstrably do.
 
-Sector-level gains over the full All Confirmed series, ranked by absolute percentage-point change:
+Sector-level gains over the All Confirmed series (March 2025 → February 2026), ranked by absolute percentage-point change:
 
-1. **Legal Occupations**: +25.5 pp (22.8% → 48.3%)
-2. **Educational Instruction and Library**: +24.8 pp (28.8% → 53.6%)
-3. **Sales and Related**: +22.8 pp (36.8% → 59.5%)
-4. **Computer and Mathematical**: +22.3 pp (43.4% → 65.7%)
-5. **Business and Financial Operations**: +19.4 pp (31.4% → 50.7%)
+1. **Sales and Related**: +18.6 pp (41.0% → 59.5%)
+2. **Computer and Mathematical**: +16.0 pp (49.8% → 65.7%)
+3. **Legal Occupations**: +14.0 pp (34.3% → 48.3%)
+4. **Business and Financial Operations**: +12.0 pp (38.7% → 50.7%)
+5. **Educational Instruction and Library**: +11.6 pp (42.0% → 53.6%)
 
-Legal's near-doubling reflects AI systems' growing capability in legal reasoning, document analysis, and research. Education's jump tracks the emergence of capable writing, tutoring, and content-generation systems. At the bottom: Farming (+1.9 pp), Transportation (+2.3 pp), Production (+2.6 pp). The physical frontier hasn't moved.
+Sales jumping from 41.0% to 59.5% is the largest absolute gain in this window. Legal and Education had seen even larger gains before March 2025; what appears here is a continuation of trends that began earlier. At the bottom: Farming (+0.4 pp), Production (+1.5 pp), Transportation (+2.0 pp). The physical frontier hasn't moved.
 
-The ceiling and confirmed trajectories have moved together rather than converging. A narrowing confirmed/ceiling gap would suggest AI capability claims are becoming more reliable as evidence accumulates. The fact that both are expanding means the frontier is still advancing faster than the validation process can consolidate it. New capabilities keep getting proposed before old proposals fully harden into confirmed status.
-
-The trend line isn't a reliable basis for mechanical extrapolation. Growth happens in step-function jumps rather than smooth curves, corresponding to specific capability demonstrations that propagate into confirmed task assessments. But the baseline trajectory — roughly doubling in 18 months at the ceiling — is the kind of growth rate that typically means a technology is past the early-adopter stage and into broad diffusion.
+The ceiling and confirmed trajectories diverged in August 2025 when MCP was incorporated — the ceiling jumped while confirmed grew more modestly. Since then, confirmed has been growing slightly faster than ceiling, narrowing the ratio modestly. Growth happens in step-function jumps rather than smooth curves, corresponding to specific capability demonstrations. August 2025 was the dominant inflection point of the 11-month window.
 
 ![Aggregate Worker Count Trend Over Time](trends/figures/aggregate_trend.png)
 
@@ -212,7 +210,7 @@ The GWA trend over the All Confirmed series is consistent with the sector trends
 
 **The physical/cognitive split is the defining boundary.** AI exceeds the typical occupation's requirement (>100%) on 23 of 120 SKA elements, all of them knowledge or skills domains. Humans lead on 97, concentrated almost entirely in physical and perceptual abilities where AI sits at 9–34% of need. The cognitive frontier has moved further than most people realize — near-parity on written comprehension, reading comprehension, and mathematical reasoning. The reliable human moat is embodied.
 
-**Everything is trending in the same direction.** The All Confirmed series roughly doubled over 18 months. Ceiling and confirmed trajectories are moving together, not converging. The sector gainers (Legal, Education, Sales, Computer/Math) are the same ones with the highest current penetration. The physical sectors at the bottom of the trend table are the same ones at the bottom of the penetration ranking.
+**Everything is trending in the same direction.** The All Confirmed series grew 31% over 11 months. August 2025 was the dominant inflection point — MCP drove a ceiling jump while confirmed advanced sharply. The sector gainers in this window (Sales, Computer/Math, Legal, Business/Finance) overlap with the highest-penetration sectors. The physical sectors at the bottom of the trend table are the same ones at the bottom of the penetration ranking.
 
 ---
 
@@ -226,7 +224,7 @@ The GWA trend over the All Confirmed series is consistent with the sector trends
 
 4. **Agentic AI's confirmed footprint (31.1M workers) is half the ceiling (60.4M).** The gap is organizational deployment, not capability limitation. Doubling the confirmed agentic reach requires no new AI — only broader enterprise deployment.
 
-5. **Legal (+25.5 pp) and Education (+24.8 pp)** saw the largest gains in task penetration over the dataset window. Both are sectors where the capability has moved faster than institutional adaptation.
+5. **Sales (+18.6 pp) and Computer/Math (+16.0 pp)** saw the largest gains in task penetration over the 11-month window (March 2025 → February 2026). Legal and Education had even larger gains earlier; what appears in this window is continuation of an already-advanced trend.
 
 6. **There are no high-exposure states or low-exposure states** — the average is ~36.1% everywhere. State-level policy should be calibrated to sector composition, not aggregate exposure.
 
