@@ -231,6 +231,93 @@ def _calibration_subtitle(calib: dict) -> str:
 
 # ── Figures ───────────────────────────────────────────────────────────────────
 
+def _pivot_cost_calibration_chart(zone_summary: pd.DataFrame, calib: dict) -> go.Figure:
+    """Bar chart of zone pivot costs with occupation skill mass reference ranges overlaid.
+
+    Shows each zone's total pivot cost alongside reference lines for the
+    empirical distribution of occupation skill+knowledge mass (p25, median, p75, max).
+    This makes the raw units interpretable at a glance: Zone 3's 359 units sits
+    between the typical occupation's median (296) and p75 (411) profile.
+    """
+    zones = zone_summary.sort_values("job_zone")
+    zone_labels = [f"Zone {z}" for z in zones["job_zone"]]
+
+    fig = go.Figure()
+
+    # IQR shaded band (p25–p75)
+    fig.add_hrect(
+        y0=calib["empirical_p25"], y1=calib["empirical_p75"],
+        fillcolor="#d1e8e2", opacity=0.35, layer="below", line_width=0,
+    )
+    # Add a dummy scatter trace for the IQR legend entry
+    fig.add_trace(go.Scatter(
+        x=[None], y=[None], mode="markers",
+        marker=dict(size=12, color="#d1e8e2", symbol="square"),
+        name=f"Middle 50% of occs (p25={calib['empirical_p25']:.0f} – p75={calib['empirical_p75']:.0f})",
+        showlegend=True,
+    ))
+
+    # Bars
+    fig.add_trace(go.Bar(
+        x=zone_labels,
+        y=zones["total_pivot_cost"].tolist(),
+        marker=dict(color=COLORS["negative"], line=dict(width=0)),
+        text=[f"{c:.0f} units" for c in zones["total_pivot_cost"]],
+        textposition="outside",
+        textfont=dict(size=11, family=FONT_FAMILY, color=COLORS["neutral"]),
+        cliponaxis=False,
+        name="Zone pivot cost",
+        showlegend=True,
+    ))
+
+    # Reference lines
+    refs = [
+        ("Median occ mass", calib["empirical_median"], "dash", COLORS["primary"]),
+        ("Mean occ mass", calib["empirical_mean"], "dot", COLORS["secondary"]),
+        ("p75 occ mass", calib["empirical_p75"], "longdash", COLORS["neutral"]),
+        (f"Max ({calib['empirical_max_occ']})", calib["empirical_max"], "longdashdot", "#9ca3af"),
+    ]
+    for label, val, dash, color in refs:
+        fig.add_hline(
+            y=val, line_dash=dash, line_color=color, line_width=1.5,
+            annotation_text=f"{label}: {val:.0f}",
+            annotation_position="right",
+            annotation_font=dict(size=10, color=color, family=FONT_FAMILY),
+        )
+        fig.add_trace(go.Scatter(
+            x=[None], y=[None], mode="lines",
+            line=dict(dash=dash, color=color, width=1.5),
+            name=f"{label}: {val:.0f}",
+            showlegend=True,
+        ))
+
+    style_figure(
+        fig,
+        "Zone Pivot Cost vs. Typical Occupation Skill Mass",
+        subtitle=(
+            f"Bars = L1 rectified reskilling cost per zone. Reference lines and shaded band = "
+            f"empirical distribution of total skill+knowledge mass across {calib['n_occs']} occupations "
+            f"(importance ≥ 3). Bars above the median line represent reskilling loads that exceed "
+            f"the typical occupation's entire skill+knowledge profile."
+        ),
+        x_title=None,
+        y_title="Skill+knowledge mass (imp × level units)",
+        height=580, width=820, show_legend=True,
+    )
+    fig.update_layout(
+        margin=dict(l=60, r=200, t=110, b=60),
+        yaxis=dict(showgrid=True, gridcolor=COLORS["border"], zeroline=True),
+        xaxis=dict(showgrid=False),
+        bargap=0.4,
+        legend=dict(
+            orientation="v",
+            x=1.02, y=1.0,
+            font=dict(size=10, family=FONT_FAMILY),
+        ),
+    )
+    return fig
+
+
 def _pivot_cost_by_zone_bar(zone_summary: pd.DataFrame, calib: dict) -> go.Figure:
     """Bar: absolute pivot cost per job zone, labeled with both absolute and % new ground."""
     zone_summary = zone_summary.sort_values("job_zone")
@@ -599,6 +686,11 @@ def main() -> None:
         save_figure(fig, fig_dir / "pivot_cost_by_zone.png")
         print("  pivot_cost_by_zone.png")
 
+        fig = _pivot_cost_calibration_chart(zone_summary, calib)
+        if fig.data:
+            save_figure(fig, fig_dir / "pivot_cost_calibration.png")
+            print("  pivot_cost_calibration.png")
+
     if element_costs_by_zone:
         fig = _element_cost_heatmap(element_costs_by_zone)
         save_figure(fig, fig_dir / "element_cost_heatmap.png")
@@ -667,8 +759,9 @@ def main() -> None:
     readme_path.write_text("".join(lines), encoding="utf-8")
 
     # ── Copy key figures ──────────────────────────────────────────────────────
-    for fname in ["pivot_cost_by_zone.png", "element_cost_heatmap.png",
-                  "element_cost_distribution.png", "ai_assisted_reskilling.png"]:
+    for fname in ["pivot_cost_by_zone.png", "pivot_cost_calibration.png",
+                  "element_cost_heatmap.png", "element_cost_distribution.png",
+                  "ai_assisted_reskilling.png"]:
         src = fig_dir / fname
         if src.exists():
             shutil.copy2(src, committed / fname)

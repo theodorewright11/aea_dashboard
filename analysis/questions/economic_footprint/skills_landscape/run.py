@@ -298,9 +298,16 @@ def _build_ska_leads_bar(
                      else "top-practitioner requirement (95th pct)"
 
     if direction == "ai":
-        sub = elem_df[elem_df[col] >= 100].sort_values(col, ascending=False).head(top_n)
-        sub = sub.sort_values(col, ascending=True)  # bottom→top, smallest at bottom
-        title = f"Top {len(sub)} Elements Where AI ≥ 100% of {baseline_label}"
+        if baseline == "eco_p95":
+            # Against top practitioners, AI doesn't yet exceed 100% on any element.
+            # Show top-N elements where AI comes *closest* to that bar.
+            sub = elem_df.sort_values(col, ascending=False).head(top_n)
+            sub = sub.sort_values(col, ascending=True)
+            title = f"Top {len(sub)} Elements Where AI Comes Closest to Top-Practitioner Need"
+        else:
+            sub = elem_df[elem_df[col] >= 100].sort_values(col, ascending=False).head(top_n)
+            sub = sub.sort_values(col, ascending=True)
+            title = f"Top {len(sub)} Elements Where AI ≥ 100% of {baseline_label}"
         color = COLORS["accent"]
     else:
         sub = elem_df[elem_df[col] < 100].sort_values(col, ascending=True).head(top_n)
