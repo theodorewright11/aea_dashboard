@@ -107,25 +107,82 @@ def _compute_skill_profile_matrix(
 def _compute_projection(
     matrix: pd.DataFrame,
     target_vector: pd.Series,
-) -> pd.Series:
+) -> tuple[pd.Series, pd.Series, float]:
     """
     Compute scalar projection of each occ's vector onto a target vector.
-    Projection = (occ · target) / ||target||
-    This captures both direction AND magnitude.
+
+    Raw projection  = (occ · target) / ||target||   — in imp×level units
+    Pct projection  = (occ · target) / ||target||²  × 100
+                    = projection / ||target|| × 100
+                    Reads as: "what % of AI's capability profile does this
+                    occupation's aligned-skill mass capture?"
+                    100% = occupation fully maps onto AI's profile at full scale.
+                    Typically 0–100%; rarely exceeds 100%.
+
+    Returns (raw_series, pct_series, target_norm)
     """
     if matrix.empty or target_vector.empty:
-        return pd.Series(dtype=float)
+        empty = pd.Series(dtype=float)
+        return empty, empty, 0.0
 
     all_cols = matrix.columns.union(target_vector.index)
     mat = matrix.reindex(columns=all_cols, fill_value=0.0)
     target = target_vector.reindex(all_cols, fill_value=0.0)
 
-    target_norm = np.linalg.norm(target.values)
+    target_norm = float(np.linalg.norm(target.values))
     if target_norm == 0:
-        return pd.Series(0.0, index=mat.index)
+        z = pd.Series(0.0, index=mat.index)
+        return z, z, 0.0
 
-    projections = mat.values @ target.values / target_norm
-    return pd.Series(projections, index=mat.index, name="projection")
+    raw = mat.values @ target.values / target_norm
+    pct = raw / target_norm * 100.0
+    return (
+        pd.Series(raw, index=mat.index, name="projection"),
+        pd.Series(pct, index=mat.index, name="projection_pct"),
+        target_norm,
+    )
+
+
+def _compute_element_contributions(
+    profile_matrix: pd.DataFrame,
+    occ_list: list[str],
+    target_vector: pd.Series,
+    target_norm: float,
+    top_n: int = 20,
+) -> pd.DataFrame:
+    """
+    For a set of occupations, compute which elements drive their projection
+    onto the target vector.
+
+    Element contribution = avg_occ_score × ai_score / target_norm²  × 100
+    This is the average element-level contribution to projection_pct, so the
+    columns sum to ~ projection_pct for the average occupation in occ_list.
+    """
+    if not occ_list or profile_matrix.empty or target_vector.empty:
+        return pd.DataFrame()
+
+    occ_in_mat = [o for o in occ_list if o in profile_matrix.index]
+    if not occ_in_mat:
+        return pd.DataFrame()
+
+    sub = profile_matrix.reindex(occ_in_mat).fillna(0.0)
+    avg_occ = sub.mean()  # average occ score per element
+
+    all_cols = avg_occ.index.union(target_vector.index)
+    avg_occ = avg_occ.reindex(all_cols, fill_value=0.0)
+    target = target_vector.reindex(all_cols, fill_value=0.0)
+
+    if target_norm == 0:
+        return pd.DataFrame()
+
+    contribution_pct = avg_occ * target / (target_norm ** 2) * 100.0
+    df = pd.DataFrame({
+        "element_name": contribution_pct.index,
+        "contribution_pct": contribution_pct.values,
+        "avg_occ_score": avg_occ.values,
+        "ai_score": target.values,
+    })
+    return df[df["contribution_pct"] > 0].sort_values("contribution_pct", ascending=False).head(top_n)
 
 
 # ── Figures ───────────────────────────────────────────────────────────────────

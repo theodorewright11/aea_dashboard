@@ -1,5 +1,6 @@
 # Manual
 delta/
+exploratory
 
 # Analysis generated outputs (regenerate with: venv/Scripts/python -m analysis.run_all)
 analysis/questions/**/results/
@@ -14,21 +15,7 @@ tsconfig.tsbuildinfo
 venv/
 __pycache__/
 *.pyc
-.ipynb_checkpoints/
-outputs/charts_for_sharing/alice
-data/original_data
-data/merged_data_files
-exploratory
-scripts/original_scripts
-scripts/charts_for_executive_summary_oct_2025.ipynb
 .claude/
-outputs/charts_for_sharing/prelim_report_oct_2025/comparisons
-outputs/charts_for_sharing/executive_summary_oct_2025
-data/v2_auto_aug_variations
-mcp/mcp_llm_classification.ipynb
-onet_hierarchy/
-mcp
-data/mcp_results_2026-02-18.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
