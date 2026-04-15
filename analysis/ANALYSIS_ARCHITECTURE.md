@@ -105,15 +105,18 @@ analysis/
 ├── question_findings/           — Flat copies of question .md reports
 ├── report/
 │   └── report.md                — Rolling aggregate report
-└── exploratory/                 — Gitignored. One-off charts Teddy is curious about.
-    │                              Not part of the question system; no reports fed into
-    │                              question_findings/ or report/. Each sub-folder has:
-    │                              run.py, README.md (metadata: what it produces + run cmd),
-    │                              <name>_report.md (findings writeup with inline figures),
-    │                              and results/ (auto-created on run, gitignored).
+└── exploratory/                 — Gitignored entirely. Nothing in this folder is ever
+    │                              committed — do not use git add -f. One-off charts only;
+    │                              no reports fed into question_findings/ or report/.
+    │                              Each sub-folder has: run.py, README.md, <name>_report.md
+    │                              (findings writeup with inline figures referencing
+    │                              results/figures/ paths), and results/ (auto-created).
     ├── ska_levels/              — AI imp×lv vs. workforce benchmarks for every SKA element
-    └── zone_pivot_anatomy/      — Why zone 3 peaks on pivot cost; overlap structure and
-                                   sector composition of at-risk occupations by zone
+    ├── zone_pivot_anatomy/      — Why zone 3 peaks on pivot cost; overlap structure and
+    │                              sector composition of at-risk occupations by zone
+    └── physical_informational_divide/ — Physical vs. informational occupation split;
+                                   GWA/IWA/DWA task distributions for 6 occ_group×task_type
+                                   combinations; auto-aug comparison across the three groups
 ```
 
 ---
