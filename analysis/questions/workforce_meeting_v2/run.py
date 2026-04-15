@@ -32,6 +32,7 @@ Run from project root:
 from __future__ import annotations
 
 import shutil
+from datetime import datetime
 from pathlib import Path
 
 import numpy as np
@@ -83,6 +84,11 @@ LEGEND_FS: int = 14
 
 
 # ── Formatting helpers ─────────────────────────────────────────────────────────
+
+def _fmt_date(date_str: str) -> str:
+    """Parse 'YYYY-MM-DD' → 'Month YYYY' (e.g. 'March 2025')."""
+    return datetime.strptime(date_str, "%Y-%m-%d").strftime("%B %Y")
+
 
 def _sign_workers(v: float) -> str:
     """Format worker count with explicit +/- sign."""
@@ -190,6 +196,7 @@ def _apply_base_style(
         show_legend=show_legend,
         height=height,
         width=width,
+        source_text="",
     )
     fig.update_layout(
         title=dict(font=dict(size=TITLE_FS, color=COLORS["text"], family=FONT_FAMILY)),
@@ -299,7 +306,7 @@ def _chart_01_sector_scope(major_df: pd.DataFrame) -> go.Figure:
     df = major_df.sort_values("workers_affected", ascending=False).head(TOP_N).copy()
     ins = [f"{format_workers(r['workers_affected'])} workers" for _, r in df.iterrows()]
     out = [
-        f"{r['pct_tasks_affected']:.0f}% tasks affected  ·  {format_wages(r['wages_affected'])} wages affected"
+        f"{r['pct_tasks_affected']:.0f}% tasks  ·  {format_wages(r['wages_affected'])} wages"
         for _, r in df.iterrows()
     ]
     return _annotated_bar(
@@ -317,9 +324,9 @@ def _chart_01_sector_scope(major_df: pd.DataFrame) -> go.Figure:
 def _chart_02_gwa_scope(gwa_df: pd.DataFrame) -> go.Figure:
     """Top 7 work activity types by % tasks affected."""
     df = gwa_df.sort_values("pct_tasks_affected", ascending=False).head(TOP_N).copy()
-    ins = [f"{r['pct_tasks_affected']:.0f}% tasks affected" for _, r in df.iterrows()]
+    ins = [f"{r['pct_tasks_affected']:.0f}% tasks" for _, r in df.iterrows()]
     out = [
-        f"{format_workers(r['workers_affected'])} workers  ·  {format_wages(r['wages_affected'])} wages affected"
+        f"{format_workers(r['workers_affected'])} workers  ·  {format_wages(r['wages_affected'])} wages"
         for _, r in df.iterrows()
     ]
     return _annotated_bar(
@@ -351,12 +358,12 @@ def _chart_03_sector_trend(
         "delta_workers", ascending=False
     ).head(TOP_N).copy()
 
-    first_date = TREND_FIRST.split()[-1]
-    last_date = TREND_LAST.split()[-1]
+    first_date = _fmt_date(TREND_FIRST.split()[-1])
+    last_date = _fmt_date(TREND_LAST.split()[-1])
 
     ins = [f"+{format_workers(r['delta_workers'])} workers" for _, r in df.iterrows()]
     out = [
-        f"{r['delta_pct']:+.1f}% tasks affected  ·  {_sign_wages(r['delta_wages'])} wages affected"
+        f"{r['delta_pct']:+.1f}% tasks  ·  {_sign_wages(r['delta_wages'])} wages"
         for _, r in df.iterrows()
     ]
     return _annotated_bar(
@@ -387,12 +394,12 @@ def _chart_04_gwa_trend(
         "delta_pct", ascending=False
     ).head(TOP_N).copy()
 
-    first_date = TREND_FIRST.split()[-1]
-    last_date = TREND_LAST.split()[-1]
+    first_date = _fmt_date(TREND_FIRST.split()[-1])
+    last_date = _fmt_date(TREND_LAST.split()[-1])
 
-    ins = [f"{r['delta_pct']:+.1f}% tasks affected" for _, r in df.iterrows()]
+    ins = [f"{r['delta_pct']:+.1f}% tasks" for _, r in df.iterrows()]
     out = [
-        f"{_sign_workers(r['delta_workers'])} workers  ·  {_sign_wages(r['delta_wages'])} wages affected"
+        f"{_sign_workers(r['delta_workers'])} workers  ·  {_sign_wages(r['delta_wages'])} wages"
         for _, r in df.iterrows()
     ]
     return _annotated_bar(
@@ -425,9 +432,9 @@ def _chart_05_sector_gap(
         "gap_pct", ascending=False
     ).head(TOP_N).copy()
 
-    ins = [f"+{r['gap_pct']:.1f}% tasks affected" for _, r in df.iterrows()]
+    ins = [f"+{r['gap_pct']:.1f}% tasks" for _, r in df.iterrows()]
     out = [
-        f"+{format_workers(r['gap_workers'])} workers  ·  {_sign_wages(r['gap_wages'])} wages affected"
+        f"+{format_workers(r['gap_workers'])} workers  ·  {_sign_wages(r['gap_wages'])} wages"
         for _, r in df.iterrows()
     ]
     return _annotated_bar(
@@ -459,15 +466,15 @@ def _chart_06_gwa_gap(
         "gap_pct", ascending=False
     ).head(TOP_N).copy()
 
-    ins = [f"+{r['gap_pct']:.1f}% tasks affected" for _, r in df.iterrows()]
+    ins = [f"+{r['gap_pct']:.1f}% tasks" for _, r in df.iterrows()]
     out = [
-        f"+{format_workers(r['gap_workers'])} workers  ·  {_sign_wages(r['gap_wages'])} wages affected"
+        f"+{format_workers(r['gap_workers'])} workers  ·  {_sign_wages(r['gap_wages'])} wages"
         for _, r in df.iterrows()
     ]
     return _annotated_bar(
         df, "category", "gap_pct",
         ins, out,
-        "Where AI Could Still Expand: Types of Work",
+        "Top Work Activities by Untapped AI Capability",
         xaxis_tickformat=".1f",
         xaxis_ticksuffix="%",
         xaxis_title="Gap in % Tasks Affected",
@@ -500,7 +507,7 @@ def _chart_07_human_vs_agentic(
         x=df["workers_affected_conv"],
         y=df["category"],
         orientation="h",
-        name="Conversational AI",
+        name="Chat AI (Browser)",
         marker=dict(color="#a8c4d8", line=dict(width=0)),
         text=[f"{format_workers(v)} workers" for v in df["workers_affected_conv"]],
         textposition="outside",
@@ -515,7 +522,7 @@ def _chart_07_human_vs_agentic(
         x=df["workers_affected_agt"],
         y=df["category"],
         orientation="h",
-        name="Agentic (Tool-Use) AI",
+        name="Agentic AI (API)",
         marker=dict(color=BAR_COLOR, line=dict(width=0)),
         text=[f"{format_workers(v)} workers" for v in df["workers_affected_agt"]],
         textposition="inside",
