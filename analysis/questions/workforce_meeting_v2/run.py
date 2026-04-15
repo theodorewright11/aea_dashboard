@@ -8,7 +8,7 @@ V2 changes from v1:
 - Primary values as large white text inside bars (like "54%" in v1 chart 01)
 - Secondary info in smaller text outside bars to the right
 - No config subtitles ("All Confirmed | UTAH | ...") on any chart
-- X-axis scale visible on all charts
+- X-axis scale visible on all charts with axis title on every chart
 - "%" not "pp" for all percentage deltas
 - Chart 07: overlaid bars showing conversational vs agentic AI reach by sector
 - SKA charts: explicit "= avg job need in this skill" reference line framing
@@ -18,7 +18,7 @@ Charts (renumbered for v2):
   02_gwa_scope             — Most AI-exposed types of work (GWA, % tasks)
   03_sector_trend          — Fastest-growing sectors (Δ workers)
   04_gwa_trend             — Fastest-growing work types (Δ % tasks)
-  05_sector_adoption_gap   — Where AI could still expand: sector worker gap
+  05_sector_adoption_gap   — Where AI could still expand: sector untapped %
   06_gwa_adoption_gap      — Where AI could still expand: work activity gap
   07_human_vs_agentic      — Conversational vs. agentic AI reach by sector
   08_ska_human_skills      — Skills where humans still outperform AI
@@ -78,7 +78,7 @@ TITLE_FS: int = 26
 YAXIS_FS: int = 15
 TICK_FS: int = 13
 INSIDE_FS: int = 20   # large white text inside bar
-OUTSIDE_FS: int = 13  # smaller secondary text outside bar
+OUTSIDE_FS: int = 16  # secondary text outside bar (bumped for readability)
 LEGEND_FS: int = 14
 
 
@@ -193,7 +193,7 @@ def _apply_base_style(
     )
     fig.update_layout(
         title=dict(font=dict(size=TITLE_FS, color=COLORS["text"], family=FONT_FAMILY)),
-        margin=dict(l=20, r=240, t=90, b=80),
+        margin=dict(l=20, r=280, t=90, b=80),
     )
     return fig
 
@@ -210,14 +210,16 @@ def _annotated_bar(
     top_n: int = TOP_N,
     xaxis_tickformat: str = "~s",
     xaxis_ticksuffix: str = "",
-    x_range_pad: float = 1.5,
+    xaxis_title: str = "",
+    x_range_pad: float = 1.6,
 ) -> go.Figure:
     """Horizontal bar with large white inside text and secondary outside text.
 
-    inside_text: short primary label (e.g. "146K") — rendered as big white text
-                 centered inside the bar.
-    outside_text: secondary context (e.g. "51% tasks · $9.4B") — smaller gray text
-                  to the right of the bar end.
+    inside_text: short primary label (e.g. "146K workers") — rendered as big
+                 white text centered inside the bar.
+    outside_text: secondary context (e.g. "51% tasks affected · $9.4B wages
+                  affected") — larger text to the right of the bar end.
+    xaxis_title: label shown below x-axis ticks describing the unit.
     """
     plot_df = df.head(top_n).copy()
     ins = inside_text[:top_n]
@@ -239,9 +241,9 @@ def _annotated_bar(
         cliponaxis=False,
     ))
 
-    # Secondary text to the right of each bar via scatter
+    # Secondary text to the right of each bar — offset by 4% of max for gap
     fig.add_trace(go.Scatter(
-        x=plot_df[value_col],
+        x=plot_df[value_col] + max_val * 0.04,
         y=plot_df[category_col],
         mode="text",
         text=out_,
@@ -260,18 +262,25 @@ def _annotated_bar(
 
     _apply_base_style(fig, title)
 
+    xaxis_cfg: dict = dict(
+        showgrid=True,
+        gridcolor=COLORS["grid"],
+        showticklabels=True,
+        tickformat=xaxis_tickformat,
+        ticksuffix=xaxis_ticksuffix,
+        showline=False,
+        zeroline=False,
+        range=[0, max_val * x_range_pad],
+        tickfont=dict(size=TICK_FS, color=COLORS["neutral"], family=FONT_FAMILY),
+    )
+    if xaxis_title:
+        xaxis_cfg["title"] = dict(
+            text=xaxis_title,
+            font=dict(size=TICK_FS, color=COLORS["neutral"], family=FONT_FAMILY),
+        )
+
     fig.update_layout(
-        xaxis=dict(
-            showgrid=True,
-            gridcolor=COLORS["grid"],
-            showticklabels=True,
-            tickformat=xaxis_tickformat,
-            ticksuffix=xaxis_ticksuffix,
-            showline=False,
-            zeroline=False,
-            range=[0, max_val * x_range_pad],
-            tickfont=dict(size=TICK_FS, color=COLORS["neutral"], family=FONT_FAMILY),
-        ),
+        xaxis=xaxis_cfg,
         yaxis=dict(
             showgrid=False,
             showline=False,
@@ -286,38 +295,41 @@ def _annotated_bar(
 # ── Chart 01: Sector scope ─────────────────────────────────────────────────────
 
 def _chart_01_sector_scope(major_df: pd.DataFrame) -> go.Figure:
-    """Top 7 sectors by workers with AI-exposed tasks (Utah)."""
+    """Top 7 sectors by workers with AI-exposed tasks."""
     df = major_df.sort_values("workers_affected", ascending=False).head(TOP_N).copy()
-    ins = [format_workers(r["workers_affected"]) for _, r in df.iterrows()]
+    ins = [f"{format_workers(r['workers_affected'])} workers" for _, r in df.iterrows()]
     out = [
-        f"{r['pct_tasks_affected']:.0f}% of tasks  ·  {format_wages(r['wages_affected'])}"
+        f"{r['pct_tasks_affected']:.0f}% tasks affected  ·  {format_wages(r['wages_affected'])} wages affected"
         for _, r in df.iterrows()
     ]
     return _annotated_bar(
         df, "category", "workers_affected",
         ins, out,
-        "Top Utah Sectors: Workers with AI-Exposed Tasks",
+        "Top Sectors by Workers Affected Based on AI-Exposed Tasks",
         xaxis_tickformat="~s",
+        xaxis_title="Workers Affected",
+        x_range_pad=1.8,
     )
 
 
 # ── Chart 02: GWA scope ────────────────────────────────────────────────────────
 
 def _chart_02_gwa_scope(gwa_df: pd.DataFrame) -> go.Figure:
-    """Top 7 work activity types by % tasks affected (Utah)."""
+    """Top 7 work activity types by % tasks affected."""
     df = gwa_df.sort_values("pct_tasks_affected", ascending=False).head(TOP_N).copy()
-    ins = [f"{r['pct_tasks_affected']:.0f}%" for _, r in df.iterrows()]
+    ins = [f"{r['pct_tasks_affected']:.0f}% tasks affected" for _, r in df.iterrows()]
     out = [
-        f"{format_workers(r['workers_affected'])} workers  ·  {format_wages(r['wages_affected'])}"
+        f"{format_workers(r['workers_affected'])} workers  ·  {format_wages(r['wages_affected'])} wages affected"
         for _, r in df.iterrows()
     ]
     return _annotated_bar(
         df, "category", "pct_tasks_affected",
         ins, out,
-        "Most AI-Exposed Types of Work (Utah)",
+        "Top Work Activities by Tasks Affected Based on AI-Exposed Tasks",
         xaxis_tickformat=".0f",
         xaxis_ticksuffix="%",
-        x_range_pad=1.45,
+        xaxis_title="% of Tasks Affected",
+        x_range_pad=1.7,
     )
 
 
@@ -342,16 +354,18 @@ def _chart_03_sector_trend(
     first_date = TREND_FIRST.split()[-1]
     last_date = TREND_LAST.split()[-1]
 
-    ins = [f"+{format_workers(r['delta_workers'])}" for _, r in df.iterrows()]
+    ins = [f"+{format_workers(r['delta_workers'])} workers" for _, r in df.iterrows()]
     out = [
-        f"{r['delta_pct']:+.1f}% tasks  ·  {_sign_wages(r['delta_wages'])}"
+        f"{r['delta_pct']:+.1f}% tasks affected  ·  {_sign_wages(r['delta_wages'])} wages affected"
         for _, r in df.iterrows()
     ]
     return _annotated_bar(
         df, "category", "delta_workers",
         ins, out,
-        f"AI Exposure Growing Fastest: Utah Sectors  ({first_date} → {last_date})",
+        f"Top Sectors by Growth in Workers Affected ({first_date} → {last_date})",
         xaxis_tickformat="~s",
+        xaxis_title="Change in Workers Affected",
+        x_range_pad=1.8,
     )
 
 
@@ -361,12 +375,13 @@ def _chart_04_gwa_trend(
     first_df: pd.DataFrame, last_df: pd.DataFrame
 ) -> go.Figure:
     """Top 7 work activity types by growth in % tasks affected (Δ first → last)."""
-    merged = last_df[["category", "pct_tasks_affected", "workers_affected"]].merge(
-        first_df[["category", "pct_tasks_affected", "workers_affected"]],
+    merged = last_df[["category", "pct_tasks_affected", "workers_affected", "wages_affected"]].merge(
+        first_df[["category", "pct_tasks_affected", "workers_affected", "wages_affected"]],
         on="category", suffixes=("_last", "_first"),
     )
     merged["delta_pct"] = merged["pct_tasks_affected_last"] - merged["pct_tasks_affected_first"]
     merged["delta_workers"] = merged["workers_affected_last"] - merged["workers_affected_first"]
+    merged["delta_wages"] = merged["wages_affected_last"] - merged["wages_affected_first"]
 
     df = merged[merged["delta_pct"] > 0].sort_values(
         "delta_pct", ascending=False
@@ -375,18 +390,19 @@ def _chart_04_gwa_trend(
     first_date = TREND_FIRST.split()[-1]
     last_date = TREND_LAST.split()[-1]
 
-    ins = [f"{r['delta_pct']:+.1f}%" for _, r in df.iterrows()]
+    ins = [f"{r['delta_pct']:+.1f}% tasks affected" for _, r in df.iterrows()]
     out = [
-        f"{_sign_workers(r['delta_workers'])} workers"
+        f"{_sign_workers(r['delta_workers'])} workers  ·  {_sign_wages(r['delta_wages'])} wages affected"
         for _, r in df.iterrows()
     ]
     return _annotated_bar(
         df, "category", "delta_pct",
         ins, out,
-        f"AI Exposure Growing Fastest: Types of Work  ({first_date} → {last_date})",
+        f"Top Work Activities by Growth in Tasks Affected ({first_date} → {last_date})",
         xaxis_tickformat=".1f",
         xaxis_ticksuffix="%",
-        x_range_pad=1.45,
+        xaxis_title="Change in % Tasks Affected",
+        x_range_pad=1.7,
     )
 
 
@@ -395,25 +411,33 @@ def _chart_04_gwa_trend(
 def _chart_05_sector_gap(
     confirmed_df: pd.DataFrame, ceiling_df: pd.DataFrame
 ) -> go.Figure:
-    """Top 7 sectors by confirmed→ceiling gap in workers (Utah)."""
-    merged = ceiling_df[["category", "workers_affected", "pct_tasks_affected"]].merge(
-        confirmed_df[["category", "workers_affected", "pct_tasks_affected"]],
+    """Top 7 sectors by confirmed→ceiling gap, sorted by % tasks gap."""
+    merged = ceiling_df[["category", "workers_affected", "pct_tasks_affected", "wages_affected"]].merge(
+        confirmed_df[["category", "workers_affected", "pct_tasks_affected", "wages_affected"]],
         on="category", suffixes=("_ceil", "_conf"),
     )
     merged["gap_workers"] = merged["workers_affected_ceil"] - merged["workers_affected_conf"]
     merged["gap_pct"] = merged["pct_tasks_affected_ceil"] - merged["pct_tasks_affected_conf"]
+    merged["gap_wages"] = merged["wages_affected_ceil"] - merged["wages_affected_conf"]
 
-    df = merged[merged["gap_workers"] > 0].sort_values(
-        "gap_workers", ascending=False
+    # Sort by % tasks gap (untapped coverage), not raw worker count
+    df = merged[merged["gap_pct"] > 0].sort_values(
+        "gap_pct", ascending=False
     ).head(TOP_N).copy()
 
-    ins = [f"+{format_workers(r['gap_workers'])}" for _, r in df.iterrows()]
-    out = [f"+{r['gap_pct']:.1f}% of tasks" for _, r in df.iterrows()]
+    ins = [f"+{r['gap_pct']:.1f}% tasks affected" for _, r in df.iterrows()]
+    out = [
+        f"+{format_workers(r['gap_workers'])} workers  ·  {_sign_wages(r['gap_wages'])} wages affected"
+        for _, r in df.iterrows()
+    ]
     return _annotated_bar(
-        df, "category", "gap_workers",
+        df, "category", "gap_pct",
         ins, out,
-        "Where AI Could Still Expand: Workers Not Yet Reached by Sector",
-        xaxis_tickformat="~s",
+        "Top Sectors by Untapped AI Capability",
+        xaxis_tickformat=".1f",
+        xaxis_ticksuffix="%",
+        xaxis_title="Untapped Task Coverage (%)",
+        x_range_pad=1.9,
     )
 
 
@@ -423,26 +447,31 @@ def _chart_06_gwa_gap(
     confirmed_df: pd.DataFrame, ceiling_df: pd.DataFrame
 ) -> go.Figure:
     """Top 7 GWAs by confirmed→ceiling gap in % tasks (Utah)."""
-    merged = ceiling_df[["category", "pct_tasks_affected", "workers_affected"]].merge(
-        confirmed_df[["category", "pct_tasks_affected", "workers_affected"]],
+    merged = ceiling_df[["category", "pct_tasks_affected", "workers_affected", "wages_affected"]].merge(
+        confirmed_df[["category", "pct_tasks_affected", "workers_affected", "wages_affected"]],
         on="category", suffixes=("_ceil", "_conf"),
     )
     merged["gap_pct"] = merged["pct_tasks_affected_ceil"] - merged["pct_tasks_affected_conf"]
     merged["gap_workers"] = merged["workers_affected_ceil"] - merged["workers_affected_conf"]
+    merged["gap_wages"] = merged["wages_affected_ceil"] - merged["wages_affected_conf"]
 
     df = merged[merged["gap_pct"] > 0].sort_values(
         "gap_pct", ascending=False
     ).head(TOP_N).copy()
 
-    ins = [f"+{r['gap_pct']:.1f}%" for _, r in df.iterrows()]
-    out = [f"+{format_workers(r['gap_workers'])} workers" for _, r in df.iterrows()]
+    ins = [f"+{r['gap_pct']:.1f}% tasks affected" for _, r in df.iterrows()]
+    out = [
+        f"+{format_workers(r['gap_workers'])} workers  ·  {_sign_wages(r['gap_wages'])} wages affected"
+        for _, r in df.iterrows()
+    ]
     return _annotated_bar(
         df, "category", "gap_pct",
         ins, out,
         "Where AI Could Still Expand: Types of Work",
         xaxis_tickformat=".1f",
         xaxis_ticksuffix="%",
-        x_range_pad=1.4,
+        xaxis_title="Gap in % Tasks Affected",
+        x_range_pad=1.8,
     )
 
 
@@ -473,7 +502,7 @@ def _chart_07_human_vs_agentic(
         orientation="h",
         name="Conversational AI",
         marker=dict(color="#a8c4d8", line=dict(width=0)),
-        text=[format_workers(v) for v in df["workers_affected_conv"]],
+        text=[f"{format_workers(v)} workers" for v in df["workers_affected_conv"]],
         textposition="outside",
         textfont=dict(
             size=OUTSIDE_FS, color=COLORS["neutral"], family=FONT_FAMILY
@@ -488,7 +517,7 @@ def _chart_07_human_vs_agentic(
         orientation="h",
         name="Agentic (Tool-Use) AI",
         marker=dict(color=BAR_COLOR, line=dict(width=0)),
-        text=[format_workers(v) for v in df["workers_affected_agt"]],
+        text=[f"{format_workers(v)} workers" for v in df["workers_affected_agt"]],
         textposition="inside",
         insidetextanchor="middle",
         textfont=dict(size=INSIDE_FS, color="white", family=FONT_FAMILY),
@@ -525,8 +554,12 @@ def _chart_07_human_vs_agentic(
             tickformat="~s",
             showline=False,
             zeroline=False,
-            range=[0, max_val * 1.45],
+            range=[0, max_val * 1.55],
             tickfont=dict(size=TICK_FS, color=COLORS["neutral"], family=FONT_FAMILY),
+            title=dict(
+                text="Workers Reached",
+                font=dict(size=TICK_FS, color=COLORS["neutral"], family=FONT_FAMILY),
+            ),
         ),
         yaxis=dict(
             showgrid=False,
@@ -555,13 +588,15 @@ def _chart_ska(
     requirement for this skill/knowledge element (importance >= 3 filter).
     100% = AI matches the average job's need in this area.
     """
+    domain_label = "Skills" if domain == "skills" else "Knowledge"
+
     if direction == "human":
         df = elements_df.sort_values("ai_pct_mean", ascending=True).head(TOP_N).copy()
-        title = f"{domain.title()} Where Humans Still Outperform AI"
+        title = f"{domain_label} Where the Average Workforce Need Still Outperforms AI"
         color = COLORS["secondary"]
     else:
         df = elements_df.sort_values("ai_pct_mean", ascending=False).head(TOP_N).copy()
-        title = f"{domain.title()} Where AI Has Surpassed Average Job Requirements"
+        title = f"{domain_label} Where AI Has Surpassed the Average Workforce Need"
         color = COLORS["accent"]
 
     max_val = float(df["ai_pct_mean"].max())
@@ -590,18 +625,30 @@ def _chart_ska(
         tickfont=dict(size=YAXIS_FS, color=COLORS["text"], family=FONT_FAMILY),
     )
 
-    # Parity reference line with plain-language annotation
+    # Parity reference line — no inline annotation (avoids overlap with bars)
     fig.add_vline(
         x=100,
         line_dash="dash",
         line_color=COLORS["muted"],
         line_width=2,
-        annotation_text="100% = avg job need in this skill",
-        annotation_position="top right",
-        annotation_font=dict(size=12, color=COLORS["muted"], family=FONT_FAMILY),
+    )
+    # Annotation placed above the chart area via paper y-coords — never overlaps bars
+    fig.add_annotation(
+        x=100,
+        y=1.04,
+        xref="x",
+        yref="paper",
+        text="100% = avg job need in this skill",
+        showarrow=False,
+        font=dict(size=17, color=COLORS["muted"], family=FONT_FAMILY),
+        xanchor="left",
+        yanchor="bottom",
     )
 
     _apply_base_style(fig, title)
+
+    # Extra top margin so above-chart annotation is not clipped
+    fig.update_layout(margin=dict(l=20, r=280, t=110, b=80))
 
     fig.update_layout(
         xaxis=dict(
@@ -614,6 +661,10 @@ def _chart_ska(
             zeroline=False,
             range=[0, x_max],
             tickfont=dict(size=TICK_FS, color=COLORS["neutral"], family=FONT_FAMILY),
+            title=dict(
+                text="AI Capability as % of Average Job Requirement",
+                font=dict(size=TICK_FS, color=COLORS["neutral"], family=FONT_FAMILY),
+            ),
         ),
         yaxis=dict(
             showgrid=False,
