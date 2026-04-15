@@ -185,14 +185,15 @@ def _apply_base_style(
     fig: go.Figure,
     title: str,
     *,
+    subtitle: str | None = None,
     height: int = CHART_H,
     width: int = CHART_W,
     show_legend: bool = False,
 ) -> go.Figure:
-    """Apply v2 base styling: large title, no subtitle, tight margins."""
+    """Apply v2 base styling: large title, optional subtitle, tight margins."""
     style_figure(
         fig, title,
-        subtitle=None,
+        subtitle=subtitle,
         show_legend=show_legend,
         height=height,
         width=width,
@@ -213,6 +214,7 @@ def _annotated_bar(
     outside_text: list[str],
     title: str,
     *,
+    subtitle: str | None = None,
     color: str = BAR_COLOR,
     top_n: int = TOP_N,
     xaxis_tickformat: str = "~s",
@@ -267,7 +269,7 @@ def _annotated_bar(
         tickfont=dict(size=YAXIS_FS, color=COLORS["text"], family=FONT_FAMILY),
     )
 
-    _apply_base_style(fig, title)
+    _apply_base_style(fig, title, subtitle=subtitle)
 
     xaxis_cfg: dict = dict(
         showgrid=True,
@@ -432,7 +434,7 @@ def _chart_05_sector_gap(
         "gap_pct", ascending=False
     ).head(TOP_N).copy()
 
-    ins = [f"+{r['gap_pct']:.1f}% tasks" for _, r in df.iterrows()]
+    ins = [f"+{r['gap_pct']:.0f}% tasks" for _, r in df.iterrows()]
     out = [
         f"+{format_workers(r['gap_workers'])} workers  ·  {_sign_wages(r['gap_wages'])} wages"
         for _, r in df.iterrows()
@@ -441,6 +443,7 @@ def _chart_05_sector_gap(
         df, "category", "gap_pct",
         ins, out,
         "Top Sectors by Untapped AI Capability",
+        subtitle="Potential not yet in AEI data — may include MCP servers and custom agentic tools",
         xaxis_tickformat=".1f",
         xaxis_ticksuffix="%",
         xaxis_title="Untapped Task Coverage (%)",
@@ -466,7 +469,7 @@ def _chart_06_gwa_gap(
         "gap_pct", ascending=False
     ).head(TOP_N).copy()
 
-    ins = [f"+{r['gap_pct']:.1f}% tasks" for _, r in df.iterrows()]
+    ins = [f"+{r['gap_pct']:.0f}% tasks" for _, r in df.iterrows()]
     out = [
         f"+{format_workers(r['gap_workers'])} workers  ·  {_sign_wages(r['gap_wages'])} wages"
         for _, r in df.iterrows()
@@ -475,6 +478,7 @@ def _chart_06_gwa_gap(
         df, "category", "gap_pct",
         ins, out,
         "Top Work Activities by Untapped AI Capability",
+        subtitle="Potential not yet in AEI data — may include MCP servers and custom agentic tools",
         xaxis_tickformat=".1f",
         xaxis_ticksuffix="%",
         xaxis_title="Gap in % Tasks Affected",
