@@ -267,6 +267,12 @@ Primary lens: `all_confirmed` series (AEI Both + Micro, Mar 2025 – Feb 2026, 4
 
 Not a research bucket — a presentation deliverable. 14 charts designed for slide decks, ordered by "lose 10% of audience per slide" logic. All charts use Utah employment, All Confirmed config, freq method, auto-aug ON.
 
+### Active: Workforce Meeting v2 (`questions/workforce_meeting_v2/`)
+
+**Overarching question:** Same as workforce_meeting. V2 is a restyled, non-technical variant for audiences with no research background (e.g. Nandeeni).
+
+V2 changes: charts only (no narrative text), 11 charts (headline/pivot cost/auto-aug dropped), larger fonts throughout, primary values as large white text inside bars, no config subheadings, x-axis scale visible, "%" not "pp" for deltas, chart 07 reframed as conversational vs. agentic overlay, SKA reference line explicitly labelled.
+
 | Chart | What It Shows |
 |-------|--------------|
 | `01_utah_headline` | Utah workers with AI-exposed tasks (stacked proportion bar) |

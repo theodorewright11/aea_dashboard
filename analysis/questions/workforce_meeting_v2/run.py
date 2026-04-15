@@ -1,0 +1,725 @@
+"""
+run.py — Workforce Meeting v2 Presentation Charts
+
+V2 changes from v1:
+- Charts only (no narrative text in report)
+- 11 charts (headline, pivot cost, and auto-aug dropped)
+- Larger fonts throughout: titles 26px, y-axis labels 15px, inside bar text 20px
+- Primary values as large white text inside bars (like "54%" in v1 chart 01)
+- Secondary info in smaller text outside bars to the right
+- No config subtitles ("All Confirmed | UTAH | ...") on any chart
+- X-axis scale visible on all charts
+- "%" not "pp" for all percentage deltas
+- Chart 07: overlaid bars showing conversational vs agentic AI reach by sector
+- SKA charts: explicit "= avg job need in this skill" reference line framing
+
+Charts (renumbered for v2):
+  01_sector_scope          — Top 7 sectors by workers with AI-exposed tasks
+  02_gwa_scope             — Most AI-exposed types of work (GWA, % tasks)
+  03_sector_trend          — Fastest-growing sectors (Δ workers)
+  04_gwa_trend             — Fastest-growing work types (Δ % tasks)
+  05_sector_adoption_gap   — Where AI could still expand: sector worker gap
+  06_gwa_adoption_gap      — Where AI could still expand: work activity gap
+  07_human_vs_agentic      — Conversational vs. agentic AI reach by sector
+  08_ska_human_skills      — Skills where humans still outperform AI
+  09_ska_human_knowledge   — Knowledge domains where humans still outperform AI
+  10_ska_ai_skills         — Skills where AI has surpassed average job requirements
+  11_ska_ai_knowledge      — Knowledge domains where AI has surpassed average job requirements
+
+Run from project root:
+    venv/Scripts/python -m analysis.questions.workforce_meeting_v2.run
+"""
+from __future__ import annotations
+
+import shutil
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import plotly.graph_objects as go
+
+from analysis.config import (
+    ANALYSIS_CONFIGS,
+    ANALYSIS_CONFIG_SERIES,
+    ensure_results_dir,
+    get_pct_tasks_affected,
+)
+from analysis.utils import (
+    COLORS,
+    FONT_FAMILY,
+    format_workers,
+    format_wages,
+    generate_pdf,
+    save_figure,
+    style_figure,
+)
+
+HERE = Path(__file__).resolve().parent
+
+# ── Constants ──────────────────────────────────────────────────────────────────
+
+GEO: str = "ut"
+TOP_N: int = 7
+
+PRIMARY_DS: str = ANALYSIS_CONFIGS["all_confirmed"]
+CEILING_DS: str = ANALYSIS_CONFIGS["all_ceiling"]
+CONV_DS: str = ANALYSIS_CONFIGS["human_conversation"]
+AGENTIC_DS: str = ANALYSIS_CONFIGS["agentic_confirmed"]
+
+TREND_FIRST: str = ANALYSIS_CONFIG_SERIES["all_confirmed"][0]
+TREND_LAST: str = ANALYSIS_CONFIG_SERIES["all_confirmed"][-1]
+
+CHART_W: int = 1400
+CHART_H: int = 787
+BAR_COLOR: str = COLORS["primary"]
+
+# Font sizes — larger than v1 for readability
+TITLE_FS: int = 26
+YAXIS_FS: int = 15
+TICK_FS: int = 13
+INSIDE_FS: int = 20   # large white text inside bar
+OUTSIDE_FS: int = 13  # smaller secondary text outside bar
+LEGEND_FS: int = 14
+
+
+# ── Formatting helpers ─────────────────────────────────────────────────────────
+
+def _sign_workers(v: float) -> str:
+    """Format worker count with explicit +/- sign."""
+    sign = "+" if v >= 0 else ""
+    return f"{sign}{format_workers(v)}"
+
+
+def _sign_wages(v: float) -> str:
+    """Format wage amount with explicit +/- sign."""
+    sign = "+" if v >= 0 else ""
+    return f"{sign}{format_wages(v)}"
+
+
+# ── Data helpers ───────────────────────────────────────────────────────────────
+
+def _get_utah_major(dataset_name: str) -> pd.DataFrame:
+    """Major-category breakdown for a single dataset, Utah geo."""
+    from backend.compute import get_group_data
+
+    data = get_group_data({
+        "selected_datasets": [dataset_name],
+        "combine_method": "Average",
+        "method": "freq",
+        "use_auto_aug": True,
+        "physical_mode": "all",
+        "geo": GEO,
+        "agg_level": "major",
+        "sort_by": "Workers Affected",
+        "top_n": 9999,
+        "search_query": "",
+        "context_size": 3,
+    })
+    assert data is not None, f"No data for {dataset_name}"
+    return data["df"].rename(columns={"major_occ_category": "category"})
+
+
+def _get_utah_gwa(dataset_name: str) -> pd.DataFrame:
+    """GWA-level breakdown for a single pre-combined dataset, Utah geo."""
+    from backend.compute import compute_work_activities
+
+    result = compute_work_activities({
+        "selected_datasets": [dataset_name],
+        "combine_method": "Average",
+        "method": "freq",
+        "use_auto_aug": True,
+        "physical_mode": "all",
+        "geo": GEO,
+        "sort_by": "workers_affected",
+        "top_n": 9999,
+    })
+    group = result.get("mcp_group") or result.get("aei_group")
+    assert group is not None, f"No WA data for {dataset_name}"
+    rows = group.get("gwa", [])
+    assert rows, f"Empty GWA rows for {dataset_name}"
+    return pd.DataFrame(rows)
+
+
+def _get_ska_elements() -> dict[str, pd.DataFrame]:
+    """Compute element-level AI coverage % from all_confirmed (national).
+
+    Returns dict["skills"|"knowledge"] → DataFrame[element_name, ai_pct_mean].
+    ai_pct_mean = mean of (ai_score / occ_score × 100) across occupations where
+    importance >= 3 — i.e., AI as % of each occupation's own requirement, then
+    averaged. This is the eco_mean comparison (avg job requirement in this skill).
+    """
+    from analysis.data.compute_ska import load_ska_data, compute_ska
+
+    pct = get_pct_tasks_affected(PRIMARY_DS, method="freq", use_auto_aug=True)
+    ska_data = load_ska_data()
+    result = compute_ska(pct, ska_data)
+
+    out: dict[str, pd.DataFrame] = {}
+    for domain in ("skills", "knowledge"):
+        occ_elem = result.occ_element_scores.get(domain)
+        if occ_elem is None or occ_elem.empty:
+            out[domain] = pd.DataFrame(columns=["element_name", "ai_pct_mean"])
+            continue
+        occ_elem = occ_elem.copy()
+        safe_occ = occ_elem["occ_score"].replace(0, np.nan)
+        occ_elem["ai_pct_occ"] = occ_elem["ai_score"] / safe_occ * 100.0
+        elem_agg = (
+            occ_elem.groupby("element_name")["ai_pct_occ"]
+            .mean()
+            .reset_index()
+            .rename(columns={"ai_pct_occ": "ai_pct_mean"})
+        )
+        out[domain] = elem_agg
+    return out
+
+
+# ── Chart styling helpers ──────────────────────────────────────────────────────
+
+def _apply_base_style(
+    fig: go.Figure,
+    title: str,
+    *,
+    height: int = CHART_H,
+    width: int = CHART_W,
+    show_legend: bool = False,
+) -> go.Figure:
+    """Apply v2 base styling: large title, no subtitle, tight margins."""
+    style_figure(
+        fig, title,
+        subtitle=None,
+        show_legend=show_legend,
+        height=height,
+        width=width,
+    )
+    fig.update_layout(
+        title=dict(font=dict(size=TITLE_FS, color=COLORS["text"], family=FONT_FAMILY)),
+        margin=dict(l=20, r=240, t=90, b=80),
+    )
+    return fig
+
+
+def _annotated_bar(
+    df: pd.DataFrame,
+    category_col: str,
+    value_col: str,
+    inside_text: list[str],
+    outside_text: list[str],
+    title: str,
+    *,
+    color: str = BAR_COLOR,
+    top_n: int = TOP_N,
+    xaxis_tickformat: str = "~s",
+    xaxis_ticksuffix: str = "",
+    x_range_pad: float = 1.5,
+) -> go.Figure:
+    """Horizontal bar with large white inside text and secondary outside text.
+
+    inside_text: short primary label (e.g. "146K") — rendered as big white text
+                 centered inside the bar.
+    outside_text: secondary context (e.g. "51% tasks · $9.4B") — smaller gray text
+                  to the right of the bar end.
+    """
+    plot_df = df.head(top_n).copy()
+    ins = inside_text[:top_n]
+    out_ = outside_text[:top_n]
+    max_val = float(plot_df[value_col].max()) if len(plot_df) > 0 else 1.0
+
+    fig = go.Figure()
+
+    # Main bar — large white text inside
+    fig.add_trace(go.Bar(
+        x=plot_df[value_col],
+        y=plot_df[category_col],
+        orientation="h",
+        marker=dict(color=color, line=dict(width=0)),
+        text=ins,
+        textposition="inside",
+        insidetextanchor="middle",
+        textfont=dict(size=INSIDE_FS, color="white", family=FONT_FAMILY),
+        cliponaxis=False,
+    ))
+
+    # Secondary text to the right of each bar via scatter
+    fig.add_trace(go.Scatter(
+        x=plot_df[value_col],
+        y=plot_df[category_col],
+        mode="text",
+        text=out_,
+        textposition="middle right",
+        textfont=dict(size=OUTSIDE_FS, color=COLORS["neutral"], family=FONT_FAMILY),
+        showlegend=False,
+        hoverinfo="skip",
+    ))
+
+    fig.update_yaxes(
+        autorange="reversed",
+        showgrid=False,
+        showline=False,
+        tickfont=dict(size=YAXIS_FS, color=COLORS["text"], family=FONT_FAMILY),
+    )
+
+    _apply_base_style(fig, title)
+
+    fig.update_layout(
+        xaxis=dict(
+            showgrid=True,
+            gridcolor=COLORS["grid"],
+            showticklabels=True,
+            tickformat=xaxis_tickformat,
+            ticksuffix=xaxis_ticksuffix,
+            showline=False,
+            zeroline=False,
+            range=[0, max_val * x_range_pad],
+            tickfont=dict(size=TICK_FS, color=COLORS["neutral"], family=FONT_FAMILY),
+        ),
+        yaxis=dict(
+            showgrid=False,
+            showline=False,
+            tickfont=dict(size=YAXIS_FS, color=COLORS["text"], family=FONT_FAMILY),
+        ),
+        bargap=0.25,
+    )
+
+    return fig
+
+
+# ── Chart 01: Sector scope ─────────────────────────────────────────────────────
+
+def _chart_01_sector_scope(major_df: pd.DataFrame) -> go.Figure:
+    """Top 7 sectors by workers with AI-exposed tasks (Utah)."""
+    df = major_df.sort_values("workers_affected", ascending=False).head(TOP_N).copy()
+    ins = [format_workers(r["workers_affected"]) for _, r in df.iterrows()]
+    out = [
+        f"{r['pct_tasks_affected']:.0f}% of tasks  ·  {format_wages(r['wages_affected'])}"
+        for _, r in df.iterrows()
+    ]
+    return _annotated_bar(
+        df, "category", "workers_affected",
+        ins, out,
+        "Top Utah Sectors: Workers with AI-Exposed Tasks",
+        xaxis_tickformat="~s",
+    )
+
+
+# ── Chart 02: GWA scope ────────────────────────────────────────────────────────
+
+def _chart_02_gwa_scope(gwa_df: pd.DataFrame) -> go.Figure:
+    """Top 7 work activity types by % tasks affected (Utah)."""
+    df = gwa_df.sort_values("pct_tasks_affected", ascending=False).head(TOP_N).copy()
+    ins = [f"{r['pct_tasks_affected']:.0f}%" for _, r in df.iterrows()]
+    out = [
+        f"{format_workers(r['workers_affected'])} workers  ·  {format_wages(r['wages_affected'])}"
+        for _, r in df.iterrows()
+    ]
+    return _annotated_bar(
+        df, "category", "pct_tasks_affected",
+        ins, out,
+        "Most AI-Exposed Types of Work (Utah)",
+        xaxis_tickformat=".0f",
+        xaxis_ticksuffix="%",
+        x_range_pad=1.45,
+    )
+
+
+# ── Chart 03: Sector trend ─────────────────────────────────────────────────────
+
+def _chart_03_sector_trend(
+    first_df: pd.DataFrame, last_df: pd.DataFrame
+) -> go.Figure:
+    """Top 7 sectors by growth in workers affected (Δ first → last date)."""
+    merged = last_df[["category", "workers_affected", "pct_tasks_affected", "wages_affected"]].merge(
+        first_df[["category", "workers_affected", "pct_tasks_affected", "wages_affected"]],
+        on="category", suffixes=("_last", "_first"),
+    )
+    merged["delta_workers"] = merged["workers_affected_last"] - merged["workers_affected_first"]
+    merged["delta_pct"] = merged["pct_tasks_affected_last"] - merged["pct_tasks_affected_first"]
+    merged["delta_wages"] = merged["wages_affected_last"] - merged["wages_affected_first"]
+
+    df = merged[merged["delta_workers"] > 0].sort_values(
+        "delta_workers", ascending=False
+    ).head(TOP_N).copy()
+
+    first_date = TREND_FIRST.split()[-1]
+    last_date = TREND_LAST.split()[-1]
+
+    ins = [f"+{format_workers(r['delta_workers'])}" for _, r in df.iterrows()]
+    out = [
+        f"{r['delta_pct']:+.1f}% tasks  ·  {_sign_wages(r['delta_wages'])}"
+        for _, r in df.iterrows()
+    ]
+    return _annotated_bar(
+        df, "category", "delta_workers",
+        ins, out,
+        f"AI Exposure Growing Fastest: Utah Sectors  ({first_date} → {last_date})",
+        xaxis_tickformat="~s",
+    )
+
+
+# ── Chart 04: GWA trend ────────────────────────────────────────────────────────
+
+def _chart_04_gwa_trend(
+    first_df: pd.DataFrame, last_df: pd.DataFrame
+) -> go.Figure:
+    """Top 7 work activity types by growth in % tasks affected (Δ first → last)."""
+    merged = last_df[["category", "pct_tasks_affected", "workers_affected"]].merge(
+        first_df[["category", "pct_tasks_affected", "workers_affected"]],
+        on="category", suffixes=("_last", "_first"),
+    )
+    merged["delta_pct"] = merged["pct_tasks_affected_last"] - merged["pct_tasks_affected_first"]
+    merged["delta_workers"] = merged["workers_affected_last"] - merged["workers_affected_first"]
+
+    df = merged[merged["delta_pct"] > 0].sort_values(
+        "delta_pct", ascending=False
+    ).head(TOP_N).copy()
+
+    first_date = TREND_FIRST.split()[-1]
+    last_date = TREND_LAST.split()[-1]
+
+    ins = [f"{r['delta_pct']:+.1f}%" for _, r in df.iterrows()]
+    out = [
+        f"{_sign_workers(r['delta_workers'])} workers"
+        for _, r in df.iterrows()
+    ]
+    return _annotated_bar(
+        df, "category", "delta_pct",
+        ins, out,
+        f"AI Exposure Growing Fastest: Types of Work  ({first_date} → {last_date})",
+        xaxis_tickformat=".1f",
+        xaxis_ticksuffix="%",
+        x_range_pad=1.45,
+    )
+
+
+# ── Chart 05: Sector adoption gap ─────────────────────────────────────────────
+
+def _chart_05_sector_gap(
+    confirmed_df: pd.DataFrame, ceiling_df: pd.DataFrame
+) -> go.Figure:
+    """Top 7 sectors by confirmed→ceiling gap in workers (Utah)."""
+    merged = ceiling_df[["category", "workers_affected", "pct_tasks_affected"]].merge(
+        confirmed_df[["category", "workers_affected", "pct_tasks_affected"]],
+        on="category", suffixes=("_ceil", "_conf"),
+    )
+    merged["gap_workers"] = merged["workers_affected_ceil"] - merged["workers_affected_conf"]
+    merged["gap_pct"] = merged["pct_tasks_affected_ceil"] - merged["pct_tasks_affected_conf"]
+
+    df = merged[merged["gap_workers"] > 0].sort_values(
+        "gap_workers", ascending=False
+    ).head(TOP_N).copy()
+
+    ins = [f"+{format_workers(r['gap_workers'])}" for _, r in df.iterrows()]
+    out = [f"+{r['gap_pct']:.1f}% of tasks" for _, r in df.iterrows()]
+    return _annotated_bar(
+        df, "category", "gap_workers",
+        ins, out,
+        "Where AI Could Still Expand: Workers Not Yet Reached by Sector",
+        xaxis_tickformat="~s",
+    )
+
+
+# ── Chart 06: GWA adoption gap ─────────────────────────────────────────────────
+
+def _chart_06_gwa_gap(
+    confirmed_df: pd.DataFrame, ceiling_df: pd.DataFrame
+) -> go.Figure:
+    """Top 7 GWAs by confirmed→ceiling gap in % tasks (Utah)."""
+    merged = ceiling_df[["category", "pct_tasks_affected", "workers_affected"]].merge(
+        confirmed_df[["category", "pct_tasks_affected", "workers_affected"]],
+        on="category", suffixes=("_ceil", "_conf"),
+    )
+    merged["gap_pct"] = merged["pct_tasks_affected_ceil"] - merged["pct_tasks_affected_conf"]
+    merged["gap_workers"] = merged["workers_affected_ceil"] - merged["workers_affected_conf"]
+
+    df = merged[merged["gap_pct"] > 0].sort_values(
+        "gap_pct", ascending=False
+    ).head(TOP_N).copy()
+
+    ins = [f"+{r['gap_pct']:.1f}%" for _, r in df.iterrows()]
+    out = [f"+{format_workers(r['gap_workers'])} workers" for _, r in df.iterrows()]
+    return _annotated_bar(
+        df, "category", "gap_pct",
+        ins, out,
+        "Where AI Could Still Expand: Types of Work",
+        xaxis_tickformat=".1f",
+        xaxis_ticksuffix="%",
+        x_range_pad=1.4,
+    )
+
+
+# ── Chart 07: Conversational vs Agentic overlay ────────────────────────────────
+
+def _chart_07_human_vs_agentic(
+    conv_df: pd.DataFrame, agentic_df: pd.DataFrame
+) -> go.Figure:
+    """Overlaid bars: conversational (light) vs agentic (dark) workers by sector.
+
+    Sorted by conversational workers descending. Tells the story of where AI
+    is active conversationally vs where it is deployed as an autonomous agent.
+    """
+    merged = conv_df[["category", "workers_affected"]].merge(
+        agentic_df[["category", "workers_affected"]],
+        on="category", suffixes=("_conv", "_agt"),
+    )
+    df = merged.sort_values("workers_affected_conv", ascending=False).head(TOP_N).copy()
+
+    max_val = float(df["workers_affected_conv"].max())
+
+    fig = go.Figure()
+
+    # Conversational bar (background) — lighter color, text outside
+    fig.add_trace(go.Bar(
+        x=df["workers_affected_conv"],
+        y=df["category"],
+        orientation="h",
+        name="Conversational AI",
+        marker=dict(color="#a8c4d8", line=dict(width=0)),
+        text=[format_workers(v) for v in df["workers_affected_conv"]],
+        textposition="outside",
+        textfont=dict(
+            size=OUTSIDE_FS, color=COLORS["neutral"], family=FONT_FAMILY
+        ),
+        cliponaxis=False,
+    ))
+
+    # Agentic bar (foreground) — full color, white text inside
+    fig.add_trace(go.Bar(
+        x=df["workers_affected_agt"],
+        y=df["category"],
+        orientation="h",
+        name="Agentic (Tool-Use) AI",
+        marker=dict(color=BAR_COLOR, line=dict(width=0)),
+        text=[format_workers(v) for v in df["workers_affected_agt"]],
+        textposition="inside",
+        insidetextanchor="middle",
+        textfont=dict(size=INSIDE_FS, color="white", family=FONT_FAMILY),
+        cliponaxis=False,
+    ))
+
+    fig.update_layout(barmode="overlay")
+
+    fig.update_yaxes(
+        autorange="reversed",
+        showgrid=False,
+        showline=False,
+        tickfont=dict(size=YAXIS_FS, color=COLORS["text"], family=FONT_FAMILY),
+    )
+
+    _apply_base_style(fig, "Conversational vs. Agentic AI Reach by Sector")
+
+    # Override to show legend for this chart
+    fig.update_layout(
+        showlegend=True,
+        legend=dict(
+            visible=True,
+            orientation="h",
+            yanchor="bottom",
+            y=-0.17,
+            xanchor="center",
+            x=0.5,
+            font=dict(size=LEGEND_FS, color=COLORS["neutral"], family=FONT_FAMILY),
+        ),
+        xaxis=dict(
+            showgrid=True,
+            gridcolor=COLORS["grid"],
+            showticklabels=True,
+            tickformat="~s",
+            showline=False,
+            zeroline=False,
+            range=[0, max_val * 1.45],
+            tickfont=dict(size=TICK_FS, color=COLORS["neutral"], family=FONT_FAMILY),
+        ),
+        yaxis=dict(
+            showgrid=False,
+            showline=False,
+            tickfont=dict(size=YAXIS_FS, color=COLORS["text"], family=FONT_FAMILY),
+        ),
+        bargap=0.25,
+    )
+
+    return fig
+
+
+# ── Charts 08–11: SKA elements ─────────────────────────────────────────────────
+
+def _chart_ska(
+    elements_df: pd.DataFrame,
+    direction: str,
+    domain: str,
+) -> go.Figure:
+    """SKA element chart comparing AI vs average job requirement.
+
+    direction="human": lowest ai_pct_mean (humans lead — AI below avg job need)
+    direction="ai": highest ai_pct_mean (AI leads — AI above avg job need)
+
+    The x-axis represents AI capability as % of the average occupation's
+    requirement for this skill/knowledge element (importance >= 3 filter).
+    100% = AI matches the average job's need in this area.
+    """
+    if direction == "human":
+        df = elements_df.sort_values("ai_pct_mean", ascending=True).head(TOP_N).copy()
+        title = f"{domain.title()} Where Humans Still Outperform AI"
+        color = COLORS["secondary"]
+    else:
+        df = elements_df.sort_values("ai_pct_mean", ascending=False).head(TOP_N).copy()
+        title = f"{domain.title()} Where AI Has Surpassed Average Job Requirements"
+        color = COLORS["accent"]
+
+    max_val = float(df["ai_pct_mean"].max())
+    x_max = max(max_val * 1.3, 135.0)  # ensure parity line is always visible
+
+    ins = [f"{v:.0f}%" for v in df["ai_pct_mean"]]
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Bar(
+        x=df["ai_pct_mean"],
+        y=df["element_name"],
+        orientation="h",
+        marker=dict(color=color, line=dict(width=0)),
+        text=ins,
+        textposition="inside",
+        insidetextanchor="middle",
+        textfont=dict(size=INSIDE_FS, color="white", family=FONT_FAMILY),
+        cliponaxis=False,
+    ))
+
+    fig.update_yaxes(
+        autorange="reversed",
+        showgrid=False,
+        showline=False,
+        tickfont=dict(size=YAXIS_FS, color=COLORS["text"], family=FONT_FAMILY),
+    )
+
+    # Parity reference line with plain-language annotation
+    fig.add_vline(
+        x=100,
+        line_dash="dash",
+        line_color=COLORS["muted"],
+        line_width=2,
+        annotation_text="100% = avg job need in this skill",
+        annotation_position="top right",
+        annotation_font=dict(size=12, color=COLORS["muted"], family=FONT_FAMILY),
+    )
+
+    _apply_base_style(fig, title)
+
+    fig.update_layout(
+        xaxis=dict(
+            showgrid=True,
+            gridcolor=COLORS["grid"],
+            showticklabels=True,
+            tickformat=".0f",
+            ticksuffix="%",
+            showline=False,
+            zeroline=False,
+            range=[0, x_max],
+            tickfont=dict(size=TICK_FS, color=COLORS["neutral"], family=FONT_FAMILY),
+        ),
+        yaxis=dict(
+            showgrid=False,
+            showline=False,
+            tickfont=dict(size=YAXIS_FS, color=COLORS["text"], family=FONT_FAMILY),
+        ),
+        bargap=0.25,
+    )
+
+    return fig
+
+
+# ── Main ───────────────────────────────────────────────────────────────────────
+
+def main() -> None:
+    results = ensure_results_dir(HERE)
+    figs_dir = HERE / "figures"
+    figs_dir.mkdir(exist_ok=True)
+
+    print("workforce_meeting_v2: loading data...")
+
+    print("  Utah major (confirmed)...")
+    major_confirmed = _get_utah_major(PRIMARY_DS)
+
+    print("  Utah major (ceiling)...")
+    major_ceiling = _get_utah_major(CEILING_DS)
+
+    print(f"  Utah major (trend first: {TREND_FIRST})...")
+    major_first = _get_utah_major(TREND_FIRST)
+
+    print("  Utah major (conversational)...")
+    major_conv = _get_utah_major(CONV_DS)
+
+    print("  Utah major (agentic)...")
+    major_agentic = _get_utah_major(AGENTIC_DS)
+
+    print("  Utah GWA (confirmed)...")
+    gwa_confirmed = _get_utah_gwa(PRIMARY_DS)
+
+    print("  Utah GWA (ceiling)...")
+    gwa_ceiling = _get_utah_gwa(CEILING_DS)
+
+    print(f"  Utah GWA (trend first: {TREND_FIRST})...")
+    gwa_first = _get_utah_gwa(TREND_FIRST)
+
+    print("  SKA elements...")
+    ska_elements = _get_ska_elements()
+
+    # ── Generate charts ────────────────────────────────────────────────────────
+    charts: dict[str, go.Figure] = {}
+    print("\n  Generating charts...")
+
+    charts["01_sector_scope"] = _chart_01_sector_scope(major_confirmed)
+    print("    01_sector_scope")
+
+    charts["02_gwa_scope"] = _chart_02_gwa_scope(gwa_confirmed)
+    print("    02_gwa_scope")
+
+    charts["03_sector_trend"] = _chart_03_sector_trend(major_first, major_confirmed)
+    print("    03_sector_trend")
+
+    charts["04_gwa_trend"] = _chart_04_gwa_trend(gwa_first, gwa_confirmed)
+    print("    04_gwa_trend")
+
+    charts["05_sector_adoption_gap"] = _chart_05_sector_gap(
+        major_confirmed, major_ceiling
+    )
+    print("    05_sector_adoption_gap")
+
+    charts["06_gwa_adoption_gap"] = _chart_06_gwa_gap(gwa_confirmed, gwa_ceiling)
+    print("    06_gwa_adoption_gap")
+
+    charts["07_human_vs_agentic"] = _chart_07_human_vs_agentic(
+        major_conv, major_agentic
+    )
+    print("    07_human_vs_agentic")
+
+    for domain in ("skills", "knowledge"):
+        elem_df = ska_elements.get(domain)
+        if elem_df is not None and not elem_df.empty:
+            idx_h = 8 if domain == "skills" else 9
+            idx_a = 10 if domain == "skills" else 11
+            charts[f"{idx_h:02d}_ska_human_{domain}"] = _chart_ska(
+                elem_df, "human", domain
+            )
+            print(f"    {idx_h:02d}_ska_human_{domain}")
+            charts[f"{idx_a:02d}_ska_ai_{domain}"] = _chart_ska(
+                elem_df, "ai", domain
+            )
+            print(f"    {idx_a:02d}_ska_ai_{domain}")
+
+    # ── Save figures ───────────────────────────────────────────────────────────
+    print("\n  Saving figures...")
+    for name, fig in sorted(charts.items()):
+        png_name = f"{name}.png"
+        save_figure(fig, results / "figures" / png_name)
+        shutil.copy(results / "figures" / png_name, figs_dir / png_name)
+        print(f"    {png_name}")
+
+    # ── Generate PDF from report ───────────────────────────────────────────────
+    report_path = HERE / "workforce_meeting_v2_report.md"
+    if report_path.exists():
+        generate_pdf(report_path, results / "workforce_meeting_v2_report.pdf")
+
+    print(f"\nworkforce_meeting_v2: done. {len(charts)} charts generated.")
+
+
+if __name__ == "__main__":
+    main()

@@ -94,14 +94,24 @@ analysis/
 │   │   ├── agentic_profile/     — Cluster by agentic intensity (agentic/confirmed) per sector
 │   │   ├── adoption_gap/        — Cluster by ceiling-confirmed gap ratio per sector
 │   │   └── cluster_convergence/ — ARI matrix + state stability across all 5 schemes
-│   └── time_trends/             — Active question bucket
+│   ├── time_trends/             — Active question bucket
+│   │   ├── README.md
+│   │   ├── time_trends_report.md
+│   │   ├── trajectory_shapes/   — Classify occupations by growth pattern (6 types)
+│   │   ├── tier_churn/          — Exposure tier transitions and sector stability
+│   │   ├── confirmed_ceiling_convergence/ — Confirmed/ceiling ratio trend nationally + by sector
+│   │   ├── wa_tipping_points/   — IWA threshold crossings (10%, 33%, 66%) and approaching IWAs
+│   │   └── occs_timeline/       — Full time-series for the 29 named occupations of interest
+│   ├── workforce_meeting/       — Active question bucket (presentation deliverable)
+│   │   ├── README.md
+│   │   ├── workforce_meeting_report.md
+│   │   ├── run.py
+│   │   └── figures/             — 14 committed chart PNGs
+│   └── workforce_meeting_v2/    — V2: charts only, larger fonts, non-technical framing
 │       ├── README.md
-│       ├── time_trends_report.md
-│       ├── trajectory_shapes/   — Classify occupations by growth pattern (6 types)
-│       ├── tier_churn/          — Exposure tier transitions and sector stability
-│       ├── confirmed_ceiling_convergence/ — Confirmed/ceiling ratio trend nationally + by sector
-│       ├── wa_tipping_points/   — IWA threshold crossings (10%, 33%, 66%) and approaching IWAs
-│       └── occs_timeline/       — Full time-series for the 29 named occupations of interest
+│       ├── workforce_meeting_v2_report.md
+│       ├── run.py
+│       └── figures/             — 11 committed chart PNGs
 ├── question_findings/           — Flat copies of question .md reports
 ├── report/
 │   └── report.md                — Rolling aggregate report
