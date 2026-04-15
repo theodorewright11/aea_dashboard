@@ -352,7 +352,7 @@ def _chart_00_headline(
 
     # Categories — displayed top to bottom (autorange="reversed")
     categories = [
-        "Tasks in At-Risk Occupations",
+        "Tasks Affected",
         "Utah Workers",
         "Utah Wages",
     ]
@@ -360,14 +360,14 @@ def _chart_00_headline(
 
     # White text inside the colored bar: the raw value
     inside_vals = [
-        f"{pct_tasks:.0f}% of tasks",
+        f"{pct_tasks:.0f}% of tasks in workforce",
         format_workers(workers_aff),
         format_wages(wages_aff),
     ]
 
     # Dark text to the right: what % of the total this represents
     outside_vals = [
-        "involve AI in at-risk occupations",
+        "",
         f"{pct_workers:.0f}% of total employment",
         f"{pct_wages:.0f}% of total wage generation",
     ]
