@@ -225,7 +225,7 @@ def _apply_base_style(
     )
     fig.update_layout(
         title=dict(font=dict(size=TITLE_FS, color=COLORS["text"], family=FONT_FAMILY)),
-        margin=dict(l=20, r=400, t=90, b=80),
+        margin=dict(l=20, r=60, t=90, b=80),
     )
     return fig
 
@@ -295,6 +295,7 @@ def _annotated_bar(
     )
 
     _apply_base_style(fig, title, subtitle=subtitle)
+    fig.update_layout(margin=dict(l=20, r=400, t=90, b=80))
 
     xaxis_cfg: dict = dict(
         showgrid=True,
