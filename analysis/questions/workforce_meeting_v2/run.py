@@ -225,7 +225,7 @@ def _apply_base_style(
     )
     fig.update_layout(
         title=dict(font=dict(size=TITLE_FS, color=COLORS["text"], family=FONT_FAMILY)),
-        margin=dict(l=20, r=280, t=90, b=80),
+        margin=dict(l=20, r=400, t=90, b=80),
     )
     return fig
 
@@ -244,7 +244,7 @@ def _annotated_bar(
     xaxis_tickformat: str = "~s",
     xaxis_ticksuffix: str = "",
     xaxis_title: str = "",
-    x_range_pad: float = 1.6,
+    x_range_pad: float = 1.1,
 ) -> go.Figure:
     """Horizontal bar with large white inside text and secondary outside text.
 
@@ -274,9 +274,9 @@ def _annotated_bar(
         cliponaxis=False,
     ))
 
-    # Secondary text to the right of each bar — offset by 4% of max for gap
+    # Secondary text — anchored just past the longest bar so nothing clips
     fig.add_trace(go.Scatter(
-        x=plot_df[value_col] + max_val * 0.04,
+        x=[max_val * 1.04] * len(plot_df),
         y=plot_df[category_col],
         mode="text",
         text=out_,
@@ -284,6 +284,7 @@ def _annotated_bar(
         textfont=dict(size=OUTSIDE_FS, color=COLORS["neutral"], family=FONT_FAMILY),
         showlegend=False,
         hoverinfo="skip",
+        cliponaxis=False,
     ))
 
     fig.update_yaxes(
@@ -372,18 +373,22 @@ def _chart_00_headline(
 
     fig = go.Figure()
 
-    # Background bar — full width (100%) in light color representing the total
+    # Background bar — full width (100%) with the context label inside its right end
     fig.add_trace(go.Bar(
         x=[100, 100, 100],
         y=categories,
         orientation="h",
         marker=dict(color="#d5e5f2", line=dict(width=0)),
+        text=outside_vals,
+        textposition="inside",
+        insidetextanchor="end",
+        textfont=dict(size=OUTSIDE_FS, color=COLORS["text"], family=FONT_FAMILY),
         showlegend=False,
         hoverinfo="skip",
         cliponaxis=False,
     ))
 
-    # Foreground colored bar — the affected share
+    # Foreground colored bar — the affected share, primary value in white
     fig.add_trace(go.Bar(
         x=pct_vals,
         y=categories,
@@ -395,18 +400,6 @@ def _chart_00_headline(
         textfont=dict(size=INSIDE_FS, color="white", family=FONT_FAMILY),
         cliponaxis=False,
         showlegend=False,
-    ))
-
-    # Outside text — % of total in dark color
-    fig.add_trace(go.Scatter(
-        x=[v + 100 * 0.03 for v in pct_vals],
-        y=categories,
-        mode="text",
-        text=outside_vals,
-        textposition="middle right",
-        textfont=dict(size=OUTSIDE_FS, color=COLORS["text"], family=FONT_FAMILY),
-        showlegend=False,
-        hoverinfo="skip",
     ))
 
     fig.update_layout(barmode="overlay")
@@ -429,7 +422,7 @@ def _chart_00_headline(
             ticksuffix="%",
             showline=False,
             zeroline=False,
-            range=[0, 170],
+            range=[0, 100],
             tickfont=dict(size=TICK_FS, color=COLORS["neutral"], family=FONT_FAMILY),
             title=dict(
                 text="% of Total",
@@ -442,7 +435,7 @@ def _chart_00_headline(
             tickfont=dict(size=YAXIS_FS, color=COLORS["text"], family=FONT_FAMILY),
         ),
         bargap=0.45,
-        margin=dict(l=20, r=380, t=90, b=80),
+        margin=dict(l=20, r=60, t=90, b=80),
     )
 
     return fig
@@ -464,7 +457,6 @@ def _chart_01_sector_scope(major_df: pd.DataFrame) -> go.Figure:
         "Top Sectors by Workers Affected Based on AI-Exposed Tasks",
         xaxis_tickformat="~s",
         xaxis_title="Workers Affected",
-        x_range_pad=1.8,
     )
 
 
@@ -485,7 +477,6 @@ def _chart_02_gwa_scope(gwa_df: pd.DataFrame) -> go.Figure:
         xaxis_tickformat=".0f",
         xaxis_ticksuffix="%",
         xaxis_title="% of Tasks Affected",
-        x_range_pad=1.7,
     )
 
 
@@ -521,7 +512,6 @@ def _chart_03_sector_trend(
         f"Top Sectors by Growth in Workers Affected ({first_date} → {last_date})",
         xaxis_tickformat="~s",
         xaxis_title="Change in Workers Affected",
-        x_range_pad=1.8,
     )
 
 
@@ -558,7 +548,6 @@ def _chart_04_gwa_trend(
         xaxis_tickformat=".1f",
         xaxis_ticksuffix="%",
         xaxis_title="Change in % Tasks Affected",
-        x_range_pad=1.7,
     )
 
 
@@ -594,7 +583,6 @@ def _chart_05_sector_gap(
         xaxis_tickformat=".1f",
         xaxis_ticksuffix="%",
         xaxis_title="Untapped Task Coverage (%)",
-        x_range_pad=1.9,
     )
 
 
@@ -629,7 +617,6 @@ def _chart_06_gwa_gap(
         xaxis_tickformat=".1f",
         xaxis_ticksuffix="%",
         xaxis_title="Gap in % Tasks Affected",
-        x_range_pad=1.8,
     )
 
 
