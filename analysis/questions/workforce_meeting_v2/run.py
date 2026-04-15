@@ -525,7 +525,7 @@ def _chart_04_gwa_trend(
     first_date = _fmt_date(TREND_FIRST.split()[-1])
     last_date = _fmt_date(TREND_LAST.split()[-1])
 
-    ins = [f"{r['delta_pct']:+.1f}% tasks" for _, r in df.iterrows()]
+    ins = [f"{r['delta_pct']:+.0f}% tasks" for _, r in df.iterrows()]
     out = [
         f"{_sign_workers(r['delta_workers'])} workers  ·  {_sign_wages(r['delta_wages'])} wages"
         for _, r in df.iterrows()
