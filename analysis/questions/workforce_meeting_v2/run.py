@@ -699,7 +699,7 @@ def _chart_07_human_vs_agentic(
             tickformat="~s",
             showline=False,
             zeroline=False,
-            range=[0, max_val * 1.55],
+            range=[0, max_val * 1.12],
             tickfont=dict(size=TICK_FS, color=COLORS["neutral"], family=FONT_FAMILY),
             title=dict(
                 text="Workers Reached",
@@ -745,7 +745,7 @@ def _chart_ska(
         color = COLORS["accent"]
 
     max_val = float(df["ai_pct_mean"].max())
-    x_max = max(max_val * 1.3, 135.0)  # ensure parity line is always visible
+    x_max = max(max_val * 1.08, 108.0)  # ensure parity line always visible
 
     ins = [f"{v:.0f}%" for v in df["ai_pct_mean"]]
 
