@@ -107,9 +107,13 @@ analysis/
 │   └── report.md                — Rolling aggregate report
 └── exploratory/                 — Gitignored. One-off charts Teddy is curious about.
     │                              Not part of the question system; no reports fed into
-    │                              question_findings/ or report/. Each sub-folder has a
-    │                              run.py, README.md, and results/ (auto-created on run).
-    └── ska_levels/              — AI imp×lv vs. workforce benchmarks for every SKA element
+    │                              question_findings/ or report/. Each sub-folder has:
+    │                              run.py, README.md (metadata: what it produces + run cmd),
+    │                              <name>_report.md (findings writeup with inline figures),
+    │                              and results/ (auto-created on run, gitignored).
+    ├── ska_levels/              — AI imp×lv vs. workforce benchmarks for every SKA element
+    └── zone_pivot_anatomy/      — Why zone 3 peaks on pivot cost; overlap structure and
+                                   sector composition of at-risk occupations by zone
 ```
 
 ---

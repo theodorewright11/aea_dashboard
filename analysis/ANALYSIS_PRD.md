@@ -305,11 +305,20 @@ Groups: High-profile/high-employment · AI-controversial/interesting · Utah-rel
 
 ## Exploratory Folder
 
-`analysis/exploratory/` is gitignored and outside the question system. It holds one-off charts that are interesting but don't belong in a formal question bucket. Each sub-folder has a `run.py`, a `README.md`, and a `results/` directory. Nothing from here feeds into `question_findings/` or `report/`.
+`analysis/exploratory/` is gitignored and outside the question system. It holds one-off charts that are interesting but don't belong in a formal question bucket. Nothing from here feeds into `question_findings/` or `report/`.
+
+Each exploratory sub-folder must have:
+- `run.py` — script that produces all figures
+- `README.md` — folder metadata: what it produces, config used, run command
+- `<name>_report.md` — findings writeup with inline figures and narrative (e.g., `zone_pivot_anatomy_report.md`)
+- `results/` — auto-created on run; figures saved to `results/figures/`; gitignored
+
+The `<name>_report.md` is the primary deliverable. It should read like a short analysis memo — not a bullet list of what the charts show, but a narrative that answers the question that motivated the analysis.
 
 | Sub-folder | What it makes |
 |------------|--------------|
 | `ska_levels/` | AI imp×lv vs. workforce benchmarks (eco mean, top-10, p95) for every SKA element across three AI variants |
+| `zone_pivot_anatomy/` | Why zone 3 peaks on pivot cost; SKA overlap structure, sector composition, and scatter of at-risk occupations by zone |
 
 ---
 

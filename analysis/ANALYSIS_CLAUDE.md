@@ -24,6 +24,8 @@ When writing reports, narratives, or any prose deliverables, follow the writing 
 
 `analysis/exploratory/` is for one-off charts only. Do not put research findings, formal question outputs, or anything that feeds into a report here. Do not sync anything from `exploratory/` to `question_findings/` or `report/`. Do not add `exploratory/` sub-folders to the question catalog in `ANALYSIS_PRD.md` as active question buckets.
 
+Each exploratory sub-folder must have: `run.py`, `README.md` (metadata), `<name>_report.md` (findings writeup with narrative and inline figures), and `results/` (auto-created). The `<name>_report.md` is required — it is the primary deliverable for the analysis.
+
 ---
 
 ## Question Workflow
