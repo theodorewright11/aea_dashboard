@@ -179,6 +179,30 @@ def _get_ska_elements() -> dict[str, pd.DataFrame]:
     return out
 
 
+# ── Utah total employment / wages (denominators for headline %) ────────────────
+
+def _get_utah_totals() -> tuple[float, float]:
+    """Return (total_workers, total_wages) for all Utah occupations.
+
+    Sums emp_tot_ut_2024 across unique occupations in the eco baseline.
+    Total wages = sum of emp * a_med (annual median wage) across unique occs.
+    """
+    from backend.compute import load_eco_raw
+
+    eco = load_eco_raw()
+    assert eco is not None, "Could not load eco baseline"
+
+    emp_col = "emp_tot_ut_2024"
+    wage_col = "a_med_ut_2024"
+
+    # One row per (occupation × task) — deduplicate to one row per occupation
+    occ = eco[["title_current", emp_col, wage_col]].drop_duplicates("title_current")
+
+    total_workers = float(occ[emp_col].fillna(0).sum())
+    total_wages = float((occ[emp_col].fillna(0) * occ[wage_col].fillna(0)).sum())
+    return total_workers, total_wages
+
+
 # ── Chart styling helpers ──────────────────────────────────────────────────────
 
 def _apply_base_style(
@@ -296,6 +320,108 @@ def _annotated_bar(
             tickfont=dict(size=YAXIS_FS, color=COLORS["text"], family=FONT_FAMILY),
         ),
         bargap=0.25,
+    )
+
+    return fig
+
+
+# ── Chart 00: Headline numbers ────────────────────────────────────────────────
+
+def _chart_00_headline(
+    major_df: pd.DataFrame,
+    total_workers: float,
+    total_wages: float,
+) -> go.Figure:
+    """Three big metric tiles: % tasks affected, workers affected, wages affected.
+
+    Workers and wages are shown with their absolute value and as a % of total
+    Utah employment / total Utah wage generation.
+    """
+    # Aggregate across all sectors from confirmed dataset
+    workers_aff = float(major_df["workers_affected"].sum())
+    wages_aff   = float(major_df["wages_affected"].sum())
+
+    # pct_tasks_affected is ratio-of-totals — pull from any single-sector agg
+    # by recomputing: workers_affected / total_workers (approx scope)
+    # Better: use weighted avg from the df itself (workers-weighted pct_tasks)
+    pct_tasks = float(
+        (major_df["pct_tasks_affected"] * major_df["workers_affected"]).sum()
+        / major_df["workers_affected"].sum()
+    )
+
+    pct_workers = workers_aff / total_workers * 100.0 if total_workers else 0.0
+    pct_wages   = wages_aff   / total_wages   * 100.0 if total_wages   else 0.0
+
+    # ── Layout: three equal columns, one metric each ──────────────────────────
+    METRIC_FS  = 72   # giant number
+    LABEL_FS   = 20   # description below number
+    SUBVAL_FS  = 22   # secondary value (% of total)
+
+    # x positions for the three columns (paper coords 0–1)
+    xs = [1/6, 3/6, 5/6]
+    labels = ["of tasks in at-risk\noccupations involve AI", "workers in jobs with\nAI-exposed tasks", "wages in jobs with\nAI-exposed tasks"]
+    big_vals = [
+        f"{pct_tasks:.0f}%",
+        format_workers(workers_aff),
+        format_wages(wages_aff),
+    ]
+    sub_vals = [
+        "",
+        f"{pct_workers:.0f}% of total Utah employment",
+        f"{pct_wages:.0f}% of total Utah wage generation",
+    ]
+
+    fig = go.Figure()
+
+    # Invisible scatter to force a plot area (needed for paper-coord annotations)
+    fig.add_trace(go.Scatter(x=[0, 1], y=[0, 1], mode="markers", marker=dict(opacity=0), showlegend=False, hoverinfo="skip"))
+
+    for i, (x, big, sub, lbl) in enumerate(zip(xs, big_vals, sub_vals, labels)):
+        # Big number
+        fig.add_annotation(
+            x=x, y=0.72, xref="paper", yref="paper",
+            text=f"<b>{big}</b>",
+            showarrow=False,
+            font=dict(size=METRIC_FS, color=COLORS["primary"], family=FONT_FAMILY),
+            xanchor="center", yanchor="middle",
+        )
+        # Description label below number
+        fig.add_annotation(
+            x=x, y=0.42, xref="paper", yref="paper",
+            text=lbl,
+            showarrow=False,
+            font=dict(size=LABEL_FS, color=COLORS["text"], family=FONT_FAMILY),
+            xanchor="center", yanchor="top",
+            align="center",
+        )
+        # Secondary % of total (workers and wages only)
+        if sub:
+            fig.add_annotation(
+                x=x, y=0.12, xref="paper", yref="paper",
+                text=sub,
+                showarrow=False,
+                font=dict(size=SUBVAL_FS, color=COLORS["neutral"], family=FONT_FAMILY),
+                xanchor="center", yanchor="top",
+                align="center",
+            )
+
+        # Vertical divider between columns (skip after last)
+        if i < 2:
+            fig.add_shape(
+                type="line",
+                x0=xs[i] + 1/6 * 0.5, x1=xs[i] + 1/6 * 0.5,
+                y0=0.08, y1=0.95,
+                xref="paper", yref="paper",
+                line=dict(color=COLORS["grid"], width=1.5),
+            )
+
+    _apply_base_style(fig, "AI Exposure in Utah — At a Glance")
+
+    fig.update_layout(
+        xaxis=dict(visible=False),
+        yaxis=dict(visible=False),
+        plot_bgcolor="white",
+        margin=dict(l=40, r=40, t=110, b=40),
     )
 
     return fig
@@ -443,7 +569,7 @@ def _chart_05_sector_gap(
         df, "category", "gap_pct",
         ins, out,
         "Top Sectors by Untapped AI Capability",
-        subtitle="Potential not yet in AEI data — may include MCP servers and custom agentic tools",
+        subtitle="Potential not captured by usage data — capabilities present in custom agentic tools (usage of these unknown)",
         xaxis_tickformat=".1f",
         xaxis_ticksuffix="%",
         xaxis_title="Untapped Task Coverage (%)",
@@ -478,7 +604,7 @@ def _chart_06_gwa_gap(
         df, "category", "gap_pct",
         ins, out,
         "Top Work Activities by Untapped AI Capability",
-        subtitle="Potential not yet in AEI data — may include MCP servers and custom agentic tools",
+        subtitle="Potential not captured by usage data — capabilities present in custom agentic tools (usage of these unknown)",
         xaxis_tickformat=".1f",
         xaxis_ticksuffix="%",
         xaxis_title="Gap in % Tasks Affected",
@@ -721,12 +847,20 @@ def main() -> None:
     print(f"  Utah GWA (trend first: {TREND_FIRST})...")
     gwa_first = _get_utah_gwa(TREND_FIRST)
 
+    print("  Utah totals (employment + wages)...")
+    utah_total_workers, utah_total_wages = _get_utah_totals()
+
     print("  SKA elements...")
     ska_elements = _get_ska_elements()
 
     # ── Generate charts ────────────────────────────────────────────────────────
     charts: dict[str, go.Figure] = {}
     print("\n  Generating charts...")
+
+    charts["00_headline"] = _chart_00_headline(
+        major_confirmed, utah_total_workers, utah_total_wages
+    )
+    print("    00_headline")
 
     charts["01_sector_scope"] = _chart_01_sector_scope(major_confirmed)
     print("    01_sector_scope")

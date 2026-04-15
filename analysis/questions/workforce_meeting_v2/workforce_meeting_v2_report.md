@@ -4,6 +4,8 @@
 
 ---
 
+![](figures/00_headline.png)
+
 ![](figures/01_sector_scope.png)
 
 ![](figures/02_gwa_scope.png)

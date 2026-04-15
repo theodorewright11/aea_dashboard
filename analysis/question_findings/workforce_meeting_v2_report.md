@@ -4,6 +4,8 @@
 
 ---
 
+![](../questions/workforce_meeting_v2/figures/00_headline.png)
+
 ![](../questions/workforce_meeting_v2/figures/01_sector_scope.png)
 
 ![](../questions/workforce_meeting_v2/figures/02_gwa_scope.png)
