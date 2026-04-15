@@ -319,6 +319,7 @@ The `<name>_report.md` is the primary deliverable. It should read like a short a
 |------------|--------------|
 | `ska_levels/` | AI imp×lv vs. workforce benchmarks (eco mean, top-10, p95) for every SKA element across three AI variants |
 | `zone_pivot_anatomy/` | Why zone 3 peaks on pivot cost; SKA overlap structure, sector composition, and scatter of at-risk occupations by zone |
+| `physical_informational_divide/` | Physical vs. informational occupation split (threshold: <33%/>67% physical tasks); GWA/IWA/DWA task distribution for each of six occ_group×task_type combinations; auto-aug comparison across the three groups |
 
 ---
 
