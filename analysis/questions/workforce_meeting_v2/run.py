@@ -332,96 +332,117 @@ def _chart_00_headline(
     total_workers: float,
     total_wages: float,
 ) -> go.Figure:
-    """Three big metric tiles: % tasks affected, workers affected, wages affected.
+    """Three horizontal bars: tasks %, workers, wages.
 
-    Workers and wages are shown with their absolute value and as a % of total
-    Utah employment / total Utah wage generation.
+    Each bar is drawn against a background bar representing 100% of the total.
+    Primary value (raw number) in white inside the colored bar.
+    % of total in dark text to the right.
     """
-    # Aggregate across all sectors from confirmed dataset
     workers_aff = float(major_df["workers_affected"].sum())
     wages_aff   = float(major_df["wages_affected"].sum())
 
-    # pct_tasks_affected is ratio-of-totals — pull from any single-sector agg
-    # by recomputing: workers_affected / total_workers (approx scope)
-    # Better: use weighted avg from the df itself (workers-weighted pct_tasks)
-    pct_tasks = float(
+    pct_tasks   = float(
         (major_df["pct_tasks_affected"] * major_df["workers_affected"]).sum()
         / major_df["workers_affected"].sum()
     )
-
     pct_workers = workers_aff / total_workers * 100.0 if total_workers else 0.0
     pct_wages   = wages_aff   / total_wages   * 100.0 if total_wages   else 0.0
 
-    # ── Layout: three equal columns, one metric each ──────────────────────────
-    METRIC_FS  = 72   # giant number
-    LABEL_FS   = 20   # description below number
-    SUBVAL_FS  = 22   # secondary value (% of total)
+    # Categories — displayed top to bottom (autorange="reversed")
+    categories = [
+        "Tasks in At-Risk Occupations",
+        "Utah Workers",
+        "Utah Wages",
+    ]
+    pct_vals = [pct_tasks, pct_workers, pct_wages]
 
-    # x positions for the three columns (paper coords 0–1)
-    xs = [1/6, 3/6, 5/6]
-    labels = ["of tasks in at-risk\noccupations involve AI", "workers in jobs with\nAI-exposed tasks", "wages in jobs with\nAI-exposed tasks"]
-    big_vals = [
-        f"{pct_tasks:.0f}%",
+    # White text inside the colored bar: the raw value
+    inside_vals = [
+        f"{pct_tasks:.0f}% of tasks",
         format_workers(workers_aff),
         format_wages(wages_aff),
     ]
-    sub_vals = [
-        "",
-        f"{pct_workers:.0f}% of total Utah employment",
-        f"{pct_wages:.0f}% of total Utah wage generation",
+
+    # Dark text to the right: what % of the total this represents
+    outside_vals = [
+        "involve AI in at-risk occupations",
+        f"{pct_workers:.0f}% of total employment",
+        f"{pct_wages:.0f}% of total wage generation",
     ]
 
     fig = go.Figure()
 
-    # Invisible scatter to force a plot area (needed for paper-coord annotations)
-    fig.add_trace(go.Scatter(x=[0, 1], y=[0, 1], mode="markers", marker=dict(opacity=0), showlegend=False, hoverinfo="skip"))
+    # Background bar — full width (100%) in light color representing the total
+    fig.add_trace(go.Bar(
+        x=[100, 100, 100],
+        y=categories,
+        orientation="h",
+        marker=dict(color="#d5e5f2", line=dict(width=0)),
+        showlegend=False,
+        hoverinfo="skip",
+        cliponaxis=False,
+    ))
 
-    for i, (x, big, sub, lbl) in enumerate(zip(xs, big_vals, sub_vals, labels)):
-        # Big number
-        fig.add_annotation(
-            x=x, y=0.72, xref="paper", yref="paper",
-            text=f"<b>{big}</b>",
-            showarrow=False,
-            font=dict(size=METRIC_FS, color=COLORS["primary"], family=FONT_FAMILY),
-            xanchor="center", yanchor="middle",
-        )
-        # Description label below number
-        fig.add_annotation(
-            x=x, y=0.42, xref="paper", yref="paper",
-            text=lbl,
-            showarrow=False,
-            font=dict(size=LABEL_FS, color=COLORS["text"], family=FONT_FAMILY),
-            xanchor="center", yanchor="top",
-            align="center",
-        )
-        # Secondary % of total (workers and wages only)
-        if sub:
-            fig.add_annotation(
-                x=x, y=0.12, xref="paper", yref="paper",
-                text=sub,
-                showarrow=False,
-                font=dict(size=SUBVAL_FS, color=COLORS["neutral"], family=FONT_FAMILY),
-                xanchor="center", yanchor="top",
-                align="center",
-            )
+    # Foreground colored bar — the affected share
+    fig.add_trace(go.Bar(
+        x=pct_vals,
+        y=categories,
+        orientation="h",
+        marker=dict(color=BAR_COLOR, line=dict(width=0)),
+        text=inside_vals,
+        textposition="inside",
+        insidetextanchor="middle",
+        textfont=dict(size=INSIDE_FS, color="white", family=FONT_FAMILY),
+        cliponaxis=False,
+        showlegend=False,
+    ))
 
-        # Vertical divider between columns (skip after last)
-        if i < 2:
-            fig.add_shape(
-                type="line",
-                x0=xs[i] + 1/6 * 0.5, x1=xs[i] + 1/6 * 0.5,
-                y0=0.08, y1=0.95,
-                xref="paper", yref="paper",
-                line=dict(color=COLORS["grid"], width=1.5),
-            )
+    # Outside text — % of total in dark color
+    fig.add_trace(go.Scatter(
+        x=[v + 100 * 0.03 for v in pct_vals],
+        y=categories,
+        mode="text",
+        text=outside_vals,
+        textposition="middle right",
+        textfont=dict(size=OUTSIDE_FS, color=COLORS["text"], family=FONT_FAMILY),
+        showlegend=False,
+        hoverinfo="skip",
+    ))
+
+    fig.update_layout(barmode="overlay")
+
+    fig.update_yaxes(
+        autorange="reversed",
+        showgrid=False,
+        showline=False,
+        tickfont=dict(size=YAXIS_FS, color=COLORS["text"], family=FONT_FAMILY),
+    )
 
     _apply_base_style(fig, "AI Exposure in Utah — At a Glance")
 
     fig.update_layout(
-        xaxis=dict(visible=False),
-        yaxis=dict(visible=False),
-        plot_bgcolor="white",
-        margin=dict(l=40, r=40, t=110, b=40),
+        xaxis=dict(
+            showgrid=True,
+            gridcolor=COLORS["grid"],
+            showticklabels=True,
+            tickformat=".0f",
+            ticksuffix="%",
+            showline=False,
+            zeroline=False,
+            range=[0, 170],
+            tickfont=dict(size=TICK_FS, color=COLORS["neutral"], family=FONT_FAMILY),
+            title=dict(
+                text="% of Total",
+                font=dict(size=TICK_FS, color=COLORS["neutral"], family=FONT_FAMILY),
+            ),
+        ),
+        yaxis=dict(
+            showgrid=False,
+            showline=False,
+            tickfont=dict(size=YAXIS_FS, color=COLORS["text"], family=FONT_FAMILY),
+        ),
+        bargap=0.45,
+        margin=dict(l=20, r=380, t=90, b=80),
     )
 
     return fig
