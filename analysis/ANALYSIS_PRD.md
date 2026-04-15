@@ -303,6 +303,16 @@ Groups: High-profile/high-employment · AI-controversial/interesting · Utah-rel
 
 ---
 
+## Exploratory Folder
+
+`analysis/exploratory/` is gitignored and outside the question system. It holds one-off charts that are interesting but don't belong in a formal question bucket. Each sub-folder has a `run.py`, a `README.md`, and a `results/` directory. Nothing from here feeds into `question_findings/` or `report/`.
+
+| Sub-folder | What it makes |
+|------------|--------------|
+| `ska_levels/` | AI imp×lv vs. workforce benchmarks (eco mean, top-10, p95) for every SKA element across three AI variants |
+
+---
+
 ## What Each Question Delivers
 
 Each sub-question produces:

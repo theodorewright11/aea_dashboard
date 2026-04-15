@@ -20,6 +20,12 @@ When writing reports, narratives, or any prose deliverables, follow the writing 
 
 ---
 
+## Exploratory Folder
+
+`analysis/exploratory/` is for one-off charts only. Do not put research findings, formal question outputs, or anything that feeds into a report here. Do not sync anything from `exploratory/` to `question_findings/` or `report/`. Do not add `exploratory/` sub-folders to the question catalog in `ANALYSIS_PRD.md` as active question buckets.
+
+---
+
 ## Question Workflow
 
 - A question prompt produces outputs for **its own sub-folder only**. It does not touch `report/report.md`. The aggregate report is updated by a separate dedicated prompt.

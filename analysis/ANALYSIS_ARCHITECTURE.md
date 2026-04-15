@@ -103,8 +103,13 @@ analysis/
 │       ├── wa_tipping_points/   — IWA threshold crossings (10%, 33%, 66%) and approaching IWAs
 │       └── occs_timeline/       — Full time-series for the 29 named occupations of interest
 ├── question_findings/           — Flat copies of question .md reports
-└── report/
-    └── report.md                — Rolling aggregate report
+├── report/
+│   └── report.md                — Rolling aggregate report
+└── exploratory/                 — Gitignored. One-off charts Teddy is curious about.
+    │                              Not part of the question system; no reports fed into
+    │                              question_findings/ or report/. Each sub-folder has a
+    │                              run.py, README.md, and results/ (auto-created on run).
+    └── ska_levels/              — AI imp×lv vs. workforce benchmarks for every SKA element
 ```
 
 ---
