@@ -1,6 +1,6 @@
 # Workforce Meeting — Presentation Charts v2
 
-*Config: All Confirmed (AEI Both + Micro 2026-02-12) | Freq | Auto-aug ON | Utah*
+*Config: All Confirmed | Freq | Auto-aug ON | Utah*
 
 ---
 
