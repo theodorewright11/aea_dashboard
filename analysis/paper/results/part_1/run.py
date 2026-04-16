@@ -182,10 +182,10 @@ def build_overview(results: Path, figures: Path) -> None:
         ("pct_tasks",   "% Tasks Affected",
          METRIC_COLORS["tasks"],
          lambda r: f"{r['pct_tasks']:.1f}%"),
-        ("pct_workers", "Workers in AI-Exposed Occupations (% of employment)",
+        ("pct_workers", "Workers in AI-Exposed Occupations (% of economy employment)",
          METRIC_COLORS["workers"],
          lambda r: f"{fmt_workers(r['workers'])}  ({r['pct_workers']:.1f}%)"),
-        ("pct_wages",   "Wages in AI-Exposed Occupations (% of wages)",
+        ("pct_wages",   "Wages in AI-Exposed Occupations (% of economy wages)",
          METRIC_COLORS["wages"],
          lambda r: f"{fmt_wages(r['wages'])}  ({r['pct_wages']:.1f}%)"),
     ]
@@ -282,27 +282,15 @@ def build_convergence(results: Path, figures: Path) -> None:
         col = idx % 2 + 1
         mat = matrices[level]
 
-        text_mat: list[list[str]] = []
-        for i in range(n):
-            row_text: list[str] = []
-            for j in range(n):
-                row_text.append("" if np.isnan(mat[i, j]) else f"{mat[i, j]:.2f}")
-            text_mat.append(row_text)
-
         fig.add_trace(
             go.Heatmap(
                 z=mat.tolist(),
                 x=CORR_LABELS,
                 y=CORR_LABELS,
-                text=text_mat,
-                texttemplate="%{text}",
-                textfont=dict(
-                    size=HEATMAP_TEXT_FS, family=FONT_FAMILY,
-                    color=PAPER_PALETTE["text_dark"],
-                ),
                 colorscale=[[0, HEATMAP_LOW], [1, HEATMAP_HIGH]],
                 zmin=0.4, zmax=1.0,
                 showscale=(idx == 3),
+                hoverinfo="z",
                 colorbar=dict(
                     title=dict(
                         text="Spearman ρ",
@@ -315,23 +303,38 @@ def build_convergence(results: Path, figures: Path) -> None:
             row=row, col=col,
         )
 
+        # Add cell annotations with conditional text color
+        for i in range(n):
+            for j in range(n):
+                val = mat[i, j]
+                if np.isnan(val):
+                    continue
+                txt_color = "white" if val >= 0.70 else PAPER_PALETTE["text_dark"]
+                fig.add_annotation(
+                    x=CORR_LABELS[j], y=CORR_LABELS[i],
+                    text=f"{val:.2f}",
+                    showarrow=False,
+                    font=dict(size=HEATMAP_TEXT_FS, family=FONT_FAMILY, color=txt_color),
+                    xref=f"x{idx + 1}" if idx > 0 else "x",
+                    yref=f"y{idx + 1}" if idx > 0 else "y",
+                )
+
     style_paper_figure(
         fig,
         "Spearman ρ on % Tasks Affected",
         width=PAPER_W,
-        height=PAPER_H + 100,
-        margin=dict(l=20, r=130, t=80, b=40),
+        height=PAPER_H + 120,
+        margin=dict(l=20, r=130, t=90, b=40),
     )
 
-    # Style subplot titles — bigger font, more space from top
+    # Style subplot titles — bigger font
+    agg_title_set = set(AGG_TITLES.values())
     for ann in fig.layout.annotations:
-        if hasattr(ann, "text") and ann.text in AGG_TITLES.values():
+        if hasattr(ann, "text") and ann.text in agg_title_set:
             ann.font = dict(
                 size=LABEL_FS + 1, family=FONT_FAMILY,
                 color=PAPER_PALETTE["text"],
             )
-            # Push panel titles down a bit for breathing room
-            ann.y = (ann.y or 0) - 0.02
 
     # Bump axis tick fonts for all subplots
     for i in range(1, 5):
@@ -477,7 +480,7 @@ def _build_one_table(
 
             # Delta % tasks affected
             dp = r["pct_tasks_affected"] - prev["pct_tasks_affected"]
-            col_dpct.append(f"+{dp:.1f}pp" if dp >= 0 else f"{dp:.1f}pp")
+            col_dpct.append(f"+{dp:.1f}%" if dp >= 0 else f"{dp:.1f}%")
 
             if is_end:
                 date_fills.append(highlight)
@@ -509,11 +512,11 @@ def _build_one_table(
 
     fig = go.Figure(data=[go.Table(
         header=dict(
-            values=["Date", "Tasks", "Δ Tasks<br>(% eco)",
+            values=["Date", "Unique<br>Tasks", "Δ Tasks<br>(% eco)",
+                    "% Tasks<br>Affected", "Δ % Tasks<br>Affected",
                     "Workers", "Δ Workers",
                     "Wages", "Δ Wages",
-                    "AI Capability<br>(0–5)",
-                    "% Tasks<br>Affected", "Δ % Tasks<br>Affected"],
+                    "AI Capability<br>(0–5)"],
             font=dict(size=TABLE_HEADER_FS, family=FONT_FAMILY, color="white"),
             fill_color=header_color,
             align="center",
@@ -521,20 +524,22 @@ def _build_one_table(
         ),
         cells=dict(
             values=[col_date, col_tasks, col_dtasks,
+                    col_pct, col_dpct,
                     col_workers, col_dworkers,
                     col_wages, col_dwages,
-                    col_autoaug, col_pct, col_dpct],
+                    col_autoaug],
             font=dict(size=TABLE_CELL_FS, family=FONT_FAMILY),
             fill_color=[date_fills, neutral_fills, delta_fills,
                         neutral_fills, delta_fills,
                         neutral_fills, delta_fills,
-                        neutral_fills, neutral_fills, delta_fills],
+                        neutral_fills, delta_fills,
+                        neutral_fills],
             align="center",
             height=32,
         ),
     )])
 
-    tbl_height = max(320, n_rows * 36 + 140)
+    tbl_height = max(350, n_rows * 40 + 150)
     style_paper_figure(
         fig,
         label,
