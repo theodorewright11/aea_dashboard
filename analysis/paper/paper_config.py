@@ -36,10 +36,11 @@ CONFIG_COLORS: dict[str, str] = {
 }
 
 # ── Three-metric colors (for overview chart) ─────────────────────────────
+# Blue → teal → gold spectrum: cohesive, professional
 METRIC_COLORS: dict[str, str] = {
-    "tasks":   "#3a5f83",   # Slate blue
-    "workers": "#4a7c6f",   # Teal green
-    "wages":   "#c05621",   # Warm orange
+    "tasks":   "#2c5f7c",   # Deep blue
+    "workers": "#4a8c7c",   # Teal
+    "wages":   "#c4962c",   # Golden amber
 }
 
 # ── Heatmap scale ────────────────────────────────────────────────────────
@@ -51,9 +52,6 @@ TREND_COLORS: dict[str, str] = {
     "all_confirmed": "#3a5f83",
     "all_ceiling":   "#4a7c6f",
 }
-
-# ── Source attribution ───────────────────────────────────────────────────
-SOURCE_LINE: str = "Source: AEA Dashboard — Utah OAIP"
 
 # ── Full palette (consolidated reference) ────────────────────────────────
 PAPER_PALETTE: dict[str, str] = {
@@ -67,22 +65,59 @@ PAPER_PALETTE: dict[str, str] = {
     "page":     COLORS["bg_page"],
     "positive": COLORS["positive"],
     "negative": COLORS["negative"],
+    # Table accent colors
+    "row_start":  "#e8f0f7",   # Light blue for start/end rows
+    "row_end":    "#e8f0f7",
+    "cell_pos":   "#e6f4ea",   # Light green for positive deltas
 }
 
+
+# ── Paper-specific formatters ────────────────────────────────────────────
+
+def fmt_wages(val: float) -> str:
+    """Format wages with T/B/M/K units."""
+    sign = "-" if val < 0 else ""
+    av = abs(val)
+    if av >= 1e12:
+        return f"{sign}${av / 1e12:.1f}T"
+    if av >= 1e9:
+        return f"{sign}${av / 1e9:.1f}B"
+    if av >= 1e6:
+        return f"{sign}${av / 1e6:.1f}M"
+    if av >= 1e3:
+        return f"{sign}${av / 1e3:.0f}K"
+    return f"{sign}${av:.0f}"
+
+
+def fmt_workers(val: float) -> str:
+    """Format workers with M/K units."""
+    sign = "-" if val < 0 else ""
+    av = abs(val)
+    if av >= 1e6:
+        return f"{sign}{av / 1e6:.1f}M"
+    if av >= 1e3:
+        return f"{sign}{av / 1e3:.0f}K"
+    return f"{sign}{int(av)}"
+
+
+# ── Figure styling ───────────────────────────────────────────────────────
 
 def style_paper_figure(
     fig: go.Figure,
     title: str,
     subtitle: str = "",
-    source_text: str = SOURCE_LINE,
     width: int = PAPER_W,
     height: int = PAPER_H,
     margin: dict | None = None,
 ) -> go.Figure:
-    """Apply consistent paper styling to a Plotly figure."""
-    muted = PAPER_PALETTE["muted"]
+    """Apply consistent paper styling to a Plotly figure.
+
+    No source attribution or config subtitle by default — the paper's
+    methods section handles that context.
+    """
     title_html = title
     if subtitle:
+        muted = PAPER_PALETTE["muted"]
         title_html += (
             f"<br><span style='font-size:{SUBTITLE_FS}px;"
             f"color:{muted}'>{subtitle}</span>"
@@ -105,22 +140,10 @@ def style_paper_figure(
         legend=dict(
             font=dict(size=LEGEND_FS, family=FONT_FAMILY),
             orientation="h",
-            yanchor="top", y=-0.10, xanchor="left", x=0,
+            yanchor="top", y=-0.08, xanchor="left", x=0,
         ),
     )
 
-    # Source attribution
-    if source_text:
-        fig.add_annotation(
-            text=source_text,
-            xref="paper", yref="paper",
-            x=1.0, y=-0.10,
-            showarrow=False,
-            font=dict(size=ANNOT_FS, color=PAPER_PALETTE["muted"], family=FONT_FAMILY),
-            xanchor="right",
-        )
-
-    # Gridlines
     fig.update_xaxes(
         gridcolor=PAPER_PALETTE["grid"],
         tickfont=dict(size=TICK_FS, family=FONT_FAMILY),

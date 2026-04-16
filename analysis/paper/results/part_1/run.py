@@ -4,7 +4,7 @@ Part 1 — Scale, Convergence, Growth
 Three chart groups for the first section of the Results chapter:
 1. Overview: Five-config aggregate economic footprint (grouped horizontal bars)
 2. Convergence: Spearman rank correlation across four independent sources (2x2 heatmaps)
-3. Temporal: Task penetration growth over time (line chart + delta table)
+3. Temporal: Task penetration growth over time (line chart + delta tables)
 
 Run from project root:
     venv/Scripts/python -m analysis.paper.results.part_1.run
@@ -27,21 +27,16 @@ from analysis.config import (
     ROOT,
     ensure_results_dir,
 )
-from analysis.utils import (
-    save_figure,
-    save_csv,
-    FONT_FAMILY,
-    format_workers,
-    format_wages,
-)
+from analysis.utils import FONT_FAMILY
 from analysis.paper.paper_config import (
     PAPER_W, PAPER_H,
     TITLE_FS, SUBTITLE_FS, INSIDE_FS, OUTSIDE_FS, TICK_FS, LABEL_FS,
     LEGEND_FS, ANNOT_FS, HEATMAP_TEXT_FS,
-    CONFIG_COLORS, METRIC_COLORS, HEATMAP_LOW, HEATMAP_HIGH,
-    TREND_COLORS, PAPER_PALETTE, SOURCE_LINE,
-    style_paper_figure,
+    METRIC_COLORS, HEATMAP_LOW, HEATMAP_HIGH,
+    TREND_COLORS, PAPER_PALETTE,
+    style_paper_figure, fmt_wages, fmt_workers,
 )
+from analysis.utils import save_figure, save_csv
 
 HERE = Path(__file__).resolve().parent
 DATA_DIR = ROOT / "data"
@@ -56,7 +51,6 @@ CONFIG_ORDER: list[str] = [
 ]
 
 # ── Correlation sources (four independent AI measurement instruments) ────
-# Using pure cumulative datasets — no cross-source contamination
 CORR_SOURCES: dict[str, dict[str, str]] = {
     "claude":     {"dataset": "AEI Conv 2026-02-12",  "label": "Claude"},
     "claude_api": {"dataset": "AEI API 2026-02-12",   "label": "Claude API"},
@@ -74,7 +68,6 @@ AGG_TITLES: dict[str, str] = {
     "occupation": "Occ level",
 }
 
-# ── Trend configs ────────────────────────────────────────────────────────
 TREND_CONFIGS: list[str] = ["all_confirmed", "all_ceiling"]
 
 
@@ -85,20 +78,23 @@ TREND_CONFIGS: list[str] = ["all_confirmed", "all_ceiling"]
 def _get_national_totals() -> tuple[float, float]:
     """Return (total_employment, total_wage_bill) from eco_2025."""
     from backend.compute import load_eco_raw
-
     eco = load_eco_raw()
     occ = eco.drop_duplicates(subset=["title_current"])
-    emp_col = "emp_tot_nat_2024"
-    wage_col = "a_med_nat_2024"
-    total_emp = float(occ[emp_col].sum())
-    total_wages = float((occ[emp_col] * occ[wage_col]).sum())
+    total_emp = float(occ["emp_tot_nat_2024"].sum())
+    total_wages = float((occ["emp_tot_nat_2024"] * occ["a_med_nat_2024"]).sum())
     return total_emp, total_wages
+
+
+def _get_eco_task_count() -> int:
+    """Count unique tasks in eco_2025."""
+    from backend.compute import load_eco_raw
+    eco = load_eco_raw()
+    return int(eco["task_normalized"].nunique())
 
 
 def _run_config(dataset_name: str, agg_level: str = "occupation") -> pd.DataFrame:
     """Run the compute pipeline for one dataset at the given agg level."""
     from backend.compute import get_group_data
-
     config = {
         "selected_datasets": [dataset_name],
         "combine_method": "Average",
@@ -123,7 +119,6 @@ def _run_config(dataset_name: str, agg_level: str = "occupation") -> pd.DataFram
 def _count_tasks(dataset_name: str) -> int:
     """Count unique tasks in a dataset's raw CSV."""
     from backend.config import DATASETS
-
     meta = DATASETS.get(dataset_name)
     if meta is None:
         return 0
@@ -134,11 +129,22 @@ def _count_tasks(dataset_name: str) -> int:
     return int(df["task_normalized"].nunique())
 
 
+def _avg_auto_aug(dataset_name: str) -> float:
+    """Average auto_aug_mean across unique tasks in a dataset."""
+    from backend.config import DATASETS
+    meta = DATASETS.get(dataset_name)
+    if meta is None:
+        return 0.0
+    fpath = Path(meta["file"])
+    if not fpath.exists():
+        return 0.0
+    df = pd.read_csv(fpath, usecols=["task_normalized", "auto_aug_mean"])
+    task_avg = df.groupby("task_normalized")["auto_aug_mean"].mean()
+    return float(task_avg.mean())
+
+
 def _copy_fig(results: Path, figures: Path, name: str) -> None:
-    """Copy a figure from results/figures/ to the committed figures/ dir."""
-    src = results / "figures" / name
-    dst = figures / name
-    shutil.copy(src, dst)
+    shutil.copy(results / "figures" / name, figures / name)
 
 
 # ─────────────────────────────────────────────────────────────────────────
@@ -146,7 +152,7 @@ def _copy_fig(results: Path, figures: Path, name: str) -> None:
 # ─────────────────────────────────────────────────────────────────────────
 
 def build_overview(results: Path, figures: Path) -> None:
-    """Grouped horizontal bars: three metrics × five configs."""
+    """Grouped horizontal bars: three metrics x five configs."""
     total_emp, total_wages = _get_national_totals()
 
     rows: list[dict] = []
@@ -157,75 +163,70 @@ def build_overview(results: Path, figures: Path) -> None:
 
         workers = float(df["workers_affected"].sum())
         wages = float(df["wages_affected"].sum())
+        pct_tasks = float(df["pct_tasks_affected"].mean())  # unweighted mean
         pct_workers = workers / total_emp * 100
         pct_wages = wages / total_wages * 100
 
         rows.append({
-            "config": key,
-            "label": label,
+            "config": key, "label": label,
+            "pct_tasks": round(pct_tasks, 1),
             "pct_workers": round(pct_workers, 1),
             "pct_wages": round(pct_wages, 1),
-            "workers": workers,
-            "wages": wages,
+            "workers": workers, "wages": wages,
         })
-        print(f"  {label}: {format_workers(workers)} ({pct_workers:.1f}%), "
-              f"{format_wages(wages)} ({pct_wages:.1f}%)")
+        print(f"  {label}: {pct_tasks:.1f}% tasks, "
+              f"{fmt_workers(workers)} ({pct_workers:.1f}%), "
+              f"{fmt_wages(wages)} ({pct_wages:.1f}%)")
 
     save_csv(pd.DataFrame(rows), results / "overview_totals.csv")
 
-    # ── Build grouped horizontal bar chart ───────────────────────────
+    # ── Build chart ──────────────────────────────────────────────────
     fig = go.Figure()
-
-    # Reversed so first config is at top
-    plot_rows = list(reversed(rows))
+    plot_rows = list(reversed(rows))  # top = first config
     labels = [r["label"] for r in plot_rows]
 
-    # Workers bar
-    fig.add_trace(go.Bar(
-        y=labels,
-        x=[r["pct_workers"] for r in plot_rows],
-        name="Workers Affected (% of employment)",
-        orientation="h",
-        marker=dict(color=METRIC_COLORS["workers"], line=dict(width=0)),
-        text=[f"{format_workers(r['workers'])}  ({r['pct_workers']:.1f}%)" for r in plot_rows],
-        textposition="inside",
-        insidetextanchor="middle",
-        textfont=dict(size=INSIDE_FS, color="white", family=FONT_FAMILY),
-    ))
+    metrics = [
+        ("pct_tasks",   "% Tasks Affected",
+         METRIC_COLORS["tasks"],
+         lambda r: f"{r['pct_tasks']:.1f}%"),
+        ("pct_workers", "Workers Affected (% of employment)",
+         METRIC_COLORS["workers"],
+         lambda r: f"{fmt_workers(r['workers'])}  ({r['pct_workers']:.1f}%)"),
+        ("pct_wages",   "Wages Affected (% of wages)",
+         METRIC_COLORS["wages"],
+         lambda r: f"{fmt_wages(r['wages'])}  ({r['pct_wages']:.1f}%)"),
+    ]
 
-    # Wages bar
-    fig.add_trace(go.Bar(
-        y=labels,
-        x=[r["pct_wages"] for r in plot_rows],
-        name="Wages Affected (% of wage bill)",
-        orientation="h",
-        marker=dict(color=METRIC_COLORS["wages"], line=dict(width=0)),
-        text=[f"{format_wages(r['wages'])}  ({r['pct_wages']:.1f}%)" for r in plot_rows],
-        textposition="inside",
-        insidetextanchor="middle",
-        textfont=dict(size=INSIDE_FS, color="white", family=FONT_FAMILY),
-    ))
+    for pct_key, name, color, fmt_fn in metrics:
+        fig.add_trace(go.Bar(
+            y=labels,
+            x=[r[pct_key] for r in plot_rows],
+            name=name,
+            orientation="h",
+            marker=dict(color=color, line=dict(width=0)),
+            text=[fmt_fn(r) for r in plot_rows],
+            textposition="inside",
+            insidetextanchor="middle",
+            textfont=dict(size=INSIDE_FS, color="white", family=FONT_FAMILY),
+        ))
 
     fig.update_layout(
         barmode="group",
-        bargap=0.30,
-        bargroupgap=0.05,
+        bargap=0.25,
+        bargroupgap=0.06,
         xaxis=dict(
             title="% of National Total",
             range=[0, 60],
             ticksuffix="%",
-            tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
         ),
-        yaxis=dict(
-            tickfont=dict(size=LABEL_FS, family=FONT_FAMILY),
-        ),
+        yaxis=dict(tickfont=dict(size=LABEL_FS, family=FONT_FAMILY)),
     )
 
     style_paper_figure(
         fig,
         "Aggregate AI Economic Footprint — Five Configurations",
-        subtitle="National | Freq | Auto-aug ON",
-        margin=dict(l=20, r=60, t=90, b=90),
+        height=PAPER_H + 40,
+        margin=dict(l=20, r=60, t=70, b=80),
     )
 
     save_figure(fig, results / "figures" / "overview.png")
@@ -241,7 +242,6 @@ def build_convergence(results: Path, figures: Path) -> None:
     """2x2 heatmap grid: lower-triangle Spearman rho at four agg levels."""
     n = len(CORR_ORDER)
 
-    # Gather pct_tasks_affected per source per agg_level
     source_data: dict[str, dict[str, pd.Series]] = {}
     for skey in CORR_ORDER:
         ds = CORR_SOURCES[skey]["dataset"]
@@ -252,14 +252,13 @@ def build_convergence(results: Path, figures: Path) -> None:
             source_data[skey][level] = df.set_index("category")["pct_tasks_affected"]
         print(f"  {lbl}: loaded all levels")
 
-    # Compute pairwise Spearman for each level
     corr_records: list[dict] = []
     matrices: dict[str, np.ndarray] = {}
 
     for level in AGG_LEVELS:
         mat = np.full((n, n), np.nan)
         for i in range(n):
-            for j in range(i):  # lower triangle only
+            for j in range(i):
                 si = source_data[CORR_ORDER[i]][level]
                 sj = source_data[CORR_ORDER[j]][level]
                 merged = pd.concat([si, sj], axis=1, join="inner").dropna()
@@ -279,12 +278,12 @@ def build_convergence(results: Path, figures: Path) -> None:
 
     save_csv(pd.DataFrame(corr_records), results / "spearman_by_level.csv")
 
-    # ── Build 2×2 heatmap grid ───────────────────────────────────────
+    # ── Build 2x2 heatmap grid — tighter spacing ────────────────────
     fig = make_subplots(
         rows=2, cols=2,
         subplot_titles=[AGG_TITLES[l] for l in AGG_LEVELS],
-        horizontal_spacing=0.14,
-        vertical_spacing=0.14,
+        horizontal_spacing=0.08,
+        vertical_spacing=0.10,
     )
 
     for idx, level in enumerate(AGG_LEVELS):
@@ -292,15 +291,11 @@ def build_convergence(results: Path, figures: Path) -> None:
         col = idx % 2 + 1
         mat = matrices[level]
 
-        # Build text annotations — show values in lower triangle only
         text_mat: list[list[str]] = []
         for i in range(n):
             row_text: list[str] = []
             for j in range(n):
-                if np.isnan(mat[i, j]):
-                    row_text.append("")
-                else:
-                    row_text.append(f"{mat[i, j]:.2f}")
+                row_text.append("" if np.isnan(mat[i, j]) else f"{mat[i, j]:.2f}")
             text_mat.append(row_text)
 
         fig.add_trace(
@@ -312,13 +307,11 @@ def build_convergence(results: Path, figures: Path) -> None:
                 texttemplate="%{text}",
                 textfont=dict(size=HEATMAP_TEXT_FS, family=FONT_FAMILY),
                 colorscale=[[0, HEATMAP_LOW], [1, HEATMAP_HIGH]],
-                zmin=0.4,
-                zmax=1.0,
+                zmin=0.4, zmax=1.0,
                 showscale=(idx == 3),
                 colorbar=dict(
                     title=dict(text="Spearman ρ", font=dict(size=LABEL_FS)),
-                    len=0.45,
-                    y=0.22,
+                    len=0.45, y=0.22,
                     tickfont=dict(size=TICK_FS),
                 ),
             ),
@@ -331,7 +324,7 @@ def build_convergence(results: Path, figures: Path) -> None:
         subtitle="Spearman ρ on pct_tasks_affected | Four independent sources",
         width=PAPER_W,
         height=PAPER_H + 80,
-        margin=dict(l=20, r=120, t=100, b=60),
+        margin=dict(l=20, r=110, t=110, b=40),
     )
 
     # Style subplot titles
@@ -348,12 +341,13 @@ def build_convergence(results: Path, figures: Path) -> None:
 
 
 # ─────────────────────────────────────────────────────────────────────────
-# Chart 3: Temporal — Growth Trends
+# Chart 3: Temporal — Growth Trends + Data Tables
 # ─────────────────────────────────────────────────────────────────────────
 
-def build_temporal(results: Path, figures: Path) -> None:
-    """Line chart of % tasks affected over time + delta table."""
+def _build_trend_data() -> pd.DataFrame:
+    """Compute metrics at each date for confirmed and ceiling configs."""
     total_emp, total_wages = _get_national_totals()
+    eco_tasks = _get_eco_task_count()
 
     trend_rows: list[dict] = []
     for config_key in TREND_CONFIGS:
@@ -365,37 +359,162 @@ def build_temporal(results: Path, figures: Path) -> None:
 
             workers = float(df["workers_affected"].sum())
             wages = float(df["wages_affected"].sum())
-            pct = workers / total_emp * 100
+            pct_emp = workers / total_emp * 100
             n_tasks = _count_tasks(ds_name)
+            auto_aug = _avg_auto_aug(ds_name)
+            coverage = n_tasks / eco_tasks * 100
 
             trend_rows.append({
                 "config": config_key,
                 "label": label,
                 "date": date_str,
                 "dataset": ds_name,
-                "pct_of_employment": round(pct, 1),
-                "workers_affected": round(workers),
-                "wages_affected": round(wages),
+                "pct_of_employment": round(pct_emp, 1),
+                "workers": workers,
+                "wages": wages,
                 "n_tasks": n_tasks,
+                "avg_auto_aug": round(auto_aug, 2),
+                "task_coverage_pct": round(coverage, 1),
+                "eco_tasks": eco_tasks,
             })
-            print(f"  {label} {date_str}: {pct:.1f}%, {format_workers(workers)}, "
-                  f"{n_tasks} tasks")
+            print(f"  {label} {date_str}: {pct_emp:.1f}%, "
+                  f"{fmt_workers(workers)}, {n_tasks} tasks, "
+                  f"auto-aug {auto_aug:.2f}, coverage {coverage:.1f}%")
 
-    trend_df = pd.DataFrame(trend_rows)
+    return pd.DataFrame(trend_rows)
 
-    # Compute deltas between consecutive dates within each config
-    for config_key in TREND_CONFIGS:
-        mask = trend_df["config"] == config_key
-        subset = trend_df.loc[mask].sort_values("date")
-        idx = subset.index
-        trend_df.loc[idx, "delta_pct"] = subset["pct_of_employment"].diff()
-        trend_df.loc[idx, "delta_workers"] = subset["workers_affected"].diff()
-        trend_df.loc[idx, "delta_wages"] = subset["wages_affected"].diff()
-        trend_df.loc[idx, "delta_tasks"] = subset["n_tasks"].diff()
 
+def _build_one_table(
+    trend_df: pd.DataFrame,
+    config_key: str,
+    results: Path,
+    figures: Path,
+) -> None:
+    """Build a growth-data table figure for one config."""
+    label = ANALYSIS_CONFIG_LABELS[config_key]
+    sub = trend_df[trend_df["config"] == config_key].sort_values("date").reset_index(drop=True)
+
+    if sub.empty:
+        return
+
+    eco_tasks = int(sub.iloc[0]["eco_tasks"])
+
+    # Build table rows
+    col_date: list[str] = []
+    col_tasks: list[str] = []
+    col_dtasks: list[str] = []
+    col_workers: list[str] = []
+    col_dworkers: list[str] = []
+    col_wages: list[str] = []
+    col_dwages: list[str] = []
+    col_autoaug: list[str] = []
+    col_coverage: list[str] = []
+
+    # Cell fill colors (one per row, for delta columns)
+    fill_colors: list[str] = []
+    pos_fill = PAPER_PALETTE["cell_pos"]
+    start_fill = PAPER_PALETTE["row_start"]
+    white = PAPER_PALETTE["surface"]
+
+    for i, (_, r) in enumerate(sub.iterrows()):
+        is_start = (i == 0)
+        is_end = (i == len(sub) - 1)
+
+        # Date label
+        if is_start:
+            col_date.append(f"Start: {r['date']}")
+        elif is_end:
+            col_date.append(f"End: {r['date']}")
+        else:
+            col_date.append(r["date"])
+
+        col_tasks.append(f"{int(r['n_tasks']):,}")
+        col_workers.append(fmt_workers(r["workers"]))
+        col_wages.append(fmt_wages(r["wages"]))
+        col_autoaug.append(f"{r['avg_auto_aug']:.2f}")
+        col_coverage.append(f"{r['task_coverage_pct']:.1f}%")
+
+        if is_start:
+            col_dtasks.append("—")
+            col_dworkers.append("—")
+            col_dwages.append("—")
+            fill_colors.append(start_fill)
+        else:
+            prev = sub.iloc[i - 1]
+            dt = int(r["n_tasks"] - prev["n_tasks"])
+            dt_pct = dt / eco_tasks * 100
+            col_dtasks.append(f"+{dt_pct:.1f}%" if dt >= 0 else f"{dt_pct:.1f}%")
+
+            dw = r["workers"] - prev["workers"]
+            dw_pct = dw / prev["workers"] * 100 if prev["workers"] else 0
+            col_dworkers.append(
+                f"{'+' if dw >= 0 else ''}{fmt_workers(dw)} "
+                f"({'+' if dw_pct >= 0 else ''}{dw_pct:.1f}%)"
+            )
+
+            dwg = r["wages"] - prev["wages"]
+            dwg_pct = dwg / prev["wages"] * 100 if prev["wages"] else 0
+            col_dwages.append(
+                f"{'+' if dwg >= 0 else ''}{fmt_wages(dwg)} "
+                f"({'+' if dwg_pct >= 0 else ''}{dwg_pct:.1f}%)"
+            )
+
+            fill_colors.append(pos_fill if dw > 0 else white)
+
+    # End row gets the start-row styling too
+    fill_colors[-1] = start_fill
+
+    # Build column fill arrays (per-cell coloring)
+    n_rows = len(col_date)
+    neutral_fills = [white] * n_rows
+    date_fills = [start_fill if i == 0 or i == n_rows - 1 else white for i in range(n_rows)]
+
+    header_color = PAPER_PALETTE["all_confirmed"] if "confirmed" in config_key else PAPER_PALETTE["all_ceiling"]
+
+    fig = go.Figure(data=[go.Table(
+        header=dict(
+            values=["Date", "Tasks", "Δ Tasks<br>(% eco)", "Workers",
+                    "Δ Workers", "Wages", "Δ Wages",
+                    "Avg<br>Auto-aug", "Task<br>Coverage"],
+            font=dict(size=LABEL_FS, family=FONT_FAMILY, color="white"),
+            fill_color=header_color,
+            align="center",
+            height=38,
+        ),
+        cells=dict(
+            values=[col_date, col_tasks, col_dtasks, col_workers,
+                    col_dworkers, col_wages, col_dwages,
+                    col_autoaug, col_coverage],
+            font=dict(size=TICK_FS + 1, family=FONT_FAMILY),
+            fill_color=[date_fills, neutral_fills, fill_colors,
+                        neutral_fills, fill_colors,
+                        neutral_fills, fill_colors,
+                        neutral_fills, neutral_fills],
+            align="center",
+            height=32,
+        ),
+    )])
+
+    tbl_height = max(300, n_rows * 36 + 140)
+    style_paper_figure(
+        fig,
+        f"Growth Data — {label}",
+        height=tbl_height,
+        margin=dict(l=10, r=10, t=60, b=20),
+    )
+
+    fname = f"temporal_table_{config_key}.png"
+    save_figure(fig, results / "figures" / fname)
+    _copy_fig(results, figures, fname)
+    print(f"  -> {fname}")
+
+
+def build_temporal(results: Path, figures: Path) -> None:
+    """Line chart + two data tables."""
+    trend_df = _build_trend_data()
     save_csv(trend_df, results / "trend_data.csv")
 
-    # ── Line chart: % of employment over time ────────────────────────
+    # ── Line chart ───────────────────────────────────────────────────
     fig = go.Figure()
 
     for config_key in TREND_CONFIGS:
@@ -427,66 +546,16 @@ def build_temporal(results: Path, figures: Path) -> None:
     style_paper_figure(
         fig,
         "AI Task Exposure Is Growing — Confirmed Usage Tracks Toward Ceiling",
-        subtitle="National | Freq | Auto-aug ON",
-        margin=dict(l=60, r=40, t=90, b=90),
+        margin=dict(l=60, r=40, t=70, b=70),
     )
 
     save_figure(fig, results / "figures" / "temporal_trend.png")
     _copy_fig(results, figures, "temporal_trend.png")
     print("  -> temporal_trend.png")
 
-    # ── Delta table as PNG ───────────────────────────────────────────
-    delta_rows = trend_df[trend_df["delta_pct"].notna()].copy()
-    delta_rows = delta_rows.sort_values(["config", "date"])
-
-    table_data: list[dict] = []
-    for _, r in delta_rows.iterrows():
-        dt = int(r["delta_tasks"])
-        dw = r["delta_workers"]
-        dwg = r["delta_wages"]
-        dp = r["delta_pct"]
-        table_data.append({
-            "Config": r["label"],
-            "Date": r["date"],
-            "New Tasks": f"+{dt:,}" if dt > 0 else f"{dt:,}",
-            "Delta Workers": ("+" if dw > 0 else "") + format_workers(dw),
-            "Delta Wages": ("+" if dwg > 0 else "") + format_wages(dwg),
-            "Delta % Emp": f"+{dp:.1f}pp" if dp > 0 else f"{dp:.1f}pp",
-        })
-
-    delta_table = pd.DataFrame(table_data)
-    save_csv(delta_table, results / "trend_deltas.csv")
-
-    # Render table as Plotly figure
-    fig_table = go.Figure(data=[go.Table(
-        header=dict(
-            values=list(delta_table.columns),
-            font=dict(size=LABEL_FS, family=FONT_FAMILY, color="white"),
-            fill_color=PAPER_PALETTE["all_confirmed"],
-            align="center",
-            height=36,
-        ),
-        cells=dict(
-            values=[delta_table[col] for col in delta_table.columns],
-            font=dict(size=TICK_FS + 1, family=FONT_FAMILY),
-            fill_color=PAPER_PALETTE["surface"],
-            align="center",
-            height=32,
-        ),
-    )])
-
-    tbl_height = max(350, len(delta_table) * 36 + 160)
-    style_paper_figure(
-        fig_table,
-        "Growth Per Dataset Update",
-        subtitle="Change from previous date | National | Freq | Auto-aug ON",
-        height=tbl_height,
-        margin=dict(l=20, r=20, t=80, b=40),
-    )
-
-    save_figure(fig_table, results / "figures" / "temporal_deltas.png")
-    _copy_fig(results, figures, "temporal_deltas.png")
-    print("  -> temporal_deltas.png")
+    # ── Data tables (one per config) ─────────────────────────────────
+    for config_key in TREND_CONFIGS:
+        _build_one_table(trend_df, config_key, results, figures)
 
 
 # ─────────────────────────────────────────────────────────────────────────
@@ -508,7 +577,7 @@ def main() -> None:
     print("\n[2/3] Convergence: Source correlation heatmaps")
     build_convergence(results, figures)
 
-    print("\n[3/3] Temporal: Growth trends")
+    print("\n[3/3] Temporal: Growth trends + data tables")
     build_temporal(results, figures)
 
     print("\n" + "=" * 60)
