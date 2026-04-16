@@ -512,7 +512,7 @@ def _build_one_table(
 
     fig = go.Figure(data=[go.Table(
         header=dict(
-            values=["Date", "Unique<br>Tasks", "Δ Tasks<br>(% eco)",
+            values=["Date", "Unique Tasks<br>Rated", "Δ Unique<br>Tasks Rated",
                     "% Tasks<br>Affected", "Δ % Tasks<br>Affected",
                     "Workers", "Δ Workers",
                     "Wages", "Δ Wages",
