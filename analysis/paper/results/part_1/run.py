@@ -457,10 +457,13 @@ def _build_one_table(
         else:
             prev = sub.iloc[i - 1]
 
-            # Delta tasks as % of eco
+            # Delta tasks: absolute + %
             dt = int(r["n_tasks"] - prev["n_tasks"])
-            dt_pct = dt / eco_tasks * 100
-            col_dtasks.append(f"+{dt_pct:.1f}%" if dt >= 0 else f"{dt_pct:.1f}%")
+            dt_pct = dt / prev["n_tasks"] * 100 if prev["n_tasks"] else 0
+            col_dtasks.append(
+                f"{'+' if dt >= 0 else ''}{dt:,} "
+                f"({'+' if dt_pct >= 0 else ''}{dt_pct:.1f}%)"
+            )
 
             # Delta workers: absolute + %
             dw = r["workers"] - prev["workers"]
