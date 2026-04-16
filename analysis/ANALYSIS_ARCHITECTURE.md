@@ -134,9 +134,10 @@ analysis/
     ├── zone_pivot_anatomy/      — Why zone 3 peaks on pivot cost; overlap structure and
     │                              sector composition of at-risk occupations by zone
     └── physical_informational_divide/ — Physical vs. informational occupation split;
-                                   GWA/IWA/DWA task distributions for 6 occ_group×task_type
-                                   combinations; auto-aug comparison; pct_tasks_affected
-                                   distribution; IWA workers concentration; auto-aug vs pct scatter
+                                   structural task distributions (GWA/IWA/DWA 3×2 panels);
+                                   AI exposure analysis: pct distribution, IWA workers
+                                   concentration, auto-aug breakdown (task type × coverage ×
+                                   dataset), GWA concentration curve, auto-aug vs pct scatter
 ```
 
 ---
