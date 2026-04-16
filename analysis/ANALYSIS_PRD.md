@@ -301,6 +301,36 @@ V2 changes: charts only (no narrative text), 11 charts (headline/pivot cost/auto
 
 ---
 
+## Paper
+
+The `analysis/paper/` folder contains infrastructure for the AEA research paper. The paper is assembled from `.md` files — one per section — which will be stitched together once all parts are complete.
+
+### Structure
+
+```
+paper/
+├── paper_config.py           — PAPER_PALETTE, chart formatting, style_paper_figure()
+├── writing_style_source.md   — ~30 pages of source writing for style calibration
+├── paper_writing_style.md    — Condensed dos and don'ts for paper writing
+├── results/                  — Results section
+│   ├── part_1/               — Scale, Convergence, Growth (charts: overview, correlation, trends)
+│   ├── part_2/               — (TBD)
+│   └── part_3/               — (TBD)
+```
+
+### Writing Style
+
+Paper writing uses `paper/writing_style_source.md` (style calibration) and `paper/paper_writing_style.md` (condensed rules). Question reports use a separate reference: `questions/writing_style_reference.md`.
+
+### Part 1 — Scale, Convergence, Growth
+
+Three chart groups:
+1. **Overview**: Five-config aggregate footprint — workers and wages as % of national totals
+2. **Convergence**: Spearman rank correlation heatmaps (lower triangle) across four independent sources (Claude, Claude API, Copilot, MCP) at four aggregation levels
+3. **Temporal**: % of employment with AI-exposed tasks over time (All Confirmed vs All Ceiling), plus per-date delta table
+
+---
+
 ## Occupations of Interest
 
 29 named occupations across three groups — see `OCCS_OF_INTEREST` in `analysis/config.py` for the exact list. Matched against `title_current` in eco_2025 with fuzzy matching where needed.

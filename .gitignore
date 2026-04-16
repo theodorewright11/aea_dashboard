@@ -4,6 +4,7 @@ exploratory
 
 # Analysis generated outputs (regenerate with: venv/Scripts/python -m analysis.run_all)
 analysis/questions/**/results/
+analysis/paper/results/*/results/
 analysis/data
 
 

@@ -115,6 +115,15 @@ analysis/
 ├── question_findings/           — Flat copies of question .md reports
 ├── report/
 │   └── report.md                — Rolling aggregate report
+├── paper/                       — Research paper infrastructure
+│   ├── paper_config.py          — PAPER_PALETTE, chart constants, style_paper_figure()
+│   ├── writing_style_source.md  — ~30 pages of source writing for style calibration
+│   ├── paper_writing_style.md   — Condensed dos/don'ts for paper writing
+│   └── results/                 — Results section (NOT gitignored — section name)
+│       ├── part_1/              — Scale, Convergence, Growth
+│       │   ├── run.py, README.md, results/ (gitignored), figures/ (committed)
+│       ├── part_2/              — (TBD)
+│       └── part_3/              — (TBD)
 └── exploratory/                 — Gitignored entirely. Nothing in this folder is ever
     │                              committed — do not use git add -f. One-off charts only;
     │                              no reports fed into question_findings/ or report/.

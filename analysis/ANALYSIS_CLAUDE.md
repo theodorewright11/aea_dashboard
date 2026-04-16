@@ -4,9 +4,15 @@ Rules specific to working in the `analysis/` folder. Read this alongside the pro
 
 ---
 
-## Writing Style
+## Writing Style — Question Reports
 
-When writing reports, narratives, or any prose deliverables, follow the writing style reference in `analysis/writing_style_reference.md`. The key points: conversational-analytical register, loose form but rigorous logic, no hedging filler, no bureaucratic framing, no AI-sounding connectors. Don't force it — the goal is to sound like a sharp person reasoning through data, not to match a template. Keep things as concise as they should be; don't pad sections.
+When writing question reports, narratives, or any prose deliverables for the question system, follow the writing style reference in `analysis/questions/writing_style_reference.md`. The key points: conversational-analytical register, loose form but rigorous logic, no hedging filler, no bureaucratic framing, no AI-sounding connectors. Don't force it — the goal is to sound like a sharp person reasoning through data, not to match a template. Keep things as concise as they should be; don't pad sections.
+
+## Writing Style — Paper
+
+When writing paper sections, follow two references in `analysis/paper/`:
+- **`writing_style_source.md`** — ~30 pages of source writing. Read this to calibrate voice, argument structure, parenthetical usage, and organizational patterns.
+- **`paper_writing_style.md`** — Condensed dos and don'ts for paper writing. Follow these rules. When in doubt, default to the pattern structure from the source reference.
 
 ---
 
@@ -17,6 +23,17 @@ When writing reports, narratives, or any prose deliverables, follow the writing 
 3. Read `ANALYSIS_ARCHITECTURE.md` (folder structure, compute access, SKA formula, output standards).
 4. If the task touches SKA computation, re-read the SKA formula section in `ANALYSIS_ARCHITECTURE.md` before writing any code.
 5. This very important - If the task is ambiguous about scope, which sub-question it belongs to, or how a metric should be computed — **ask before implementing**.
+
+---
+
+## Paper Folder
+
+`analysis/paper/` contains infrastructure for the research paper. Each main section of the paper gets its own subfolder (e.g., `results/`). Within each section, parts follow the same sub-folder pattern as question folders: `run.py`, `README.md`, `results/` (gitignored), `figures/` (committed).
+
+- Paper sections are `.md` files. They will be stitched together once all parts are complete.
+- Charts follow the `PAPER_PALETTE` defined in `analysis/paper/paper_config.py` — readable style (big text, fill space), descriptive titles, subtle config footer.
+- Run scripts from project root: `venv/Scripts/python -m analysis.paper.results.part_1.run`
+- Paper writing style is separate from question report style — see "Writing Style — Paper" above.
 
 ---
 
