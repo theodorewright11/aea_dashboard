@@ -119,9 +119,11 @@ analysis/
 │   ├── paper_config.py          — PAPER_PALETTE, chart constants, style_paper_figure()
 │   ├── writing_style_source.md  — ~30 pages of source writing for style calibration
 │   ├── paper_writing_style.md   — Condensed dos/don'ts for paper writing
+│   ├── working_paper_outline.md — Draft structure reference only (not final, may be outdated)
 │   └── results/                 — Results section (NOT gitignored — section name)
-│       ├── part_1/              — Scale, Convergence, Growth
-│       │   ├── run.py, README.md, results/ (gitignored), figures/ (committed)
+│       ├── results.md           — Assembled Results section (Parts 1–3; update as parts complete)
+│       ├── part_1/              — Scale, Convergence, Growth — FIRST DRAFT COMPLETE
+│       │   ├── run.py, README.md, part_1.md, results/ (gitignored), figures/ (committed)
 │       ├── part_2/              — (TBD)
 │       └── part_3/              — (TBD)
 └── exploratory/                 — Gitignored entirely. Nothing in this folder is ever

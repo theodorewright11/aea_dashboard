@@ -303,31 +303,41 @@ V2 changes: charts only (no narrative text), 11 charts (headline/pivot cost/auto
 
 ## Paper
 
-The `analysis/paper/` folder contains infrastructure for the AEA research paper. The paper is assembled from `.md` files — one per section — which will be stitched together once all parts are complete.
+The `analysis/paper/` folder contains infrastructure for the AEA research paper. The paper is assembled from `.md` files — one per section — which will be stitched together once all parts are complete. **Target length: 15–20 pages of prose (excluding appendices).**
+
+A working paper outline is at `paper/working_paper_outline.md`. It is **not final and may contain outdated information** — use it only as a general structure reference and to gauge section length targets. The outline covers: Abstract, Introduction, Background, Data Sources, Methodology, Results (Parts 1–3), Discussion, Limitations, Future Work, and Appendices.
 
 ### Structure
 
 ```
 paper/
-├── paper_config.py           — PAPER_PALETTE, chart formatting, style_paper_figure()
-├── writing_style_source.md   — ~30 pages of source writing for style calibration
-├── paper_writing_style.md    — Condensed dos and don'ts for paper writing
-├── results/                  — Results section
-│   ├── part_1/               — Scale, Convergence, Growth (charts: overview, correlation, trends)
-│   ├── part_2/               — (TBD)
-│   └── part_3/               — (TBD)
+├── paper_config.py              — PAPER_PALETTE, chart formatting, style_paper_figure()
+├── writing_style_source.md      — ~30 pages of source writing for style calibration
+├── paper_writing_style.md       — Condensed dos and don'ts for paper writing
+├── working_paper_outline.md     — Draft structure reference only (not final, may be outdated)
+├── results/                     — Results section
+│   ├── results.md               — Assembled Results section (Parts 1–3)
+│   ├── part_1/                  — Scale, Convergence, Growth — FIRST DRAFT COMPLETE
+│   ├── part_2/                  — (TBD)
+│   └── part_3/                  — (TBD)
 ```
 
 ### Writing Style
 
 Paper writing uses `paper/writing_style_source.md` (style calibration) and `paper/paper_writing_style.md` (condensed rules). Question reports use a separate reference: `questions/writing_style_reference.md`.
 
-### Part 1 — Scale, Convergence, Growth
+### Part 1 — Scale, Convergence, Growth ("This is real")
 
-Three chart groups:
+The credibility argument. Three chart groups:
 1. **Overview**: Five-config aggregate footprint — workers and wages as % of national totals
-2. **Convergence**: Spearman rank correlation heatmaps (lower triangle) across four independent sources (Claude, Claude API, Copilot, MCP) at four aggregation levels
-3. **Temporal**: % of employment with AI-exposed tasks over time (All Confirmed vs All Ceiling), plus per-date delta table
+2. **Convergence**: Spearman rank correlation heatmaps (lower triangle) across four independent sources (Claude Browser, Claude API, Copilot, MCP) at four aggregation levels
+3. **Temporal**: % of employment with AI-exposed tasks over time (All Confirmed vs All Ceiling), plus per-date delta tables
+
+Narrative arc: scale → multi-source convergence → growth trajectory. Does not characterize which sectors are most exposed (Part 2) or recommend actions (Part 3). Benchmark comparisons (Seampoint, Iceberg) are woven in briefly as convergence evidence.
+
+### Part 2 — (TBD: "Here's what it is" / Characterization)
+
+### Part 3 — (TBD: "Here's what to do about it" / Action)
 
 ---
 
