@@ -135,7 +135,8 @@ analysis/
     │                              sector composition of at-risk occupations by zone
     └── physical_informational_divide/ — Physical vs. informational occupation split;
                                    GWA/IWA/DWA task distributions for 6 occ_group×task_type
-                                   combinations; auto-aug comparison across the three groups
+                                   combinations; auto-aug comparison; pct_tasks_affected
+                                   distribution; IWA workers concentration; auto-aug vs pct scatter
 ```
 
 ---
