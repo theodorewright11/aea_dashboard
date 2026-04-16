@@ -4,16 +4,16 @@
 
 ## The Overview
 
-![Aggregate AI Economic Footprint — Five Configurations](figures/overview.png)
+![Aggregate AI Economic Footprint](figures/overview.png)
 
 ## The Convergence Argument
 
-![Source Agreement Degrades at Finer Granularity](figures/convergence.png)
+![Spearman ρ on % Tasks Affected](figures/convergence.png)
 
 ## The Temporal Argument
 
-![AI Task Exposure Is Growing](figures/temporal_trend.png)
+![% of Employment with AI-Exposed Tasks Over Time](figures/temporal_trend.png)
 
-![Growth Data — All Confirmed](figures/temporal_table_all_confirmed.png)
+![All Confirmed](figures/temporal_table_all_confirmed.png)
 
-![Growth Data — All Sources (Ceiling)](figures/temporal_table_all_ceiling.png)
+![All Sources (Ceiling)](figures/temporal_table_all_ceiling.png)
