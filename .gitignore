@@ -7,6 +7,11 @@ analysis/questions/**/results/
 analysis/paper/results/*/results/
 analysis/data
 
+# Writing style references (not committed)
+analysis/questions/writing_style_reference.md
+analysis/paper/writing_style_source.md
+analysis/paper/paper_writing_style.md
+
 
 
 # Template
