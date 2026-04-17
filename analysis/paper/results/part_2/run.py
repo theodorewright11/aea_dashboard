@@ -462,6 +462,8 @@ def build_ska_levels(results: Path, figures: Path) -> None:
 
         enames = df["element_name"].tolist()
         ai_vals = df[ai_col].fillna(0).tolist()
+        ai_p95_vals = df["ai_95th"].fillna(0).tolist()
+        ai_top10_vals = df["ai_top10"].fillna(0).tolist()
         emax_vals = df["eco_max"].fillna(0).tolist()
         ep95_vals = df["eco_p95"].fillna(0).tolist()
         etop10_vals = df["eco_top10"].fillna(0).tolist()
@@ -492,6 +494,27 @@ def build_ska_levels(results: Path, figures: Path) -> None:
             marker=dict(color=METRIC_COLORS["tasks"], opacity=0.88, line=dict(width=0)),
             showlegend=_show(ai_col),
             hovertemplate=f"{ai_label}: %{{x:.1f}}<extra></extra>",
+        ), row=row, col=1)
+
+        # AI P95 marker — colored circle
+        ai_marker_color = METRIC_COLORS["workers"]  # Teal, distinct from bar blue
+        fig.add_trace(go.Scatter(
+            y=enames, x=ai_p95_vals, mode="markers",
+            name="AI P95",
+            marker=dict(color=ai_marker_color, symbol="circle", size=8,
+                        line=dict(width=1.5, color=ai_marker_color)),
+            showlegend=_show("ai_p95"),
+            hovertemplate="AI P95: %{x:.1f}<extra></extra>",
+        ), row=row, col=1)
+
+        # AI Top-10 marker — colored diamond
+        fig.add_trace(go.Scatter(
+            y=enames, x=ai_top10_vals, mode="markers",
+            name="AI Top-10 Avg",
+            marker=dict(color=ai_marker_color, symbol="diamond", size=8,
+                        line=dict(width=1.5, color=ai_marker_color)),
+            showlegend=_show("ai_top10"),
+            hovertemplate="AI Top-10 avg: %{x:.1f}<extra></extra>",
         ), row=row, col=1)
 
         # Workforce P95 marker — dark tick
@@ -549,8 +572,8 @@ def build_ska_levels(results: Path, figures: Path) -> None:
                 f"AI Capability vs. Workforce Requirements Across SKA Elements"
                 f"<br><span style='font-size:{SUBTITLE_FS}px;"
                 f"color:{PAPER_PALETTE['muted']}'>"
-                f"AI Maximum of (pct/100 × imp × lv) | {CONFIG_SUBTITLE} | "
-                f"Importance ≥ 3 | Sorted by AI as % of workforce max"
+                f"Bar = AI Max | Markers = AI P95 + Top-10 (teal) and Workforce P95 + Top-10 + Mean (black) | "
+                f"{CONFIG_SUBTITLE} | Importance ≥ 3"
                 f"</span>"
             ),
             font=dict(size=TITLE_FS, color=PAPER_PALETTE["text"], family=FONT_FAMILY),
