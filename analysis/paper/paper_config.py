@@ -42,7 +42,7 @@ CONFIG_COLORS: dict[str, str] = {
 METRIC_COLORS: dict[str, str] = {
     "tasks":   "#4a7a94",   # Muted slate blue
     "workers": "#6a9e8f",   # Muted sage teal
-    "wages":   "#b39b6d",   # Warm tan
+    "wages":   "#c4a76c",   # Warm tan (closer to heatmap low)
 }
 
 # ── Heatmap scale ────────────────────────────────────────────────────────

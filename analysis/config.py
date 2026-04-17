@@ -153,7 +153,7 @@ ANALYSIS_CONFIGS: dict[str, str] = {
 # Config labels for charts/reports
 ANALYSIS_CONFIG_LABELS: dict[str, str] = {
     "all_ceiling":        "All Sources (Ceiling)",
-    "human_conversation": "Human Conversation",
+    "human_conversation": "Conversational Confirmed",
     "agentic_confirmed":  "Agentic Confirmed",
     "all_confirmed":      "All Confirmed",
     "agentic_ceiling":    "Agentic Ceiling",
