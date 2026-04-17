@@ -1,6 +1,6 @@
 # Part 1 — Scale, Convergence, Growth
 
-First section of the Results chapter. Charts only (no prose yet). Content in `part_1.md`.
+First section of the Results chapter. First draft complete. Content in `part_1.md`.
 
 ## Charts Produced
 
