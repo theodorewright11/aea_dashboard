@@ -33,7 +33,7 @@ All analyses use one or more of these five canonical dataset configurations. Eac
 |-----|---------|-----------------|
 | `all_confirmed` | `final_all_confirmed_usage_2026-02-12` | **PRIMARY** — All confirmed usage (conv + API + Microsoft, no MCP) |
 | `all_ceiling` | `final_all_usage_2026-02-18` | Upper bound — everything AI can reach (AEI + MCP + Microsoft) |
-| `human_conversation` | `final_confirmed_human_usage_2026-02-12` | Confirmed human conversational AI use only |
+| `human_conversation` | `final_confirmed_human_usage_2026-02-12` | Confirmed human conversational AI use (AEI Conv + Microsoft Copilot; same chat-session interaction mode, no API/agentic) |
 | `agentic_confirmed` | `final_aei_agentic_usage_2026-02-12` | Confirmed agentic tool-use (AEI API) |
 | `agentic_ceiling` | `final_all_agentic_usage_2026-02-18` | Agentic Ceiling tool-use (MCP + AEI API) |
 
