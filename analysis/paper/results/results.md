@@ -2,7 +2,7 @@
 
 ---
 
-## Part 1 — Scale, Convergence, Growth
+## Part 1 — AI Is In The Workforce
 
 ### The Overview
 
@@ -50,7 +50,7 @@ The confirmed-to-ceiling ratio has been narrowing: 77% in August 2025, 80% by Fe
 
 ---
 
-## Part 2 — [TBD: Characterization]
+## Part 2 — Where Is AI In The Workforce
 
 ### The Physical/Informational Divide
 
