@@ -318,7 +318,7 @@ paper/
 ├── results/                     — Results section
 │   ├── results.md               — Assembled Results section (Parts 1–3)
 │   ├── part_1/                  — Scale, Convergence, Growth — FIRST DRAFT COMPLETE
-│   ├── part_2/                  — (TBD)
+│   ├── part_2/                  — Characterization — FIRST DRAFT COMPLETE
 │   └── part_3/                  — (TBD)
 ```
 
@@ -335,7 +335,16 @@ The credibility argument. Three chart groups:
 
 Narrative arc: scale → multi-source convergence → growth trajectory. Does not characterize which sectors are most exposed (Part 2) or recommend actions (Part 3). Benchmark comparisons (Seampoint, Iceberg) are woven in briefly as convergence evidence.
 
-### Part 2 — (TBD: "Here's what it is" / Characterization)
+### Part 2 — Characterization: Where AI Exposure Falls ("Here's what it is")
+
+Five chart groups characterizing the structural distribution of AI exposure:
+1. **Physical/Informational Divide**: Box plots of % tasks affected by occupation group (Non-physical / Mixed / Physical, classified by proportion of physical tasks)
+2. **Job Zone**: Violin plots of % tasks affected by O*NET job zone (1–5), showing AI exposure peaks at Zone 4–5 (considerable/extensive prep)
+3. **SKA Levels**: AI Maximum of imp×lv vs. workforce benchmarks for every Skills, Abilities, and Knowledge element (3 subplots with workforce max, P95, top-10, mean markers)
+4. **Work Activities**: All GWAs ranked by % tasks affected, bar color intensity = workers affected, annotated with workers and wages
+5. **Major Categories**: All 22 major occupational categories in 3 side-by-side panels (% Tasks Affected, Workers Affected, Wages Affected)
+
+Narrative arc: physical/informational structure → preparation level gradient → element-level capability profile → work activity rankings → sector-level view. Uses All Confirmed config throughout.
 
 ### Part 3 — (TBD: "Here's what to do about it" / Action)
 

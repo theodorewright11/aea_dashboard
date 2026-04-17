@@ -124,7 +124,8 @@ analysis/
 │       ├── results.md           — Assembled Results section (Parts 1–3; update as parts complete)
 │       ├── part_1/              — Scale, Convergence, Growth — FIRST DRAFT COMPLETE
 │       │   ├── run.py, README.md, part_1.md, results/ (gitignored), figures/ (committed)
-│       ├── part_2/              — (TBD)
+│       ├── part_2/              — Characterization: Where AI Exposure Falls — FIRST DRAFT COMPLETE
+│       │   ├── run.py, README.md, part_2.md, results/ (gitignored), figures/ (committed)
 │       └── part_3/              — (TBD)
 └── exploratory/                 — Gitignored entirely. Nothing in this folder is ever
     │                              committed — do not use git add -f. One-off charts only;
