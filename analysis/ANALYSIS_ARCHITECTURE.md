@@ -133,14 +133,25 @@ analysis/
     │                              Each sub-folder has: run.py, README.md, <name>_report.md
     │                              (findings writeup with inline figures referencing
     │                              results/figures/ paths), and results/ (auto-created).
+    ├── job_breakdown/           — Per-occupation SKA + task breakdown for 3 EOR-adjacent
+    │                              occupations (HR Specialists, Compensation Specialists,
+    │                              Customer Service Reps); replicates worker_resilience pattern
     ├── ska_levels/              — AI imp×lv vs. workforce benchmarks for every SKA element
     ├── zone_pivot_anatomy/      — Why zone 3 peaks on pivot cost; overlap structure and
     │                              sector composition of at-risk occupations by zone
-    └── physical_informational_divide/ — Physical vs. informational occupation split;
-                                   structural task distributions (GWA/IWA/DWA 3×2 panels);
-                                   AI exposure analysis: pct distribution, IWA workers
-                                   concentration, auto-aug breakdown (task type × coverage ×
-                                   dataset), GWA concentration curve, auto-aug vs pct scatter
+    ├── physical_informational_divide/ — Physical vs. informational occupation split;
+    │                              structural task distributions (GWA/IWA/DWA 3×2 panels);
+    │                              AI exposure analysis: pct distribution, IWA workers
+    │                              concentration, auto-aug breakdown (task type × coverage ×
+    │                              dataset), GWA concentration curve, auto-aug vs pct scatter
+    └── aioe_comparison/         — Felten/Raj/Seamans AIOE 52×10 matrix vs. our
+                                   pct_tasks_affected. Per-occ AIOE score = ratio-of-sums
+                                   of imp×lv×ability_cap over imp≥3 ability rows. Three
+                                   variants: row-mean across 10 apps, Language Modeling
+                                   column only, Reading Comprehension column only. 13 charts
+                                   spanning occ-level scatter, SOC-level convergence, per-
+                                   ability SKA-aggregate vs AIOE comparisons, per-AI-app ρ
+                                   breakdown at ability and occupation level.
 ```
 
 ---
