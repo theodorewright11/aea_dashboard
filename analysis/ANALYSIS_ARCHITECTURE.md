@@ -154,14 +154,21 @@ analysis/
     │                              by mean/RC/LM), per-ability SKA-aggregate vs AIOE
     │                              comparisons, per-AI-app ρ breakdown at 3 SKA aggregates,
     │                              occ-level full heatmap.
-    └── pct_norm_vs_eco/         — AI usage distribution (sum of pct_normalized) vs.
-                                   economic baseline, both renormalized to 100% for shape
-                                   comparison. Major occ cat version: unique (task, occ)
-                                   pairs; AI = Σpct_norm, Eco = Σ(freq × emp). GWA version:
-                                   AI = unique (gwa, task) pairs Σpct_norm, Eco = freq-
-                                   method emp allocation per (task, occ) summed by GWA.
-                                   Dataset: all_confirmed. 4 charts: overlay + signed-delta
-                                   at each level.
+    └── pct_norm_vs_eco/         — AI usage distribution (Σ pct_normalized) vs. economic
+                                   baseline (freq×emp / freq-allocated emp), renormalized
+                                   to 100%. Overhauled: two configs (all_confirmed and
+                                   aei_all_usage), seven levels (major/minor/broad/occ/
+                                   gwa/iwa/dwa), two eco scopes (config-scoped vs. full
+                                   eco_2025), and five bias variants (no_bias, equal
+                                   3-source consensus, chatgpt_2x/5x/10x). Bias correction
+                                   divides each task's pct by bias_ratio[gwa] =
+                                   claude_share / consensus_share, averaging across GWAs
+                                   for multi-mapped tasks at occ-hierarchy levels. Source
+                                   GWA shares (AEI, Copilot, ChatGPT) hardcoded from
+                                   published distributions. Coverage: GWA + major have
+                                   all bias × both configs × both eco (40 charts each);
+                                   other levels are all_confirmed only, equal bias only,
+                                   both eco (4 charts each × 5 = 20). 100 PNGs total.
 ```
 
 ---
