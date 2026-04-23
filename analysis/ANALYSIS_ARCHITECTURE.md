@@ -169,6 +169,11 @@ analysis/
                                    all bias × both configs × both eco (40 charts each);
                                    other levels are all_confirmed only, equal bias only,
                                    both eco (4 charts each × 5 = 20). 100 PNGs total.
+                                   V2 add-on (run_v2.py + pct_norm_vs_eco_report_v2.md):
+                                   focused 12 delta-only charts (top-30 over + bot-10
+                                   under) at all 8 levels (incl. task) under the base
+                                   config, plus 2 ChatGPT-5× variants and 2 full-eco
+                                   variants on GWA + major. Same bias code as v1.
 ```
 
 ---
