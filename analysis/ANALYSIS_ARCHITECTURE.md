@@ -148,10 +148,11 @@ analysis/
                                    pct_tasks_affected. Per-occ AIOE score = ratio-of-sums
                                    of imp×lv×ability_cap over imp≥3 ability rows. Three
                                    variants: row-mean across 10 apps, Language Modeling
-                                   column only, Reading Comprehension column only. 13 charts
-                                   spanning occ-level scatter, SOC-level convergence, per-
-                                   ability SKA-aggregate vs AIOE comparisons, per-AI-app ρ
-                                   breakdown at ability and occupation level.
+                                   column only, Reading Comprehension column only. 17 charts
+                                   spanning occ-level scatter, SOC-level convergence, 4-
+                                   aggregate-panel ability ranking (sorted by mean/RC/LM),
+                                   per-ability SKA-aggregate vs AIOE comparisons, per-AI-app
+                                   ρ breakdown at 3 SKA aggregates, occ-level full heatmap.
 ```
 
 ---
