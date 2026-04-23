@@ -257,6 +257,39 @@ def chart3_wages_affected(tech: pd.DataFrame) -> pd.DataFrame:
     return agg.sort_values("wages_affected", ascending=False)
 
 
+def chart_composite_ranking(
+    chart1: pd.DataFrame, chart2: pd.DataFrame, chart3: pd.DataFrame,
+    top_n: int = 25, pct_weight: float = 1.0,
+) -> pd.DataFrame:
+    """Weighted geometric-mean composite of pct_affected (depth) and workers_affected (breadth).
+
+    Both metrics are min-max normalized to 0-1, then combined as
+    (norm_pct^pct_weight × norm_workers)^(1/(pct_weight+1)).
+    pct_weight=1 → equal weighting; pct_weight=2 → depth counts double.
+    """
+    merged = chart1[["Commodity Title", "mean_pct_affected", "n_occs", "n_entries"]].merge(
+        chart2[["Commodity Title", "workers_affected", "pct_of_commodity_workers"]],
+        on="Commodity Title",
+        how="inner",
+    ).merge(
+        chart3[["Commodity Title", "wages_affected", "pct_of_commodity_wages"]],
+        on="Commodity Title",
+        how="inner",
+    )
+    total_entries = chart1["n_entries"].sum()
+    merged["pct_of_all_entries"] = merged["n_entries"] / total_entries * 100.0
+    # min-max normalize
+    pct_min, pct_max = merged["mean_pct_affected"].min(), merged["mean_pct_affected"].max()
+    wrk_min, wrk_max = merged["workers_affected"].min(), merged["workers_affected"].max()
+    merged["norm_pct"] = (merged["mean_pct_affected"] - pct_min) / (pct_max - pct_min)
+    merged["norm_workers"] = (merged["workers_affected"] - wrk_min) / (wrk_max - wrk_min)
+    total_weight = pct_weight + 1.0
+    merged["composite"] = (
+        merged["norm_pct"] ** pct_weight * merged["norm_workers"]
+    ) ** (1.0 / total_weight)
+    return merged.sort_values("composite", ascending=False).head(top_n)
+
+
 def aggregate_tech_by_major(tech: pd.DataFrame, top_categories: list[str]) -> pd.DataFrame:
     """
     For top tech categories: count distinct occupations per (major, category),
@@ -468,12 +501,18 @@ def _build_tech_workers_affected(chart2: pd.DataFrame, top_n: int = 25) -> go.Fi
     return fig
 
 
-def _build_tech_wages_affected(chart3: pd.DataFrame, top_n: int = 25) -> go.Figure:
+def _build_tech_wages_affected(chart3: pd.DataFrame, chart1: pd.DataFrame, top_n: int = 25) -> go.Figure:
     """Chart 3: top commodities by exposed wages (with n-commodities-in-occ divisor)."""
-    top = chart3.head(top_n).sort_values("wages_affected", ascending=True)
+    top = chart3.head(top_n).copy()
+    top = top.merge(
+        chart1[["Commodity Title", "mean_pct_affected"]],
+        on="Commodity Title",
+        how="left",
+    )
+    top = top.sort_values("wages_affected", ascending=True)
     labels = [
-        f"{_format_dollars(w)} wages  ({p:.0f}% of commodity wages)"
-        for w, p in zip(top["wages_affected"], top["pct_of_commodity_wages"])
+        f"{_format_dollars(w)} wages  ({mp:.0f}% avg pct aff | {p:.0f}% of commodity wages)"
+        for w, mp, p in zip(top["wages_affected"], top["mean_pct_affected"], top["pct_of_commodity_wages"])
     ]
     fig = go.Figure(go.Bar(
         x=top["wages_affected"],
@@ -492,10 +531,10 @@ def _build_tech_wages_affected(chart3: pd.DataFrame, top_n: int = 25) -> go.Figu
                   "the (occ, software) rows. The n_commodities divisor prevents wage "
                   "double-counting when one occ lists many commodities."),
         x_title="Wages in AI-affected use",
-        show_legend=False, height=850, width=1200,
+        show_legend=False, height=850, width=1300,
     )
     fig.update_layout(
-        margin=dict(l=20, r=240),
+        margin=dict(l=20, r=310),
         xaxis=dict(showgrid=True, gridcolor=COLORS["border"], showticklabels=False),
         yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=10)),
         bargap=0.2,
@@ -542,6 +581,148 @@ def _build_tech_major_heatmap(
         xaxis=dict(side="bottom", tickangle=-35, showgrid=False, showline=False, tickfont=dict(size=9)),
         yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=10)),
         margin=dict(l=280, r=80, t=90, b=200),
+    )
+    return fig
+
+
+def _build_tech_composite(
+    comp: pd.DataFrame, pct_weight: float = 1.0, stripe_wages: bool = False,
+) -> go.Figure:
+    """Composite chart: weighted geometric mean of normalized pct × workers.
+
+    Bar color intensity reflects mean_pct_affected (darker = higher).
+    Labels show workers, wages, % of users, occs, entries — no composite score.
+    Economy totals displayed in subtitle for context.
+
+    stripe_wages: if True, bars get diagonal stripe pattern whose density
+    (solidity) scales with wages_affected — denser stripes = more wages.
+    """
+    top = comp.sort_values("composite", ascending=True)
+
+    # Economy totals for subtitle context
+    total_workers = comp["workers_affected"].sum()
+    total_wages = comp["wages_affected"].sum()
+    total_occs = comp["n_occs"].sum()
+    total_entries = int(comp["n_entries"].sum())
+
+    labels = [
+        (f"{_format_workers(wk)} workers | {_format_dollars(wa)} wages | "
+         f"{pu:.0f}% of users | {o} occs | {int(ne):,} entries")
+        for wk, wa, pu, o, ne in zip(
+            top["workers_affected"], top["wages_affected"],
+            top["pct_of_commodity_workers"], top["n_occs"],
+            top["n_entries"],
+        )
+    ]
+    weight_label = "" if pct_weight == 1.0 else f" (pct weighted {pct_weight:.0f}×)"
+    totals_line = (f"Top-{len(comp)} totals: {_format_workers(total_workers)} workers | "
+                   f"{_format_dollars(total_wages)} wages | "
+                   f"{total_occs:,} occ entries | {total_entries:,} software entries")
+
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        x=top["composite"],
+        y=top["Commodity Title"],
+        orientation="h",
+        marker=dict(
+            color=top["mean_pct_affected"].values,
+            colorscale=[[0, "#c4d9d2"], [1, "#0a2e25"]],
+            showscale=True,
+            colorbar=dict(
+                title=dict(text="Avg % tasks affected", side="top"),
+                ticksuffix="%",
+                tickfont=dict(size=9),
+                orientation="h",
+                x=0.35,
+                y=-0.06,
+                xanchor="center",
+                yanchor="top",
+                len=0.3,
+                thickness=12,
+            ),
+        ),
+        text=labels,
+        textposition="outside",
+        textfont=dict(size=9, color=COLORS["neutral"], family=FONT_FAMILY),
+        cliponaxis=False,
+        showlegend=False,
+    ))
+
+    if stripe_wages:
+        dot_x1 = top["composite"].max() * 0.015
+        dot_x2 = top["composite"].max() * 0.045
+        # Blue squares: workers affected
+        fig.add_trace(go.Scatter(
+            x=[dot_x1] * len(top),
+            y=top["Commodity Title"],
+            mode="markers",
+            marker=dict(
+                size=11,
+                symbol="square",
+                color=top["workers_affected"].values,
+                colorscale=[[0, "#dbeafe"], [1, "#1e40af"]],
+                showscale=True,
+                colorbar=dict(
+                    title=dict(text="Workers affected", side="top"),
+                    tickfont=dict(size=9),
+                    orientation="h",
+                    x=0.55,
+                    y=-0.06,
+                    xanchor="center",
+                    yanchor="top",
+                    len=0.25,
+                    thickness=12,
+                    tickformat=".0s",
+                ),
+                line=dict(width=0.5, color="#1e3a5f"),
+            ),
+            hoverinfo="skip",
+            showlegend=False,
+        ))
+        # Orange squares: wages affected
+        fig.add_trace(go.Scatter(
+            x=[dot_x2] * len(top),
+            y=top["Commodity Title"],
+            mode="markers",
+            marker=dict(
+                size=11,
+                symbol="square",
+                color=top["wages_affected"].values,
+                colorscale=[[0, "#fde8c8"], [1, "#c2410c"]],
+                showscale=True,
+                colorbar=dict(
+                    title=dict(text="Wages affected", side="top"),
+                    tickprefix="$",
+                    tickfont=dict(size=9),
+                    orientation="h",
+                    x=0.85,
+                    y=-0.06,
+                    xanchor="center",
+                    yanchor="top",
+                    len=0.25,
+                    thickness=12,
+                    tickformat=".0s",
+                ),
+                line=dict(width=0.5, color="#9a3412"),
+            ),
+            hoverinfo="skip",
+            showlegend=False,
+        ))
+    wage_note = " Blue squares = workers; orange squares = wages." if stripe_wages else ""
+    style_figure(
+        fig,
+        f"Top {len(top)} Tech Commodities — Depth × Breadth Composite{weight_label}",
+        subtitle=(f"Weighted geometric mean of min-max-normalized % tasks affected "
+                  f"(weight {pct_weight:.0f}) and workers (weight 1). "
+                  f"Darker bars = higher avg % tasks affected.{wage_note}<br>"
+                  f"{totals_line}"),
+        show_legend=False, height=900, width=1600,
+    )
+    fig.update_layout(
+        margin=dict(l=20, r=480, t=110, b=80),
+        xaxis=dict(showgrid=True, gridcolor=COLORS["border"], showticklabels=False),
+        yaxis=dict(showgrid=False, showline=False, tickfont=dict(size=10)),
+        bargap=0.2,
     )
     return fig
 
@@ -606,12 +787,18 @@ def main() -> None:
     save_csv(chart2, results / "tech_workers_affected_economy.csv")
     save_csv(chart3, results / "tech_wages_affected_economy.csv")
 
+    # Composite: geometric mean of normalized pct × workers
+    composite = chart_composite_ranking(chart1, chart2, chart3, top_n=25)
+    composite_2x = chart_composite_ranking(chart1, chart2, chart3, top_n=25, pct_weight=2.0)
+    save_csv(composite, results / "tech_composite_economy.csv")
+    save_csv(composite_2x, results / "tech_composite_2x_economy.csv")
+
     # Heatmap columns are ordered by Chart 2 (exposed workers) ranking
     top_25_by_workers = chart2.head(25)["Commodity Title"].tolist()
     major_tech = aggregate_tech_by_major(tech, top_25_by_workers)
     save_csv(major_tech, results / "tech_categories_major.csv")
     print(
-        f"  Tech: {len(chart1)} commodities; chart 1 (pct), 2 (workers), 3 (wages) saved."
+        f"  Tech: {len(chart1)} commodities; chart 1 (pct), 2 (workers), 3 (wages), composite saved."
     )
 
     # ── 4. Figures ────────────────────────────────────────────────────────────
@@ -639,9 +826,17 @@ def main() -> None:
     # 4f–4h. Three tech commodity charts
     _save_committed(_build_tech_pct_affected(chart1, top_n=25), "tech_pct_affected.png")
     _save_committed(_build_tech_workers_affected(chart2, top_n=25), "tech_workers_affected.png")
-    _save_committed(_build_tech_wages_affected(chart3, top_n=25), "tech_wages_affected.png")
+    _save_committed(_build_tech_wages_affected(chart3, chart1, top_n=25), "tech_wages_affected.png")
 
-    # 4i. Tech × major heatmap (sorted by Chart 2 ranking)
+    # 4i. Tech composite (depth × breadth)
+    _save_committed(_build_tech_composite(composite), "tech_composite.png")
+    _save_committed(_build_tech_composite(composite_2x, pct_weight=2.0), "tech_composite_2x.png")
+    _save_committed(
+        _build_tech_composite(composite_2x, pct_weight=2.0, stripe_wages=True),
+        "tech_composite_2x_striped.png",
+    )
+
+    # 4j. Tech × major heatmap (sorted by Chart 2 ranking)
     _save_committed(
         _build_tech_major_heatmap(major_tech, top_25_by_workers),
         "tech_major_heatmap.png",
