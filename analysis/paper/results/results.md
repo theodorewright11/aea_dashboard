@@ -32,6 +32,20 @@ Six major categories land in the high-exposure tier across all four sources: Com
 
 ---
 
+### External Convergence
+
+![Spearman ρ — Our Sources vs. External Benchmarks](part_1/figures/convergence_external.png)
+
+Internal agreement is one check. A more stringent test is whether our ranking of occupations lines up with independent academic work built on entirely different methodology. Two well-known exposure indices fit that description. Eloundou, Manning, Mishkin, and Rock (2023, "GPTs are GPTs") scored every O*NET occupation on a 0–1 LLM-exposure rubric, once by GPT-4 and once by a human panel; we use the β variant (E1 + 0.5·E2), which their paper treats as the primary measurement. Felten, Raj, and Seamans' AIOE is an older, ability-based index: it scores occupations by how overlapping their O*NET abilities are with a set of AI applications from a 2018 MTurk survey. We use the 10-application row mean (original AIOE framing) and the Reading Comprehension column alone (the one most closely aligned to modern LLMs). Neither index was built with the same task data, the same scoring model, or the same time window as ours. If our rankings agreed with these, it would be because all four approaches were picking up on the same underlying structure, not because of shared inputs.
+
+The rankings do agree. At the major category level, the sixteen cells (four internal sources × four external benchmarks) have a mean Spearman ρ of 0.83, with a range of 0.67 to 0.93. That's essentially the same agreement strength we saw for our four sources against each other (mean 0.85). The degradation-with-granularity pattern holds here too: at the occupation level (n ≈ 900), the mean drops to 0.64 across the sixteen cells, range 0.52 to 0.77. Same shape as the internal chart, same magnitudes.
+
+The strongest row is MCP, which agrees most closely with Eloundou's ratings (0.92 with GPT-4 β, 0.93 with Human β at major; 0.77 and 0.73 at occupation). This makes sense given what each thing measures: MCP captures what AI tools can functionally do (tool integration specs), and the Eloundou rubric scores capability overlap with LLMs. Both are assessments of potential exposure, not observed usage. The weakest row is Copilot, which runs 0.67–0.78 at major and drops to 0.52–0.64 at occupation. That's the row where Microsoft's enterprise assessment disagrees most with the academic benchmarks. It still correlates strongly in an absolute sense, but Copilot's signal comes from inside Microsoft's own productivity-software lens, and that lens weights differently from either the Eloundou rubric or the AIOE ability profile. It's also worth noting that AIOE Reading Comprehension correlates with our sources about as well as AIOE mean does, sometimes slightly better. For modern LLM-era exposure ranking, the single reading-comprehension column carries more of the signal than an average that includes nine older AI applications.
+
+The upshot: two research groups using completely different scoring frameworks (GPT-4 and human judgment on exposure rubrics; ability-to-AI-application overlap) arrived at rankings that look like ours. Our framework is reproducing a structural pattern that independent academic work has already found, not an artifact of the specific data sources or methodology we used.
+
+---
+
 ### The Temporal Argument
 
 ![% of Employment with AI-Exposed Tasks Over Time](part_1/figures/temporal_trend.png)

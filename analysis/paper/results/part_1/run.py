@@ -24,6 +24,7 @@ from analysis.config import (
     ANALYSIS_CONFIGS,
     ANALYSIS_CONFIG_LABELS,
     ANALYSIS_CONFIG_SERIES,
+    ANALYSIS_DIR,
     ROOT,
     ensure_results_dir,
 )
@@ -68,6 +69,21 @@ AGG_TITLES: dict[str, str] = {
 }
 
 TREND_CONFIGS: list[str] = ["all_confirmed", "all_ceiling"]
+
+# ── External benchmarks (for convergence_external chart) ─────────────────
+# Four external occupation-level AI-exposure measures from prior academic
+# work. The convergence_external chart correlates our four internal sources
+# against each of these benchmarks at the same four SOC aggregation levels.
+EXT_SOURCES: list[tuple[str, str]] = [
+    ("gpt_beta",   "Eloundou GPT-4 β"),
+    ("human_beta", "Eloundou Human β"),
+    ("aioe_mean",  "AIOE mean (10 apps)"),
+    ("aioe_rc",    "AIOE Reading Compr."),
+]
+
+GPTS_CSV = ANALYSIS_DIR / "data" / "gpts_are_gpts_occ_data.csv"
+AIOE_MATRIX_PATH = ANALYSIS_DIR / "data" / "aioe_ability_matrix.csv"
+ABILITIES_PATH = ANALYSIS_DIR / "data" / "abilities_v30.1.csv"
 
 
 # ─────────────────────────────────────────────────────────────────────────
@@ -349,6 +365,245 @@ def build_convergence(results: Path, figures: Path) -> None:
 
 
 # ─────────────────────────────────────────────────────────────────────────
+# Chart 2b: Convergence — Our sources vs. External benchmarks
+# ─────────────────────────────────────────────────────────────────────────
+
+def _load_eloundou_occ() -> pd.DataFrame:
+    """Eloundou et al. (2023) per-occupation ratings, scaled ×100 to match
+    our pct_tasks_affected units. Returns title_current, gpt_beta, human_beta."""
+    df = pd.read_csv(GPTS_CSV)
+    assert "Title" in df.columns, f"Title column missing in {GPTS_CSV}"
+    for c in ("dv_rating_beta", "human_rating_beta"):
+        assert c in df.columns, f"{c} column missing in {GPTS_CSV}"
+    out = pd.DataFrame({
+        "title_current": df["Title"].astype(str),
+        "gpt_beta":      pd.to_numeric(df["dv_rating_beta"], errors="coerce") * 100.0,
+        "human_beta":    pd.to_numeric(df["human_rating_beta"], errors="coerce") * 100.0,
+    })
+    assert out["gpt_beta"].notna().any(), "Eloundou gpt_beta is all NaN after load"
+    return out
+
+
+def _compute_aioe_occ() -> pd.DataFrame:
+    """Per-occupation AIOE scores computed as ratio-of-sums of imp×lv×ability_cap
+    over imp≥3 ability rows (per Felten/Raj/Seamans framing). Two variants:
+    mean of the 10 AI-application columns, and Reading Comprehension only.
+    Values are ×100 to match pct_tasks_affected. Returns title_current,
+    aioe_mean, aioe_rc."""
+    matrix = pd.read_csv(AIOE_MATRIX_PATH, index_col=0)
+    assert matrix.shape == (52, 10), f"AIOE matrix shape {matrix.shape} — expected (52, 10)"
+    # AIOE labels this "Visual Color Determination"; O*NET v30.1 uses
+    # "Visual Color Discrimination". Same element.
+    matrix = matrix.rename(index={
+        "Visual Color Determination": "Visual Color Discrimination",
+    })
+    per_ability = pd.DataFrame({
+        "ability_name": matrix.index,
+        "aioe_mean":    matrix.mean(axis=1).values,
+        "aioe_rc":      matrix["Reading Comprehension"].values,
+    })
+
+    abilities = pd.read_csv(ABILITIES_PATH, dtype=str)
+    abilities = abilities.rename(columns={
+        "O*NET-SOC Code": "soc_code",
+        "Title":          "title_current",
+        "Element Name":   "ability_name",
+        "Scale ID":       "scale_id",
+        "Data Value":     "data_value",
+    })
+    abilities["data_value"] = pd.to_numeric(abilities["data_value"], errors="coerce")
+    abilities = abilities[abilities["scale_id"].isin(["IM", "LV"])]
+    pivoted = (
+        abilities.pivot_table(
+            index=["title_current", "ability_name"],
+            columns="scale_id", values="data_value", aggfunc="mean",
+        )
+        .reset_index()
+    )
+    pivoted.columns.name = None
+    pivoted = pivoted.rename(columns={"IM": "importance", "LV": "level"})
+    pivoted = pivoted.dropna(subset=["importance", "level"])
+
+    joined = pivoted.merge(per_ability, on="ability_name", how="inner")
+    # imp ≥ 3 filter is applied per (occ, ability) row
+    filt = joined[joined["importance"] >= 3].copy()
+    assert not filt.empty, "AIOE: no rows after imp>=3 filter"
+    filt["weight"] = filt["importance"] * filt["level"]
+
+    grouped = filt.groupby("title_current")
+    rows: list[dict] = []
+    for title, g in grouped:
+        w_sum = float(g["weight"].sum())
+        if w_sum == 0:
+            continue
+        rows.append({
+            "title_current": title,
+            "aioe_mean": float((g["weight"] * g["aioe_mean"]).sum() / w_sum) * 100.0,
+            "aioe_rc":   float((g["weight"] * g["aioe_rc"]).sum()   / w_sum) * 100.0,
+        })
+    out = pd.DataFrame(rows)
+    assert not out.empty, "AIOE per-occ scores are empty"
+    return out
+
+
+def _ext_at_level(ext_df: pd.DataFrame, col: str, agg_level: str) -> pd.Series:
+    """Roll an external benchmark from occupation level to SOC group level
+    using an unweighted mean across matched occupations (each occupation
+    contributes equally to its group). Matches the rollup method used in
+    the exploratory gpts_are_gpts and aioe_comparison charts 14/18."""
+    work = ext_df[["title_current", col]].dropna().copy()
+    if agg_level == "occupation":
+        return work.set_index("title_current")[col]
+
+    from backend.compute import load_eco_raw
+    eco = load_eco_raw()
+    level_col = {
+        "major": "major_occ_category",
+        "minor": "minor_occ_category",
+        "broad": "broad_occ",
+    }[agg_level]
+    occ_to_group = (
+        eco[["title_current", level_col]].drop_duplicates()
+           .set_index("title_current")[level_col]
+    )
+    work["group"] = work["title_current"].map(occ_to_group)
+    work = work.dropna(subset=["group"])
+    return work.groupby("group")[col].mean()
+
+
+def build_convergence_external(results: Path, figures: Path) -> None:
+    """2×2 grid of rectangular 4×4 heatmaps (rows: our four internal sources,
+    cols: four external benchmarks), one subplot per SOC aggregation level.
+    Each cell is the Spearman ρ between that source pair at that level."""
+    eloundou = _load_eloundou_occ()
+    aioe = _compute_aioe_occ()
+    ext_df = eloundou.merge(aioe, on="title_current", how="outer")
+    print(f"  External benchmarks loaded: {len(ext_df)} occs "
+          f"(Eloundou={eloundou['title_current'].nunique()}, "
+          f"AIOE={aioe['title_current'].nunique()})")
+
+    # Our four sources at each SOC level — same datasets as build_convergence.
+    source_data: dict[str, dict[str, pd.Series]] = {}
+    for skey in CORR_ORDER:
+        ds = CORR_SOURCES[skey]["dataset"]
+        lbl = CORR_SOURCES[skey]["label"]
+        source_data[skey] = {}
+        for level in AGG_LEVELS:
+            df = _run_config(ds, level)
+            source_data[skey][level] = df.set_index("category")["pct_tasks_affected"]
+        print(f"  {lbl}: loaded all levels")
+
+    ext_keys = [k for k, _ in EXT_SOURCES]
+    ext_labels = [lbl for _, lbl in EXT_SOURCES]
+    our_labels = CORR_LABELS
+    n_rows = len(CORR_ORDER)
+    n_cols = len(EXT_SOURCES)
+
+    corr_records: list[dict] = []
+    matrices: dict[str, np.ndarray] = {}
+
+    for level in AGG_LEVELS:
+        mat = np.full((n_rows, n_cols), np.nan)
+        for i, skey in enumerate(CORR_ORDER):
+            ours = source_data[skey][level]
+            for j, ext_key in enumerate(ext_keys):
+                theirs = _ext_at_level(ext_df, ext_key, level)
+                merged = pd.concat(
+                    [ours.rename("x"), theirs.rename("y")],
+                    axis=1, join="inner",
+                ).dropna()
+                if len(merged) < 3:
+                    continue
+                rho, pval = stats.spearmanr(merged["x"], merged["y"])
+                mat[i, j] = rho
+                corr_records.append({
+                    "level":      level,
+                    "our_source": our_labels[i],
+                    "external":   ext_labels[j],
+                    "rho":        round(float(rho), 3),
+                    "p_value":    round(float(pval), 6),
+                    "n":          len(merged),
+                })
+        matrices[level] = mat
+
+    save_csv(pd.DataFrame(corr_records), results / "spearman_external_by_level.csv")
+
+    fig = make_subplots(
+        rows=2, cols=2,
+        subplot_titles=[AGG_TITLES[l] for l in AGG_LEVELS],
+        horizontal_spacing=0.18,
+        vertical_spacing=0.14,
+    )
+
+    for idx, level in enumerate(AGG_LEVELS):
+        row = idx // 2 + 1
+        col = idx % 2 + 1
+        mat = matrices[level]
+
+        fig.add_trace(
+            go.Heatmap(
+                z=mat.tolist(),
+                x=ext_labels,
+                y=our_labels,
+                colorscale=[[0, HEATMAP_LOW], [1, HEATMAP_HIGH]],
+                zmin=0.0, zmax=1.0,
+                showscale=(idx == 3),
+                hoverinfo="z",
+                colorbar=dict(
+                    title=dict(
+                        text="Spearman ρ",
+                        font=dict(size=LABEL_FS, family=FONT_FAMILY),
+                    ),
+                    len=0.45, y=0.22,
+                    tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
+                ),
+            ),
+            row=row, col=col,
+        )
+
+        for i in range(n_rows):
+            for j in range(n_cols):
+                val = mat[i, j]
+                if np.isnan(val):
+                    continue
+                txt_color = "white" if val >= 0.70 else PAPER_PALETTE["text_dark"]
+                fig.add_annotation(
+                    x=ext_labels[j], y=our_labels[i],
+                    text=f"{val:.2f}",
+                    showarrow=False,
+                    font=dict(size=HEATMAP_TEXT_FS, family=FONT_FAMILY, color=txt_color),
+                    xref=f"x{idx + 1}" if idx > 0 else "x",
+                    yref=f"y{idx + 1}" if idx > 0 else "y",
+                )
+
+    style_paper_figure(
+        fig,
+        "Spearman ρ — Our Sources vs. External Benchmarks",
+        width=PAPER_W,
+        height=PAPER_H + 120,
+        margin=dict(l=20, r=130, t=90, b=40),
+    )
+
+    agg_title_set = set(AGG_TITLES.values())
+    for ann in fig.layout.annotations:
+        if hasattr(ann, "text") and ann.text in agg_title_set:
+            ann.font = dict(
+                size=LABEL_FS + 1, family=FONT_FAMILY,
+                color=PAPER_PALETTE["text"],
+            )
+
+    for i in range(1, 5):
+        xkey = f"xaxis{i}" if i > 1 else "xaxis"
+        ykey = f"yaxis{i}" if i > 1 else "yaxis"
+        fig.layout[xkey].tickfont = dict(size=TICK_FS - 1, family=FONT_FAMILY)
+        fig.layout[ykey].tickfont = dict(size=TICK_FS - 1, family=FONT_FAMILY)
+
+    save_figure(fig, results / "figures" / "convergence_external.png")
+    _copy_fig(results, figures, "convergence_external.png")
+    print("  -> convergence_external.png")
+
+
+# ─────────────────────────────────────────────────────────────────────────
 # Chart 3: Temporal
 # ─────────────────────────────────────────────────────────────────────────
 
@@ -623,13 +878,16 @@ def main() -> None:
     print("Part 1: Scale, Convergence, Growth")
     print("=" * 60)
 
-    print("\n[1/3] Overview: Five-config aggregate footprint")
+    print("\n[1/4] Overview: Five-config aggregate footprint")
     build_overview(results, figures)
 
-    print("\n[2/3] Convergence: Source correlation heatmaps")
+    print("\n[2/4] Convergence: Source correlation heatmaps")
     build_convergence(results, figures)
 
-    print("\n[3/3] Temporal: Growth trends + data tables")
+    print("\n[3/4] Convergence: Our sources vs. external benchmarks")
+    build_convergence_external(results, figures)
+
+    print("\n[4/4] Temporal: Growth trends + data tables")
     build_temporal(results, figures)
 
     print("\n" + "=" * 60)

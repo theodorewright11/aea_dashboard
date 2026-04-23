@@ -328,12 +328,13 @@ Paper writing uses `paper/writing_style_source.md` (style calibration) and `pape
 
 ### Part 1 — Scale, Convergence, Growth ("This is real")
 
-The credibility argument. Three chart groups:
+The credibility argument. Four chart groups:
 1. **Overview**: Five-config aggregate footprint — workers and wages as % of national totals
-2. **Convergence**: Spearman rank correlation heatmaps (lower triangle) across four independent sources (Claude Browser, Claude API, Copilot, MCP) at four aggregation levels
-3. **Temporal**: % of employment with AI-exposed tasks over time (All Confirmed vs All Ceiling), plus per-date delta tables
+2. **Convergence (internal)**: Spearman rank correlation heatmaps (lower triangle) across four independent sources (Claude Browser, Claude API, Copilot, MCP) at four aggregation levels
+3. **Convergence (external)**: 2×2 grid of rectangular 4×4 heatmaps — our four sources (rows) vs. four external academic benchmarks (Eloundou GPT-4 β, Eloundou Human β, AIOE 10-app mean, AIOE Reading Comprehension) at the same four aggregation levels. External benchmarks rolled up to SOC group level by unweighted mean across matched occupations.
+4. **Temporal**: % of employment with AI-exposed tasks over time (All Confirmed vs All Ceiling), plus per-date delta tables
 
-Narrative arc: scale → multi-source convergence → growth trajectory. Does not characterize which sectors are most exposed (Part 2) or recommend actions (Part 3). Benchmark comparisons (Seampoint, Iceberg) are woven in briefly as convergence evidence.
+Narrative arc: scale → internal multi-source convergence → convergence with independent academic work → growth trajectory. Does not characterize which sectors are most exposed (Part 2) or recommend actions (Part 3). Benchmark comparisons (Seampoint, Iceberg) are woven in briefly alongside the Eloundou/AIOE convergence chart as external validation evidence.
 
 ### Part 2 — Characterization: Where AI Exposure Falls ("Here's what it is")
 
