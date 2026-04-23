@@ -375,7 +375,7 @@ The `<name>_report.md` is the primary deliverable. It should read like a short a
 | `ska_levels/` | AI imp×lv vs. workforce benchmarks (eco mean, top-10, p95) for every SKA element across three AI variants |
 | `zone_pivot_anatomy/` | Why zone 3 peaks on pivot cost; SKA overlap structure, sector composition, and scatter of at-risk occupations by zone |
 | `physical_informational_divide/` | Physical vs. informational occupation split (<33%/>67% thresholds); structural task distributions (GWA/IWA/DWA); AI exposure: pct distribution, IWA workers concentration, auto-aug breakdown by task type × coverage × dataset (Confirmed/Ceiling), GWA concentration curve, auto-aug vs. pct scatter |
-| `aioe_comparison/` | Felten/Raj/Seamans AIOE 52×10 matrix vs. our pct_tasks_affected. Per-occ AIOE score = sum(imp×lv×ability_cap)/sum(imp×lv) on imp≥3 rows, 3 variants (mean-10, Language Modeling only, Reading Comprehension only). 17 charts: occ-level scatter, SOC-level convergence, 4-aggregate-panel ability ranking (sorted by mean/RC/LM), per-ability SKA aggregates vs AIOE, per-AI-app ρ breakdown at 3 SKA aggregates |
+| `aioe_comparison/` | Felten/Raj/Seamans AIOE 52×10 matrix vs. our pct_tasks_affected. Per-occ AIOE score = sum(imp×lv×ability_cap)/sum(imp×lv) on imp≥3 rows, 3 variants (mean-10, Language Modeling only, Reading Comprehension only). 18 charts: occ-level scatter, SOC-level convergence (focused + all-sources), 4-aggregate-panel ability ranking (sorted by mean/RC/LM), per-ability SKA aggregates vs AIOE, per-AI-app ρ breakdown at 3 SKA aggregates |
 
 ---
 
