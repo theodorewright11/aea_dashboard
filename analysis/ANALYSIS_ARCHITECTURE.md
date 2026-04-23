@@ -144,16 +144,24 @@ analysis/
     │                              AI exposure analysis: pct distribution, IWA workers
     │                              concentration, auto-aug breakdown (task type × coverage ×
     │                              dataset), GWA concentration curve, auto-aug vs pct scatter
-    └── aioe_comparison/         — Felten/Raj/Seamans AIOE 52×10 matrix vs. our
-                                   pct_tasks_affected. Per-occ AIOE score = ratio-of-sums
-                                   of imp×lv×ability_cap over imp≥3 ability rows. Three
-                                   variants: row-mean across 10 apps, Language Modeling
-                                   column only, Reading Comprehension column only. 18 charts
-                                   spanning occ-level scatter, SOC-level convergence (focused
-                                   + all-sources), 4-aggregate-panel ability ranking (sorted
-                                   by mean/RC/LM), per-ability SKA-aggregate vs AIOE
-                                   comparisons, per-AI-app ρ breakdown at 3 SKA aggregates,
-                                   occ-level full heatmap.
+    ├── aioe_comparison/         — Felten/Raj/Seamans AIOE 52×10 matrix vs. our
+    │                              pct_tasks_affected. Per-occ AIOE score = ratio-of-sums
+    │                              of imp×lv×ability_cap over imp≥3 ability rows. Three
+    │                              variants: row-mean across 10 apps, Language Modeling
+    │                              column only, Reading Comprehension column only. 18 charts
+    │                              spanning occ-level scatter, SOC-level convergence (focused
+    │                              + all-sources), 4-aggregate-panel ability ranking (sorted
+    │                              by mean/RC/LM), per-ability SKA-aggregate vs AIOE
+    │                              comparisons, per-AI-app ρ breakdown at 3 SKA aggregates,
+    │                              occ-level full heatmap.
+    └── pct_norm_vs_eco/         — AI usage distribution (sum of pct_normalized) vs.
+                                   economic baseline, both renormalized to 100% for shape
+                                   comparison. Major occ cat version: unique (task, occ)
+                                   pairs; AI = Σpct_norm, Eco = Σ(freq × emp). GWA version:
+                                   AI = unique (gwa, task) pairs Σpct_norm, Eco = freq-
+                                   method emp allocation per (task, occ) summed by GWA.
+                                   Dataset: all_confirmed. 4 charts: overlay + signed-delta
+                                   at each level.
 ```
 
 ---

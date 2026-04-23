@@ -377,6 +377,7 @@ The `<name>_report.md` is the primary deliverable. It should read like a short a
 | `zone_pivot_anatomy/` | Why zone 3 peaks on pivot cost; SKA overlap structure, sector composition, and scatter of at-risk occupations by zone |
 | `physical_informational_divide/` | Physical vs. informational occupation split (<33%/>67% thresholds); structural task distributions (GWA/IWA/DWA); AI exposure: pct distribution, IWA workers concentration, auto-aug breakdown by task type × coverage × dataset (Confirmed/Ceiling), GWA concentration curve, auto-aug vs. pct scatter |
 | `aioe_comparison/` | Felten/Raj/Seamans AIOE 52×10 matrix vs. our pct_tasks_affected. Per-occ AIOE score = sum(imp×lv×ability_cap)/sum(imp×lv) on imp≥3 rows, 3 variants (mean-10, Language Modeling only, Reading Comprehension only). 18 charts: occ-level scatter, SOC-level convergence (focused + all-sources), 4-aggregate-panel ability ranking (sorted by mean/RC/LM), per-ability SKA aggregates vs AIOE, per-AI-app ρ breakdown at 3 SKA aggregates |
+| `pct_norm_vs_eco/` | AI usage distribution (sum of `pct_normalized`) vs. economic baseline (freq × emp for major occ cats; freq-method emp allocation for GWAs) per category, both renormalized to 100%. Shows where AI usage is over/under-indexed vs. the underlying economic task-weight. Dataset: `all_confirmed`. 4 charts: paired-bar overlay + signed delta bar, at major_occ_category and GWA levels |
 
 ---
 
