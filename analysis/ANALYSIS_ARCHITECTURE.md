@@ -170,16 +170,17 @@ analysis/
                                    other levels are all_confirmed only, equal bias only,
                                    both eco (4 charts each × 5 = 20). 100 PNGs total.
                                    V2 add-on (run_v2.py + pct_norm_vs_eco_report_v2.md):
-                                   12 intensity-ranking charts using a different metric —
+                                   16 intensity-ranking charts using a different metric —
                                    per-cat ratio = Σ pct (bias-corrected) / Σ (freq×emp),
                                    renormalized across cats to 100%. Single-color horiz
                                    bar, sorted desc, top-30 + bot-10 per chart. Coverage:
                                    8 base levels (major/minor/broad/occ/gwa/iwa/dwa/task)
                                    with config-scoped (rated-task) denominator, +2 ChatGPT-
                                    5× variants on major + gwa, +2 full eco_2025 denominator
-                                   variants on major + gwa (numerator stays config-only;
-                                   only the denom includes unrated eco_2025 tasks). Same
-                                   bias-correction code as v1.
+                                   variants on major + gwa, +4 auto_aug-weighted variants
+                                   on major + gwa × both eco scopes (pct × auto_aug_mean/5
+                                   applied per row before aggregation; down-weights low-
+                                   automatability usage). Same bias-correction code as v1.
 ```
 
 ---
