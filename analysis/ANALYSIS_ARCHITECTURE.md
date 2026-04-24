@@ -170,16 +170,16 @@ analysis/
                                    other levels are all_confirmed only, equal bias only,
                                    both eco (4 charts each × 5 = 20). 100 PNGs total.
                                    V2 add-on (run_v2.py + pct_norm_vs_eco_report_v2.md):
-                                   10 intensity-ranking charts using a different metric —
-                                   per-cat ratio = Σ pct (bias-corrected) / Σ (freq×emp)
-                                   over rated-task rows, renormalized across cats to 100%.
-                                   Single-color horizontal bar, sorted desc, top-30 +
-                                   bot-10 per chart. Coverage: 8 base levels (major/minor/
-                                   broad/occ/gwa/iwa/dwa/task) under all_confirmed + equal
-                                   consensus, plus ChatGPT-5× variants on major + gwa.
-                                   Full-eco variant removed (denominator is rated tasks
-                                   only, so config-scoped and full-eco are identical under
-                                   this metric). Same bias-correction code as v1.
+                                   12 intensity-ranking charts using a different metric —
+                                   per-cat ratio = Σ pct (bias-corrected) / Σ (freq×emp),
+                                   renormalized across cats to 100%. Single-color horiz
+                                   bar, sorted desc, top-30 + bot-10 per chart. Coverage:
+                                   8 base levels (major/minor/broad/occ/gwa/iwa/dwa/task)
+                                   with config-scoped (rated-task) denominator, +2 ChatGPT-
+                                   5× variants on major + gwa, +2 full eco_2025 denominator
+                                   variants on major + gwa (numerator stays config-only;
+                                   only the denom includes unrated eco_2025 tasks). Same
+                                   bias-correction code as v1.
 ```
 
 ---
