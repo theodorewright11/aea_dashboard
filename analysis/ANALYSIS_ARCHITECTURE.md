@@ -247,6 +247,38 @@ analysis/
     │                              not within. Three PNGs + 4 CSVs (occ-level
     │                              long-form 576 records + summary, task-level
     │                              overall + subhypothesis summaries).
+    ├── crashing_waves_vs_rising_tides/ — Empirical comparison to Mertens et
+    │                              al. (2026), "Crashing Waves vs. Rising
+    │                              Tides" (arXiv 2604.01363). Two parts.
+    │                              Part A tests cross-occupation distribution
+    │                              shape of Δpct_tasks_affected between
+    │                              snapshots — histograms with shape stats
+    │                              (Gini/kurtosis/skew/concentration), Lorenz
+    │                              curves, lift profile by initial-exposure
+    │                              decile, rank stability over time,
+    │                              per-period violins, growth-by-major
+    │                              sorted by paper β. Run for both
+    │                              `all_confirmed` (4 dates) and `all_ceiling`
+    │                              (8 dates). Headline: capability (ceiling)
+    │                              is tide-shaped (Gini 0.39, smooth lift),
+    │                              adoption (confirmed) is wave-shaped
+    │                              (Gini 0.65, concentrated in already-
+    │                              exposed occupations). Part B encodes
+    │                              Mertens Table 1 betas per major and
+    │                              computes three forward-risk scores per
+    │                              occupation restricted to the six sig-β
+    │                              majors: already_score = pct × |β|,
+    │                              headroom_score = (100−pct) × |β|,
+    │                              combined_score = p(1−p)|β|·100. 13 PNGs
+    │                              + 11 CSVs. The "already" cut surfaces
+    │                              the most policy-relevant front-of-the-
+    │                              wave list (Electronics Engineers,
+    │                              Investment Fund Managers, Architects,
+    │                              Graphic Designers, PR Specialists,
+    │                              Concierges); the "headroom" cut is
+    │                              dominated by Personal Care/Service
+    │                              because |β|=0.93 there is roughly double
+    │                              the next steepest.
     └── pct_norm_vs_eco/         — AI usage distribution (Σ pct_normalized) vs. economic
                                    baseline (freq×emp / freq-allocated emp), renormalized
                                    to 100%. Overhauled: two configs (all_confirmed and
