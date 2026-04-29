@@ -154,23 +154,28 @@ analysis/
     │                              by mean/RC/LM), per-ability SKA-aggregate vs AIOE
     │                              comparisons, per-AI-app ρ breakdown at 3 SKA aggregates,
     │                              occ-level full heatmap.
-    ├── action_levers/           — Persistent workspace for paper-bound charts and reports.
-    │                              Has its own CLAUDE.md (agent spec), master_report.md
-    │                              (rolling synthesis — single shareable deliverable
-    │                              updated every session), INVENTORY.md (meta log of
-    │                              sub-folders, promotion candidates, open threads,
-    │                              accreted conventions), README.md, and lib/ for
-    │                              shared helpers. Each iteration is a named sub-folder
-    │                              with run.py + results/ + notes.md (and optionally
-    │                              <topic>_report.md). Synthesis reports may live at the
-    │                              workspace root. Folder is gitignored entirely. Seed
-    │                              sub-folder initial_action_charts/ produces six charts
-    │                              on what to do about widespread exposure (complementarity
-    │                              quadrant, sectoral velocity, wage resilience matrix,
-    │                              resilience differential, trade-up corridors, bottleneck
+    ├── claude_lab/              — Claude's autonomous research workspace on the AEA
+    │                              data. Operates as an independent researcher, not a
+    │                              directed analyst. Has its own CLAUDE.md (agent spec
+    │                              with autonomous-researcher framing), research_log.md
+    │                              (single rolling synthesis updated every session),
+    │                              INVENTORY.md (meta log of sub-folders, open threads,
+    │                              accreted conventions, paper-flag candidates),
+    │                              README.md, and lib/ for shared helpers. Each thread
+    │                              is a named sub-folder with run.py + results/ +
+    │                              notes.md (and optionally <topic>_report.md).
+    │                              Synthesis reports may live at the workspace root.
+    │                              Folder is gitignored entirely. Folder used to be
+    │                              called action_levers/; the seed sub-folder
+    │                              initial_action_charts/ retains that historical name
+    │                              and produces six charts on what to do about
+    │                              widespread exposure (complementarity quadrant,
+    │                              sectoral velocity, wage resilience matrix, resilience
+    │                              differential, trade-up corridors, bottleneck
     │                              activity atlas) — all under all_confirmed. Future
-    │                              sub-folders extend / refine / synthesize. Promotion to
-    │                              paper/ is the user's call.
+    │                              sub-folders pursue whatever Claude finds worth
+    │                              investigating. Promotion to paper/ is gated by the
+    │                              user.
     └── pct_norm_vs_eco/         — AI usage distribution (Σ pct_normalized) vs. economic
                                    baseline (freq×emp / freq-allocated emp), renormalized
                                    to 100%. Overhauled: two configs (all_confirmed and
