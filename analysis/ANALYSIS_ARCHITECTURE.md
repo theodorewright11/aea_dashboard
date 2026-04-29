@@ -176,29 +176,41 @@ analysis/
     │                              sub-folders pursue whatever Claude finds worth
     │                              investigating. Promotion to paper/ is gated by the
     │                              user.
-    ├── external_indices_correlation/ — Spearman ρ of our 4 internal sources +
-    │                              5 ANALYSIS_CONFIGS (9 rows) against all 16
-    │                              external AI/automation exposure indices in
-    │                              `Comparison of Indices.csv` from Schaal 2025
+    ├── external_indices_correlation/ — Two analyses against Schaal 2025
     │                              (Cambridge ERA AI Governance Research Fellowship,
     │                              "A theory-based AI automation exposure index:
     │                              Applying Moravec's Paradox to the US labor
-    │                              market"). Columns: Schaal's own Moravec index
-    │                              (overall auto_w + 4 subhypotheses PV/DA/TK/AG;
-    │                              tk_w is inverted-coded, high = MORE tacit
-    │                              knowledge required = LESS automatable),
-    │                              Eloundou α/β/γ, Webb software/robot/ai, SML,
-    │                              AIOE base felten, Frey-Osborne, Autor routine
-    │                              cog/manual. Four SOC levels stacked vertically,
-    │                              pairwise dropna per cell, diverging color scale,
-    │                              significance asterisks. Negative ρ against
-    │                              pre-LLM indices (Webb Robot, Routine Manual,
-    │                              Frey-Osborne) reproduces Schaal's Figure 4
-    │                              paradigm-shift finding from a third independent
-    │                              methodology (observed-usage vs. his
-    │                              theory-driven LLM annotation). One PNG +
-    │                              576-row long-form CSV + per-(level, internal)
-    │                              summary CSV.
+    │                              market") replication data.
+    │                              (1) SOC convergence heatmap: Spearman ρ of
+    │                              our 4 internal sources + 5 ANALYSIS_CONFIGS
+    │                              (9 rows) against all 16 external AI/automation
+    │                              exposure indices in `Comparison of Indices.csv`
+    │                              — Schaal's own Moravec index (overall auto_w
+    │                              + 4 subhypotheses PV/DA/TK/AG; tk_w is
+    │                              inverted-coded, high = MORE tacit knowledge
+    │                              required = LESS automatable), Eloundou α/β/γ,
+    │                              Webb software/robot/ai, SML, AIOE base felten,
+    │                              Frey-Osborne, Autor routine cog/manual. Four
+    │                              SOC levels stacked vertically, pairwise dropna
+    │                              per cell, diverging color scale, significance
+    │                              asterisks. Negative ρ against pre-LLM indices
+    │                              reproduces Schaal's Figure 4 paradigm-shift
+    │                              finding from a third independent methodology.
+    │                              (2) Task-level scatter: Schaal's per-task
+    │                              auto_avg from `merged_tasks_full.csv` vs our
+    │                              auto_aug_mean per (task_normalized,
+    │                              soc_code_2019_full). 5-panel one-per-config
+    │                              + 4-panel subhypothesis breakdown. Joins on
+    │                              normalized task text + 2019 SOC; AEI-only
+    │                              datasets (only soc_code_2010 in file) bridged
+    │                              to 2019 via the AEI Both + Micro crosswalk;
+    │                              GWA/IWA/DWA expansion deduped via
+    │                              groupby([task_norm, soc]).first(). Task-level
+    │                              ρ (0.07–0.30) is much weaker than occ-level
+    │                              ρ (0.5–0.6) — agreement is between-occupation,
+    │                              not within. Three PNGs + 4 CSVs (occ-level
+    │                              long-form 576 records + summary, task-level
+    │                              overall + subhypothesis summaries).
     └── pct_norm_vs_eco/         — AI usage distribution (Σ pct_normalized) vs. economic
                                    baseline (freq×emp / freq-allocated emp), renormalized
                                    to 100%. Overhauled: two configs (all_confirmed and
