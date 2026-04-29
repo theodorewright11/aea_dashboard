@@ -28,6 +28,8 @@ The agreement degrades as you zoom in. At the occupation level (923 categories),
 
 Six major categories land in the high-exposure tier across all four sources: Computer and Mathematical, Office and Administrative Support, Sales, Business and Financial Operations, Arts and Design, and Life/Physical/Social Science. Ten major categories show consistently low exposure across every source: construction, farming, food prep, both healthcare groups, installation and maintenance, personal care, production, protective service, and transportation. The sources agree as strongly on what AI doesn't touch as on what it does, and that double consensus is the clearest signal the framework is tracking something real about which kinds of work current AI engages with.
 
+Cells are annotated with significance asterisks (`*` p<.05, `**` p<.01, `***` p<.001, two-tailed Spearman). At the major level (n = 22 SOC categories), the threshold for p < .001 lands at roughly ρ = 0.65 — every cell in this chart clears that bar. At the occupation level (n ≈ 900), the bar drops to ρ ≈ 0.10, so significance carries less interpretive weight there.
+
 ---
 
 ## External Convergence
@@ -41,6 +43,8 @@ The rankings do agree. At the major category level, the sixteen cells (four inte
 The strongest row is MCP, which agrees most closely with Eloundou's ratings (0.92 with GPT-4 β, 0.93 with Human β at major; 0.77 and 0.73 at occupation). This makes sense given what each thing measures: MCP captures what AI tools can functionally do (tool integration specs), and the Eloundou rubric scores capability overlap with LLMs. Both are assessments of potential exposure, not observed usage. The weakest row is Copilot, which runs 0.67–0.78 at major and drops to 0.52–0.64 at occupation. That's the row where Microsoft's enterprise assessment disagrees most with the academic benchmarks. It still correlates strongly in an absolute sense, but Copilot's signal comes from inside Microsoft's own productivity-software lens, and that lens weights differently from either the Eloundou rubric or the AIOE ability profile. It's also worth noting that AIOE Reading Comprehension correlates with our sources about as well as AIOE mean does, sometimes slightly better. For modern LLM-era exposure ranking, the single reading-comprehension column carries more of the signal than an average that includes nine older AI applications.
 
 The upshot: two research groups using completely different scoring frameworks (GPT-4 and human judgment on exposure rubrics; ability-to-AI-application overlap) arrived at rankings that look like ours. Our framework is reproducing a structural pattern that independent academic work has already found, not an artifact of the specific data sources or methodology we used.
+
+Cells are annotated with significance asterisks (same convention as the internal convergence chart). Every cell here clears p < .001 because the smallest ρ is 0.67 and the smallest n is 22 (major level) — well past threshold.
 
 ---
 

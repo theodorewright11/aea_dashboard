@@ -158,6 +158,26 @@ def _copy_fig(results: Path, figures: Path, name: str) -> None:
     shutil.copy(results / "figures" / name, figures / name)
 
 
+def _stars(p: float) -> str:
+    """Standard significance asterisks for two-tailed correlation p-values."""
+    if not np.isfinite(p):
+        return ""
+    if p < 0.001:
+        return "***"
+    if p < 0.01:
+        return "**"
+    if p < 0.05:
+        return "*"
+    return ""
+
+
+SIG_FOOTNOTE: str = (
+    "Significance: <b>*</b> p &lt; .05  &nbsp; "
+    "<b>**</b> p &lt; .01  &nbsp; "
+    "<b>***</b> p &lt; .001 (two-tailed Spearman)."
+)
+
+
 # ─────────────────────────────────────────────────────────────────────────
 # Chart 1: Overview
 # ─────────────────────────────────────────────────────────────────────────
@@ -262,9 +282,11 @@ def build_convergence(results: Path, figures: Path) -> None:
 
     corr_records: list[dict] = []
     matrices: dict[str, np.ndarray] = {}
+    pmatrices: dict[str, np.ndarray] = {}
 
     for level in AGG_LEVELS:
         mat = np.full((n, n), np.nan)
+        pmat = np.full((n, n), np.nan)
         for i in range(n):
             for j in range(i):
                 si = source_data[CORR_ORDER[i]][level]
@@ -274,6 +296,7 @@ def build_convergence(results: Path, figures: Path) -> None:
                     continue
                 rho, pval = stats.spearmanr(merged.iloc[:, 0], merged.iloc[:, 1])
                 mat[i, j] = rho
+                pmat[i, j] = pval
                 corr_records.append({
                     "level": level,
                     "source_a": CORR_LABELS[i],
@@ -281,8 +304,10 @@ def build_convergence(results: Path, figures: Path) -> None:
                     "rho": round(float(rho), 3),
                     "p_value": round(float(pval), 6),
                     "n": len(merged),
+                    "stars": _stars(pval),
                 })
         matrices[level] = mat
+        pmatrices[level] = pmat
 
     save_csv(pd.DataFrame(corr_records), results / "spearman_by_level.csv")
 
@@ -297,6 +322,7 @@ def build_convergence(results: Path, figures: Path) -> None:
         row = idx // 2 + 1
         col = idx % 2 + 1
         mat = matrices[level]
+        pmat = pmatrices[level]
 
         fig.add_trace(
             go.Heatmap(
@@ -319,7 +345,8 @@ def build_convergence(results: Path, figures: Path) -> None:
             row=row, col=col,
         )
 
-        # Add cell annotations with conditional text color
+        # Add cell annotations with significance asterisks (sample size at
+        # major level is small — n=22 — so even rho=0.7 isn't always significant)
         for i in range(n):
             for j in range(n):
                 val = mat[i, j]
@@ -328,7 +355,7 @@ def build_convergence(results: Path, figures: Path) -> None:
                 txt_color = "white" if val >= 0.70 else PAPER_PALETTE["text_dark"]
                 fig.add_annotation(
                     x=CORR_LABELS[j], y=CORR_LABELS[i],
-                    text=f"{val:.2f}",
+                    text=f"{val:.2f}{_stars(pmat[i, j])}",
                     showarrow=False,
                     font=dict(size=HEATMAP_TEXT_FS, family=FONT_FAMILY, color=txt_color),
                     xref=f"x{idx + 1}" if idx > 0 else "x",
@@ -339,8 +366,17 @@ def build_convergence(results: Path, figures: Path) -> None:
         fig,
         "Spearman ρ on % Tasks Affected",
         width=PAPER_W,
-        height=PAPER_H + 120,
-        margin=dict(l=20, r=130, t=90, b=40),
+        height=PAPER_H + 160,
+        margin=dict(l=20, r=130, t=90, b=80),
+    )
+
+    fig.add_annotation(
+        text=SIG_FOOTNOTE,
+        xref="paper", yref="paper",
+        x=0, y=-0.06, xanchor="left", yanchor="top",
+        showarrow=False,
+        font=dict(size=ANNOT_FS, family=FONT_FAMILY,
+                  color=PAPER_PALETTE["muted"]),
     )
 
     # Style subplot titles — bigger font
@@ -501,9 +537,11 @@ def build_convergence_external(results: Path, figures: Path) -> None:
 
     corr_records: list[dict] = []
     matrices: dict[str, np.ndarray] = {}
+    pmatrices: dict[str, np.ndarray] = {}
 
     for level in AGG_LEVELS:
         mat = np.full((n_rows, n_cols), np.nan)
+        pmat = np.full((n_rows, n_cols), np.nan)
         for i, skey in enumerate(CORR_ORDER):
             ours = source_data[skey][level]
             for j, ext_key in enumerate(ext_keys):
@@ -516,6 +554,7 @@ def build_convergence_external(results: Path, figures: Path) -> None:
                     continue
                 rho, pval = stats.spearmanr(merged["x"], merged["y"])
                 mat[i, j] = rho
+                pmat[i, j] = pval
                 corr_records.append({
                     "level":      level,
                     "our_source": our_labels[i],
@@ -523,8 +562,10 @@ def build_convergence_external(results: Path, figures: Path) -> None:
                     "rho":        round(float(rho), 3),
                     "p_value":    round(float(pval), 6),
                     "n":          len(merged),
+                    "stars":      _stars(pval),
                 })
         matrices[level] = mat
+        pmatrices[level] = pmat
 
     save_csv(pd.DataFrame(corr_records), results / "spearman_external_by_level.csv")
 
@@ -539,6 +580,7 @@ def build_convergence_external(results: Path, figures: Path) -> None:
         row = idx // 2 + 1
         col = idx % 2 + 1
         mat = matrices[level]
+        pmat = pmatrices[level]
 
         fig.add_trace(
             go.Heatmap(
@@ -569,7 +611,7 @@ def build_convergence_external(results: Path, figures: Path) -> None:
                 txt_color = "white" if val >= 0.70 else PAPER_PALETTE["text_dark"]
                 fig.add_annotation(
                     x=ext_labels[j], y=our_labels[i],
-                    text=f"{val:.2f}",
+                    text=f"{val:.2f}{_stars(pmat[i, j])}",
                     showarrow=False,
                     font=dict(size=HEATMAP_TEXT_FS, family=FONT_FAMILY, color=txt_color),
                     xref=f"x{idx + 1}" if idx > 0 else "x",
@@ -580,8 +622,17 @@ def build_convergence_external(results: Path, figures: Path) -> None:
         fig,
         "Spearman ρ — Our Sources vs. External Benchmarks",
         width=PAPER_W,
-        height=PAPER_H + 120,
-        margin=dict(l=20, r=130, t=90, b=40),
+        height=PAPER_H + 200,
+        margin=dict(l=20, r=130, t=90, b=120),
+    )
+
+    fig.add_annotation(
+        text=SIG_FOOTNOTE,
+        xref="paper", yref="paper",
+        x=0, y=-0.10, xanchor="left", yanchor="top",
+        showarrow=False,
+        font=dict(size=ANNOT_FS, family=FONT_FAMILY,
+                  color=PAPER_PALETTE["muted"]),
     )
 
     agg_title_set = set(AGG_TITLES.values())

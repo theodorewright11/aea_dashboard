@@ -176,6 +176,16 @@ analysis/
     │                              sub-folders pursue whatever Claude finds worth
     │                              investigating. Promotion to paper/ is gated by the
     │                              user.
+    ├── external_indices_correlation/ — Spearman ρ of our 4 internal sources +
+    │                              5 ANALYSIS_CONFIGS (9 rows) against all 16
+    │                              external AI/automation exposure indices in
+    │                              `Comparison of Indices.csv` (AIOE alt-weights,
+    │                              Eloundou α/β/γ, Webb software/robot/ai, SML,
+    │                              AIOE base felten, Frey-Osborne, Autor routine
+    │                              cog/manual). Four SOC levels stacked vertically,
+    │                              pairwise dropna per cell, diverging color scale,
+    │                              significance asterisks. One PNG + 576-row long-form
+    │                              CSV + per-(level, internal) summary CSV.
     └── pct_norm_vs_eco/         — AI usage distribution (Σ pct_normalized) vs. economic
                                    baseline (freq×emp / freq-allocated emp), renormalized
                                    to 100%. Overhauled: two configs (all_confirmed and
