@@ -179,24 +179,39 @@ analysis/
     ├── schaal_substitution/     — Replicates the chart types from
     │                              `paper/results/part_1` + `part_2` (minus
     │                              correlations and temporal) using Schaal 2025's
-    │                              per-task auto_avg in place of our pipeline's
-    │                              auto_aug_mean. Schaal score normalized as
-    │                              auto_avg / 2 to match the original
-    │                              auto_aug_mean / 5 0–1 multiplier mechanic.
-    │                              Two versions per chart: "economy" (Schaal
-    │                              applied to every eco_2025 task with a score)
-    │                              and "confirmed" (Schaal applied only to
-    │                              task-occ pairs that ALSO appear in
-    │                              all_confirmed). Six chart types replicated:
-    │                              overview (single A-vs-B paired bars),
-    │                              phys/info divide, job zone violin, GWA
-    │                              exposure ranking, major categories 3-panel,
-    │                              SKA levels (compute_ska piped with
-    │                              Schaal-derived per-occ pct). Eleven PNGs +
-    │                              per-chart CSVs. Major-category rankings,
-    │                              phys/info divide, job zone gradient, and GWA
-    │                              pattern all reproduce — Part 2's structural
-    │                              findings survive the substitution.
+    │                              per-task scores from merged_tasks_full.csv
+    │                              in place of our pipeline's auto_aug_mean.
+    │                              Schaal score normalized as score / 2 to
+    │                              match the original auto_aug_mean / 5 0-1
+    │                              multiplier mechanic. Two versions per chart:
+    │                              "economy" (Schaal applied to every eco_2025
+    │                              task with a score) and "confirmed" (Schaal
+    │                              applied only to task-occ pairs that ALSO
+    │                              appear in all_confirmed). Five score
+    │                              variants run through the full pipeline:
+    │                              auto_avg (Schaal Overall, eq. 1), pv_avg
+    │                              (Performance Variance / Moravec proxy),
+    │                              da_avg (Data Abundance), tk_avg (Tacit
+    │                              Knowledge — high = MINIMAL TK required =
+    │                              MORE automatable, system-prompt convention),
+    │                              ag_avg (Algorithmic Efficiency Gap). Six
+    │                              chart types per variant (overview, phys/info,
+    │                              job zone, GWA, major categories, SKA via
+    │                              compute_ska piped with Schaal-derived pct)
+    │                              x 11 PNGs each + 1 cross-variant comparison
+    │                              chart = 56 PNGs total in
+    │                              results/figures/{auto,pv,da,tk,ag,_comparison}/.
+    │                              Per-variant findings: DA closest to
+    │                              observed-usage (Office/Admin + Computer/Math
+    │                              top); TK is the cleanest Moravec test
+    │                              (high-skill expert work consistently bottom
+    │                              — supports seniority-biased technological
+    │                              change); PV inverts intuitions
+    │                              (Arts/Education on top via high human
+    │                              performance variance); AG essentially a
+    │                              phys/info cut. No single subhypothesis
+    │                              reproduces Schaal Overall — the four-factor
+    │                              average is doing real work.
     ├── external_indices_correlation/ — Two analyses against Schaal 2025
     │                              (Cambridge ERA AI Governance Research Fellowship,
     │                              "A theory-based AI automation exposure index:
