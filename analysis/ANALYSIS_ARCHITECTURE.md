@@ -154,6 +154,31 @@ analysis/
     │                              by mean/RC/LM), per-ability SKA-aggregate vs AIOE
     │                              comparisons, per-AI-app ρ breakdown at 3 SKA aggregates,
     │                              occ-level full heatmap.
+    ├── action_levers/           — Six action-oriented charts on what to do about
+    │                              widespread exposure (independent of questions/ and
+    │                              paper/). (1) Complementarity Quadrant: pct × human
+    │                              SKA headroom (100 − overall_pct), sized by emp,
+    │                              colored by wage; quadrant labels for augmentation-OK
+    │                              / substitution-risk / untouched / vulnerable-when-
+    │                              reached. (2) Sectoral Velocity Quadrant: current
+    │                              pct × annualized growth (pp/yr) over the all_confirmed
+    │                              series for 22 majors. (3) Wage Resilience Matrix:
+    │                              pct × log(median wage), sized by emp, colored by SKA
+    │                              gap (diverging); dotted Q1/Q3 wage lines. (4)
+    │                              Resilience Differential: 3-panel horizontal bar
+    │                              (Skills / Knowledge / Abilities) ranking each
+    │                              element by emp-weighted avg pct in occupations that
+    │                              emphasize it (importance ≥ 4) minus same in those
+    │                              that don't. Negative = curriculum-design target.
+    │                              (5) Trade-Up Corridors: heatmap of avg L1 SKA
+    │                              distance from top-quartile-pct origins to bottom-
+    │                              quartile-pct destinations, aggregated by major-major,
+    │                              restricted to pairs within ±25% median wage. (6)
+    │                              Bottleneck Activity Atlas: per major, share of
+    │                              work-time (freq × emp) in residual (≤33%) /
+    │                              moderate (33–50%) / heavy (>50%) IWA exposure tiers.
+    │                              All charts use all_confirmed (AEI Both + Micro
+    │                              2026-02-12) as primary lens. 6 PNGs + 7 CSVs.
     └── pct_norm_vs_eco/         — AI usage distribution (Σ pct_normalized) vs. economic
                                    baseline (freq×emp / freq-allocated emp), renormalized
                                    to 100%. Overhauled: two configs (all_confirmed and
