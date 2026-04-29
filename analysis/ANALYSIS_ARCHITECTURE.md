@@ -212,7 +212,7 @@ analysis/
     │                              phys/info cut. No single subhypothesis
     │                              reproduces Schaal Overall — the four-factor
     │                              average is doing real work.
-    ├── external_indices_correlation/ — Two analyses against Schaal 2025
+    ├── external_indices_correlation/ — Three analyses against Schaal 2025
     │                              (Cambridge ERA AI Governance Research Fellowship,
     │                              "A theory-based AI automation exposure index:
     │                              Applying Moravec's Paradox to the US labor
@@ -244,9 +244,22 @@ analysis/
     │                              groupby([task_norm, soc]).first(). Task-level
     │                              ρ (0.07–0.30) is much weaker than occ-level
     │                              ρ (0.5–0.6) — agreement is between-occupation,
-    │                              not within. Three PNGs + 4 CSVs (occ-level
-    │                              long-form 576 records + summary, task-level
-    │                              overall + subhypothesis summaries).
+    │                              not within. (3) Group-level auto_aug vs
+    │                              Schaal heatmap (group_auto_aug_vs_schaal.png):
+    │                              two stacked 4×5 heatmaps, rows = SOC levels,
+    │                              cols = Schaal's 5 score columns from
+    │                              merged_tasks_full.csv. Cells = Spearman ρ
+    │                              between group-level avg auto_aug_mean (from
+    │                              all_confirmed) and group-level avg Schaal
+    │                              score. Two methods applied symmetrically:
+    │                              Method A zero-fill (avg over ALL eco
+    │                              task-occ pairs in group, missing = 0) and
+    │                              Method B rated-only (only pairs with both
+    │                              ratings). Schaal DA strongest predictor
+    │                              (ρ ≈ 0.83 at major under Method A); Schaal
+    │                              TK negative (observed Claude usage
+    │                              concentrates in high-tacit-knowledge fields).
+    │                              Four PNGs + 5 CSVs total.
     ├── crashing_waves_vs_rising_tides/ — Empirical comparison to Mertens et
     │                              al. (2026), "Crashing Waves vs. Rising
     │                              Tides" (arXiv 2604.01363). Two parts.
