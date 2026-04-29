@@ -155,10 +155,12 @@ analysis/
     │                              comparisons, per-AI-app ρ breakdown at 3 SKA aggregates,
     │                              occ-level full heatmap.
     ├── action_levers/           — Persistent workspace for paper-bound charts and reports.
-    │                              Has its own CLAUDE.md (agent spec), INVENTORY.md
-    │                              (running log of sub-folders, promotion candidates, open
-    │                              threads, accreted conventions), README.md, and lib/
-    │                              for shared helpers. Each iteration is a named sub-folder
+    │                              Has its own CLAUDE.md (agent spec), master_report.md
+    │                              (rolling synthesis — single shareable deliverable
+    │                              updated every session), INVENTORY.md (meta log of
+    │                              sub-folders, promotion candidates, open threads,
+    │                              accreted conventions), README.md, and lib/ for
+    │                              shared helpers. Each iteration is a named sub-folder
     │                              with run.py + results/ + notes.md (and optionally
     │                              <topic>_report.md). Synthesis reports may live at the
     │                              workspace root. Folder is gitignored entirely. Seed
