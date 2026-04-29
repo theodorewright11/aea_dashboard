@@ -176,6 +176,27 @@ analysis/
     │                              sub-folders pursue whatever Claude finds worth
     │                              investigating. Promotion to paper/ is gated by the
     │                              user.
+    ├── schaal_substitution/     — Replicates the chart types from
+    │                              `paper/results/part_1` + `part_2` (minus
+    │                              correlations and temporal) using Schaal 2025's
+    │                              per-task auto_avg in place of our pipeline's
+    │                              auto_aug_mean. Schaal score normalized as
+    │                              auto_avg / 2 to match the original
+    │                              auto_aug_mean / 5 0–1 multiplier mechanic.
+    │                              Two versions per chart: "economy" (Schaal
+    │                              applied to every eco_2025 task with a score)
+    │                              and "confirmed" (Schaal applied only to
+    │                              task-occ pairs that ALSO appear in
+    │                              all_confirmed). Six chart types replicated:
+    │                              overview (single A-vs-B paired bars),
+    │                              phys/info divide, job zone violin, GWA
+    │                              exposure ranking, major categories 3-panel,
+    │                              SKA levels (compute_ska piped with
+    │                              Schaal-derived per-occ pct). Eleven PNGs +
+    │                              per-chart CSVs. Major-category rankings,
+    │                              phys/info divide, job zone gradient, and GWA
+    │                              pattern all reproduce — Part 2's structural
+    │                              findings survive the substitution.
     ├── external_indices_correlation/ — Two analyses against Schaal 2025
     │                              (Cambridge ERA AI Governance Research Fellowship,
     │                              "A theory-based AI automation exposure index:
