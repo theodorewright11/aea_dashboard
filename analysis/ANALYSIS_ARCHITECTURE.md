@@ -154,31 +154,21 @@ analysis/
     │                              by mean/RC/LM), per-ability SKA-aggregate vs AIOE
     │                              comparisons, per-AI-app ρ breakdown at 3 SKA aggregates,
     │                              occ-level full heatmap.
-    ├── action_levers/           — Six action-oriented charts on what to do about
-    │                              widespread exposure (independent of questions/ and
-    │                              paper/). (1) Complementarity Quadrant: pct × human
-    │                              SKA headroom (100 − overall_pct), sized by emp,
-    │                              colored by wage; quadrant labels for augmentation-OK
-    │                              / substitution-risk / untouched / vulnerable-when-
-    │                              reached. (2) Sectoral Velocity Quadrant: current
-    │                              pct × annualized growth (pp/yr) over the all_confirmed
-    │                              series for 22 majors. (3) Wage Resilience Matrix:
-    │                              pct × log(median wage), sized by emp, colored by SKA
-    │                              gap (diverging); dotted Q1/Q3 wage lines. (4)
-    │                              Resilience Differential: 3-panel horizontal bar
-    │                              (Skills / Knowledge / Abilities) ranking each
-    │                              element by emp-weighted avg pct in occupations that
-    │                              emphasize it (importance ≥ 4) minus same in those
-    │                              that don't. Negative = curriculum-design target.
-    │                              (5) Trade-Up Corridors: heatmap of avg L1 SKA
-    │                              distance from top-quartile-pct origins to bottom-
-    │                              quartile-pct destinations, aggregated by major-major,
-    │                              restricted to pairs within ±25% median wage. (6)
-    │                              Bottleneck Activity Atlas: per major, share of
-    │                              work-time (freq × emp) in residual (≤33%) /
-    │                              moderate (33–50%) / heavy (>50%) IWA exposure tiers.
-    │                              All charts use all_confirmed (AEI Both + Micro
-    │                              2026-02-12) as primary lens. 6 PNGs + 7 CSVs.
+    ├── action_levers/           — Persistent workspace for paper-bound charts and reports.
+    │                              Has its own CLAUDE.md (agent spec), INVENTORY.md
+    │                              (running log of sub-folders, promotion candidates, open
+    │                              threads, accreted conventions), README.md, and lib/
+    │                              for shared helpers. Each iteration is a named sub-folder
+    │                              with run.py + results/ + notes.md (and optionally
+    │                              <topic>_report.md). Synthesis reports may live at the
+    │                              workspace root. Folder is gitignored entirely. Seed
+    │                              sub-folder initial_action_charts/ produces six charts
+    │                              on what to do about widespread exposure (complementarity
+    │                              quadrant, sectoral velocity, wage resilience matrix,
+    │                              resilience differential, trade-up corridors, bottleneck
+    │                              activity atlas) — all under all_confirmed. Future
+    │                              sub-folders extend / refine / synthesize. Promotion to
+    │                              paper/ is the user's call.
     └── pct_norm_vs_eco/         — AI usage distribution (Σ pct_normalized) vs. economic
                                    baseline (freq×emp / freq-allocated emp), renormalized
                                    to 100%. Overhauled: two configs (all_confirmed and
