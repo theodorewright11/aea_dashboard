@@ -5,8 +5,11 @@ import { usePathname } from "next/navigation";
 import { useSimpleMode } from "@/lib/SimpleModeContext";
 import { useState, useRef, useEffect } from "react";
 
-/* Group nav links: Explorers | Charts | Info, with dividers between groups */
+/* Group nav links: Personal | Explorers | Charts | Info, with dividers between groups */
 const NAV_GROUPS = [
+  [
+    { href: "/my-occupation",          label: "My Occupation" },
+  ],
   [
     { href: "/explorer",               label: "Occupation Explorer" },
     { href: "/wa-explorer",            label: "Work Activities Explorer" },

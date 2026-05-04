@@ -719,3 +719,34 @@ def task_changes(req: TaskChangesRequest):
         from_dataset=req.from_dataset,
         to_dataset=req.to_dataset,
     )
+
+
+# ── /api/occupation-report ─────────────────────────────────────────────────────
+# Per-occupation actionable report. Returns one big payload assembled from:
+# headline + risk + intensity, tasks (with per-source auto_aug + top MCPs),
+# work activities, group ranks, trend, SKA gap, sector stats, similar occs,
+# tech tools. See backend/occupation_report.py for the compute logic.
+
+from occupation_report import (
+    get_occupation_report,
+    get_occupation_titles,
+)
+
+
+@app.get("/api/occupation-report/titles")
+def occupation_report_titles():
+    """All occupation titles available — used by the page's occupation picker."""
+    return {"titles": get_occupation_titles()}
+
+
+@app.get("/api/occupation-report")
+def occupation_report(
+    title: str = Query(..., description="Occupation title (title_current)"),
+    geo:   str = Query("nat", description="Geography code (nat, ut, ca, …)"),
+):
+    if geo not in GEO_OPTIONS:
+        raise HTTPException(status_code=400, detail=f"Unknown geo: {geo}")
+    payload = get_occupation_report(title, geo)
+    if payload is None:
+        raise HTTPException(status_code=404, detail=f"Occupation not found: {title}")
+    return payload

@@ -82,6 +82,17 @@ These sets are exposed via `GET /api/config` as `aei_conv_snapshot_datasets`, `a
 | `final_eco_2025.csv` (~23,850 rows) | Primary ECO baseline (denominator for all metrics). Has `task_prop`, `title_current` (2019 SOC). |
 | `final_eco_2015.csv` (~24,631 rows) | AEI work-activity baseline. Has `title` (2010 SOC). |
 | `2010_to_2019_soc_crosswalk.csv` | Maps 2010 SOC → 2019 SOC. Searched in `data/`, then `../aea_dashboard_dev/data/`, then `../automation_exposure_analysis/data/`. |
+| `mcp_titles_desc.csv` | Per-MCP-server descriptions (`title`, `text_for_llm`). Used by `/api/occupation-report` to enrich the top-5 MCP servers shown for each task. |
+
+### Static Reference Files (from `analysis/data/`, used by `occupation_report.py`)
+
+These live in `analysis/data/` rather than `data/` for historical reasons (the analysis bucket loaded them first), but the Dockerfile explicitly copies them into the production image so the backend can read them at runtime. They have no Python deps — pure CSV reference data.
+
+| File | Purpose |
+|------|---------|
+| `skills_v30.1.csv` / `abilities_v30.1.csv` / `knowledge_v30.1.csv` | O*NET v30.1 SKA element scores (importance + level per occupation). Required for the SKA gap section and similarity matrix. |
+| `tech_skills_simple.csv` | Per-occupation `n_software` count. Required for risk-score flag 7. |
+| `technology_skills_v30.1.csv` | One row per (occupation, specific software) entry, with commodity category. Required for the tech-tools section. |
 
 ### Shared Columns Across All Datasets
 
@@ -207,6 +218,37 @@ Organized by pipeline stage:
 - `_build_eco2015_baseline_set()` — builds set of (task_normalized, title_current) from crosswalked eco_2015. Cached.
 - `_prepare_dataset_for_comparison(ds_name)` — loads a dataset, crosswalks AEI to 2019 SOC, deduplicates to (task_normalized, title_current) level with averaged auto_aug_mean and pct_normalized. Returns DataFrame.
 - `compute_task_changes(from_dataset, to_dataset, geo="nat")` — compares two datasets at task level. Returns list of dicts with status, deltas, `emp`/`wage` for requested geo, and metadata. Cached by (from_dataset, to_dataset, geo).
+
+### `occupation_report.py` — Per-Occupation Report
+
+Composes one big payload for the `/my-occupation` page. Lives outside `compute.py` because (a) it only ever runs at occupation level, (b) it pulls in static O*NET reference data (skills/abilities/knowledge + tech skills CSVs from `analysis/data/`), and (c) it inlines small portions of analysis-folder logic — SKA computation and equal-consensus bias ratios — to keep the backend self-contained for production deployment (analysis/ is not in the Docker image except for the static reference CSVs explicitly copied via the Dockerfile).
+
+**Primary dataset:** all headline metrics, the SKA gap reference, the risk score, the trend sparkline, the intensity rank, and the tech commodity ranking are computed against `AEI Both + Micro Conservative 2026-02-12`. Per-task auto_aug per source comes from `_build_explorer_task_lookup()` (same pipeline the Occupation Explorer uses).
+
+**Section builders (all called by `get_occupation_report()`):**
+- `_build_headline(title, geo)` — title, hierarchy, job zone, outlook, n_tasks, raw emp/wage from `_raw_emp_wage()` (eco_2025 BLS columns), pct/workers/wages from `_emp_wage_for(PRIMARY_DATASET, geo)`, risk payload from `_risk_table()`, intensity from `_intensity_rank_table()`.
+- `_build_tasks(title)` — all unique tasks for this occ from eco_2025; per-task max across `AEI Conv. v1–v5`, max across `AEI API v3–v5`, plus single Microsoft and MCP scores, color bucket from max(AEI Conv max, AEI API max, MS), top-5 MCPs enriched with `text_for_llm` descriptions from `data/mcp_titles_desc.csv`. Sorted by color_driver desc.
+- `_build_was(tasks)` — rolls the task list up to GWA/IWA/DWA. Per-WA values are simple averages of the per-task scores within each WA.
+- `_build_group_ranks(title, geo)` — rank in economy / major / minor / broad on pct_tasks_affected, workers_affected, wages_affected. Built by sorting all 923 occs from `_emp_wage_for(PRIMARY_DATASET, geo)`.
+- `_build_trend(title, geo)` — pct_tasks_affected at each of the four `all_confirmed` snapshot dates (Mar 2025 → Feb 2026).
+- `_build_ska(title)` — per-element rows (Skills/Abilities/Knowledge separate, importance ≥ 3 only) using `_compute_ska_for_pct(pct)` and `_ska_top10_per_element()`. Per row: importance, level, occ_score (imp × lv), ai_top10 reference (mean of top-10 ai_product values for that element across all occs), gap (ai_top10 − occ_score), pct_of_need, color bucket. Sorted with biggest AI lead at top within each section.
+- `_build_sector_stats(title, geo)` — major-category aggregate stats via `get_group_data()` at `agg_level="major"` for the conservative dataset. Adds rank columns within the 22 majors.
+- `_similar_occs(title, n)` — L1 distance over the `_ska_profile_matrix()` (one row per occ, one column per (type, element_name) with imp ≥ 3 in any occ; cell = importance × level or 0). Returns the n smallest distances excluding self, with each occ's pct, wage, job zone, outlook.
+- `_tech_for_occ(title)` — softwares from O*NET `technology_skills_v30.1.csv` for this occupation, joined with `_tech_commodity_rank()` (every commodity's economy-wide rank by avg pct_tasks_affected).
+
+**Risk table (`_risk_table()`):** mirrors `analysis/questions/job_exposure/job_risk_scoring/run.py` exactly. 8 binary flags weighted 1× or 2× (max 10), exposure gate at pct < 33% downgrades score-8+ to mod_high. Uses pct_first/pct_last from `TREND_SERIES` for the trend flags, SKA overall_pct for flag 2, `n_software` from `analysis/data/tech_skills_simple.csv` for flag 7, `auto_avg_with_vals` from the explorer for flag 8. Cached once.
+
+**Intensity rank (`_intensity_rank_table()`):** mirrors `analysis/exploratory/pct_norm_vs_eco/run_v2.compute_intensity_metric` for `equal` consensus + `configscoped` eco + no smoothing, computed for both occupation and major levels. Bias ratios inlined as `_equal_consensus_bias_ratios()` from the Claude/Copilot/ChatGPT GWA share constants. Returns each occ's `ratio_pct` (renormalized to sum to 100 across cats) and rank within its level.
+
+**Caches** (all module-level, lazy):
+- `_pct_by_dataset_cache` — keyed by `f"{dataset}|{geo}"`, holds pct Series.
+- `_ska_data_cache`, `_ska_result_cache`, `_ska_top10_per_element_cache`, `_ska_profile_matrix_cache` — SKA pipeline.
+- `_intensity_rank_cache`, `_risk_table_cache`, `_tech_commodity_rank_cache` — cross-occ precomputes.
+- `_mcp_titles_desc_cache`, `_explorer_occ_index_cache` — per-payload helpers.
+
+**Public entrypoints:**
+- `get_occupation_titles() -> list[str]` — sorted list of 923 titles.
+- `get_occupation_report(title, geo="nat") -> dict | None` — full payload; None if title not in eco_2025.
 
 ### `main.py` — API Layer
 
@@ -797,17 +839,34 @@ Response (`TaskChangesResponse`):
 }
 ```
 
+### `GET /api/occupation-report/titles`
+
+Response:
+```ts
+{ titles: string[] }   // sorted list of all 923 occupation titles
+```
+
+### `GET /api/occupation-report`
+
+Query params:
+- `title` (string, required) — full `title_current` from eco_2025.
+- `geo` (string, default `"nat"`) — geography code.
+
+Response: full report payload built by `occupation_report.get_occupation_report()`. Top-level keys: `title`, `geo`, `primary_dataset`, `headline`, `tasks`, `work_activities`, `group_ranks`, `trend`, `ska`, `sector`, `similar`, `tech`. See `frontend/src/lib/types.ts → OccupationReport` for the full TypeScript shape (matches the Python compute output exactly).
+
+Returns 404 if the title isn't in eco_2025; 400 if `geo` is unknown.
+
 ---
 
 ## 6. Frontend Architecture
 
 ### Navigation & Layout
 
-`Navigation.tsx` — fixed 56px nav bar (`var(--nav-height)`), 7 links: Occupation Explorer, Work Activities Explorer, Occupation Categories, Work Activities, Trends, Instructions, About. Active tab highlighted with brand color. Includes a **Simple/Advanced toggle** button (right side of nav). All pages render below with `paddingTop: var(--nav-height)`.
+`Navigation.tsx` — fixed 56px nav bar (`var(--nav-height)`), 9 links across 5 groups: My Occupation | Occupation Explorer, Work Activities Explorer | Occupation Categories, Work Activities | Trends, Task Changes Explorer | Instructions, About. Active tab highlighted with brand color. Includes a **Simple/Advanced toggle** button (right side of nav). All pages render below with `paddingTop: var(--nav-height)`.
 
 `Footer.tsx` — global footer displayed below all page content. Contains source attribution text and labeled links: Dashboard GitHub, MCP Classification GitHub, Data Merging GitHub (placeholder — repo not yet available), Research Paper (placeholder — not yet available), and a contact email link.
 
-Root URL (`/`) redirects to `/explorer` (Occupation Explorer is the default landing page).
+Root URL (`/`) redirects to `/my-occupation` (Occupation Report is the default landing page).
 
 `layout.tsx` — root layout mounting `<SimpleModeProvider>` → `<Navigation />` + `{children}` + `<Footer />`.
 
@@ -839,6 +898,36 @@ CSS variables in `globals.css`:
 ```
 
 Utility classes: `.card`, `.pill`, `.btn-brand`, `.btn-ghost`, `.filter-chip`, `.tag`, `.tag-aei`, `.tag-mcp`, `.tag-ms`, `.tag-avg`, `.tag-max`.
+
+### Page: My Occupation (`/my-occupation` → `app/my-occupation/page.tsx`)
+
+Thin wrapper that fetches `/api/config` and renders `<OccupationReport config={config} />`. No URL params — the component manages its own `selectedTitle` and `geo` state internally.
+
+### Component: `OccupationReport`
+
+Single-file component (`components/OccupationReport.tsx`) holding the entire report page. Sub-sections are local `function` components defined in the same file (`Hero`, `Headline`, `Trend`, `GroupRanks`, `Sector`, `SkaSection`, `TasksSection`, `WaSection`, `TechSection`, `SimilarSection`).
+
+**State:**
+- `titles: string[]` — list of all 923 occupation titles, fetched once on mount.
+- `selectedTitle: string` — current selection. `searchQuery` is a separate input string with typeahead suggestions.
+- `geo: string` — geography code; changing triggers a refetch.
+- `report: OccupationReport | null` — full payload from `/api/occupation-report`.
+- `waLevel: "gwa" | "iwa" | "dwa"` — work activities tab.
+- `showRiskFlags: boolean` — risk-tier "Why?" expandable.
+
+**Color tokens** (defined in-file): `BUCKET_BG / BUCKET_BORDER / BUCKET_DOT / BUCKET_LABEL` keyed by `ColorBucket` (`"high" | "mid" | "low" | "none"`). Same neutral 3-tier palette used for both task auto_aug coloring (≥4 / 2.5–4 / <2.5) and SKA pct_of_need coloring (≥100 / 66–100 / <66).
+
+**Tasks table:** rows are click-to-expand (only when `top_mcps.length > 0`). Expanded view shows the top-5 MCP servers with `description` from `text_for_llm` rendered inline (no tooltip — full visibility).
+
+**Work activities table:** tab selector (GWA/IWA/DWA). Each table row is one WA with averaged per-source scores rolled up from the occupation's tasks within that WA.
+
+**SKA section:** three sub-tables (Skills, Knowledge, Abilities). Sorted with biggest AI lead at the top (matches the user's spec). The summary header shows the four ratio-of-sums percentages (Overall / Skills / Knowledge / Abilities).
+
+**Tech section:** top 25 of the occupation's softwares, sorted by commodity rank (most-AI-exposed commodities first). Shows software name, commodity, commodity rank within all commodities economy-wide, and avg % tasks affected for that commodity.
+
+**Similar section:** top 5 nearest occupations by L1 distance. Each row links nothing (just informational); shows pct_tasks_affected, wage, job zone, outlook, and the SKA distance number itself.
+
+**No Simple/Advanced mode handling** — this page is a single curated view by design; the toggle in nav still appears (it's global) but the component doesn't read `useSimpleMode()`.
 
 ### Page: Occupation Categories (`/occupation-categories` → `app/occupation-categories/page.tsx`)
 
@@ -1156,3 +1245,7 @@ The explorer endpoints are **cold-start heavy** (~2–5s on first `/api/explorer
 29. **PctComputePanel auto-recomputes on geo and empWeighting changes.** Both `PctComputePanel` (occ explorer) and `WaPctComputePanel` (WA explorer) track `geo` changes via a ref and auto-recompute when the panel has already been computed and the geo changes. `WaPctComputePanel` additionally auto-recomputes when the parent's `empWeighting` toggle changes (syncing "freq"/"value" to the panel's "freq"/"imp" method). Simple mode auto-compute handles geo via its useEffect dependency.
 
 30. **All-eco-tasks uses weighted emp, not n_tasks_per_occ.** `get_all_eco_task_rows(geo)` returns weighted emp allocation fields (`emp_freq`, `emp_value`) for the requested geography instead of `n_tasks_per_occ`. The WA Explorer task view selects freq or value variant based on Time/Value toggle. The `get_wa_explorer_data(geo)` `needed_cols` includes `freq_mean`, `relevance`, `importance` — all three are required for correct emp allocation and to avoid emp=0 bugs for WA activity rows.
+
+31. **`occupation_report.py` re-implements analysis logic instead of importing it.** The Dockerfile only ships `data/`, `backend/`, and a hand-picked subset of `analysis/data/` CSVs. Importing from `analysis.*` Python modules in the backend works locally but breaks in production. So `_compute_ska_for_pct`, `_equal_consensus_bias_ratios`, the risk-table flag logic, and the intensity ratio pipeline are inlined in `occupation_report.py`. If the analysis canonical implementations change (e.g. `analysis/data/compute_ska.py` SKA formula, `analysis/exploratory/pct_norm_vs_eco/run.py` GWA share constants, or `analysis/questions/job_exposure/job_risk_scoring/run.py` flag weights), update both places.
+
+32. **Conservative dataset is the source of truth for the Occupation Report.** `PRIMARY_DATASET = "AEI Both + Micro Conservative 2026-02-12"` drives every headline number, the SKA pipeline, the risk score, the intensity rank, and the tech commodity ranking. Per-task auto_aug per source still comes from the regular explorer task lookup (which reads AEI Conv. v1–v5, AEI API v3–v5, MCP Cumul. v4, Microsoft directly). When/if a newer conservative snapshot lands, change the `PRIMARY_DATASET` constant and `TREND_SERIES` together — they share the same all_confirmed family.

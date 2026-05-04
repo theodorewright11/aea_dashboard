@@ -353,3 +353,193 @@ export interface TaskChangesResponse {
   from_dataset: string;
   to_dataset: string;
 }
+
+// ── Occupation Report ────────────────────────────────────────────────────────
+
+export type ColorBucket = "high" | "mid" | "low" | "none";
+
+export interface OccReportMcp {
+  title: string;
+  rating?: number | null;
+  url?: string | null;
+  description?: string | null;
+}
+
+export interface OccReportTask {
+  rank: number;
+  task: string;
+  task_normalized: string;
+  importance?: number | null;
+  freq_mean?: number | null;
+  relevance?: number | null;
+  physical: boolean;
+  gwa_title?: string | null;
+  iwa_title?: string | null;
+  dwa_title?: string | null;
+  aei_conv_max?: number | null;
+  aei_api_max?: number | null;
+  microsoft?: number | null;
+  mcp?: number | null;
+  color_driver?: number | null;
+  color_bucket: ColorBucket;
+  pct_max?: number | null;
+  top_mcps: OccReportMcp[];
+}
+
+export interface OccReportWaRow {
+  rank: number;
+  name: string;
+  n_tasks: number;
+  aei_conv_max?: number | null;
+  aei_api_max?: number | null;
+  microsoft?: number | null;
+  mcp?: number | null;
+  color_driver?: number | null;
+  color_bucket: ColorBucket;
+  avg_importance?: number | null;
+}
+
+export interface OccReportWAs {
+  gwa: OccReportWaRow[];
+  iwa: OccReportWaRow[];
+  dwa: OccReportWaRow[];
+}
+
+export interface OccReportRiskFlags {
+  flag1_pct: number;
+  flag2_ska: number;
+  flag3_pct_trend: number;
+  flag4_ska_trend: number;
+  flag5_job_zone: number;
+  flag6_outlook: number;
+  flag7_n_software: number;
+  flag8_auto_aug: number;
+}
+
+export interface OccReportRisk {
+  score: number;
+  tier: "high" | "mod_high" | "mod_low" | "low";
+  flags: OccReportRiskFlags;
+}
+
+export interface OccReportIntensity {
+  occ_intensity_pct?: number | null;
+  occ_intensity_rank?: number | null;
+  occ_intensity_total?: number | null;
+  major_intensity_pct?: number | null;
+  major_intensity_rank?: number | null;
+  major_intensity_total?: number | null;
+}
+
+export interface OccReportHeadline {
+  title: string;
+  major?: string | null;
+  minor?: string | null;
+  broad?: string | null;
+  job_zone?: number | null;
+  dws_star_rating?: number | null;
+  n_tasks?: number | null;
+  pct_physical?: number | null;
+  emp?: number | null;
+  wage?: number | null;
+  pct_tasks_affected?: number | null;
+  workers_affected?: number | null;
+  wages_affected?: number | null;
+  risk: OccReportRisk;
+  intensity: OccReportIntensity;
+}
+
+export interface OccReportRanks {
+  pct?: number;
+  workers?: number;
+  wages?: number;
+  total: number;
+}
+
+export interface OccReportGroupRanks {
+  economy: OccReportRanks;
+  major?: OccReportRanks | null;
+  minor?: OccReportRanks | null;
+  broad?: OccReportRanks | null;
+}
+
+export interface OccReportTrendPoint {
+  dataset: string;
+  date: string;
+  pct_tasks_affected?: number | null;
+}
+
+export interface OccReportSkaRow {
+  element: string;
+  importance?: number | null;
+  level?: number | null;
+  occ_score?: number | null;
+  ai_top10?: number | null;
+  gap?: number | null;
+  pct_of_need?: number | null;
+  color_bucket: ColorBucket;
+}
+
+export interface OccReportSkaSummary {
+  skills_pct?: number | null;
+  abilities_pct?: number | null;
+  knowledge_pct?: number | null;
+  overall_pct?: number | null;
+}
+
+export interface OccReportSka {
+  summary: OccReportSkaSummary;
+  rows: {
+    skills: OccReportSkaRow[];
+    abilities: OccReportSkaRow[];
+    knowledge: OccReportSkaRow[];
+  };
+}
+
+export interface OccReportSector {
+  major?: string;
+  pct_tasks_affected?: number | null;
+  workers_affected?: number | null;
+  wages_affected?: number | null;
+  rank_pct?: number;
+  rank_workers?: number;
+  rank_wages?: number;
+  n_majors?: number;
+}
+
+export interface OccReportSimilar {
+  title: string;
+  distance?: number | null;
+  pct_tasks_affected?: number | null;
+  wage?: number | null;
+  job_zone?: number | null;
+  dws_star_rating?: number | null;
+  major?: string | null;
+}
+
+export interface OccReportTech {
+  software: string;
+  commodity: string;
+  commodity_rank?: number | null;
+  commodity_total: number;
+  commodity_avg_pct?: number | null;
+}
+
+export interface OccupationReport {
+  title: string;
+  geo: string;
+  primary_dataset: string;
+  headline: OccReportHeadline;
+  tasks: OccReportTask[];
+  work_activities: OccReportWAs;
+  group_ranks: OccReportGroupRanks;
+  trend: OccReportTrendPoint[];
+  ska: OccReportSka;
+  sector: OccReportSector;
+  similar: OccReportSimilar[];
+  tech: OccReportTech[];
+}
+
+export interface OccReportTitlesResponse {
+  titles: string[];
+}

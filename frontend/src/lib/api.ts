@@ -12,6 +12,8 @@ import type {
   WAExplorerResponse,
   WATasksResponse,
   TaskChangesResponse,
+  OccupationReport,
+  OccReportTitlesResponse,
 } from "./types";
 
 const API_BASE =
@@ -179,5 +181,21 @@ export async function fetchTaskChanges(fromDataset: string, toDataset: string, g
     body: JSON.stringify({ from_dataset: fromDataset, to_dataset: toDataset, geo }),
   });
   if (!res.ok) throw new Error("Task changes request failed");
+  return res.json();
+}
+
+export async function fetchOccupationReportTitles(): Promise<OccReportTitlesResponse> {
+  const res = await fetch(`${API_BASE}/api/occupation-report/titles`);
+  if (!res.ok) throw new Error("Occupation titles request failed");
+  return res.json();
+}
+
+export async function fetchOccupationReport(title: string, geo: string = "nat"): Promise<OccupationReport> {
+  const url = `${API_BASE}/api/occupation-report?title=${encodeURIComponent(title)}&geo=${encodeURIComponent(geo)}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Occupation report request failed: ${text || res.statusText}`);
+  }
   return res.json();
 }

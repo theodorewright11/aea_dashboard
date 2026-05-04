@@ -51,7 +51,35 @@ Datasets are organized into four categories:
 
 ## 3. Pages & Features
 
-The dashboard has eight pages accessible from the top navigation bar. The **default landing page** is the Occupation Explorer (`/explorer`); the root URL (`/`) redirects there. A global **footer** below all page content shows source attribution and links to the project's GitHub repositories (dashboard, MCP classification, data pipeline), and a contact email.
+The dashboard has nine pages accessible from the top navigation bar. The **default landing page** is the Occupation Report (`/my-occupation`); the root URL (`/`) redirects there. A global **footer** below all page content shows source attribution and links to the project's GitHub repositories (dashboard, MCP classification, data pipeline), and a contact email.
+
+### 3.0 My Occupation (Occupation Report)
+
+A personal, actionable report for a single occupation. Built for workers who want to know — for their specific job — what AI already does well, where they still hold an advantage, what tasks to consider delegating, and how their role compares to similar ones.
+
+**Source dataset:** All headline metrics, the SKA gap reference, the risk score, the intensity rank, and the trend sparkline are drawn from `AEI Both + Micro Conservative 2026-02-12` (all-confirmed usage with Microsoft's physical tasks stripped). Per-source auto-aug values on individual tasks come from the same explorer task lookup the rest of the dashboard uses (AEI Conv. v1–v5 → AEI Conv max column; AEI API v3–v5 → AEI API max column; Microsoft and MCP from their own datasets).
+
+**What questions it answers:**
+- Given my occupation, which tasks could AI take over, augment, or hasn't reached yet?
+- Where does AI's demonstrated capability already exceed what my job requires (Skills/Knowledge/Abilities)?
+- How does my occupation rank within its broader categories on % tasks affected, workers affected, and wages affected?
+- Which other occupations have similar skill demands — and how AI-exposed are they?
+- Which software tools my job relies on are most exposed economy-wide?
+- Has my occupation's AI exposure grown over the past year?
+
+**What the user sees and can do:**
+- **Occupation picker + geography selector** — typeahead search over all 923 occupations; geo dropdown applies to employment, wage, workers-affected, and wages-affected numbers.
+- **Hero card** — occupation name, full SOC hierarchy (broad/minor/major), Job Zone chip with interpretation, Outlook chip with interpretation, total task count, and a **Risk tier chip** (Low / Mod-Low / Mod-High / High) with the 0–10 score. Clicking "Why?" expands an 8-flag breakdown showing which signals fired (lifted from the analysis bucket's `job_risk_scoring` formula).
+- **Headline numbers** — % Tasks Affected, Workers Affected, Wages Affected, Total Employment, Median Wage.
+- **Trend sparkline** — % Tasks Affected over the four `all_confirmed` snapshot dates (Mar 2025 → Feb 2026), with first-to-last delta in pp.
+- **Where you stand** — rank cards for the economy (out of 923), major (out of N occs in major), minor, broad. Three metrics per scope: % Tasks, Workers, Wages. Plus an **intensity rank** card showing this occupation's per-task usage ratio rank (Σ pct ÷ Σ freq×emp, bias-corrected for source asymmetries) within the economy and its major.
+- **Sector at a glance** — major-category aggregate stats (sector pct, workers, wages) with sector rank among all 22 majors on each metric.
+- **SKA gap section** — three tables (Skills, Knowledge, Abilities) with importance ≥ 3 elements only. Per row: importance, level, occ score (importance × level), AI top-10 reference (mean of top-10 ai_product values for that element), gap, AI as % of need, neutral 3-tier color. Sorted with biggest AI lead at top within each section. Section header shows the four ratio-of-sums summaries (Overall / Skills / Knowledge / Abilities).
+- **Tasks table** — all unique tasks for the occupation, color-coded by max(AEI Conv, AEI API, Microsoft). Columns: rank, task text, importance, AEI Conv max, AEI API max, Microsoft, MCP. Each row is expandable to reveal the top-5 MCP servers that match the task, with names, ratings, URLs, and descriptions pulled from `data/mcp_titles_desc.csv`. AEI API reflects agentic capability specifically (a callout near the table explains the conv/agentic distinction).
+- **Work activities table** — same per-source columns rolled up to the GWA / IWA / DWA categories the occupation's tasks fall into. Tab selector at top.
+- **Software tools** — list of softwares from O*NET's tech skills inventory for this occupation, joined with each commodity's economy-wide rank by average % tasks affected. Useful for a worker assessing which of their tools are most touched by AI.
+- **Similar occupations** — top-5 nearest by L1 distance over the occupation's SKA profile (importance × level vector across all S+K+A elements with imp ≥ 3 in either occupation). Each row shows occupation, sector, % tasks affected, median wage, job zone, outlook rating, and the SKA distance.
+- **Color framing** — three buckets across all tables: "more automated usage seen" (auto_aug ≥ 4 or AI ≥ 100% of SKA need), "more augmentative" (2.5–4 or 66–100%), and "less automated usage seen" (< 2.5 or < 66%). Neutral palette: warm sand for high, light amber for mid, cool steel-blue for low — chosen to avoid a politically-charged red/green framing.
 
 ### 3.1 Occupation Explorer
 
