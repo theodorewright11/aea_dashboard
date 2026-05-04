@@ -39,6 +39,8 @@ DATASETS = {
     "AEI Both + Micro 2025-08-11": {"file": str(DATA_DIR / "final_all_confirmed_usage_2025-08-11.csv"), "is_aei": False, "is_mcp": False},
     "AEI Both + Micro 2025-11-13": {"file": str(DATA_DIR / "final_all_confirmed_usage_2025-11-13.csv"), "is_aei": False, "is_mcp": False},
     "AEI Both + Micro 2026-02-12": {"file": str(DATA_DIR / "final_all_confirmed_usage_2026-02-12.csv"), "is_aei": False, "is_mcp": False},
+    # AEI Both + Micro Conservative — same as AEI Both + Micro 2026-02-12 with Microsoft physical tasks stripped
+    "AEI Both + Micro Conservative 2026-02-12": {"file": str(DATA_DIR / "final_all_confirmed_usage_ms_nonphysical_2026-02-12.csv"), "is_aei": False, "is_mcp": False},
     # AEI Conv + Micro — All confirmed human usage (2019 SOC)
     "AEI Conv + Micro 2024-09-30": {"file": str(DATA_DIR / "final_confirmed_human_usage_2024-09-30.csv"), "is_aei": False, "is_mcp": False},
     "AEI Conv + Micro 2024-12-23": {"file": str(DATA_DIR / "final_confirmed_human_usage_2024-12-23.csv"), "is_aei": False, "is_mcp": False},

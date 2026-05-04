@@ -264,34 +264,57 @@ analysis/
     │                              properties (m, d, s, r, h, e, t, tf, df,
     │                              de, nt, ac) from
     │                              `data/final_eco_2025_with_task_properties.csv`
-    │                              against our 4 internal sources + 5
-    │                              ANALYSIS_CONFIGS at major/minor/broad/
-    │                              occupation. Five scoring schemes:
-    │                              Composite A = (d·m·s·h)/(r·tf·df) —
-    │                              friction terms in the denominator since
-    │                              high values reduce automation likelihood;
-    │                              Composite B = d·m·s; plus weighting
-    │                              variants (× freq, × t, × freq×t, raw).
-    │                              Group score = mean of per-task score
-    │                              across (task, occ) rows in the SOC group.
-    │                              Outputs: 9×12 stacked-by-level heatmap
-    │                              for single properties × freq, 9×5
-    │                              stacked-by-level heatmap for composites,
-    │                              22-major × 12-property means heatmap.
-    │                              Headline: composite_A_time_a (× t, no
-    │                              freq) hits ρ 0.49–0.59 across all 9
-    │                              internal series at major level, every
-    │                              cell p < .05. The × freq variants
-    │                              collapse to ρ ≈ 0 because freq_mean is
-    │                              hourly-tail-dominated (physical/
-    │                              repetitive work), where our pct is low;
-    │                              t (per-instance duration) inverts that
-    │                              and weights toward knowledge work. Per-
-    │                              property × freq cells are uniformly
-    │                              negative for the same reason; friction
-    │                              properties (r, tf, df, nt) are the most
-    │                              negative at ~ρ −0.4 — direction-correct.
-    │                              3 PNGs + 4 CSVs.
+    │                              against 4 internal sources + 6 configs
+    │                              (5 ANALYSIS_CONFIGS + new
+    │                              `all_confirmed_conservative` from
+    │                              `final_all_confirmed_usage_ms_nonphysical_2026-02-12.csv`,
+    │                              registered in backend/config.py as
+    │                              "AEI Both + Micro Conservative 2026-02-12")
+    │                              at major/minor/broad/occupation. Two
+    │                              methodologies: Method A (group-mean of
+    │                              property × weight, weight ∈ {raw, freq,
+    │                              t}); Method B (composite as synthetic
+    │                              auto_aug, plugged into the dashboard's
+    │                              pct pipeline — composite min-max scaled
+    │                              to [0,1], synth_pct = 100 × Σ(weight ×
+    │                              comp_norm) / Σ(weight) — produces a pct
+    │                              series structurally identical to real
+    │                              pct, eliminating group-size effects).
+    │                              Two composites: A = (d·m·s·h)/(r·tf·df),
+    │                              B = d·m·s. Each runs full-eco and
+    │                              confirmed-only (Schaal Method B parallel
+    │                              — restricted to (task, occ) pairs in
+    │                              all_confirmed). Plus paper convergence
+    │                              rerun: reproduces paper/results/part_1
+    │                              convergence + convergence_external
+    │                              charts under both freq and t weighting,
+    │                              with Composite-A-as-auto-aug as a 5th
+    │                              source row. Headlines: (1) raw `s` ranks
+    │                              SOC majors at ρ = +0.84 against our pct,
+    │                              raw `d` at +0.80 — property signal was
+    │                              buried by freq weighting before. (2)
+    │                              Composite B (d·m·s) outperforms A at
+    │                              every weighting (raw +0.66 vs +0.32,
+    │                              ×t +0.71 vs +0.53, Method B ×freq +0.67
+    │                              vs +0.39) — friction denominator hurts
+    │                              because friction terms have wide per-
+    │                              task variance amplified multiplicatively.
+    │                              (3) Confirmed-only filter decreases
+    │                              strongest predictors (s_raw drops
+    │                              −0.19) — restricting to tasks AI sees
+    │                              removes discriminative tail. (4) Paper
+    │                              convergence with t ≈ freq (internal
+    │                              5×5 mean ρ at major: 0.65 vs 0.66;
+    │                              external 5×4: 0.69 vs 0.71) — cross-
+    │                              source story robust to per-task weight.
+    │                              (5) all_confirmed_conservative tracks
+    │                              all_confirmed almost identically; t-
+    │                              weighted composite slightly stronger.
+    │                              Headline single number: ρ +0.71 at
+    │                              major (Method A, Composite B, ×t, full
+    │                              eco) — what 12 LLM-rated properties +
+    │                              one slim formula can do without seeing
+    │                              any usage data. 6 PNGs + 6 CSVs.
     ├── crashing_waves_vs_rising_tides/ — Empirical comparison to Mertens et
     │                              al. (2026), "Crashing Waves vs. Rising
     │                              Tides" (arXiv 2604.01363). Two parts.
