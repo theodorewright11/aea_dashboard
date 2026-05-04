@@ -260,6 +260,38 @@ analysis/
     │                              TK negative (observed Claude usage
     │                              concentrates in high-tacit-knowledge fields).
     │                              Four PNGs + 5 CSVs total.
+    ├── task_properties_correlation/ — Correlates 12 LLM-rated task
+    │                              properties (m, d, s, r, h, e, t, tf, df,
+    │                              de, nt, ac) from
+    │                              `data/final_eco_2025_with_task_properties.csv`
+    │                              against our 4 internal sources + 5
+    │                              ANALYSIS_CONFIGS at major/minor/broad/
+    │                              occupation. Five scoring schemes:
+    │                              Composite A = (d·m·s·h)/(r·tf·df) —
+    │                              friction terms in the denominator since
+    │                              high values reduce automation likelihood;
+    │                              Composite B = d·m·s; plus weighting
+    │                              variants (× freq, × t, × freq×t, raw).
+    │                              Group score = mean of per-task score
+    │                              across (task, occ) rows in the SOC group.
+    │                              Outputs: 9×12 stacked-by-level heatmap
+    │                              for single properties × freq, 9×5
+    │                              stacked-by-level heatmap for composites,
+    │                              22-major × 12-property means heatmap.
+    │                              Headline: composite_A_time_a (× t, no
+    │                              freq) hits ρ 0.49–0.59 across all 9
+    │                              internal series at major level, every
+    │                              cell p < .05. The × freq variants
+    │                              collapse to ρ ≈ 0 because freq_mean is
+    │                              hourly-tail-dominated (physical/
+    │                              repetitive work), where our pct is low;
+    │                              t (per-instance duration) inverts that
+    │                              and weights toward knowledge work. Per-
+    │                              property × freq cells are uniformly
+    │                              negative for the same reason; friction
+    │                              properties (r, tf, df, nt) are the most
+    │                              negative at ~ρ −0.4 — direction-correct.
+    │                              3 PNGs + 4 CSVs.
     ├── crashing_waves_vs_rising_tides/ — Empirical comparison to Mertens et
     │                              al. (2026), "Crashing Waves vs. Rising
     │                              Tides" (arXiv 2604.01363). Two parts.
