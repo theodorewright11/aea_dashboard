@@ -271,6 +271,10 @@ Not a research bucket — a presentation deliverable. 14 charts designed for sli
 
 **Overarching question:** Same as workforce_meeting. V2 is a restyled, non-technical variant for audiences with no research background (e.g. Nandeeni).
 
+### Active: Workforce Sig Meeting (`questions/workforce_sig_meeting/`)
+
+Not a research bucket — a presentation deliverable. The report opens with a "How Each Number Is Generated" methodology table on Chief Executives (6 of 31 sample tasks shown; footer math uses all 31 tasks: Σ(freq × auto-aug/5) ÷ Σ freq → 50.7% task completions affected → 87,400 workers affected → $18.0B wages affected, exactly matching `get_pct_tasks_affected("AEI Both + Micro 2026-02-12")["Chief Executives"]`). Then it embeds key paper figures: `temporal_trend` from part_1; all five part_2 charts (`phys_info_divide`, `job_zone_violin`, `ska_levels`, `gwa_exposure`, `major_categories`); `tech_commodities` from part_3. Finally two custom charts produced locally: `gap_to_ceiling_wages.png` (wages variant of part_3's gap_to_ceiling, sorted by wage gap) and `conv_allconfirmed_ceiling.png` (variant of part_3's conv_vs_agentic where the middle bar is All Confirmed instead of Agentic Confirmed and the right bar is Ceiling — three bars per major: Conversational → All Confirmed → Ceiling).
+
 V2 changes: charts only (no narrative text), 11 charts (headline/pivot cost/auto-aug dropped), larger fonts throughout, primary values as large white text inside bars, no config subheadings, x-axis scale visible, "%" not "pp" for deltas, chart 07 reframed as conversational vs. agentic overlay, SKA reference line explicitly labelled.
 
 | Chart | What It Shows |

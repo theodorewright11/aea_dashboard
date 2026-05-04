@@ -107,11 +107,27 @@ analysis/
 │   │   ├── workforce_meeting_report.md
 │   │   ├── run.py
 │   │   └── figures/             — 14 committed chart PNGs
-│   └── workforce_meeting_v2/    — V2: charts only, larger fonts, non-technical framing
+│   ├── workforce_meeting_v2/    — V2: charts only, larger fonts, non-technical framing
+│   │   ├── README.md
+│   │   ├── workforce_meeting_v2_report.md
+│   │   ├── run.py
+│   │   └── figures/             — 11 committed chart PNGs
+│   └── workforce_sig_meeting/   — Presentation deliverable; methodology
+│       │                          table on Chief Executives at top of
+│       │                          report (6 of 31 sample tasks; footer
+│       │                          math runs the dashboard's freq × auto-aug
+│       │                          formula on all 31 tasks → 50.7% / 87.4K /
+│       │                          $18B). Reuses paper part_1 trend, all 5
+│       │                          part_2 charts, and part_3 tech_commodities.
+│       │                          Custom charts: gap_to_ceiling_wages
+│       │                          (wages variant of part_3 gap_to_ceiling)
+│       │                          and conv_allconfirmed_ceiling (3-bar
+│       │                          variant: Conversational → All Confirmed
+│       │                          → Ceiling).
 │       ├── README.md
-│       ├── workforce_meeting_v2_report.md
+│       ├── workforce_sig_meeting_report.md
 │       ├── run.py
-│       └── figures/             — 11 committed chart PNGs
+│       └── figures/             — 2 committed chart PNGs
 ├── question_findings/           — Flat copies of question .md reports
 ├── report/
 │   └── report.md                — Rolling aggregate report
