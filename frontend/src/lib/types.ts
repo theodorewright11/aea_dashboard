@@ -386,6 +386,18 @@ export interface OccReportTask {
   top_mcps: OccReportMcp[];
 }
 
+export interface OccReportWaEcoStats {
+  pct_tasks_affected?: number | null;
+  workers_affected?: number | null;
+  wages_affected?: number | null;
+  auto_aug_mean?: number | null;
+  rank_pct?: number | null;
+  rank_workers?: number | null;
+  rank_wages?: number | null;
+  rank_auto?: number | null;
+  total: number;
+}
+
 export interface OccReportWaRow {
   rank: number;
   name: string;
@@ -397,6 +409,7 @@ export interface OccReportWaRow {
   color_driver?: number | null;
   color_bucket: ColorBucket;
   avg_importance?: number | null;
+  eco_stats?: OccReportWaEcoStats | null;
 }
 
 export interface OccReportWAs {
@@ -525,6 +538,24 @@ export interface OccReportTech {
   commodity_avg_pct?: number | null;
 }
 
+export interface OccReportSectorChainEntry {
+  name: string;
+  level: "major" | "minor" | "broad";
+  pct_tasks_affected?: number | null;
+  workers_affected?: number | null;
+  wages_affected?: number | null;
+  rank_pct?: number | null;
+  rank_workers?: number | null;
+  rank_wages?: number | null;
+  total: number;
+}
+
+export interface OccReportSectorChain {
+  major: OccReportSectorChainEntry | null;
+  minor: OccReportSectorChainEntry | null;
+  broad: OccReportSectorChainEntry | null;
+}
+
 export interface OccupationReport {
   title: string;
   geo: string;
@@ -536,6 +567,7 @@ export interface OccupationReport {
   trend: OccReportTrendPoint[];
   ska: OccReportSka;
   sector: OccReportSector;
+  sector_chain: OccReportSectorChain;
   similar: OccReportSimilar[];
   tech: OccReportTech[];
 }

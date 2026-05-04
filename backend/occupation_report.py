@@ -32,6 +32,7 @@ from compute import (
     _build_explorer_task_lookup,
     _build_top_mcps_lookup,
     _safe_num,
+    compute_work_activities,
     get_explorer_groups,
     get_explorer_occupations,
     get_group_data,
@@ -189,6 +190,8 @@ _ska_top10_per_element_cache: Optional[pd.DataFrame] = None
 _mcp_titles_desc_cache: Optional[dict[str, str]] = None
 _explorer_occ_index_cache: Optional[dict[str, dict]] = None
 _ska_profile_matrix_cache: Optional[tuple[list[str], np.ndarray]] = None  # (titles, profile)
+_eco_wa_stats_cache: dict[str, dict[str, dict[str, dict]]] = {}  # geo → level → wa_name → eco_stats
+_sector_level_cache: dict[tuple[str, str], pd.DataFrame] = {}    # (level, geo) → ranked group df
 
 
 # ── SKA loader & compute (inlined from analysis/data/compute_ska.py) ──────────
@@ -922,10 +925,97 @@ def _build_tasks(title: str) -> list[dict]:
     return rows
 
 
-def _build_was(tasks: list[dict]) -> dict:
+def _eco_wa_stats(geo: str) -> dict[str, dict[str, dict]]:
+    """Economy-wide stats per WA at gwa/iwa/dwa, computed against PRIMARY_DATASET.
+
+    Returns: {level: {wa_name: {pct_tasks_affected, workers_affected, wages_affected,
+                                 auto_aug_mean, rank_pct, rank_workers, rank_wages,
+                                 rank_auto, total}}}.
+
+    Cached per geo. Workers/wages depend on geo; pct/auto_aug do not, but we store
+    them under the same key for simplicity.
+    """
+    if geo in _eco_wa_stats_cache:
+        return _eco_wa_stats_cache[geo]
+
+    settings = {
+        "selected_datasets": [PRIMARY_DATASET],
+        "combine_method":    "Average",
+        "method":            "freq",
+        "use_auto_aug":      True,
+        "physical_mode":     "all",
+        "geo":               geo,
+        "agg_level":         "occupation",
+        "sort_by":           "Workers Affected",
+        "top_n":             9999,
+        "search_query":      "",
+        "context_size":      3,
+    }
+    wa_result = compute_work_activities(settings)
+    # PRIMARY is is_aei=False → comes back as mcp_group
+    group = (wa_result or {}).get("mcp_group") or (wa_result or {}).get("aei_group") or {}
+
+    # Per-WA auto_aug_mean from the dataset CSV (one pass, level-agnostic)
+    auto_by_level: dict[str, dict[str, float]] = {"gwa": {}, "iwa": {}, "dwa": {}}
+    fpath = DATASETS.get(PRIMARY_DATASET, {}).get("file", "")
+    if Path(fpath).exists():
+        try:
+            df = pd.read_csv(fpath, low_memory=False)
+            if "auto_aug_mean" in df.columns:
+                df["auto_aug_mean"] = pd.to_numeric(df["auto_aug_mean"], errors="coerce")
+                for level_key, col in (("gwa", "gwa_title"), ("iwa", "iwa_title"), ("dwa", "dwa_title")):
+                    if col not in df.columns:
+                        continue
+                    sub = df[df[col].notna() & df["auto_aug_mean"].notna()].copy()
+                    # Dedup by (task_normalized, wa) so a task counted once per WA
+                    if "task_normalized" in sub.columns:
+                        sub = sub.drop_duplicates(subset=["task_normalized", col])
+                    auto_by_level[level_key] = sub.groupby(col)["auto_aug_mean"].mean().to_dict()
+        except Exception:
+            pass  # leave auto empty; eco_stats just won't have auto
+
+    out: dict[str, dict[str, dict]] = {"gwa": {}, "iwa": {}, "dwa": {}}
+    for level_key in ("gwa", "iwa", "dwa"):
+        rows = group.get(level_key) or []
+        if not rows:
+            continue
+        rec_df = pd.DataFrame(rows)
+        if rec_df.empty or "category" not in rec_df.columns:
+            continue
+        # Attach auto and compute per-metric ranks (1 = highest)
+        rec_df["auto_aug_mean"] = rec_df["category"].map(auto_by_level.get(level_key, {})).astype(float)
+        for metric in ("pct_tasks_affected", "workers_affected", "wages_affected", "auto_aug_mean"):
+            if metric not in rec_df.columns:
+                rec_df[metric] = np.nan
+            rec_df[f"rank_{metric.split('_')[0]}"] = (
+                rec_df[metric].rank(ascending=False, method="min", na_option="bottom").astype("Int64")
+            )
+        total = int(len(rec_df))
+        for _, r in rec_df.iterrows():
+            name = str(r["category"])
+            out[level_key][name] = {
+                "pct_tasks_affected": _round_or_none(r.get("pct_tasks_affected"), 1),
+                "workers_affected":   _round_or_none(r.get("workers_affected"), 0),
+                "wages_affected":     _round_or_none(r.get("wages_affected"), 0),
+                "auto_aug_mean":      _round_or_none(r.get("auto_aug_mean"), 2),
+                "rank_pct":           int(r["rank_pct"])     if pd.notna(r["rank_pct"])     else None,
+                "rank_workers":       int(r["rank_workers"]) if pd.notna(r["rank_workers"]) else None,
+                "rank_wages":         int(r["rank_wages"])   if pd.notna(r["rank_wages"])   else None,
+                "rank_auto":          int(r["rank_auto"])    if pd.notna(r["rank_auto"])    else None,
+                "total":              total,
+            }
+
+    _eco_wa_stats_cache[geo] = out
+    return out
+
+
+def _build_was(tasks: list[dict], geo: str) -> dict:
     """Roll up tasks → GWA/IWA/DWA. For each WA, average the per-task
-    auto_aug values across the same color buckets."""
-    def _rollup(level_key: str) -> list[dict]:
+    auto_aug values across the same color buckets, and attach economy-wide
+    eco_stats (pct/workers/wages/auto + ranks within all WAs at that level)."""
+    eco_stats = _eco_wa_stats(geo)
+
+    def _rollup(level_key: str, eco_key: str) -> list[dict]:
         groups: dict[str, list[dict]] = {}
         for t in tasks:
             name = t.get(level_key)
@@ -933,6 +1023,7 @@ def _build_was(tasks: list[dict]) -> dict:
                 continue
             groups.setdefault(name, []).append(t)
         out: list[dict] = []
+        eco_for_level = eco_stats.get(eco_key, {})
         for name, ts in groups.items():
             n = len(ts)
             def _avg(field: str) -> Optional[float]:
@@ -949,6 +1040,7 @@ def _build_was(tasks: list[dict]) -> dict:
                 "color_driver":   color_avg,
                 "color_bucket":   _color_bucket_auto(color_avg),
                 "avg_importance": _avg("importance"),
+                "eco_stats":      eco_for_level.get(name),
             })
         out.sort(key=lambda r: (r["color_driver"] is None, -(r["color_driver"] or 0.0)))
         for i, r in enumerate(out, start=1):
@@ -956,9 +1048,9 @@ def _build_was(tasks: list[dict]) -> dict:
         return out
 
     return {
-        "gwa": _rollup("gwa_title"),
-        "iwa": _rollup("iwa_title"),
-        "dwa": _rollup("dwa_title"),
+        "gwa": _rollup("gwa_title", "gwa"),
+        "iwa": _rollup("iwa_title", "iwa"),
+        "dwa": _rollup("dwa_title", "dwa"),
     }
 
 
@@ -1086,49 +1178,92 @@ def _build_ska(title: str) -> dict:
     return {"summary": summary, "rows": out}
 
 
-def _build_sector_stats(title: str, geo: str) -> dict:
-    """Aggregate stats for the occ's major sector: avg pct, total workers,
-    total wages, rank among 22 majors on each metric."""
-    occ_idx = _occ_index()
-    meta = occ_idx.get(title, {})
-    major = meta.get("major")
-    if not major:
-        return {}
+_SECTOR_LEVEL_GROUP_COL: dict[str, str] = {
+    "major": "major_occ_category",
+    "minor": "minor_occ_category",
+    "broad": "broad_occ",
+}
 
-    workers, wages, pct = _emp_wage_for(PRIMARY_DATASET, geo)
 
-    # Use compute pipeline directly for accurate group-level metrics (since
-    # group-level pct is ratio-of-totals, not avg of pcts).
+def _ranked_group_df(level: str, geo: str) -> Optional[pd.DataFrame]:
+    """Compute the full ranked group dataframe at one SOC level for PRIMARY_DATASET.
+    Cached per (level, geo). Returns DataFrame with rank columns added."""
+    cache_key = (level, geo)
+    if cache_key in _sector_level_cache:
+        return _sector_level_cache[cache_key]
     settings = {
         "selected_datasets": [PRIMARY_DATASET], "combine_method": "Average",
         "method": "freq", "use_auto_aug": True,
-        "physical_mode": "all", "geo": geo, "agg_level": "major",
+        "physical_mode": "all", "geo": geo, "agg_level": level,
         "sort_by": "% Tasks Affected", "top_n": 9999,
         "search_query": "", "context_size": 3,
     }
     data = get_group_data(settings)
     if data is None:
-        return {}
-    df: pd.DataFrame = data["df"]
-    df = df.reset_index(drop=True)
+        return None
+    df: pd.DataFrame = data["df"].copy().reset_index(drop=True)
     df["rank_pct"]     = df["pct_tasks_affected"].rank(ascending=False, method="min").astype(int)
     df["rank_workers"] = df["workers_affected"].rank(ascending=False, method="min").astype(int)
     df["rank_wages"]   = df["wages_affected"].rank(ascending=False, method="min").astype(int)
-    n_majors = len(df)
+    _sector_level_cache[cache_key] = df
+    return df
 
-    row = df[df["major_occ_category"] == major]
+
+def _sector_stats_at_level(title: str, level: str, geo: str) -> Optional[dict]:
+    """Stats for the occ's category at one SOC level (major/minor/broad)."""
+    occ_idx = _occ_index()
+    meta = occ_idx.get(title, {})
+    level_meta_key = {"major": "major", "minor": "minor", "broad": "broad"}[level]
+    cat = meta.get(level_meta_key)
+    if not cat:
+        return None
+    df = _ranked_group_df(level, geo)
+    if df is None:
+        return None
+    group_col = _SECTOR_LEVEL_GROUP_COL[level]
+    if group_col not in df.columns:
+        return None
+    row = df[df[group_col] == cat]
     if row.empty:
-        return {}
+        return None
     r = row.iloc[0]
     return {
-        "major":              major,
+        "name":               cat,
+        "level":              level,
         "pct_tasks_affected": _round_or_none(r["pct_tasks_affected"], 1),
         "workers_affected":   _round_or_none(r["workers_affected"], 0),
         "wages_affected":     _round_or_none(r["wages_affected"], 0),
         "rank_pct":           int(r["rank_pct"]),
         "rank_workers":       int(r["rank_workers"]),
         "rank_wages":         int(r["rank_wages"]),
-        "n_majors":           n_majors,
+        "total":              int(len(df)),
+    }
+
+
+def _build_sector_stats(title: str, geo: str) -> dict:
+    """Major sector stats with the legacy field names (kept for backwards
+    compatibility with the existing `sector` payload key)."""
+    s = _sector_stats_at_level(title, "major", geo)
+    if not s:
+        return {}
+    return {
+        "major":              s["name"],
+        "pct_tasks_affected": s["pct_tasks_affected"],
+        "workers_affected":   s["workers_affected"],
+        "wages_affected":     s["wages_affected"],
+        "rank_pct":           s["rank_pct"],
+        "rank_workers":       s["rank_workers"],
+        "rank_wages":         s["rank_wages"],
+        "n_majors":           s["total"],
+    }
+
+
+def _build_sector_chain(title: str, geo: str) -> dict:
+    """Per-level (major/minor/broad) economy-wide stats + ranks for the occ."""
+    return {
+        "major": _sector_stats_at_level(title, "major", geo),
+        "minor": _sector_stats_at_level(title, "minor", geo),
+        "broad": _sector_stats_at_level(title, "broad", geo),
     }
 
 
@@ -1168,11 +1303,12 @@ def get_occupation_report(title: str, geo: str = "nat") -> Optional[dict]:
 
     headline = _build_headline(title, geo)
     tasks    = _build_tasks(title)
-    was      = _build_was(tasks)
+    was      = _build_was(tasks, geo)
     group_ranks = _build_group_ranks(title, geo)
     trend    = _build_trend(title, geo)
     ska      = _build_ska(title)
     sector   = _build_sector_stats(title, geo)
+    sector_chain = _build_sector_chain(title, geo)
     similar  = _similar_occs(title, n=N_SIMILAR_OCCS)
     tech     = _tech_for_occ(title)
 
@@ -1187,6 +1323,7 @@ def get_occupation_report(title: str, geo: str = "nat") -> Optional[dict]:
         "trend":     trend,
         "ska":       ska,
         "sector":    sector,
+        "sector_chain": sector_chain,
         "similar":   similar,
         "tech":      tech,
     }

@@ -228,11 +228,14 @@ Composes one big payload for the `/my-occupation` page. Lives outside `compute.p
 **Section builders (all called by `get_occupation_report()`):**
 - `_build_headline(title, geo)` — title, hierarchy, job zone, outlook, n_tasks, raw emp/wage from `_raw_emp_wage()` (eco_2025 BLS columns), pct/workers/wages from `_emp_wage_for(PRIMARY_DATASET, geo)`, risk payload from `_risk_table()`, intensity from `_intensity_rank_table()`.
 - `_build_tasks(title)` — all unique tasks for this occ from eco_2025; per-task max across `AEI Conv. v1–v5`, max across `AEI API v3–v5`, plus single Microsoft and MCP scores, color bucket from max(AEI Conv max, AEI API max, MS), top-5 MCPs enriched with `text_for_llm` descriptions from `data/mcp_titles_desc.csv`. Sorted by color_driver desc.
-- `_build_was(tasks)` — rolls the task list up to GWA/IWA/DWA. Per-WA values are simple averages of the per-task scores within each WA.
+- `_build_was(tasks, geo)` — rolls the task list up to GWA/IWA/DWA. Per-WA values are simple averages of the per-task scores within each WA. Each WA row also gets an `eco_stats` block from `_eco_wa_stats(geo)` — economy-wide pct/workers/wages/auto_aug for that WA plus rank within all WAs at that level.
+- `_eco_wa_stats(geo)` — for each level (gwa/iwa/dwa), runs `compute_work_activities()` on the conservative dataset to get per-WA pct/workers/wages, joins per-WA `auto_aug_mean` from a one-pass groupby on the dataset CSV, and computes 1-indexed ranks per metric across all WAs at that level. Cached per geo. Used by `_build_was`.
 - `_build_group_ranks(title, geo)` — rank in economy / major / minor / broad on pct_tasks_affected, workers_affected, wages_affected. Built by sorting all 923 occs from `_emp_wage_for(PRIMARY_DATASET, geo)`.
 - `_build_trend(title, geo)` — pct_tasks_affected at each of the four `all_confirmed` snapshot dates (Mar 2025 → Feb 2026).
 - `_build_ska(title)` — per-element rows (Skills/Abilities/Knowledge separate, importance ≥ 3 only) using `_compute_ska_for_pct(pct)` and `_ska_top10_per_element()`. Per row: importance, level, occ_score (imp × lv), ai_top10 reference (mean of top-10 ai_product values for that element across all occs), gap (ai_top10 − occ_score), pct_of_need, color bucket. Sorted with biggest AI lead at top within each section.
-- `_build_sector_stats(title, geo)` — major-category aggregate stats via `get_group_data()` at `agg_level="major"` for the conservative dataset. Adds rank columns within the 22 majors.
+- `_build_sector_stats(title, geo)` — major-category aggregate stats. Thin wrapper over `_sector_stats_at_level(title, "major", geo)` kept for backwards compatibility with the legacy `sector` payload key.
+- `_ranked_group_df(level, geo)` / `_sector_stats_at_level(title, level, geo)` — generic per-SOC-level (`major`/`minor`/`broad`) ranked group dataframe via `get_group_data()` for the conservative dataset, returning the occ's row plus rank columns and the level's total. Cached per `(level, geo)`.
+- `_build_sector_chain(title, geo)` — runs `_sector_stats_at_level` at `major`, `minor`, and `broad` and returns all three. Powers the new `sector_chain` payload key.
 - `_similar_occs(title, n)` — L1 distance over the `_ska_profile_matrix()` (one row per occ, one column per (type, element_name) with imp ≥ 3 in any occ; cell = importance × level or 0). Returns the n smallest distances excluding self, with each occ's pct, wage, job zone, outlook.
 - `_tech_for_occ(title)` — softwares from O*NET `technology_skills_v30.1.csv` for this occupation, joined with `_tech_commodity_rank()` (every commodity's economy-wide rank by avg pct_tasks_affected).
 
@@ -245,6 +248,8 @@ Composes one big payload for the `/my-occupation` page. Lives outside `compute.p
 - `_ska_data_cache`, `_ska_result_cache`, `_ska_top10_per_element_cache`, `_ska_profile_matrix_cache` — SKA pipeline.
 - `_intensity_rank_cache`, `_risk_table_cache`, `_tech_commodity_rank_cache` — cross-occ precomputes.
 - `_mcp_titles_desc_cache`, `_explorer_occ_index_cache` — per-payload helpers.
+- `_eco_wa_stats_cache` — per-geo dict of economy-wide WA stats (pct/workers/wages/auto + ranks) at gwa/iwa/dwa.
+- `_sector_level_cache` — per-`(level, geo)` ranked group dataframe used to look up sector_chain stats at major/minor/broad.
 
 **Public entrypoints:**
 - `get_occupation_titles() -> list[str]` — sorted list of 923 titles.
@@ -852,7 +857,7 @@ Query params:
 - `title` (string, required) — full `title_current` from eco_2025.
 - `geo` (string, default `"nat"`) — geography code.
 
-Response: full report payload built by `occupation_report.get_occupation_report()`. Top-level keys: `title`, `geo`, `primary_dataset`, `headline`, `tasks`, `work_activities`, `group_ranks`, `trend`, `ska`, `sector`, `similar`, `tech`. See `frontend/src/lib/types.ts → OccupationReport` for the full TypeScript shape (matches the Python compute output exactly).
+Response: full report payload built by `occupation_report.get_occupation_report()`. Top-level keys: `title`, `geo`, `primary_dataset`, `headline`, `tasks`, `work_activities`, `group_ranks`, `trend`, `ska`, `sector`, `sector_chain`, `similar`, `tech`. Each WA row inside `work_activities.{gwa,iwa,dwa}` carries an optional `eco_stats` block with economy-wide pct/workers/wages/auto + per-metric ranks. `sector_chain` exposes major/minor/broad sector aggregates with the same shape as `sector` (pct/workers/wages/3 ranks) so the UI can render the full SOC hierarchy, not just the major. See `frontend/src/lib/types.ts → OccupationReport` for the full TypeScript shape (matches the Python compute output exactly).
 
 Returns 404 if the title isn't in eco_2025; 400 if `geo` is unknown.
 
@@ -905,7 +910,7 @@ Thin wrapper that fetches `/api/config` and renders `<OccupationReport config={c
 
 ### Component: `OccupationReport`
 
-Single-file component (`components/OccupationReport.tsx`) holding the entire report page. Sub-sections are local `function` components defined in the same file (`Hero`, `Headline`, `Trend`, `GroupRanks`, `Sector`, `SkaSection`, `TasksSection`, `WaSection`, `TechSection`, `SimilarSection`).
+Single-file component (`components/OccupationReport.tsx`) holding the entire report page. Sub-sections are local `function` components defined in the same file: chrome (`Picker`, `SearchPanel`, `BrowsePanel`, `BrowseSelect`, `PickerTab`), primitives (`Pill`, `MiniBar`, `TierDot`, `Sparkline`, `RiskGauge`, `SourceMiniBars`, `Chevron`, `Card`, `TierGroup`), top-of-page (`Hero`, `RiskFlagsTable`, `KpiRow`, `KpiCard`), body cards (`RankBars`, `SectorChain`, `SectorChainStat`, `TechList`, `TasksByTier`, `TaskRowsCompact`, `SkaSection`, `SkaSummaryStat`, `SkaSubsection`, `SkaTable`, `WaSection`, `WaByTier`, `WaTable`, `RankedCell`, `SimilarTable`), and footer (`PaletteLegend`, `PaletteFooter`, `Th`, `Td`).
 
 **State:**
 - `titles: string[]` — list of all 923 occupation titles, fetched once on mount.
@@ -913,19 +918,41 @@ Single-file component (`components/OccupationReport.tsx`) holding the entire rep
 - `geo: string` — geography code; changing triggers a refetch.
 - `report: OccupationReport | null` — full payload from `/api/occupation-report`.
 - `waLevel: "gwa" | "iwa" | "dwa"` — work activities tab.
-- `showRiskFlags: boolean` — risk-tier "Why?" expandable.
+- `showRiskFlags: boolean` — risk-tier "Why?" expandable inside the hero.
 
-**Color tokens** (defined in-file): `BUCKET_BG / BUCKET_BORDER / BUCKET_DOT / BUCKET_LABEL` keyed by `ColorBucket` (`"high" | "mid" | "low" | "none"`). Same neutral 3-tier palette used for both task auto_aug coloring (≥4 / 2.5–4 / <2.5) and SKA pct_of_need coloring (≥100 / 66–100 / <66).
+Each `Card` and `TierGroup` manages its own local `open: boolean` state for collapsibility.
 
-**Tasks table:** rows are click-to-expand (only when `top_mcps.length > 0`). Expanded view shows the top-5 MCP servers with `description` from `text_for_llm` rendered inline (no tooltip — full visibility).
+**Layout** (top to bottom):
+1. **Header** — page title + "all-confirmed (conservative)" attribution paragraph (kept from prior version).
+2. **Picker** — Search / Browse-by-category tabs + geography dropdown.
+3. **Hero** — full-width card. Left: eyebrow ("Occupation report · {geo}"), occupation title, SOC chain, and four pills (Job Zone, Outlook, n_tasks, total workers). Right: tinted card with `RiskGauge` (108×~92px SVG, half-circle, score in center), tier label, "{n} of 8 flags raised" line, and a "Why?" toggle that reveals the 8-flag breakdown table.
+4. **KPI row** — 4 cards in a `1.2fr 1fr 1fr 1fr` grid. First card has a brand-color left accent bar, the headline `% of weighted tasks affected` value at 38px, sub line ("Up from X% in YYYY-MM"), and an inline `Sparkline` of the all_confirmed trend. Other three: workers affected, wages affected, intensity rank.
+5. **12-col body grid** of `Card` primitives, all collapsible at the section level via a chevron on the header:
+   - `Where you rank` (colSpan 4) — gradient-filled bars for Economy / Major / Minor / Broad on % tasks, with workers/wages ranks below; intensity sub-card.
+   - `Sector chain` (colSpan 4) — three stacked entries (Major / Minor / Broad) each from `report.sector_chain`. Per entry: name, rank pill, and a 3-column row of % tasks / workers / wages with their respective ranks.
+   - `Tools you use` (colSpan 4) — full list of the occ's softwares, scrollable, sorted by commodity rank.
+   - `Tasks AI can help with` (colSpan 12) — `PaletteLegend` then `TasksByTier`: tasks grouped into collapsible tier sections (high/mid/low/none) via `TierGroup`. Within each tier, `TaskRowsCompact` shows the existing rows (TierDot + task text + 4 source mini-bars + max score), click-to-expand for top MCP servers (only when present).
+   - `Where you lead, where AI leads` (colSpan 12) — SKA section: 4-stat summary header, then three collapsible subsections (Skills, Knowledge, Abilities) via `SkaSubsection`. Each subsection groups its rows into the same 3 collapsible color-bucket tiers, then renders `SkaTable` with the existing 6 columns.
+   - `Your work activities` (colSpan 12) — GWA / IWA / DWA tabs. Rows are tier-grouped via `WaByTier` and rendered by `WaTable`. Columns: name, # tasks (in occ), Conv/API/MS/MCP per-source maxes, then four `RankedCell` columns (eco % tasks, eco workers, eco wages, eco auto) — each value with its `#rank/total` underneath in muted small text.
+   - `Similar occupations` (colSpan 12) — top-5 nearest by SKA L1 distance with the existing 7-column table.
+6. **PaletteFooter** — original source-attribution paragraph at page bottom.
 
-**Work activities table:** tab selector (GWA/IWA/DWA). Each table row is one WA with averaged per-source scores rolled up from the occupation's tasks within that WA.
+**Color tokens** (defined in-file): `BUCKET_BG / BUCKET_BORDER / BUCKET_DOT / BUCKET_FG / BUCKET_LABEL / BUCKET_TIER_HEADING` keyed by `ColorBucket` (`"high" | "mid" | "low" | "none"`). Same neutral 3-tier palette used for task auto_aug coloring (≥4 / 2.5–4 / <2.5), SKA pct_of_need coloring (≥100 / 66–100 / <66), and tier-group section headers. `TIER_COLORS` provides the 4 risk-tier colors used by the `RiskGauge` arc fill and the hero's right-rail card. `SOURCE_META` defines the four data-source colors used by `SourceMiniBars`.
 
-**SKA section:** three sub-tables (Skills, Knowledge, Abilities). Sorted with biggest AI lead at the top (matches the user's spec). The summary header shows the four ratio-of-sums percentages (Overall / Skills / Knowledge / Abilities).
+**Collapsibility model:**
+- Every body `Card` opens/closes via a chevron on its header (default open).
+- `TierGroup` (used inside Tasks, SKA tables, and WA tables) opens/closes per tier (high/mid open by default, low/none closed by default) so users can scroll through long lists by ignoring the lower tiers.
+- `SkaSubsection` adds a third nesting level: section → S/K/A subsection → tier group → table.
 
-**Tech section:** top 25 of the occupation's softwares, sorted by commodity rank (most-AI-exposed commodities first). Shows software name, commodity, commodity rank within all commodities economy-wide, and avg % tasks affected for that commodity.
+**Tasks table:** all unique tasks for the occ, grouped by `color_bucket`. Click on a row expands to show top-5 MCP servers with `description` from `text_for_llm` rendered inline (only when `top_mcps.length > 0`).
 
-**Similar section:** top 5 nearest occupations by L1 distance. Each row links nothing (just informational); shows pct_tasks_affected, wage, job zone, outlook, and the SKA distance number itself.
+**Work activities table:** tab selector (GWA/IWA/DWA). The per-source columns (Conv/API/MS/MCP) come from the existing roll-up (averages across the occupation's tasks within that WA). The four eco columns come from the new `eco_stats` block on each row.
+
+**SKA section:** three subsections (Skills, Knowledge, Abilities), each tier-collapsible. Sorted with biggest AI lead at the top within each tier. The summary header shows the four ratio-of-sums percentages (Overall / Skills / Knowledge / Abilities).
+
+**Tech section:** full list of the occupation's softwares, sorted by commodity rank (most-AI-exposed commodities first). Shows software name, commodity, and commodity rank within all commodities economy-wide.
+
+**Similar section:** top 5 nearest occupations by L1 distance. Shows pct_tasks_affected, wage, job zone, outlook, and the SKA distance number itself.
 
 **No Simple/Advanced mode handling** — this page is a single curated view by design; the toggle in nav still appears (it's global) but the component doesn't read `useSimpleMode()`.
 
