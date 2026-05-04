@@ -319,7 +319,7 @@ paper/
 │   ├── results.md               — Assembled Results section (Parts 1–3)
 │   ├── part_1/                  — Scale, Convergence, Growth — FIRST DRAFT COMPLETE
 │   ├── part_2/                  — Characterization — FIRST DRAFT COMPLETE
-│   └── part_3/                  — (TBD)
+│   └── part_3/                  — Action — FIGURES + SCAFFOLDING (no prose yet)
 ```
 
 ### Writing Style
@@ -347,7 +347,15 @@ Five chart groups characterizing the structural distribution of AI exposure:
 
 Narrative arc: physical/informational structure → preparation level gradient → element-level capability profile → work activity rankings → sector-level view. Uses All Confirmed config throughout.
 
-### Part 3 — (TBD: "Here's what to do about it" / Action)
+### Part 3 — Action: What To Do About It ("Here's what to do about it")
+
+Audience-organized action levers. One framing chart at the top motivates why the cuts that follow are load-bearing (the 12 LLM-rated task properties collapse to ~2 dimensions: PC1 = phys/info, PC2 = friction). Then three audience sections each carry their own charts. **Figures + thin scaffolding only — no prose drafted yet.**
+
+1. **Framing — Property biplot**: PCA on the 12 task properties (m, d, s, r, h, e, t, tf, df, de, nt, ac), aggregated to occupation level. PC1 explains ~45% of variance, PC2 ~28%. Loading arrows show suitability properties (s, d) clustering on the phys/info axis and frictions (df, tf, t) clustering on the secondary axis.
+2. **For Organizations** (3 charts): tech commodities top-25 by depth × breadth composite (reused from `economic_footprint/skills_landscape`); conversational vs. agentic footprint by major sector; confirmed→ceiling worker gap by major sector.
+3. **For Policy** (3 charts): Risk × recovery option (a) — 8-flag risk score vs. SKA overall_gap (cross-references `job_exposure/job_risk_scoring` + `job_exposure/worker_resilience`); risk × recovery option (b) — pct_tasks_affected vs. mean(nt + de) per occ, with major-category centroids labeled and "displacement risk" / "exposure with offset" quadrants annotated; phys/Mixed/Non-physical buckets each split into low/mid/high friction tertiles to show that frictions discriminate within non-physical work.
+4. **For Individuals** (1 chart): two-panel layout — left scatter of occupations on (mean t, mean e) colored by SKA overall_gap and sized by employment, with AI-safe occupations (top-friction + bottom-suitability) annotated; right bar showing mean(e) declines from smallest to largest employment quartiles (commodified work concentrates in big workforces).
+5. **Closing caveat** (no chart): the augmentation-regime point — frictions haven't bound yet because deployment is still on the easy cognitive surface; t and freq_mean are inversely related (ρ ≈ −0.32), which affects how × t weighting compares to × freq weighting.
 
 ---
 

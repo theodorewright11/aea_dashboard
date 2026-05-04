@@ -126,7 +126,15 @@ analysis/
 │       │   ├── run.py, README.md, part_1.md, results/ (gitignored), figures/ (committed)
 │       ├── part_2/              — Characterization: Where AI Exposure Falls — FIRST DRAFT COMPLETE
 │       │   ├── run.py, README.md, part_2.md, results/ (gitignored), figures/ (committed)
-│       └── part_3/              — (TBD)
+│       └── part_3/              — Action: What To Do About It — FIGURES + SCAFFOLDING (no prose yet)
+│           ├── run.py, README.md, part_3.md, results/ (gitignored), figures/ (committed)
+│           ├── Figures: property_biplot, tech_commodities, conv_vs_agentic, gap_to_ceiling,
+│           │            risk_x_ska, pct_x_nt_de, phys_info_frictions, tacit_duration_safe
+│           └── Cross-references: job_exposure/job_risk_scoring (risk_scores_primary.csv),
+│                                 job_exposure/worker_resilience (occ_gaps_summary.csv),
+│                                 economic_footprint/skills_landscape (tech_skills pipeline,
+│                                 reimplemented in paper styling),
+│                                 data/final_eco_2025_with_task_properties.csv (12 props)
 └── exploratory/                 — Gitignored entirely. Nothing in this folder is ever
     │                              committed — do not use git add -f. One-off charts only;
     │                              no reports fed into question_findings/ or report/.
