@@ -540,6 +540,14 @@ export interface OccupationReport {
   tech: OccReportTech[];
 }
 
+export interface OccReportHierarchyEntry {
+  title: string;
+  major?: string | null;
+  minor?: string | null;
+  broad?: string | null;
+}
+
 export interface OccReportTitlesResponse {
   titles: string[];
+  hierarchy: OccReportHierarchyEntry[];
 }

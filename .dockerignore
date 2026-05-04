@@ -1,0 +1,32 @@
+# Slim the build context Railway / Docker uploads. The Dockerfile only
+# copies `data/` and `backend/` — everything else here is pure context bloat.
+
+# ── Frontend (Vercel deploys this separately; the backend image never needs it)
+frontend/
+
+# ── Analysis bucket (research scripts, not runtime; the 5 reference CSVs we
+# do need now live in `data/`, not analysis/data/)
+analysis/
+
+# ── Local dev
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# ── Editor / OS
+.idea/
+.vscode/
+.DS_Store
+
+# ── Git (Docker excludes .git by default but explicit doesn't hurt)
+.git/
+.gitignore
+
+# ── Misc
+delta/
+*.log
+*.md
+!backend/**/*.md
+README.md

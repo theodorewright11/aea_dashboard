@@ -80,14 +80,14 @@ FLAG_WEIGHTS: dict[str, int] = {
     "flag8_auto_aug":   1,
 }
 
-# Static reference CSVs from analysis/data/ — bundled in the Dockerfile.
-ROOT = Path(__file__).resolve().parent.parent
-ANALYSIS_DATA_DIR = ROOT / "analysis" / "data"
-SKILLS_FILE     = ANALYSIS_DATA_DIR / "skills_v30.1.csv"
-ABILITIES_FILE  = ANALYSIS_DATA_DIR / "abilities_v30.1.csv"
-KNOWLEDGE_FILE  = ANALYSIS_DATA_DIR / "knowledge_v30.1.csv"
-TECH_SKILLS_FILE        = ANALYSIS_DATA_DIR / "technology_skills_v30.1.csv"
-TECH_SKILLS_SIMPLE_FILE = ANALYSIS_DATA_DIR / "tech_skills_simple.csv"
+# Static reference CSVs. They live alongside the dashboard's runtime data
+# in `data/`; copies also exist in `analysis/data/` for the analysis bucket
+# (which is gitignored, so production never sees those copies).
+SKILLS_FILE     = DATA_DIR / "skills_v30.1.csv"
+ABILITIES_FILE  = DATA_DIR / "abilities_v30.1.csv"
+KNOWLEDGE_FILE  = DATA_DIR / "knowledge_v30.1.csv"
+TECH_SKILLS_FILE        = DATA_DIR / "technology_skills_v30.1.csv"
+TECH_SKILLS_SIMPLE_FILE = DATA_DIR / "tech_skills_simple.csv"
 MCP_TITLES_DESC_FILE    = DATA_DIR / "mcp_titles_desc.csv"
 
 
@@ -1137,6 +1137,25 @@ def _build_sector_stats(title: str, geo: str) -> dict:
 def get_occupation_titles() -> list[str]:
     """All occupation titles available — used by the frontend's occupation picker."""
     return sorted(_occ_index().keys())
+
+
+def get_occupation_hierarchy() -> list[dict]:
+    """Same set of occupations, plus their major/minor/broad. Sorted by title.
+
+    Used by the frontend's Browse-by-category picker so it can build cascading
+    Major → Minor → Broad → Occupation dropdowns without an extra round-trip.
+    """
+    occ_idx = _occ_index()
+    out: list[dict] = []
+    for title in sorted(occ_idx.keys()):
+        meta = occ_idx[title]
+        out.append({
+            "title": title,
+            "major": meta.get("major"),
+            "minor": meta.get("minor"),
+            "broad": meta.get("broad"),
+        })
+    return out
 
 
 def get_occupation_report(title: str, geo: str = "nat") -> Optional[dict]:

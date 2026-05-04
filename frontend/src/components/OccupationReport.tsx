@@ -8,11 +8,14 @@ import type {
   OccReportTask,
   OccReportWaRow,
   OccReportSkaRow,
+  OccReportHierarchyEntry,
 } from "@/lib/types";
 import {
   fetchOccupationReport,
   fetchOccupationReportTitles,
 } from "@/lib/api";
+
+type PickerMode = "search" | "browse";
 
 interface Props {
   config: ConfigResponse;
@@ -104,7 +107,9 @@ const OUTLOOK_INTERP: Record<number, string> = {
 
 export default function OccupationReport({ config }: Props) {
   const [titles, setTitles] = useState<string[]>([]);
+  const [hierarchy, setHierarchy] = useState<OccReportHierarchyEntry[]>([]);
   const [selectedTitle, setSelectedTitle] = useState<string>("");
+  const [pickerMode, setPickerMode] = useState<PickerMode>("search");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
   const [geo, setGeo] = useState<string>("nat");
@@ -114,10 +119,13 @@ export default function OccupationReport({ config }: Props) {
   const [waLevel, setWaLevel] = useState<"gwa" | "iwa" | "dwa">("gwa");
   const [showRiskFlags, setShowRiskFlags] = useState<boolean>(false);
 
-  // Load titles once
+  // Load titles + hierarchy once
   useEffect(() => {
     fetchOccupationReportTitles()
-      .then((d) => setTitles(d.titles))
+      .then((d) => {
+        setTitles(d.titles);
+        setHierarchy(d.hierarchy);
+      })
       .catch((e) => setError(e.message));
   }, []);
 
@@ -142,6 +150,12 @@ export default function OccupationReport({ config }: Props) {
     return titles.filter((t) => t.toLowerCase().includes(q)).slice(0, 12);
   }, [searchQuery, titles]);
 
+  const handleSelect = (t: string) => {
+    setSelectedTitle(t);
+    setSearchQuery(t);
+    setShowSuggestions(false);
+  };
+
   return (
     <div style={{ maxWidth: 1280, margin: "0 auto", padding: "32px 24px 80px" }}>
       <header style={{ marginBottom: 24 }}>
@@ -157,17 +171,17 @@ export default function OccupationReport({ config }: Props) {
         </p>
       </header>
 
-      <SearchBar
+      <Picker
+        pickerMode={pickerMode}
+        setPickerMode={setPickerMode}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         showSuggestions={showSuggestions}
         setShowSuggestions={setShowSuggestions}
         filteredTitles={filteredTitles}
-        onSelect={(t) => {
-          setSelectedTitle(t);
-          setSearchQuery(t);
-          setShowSuggestions(false);
-        }}
+        onSelect={handleSelect}
+        selectedTitle={selectedTitle}
+        hierarchy={hierarchy}
         geo={geo}
         setGeo={setGeo}
         geoOptions={config.geo_options}
@@ -223,83 +237,283 @@ export default function OccupationReport({ config }: Props) {
   );
 }
 
-/* ── Search bar ───────────────────────────────────────────────────────────── */
+/* ── Picker (Search + Browse tabs) ────────────────────────────────────────── */
 
-function SearchBar({
-  searchQuery, setSearchQuery, showSuggestions, setShowSuggestions,
-  filteredTitles, onSelect, geo, setGeo, geoOptions,
-}: {
+interface PickerProps {
+  pickerMode: PickerMode;
+  setPickerMode: (m: PickerMode) => void;
   searchQuery: string;
   setSearchQuery: (s: string) => void;
   showSuggestions: boolean;
   setShowSuggestions: (b: boolean) => void;
   filteredTitles: string[];
   onSelect: (t: string) => void;
+  selectedTitle: string;
+  hierarchy: OccReportHierarchyEntry[];
   geo: string;
   setGeo: (g: string) => void;
   geoOptions: Record<string, string>;
-}) {
+}
+
+function Picker(props: PickerProps) {
+  const { pickerMode, setPickerMode, geo, setGeo, geoOptions } = props;
   return (
     <div style={{
-      display: "flex", gap: 12, alignItems: "stretch",
       background: "var(--bg-surface)", border: "1px solid var(--border)",
       borderRadius: 10, padding: 14,
     }}>
-      <div style={{ position: "relative", flex: 1 }}>
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => { setSearchQuery(e.target.value); setShowSuggestions(true); }}
-          onFocus={() => setShowSuggestions(true)}
-          onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-          placeholder="Search for your occupation (e.g. Registered Nurses)…"
+      {/* Tab row + geo dropdown */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, gap: 12 }}>
+        <div style={{ display: "flex", gap: 4 }}>
+          <PickerTab label="Search"
+                     active={pickerMode === "search"}
+                     onClick={() => setPickerMode("search")} />
+          <PickerTab label="Browse by category"
+                     active={pickerMode === "browse"}
+                     onClick={() => setPickerMode("browse")} />
+        </div>
+        <select
+          value={geo}
+          onChange={(e) => setGeo(e.target.value)}
           style={{
-            width: "100%", padding: "10px 14px",
-            border: "1px solid var(--border)", borderRadius: 8,
-            fontSize: 14, outline: "none",
-            transition: "border-color 0.15s",
+            padding: "8px 14px", border: "1px solid var(--border)",
+            borderRadius: 8, fontSize: 13, cursor: "pointer",
+            background: "var(--bg-surface)", color: "var(--text-primary)",
+            minWidth: 180,
           }}
-        />
-        {showSuggestions && filteredTitles.length > 0 && (
-          <div style={{
-            position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0, zIndex: 20,
-            maxHeight: 320, overflowY: "auto",
-            background: "var(--bg-surface)", border: "1px solid var(--border)",
-            borderRadius: 8, boxShadow: "0 6px 20px rgba(0,0,0,0.10)",
-          }}>
-            {filteredTitles.map((t) => (
+        >
+          {Object.entries(geoOptions).map(([code, name]) => (
+            <option key={code} value={code}>{name}</option>
+          ))}
+        </select>
+      </div>
+
+      {pickerMode === "search" ? <SearchPanel {...props} /> : <BrowsePanel {...props} />}
+    </div>
+  );
+}
+
+function PickerTab({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        padding: "7px 14px", borderRadius: 6,
+        fontSize: 13, fontWeight: active ? 600 : 500,
+        background: active ? "var(--brand-light)" : "transparent",
+        color: active ? "var(--brand)" : "var(--text-secondary)",
+        border: "1px solid",
+        borderColor: active ? "var(--brand-light)" : "transparent",
+        cursor: "pointer",
+        transition: "all 0.13s",
+      }}
+    >
+      {label}
+    </button>
+  );
+}
+
+function SearchPanel({
+  searchQuery, setSearchQuery, showSuggestions, setShowSuggestions,
+  filteredTitles, onSelect,
+}: PickerProps) {
+  return (
+    <div style={{ position: "relative" }}>
+      <input
+        type="text"
+        value={searchQuery}
+        onChange={(e) => { setSearchQuery(e.target.value); setShowSuggestions(true); }}
+        onFocus={() => setShowSuggestions(true)}
+        onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+        placeholder="Search for your occupation (e.g. Registered Nurses)…"
+        style={{
+          width: "100%", padding: "10px 14px",
+          border: "1px solid var(--border)", borderRadius: 8,
+          fontSize: 14, outline: "none",
+          transition: "border-color 0.15s",
+        }}
+      />
+      {showSuggestions && filteredTitles.length > 0 && (
+        <div style={{
+          position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0, zIndex: 20,
+          maxHeight: 320, overflowY: "auto",
+          background: "var(--bg-surface)", border: "1px solid var(--border)",
+          borderRadius: 8, boxShadow: "0 6px 20px rgba(0,0,0,0.10)",
+        }}>
+          {filteredTitles.map((t) => (
+            <button
+              key={t}
+              onMouseDown={() => onSelect(t)}
+              style={{
+                display: "block", width: "100%", textAlign: "left",
+                padding: "9px 14px", fontSize: 13,
+                background: "transparent", border: "none", cursor: "pointer",
+                color: "var(--text-primary)",
+                borderBottom: "1px solid var(--border-light)",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg-base)")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Browse panel (cascading Major → Minor → Broad → Occupation) ────────── */
+
+function BrowsePanel({ hierarchy, onSelect, selectedTitle }: PickerProps) {
+  const [major, setMajor] = useState<string>("");
+  const [minor, setMinor] = useState<string>("");
+  const [broad, setBroad] = useState<string>("");
+
+  // Distinct sorted lists derived from hierarchy + current selections
+  const majors = useMemo(() => {
+    const s = new Set<string>();
+    hierarchy.forEach((h) => h.major && s.add(h.major));
+    return Array.from(s).sort();
+  }, [hierarchy]);
+
+  const minors = useMemo(() => {
+    if (!major) return [];
+    const s = new Set<string>();
+    hierarchy.forEach((h) => h.major === major && h.minor && s.add(h.minor));
+    return Array.from(s).sort();
+  }, [hierarchy, major]);
+
+  const broads = useMemo(() => {
+    if (!minor) return [];
+    const s = new Set<string>();
+    hierarchy.forEach((h) => h.minor === minor && h.broad && s.add(h.broad));
+    return Array.from(s).sort();
+  }, [hierarchy, minor]);
+
+  const occs = useMemo(() => {
+    if (!broad) return [];
+    return hierarchy.filter((h) => h.broad === broad).map((h) => h.title).sort();
+  }, [hierarchy, broad]);
+
+  // Auto-clear downstream selections when an upstream one changes
+  const onMajor = (m: string) => { setMajor(m); setMinor(""); setBroad(""); };
+  const onMinor = (m: string) => { setMinor(m); setBroad(""); };
+
+  // If user already selected an occupation via search, prefill the dropdowns
+  // so the Browse view reflects "where am I".
+  useEffect(() => {
+    if (!selectedTitle || !hierarchy.length) return;
+    const found = hierarchy.find((h) => h.title === selectedTitle);
+    if (!found) return;
+    if (found.major && found.major !== major) setMajor(found.major);
+    if (found.minor && found.minor !== minor) setMinor(found.minor);
+    if (found.broad && found.broad !== broad) setBroad(found.broad);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedTitle, hierarchy.length]);
+
+  return (
+    <div>
+      <div style={{
+        display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 10,
+      }}>
+        <BrowseSelect label="Major"
+                      value={major}
+                      options={majors}
+                      placeholder="Pick a major category…"
+                      onChange={onMajor} />
+        <BrowseSelect label="Minor"
+                      value={minor}
+                      options={minors}
+                      placeholder={major ? "Pick a minor…" : "Pick a major first"}
+                      onChange={onMinor}
+                      disabled={!major} />
+        <BrowseSelect label="Broad"
+                      value={broad}
+                      options={broads}
+                      placeholder={minor ? "Pick a broad…" : "Pick a minor first"}
+                      onChange={setBroad}
+                      disabled={!minor} />
+      </div>
+
+      {broad ? (
+        <div style={{
+          maxHeight: 280, overflowY: "auto",
+          border: "1px solid var(--border-light)", borderRadius: 8,
+          background: "var(--bg-base)",
+        }}>
+          {occs.length === 0 && (
+            <p style={{ padding: 14, fontSize: 13, color: "var(--text-muted)" }}>
+              No occupations under this broad category.
+            </p>
+          )}
+          {occs.map((t) => {
+            const isSelected = t === selectedTitle;
+            return (
               <button
                 key={t}
-                onMouseDown={() => onSelect(t)}
+                onClick={() => onSelect(t)}
                 style={{
                   display: "block", width: "100%", textAlign: "left",
-                  padding: "9px 14px", fontSize: 13,
-                  background: "transparent", border: "none", cursor: "pointer",
-                  color: "var(--text-primary)",
+                  padding: "10px 14px", fontSize: 13,
+                  background: isSelected ? "var(--brand-light)" : "transparent",
+                  color: isSelected ? "var(--brand)" : "var(--text-primary)",
+                  border: "none", cursor: "pointer",
                   borderBottom: "1px solid var(--border-light)",
+                  fontWeight: isSelected ? 600 : 400,
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg-base)")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                onMouseEnter={(e) => {
+                  if (!isSelected) e.currentTarget.style.background = "var(--bg-surface)";
+                }}
+                onMouseLeave={(e) => {
+                  if (!isSelected) e.currentTarget.style.background = "transparent";
+                }}
               >
                 {t}
               </button>
-            ))}
-          </div>
-        )}
-      </div>
+            );
+          })}
+        </div>
+      ) : (
+        <p style={{ fontSize: 12, color: "var(--text-muted)", padding: "12px 4px 4px" }}>
+          Pick a Major → Minor → Broad to see the occupations under that branch.
+        </p>
+      )}
+    </div>
+  );
+}
+
+function BrowseSelect({
+  label, value, options, placeholder, onChange, disabled,
+}: {
+  label: string;
+  value: string;
+  options: string[];
+  placeholder: string;
+  onChange: (v: string) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <div>
+      <p style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase",
+                  letterSpacing: "0.04em", marginBottom: 4 }}>
+        {label}
+      </p>
       <select
-        value={geo}
-        onChange={(e) => setGeo(e.target.value)}
+        value={value}
+        disabled={disabled}
+        onChange={(e) => onChange(e.target.value)}
         style={{
-          padding: "10px 14px", border: "1px solid var(--border)",
-          borderRadius: 8, fontSize: 13, cursor: "pointer",
-          background: "var(--bg-surface)", color: "var(--text-primary)",
-          minWidth: 180,
+          width: "100%", padding: "9px 12px",
+          border: "1px solid var(--border)", borderRadius: 8,
+          fontSize: 13, cursor: disabled ? "not-allowed" : "pointer",
+          background: disabled ? "var(--bg-base)" : "var(--bg-surface)",
+          color: value ? "var(--text-primary)" : "var(--text-muted)",
+          opacity: disabled ? 0.6 : 1,
         }}
       >
-        {Object.entries(geoOptions).map(([code, name]) => (
-          <option key={code} value={code}>{name}</option>
-        ))}
+        <option value="">{placeholder}</option>
+        {options.map((o) => (<option key={o} value={o}>{o}</option>))}
       </select>
     </div>
   );

@@ -730,13 +730,21 @@ def task_changes(req: TaskChangesRequest):
 from occupation_report import (
     get_occupation_report,
     get_occupation_titles,
+    get_occupation_hierarchy,
 )
 
 
 @app.get("/api/occupation-report/titles")
 def occupation_report_titles():
-    """All occupation titles available — used by the page's occupation picker."""
-    return {"titles": get_occupation_titles()}
+    """All occupation titles + hierarchy — used by the page's picker.
+
+    Returns both `titles` (flat sorted strings, for the typeahead) and
+    `hierarchy` (each occ with its major/minor/broad, for the Browse tab).
+    """
+    return {
+        "titles":    get_occupation_titles(),
+        "hierarchy": get_occupation_hierarchy(),
+    }
 
 
 @app.get("/api/occupation-report")
