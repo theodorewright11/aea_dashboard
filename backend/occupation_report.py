@@ -746,7 +746,9 @@ def _ska_profile_matrix() -> tuple[list[str], np.ndarray, list[str]]:
 
 
 def _similar_occs(title: str, n: int = N_SIMILAR_OCCS) -> list[dict]:
-    """L1 distance over SKA profile vector. Returns list of nearest occ dicts."""
+    """L1 distance over SKA profile vector. Returns list of nearest occ dicts.
+    Each row also carries the occupation's exposure (risk) score / tier / flags
+    so the UI can render an exposure profile column."""
     titles, matrix, _ = _ska_profile_matrix()
     if title not in titles:
         return []
@@ -758,6 +760,7 @@ def _similar_occs(title: str, n: int = N_SIMILAR_OCCS) -> list[dict]:
     order = np.argsort(dists)
     occ_idx = _occ_index()
     pct_map = _pct_for(PRIMARY_DATASET)
+    risk_df = _risk_table().set_index("title_current")
 
     out: list[dict] = []
     for j in order:
@@ -767,6 +770,14 @@ def _similar_occs(title: str, n: int = N_SIMILAR_OCCS) -> list[dict]:
         meta = occ_idx.get(other)
         if meta is None:
             continue
+        risk_payload: Optional[dict] = None
+        if other in risk_df.index:
+            r = risk_df.loc[other]
+            risk_payload = {
+                "score": int(r["risk_score"]),
+                "tier":  str(r["risk_tier"]),
+                "flags": {k: int(r[k]) for k in FLAG_WEIGHTS.keys()},
+            }
         out.append({
             "title": other,
             "distance": _round_or_none(float(dists[j]), 1),
@@ -775,6 +786,7 @@ def _similar_occs(title: str, n: int = N_SIMILAR_OCCS) -> list[dict]:
             "job_zone": _safe_num(meta.get("job_zone")),
             "dws_star_rating": _safe_num(meta.get("dws_star_rating")),
             "major": meta.get("major"),
+            "risk": risk_payload,
         })
         if len(out) >= n:
             break

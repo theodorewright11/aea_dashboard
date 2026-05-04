@@ -8,6 +8,7 @@ import type {
   OccReportTask,
   OccReportWaRow,
   OccReportSkaRow,
+  OccReportSimilar,
   OccReportHierarchyEntry,
   OccReportSectorChainEntry,
   OccReportTrendPoint,
@@ -63,18 +64,18 @@ const BUCKET_TIER_HEADING: Record<ColorBucket, string> = {
   none: "No data",
 };
 
-const TIER_COLORS: Record<string, { bg: string; fg: string; label: string }> = {
-  high:     { bg: "rgba(184, 96, 60, 0.12)",  fg: "#b8603c", label: "High Risk" },
-  mod_high: { bg: "rgba(214, 165, 96, 0.14)", fg: "#c08a45", label: "Mod-High Risk" },
-  mod_low:  { bg: "rgba(160, 160, 130, 0.14)", fg: "#7a8862", label: "Mod-Low Risk" },
-  low:      { bg: "rgba(110, 138, 156, 0.14)", fg: "#5e7e92", label: "Low Risk" },
+const TIER_COLORS: Record<string, { bg: string; fg: string; label: string; short: string }> = {
+  high:     { bg: "rgba(184, 96, 60, 0.12)",  fg: "#b8603c", label: "High Exposure",     short: "High" },
+  mod_high: { bg: "rgba(214, 165, 96, 0.14)", fg: "#c08a45", label: "Mod-High Exposure", short: "Mod-High" },
+  mod_low:  { bg: "rgba(160, 160, 130, 0.14)", fg: "#7a8862", label: "Mod-Low Exposure", short: "Mod-Low" },
+  low:      { bg: "rgba(110, 138, 156, 0.14)", fg: "#5e7e92", label: "Low Exposure",     short: "Low" },
 };
 
 const SOURCE_META = {
-  aei_conv:  { label: "Conversational", short: "Conv",  color: "#3a5f83" },
-  aei_api:   { label: "Agentic",        short: "Agent", color: "#6e4d7e" },
-  microsoft: { label: "Copilot",        short: "Copi",  color: "#8a4225" },
-  mcp:       { label: "MCP tools",      short: "MCP",   color: "#4a7c6f" },
+  aei_conv:  { label: "Claude Conv", short: "Claude Conv", color: "#3a5f83" },
+  aei_api:   { label: "Claude API",  short: "Claude API",  color: "#6e4d7e" },
+  microsoft: { label: "Copilot",     short: "Copilot",     color: "#8a4225" },
+  mcp:       { label: "MCP",         short: "MCP",         color: "#4a7c6f" },
 } as const;
 
 /* ── Formatters ───────────────────────────────────────────────────────────── */
@@ -247,22 +248,43 @@ function RiskGauge({
   );
 }
 
-function SourceMiniBars({ t }: { t: OccReportTask }) {
+interface SourceCellInput {
+  aei_conv_max?: number | null;
+  aei_api_max?: number | null;
+  microsoft?: number | null;
+  mcp?: number | null;
+}
+
+function SourceMiniBars({ t, showLabels = true }: { t: SourceCellInput; showLabels?: boolean }) {
   const sources = [
-    { key: "aei_conv", label: SOURCE_META.aei_conv.short,  v: t.aei_conv_max ?? 0, c: SOURCE_META.aei_conv.color },
-    { key: "aei_api",  label: SOURCE_META.aei_api.short,   v: t.aei_api_max  ?? 0, c: SOURCE_META.aei_api.color },
-    { key: "ms",       label: SOURCE_META.microsoft.short, v: t.microsoft    ?? 0, c: SOURCE_META.microsoft.color },
-    { key: "mcp",      label: SOURCE_META.mcp.short,       v: t.mcp          ?? 0, c: SOURCE_META.mcp.color },
+    { key: "aei_conv", label: SOURCE_META.aei_conv.short,  v: t.aei_conv_max ?? null, c: SOURCE_META.aei_conv.color },
+    { key: "aei_api",  label: SOURCE_META.aei_api.short,   v: t.aei_api_max  ?? null, c: SOURCE_META.aei_api.color },
+    { key: "ms",       label: SOURCE_META.microsoft.short, v: t.microsoft    ?? null, c: SOURCE_META.microsoft.color },
+    { key: "mcp",      label: SOURCE_META.mcp.short,       v: t.mcp          ?? null, c: SOURCE_META.mcp.color },
   ];
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
       {sources.map((s) => (
         <div key={s.key} style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-          <p style={{
-            fontSize: 9, color: "var(--text-muted)",
-            letterSpacing: "0.04em", textTransform: "uppercase", margin: 0,
-          }}>{s.label}</p>
-          <MiniBar value={s.v} max={5} color={s.c} height={4} />
+          <div style={{
+            display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 4,
+          }}>
+            {showLabels && (
+              <p style={{
+                fontSize: 9, color: "var(--text-muted)",
+                letterSpacing: "0.04em", textTransform: "uppercase", margin: 0,
+                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+              }}>{s.label}</p>
+            )}
+            <span style={{
+              fontSize: 11, fontWeight: 600,
+              color: s.v != null ? "var(--text-primary)" : "var(--text-muted)",
+              fontVariantNumeric: "tabular-nums", marginLeft: "auto",
+            }}>
+              {s.v != null ? s.v.toFixed(1) : "—"}
+            </span>
+          </div>
+          <MiniBar value={s.v ?? 0} max={5} color={s.c} height={5} />
         </div>
       ))}
     </div>
@@ -795,18 +817,18 @@ function ReportBody({
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 16 }}>
         <Card span={4} title="Where you rank"
-              sub="Lower number = more exposed within group">
+              sub="Where THIS occupation sits within each scope on % tasks affected (lower number = more exposed). Workers / wages ranks shown beneath each bar.">
           <RankBars report={report} />
         </Card>
 
         <Card span={4} title="Sector chain"
-              sub="Major / minor / broad — economy-wide stats and rank">
+              sub="How THIS occupation's major / minor / broad CATEGORIES rank against all categories at the same level — and the categories' aggregate stats.">
           <SectorChain report={report} />
         </Card>
 
-        <Card span={4} title="Tools you use"
-              sub="O*NET technology · ranked by economy-wide AI exposure">
-          <TechList items={report.tech} />
+        <Card span={4} title="Software commodities"
+              sub="O*NET commodity categories this occupation's tools fall into. Count = # of distinct softwares in this occ. Rank = where this commodity sits economy-wide on average AI exposure.">
+          <TechCommodities items={report.tech} />
         </Card>
 
         <Card span={12} title="Tasks AI can help with"
@@ -824,7 +846,7 @@ function ReportBody({
           <TasksByTier tasks={report.tasks} />
         </Card>
 
-        <Card span={12} title="Where you lead, where AI leads"
+        <Card span={12} title="Where AI leads, where you lead"
               sub="Skills + Knowledge + Abilities (importance ≥ 3 only). “AI capability” is the top-10-occupation average for that element. Above 100% of need = AI leads. Sorted with biggest AI lead at top.">
           <SkaSection report={report} />
         </Card>
@@ -915,7 +937,7 @@ function Hero({
               fontSize: 11, color: "var(--text-secondary)", letterSpacing: "0.06em",
               textTransform: "uppercase", fontWeight: 600, margin: 0,
             }}>
-              Risk tier
+              Exposure tier
             </p>
             <p style={{
               fontSize: 24, fontWeight: 700, color: tierStyle.fg, lineHeight: 1.1,
@@ -968,8 +990,8 @@ function RiskFlagsTable({ risk }: { risk: OccupationReport["headline"]["risk"] }
       <p style={{
         fontSize: 11, color: "var(--text-muted)", marginBottom: 8, lineHeight: 1.4,
       }}>
-        Risk score is built from 8 binary flags weighted 1× or 2×. High requires a score of 8+ AND
-        pct_tasks_affected ≥ 33%; otherwise it caps at Mod-High.
+        Exposure score is built from 8 binary flags weighted 1× or 2×. High Exposure requires a score of 8+
+        AND pct_tasks_affected ≥ 33%; otherwise it caps at Mod-High.
       </p>
       <div style={{
         display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 6,
@@ -1040,14 +1062,16 @@ function KpiRow({ report }: { report: OccupationReport }) {
           : undefined}
       />
       <KpiCard
-        label="Intensity rank"
+        label="AI adoption rank"
         value={h.intensity.occ_intensity_rank !== null && h.intensity.occ_intensity_rank !== undefined
           ? `#${h.intensity.occ_intensity_rank}`
           : "—"}
         sub={h.intensity.occ_intensity_total !== null && h.intensity.occ_intensity_total !== undefined
-          ? `of ${fmtNumber(h.intensity.occ_intensity_total)} occupations`
+          ? `of ${fmtNumber(h.intensity.occ_intensity_total)} occupations · how much workers in this occupation already use AI relative to their task load`
           : undefined}
-        rank="Per-task usage"
+        rank={h.intensity.major_intensity_rank !== null && h.intensity.major_intensity_rank !== undefined
+          ? `#${h.intensity.major_intensity_rank} / ${h.intensity.major_intensity_total} in major`
+          : undefined}
       />
     </div>
   );
@@ -1282,35 +1306,68 @@ function SectorChainStat({
 
 /* ── Tools list ───────────────────────────────────────────────────────────── */
 
-function TechList({ items }: { items: OccupationReport["tech"] }) {
-  if (!items.length) return (
-    <p style={{ fontSize: 12, color: "var(--text-muted)" }}>No software tools listed.</p>
+interface CommodityRow {
+  commodity: string;
+  count: number;
+  rank: number | null;
+  total: number;
+}
+
+function TechCommodities({ items }: { items: OccupationReport["tech"] }) {
+  const grouped = useMemo<CommodityRow[]>(() => {
+    const byCommodity = new Map<string, CommodityRow>();
+    for (const t of items) {
+      const existing = byCommodity.get(t.commodity);
+      if (existing) {
+        existing.count += 1;
+      } else {
+        byCommodity.set(t.commodity, {
+          commodity: t.commodity,
+          count: 1,
+          rank: t.commodity_rank ?? null,
+          total: t.commodity_total,
+        });
+      }
+    }
+    return Array.from(byCommodity.values()).sort((a, b) => {
+      if (a.rank == null && b.rank == null) return 0;
+      if (a.rank == null) return 1;
+      if (b.rank == null) return -1;
+      return a.rank - b.rank;
+    });
+  }, [items]);
+
+  if (!grouped.length) return (
+    <p style={{ fontSize: 12, color: "var(--text-muted)" }}>No software commodities listed.</p>
   );
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", maxHeight: 360, overflowY: "auto" }}>
-      {items.map((t, i) => (
-        <div key={`${t.software}-${t.commodity}-${i}`} style={{
-          display: "grid", gridTemplateColumns: "1fr 60px", gap: 8, alignItems: "center",
-          padding: "7px 0", borderTop: i === 0 ? "none" : "1px dotted var(--border-light)",
+    <div style={{ display: "flex", flexDirection: "column", maxHeight: 420, overflowY: "auto" }}>
+      {grouped.map((c, i) => (
+        <div key={`${c.commodity}-${i}`} style={{
+          display: "grid", gridTemplateColumns: "1fr 70px", gap: 8, alignItems: "center",
+          padding: "8px 0",
+          borderTop: i === 0 ? "none" : "1px dotted var(--border-light)",
         }}>
           <div style={{ minWidth: 0 }}>
             <p style={{
               fontSize: 12, fontWeight: 500, margin: 0, color: "var(--text-primary)",
-              overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-            }}>{t.software}</p>
+              lineHeight: 1.35,
+            }}>{c.commodity}</p>
             <p style={{
-              fontSize: 10, color: "var(--text-muted)", margin: 0,
-              overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-            }}>{t.commodity}</p>
+              fontSize: 10, color: "var(--text-muted)", margin: "2px 0 0",
+            }}>
+              {c.count} {c.count === 1 ? "tool" : "tools"} in this occupation
+            </p>
           </div>
           <p style={{
-            fontSize: 11, fontVariantNumeric: "tabular-nums", textAlign: "right",
+            fontSize: 12, fontVariantNumeric: "tabular-nums", textAlign: "right",
             color: "#a35135", fontWeight: 600, margin: 0,
           }}>
-            {t.commodity_rank ? `#${t.commodity_rank}` : "—"}
-            {t.commodity_total ? <span style={{
+            {c.rank ? `#${c.rank}` : "—"}
+            {c.total ? <span style={{
               color: "var(--text-muted)", fontWeight: 400,
-            }}>/{t.commodity_total}</span> : null}
+            }}>/{c.total}</span> : null}
           </p>
         </div>
       ))}
@@ -1320,13 +1377,40 @@ function TechList({ items }: { items: OccupationReport["tech"] }) {
 
 /* ── Tasks (grouped by tier) ─────────────────────────────────────────────── */
 
+interface TaskWithMeta extends OccReportTask {
+  value_weight: number;
+  value_rank: number;
+  value_total: number;
+}
+
+const TASK_GRID = "1fr 320px 80px 70px 60px 24px";
+
 function TasksByTier({ tasks }: { tasks: OccReportTask[] }) {
+  // Compute freq × imp × rel ("value") weight + rank-within-occupation once
+  // for ALL tasks before splitting by tier, so ranks reflect the whole occ.
+  const tasksWithMeta = useMemo<TaskWithMeta[]>(() => {
+    const withWeight = tasks.map((t) => ({
+      ...t,
+      value_weight: (t.freq_mean ?? 0) * (t.importance ?? 0) * (t.relevance ?? 0),
+    }));
+    const sorted = [...withWeight].sort((a, b) => b.value_weight - a.value_weight);
+    const rankByKey = new Map<string, number>();
+    sorted.forEach((t, i) => rankByKey.set(t.task_normalized, i + 1));
+    const total = sorted.length;
+    return withWeight.map((t) => ({
+      ...t,
+      value_rank: rankByKey.get(t.task_normalized) ?? 0,
+      value_total: total,
+    }));
+  }, [tasks]);
+
   const buckets: ColorBucket[] = ["high", "mid", "low", "none"];
-  const grouped: Record<ColorBucket, OccReportTask[]> = { high: [], mid: [], low: [], none: [] };
-  for (const t of tasks) grouped[t.color_bucket].push(t);
-  // Within each bucket, keep the existing sort (color_driver desc).
+  const grouped: Record<ColorBucket, TaskWithMeta[]> = { high: [], mid: [], low: [], none: [] };
+  for (const t of tasksWithMeta) grouped[t.color_bucket].push(t);
+
   return (
     <div style={{ marginTop: 10 }}>
+      <TaskHeaderRow />
       {buckets.map((b) => {
         const rows = grouped[b];
         if (!rows.length) return null;
@@ -1340,7 +1424,28 @@ function TasksByTier({ tasks }: { tasks: OccReportTask[] }) {
   );
 }
 
-function TaskRowsCompact({ tasks }: { tasks: OccReportTask[] }) {
+function TaskHeaderRow() {
+  const labelStyle: React.CSSProperties = {
+    fontSize: 9, color: "var(--text-muted)", letterSpacing: "0.06em",
+    textTransform: "uppercase", fontWeight: 600, margin: 0,
+  };
+  return (
+    <div style={{
+      display: "grid", gridTemplateColumns: TASK_GRID, gap: 14,
+      alignItems: "center", padding: "0 4px 8px",
+      borderBottom: "1px solid var(--border-light)", marginBottom: 8,
+    }}>
+      <p style={labelStyle}>Task</p>
+      <p style={{ ...labelStyle, textAlign: "left" }}>Per-source AI score (0–5)</p>
+      <p style={{ ...labelStyle, textAlign: "right" }}>Freq×Imp×Rel</p>
+      <p style={{ ...labelStyle, textAlign: "right" }}>Rank in occ</p>
+      <p style={{ ...labelStyle, textAlign: "right" }}>Max AI</p>
+      <span />
+    </div>
+  );
+}
+
+function TaskRowsCompact({ tasks }: { tasks: TaskWithMeta[] }) {
   const [open, setOpen] = useState<string | null>(null);
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
@@ -1351,6 +1456,12 @@ function TaskRowsCompact({ tasks }: { tasks: OccReportTask[] }) {
           t.microsoft ?? 0, t.mcp ?? 0,
         );
         const hasMcps = t.top_mcps.length > 0;
+        // Higher value rank = higher in occ. Map rank→intensity 1.0 (top) to 0.35 (bottom).
+        const intensity = t.value_total > 1
+          ? 1 - (t.value_rank - 1) / (t.value_total - 1)
+          : 1;
+        const rankOpacity = 0.35 + intensity * 0.65;
+        const rankWeight = intensity > 0.66 ? 700 : intensity > 0.33 ? 600 : 400;
         return (
           <div
             key={t.task_normalized}
@@ -1362,7 +1473,7 @@ function TaskRowsCompact({ tasks }: { tasks: OccReportTask[] }) {
             }}
           >
             <div style={{
-              display: "grid", gridTemplateColumns: "1fr 280px 60px", gap: 14,
+              display: "grid", gridTemplateColumns: TASK_GRID, gap: 14,
               alignItems: "center",
             }}>
               <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
@@ -1375,12 +1486,35 @@ function TaskRowsCompact({ tasks }: { tasks: OccReportTask[] }) {
               </div>
               <SourceMiniBars t={t} />
               <p style={{
+                fontSize: 13, textAlign: "right", margin: 0,
+                color: "var(--text-primary)", fontWeight: 500,
+                fontVariantNumeric: "tabular-nums",
+              }}>
+                {t.value_weight > 0 ? t.value_weight.toFixed(1) : "—"}
+              </p>
+              <p style={{
+                fontSize: 13, textAlign: "right", margin: 0,
+                color: "var(--text-primary)", opacity: rankOpacity, fontWeight: rankWeight,
+                fontVariantNumeric: "tabular-nums",
+              }}>
+                {t.value_rank}<span style={{ color: "var(--text-muted)", fontWeight: 400 }}>/{t.value_total}</span>
+              </p>
+              <p style={{
                 fontSize: 16, fontWeight: 700, textAlign: "right",
                 color: BUCKET_FG[t.color_bucket],
                 fontVariantNumeric: "tabular-nums", margin: 0,
               }}>
                 {max > 0 ? max.toFixed(1) : "—"}
               </p>
+              <span style={{
+                textAlign: "right",
+                color: hasMcps ? "var(--text-muted)" : "transparent",
+                fontSize: 11, transition: "transform 0.15s",
+                transform: isOpen ? "rotate(90deg)" : "rotate(0deg)",
+                display: "inline-block",
+              }}>
+                {hasMcps ? "▶" : ""}
+              </span>
             </div>
             {isOpen && hasMcps && (
               <div style={{
@@ -1608,7 +1742,7 @@ function WaByTier({ rows, level }: { rows: OccReportWaRow[]; level: WaLevel }) {
         if (!sub.length) return null;
         return (
           <TierGroup key={b} bucket={b} count={sub.length} defaultOpen={b !== "low" && b !== "none"}>
-            <WaTable rows={sub} level={level} />
+            <WaList rows={sub} />
           </TierGroup>
         );
       })}
@@ -1616,85 +1750,121 @@ function WaByTier({ rows, level }: { rows: OccReportWaRow[]; level: WaLevel }) {
   );
 }
 
-function WaTable({ rows, level }: { rows: OccReportWaRow[]; level: WaLevel }) {
+function WaList({ rows }: { rows: OccReportWaRow[] }) {
   return (
-    <div style={{
-      overflowX: "auto", border: "1px solid var(--border-light)", borderRadius: 8,
-    }}>
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-        <thead>
-          <tr style={{ background: "var(--bg-base)", textAlign: "left" }}>
-            <Th>{level.toUpperCase()}</Th>
-            <Th align="right"># tasks</Th>
-            <Th align="right">Conv</Th>
-            <Th align="right">API</Th>
-            <Th align="right">MS</Th>
-            <Th align="right">MCP</Th>
-            <Th align="right">Eco % tasks</Th>
-            <Th align="right">Eco workers</Th>
-            <Th align="right">Eco wages</Th>
-            <Th align="right">Eco auto</Th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((r, i) => {
-            const eco = r.eco_stats;
-            return (
-              <tr key={i} style={{ borderTop: "1px solid var(--border-light)" }}>
-                <Td>
-                  <span style={{
-                    display: "inline-block", width: 8, height: 8, borderRadius: "50%",
-                    background: BUCKET_DOT[r.color_bucket], marginRight: 8,
-                  }} />
-                  {r.name}
-                </Td>
-                <Td align="right">{r.n_tasks}</Td>
-                <Td align="right">{fmtAuto(r.aei_conv_max)}</Td>
-                <Td align="right">{fmtAuto(r.aei_api_max)}</Td>
-                <Td align="right">{fmtAuto(r.microsoft)}</Td>
-                <Td align="right">{fmtAuto(r.mcp)}</Td>
-                <Td align="right">
-                  <RankedCell value={fmtPct(eco?.pct_tasks_affected)} rank={eco?.rank_pct} total={eco?.total} />
-                </Td>
-                <Td align="right">
-                  <RankedCell value={fmtNumber(eco?.workers_affected)} rank={eco?.rank_workers} total={eco?.total} />
-                </Td>
-                <Td align="right">
-                  <RankedCell value={fmtWage(eco?.wages_affected)} rank={eco?.rank_wages} total={eco?.total} />
-                </Td>
-                <Td align="right">
-                  <RankedCell value={fmtAuto(eco?.auto_aug_mean)} rank={eco?.rank_auto} total={eco?.total} />
-                </Td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      {rows.map((r, i) => (<WaCard key={`${r.name}-${i}`} row={r} />))}
     </div>
   );
 }
 
-function RankedCell({
-  value, rank, total,
-}: { value: string; rank?: number | null; total?: number | null }) {
+function WaCard({ row }: { row: OccReportWaRow }) {
+  const eco = row.eco_stats;
   return (
     <div style={{
-      display: "flex", flexDirection: "column", alignItems: "flex-end",
-      lineHeight: 1.3,
+      padding: "12px 14px", border: "1px solid var(--border-light)", borderRadius: 8,
+      background: "var(--bg-surface)",
     }}>
-      <span style={{ fontVariantNumeric: "tabular-nums" }}>{value}</span>
-      {rank && total ? (
+      <div style={{
+        display: "flex", alignItems: "baseline", gap: 8, marginBottom: 12,
+      }}>
+        <span style={{ alignSelf: "center" }}><TierDot bucket={row.color_bucket} /></span>
+        <h4 style={{
+          fontSize: 14, fontWeight: 600, margin: 0, color: "var(--text-primary)",
+          flex: 1, minWidth: 0, lineHeight: 1.35,
+        }}>
+          {row.name}
+        </h4>
+        <span style={{
+          fontSize: 11, color: "var(--text-muted)", fontVariantNumeric: "tabular-nums",
+          whiteSpace: "nowrap",
+        }}>
+          {row.n_tasks} {row.n_tasks === 1 ? "task" : "tasks"}
+        </span>
+      </div>
+      <SourceMiniBars t={row} />
+      {eco && (
+        <div style={{
+          display: "flex", flexWrap: "wrap", gap: 6, marginTop: 12,
+          paddingTop: 10, borderTop: "1px dotted var(--border-light)",
+        }}>
+          <EcoPill label="Eco %"   value={fmtPct(eco.pct_tasks_affected)}    rank={eco.rank_pct}     total={eco.total} />
+          <EcoPill label="Workers" value={fmtNumber(eco.workers_affected)}   rank={eco.rank_workers} total={eco.total} />
+          <EcoPill label="Wages"   value={fmtWage(eco.wages_affected)}       rank={eco.rank_wages}   total={eco.total} />
+          <EcoPill label="Auto"    value={fmtAuto(eco.auto_aug_mean)}        rank={eco.rank_auto}    total={eco.total} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function EcoPill({
+  label, value, rank, total,
+}: { label: string; value: string; rank?: number | null; total: number }) {
+  return (
+    <div style={{
+      display: "inline-flex", alignItems: "baseline", gap: 6,
+      padding: "4px 10px", background: "var(--bg-base)",
+      border: "1px solid var(--border-light)", borderRadius: 6,
+      fontSize: 12,
+    }}>
+      <span style={{
+        color: "var(--text-muted)", textTransform: "uppercase",
+        fontSize: 9, fontWeight: 600, letterSpacing: "0.04em",
+      }}>{label}</span>
+      <span style={{
+        fontWeight: 600, fontVariantNumeric: "tabular-nums",
+        color: "var(--text-primary)",
+      }}>{value}</span>
+      {rank != null && (
         <span style={{
           fontSize: 10, color: "var(--text-muted)", fontVariantNumeric: "tabular-nums",
         }}>
           #{rank}/{total}
         </span>
-      ) : null}
+      )}
     </div>
   );
 }
 
 /* ── Similar occupations ─────────────────────────────────────────────────── */
+
+const SIMILAR_FLAG_KEYS: Array<keyof OccupationReport["headline"]["risk"]["flags"]> = [
+  "flag1_pct", "flag2_ska", "flag3_pct_trend", "flag4_ska_trend",
+  "flag5_job_zone", "flag6_outlook", "flag7_n_software", "flag8_auto_aug",
+];
+
+function ExposureProfile({ risk }: { risk: OccReportSimilar["risk"] }) {
+  if (!risk) {
+    return <span style={{ color: "var(--text-muted)", fontSize: 12 }}>—</span>;
+  }
+  const tierStyle = TIER_COLORS[risk.tier] ?? TIER_COLORS.low;
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 4 }}>
+      <span style={{
+        display: "inline-flex", alignItems: "center", gap: 4,
+        padding: "2px 8px", borderRadius: 999,
+        background: tierStyle.bg, color: tierStyle.fg,
+        border: `1px solid ${tierStyle.fg}33`,
+        fontSize: 10, fontWeight: 600, letterSpacing: "0.02em",
+        whiteSpace: "nowrap",
+      }}>
+        {tierStyle.short} · {risk.score}/10
+      </span>
+      <div style={{ display: "flex", gap: 3 }} title={`${risk.score} of 10 (8 weighted exposure flags)`}>
+        {SIMILAR_FLAG_KEYS.map((k) => {
+          const lit = (risk.flags as unknown as Record<string, number>)[k] ?? 0;
+          return (
+            <span key={k} style={{
+              width: 7, height: 7, borderRadius: "50%",
+              background: lit ? tierStyle.fg : "var(--border-light)",
+            }} />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 function SimilarTable({ report }: { report: OccupationReport }) {
   if (!report.similar.length) return (
@@ -1707,6 +1877,7 @@ function SimilarTable({ report }: { report: OccupationReport }) {
           <tr style={{ background: "var(--bg-base)", textAlign: "left" }}>
             <Th>Occupation</Th>
             <Th>Sector</Th>
+            <Th>Exposure</Th>
             <Th align="right">% Tasks Affected</Th>
             <Th align="right">Median Wage</Th>
             <Th align="right">Job Zone</Th>
@@ -1719,6 +1890,7 @@ function SimilarTable({ report }: { report: OccupationReport }) {
             <tr key={i} style={{ borderTop: "1px solid var(--border-light)" }}>
               <Td>{o.title}</Td>
               <Td style={{ color: "var(--text-secondary)", fontSize: 12 }}>{o.major}</Td>
+              <Td><ExposureProfile risk={o.risk} /></Td>
               <Td align="right">{fmtPct(o.pct_tasks_affected, 0)}</Td>
               <Td align="right">{fmtWage(o.wage)}</Td>
               <Td align="right">{o.job_zone ?? "—"}</Td>

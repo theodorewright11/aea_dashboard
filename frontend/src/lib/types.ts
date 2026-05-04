@@ -528,6 +528,7 @@ export interface OccReportSimilar {
   job_zone?: number | null;
   dws_star_rating?: number | null;
   major?: string | null;
+  risk: OccReportRisk | null;
 }
 
 export interface OccReportTech {
