@@ -433,10 +433,26 @@ analysis/
     │                              defensible options — A (raw cut), E
     │                              (trimmed), C (pct ∩ emp proj decline),
     │                              H (forward-looking watch list). Avoid F,
-    │                              B/D (≈ A), G/I (≈ each other). Side-
-    │                              deliverable: ska_below_100_top10.csv
-    │                              (250 occs with SKA top-10 mean <100%,
-    │                              vs 735 under p95). 6 PNGs + 8 CSVs.
+    │                              B/D (≈ A), G/I (≈ each other).
+    │                              Section 5 produces 4 chart variations
+    │                              (5a–5d) on a focused 56-occ set
+    │                              (pct>50% & trend>med & emp proj<0,
+    │                              with flag for whether SKA>med also
+    │                              fires — 43 SKA-gated, 13 added when
+    │                              SKA filter dropped). The 13 added are
+    │                              mostly Zone 4–5 educators + research-
+    │                              adjacent professionals + Computer/Math
+    │                              knowledge workers — a forward-looking
+    │                              professional tier vs. the SKA-gated
+    │                              clerical core. 5a bar by pct, 5b bar
+    │                              by emp projection, 5c scatter, 5d
+    │                              stacked bar by major. Intended for
+    │                              the next chat to pull into Part 3.
+    │                              Side-deliverables: focused_set.csv
+    │                              (the 56 occs with tier flag),
+    │                              ska_below_100_top10.csv (250 occs
+    │                              with SKA top-10 mean <100%, vs 735
+    │                              under p95). 10 PNGs + 9 CSVs.
     └── pct_norm_vs_eco/         — AI usage distribution (Σ pct_normalized) vs. economic
                                    baseline (freq×emp / freq-allocated emp), renormalized
                                    to 100%. Overhauled: two configs (all_confirmed and
