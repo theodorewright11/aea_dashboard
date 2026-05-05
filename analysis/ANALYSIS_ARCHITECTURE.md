@@ -376,53 +376,67 @@ analysis/
     ├── risk_score_audit/        — Diagnostic on the
     │                              `job_exposure/job_risk_scoring` 8-flag
     │                              composite; framing question for Part 3
-    │                              of the paper. Four sections.
+    │                              of the paper. Two methodological
+    │                              overrides applied locally (not in
+    │                              compute_ska.py or job_risk_scoring):
+    │                              (i) SKA AI capability uses top-10 mean
+    │                              instead of p95; (ii) flag 6 fires on
+    │                              eco_2025's `emp_change_pct_2024_2034 < 0`
+    │                              (BLS 2024–2034 employment projection)
+    │                              instead of DWS outlook ∈ {2,3} — 248
+    │                              of 923 occs project negative change.
+    │                              Four sections.
     │                              (1) Flag-validity: eta² of each flag
     │                              vs. pct_physical, job_zone, major. F5
     │                              (zone in 1–3) is tautological with
     │                              job_zone (η²=1.00), F7 (software>med)
     │                              is heavily structural (η²≈0.42 across
-    │                              all three cuts), F1/F6/F2 are moderately
-    │                              structural, F3/F4/F8 are mostly
-    │                              independent.
-    │                              (2) SKA mechanicalness: OLS
-    │                              R²(ska_pct ~ pct_physical) = 0.03 (~0),
-    │                              R²(~ job_zone) = 0.18, combined 0.21;
+    │                              all three cuts), F1 moderate (0.12 zone,
+    │                              0.36 major), F6 (emp proj<0) much less
+    │                              structural than the old DWS version
+    │                              (0.05/0.11/0.29 vs prior 0.13/0.20/0.30
+    │                              — the swap reduces structural
+    │                              contamination of flag 6), F2/F3/F4/F8
+    │                              mostly independent.
+    │                              (2) SKA mechanicalness (top-10 mean):
+    │                              OLS R²(ska_pct ~ pct_physical) = 0.03,
+    │                              R²(~ job_zone) = 0.19, combined 0.22;
     │                              direction on zone reversed from upstream
     │                              intuition (lower-zone occs have HIGHER
     │                              SKA pct because their requirement floor
     │                              is lower).
-    │                              (3) Level-vs-trend: 8 contingencies (4
-    │                              pairings × median+p75). pct level × pct
-    │                              trend has 21% off-diag at median (φ=0.57)
-    │                              / 11% at p75 (φ=0.72); SKA × SKA tighter
-    │                              (11/8% off-diag, φ=0.78/0.80); cross
+    │                              (3) Level-vs-trend: 8 contingencies.
+    │                              pct level × pct trend has 21% off-diag
+    │                              at median (φ=0.57) / 11% at p75 (φ=0.72);
+    │                              SKA × SKA tighter under top-10 mean
+    │                              (10/6% off-diag, φ=0.80/0.83); cross
     │                              pairings φ ≈ 0.
-    │                              (4) Flagging variants (now 9): A
-    │                              (pct>50%), B (pct>p75), and D (pct>50%
-    │                              + trend top half) are essentially
-    │                              identical (~230 occs, Jaccard 0.94–
-    │                              0.98). C (pct>50% + outlook 2–3) drops
-    │                              to 83 occs. E (trimmed 4-flag composite)
-    │                              is 208 occs / 88% Jaccard with A. F
-    │                              (full 8-flag) is 115 occs / 46% Jaccard
-    │                              with A and structurally biased (59%
-    │                              zone 1–3 vs 30% baseline; 53% outlook
-    │                              2–3 vs 35%). Three quad-intersect
-    │                              variants (pct + SKA>med + pct trend>med
-    │                              + outlook 2–3): G (pct>50%) → 53 occs,
-    │                              H (pct>median) → 95 occs, I (pct>p75) →
-    │                              52 occs. G≈I (Jaccard 0.98); H is the
-    │                              only one with distinct content (admits
-    │                              42 mid-exposure occs in trajectory).
-    │                              All three are 75–83% zone 1–3 and 100%
-    │                              outlook 2–3 by construction.
-    │                              Recommendation in the report: four
+    │                              (4) Flagging variants (9): A (pct>50%),
+    │                              B (pct>p75), D (pct>50% + trend top
+    │                              half) essentially identical (~230 occs,
+    │                              Jaccard 0.94–0.98). C (pct>50% + emp
+    │                              proj<0) drops to 59 occs (was 83 with
+    │                              DWS). E (trimmed 4-flag) is 200 occs /
+    │                              87% Jaccard with A. F (full 8-flag) is
+    │                              109 occs / 46% Jaccard with A and
+    │                              structurally biased (61% zone 1–3 vs
+    │                              30% baseline; 44% emp proj<0 vs 25%).
+    │                              Three quad-intersect variants (pct +
+    │                              SKA>med + pct trend>med + emp proj<0):
+    │                              G (pct>50%) → 43 occs, H (pct>median)
+    │                              → 62 occs, I (pct>p75) → 41 occs. G≈I
+    │                              (Jaccard 0.95); H is the only one with
+    │                              distinct content (admits 19 mid-exposure
+    │                              trajectory occs). All three are 76–84%
+    │                              zone 1–3 and 100% emp proj<0 by
+    │                              construction. Recommendation: four
     │                              defensible options — A (raw cut), E
-    │                              (trimmed), C (pct ∩ outlook), H (forward-
-    │                              looking watch list). Avoid F (structural
-    │                              baggage), B/D (≈ A), G/I (≈ each other).
-    │                              6 PNGs + 7 CSVs.
+    │                              (trimmed), C (pct ∩ emp proj decline),
+    │                              H (forward-looking watch list). Avoid F,
+    │                              B/D (≈ A), G/I (≈ each other). Side-
+    │                              deliverable: ska_below_100_top10.csv
+    │                              (250 occs with SKA top-10 mean <100%,
+    │                              vs 735 under p95). 6 PNGs + 8 CSVs.
     └── pct_norm_vs_eco/         — AI usage distribution (Σ pct_normalized) vs. economic
                                    baseline (freq×emp / freq-allocated emp), renormalized
                                    to 100%. Overhauled: two configs (all_confirmed and
