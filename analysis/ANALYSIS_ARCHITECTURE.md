@@ -413,9 +413,14 @@ analysis/
                                    for tasks in multiple GWAs, then deduped to (task, occ)
                                    pairs over the full eco_2025 universe. Charts 10–11 use
                                    the full eco_2025 denominator; 01–09 use rated-task
-                                   denominator. Outputs: 11 PNGs in figures/v3/, 11 per-chart
+                                   denominator. Outputs: 12 PNGs in figures/v3/, 12 per-chart
                                    CSVs in results/v3/, plus all_variants_combined.csv (long)
                                    and all_variants_wide.csv (rows=major, cols=chart_id).
+                                   Chart 12 reanchors chart 06 (all_confirmed bias-corrected)
+                                   by dividing each major's renormalized ratio_pct by the
+                                   median major's ratio_pct (~1.35). Median major = 1.00×;
+                                   reads as "X times the median sector's AI usage." Same
+                                   shape as chart 06; rescaled axis only.
 ```
 
 ---
