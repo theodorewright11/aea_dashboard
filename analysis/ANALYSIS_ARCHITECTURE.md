@@ -163,6 +163,15 @@ analysis/
     │                              occupations (HR Specialists, Compensation Specialists,
     │                              Customer Service Reps); replicates worker_resilience pattern
     ├── ska_levels/              — AI imp×lv vs. workforce benchmarks for every SKA element
+    ├── ska_category_breakdown/  — Same per-element data as the Part 2 paper SKA
+    │                              chart (all_confirmed, imp ≥ 3) rolled up to
+    │                              O*NET native categories via element_id prefix.
+    │                              7 skills subcategories, 15 abilities
+    │                              subcategories, 10 knowledge categories. 4 PNGs
+    │                              (combined 3-panel + per-type) + 2 CSVs +
+    │                              ska_category_breakdown_report.md with category
+    │                              tables and element-level detail nested under
+    │                              each category.
     ├── zone_pivot_anatomy/      — Why zone 3 peaks on pivot cost; overlap structure and
     │                              sector composition of at-risk occupations by zone
     ├── physical_informational_divide/ — Physical vs. informational occupation split;
