@@ -399,6 +399,23 @@ analysis/
                                    showing per-major task counts, eco coverage, raw Σ pct
                                    (with and without auto_aug), and all three ratio
                                    variants' shares. Same bias-correction code as v1.
+                                   V3 add-on (run_v3.py + pct_norm_vs_eco_report_v3.md):
+                                   11 major-only intensity charts varying source dataset
+                                   and bias correction. Same per-cat ratio metric as v2.
+                                   Datasets: all_confirmed, microsoft_only (final_microsoft.csv),
+                                   aei_all (Conv+API), aei_conv (final_aei_human_usage_2026-02-12.csv),
+                                   aei_api (final_aei_agentic_usage_2026-02-12.csv). Charts:
+                                   01–05 are dataset variants no_bias; 06–09 are dataset
+                                   variants with equal 3-source bias correction (all_confirmed,
+                                   aei_all, aei_conv, aei_api); 10–11 are synthetic-from-prior
+                                   charts where Copilot's / ChatGPT's published GWA share is
+                                   spread evenly across unique eco_2025 tasks per GWA, summed
+                                   for tasks in multiple GWAs, then deduped to (task, occ)
+                                   pairs over the full eco_2025 universe. Charts 10–11 use
+                                   the full eco_2025 denominator; 01–09 use rated-task
+                                   denominator. Outputs: 11 PNGs in figures/v3/, 11 per-chart
+                                   CSVs in results/v3/, plus all_variants_combined.csv (long)
+                                   and all_variants_wide.csv (rows=major, cols=chart_id).
 ```
 
 ---
