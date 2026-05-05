@@ -42,14 +42,12 @@ Generates:
   `job_zone_violin.png`, `ska_levels.png`, `gwa_exposure.png`,
   `major_categories.png`
 - **Reused from `paper/results/part_3`**: `tech_commodities.png`
-- **`gap_to_ceiling_wages.png`** — wages variant of part_3's
-  `gap_to_ceiling.png`. Same stacked confirmed-+-extension structure but
-  x-axis is wages affected (USD/yr) instead of workers affected, and the
-  sectors are sorted by wage gap instead of worker gap.
-- **`conv_allconfirmed_ceiling.png`** — variant of part_3's
-  `conv_vs_agentic.png` where the middle bar is "All Confirmed" (instead
-  of "Agentic Confirmed") and the right bar is "Ceiling". Three bars per
-  major: Conversational → All Confirmed → Ceiling.
+- **`gap_to_ceiling_wages.png`** — top sectors by all_confirmed →
+  all_ceiling wage gap. Stacked horizontal bars: confirmed wages base +
+  extension to ceiling, sorted by wage gap.
+- **`conv_allconfirmed_ceiling.png`** — top sectors with three grouped
+  bars per major: Conversational → All Confirmed → Ceiling. Built locally
+  in this folder's `run.py`.
 
 ## Config
 

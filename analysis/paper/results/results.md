@@ -134,68 +134,8 @@ The bottom of all three panels converges: Farming, Fishing, and Forestry (13.7%,
 
 ## Part 3 — Action: What To Do About It
 
-### The 12 Properties Collapse to ~2 Dimensions
-
-![Property Biplot](part_3/figures/property_biplot.png)
-
-*Prose pending.*
-
----
-
-### For Organizations
-
-#### Tech Commodities Where AI Has Reach
+### Tech Commodities Where AI Has Reach
 
 ![Tech Commodities](part_3/figures/tech_commodities.png)
 
 *Prose pending.*
-
-#### Conversational vs. Agentic Footprint
-
-![Conversational vs Agentic](part_3/figures/conv_vs_agentic.png)
-
-*Prose pending.*
-
-#### The Gap Between Confirmed Use and Demonstrated Capability
-
-![Gap to Ceiling](part_3/figures/gap_to_ceiling.png)
-
-*Prose pending.*
-
----
-
-### For Policy
-
-#### Risk × Recovery (Option A — 8-Flag Risk vs. SKA Gap)
-
-![Risk x SKA](part_3/figures/risk_x_ska.png)
-
-*Prose pending.*
-
-#### Risk × Recovery (Option B — Exposure vs. Offset Properties)
-
-![Pct x nt+de](part_3/figures/pct_x_nt_de.png)
-
-*Prose pending.*
-
-#### Frictions Discriminate Within Non-Physical Work
-
-![Phys/Info + Frictions](part_3/figures/phys_info_frictions.png)
-
-*Prose pending.*
-
----
-
-### For Individuals
-
-#### Where Humans Still Lead: Tacit Knowledge and Task Duration
-
-![Tacit Knowledge x Duration](part_3/figures/tacit_duration_safe.png)
-
-*Prose pending.*
-
----
-
-### The Augmentation-Regime Caveat
-
-*Prose pending. Note: t and freq_mean are inversely related (Spearman ρ ≈ −0.32); long-duration tasks happen less frequently. This affects how × t weighting compares to × freq weighting and is a methodological footnote on the charts above.*

@@ -2,15 +2,14 @@
 workforce_sig_meeting — generates the two custom charts the report needs.
 
 Most charts in `workforce_sig_meeting_report.md` are reused from
-`analysis/paper/results/part_1`, `part_2`, and `part_3`. Two are new:
+`analysis/paper/results/part_1`, `part_2`, and `part_3` (`tech_commodities.png`
+only). Two are produced locally here:
 
-  1. `conv_allconfirmed_ceiling.png` — variant of part_3's conv_vs_agentic
-     where the middle bar is "All Confirmed" (instead of "Agentic Confirmed")
-     and the right bar is "Ceiling". Three bars per major: Conversational →
-     All Confirmed → Ceiling.
-  2. `gap_to_ceiling_wages.png` — variant of part_3's gap_to_ceiling using
-     wages_affected on the x-axis instead of workers_affected. Same stacked
-     "confirmed + extension to ceiling" structure.
+  1. `conv_allconfirmed_ceiling.png` — three bars per major:
+     Conversational → All Confirmed → Ceiling.
+  2. `gap_to_ceiling_wages.png` — top sectors by all_confirmed → all_ceiling
+     wage gap. Stacked "confirmed + extension to ceiling" structure on a
+     wages-affected x-axis.
 
 Both charts get saved to `results/figures/` (gitignored) and copied to
 `figures/` (committed) so the report renders on GitHub.

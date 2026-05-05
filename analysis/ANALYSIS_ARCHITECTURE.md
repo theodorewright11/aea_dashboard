@@ -120,10 +120,12 @@ analysis/
 │       │                          $18B). Reuses paper part_1 trend, all 5
 │       │                          part_2 charts, and part_3 tech_commodities.
 │       │                          Custom charts: gap_to_ceiling_wages
-│       │                          (wages variant of part_3 gap_to_ceiling)
-│       │                          and conv_allconfirmed_ceiling (3-bar
-│       │                          variant: Conversational → All Confirmed
-│       │                          → Ceiling).
+│       │                          (top sectors by all_confirmed →
+│       │                          all_ceiling wage gap, stacked
+│       │                          confirmed-+-extension on a wages
+│       │                          x-axis) and conv_allconfirmed_ceiling
+│       │                          (3-bar variant: Conversational →
+│       │                          All Confirmed → Ceiling).
 │       ├── README.md
 │       ├── workforce_sig_meeting_report.md
 │       ├── run.py
@@ -142,15 +144,11 @@ analysis/
 │       │   ├── run.py, README.md, part_1.md, results/ (gitignored), figures/ (committed)
 │       ├── part_2/              — Characterization: Where AI Exposure Falls — FIRST DRAFT COMPLETE
 │       │   ├── run.py, README.md, part_2.md, results/ (gitignored), figures/ (committed)
-│       └── part_3/              — Action: What To Do About It — FIGURES + SCAFFOLDING (no prose yet)
+│       └── part_3/              — Action: What To Do About It — REVAMP IN PROGRESS (1 chart)
 │           ├── run.py, README.md, part_3.md, results/ (gitignored), figures/ (committed)
-│           ├── Figures: property_biplot, tech_commodities, conv_vs_agentic, gap_to_ceiling,
-│           │            risk_x_ska, pct_x_nt_de, phys_info_frictions, tacit_duration_safe
-│           └── Cross-references: job_exposure/job_risk_scoring (risk_scores_primary.csv),
-│                                 job_exposure/worker_resilience (occ_gaps_summary.csv),
-│                                 economic_footprint/skills_landscape (tech_skills pipeline,
-│                                 reimplemented in paper styling),
-│                                 data/final_eco_2025_with_task_properties.csv (12 props)
+│           ├── Figures: tech_commodities (audience scaffolding stripped pending new charts)
+│           └── Cross-references: economic_footprint/skills_landscape (tech_skills pipeline,
+│                                 reimplemented in paper styling)
 └── exploratory/                 — Gitignored entirely. Nothing in this folder is ever
     │                              committed — do not use git add -f. One-off charts only;
     │                              no reports fed into question_findings/ or report/.
@@ -413,17 +411,27 @@ analysis/
                                    for tasks in multiple GWAs, then deduped to (task, occ)
                                    pairs over the full eco_2025 universe. Charts 10–11 use
                                    the full eco_2025 denominator; 01–09 use rated-task
-                                   denominator. Outputs: 14 PNGs in figures/v3/, 14 per-chart
+                                   denominator. Outputs: 15 PNGs in figures/v3/, 15 per-chart
                                    CSVs in results/v3/, plus all_variants_combined.csv (long)
                                    and all_variants_wide.csv (rows=major, cols=chart_id).
-                                   Charts 12–14 reanchor chart 06 (all_confirmed bias-corrected)
+                                   Charts 12–15 reanchor chart 06 (all_confirmed bias-corrected)
                                    on Educational Instruction (the higher of the two median-rank
                                    majors out of 22) so it reads as 1.00×, with a dashed median
                                    line drawn at the lift distribution's statistical median.
                                    12 = basic ratio (Σ pct / Σ ew), 13 = sqrt-den smoothing
                                    (Σ pct / √Σ ew), 14 = additive smoothing (Σ pct /
-                                   (Σ ew + α), α = median den). Top of chart compresses from
-                                   25.5× (basic) → 5.8× (sqrt) → 5.7× (additive). Computer/Math
+                                   (Σ ew + α), α = median den). 15 = same numerator as 12 but
+                                   denominator = full eco_2025 (Σ freq×emp over ALL eco_2025
+                                   tasks per major, not only rated tasks) — captures "AI usage
+                                   per unit of WHOLE economic activity" rather than per unit of
+                                   rated activity. Top of chart compresses from 25.5× (basic) →
+                                   5.8× (sqrt) → 5.7× (additive). Chart 15 puts Life Sciences at
+                                   20.4× and Computer/Math at 10.2× (vs 8.5× under chart 12),
+                                   reflecting that the dataset rates a higher share of
+                                   Computer/Math tasks than the average sector. Charts 12 & 15
+                                   bars are also color-shaded by pct_tasks_affected (darker =
+                                   higher), computed from the standard dashboard formula on
+                                   the all_confirmed dataset at major level. Computer/Math
                                    passes Life Sciences in chart 14, revealing that Life Sciences'
                                    lead in 12 was partly a small-denominator artifact.
 ```
