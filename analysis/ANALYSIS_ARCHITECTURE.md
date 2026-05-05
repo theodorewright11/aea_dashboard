@@ -496,6 +496,58 @@ analysis/
                                    Computer/Math
                                    passes Life Sciences in chart 14, revealing that Life Sciences'
                                    lead in 12 was partly a small-denominator artifact.
+    └── onet_economy_baseline/   — Pure structural panorama of the U.S.
+                                   occupational economy (O*NET + BLS only,
+                                   no AI data). 62 PNGs across 8 numbered
+                                   families: (1) overall makeup distributions
+                                   (emp / wage histograms, zone / outlook /
+                                   phys-class bars), (2) makeup by SOC level
+                                   (all 22 majors + top 30 minors + top 30
+                                   broads — emp / wages / avg zone / avg wage
+                                   per group), (3) phys / mixed / non-phys
+                                   split (avg zone, avg wage, composition-by-
+                                   major stacked, phys × zone heatmap, phys ×
+                                   outlook heatmap), (4) job zone deep dive
+                                   (avg wage by zone, avg pct phys by zone,
+                                   major × zone emp + wage heatmaps), (5) SKA
+                                   levels at imp ≥ 3 using O*NET native
+                                   subgroupings — Cognitive / Psychomotor /
+                                   Physical / Sensory Abilities; Content /
+                                   Process / Social / Complex Problem Solving
+                                   / Technical / Systems / Resource Management
+                                   Skills; 10 knowledge domains — with
+                                   subgroup × major heatmaps for each of
+                                   abilities / skills / knowledge plus
+                                   subgroup × zone and subgroup × phys class
+                                   for abilities, (6) physical-vs-non-physical
+                                   SKA share per occupation (Psychomotor +
+                                   Physical Abilities + manual subset of
+                                   Technical Skills counted as physical;
+                                   Sensory tracked separately and rolled into
+                                   non-physical for the binary cut) by major
+                                   / zone / phys class / wage quartile + a
+                                   wage scatter, (7) work activities GWA /
+                                   IWA / DWA with employment allocated
+                                   equally across each occupation's tasks —
+                                   emp + wages + avg zone bars for GWAs, top
+                                   30 IWAs and DWAs by emp, GWA × phys class
+                                   / GWA × zone / GWA × major heatmaps, (8)
+                                   cross-cuts — wage × zone violins, wage ×
+                                   phys class violins, wage × pct_physical
+                                   scatter, avg SKA × wage scatter, SKA ×
+                                   zone violins, emp × major × phys class
+                                   stacked. Figures filename-prefixed by
+                                   family number for easy browsing. Loads
+                                   eco_raw via backend.compute (gives
+                                   job_zone + dws_star_rating) and the three
+                                   O*NET v30.1 SKA files directly. SKA
+                                   physical-class classification driven by
+                                   element_id prefix (1.A.2 / 1.A.3 → physical;
+                                   1.A.1 → cognitive; 1.A.4 → sensory) plus
+                                   per-element override on Technical Skills
+                                   2.B.3.* (Repairing / Equipment Maintenance
+                                   / etc → physical; Programming / Operations
+                                   Analysis / etc → non-physical).
 ```
 
 ---
