@@ -144,11 +144,15 @@ analysis/
 │       │   ├── run.py, README.md, part_1.md, results/ (gitignored), figures/ (committed)
 │       ├── part_2/              — Characterization: Where AI Exposure Falls — FIRST DRAFT COMPLETE
 │       │   ├── run.py, README.md, part_2.md, results/ (gitignored), figures/ (committed)
-│       └── part_3/              — Action: What To Do About It — REVAMP IN PROGRESS (1 chart)
+│       └── part_3/              — Action: What To Do About It — REVAMP IN PROGRESS (3 charts)
 │           ├── run.py, README.md, part_3.md, results/ (gitignored), figures/ (committed)
-│           ├── Figures: tech_commodities (audience scaffolding stripped pending new charts)
+│           ├── Figures: tech_commodities, conv_confirmed_ceiling_gap,
+│           │            intensity_anchor_fulleco
 │           └── Cross-references: economic_footprint/skills_landscape (tech_skills pipeline,
-│                                 reimplemented in paper styling)
+│                                 reimplemented in paper styling);
+│                                 exploratory/pct_norm_vs_eco/run_v3.py
+│                                 (chart 15 — function-level import, skips
+│                                 gracefully if exploratory folder absent)
 └── exploratory/                 — Gitignored entirely. Nothing in this folder is ever
     │                              committed — do not use git add -f. One-off charts only;
     │                              no reports fed into question_findings/ or report/.

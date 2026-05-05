@@ -139,3 +139,19 @@ The bottom of all three panels converges: Farming, Fishing, and Forestry (13.7%,
 ![Tech Commodities](part_3/figures/tech_commodities.png)
 
 *Prose pending.*
+
+---
+
+### Conv → Confirmed → Ceiling Reach by Major Sector
+
+![Conv → Confirmed → Ceiling](part_3/figures/conv_confirmed_ceiling_gap.png)
+
+*Prose pending.*
+
+---
+
+### AI Intensity vs. Median-Rank Anchor (Full eco_2025 Denominator)
+
+![AI Intensity Anchor](part_3/figures/intensity_anchor_fulleco.png)
+
+*Prose pending.*

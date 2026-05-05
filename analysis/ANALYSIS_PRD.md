@@ -353,9 +353,11 @@ Narrative arc: physical/informational structure → preparation level gradient �
 
 ### Part 3 — Action: What To Do About It ("Here's what to do about it")
 
-In the middle of a content revamp. The previous draft (eight charts in three audience sections — Organizations, Policy, Individuals — plus a property-biplot framing chart and an augmentation-regime caveat) has been pared back to a single chart pending a new direction. Audience scaffolding will be rebuilt around the next round of charts.
+In the middle of a content revamp. The previous draft (eight charts in three audience sections — Organizations, Policy, Individuals — plus a property-biplot framing chart and an augmentation-regime caveat) has been pared back. Currently three charts; audience scaffolding will be rebuilt as more charts come in.
 
 1. **Tech commodities top-25** by depth × breadth composite (reused from `economic_footprint/skills_landscape`).
+2. **Conv → Confirmed → Ceiling reach by major sector** — all 22 major occ categories on a stacked bar with three segments: Conversational confirmed base + Conv → Confirmed gap (focal, colored by workers added) + Confirmed → Ceiling extension. Sorted by Conv → Confirmed % tasks gap. Right-side annotations show pp / workers / wages deltas for both gaps.
+3. **AI intensity vs. median-rank anchor (full eco_2025 denominator)** — chart 15 from `exploratory/pct_norm_vs_eco/run_v3.py`. Major occ categories ranked by Σ pct (rated, equal 3-source bias-corrected) / Σ (freq × emp) over the full eco_2025 universe, anchored on Educational Instruction = 1.00×, with a dashed median line. Bars shaded by `pct_tasks_affected`. Imports v3 compute at function level — skips with a warning if the gitignored exploratory folder is absent.
 
 ---
 
