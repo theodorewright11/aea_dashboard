@@ -504,9 +504,20 @@ analysis/
                                    for tasks in multiple GWAs, then deduped to (task, occ)
                                    pairs over the full eco_2025 universe. Charts 10–11 use
                                    the full eco_2025 denominator; 01–09 use rated-task
-                                   denominator. Outputs: 17 PNGs in figures/v3/, 17 per-chart
+                                   denominator. Outputs: 24 PNGs in figures/v3/, 24 per-chart
                                    CSVs in results/v3/, plus all_variants_combined.csv (long)
                                    and all_variants_wide.csv (rows=major, cols=chart_id).
+                                   Chart 18 (analyze_chart15_trend_and_configs.py) traces chart
+                                   15's lift over the four all_confirmed snapshot dates
+                                   (Mar 2025 → Feb 2026) — Life Sciences stable ~20×, Computer/Math
+                                   nearly doubles 5.4× → 10.3×, bottom of chart flat throughout.
+                                   Charts 19–24 reproduce chart 15's metric across six configs
+                                   (all_confirmed, all_ceiling, human_conversation,
+                                   agentic_confirmed, agentic_ceiling, all_confirmed_conservative).
+                                   Headline: agentic_confirmed (AEI API) is the outlier — Computer/
+                                   Math 44.4× passes Life Sciences for first place; non-agentic
+                                   configs are stable to ~10% on the top end. Combined CSVs
+                                   (19_24_configs_combined / _wide) sit alongside.
                                    Charts 12–17 reanchor chart 06 (all_confirmed bias-corrected)
                                    on Educational Instruction (the higher of the two median-rank
                                    majors out of 22) so it reads as 1.00×, with a dashed median
