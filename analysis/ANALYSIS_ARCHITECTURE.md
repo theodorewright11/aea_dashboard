@@ -373,6 +373,47 @@ analysis/
     │                              dominated by Personal Care/Service
     │                              because |β|=0.93 there is roughly double
     │                              the next steepest.
+    ├── risk_score_audit/        — Diagnostic on the
+    │                              `job_exposure/job_risk_scoring` 8-flag
+    │                              composite; framing question for Part 3
+    │                              of the paper. Four sections.
+    │                              (1) Flag-validity: eta² of each flag
+    │                              vs. pct_physical, job_zone, major. F5
+    │                              (zone in 1–3) is tautological with
+    │                              job_zone (η²=1.00), F7 (software>med)
+    │                              is heavily structural (η²≈0.42 across
+    │                              all three cuts), F1/F6/F2 are moderately
+    │                              structural, F3/F4/F8 are mostly
+    │                              independent.
+    │                              (2) SKA mechanicalness: OLS
+    │                              R²(ska_pct ~ pct_physical) = 0.03 (~0),
+    │                              R²(~ job_zone) = 0.18, combined 0.21;
+    │                              direction on zone reversed from upstream
+    │                              intuition (lower-zone occs have HIGHER
+    │                              SKA pct because their requirement floor
+    │                              is lower).
+    │                              (3) Level-vs-trend: 8 contingencies (4
+    │                              pairings × median+p75). pct level × pct
+    │                              trend has 21% off-diag at median (φ=0.57)
+    │                              / 11% at p75 (φ=0.72); SKA × SKA tighter
+    │                              (11/8% off-diag, φ=0.78/0.80); cross
+    │                              pairings φ ≈ 0.
+    │                              (4) Flagging variants: A (pct>50%), B
+    │                              (pct>p75), and D (pct>50% + trend top
+    │                              half) are essentially identical (~230
+    │                              occs each, Jaccard 0.94–0.98). C
+    │                              (pct>50% + outlook 2–3) drops to 83
+    │                              occs. E (trimmed 4-flag composite) is
+    │                              208 occs / 88% Jaccard with A. F (full
+    │                              8-flag) is 115 occs / 46% Jaccard with
+    │                              A and structurally biased (59% zone
+    │                              1–3 vs 30% baseline; 53% outlook 2–3
+    │                              vs 35%). Recommendation in the report:
+    │                              don't import F as a "risk score" chart;
+    │                              either keep just `pct > 50%` or use the
+    │                              trimmed E composite. C is the strictest
+    │                              defensible "risk" definition (exposure
+    │                              × downside outlook). 6 PNGs + 7 CSVs.
     └── pct_norm_vs_eco/         — AI usage distribution (Σ pct_normalized) vs. economic
                                    baseline (freq×emp / freq-allocated emp), renormalized
                                    to 100%. Overhauled: two configs (all_confirmed and
