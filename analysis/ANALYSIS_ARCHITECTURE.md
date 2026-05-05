@@ -413,14 +413,19 @@ analysis/
                                    for tasks in multiple GWAs, then deduped to (task, occ)
                                    pairs over the full eco_2025 universe. Charts 10–11 use
                                    the full eco_2025 denominator; 01–09 use rated-task
-                                   denominator. Outputs: 12 PNGs in figures/v3/, 12 per-chart
+                                   denominator. Outputs: 14 PNGs in figures/v3/, 14 per-chart
                                    CSVs in results/v3/, plus all_variants_combined.csv (long)
                                    and all_variants_wide.csv (rows=major, cols=chart_id).
-                                   Chart 12 reanchors chart 06 (all_confirmed bias-corrected)
-                                   by dividing each major's renormalized ratio_pct by the
-                                   median major's ratio_pct (~1.35). Median major = 1.00×;
-                                   reads as "X times the median sector's AI usage." Same
-                                   shape as chart 06; rescaled axis only.
+                                   Charts 12–14 reanchor chart 06 (all_confirmed bias-corrected)
+                                   on Educational Instruction (the higher of the two median-rank
+                                   majors out of 22) so it reads as 1.00×, with a dashed median
+                                   line drawn at the lift distribution's statistical median.
+                                   12 = basic ratio (Σ pct / Σ ew), 13 = sqrt-den smoothing
+                                   (Σ pct / √Σ ew), 14 = additive smoothing (Σ pct /
+                                   (Σ ew + α), α = median den). Top of chart compresses from
+                                   25.5× (basic) → 5.8× (sqrt) → 5.7× (additive). Computer/Math
+                                   passes Life Sciences in chart 14, revealing that Life Sciences'
+                                   lead in 12 was partly a small-denominator artifact.
 ```
 
 ---
