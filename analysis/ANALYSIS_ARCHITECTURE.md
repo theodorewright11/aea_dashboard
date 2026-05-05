@@ -398,22 +398,31 @@ analysis/
     │                              / 11% at p75 (φ=0.72); SKA × SKA tighter
     │                              (11/8% off-diag, φ=0.78/0.80); cross
     │                              pairings φ ≈ 0.
-    │                              (4) Flagging variants: A (pct>50%), B
-    │                              (pct>p75), and D (pct>50% + trend top
-    │                              half) are essentially identical (~230
-    │                              occs each, Jaccard 0.94–0.98). C
-    │                              (pct>50% + outlook 2–3) drops to 83
-    │                              occs. E (trimmed 4-flag composite) is
-    │                              208 occs / 88% Jaccard with A. F (full
-    │                              8-flag) is 115 occs / 46% Jaccard with
-    │                              A and structurally biased (59% zone
-    │                              1–3 vs 30% baseline; 53% outlook 2–3
-    │                              vs 35%). Recommendation in the report:
-    │                              don't import F as a "risk score" chart;
-    │                              either keep just `pct > 50%` or use the
-    │                              trimmed E composite. C is the strictest
-    │                              defensible "risk" definition (exposure
-    │                              × downside outlook). 6 PNGs + 7 CSVs.
+    │                              (4) Flagging variants (now 9): A
+    │                              (pct>50%), B (pct>p75), and D (pct>50%
+    │                              + trend top half) are essentially
+    │                              identical (~230 occs, Jaccard 0.94–
+    │                              0.98). C (pct>50% + outlook 2–3) drops
+    │                              to 83 occs. E (trimmed 4-flag composite)
+    │                              is 208 occs / 88% Jaccard with A. F
+    │                              (full 8-flag) is 115 occs / 46% Jaccard
+    │                              with A and structurally biased (59%
+    │                              zone 1–3 vs 30% baseline; 53% outlook
+    │                              2–3 vs 35%). Three quad-intersect
+    │                              variants (pct + SKA>med + pct trend>med
+    │                              + outlook 2–3): G (pct>50%) → 53 occs,
+    │                              H (pct>median) → 95 occs, I (pct>p75) →
+    │                              52 occs. G≈I (Jaccard 0.98); H is the
+    │                              only one with distinct content (admits
+    │                              42 mid-exposure occs in trajectory).
+    │                              All three are 75–83% zone 1–3 and 100%
+    │                              outlook 2–3 by construction.
+    │                              Recommendation in the report: four
+    │                              defensible options — A (raw cut), E
+    │                              (trimmed), C (pct ∩ outlook), H (forward-
+    │                              looking watch list). Avoid F (structural
+    │                              baggage), B/D (≈ A), G/I (≈ each other).
+    │                              6 PNGs + 7 CSVs.
     └── pct_norm_vs_eco/         — AI usage distribution (Σ pct_normalized) vs. economic
                                    baseline (freq×emp / freq-allocated emp), renormalized
                                    to 100%. Overhauled: two configs (all_confirmed and
