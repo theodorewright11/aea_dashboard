@@ -41,7 +41,7 @@ When writing paper sections, follow two references in `analysis/paper/`:
 
 `analysis/exploratory/` is for one-off charts only. Do not put research findings, formal question outputs, or anything that feeds into a report here. Do not sync anything from `exploratory/` to `question_findings/` or `report/`. Do not add `exploratory/` sub-folders to the question catalog in `ANALYSIS_PRD.md` as active question buckets.
 
-**Nothing in `exploratory/` is committed to git — ever.** The entire folder is gitignored. Do not use `git add -f` or any other mechanism to force-add exploratory files. Figures reference `results/figures/` paths (which work locally after running the script).
+**Nothing in `exploratory/` is committed to git** except for the carved-out exception `analysis/exploratory/all_paper_charts/` (a chart mirror of the paper's committed figures, surfaced on GitHub via a `!` rule in `.gitignore`). Outside of that one folder, do not use `git add -f` or any other mechanism to force-add exploratory files. Figures reference `results/figures/` paths (which work locally after running the script).
 
 Each exploratory sub-folder must have: `run.py`, `README.md` (metadata), `<name>_report.md` (findings writeup with narrative and inline figures), and `results/` (auto-created). The `<name>_report.md` is required — it is the primary deliverable for the analysis.
 

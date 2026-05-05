@@ -153,12 +153,28 @@ analysis/
 │                                 exploratory/pct_norm_vs_eco/run_v3.py
 │                                 (chart 15 — function-level import, skips
 │                                 gracefully if exploratory folder absent)
-└── exploratory/                 — Gitignored entirely. Nothing in this folder is ever
-    │                              committed — do not use git add -f. One-off charts only;
-    │                              no reports fed into question_findings/ or report/.
-    │                              Each sub-folder has: run.py, README.md, <name>_report.md
+└── exploratory/                 — Gitignored except for the carved-out
+    │                              `all_paper_charts/` sub-folder (see below).
+    │                              Outside that exception, nothing in this
+    │                              folder is committed — do not use git add -f.
+    │                              One-off charts only; no reports fed into
+    │                              question_findings/ or report/. Each sub-folder
+    │                              has: run.py, README.md, <name>_report.md
     │                              (findings writeup with inline figures referencing
     │                              results/figures/ paths), and results/ (auto-created).
+    │                              Gitignore mechanic: `analysis/exploratory/*`
+    │                              excludes everything inside, then
+    │                              `!analysis/exploratory/all_paper_charts/**`
+    │                              re-includes the one exception.
+    ├── all_paper_charts/        — COMMITTED (gitignore exception). Mirror
+    │                              of every figure currently in
+    │                              analysis/paper/results/part_{1,2,3}/figures/.
+    │                              run.py syncs the PNGs into
+    │                              figures/part_{1,2,3}/ and regenerates
+    │                              all_paper_charts.md (a no-prose chart
+    │                              listing). Surfaces on GitHub so the
+    │                              paper's figure set is browsable in one
+    │                              place.
     ├── job_breakdown/           — Per-occupation SKA + task breakdown for 3 EOR-adjacent
     │                              occupations (HR Specialists, Compensation Specialists,
     │                              Customer Service Reps); replicates worker_resilience pattern

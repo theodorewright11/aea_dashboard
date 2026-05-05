@@ -371,7 +371,7 @@ Groups: High-profile/high-employment · AI-controversial/interesting · Utah-rel
 
 ## Exploratory Folder
 
-`analysis/exploratory/` is gitignored and outside the question system. It holds one-off charts that are interesting but don't belong in a formal question bucket. Nothing from here feeds into `question_findings/` or `report/`.
+`analysis/exploratory/` is gitignored (with one carved-out exception, `all_paper_charts/`, see below) and outside the question system. It holds one-off charts that are interesting but don't belong in a formal question bucket. Nothing from here feeds into `question_findings/` or `report/`.
 
 Each exploratory sub-folder must have:
 - `run.py` — script that produces all figures
@@ -383,6 +383,7 @@ The `<name>_report.md` is the primary deliverable. It should read like a short a
 
 | Sub-folder | What it makes |
 |------------|--------------|
+| `all_paper_charts/` | **Committed (gitignore exception).** Mirror of every figure currently in `analysis/paper/results/part_{1,2,3}/figures/`. `run.py` syncs the PNGs into `figures/part_{1,2,3}/` and regenerates `all_paper_charts.md`, which is a no-prose listing of every chart. Surfaces on GitHub so the paper's figure set is browsable in one place. |
 | `ska_levels/` | AI imp×lv vs. workforce benchmarks (eco mean, top-10, p95) for every SKA element across three AI variants |
 | `ska_category_breakdown/` | Same per-element AI-vs-workforce data as the Part 2 paper SKA chart (all_confirmed, importance ≥ 3), rolled up to O*NET native categories from element_id prefixes — 7 skills subcategories (Content / Process / Social / Complex Problem Solving / Technical / Systems / Resource Management), 15 abilities subcategories (Cognitive split into Verbal / Idea Generation / Quantitative / Memory / Perceptual / Spatial / Attentiveness; Psychomotor split into Fine Manipulative / Control Movement / Reaction; Physical split into Strength / Endurance / Flexibility, Balance, and Coordination; Sensory split into Visual / Auditory and Speech), and 10 knowledge categories (Education and Training, Communications, Arts and Humanities, etc). Headline metric per category: mean of `ai_max / eco_max × 100`. Output: 4 PNGs (combined 3-panel + one per type), 2 CSVs (per-element + per-category), and `ska_category_breakdown_report.md` with category tables and element-level detail nested under each category. Findings: Education and Training (86%) tops Knowledge; Memory and Verbal (79%, 76%) top Abilities; Content and Process (71%, 68%) top Skills. Bottom of each: Transportation (48%), Control Movement (27%), Technical (49%). |
 | `zone_pivot_anatomy/` | Why zone 3 peaks on pivot cost; SKA overlap structure, sector composition, and scatter of at-risk occupations by zone |
