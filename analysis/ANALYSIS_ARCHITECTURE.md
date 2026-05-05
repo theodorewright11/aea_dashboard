@@ -411,10 +411,10 @@ analysis/
                                    for tasks in multiple GWAs, then deduped to (task, occ)
                                    pairs over the full eco_2025 universe. Charts 10–11 use
                                    the full eco_2025 denominator; 01–09 use rated-task
-                                   denominator. Outputs: 15 PNGs in figures/v3/, 15 per-chart
+                                   denominator. Outputs: 17 PNGs in figures/v3/, 17 per-chart
                                    CSVs in results/v3/, plus all_variants_combined.csv (long)
                                    and all_variants_wide.csv (rows=major, cols=chart_id).
-                                   Charts 12–15 reanchor chart 06 (all_confirmed bias-corrected)
+                                   Charts 12–17 reanchor chart 06 (all_confirmed bias-corrected)
                                    on Educational Instruction (the higher of the two median-rank
                                    majors out of 22) so it reads as 1.00×, with a dashed median
                                    line drawn at the lift distribution's statistical median.
@@ -424,14 +424,22 @@ analysis/
                                    denominator = full eco_2025 (Σ freq×emp over ALL eco_2025
                                    tasks per major, not only rated tasks) — captures "AI usage
                                    per unit of WHOLE economic activity" rather than per unit of
-                                   rated activity. Top of chart compresses from 25.5× (basic) →
+                                   rated activity. 16 = chart 12 with auto-aug weighting on the
+                                   numerator (each adj_pct multiplied by auto_aug_mean / 5
+                                   before summing — high-automatability tasks contribute more).
+                                   17 = chart 15 with the same auto-aug weighting (full-eco
+                                   denominator). Top of chart compresses from 25.5× (basic) →
                                    5.8× (sqrt) → 5.7× (additive). Chart 15 puts Life Sciences at
                                    20.4× and Computer/Math at 10.2× (vs 8.5× under chart 12),
                                    reflecting that the dataset rates a higher share of
-                                   Computer/Math tasks than the average sector. Charts 12 & 15
-                                   bars are also color-shaded by pct_tasks_affected (darker =
-                                   higher), computed from the standard dashboard formula on
-                                   the all_confirmed dataset at major level. Computer/Math
+                                   Computer/Math tasks than the average sector. Auto-aug
+                                   weighting (16 / 17) bumps the top-3 majors up roughly 5–10%
+                                   in lift terms (e.g. Life Sciences 25.5× → 27.7× from 12 → 16,
+                                   20.4× → 22.2× from 15 → 17) — same headline ranking. Charts
+                                   12, 15, 16, 17 bars are color-shaded by pct_tasks_affected
+                                   (darker = higher), computed from the standard dashboard
+                                   formula on the all_confirmed dataset at major level.
+                                   Computer/Math
                                    passes Life Sciences in chart 14, revealing that Life Sciences'
                                    lead in 12 was partly a small-denominator artifact.
 ```
