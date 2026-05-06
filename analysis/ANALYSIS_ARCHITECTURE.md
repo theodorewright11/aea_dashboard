@@ -232,11 +232,28 @@ analysis/
     │                              Spearman ρ ≥ 0.96 vs freq at occ level. Ships
     │                              a parallel ratio-of-totals compute pipeline
     │                              (validated at ρ = 1.0000 vs dashboard's
-    │                              get_pct_tasks_affected). Recommendations:
-    │                              (a) switch primary to conservative + collapse
-    │                              to 5 configs; (b) keep freq as primary weight.
-    │                              `t` joined from
+    │                              get_pct_tasks_affected). `t` joined from
     │                              `data/final_eco_2025_with_task_properties.csv`.
+    │                              Q1 follow-up `physical_filter_audit.py`:
+    │                              row-set diff between regular and conservative
+    │                              datasets — all 3,116 dropped rows are
+    │                              physical=True (sanity passes), but 41.9% of
+    │                              the 2,160 unique dropped pairs land in INFO
+    │                              majors. 223 mislabel candidates have d, m,
+    │                              AND s all above eco median (top: bank-teller
+    │                              cash entry, cashier checkout transactions,
+    │                              library checkouts, payroll entries). Smart-
+    │                              conservative counterfactual (physical-flag +
+    │                              d/m/s gate) recovers 4.2pp / 6.4M / $0.3T —
+    │                              about 60% of plain conservative's cut.
+    │                              Office/Admin recovers +8.2pp, Sales +5.7pp,
+    │                              Healthcare Practitioners +5.3pp, Architecture
+    │                              +4.9pp. Revised recommendations: (a) DON'T
+    │                              adopt plain conservative as primary; either
+    │                              keep regular all_confirmed, adopt smart-
+    │                              conservative, or improve the physical
+    │                              classifier first; (b) keep freq as primary
+    │                              weight (unchanged from Stage B).
     ├── appendix_charts/         — COMMITTED (gitignore exception). Auxiliary
     │                              paper figures generated fresh by its own
     │                              run.py (no copying from elsewhere). Two
