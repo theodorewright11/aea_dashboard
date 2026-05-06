@@ -845,7 +845,16 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
     All Confirmed and All Sources (Ceiling) lines. Per-panel metric color:
     tasks=blue, workers=gold, wages=green. All Confirmed = solid line in
     primary color; All Sources (Ceiling) = dashed line in lighter shade.
-    Y-axis ranges are tightened to the data band (not zero-anchored)."""
+
+    Per-point value labels are rendered as annotations with an explicit
+    pixel `yshift` so they sit a fixed distance above/below the marker
+    regardless of how the line curves — text mode + textposition only
+    offsets ~6px which isn't enough to clear a curving line. Confirmed
+    labels go below their line; ceiling labels go above theirs.
+
+    The legend is rendered from two neutral-gray dummy traces (one solid,
+    one dashed) so it conveys *line style* rather than implying any one
+    panel's color is "the" color of confirmed vs. ceiling."""
     panels = [
         ("pct",     "% Tasks Exposed", "% Tasks Exposed",     "tasks",
          lambda v: f"{v:.1f}%",
@@ -864,10 +873,52 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
         horizontal_spacing=0.10,
     )
 
+    # Neutral-gray dummy traces JUST for the legend (one solid, one dashed).
+    # Use a real date string from the data with y=None so plotly's x-axis
+    # type detection still picks date (passing x=[None] forces numeric).
+    legend_color = PAPER_PALETTE["text"]
+    legend_anchor_x = trend_df["date"].iloc[0]
+    fig.add_trace(go.Scatter(
+        x=[legend_anchor_x], y=[None], mode="lines",
+        name=ANALYSIS_CONFIG_LABELS["all_confirmed"],
+        line=dict(color=legend_color, width=3, dash="solid"),
+        showlegend=True, hoverinfo="skip",
+    ), row=1, col=1)
+    fig.add_trace(go.Scatter(
+        x=[legend_anchor_x], y=[None], mode="lines",
+        name=ANALYSIS_CONFIG_LABELS["all_ceiling"],
+        line=dict(color=legend_color, width=3, dash="dash"),
+        showlegend=True, hoverinfo="skip",
+    ), row=1, col=1)
+
+    # Pixel offset for value labels above/below each marker. This is a
+    # fixed pixel shift so labels stay clear of the line as it curves
+    # between markers, regardless of zoom or aspect ratio.
+    LABEL_YSHIFT_PX = 18
+
+    def _spaced_label_indices(dates: list[str], min_days: int = 25) -> set[int]:
+        """Pick which date indices get a value label drawn.
+
+        Walks backwards from the last point and keeps a label only if it
+        is at least `min_days` from the next kept label. This prevents
+        labels at very close dates (e.g. Feb 12 / Feb 18 on the ceiling
+        series) from stacking on top of each other horizontally.
+        """
+        if not dates:
+            return set()
+        parsed = [pd.Timestamp(d) for d in dates]
+        keep = [len(dates) - 1]
+        for i in range(len(dates) - 2, -1, -1):
+            if (parsed[keep[-1]] - parsed[i]).days >= min_days:
+                keep.append(i)
+        return set(keep)
+
     for col_idx, (key, _panel_title, y_axis_title, metric_key, fmt_fn, getter) in enumerate(
         panels, start=1
     ):
-        # Track values per panel for y-range
+        x_ref = "x" if col_idx == 1 else f"x{col_idx}"
+        y_ref = "y" if col_idx == 1 else f"y{col_idx}"
+
         panel_vals: list[float] = []
         for config_key in TREND_CONFIGS:
             subset = trend_df[trend_df["config"] == config_key].sort_values("date").reset_index(drop=True)
@@ -875,26 +926,23 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
             if config_key == "all_confirmed":
                 color = METRIC_COLORS[metric_key]
                 dash = "solid"
-                # Confirmed is the lower line — anchor end label below it
-                # so it doesn't crash up into the ceiling line.
-                end_position = "bottom right"
-                start_position = "bottom left"
+                yshift = -LABEL_YSHIFT_PX  # below marker
             else:
                 color = METRIC_COLORS_LIGHT[metric_key]
                 dash = "dash"
-                # Ceiling is the upper line — anchor end label above it.
-                end_position = "top right"
-                start_position = "top left"
+                yshift = LABEL_YSHIFT_PX   # above marker
+
             xvals = list(subset["date"])
             yvals = list(getter(subset))
             panel_vals.extend(float(v) for v in yvals)
 
-            # 1. The line + markers (no per-point text).
+            # The line + markers (showlegend=False — legend uses the dummy
+            # neutral traces, since each panel's color is different).
             fig.add_trace(go.Scatter(
                 x=xvals, y=yvals,
                 name=label,
                 legendgroup=config_key,
-                showlegend=(col_idx == 1),
+                showlegend=False,
                 mode="lines+markers",
                 line=dict(color=color, width=3, dash=dash),
                 marker=dict(size=8, color=color),
@@ -902,31 +950,30 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
                 cliponaxis=False,
             ), row=1, col=col_idx)
 
-            # 2. Endpoint-only labels (start + end), kept short and clear of
-            #    each other since the start/end x positions are well-separated.
-            if len(subset) >= 1:
-                idxs = [0] if len(subset) == 1 else [0, len(subset) - 1]
-                positions = [start_position, end_position] if len(idxs) == 2 else [end_position]
-                ep_x = [xvals[i] for i in idxs]
-                ep_y = [yvals[i] for i in idxs]
-                ep_text = [fmt_fn(yvals[i]) for i in idxs]
-                fig.add_trace(go.Scatter(
-                    x=ep_x, y=ep_y,
-                    mode="text",
-                    text=ep_text,
-                    textposition=positions,
-                    textfont=dict(size=ANNOT_FS, color=color, family=FONT_FAMILY),
-                    showlegend=False, hoverinfo="skip",
-                    cliponaxis=False,
-                ), row=1, col=col_idx)
+            # Per-point value labels as annotations with explicit pixel
+            # yshift — ensures the line never overlaps the text. Skip
+            # labels for dates within 25 days of the next kept label so
+            # close-clustered dates (e.g. Feb 12 / Feb 18) don't stack.
+            kept = _spaced_label_indices(xvals)
+            for i, (x_i, y_i) in enumerate(zip(xvals, yvals)):
+                if i not in kept:
+                    continue
+                fig.add_annotation(
+                    x=x_i, y=y_i,
+                    xref=x_ref, yref=y_ref,
+                    text=fmt_fn(y_i),
+                    showarrow=False,
+                    yshift=yshift,
+                    font=dict(size=ANNOT_FS - 1, color=color, family=FONT_FAMILY),
+                )
 
-        # Tight y-range — wider top + bottom padding so endpoint labels fit
-        # without bumping into the panel title or the x-axis.
+        # Tight y-range — leave enough room above and below the data band
+        # for the pixel-shifted annotations to render without clipping.
         if panel_vals:
             v_lo, v_hi = min(panel_vals), max(panel_vals)
             spread = v_hi - v_lo
-            pad_lo = spread * 0.18
-            pad_hi = spread * 0.20
+            pad_lo = spread * 0.22
+            pad_hi = spread * 0.22
             y_min = max(0.0, v_lo - pad_lo)
             y_max = v_hi + pad_hi
         else:
@@ -956,18 +1003,18 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
         "All Confirmed vs All Sources (Ceiling) Over Time",
         subtitle=(
             "Tasks, workers, and wages exposed over the dataset window "
-            "(March 2025 – February 2026), with start- and end-point values labelled."
+            "(March 2025 – February 2026)."
         ),
-        height=PAPER_H - 20,
+        height=PAPER_H + 40,
         width=PAPER_W + 100,
-        margin=dict(l=80, r=60, t=110, b=140),
+        margin=dict(l=80, r=60, t=110, b=160),
     )
 
-    # Restore a single bottom-aligned legend (one entry per config).
+    # Bottom-aligned legend driven by the neutral dummy traces.
     fig.update_layout(
         legend=dict(
             orientation="h",
-            yanchor="bottom", y=-0.30, xanchor="center", x=0.5,
+            yanchor="bottom", y=-0.32, xanchor="center", x=0.5,
             font=dict(size=LEGEND_FS, family=FONT_FAMILY),
             bgcolor="rgba(255,255,255,0.9)",
         ),
