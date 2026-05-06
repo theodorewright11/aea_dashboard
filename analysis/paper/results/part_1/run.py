@@ -264,8 +264,9 @@ def build_overview(results: Path, figures: Path) -> None:
         fig,
         "AI Economic Exposure Across Data Configurations",
         subtitle=(
-            "Share of national task volume, employment, and wages exposed "
-            "across the six AI data configurations."
+            "Share of national tasks, employment, and wages exposed per "
+            "AI data configuration — one bar each for % tasks exposed, "
+            "workers exposed, and wages exposed."
         ),
         height=PAPER_H + 140,
         margin=dict(l=20, r=60, t=140, b=110),

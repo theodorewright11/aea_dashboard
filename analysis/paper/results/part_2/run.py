@@ -53,8 +53,8 @@ PHYS_UPPER = 67.0
 OCC_GROUPS = ["Physical", "Mixed", "Non-physical"]
 GROUP_COLORS = {
     "Non-physical": METRIC_COLORS["tasks"],     # Slate blue
-    "Mixed":        METRIC_COLORS["workers"],   # Gold
-    "Physical":     METRIC_COLORS["wages"],     # Sage green
+    "Mixed":        METRIC_COLORS["wages"],     # Sage green
+    "Physical":     METRIC_COLORS["workers"],   # Gold / yellow
 }
 
 # Job zone labels
@@ -1326,15 +1326,36 @@ def build_major_categories(results: Path, figures: Path) -> None:
         zeroline=True, zerolinecolor=PAPER_PALETTE["grid"],
         tickfont=dict(size=TICK_FS - 2, family=FONT_FAMILY),
     )
-    # Per-panel x-axis tick formatting
+
+    def _nice_ticks(max_val: float, n_ticks: int = 5) -> list[float]:
+        """Round-step tickvals from 0 up to ~max_val."""
+        import math
+        if max_val <= 0:
+            return [0.0]
+        raw_step = max_val / (n_ticks - 1)
+        magnitude = 10 ** math.floor(math.log10(raw_step))
+        step = math.ceil(raw_step / magnitude) * magnitude
+        ticks = [step * i for i in range(n_ticks + 1)]
+        return [t for t in ticks if t <= max_val * 1.05]
+
+    workers_max = max(workers_vals)
+    wages_max = max(wages_vals)
+    worker_ticks = _nice_ticks(workers_max)
+    wage_ticks = _nice_ticks(wages_max)
+
+    # Per-panel x-axis tick formatting. Use fmt_workers / fmt_wages directly
+    # for ticktext so wages render as "$700B" rather than plotly's SI default
+    # of "$700G".
     fig.update_xaxes(ticksuffix="%", row=1, col=1)
     fig.update_xaxes(
-        tickformat="~s",
+        tickvals=worker_ticks,
+        ticktext=[fmt_workers(v) for v in worker_ticks],
         title=dict(text="Workers Exposed", font=dict(size=LABEL_FS - 2)),
         row=1, col=2,
     )
     fig.update_xaxes(
-        tickprefix="$", tickformat="~s",
+        tickvals=wage_ticks,
+        ticktext=[fmt_wages(v) for v in wage_ticks],
         title=dict(text="Wages Exposed", font=dict(size=LABEL_FS - 2)),
         row=1, col=3,
     )
