@@ -144,18 +144,23 @@ analysis/
 │       │   ├── run.py, README.md, part_1.md, results/ (gitignored), figures/ (committed)
 │       ├── part_2/              — Characterization: Where AI Exposure Falls — FIRST DRAFT COMPLETE
 │       │   ├── run.py, README.md, part_2.md, results/ (gitignored), figures/ (committed)
-│       └── part_3/              — Action: What To Do About It — REVAMP IN PROGRESS (3 charts)
+│       └── part_3/              — Action: What To Do About It — 4 charts
 │           ├── run.py, README.md, part_3.md, results/ (gitignored), figures/ (committed)
-│           ├── Figures: tech_commodities, conv_confirmed_ceiling_gap,
+│           ├── Figures (in order): conv_confirmed_ceiling_gap (top 10),
+│           │            tech_commodities, risk_score_5f,
 │           │            intensity_anchor_fulleco
 │           └── Cross-references: economic_footprint/skills_landscape (tech_skills pipeline,
 │                                 reimplemented in paper styling);
 │                                 exploratory/pct_norm_vs_eco/run_v3.py
 │                                 (chart 15 — function-level import, skips
-│                                 gracefully if exploratory folder absent)
-└── exploratory/                 — Gitignored except for the carved-out
-    │                              `all_paper_charts/` sub-folder (see below).
-    │                              Outside that exception, nothing in this
+│                                 gracefully if exploratory folder absent);
+│                                 exploratory/risk_score_audit/run.py
+│                                 (5f flags + focused-set helpers, function-level
+│                                 import, paper-styled rendering)
+└── exploratory/                 — Gitignored except for two carved-out
+    │                              committed sub-folders: `all_paper_charts/`
+    │                              and `appendix_charts/` (see below).
+    │                              Outside those exceptions, nothing in this
     │                              folder is committed — do not use git add -f.
     │                              One-off charts only; no reports fed into
     │                              question_findings/ or report/. Each sub-folder
@@ -165,16 +170,42 @@ analysis/
     │                              Gitignore mechanic: `analysis/exploratory/*`
     │                              excludes everything inside, then
     │                              `!analysis/exploratory/all_paper_charts/**`
-    │                              re-includes the one exception.
+    │                              and `!analysis/exploratory/appendix_charts/**`
+    │                              re-include the two exceptions; a final rule
+    │                              `analysis/exploratory/all_paper_charts/offshoots/`
+    │                              re-excludes the offshoots sandbox.
     ├── all_paper_charts/        — COMMITTED (gitignore exception). Mirror
-    │                              of every figure currently in
-    │                              analysis/paper/results/part_{1,2,3}/figures/.
-    │                              run.py syncs the PNGs into
-    │                              figures/part_{1,2,3}/ and regenerates
-    │                              all_paper_charts.md (a no-prose chart
-    │                              listing). Surfaces on GitHub so the
-    │                              paper's figure set is browsable in one
-    │                              place.
+    │   │                          of every figure currently in
+    │   │                          analysis/paper/results/part_{1,2,3}/figures/.
+    │   │                          run.py syncs the PNGs into
+    │   │                          figures/part_{1,2,3}/, applies a SKIP set
+    │   │                          (charts not in results.md) + CHART_ORDER
+    │   │                          (per-part canonical order), and regenerates
+    │   │                          all_paper_charts.md (no-prose chart
+    │   │                          listing). Surfaces on GitHub so the
+    │   │                          paper's figure set is browsable in one
+    │   │                          place.
+    │   └── offshoots/           — GITIGNORED sandbox carved out inside the
+    │                              committed mirror. Use this for trying
+    │                              alternate chart variants without polluting
+    │                              GitHub. Each thread has its own run.py +
+    │                              README + results/. Currently:
+    │                              simple_mean_convergence/ (rebuilds the
+    │                              paper convergence chart with our internal
+    │                              sources rolled up by simple-mean across
+    │                              occupations, matching the methodology used
+    │                              for the external benchmarks).
+    ├── appendix_charts/         — COMMITTED (gitignore exception). Auxiliary
+    │                              paper figures generated fresh by its own
+    │                              run.py (no copying from elsewhere). Two
+    │                              charts: phys_zone_faceted (Physical /
+    │                              Mixed / Non-physical panels of job zone
+    │                              violins, with per-row + per-column
+    │                              median+n labels added) and ska_full (full
+    │                              element-level SKA across skills /
+    │                              knowledge / abilities with the complete
+    │                              workforce ladder Mean+P95+Top-10). Writes
+    │                              appendix_charts.md listing both.
     ├── job_breakdown/           — Per-occupation SKA + task breakdown for 3 EOR-adjacent
     │                              occupations (HR Specialists, Compensation Specialists,
     │                              Customer Service Reps); replicates worker_resilience pattern

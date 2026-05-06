@@ -3,6 +3,12 @@ delta/
 analysis/exploratory/*
 !analysis/exploratory/all_paper_charts/
 !analysis/exploratory/all_paper_charts/**
+!analysis/exploratory/appendix_charts/
+!analysis/exploratory/appendix_charts/**
+# Re-exclude regenerable outputs inside the committed exploratory folders
+analysis/exploratory/appendix_charts/results/
+# Offshoots is a gitignored sandbox carved out inside the (committed) mirror
+analysis/exploratory/all_paper_charts/offshoots/
 
 # Analysis generated outputs (regenerate with: venv/Scripts/python -m analysis.run_all)
 analysis/questions/**/results/

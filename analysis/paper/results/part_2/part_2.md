@@ -65,3 +65,15 @@ Computer and Mathematical occupations lead on % tasks affected at 65.7%, but ran
 Management Occupations present an interesting case. At 35.5% task exposure, they rank 12th on percentage, below the median. But because management positions carry high wages, they rank 1st in wages affected ($614B) and 5th in workers (4.8M). AI exposure in management roles represents a relatively small share of the work but an outsized share of the economic value.
 
 The bottom of all three panels converges: Farming, Fishing, and Forestry (13.7%, 41K workers, $1.7B wages) and Construction and Extraction (13.9%, 1.3M workers, $85.6B) consistently rank at or near the bottom. These are sectors where the work is fundamentally physical, and current AI systems have minimal demonstrated overlap with their task profiles.
+
+---
+
+## Combined View Drafts — Phys/Info + Job Zone
+
+### Option A — Stacked panels (shared x-axis)
+
+![Combined Phys/Info + Job Zone — Stacked](figures/phys_zone_stacked.png)
+
+### Option B — Faceted by physical mix
+
+![Combined Phys × Zone — Faceted](figures/phys_zone_faceted.png)

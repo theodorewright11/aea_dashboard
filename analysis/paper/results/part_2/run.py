@@ -45,7 +45,6 @@ DATA_DIR = ROOT / "data"
 PRIMARY_KEY = "all_confirmed"
 PRIMARY_DATASET = ANALYSIS_CONFIGS[PRIMARY_KEY]
 PRIMARY_LABEL = ANALYSIS_CONFIG_LABELS[PRIMARY_KEY]
-CONFIG_SUBTITLE = f"{PRIMARY_LABEL} | National | freq, auto-aug ON"
 
 # Physical/informational thresholds (matches exploratory)
 PHYS_LOWER = 33.0
@@ -216,10 +215,7 @@ def build_phys_info_divide(results: Path, figures: Path) -> None:
     style_paper_figure(
         fig,
         "AI Task Exposure Is Structurally Higher in Non-Physical Occupations",
-        subtitle=(
-            f"Distribution of % tasks affected across {len(occ)} occupations | "
-            f"{CONFIG_SUBTITLE}"
-        ),
+        subtitle=f"Distribution of % tasks affected across {len(occ)} occupations",
         height=420,
         width=PAPER_W,
         margin=dict(l=20, r=60, t=90, b=70),
@@ -340,10 +336,7 @@ def build_job_zone_violin(results: Path, figures: Path) -> None:
     style_paper_figure(
         fig,
         "AI Exposure Peaks at Job Zone 4 (Considerable Preparation)",
-        subtitle=(
-            f"Distribution of % tasks affected by O*NET job zone across "
-            f"{len(occ)} occupations | {CONFIG_SUBTITLE}"
-        ),
+        subtitle=f"Distribution of % tasks affected by O*NET job zone across {len(occ)} occupations",
         height=580,
         width=PAPER_W,
         margin=dict(l=20, r=60, t=90, b=70),
@@ -365,6 +358,269 @@ def build_job_zone_violin(results: Path, figures: Path) -> None:
     save_figure(fig, results / "figures" / "job_zone_violin.png")
     _copy_fig(results, figures, "job_zone_violin.png")
     print("  -> job_zone_violin.png")
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# Combined Phys/Info × Job Zone — Option A (stacked) and Option B (faceted)
+# ─────────────────────────────────────────────────────────────────────────
+
+ZONE_COLORS = {
+    1: "#b8cfe0",
+    2: "#8cafc5",
+    3: "#6090aa",
+    4: "#3a6f8f",
+    5: "#1a4f73",
+}
+
+
+def _occ_with_pct() -> pd.DataFrame:
+    occ = _load_occ_structural()
+    pct = get_pct_tasks_affected(PRIMARY_DATASET)
+    occ["pct_tasks_affected"] = occ["title_current"].map(pct)
+    occ = occ.dropna(subset=["pct_tasks_affected", "job_zone"])
+    occ["job_zone"] = occ["job_zone"].astype(int)
+    return occ
+
+
+def build_combined_stacked(results: Path, figures: Path) -> None:
+    """Option A — phys/info boxes (top) + job zone violins (bottom), shared x-axis."""
+    occ = _occ_with_pct()
+    zones = sorted(occ["job_zone"].unique())
+    n_phys = len(OCC_GROUPS)
+    n_zones = len(zones)
+
+    fig = make_subplots(
+        rows=2, cols=1,
+        row_heights=[n_phys / (n_phys + n_zones), n_zones / (n_phys + n_zones)],
+        shared_xaxes=True,
+        vertical_spacing=0.07,
+        subplot_titles=[
+            "Physical / Informational Divide",
+            "Job Zone (Preparation Level)",
+        ],
+    )
+
+    # Top: phys/info boxes
+    for grp in OCC_GROUPS:
+        sub = occ[occ["occ_group"] == grp]
+        fig.add_trace(go.Box(
+            x=sub["pct_tasks_affected"],
+            name=f"{grp}  (n={len(sub)})",
+            marker_color=GROUP_COLORS[grp],
+            line_color=GROUP_COLORS[grp],
+            fillcolor=GROUP_COLORS[grp],
+            opacity=0.7,
+            boxmean=True,
+            orientation="h",
+            showlegend=False,
+        ), row=1, col=1)
+
+    # Bottom: zone violins
+    for z in zones:
+        sub = occ[occ["job_zone"] == z]
+        label = ZONE_LABELS.get(z, f"Zone {z}")
+        fig.add_trace(go.Violin(
+            x=sub["pct_tasks_affected"],
+            name=f"{label}  (n={len(sub)})",
+            marker_color=ZONE_COLORS[z],
+            line_color=ZONE_COLORS[z],
+            fillcolor=ZONE_COLORS[z],
+            opacity=0.7,
+            box_visible=True,
+            meanline_visible=True,
+            orientation="h",
+            side="positive",
+            width=0.85,
+            showlegend=False,
+        ), row=2, col=1)
+
+    # Y-axis ordering per row
+    fig.update_yaxes(
+        categoryorder="array",
+        categoryarray=[
+            f"{g}  (n={int(occ[occ['occ_group'] == g].shape[0])})"
+            for g in reversed(OCC_GROUPS)
+        ],
+        showgrid=False, showline=False,
+        tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
+        row=1, col=1,
+    )
+    fig.update_yaxes(
+        categoryorder="array",
+        categoryarray=[
+            f"{ZONE_LABELS.get(z, f'Zone {z}')}  (n={int(occ[occ['job_zone'] == z].shape[0])})"
+            for z in reversed(zones)
+        ],
+        showgrid=False, showline=False,
+        tickfont=dict(size=TICK_FS - 1, family=FONT_FAMILY),
+        row=2, col=1,
+    )
+
+    fig.update_xaxes(
+        range=[0, 100], dtick=10,
+        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+        showline=True, linecolor=PAPER_PALETTE["grid"],
+        row=1, col=1,
+    )
+    fig.update_xaxes(
+        range=[0, 100], dtick=10,
+        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+        showline=True, linecolor=PAPER_PALETTE["grid"],
+        title=dict(text="% Tasks Affected", font=dict(size=LABEL_FS)),
+        row=2, col=1,
+    )
+
+    style_paper_figure(
+        fig,
+        "Where AI Exposure Falls — by Physical Mix and Preparation Level",
+        subtitle=f"Distribution of % tasks affected across {len(occ)} occupations",
+        height=820,
+        width=PAPER_W,
+        margin=dict(l=20, r=60, t=90, b=70),
+    )
+
+    # Style subplot titles
+    panel_titles = {
+        "Physical / Informational Divide",
+        "Job Zone (Preparation Level)",
+    }
+    for ann in fig.layout.annotations:
+        if hasattr(ann, "text") and ann.text in panel_titles:
+            ann.font = dict(size=LABEL_FS, family=FONT_FAMILY, color=PAPER_PALETTE["text"])
+
+    save_figure(fig, results / "figures" / "phys_zone_stacked.png", scale=2)
+    _copy_fig(results, figures, "phys_zone_stacked.png")
+    print("  -> phys_zone_stacked.png")
+
+
+def build_combined_faceted(results: Path, figures: Path) -> None:
+    """Option B — 3 panels (Non-physical / Mixed / Physical), each containing 5
+    job zone violins. Cross-tab view.
+    """
+    occ = _occ_with_pct()
+    zones = sorted(occ["job_zone"].unique())
+
+    # Cross-tab summary CSV
+    rows_csv = []
+    for grp in OCC_GROUPS:
+        for z in zones:
+            sub = occ[(occ["occ_group"] == grp) & (occ["job_zone"] == z)]
+            rows_csv.append({
+                "occ_group": grp,
+                "job_zone": z,
+                "n_occs": len(sub),
+                "median_pct": round(float(sub["pct_tasks_affected"].median()), 1) if len(sub) else None,
+                "mean_pct": round(float(sub["pct_tasks_affected"].mean()), 1) if len(sub) else None,
+            })
+    save_csv(pd.DataFrame(rows_csv), results / "phys_zone_crosstab.csv")
+
+    panel_titles = [
+        f"{g}  (n={int(occ[occ['occ_group'] == g].shape[0])})"
+        for g in OCC_GROUPS
+    ]
+
+    fig = make_subplots(
+        rows=1, cols=3,
+        shared_yaxes=True,
+        horizontal_spacing=0.04,
+        subplot_titles=panel_titles,
+    )
+
+    y_labels = [f"Zone {z}" for z in zones]
+
+    for col_idx, grp in enumerate(OCC_GROUPS, start=1):
+        grp_df = occ[occ["occ_group"] == grp]
+        for z in zones:
+            sub = grp_df[grp_df["job_zone"] == z]
+            label = f"Zone {z}"
+            if len(sub) == 0:
+                # Add an invisible placeholder so the axis row still renders
+                fig.add_trace(go.Scatter(
+                    x=[None], y=[label],
+                    mode="markers",
+                    marker=dict(opacity=0),
+                    showlegend=False,
+                    hoverinfo="skip",
+                ), row=1, col=col_idx)
+                continue
+            fig.add_trace(go.Violin(
+                x=sub["pct_tasks_affected"],
+                y=[label] * len(sub),
+                marker_color=ZONE_COLORS[z],
+                line_color=ZONE_COLORS[z],
+                fillcolor=ZONE_COLORS[z],
+                opacity=0.7,
+                box_visible=True,
+                meanline_visible=True,
+                orientation="h",
+                side="positive",
+                width=0.9,
+                points=False,
+                showlegend=False,
+                name=f"{grp} — {label}",
+                hovertemplate=(
+                    f"{grp}, {label}<br>"
+                    "%{x:.1f}%<extra></extra>"
+                ),
+            ), row=1, col=col_idx)
+
+        # Cell-level n + median annotations to the right of each violin
+        for z in zones:
+            sub = grp_df[grp_df["job_zone"] == z]
+            if len(sub) == 0:
+                txt = "n=0"
+            else:
+                med = sub["pct_tasks_affected"].median()
+                txt = f"n={len(sub)}, med {med:.0f}%"
+            fig.add_annotation(
+                x=99, y=f"Zone {z}",
+                xref=f"x{'' if col_idx == 1 else col_idx}",
+                yref=f"y{'' if col_idx == 1 else col_idx}",
+                text=txt,
+                showarrow=False,
+                xanchor="right", yanchor="middle",
+                font=dict(size=ANNOT_FS - 1, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
+            )
+
+    y_order = [f"Zone {z}" for z in reversed(zones)]
+    for col_idx in range(1, 4):
+        fig.update_yaxes(
+            categoryorder="array",
+            categoryarray=y_order,
+            showgrid=False, showline=False,
+            tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
+            row=1, col=col_idx,
+        )
+        x_kwargs = dict(
+            range=[0, 100], dtick=20,
+            showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+            showline=True, linecolor=PAPER_PALETTE["grid"],
+            row=1, col=col_idx,
+        )
+        if col_idx == 2:
+            fig.update_xaxes(
+                title=dict(text="% Tasks Affected", font=dict(size=LABEL_FS)),
+                **x_kwargs,
+            )
+        else:
+            fig.update_xaxes(**x_kwargs)
+
+    style_paper_figure(
+        fig,
+        "AI Exposure by Physical Mix × Preparation Level",
+        subtitle=f"Job zone violins within each occupation group ({len(occ)} occupations)",
+        height=640,
+        width=PAPER_W,
+        margin=dict(l=20, r=60, t=90, b=70),
+    )
+
+    for ann in fig.layout.annotations:
+        if hasattr(ann, "text") and ann.text in panel_titles:
+            ann.font = dict(size=LABEL_FS, family=FONT_FAMILY, color=PAPER_PALETTE["text"])
+
+    save_figure(fig, results / "figures" / "phys_zone_faceted.png", scale=2)
+    _copy_fig(results, figures, "phys_zone_faceted.png")
+    print("  -> phys_zone_faceted.png")
 
 
 # ─────────────────────────────────────────────────────────────────────────
@@ -411,6 +667,86 @@ def _compute_ska_variants(
     return pd.DataFrame(records)
 
 
+# O*NET ability subcategory map (matches ska_category_breakdown)
+ABILITY_SUBCATEGORY: dict[str, str] = {
+    "1.A.1.a": "Verbal", "1.A.1.b": "Idea Generation", "1.A.1.c": "Quantitative",
+    "1.A.1.d": "Memory", "1.A.1.e": "Perceptual", "1.A.1.f": "Spatial",
+    "1.A.1.g": "Attentiveness",
+    "1.A.2.a": "Fine Manipulative", "1.A.2.b": "Control Movement", "1.A.2.c": "Reaction",
+    "1.A.3.a": "Strength", "1.A.3.b": "Endurance",
+    "1.A.3.c": "Flexibility, Balance, Coordination",
+    "1.A.4.a": "Visual", "1.A.4.b": "Auditory and Speech",
+}
+
+
+def _ability_subcat(eid: str) -> str:
+    parts = eid.split(".")
+    sub_key = ".".join(parts[:4]) if len(parts) >= 4 else ".".join(parts[:3])
+    return ABILITY_SUBCATEGORY.get(sub_key, "Other")
+
+
+def _compute_abilities_by_subcategory(pct_series: pd.Series) -> pd.DataFrame:
+    """Per-subcategory mean of ai_max/eco_max × 100. Importance ≥ 3 per row."""
+    abil_path = ROOT / "analysis" / "data" / "abilities_v30.1.csv"
+    df = pd.read_csv(abil_path, dtype=str)
+    df = df.rename(columns={
+        "O*NET-SOC Code": "soc_code", "Title": "title",
+        "Element ID": "element_id", "Element Name": "element_name",
+        "Scale ID": "scale_id", "Data Value": "data_value",
+    })
+    df["data_value"] = pd.to_numeric(df["data_value"], errors="coerce")
+    df = df[df["scale_id"].isin(["IM", "LV"])]
+
+    pivoted = (
+        df.pivot_table(
+            index=["soc_code", "title", "element_id", "element_name"],
+            columns="scale_id", values="data_value", aggfunc="mean",
+        )
+        .reset_index()
+    )
+    pivoted.columns.name = None
+    pivoted = pivoted.rename(columns={"IM": "importance", "LV": "level"}).dropna(
+        subset=["importance", "level"]
+    )
+
+    pivoted["pct"] = pivoted["title"].map(pct_series)
+    pivoted = pivoted.dropna(subset=["pct"])
+    pivoted = pivoted[pivoted["importance"] >= IMPORTANCE_THRESHOLD].copy()
+
+    pivoted["occ_score"] = pivoted["importance"] * pivoted["level"]
+    pivoted["ai_product"] = (pivoted["pct"] / 100.0) * pivoted["occ_score"]
+
+    elem_rows = []
+    for (eid, ename), grp in pivoted.groupby(["element_id", "element_name"]):
+        ai_vals = grp["ai_product"]
+        occ_vals = grp["occ_score"]
+        elem_rows.append({
+            "element_id": eid,
+            "element_name": ename,
+            "subcategory": _ability_subcat(eid),
+            "ai_max": float(ai_vals.max()),
+            "eco_max": float(occ_vals.max()),
+            "eco_mean": float(occ_vals.mean()),
+        })
+    elem_df = pd.DataFrame(elem_rows)
+    elem_df["ai_pct_of_max"] = elem_df["ai_max"] / elem_df["eco_max"] * 100.0
+    elem_df["eco_mean_pct_of_max"] = elem_df["eco_mean"] / elem_df["eco_max"] * 100.0
+
+    cat_rows = []
+    for sub, grp in elem_df.groupby("subcategory"):
+        cat_rows.append({
+            "subcategory": sub,
+            "n_elements": len(grp),
+            "ai_pct_of_max": float(grp["ai_pct_of_max"].mean()),
+            "eco_mean_pct_of_max": float(grp["eco_mean_pct_of_max"].mean()),
+        })
+    return (
+        pd.DataFrame(cat_rows)
+        .sort_values("ai_pct_of_max", ascending=False)
+        .reset_index(drop=True)
+    )
+
+
 def build_ska_levels(results: Path, figures: Path) -> None:
     pct = get_pct_tasks_affected(PRIMARY_DATASET)
     ska_data = load_ska_data()
@@ -418,33 +754,40 @@ def build_ska_levels(results: Path, figures: Path) -> None:
     elements_by_type: dict[str, pd.DataFrame] = {}
     for type_name, onet_df in [
         ("skills", ska_data.skills),
-        ("abilities", ska_data.abilities),
         ("knowledge", ska_data.knowledge),
     ]:
         df = _compute_ska_variants(onet_df, pct, type_name)
         elements_by_type[type_name] = df
         print(f"    {type_name}: {len(df)} elements")
 
+    abilities_cat = _compute_abilities_by_subcategory(pct)
+    print(f"    abilities (subcategory): {len(abilities_cat)} subcategories")
+
     # Save CSV
-    all_df = pd.concat(elements_by_type.values(), ignore_index=True)
-    save_csv(all_df, results / "ska_levels.csv", float_format="%.4f")
+    save_csv(
+        pd.concat(elements_by_type.values(), ignore_index=True),
+        results / "ska_levels.csv", float_format="%.4f",
+    )
+    save_csv(abilities_cat, results / "ska_abilities_by_subcategory.csv",
+             float_format="%.2f")
 
-    # Build the figure
-    TYPES = ["skills", "abilities", "knowledge"]
-    TYPE_LABELS = {"skills": "Skills", "abilities": "Abilities", "knowledge": "Knowledge"}
-    ai_col = "ai_max"
-    ai_label = "AI Maximum"
-
-    counts = {t: len(elements_by_type[t]) for t in TYPES}
-    total_elems = sum(counts.values())
-    row_heights = [counts[t] / total_elems for t in TYPES]
-    fig_height = max(1800, total_elems * 22 + 380)
+    # Layout — element rows for skills + knowledge, plus n_subcat rows for abilities
+    n_skills = len(elements_by_type["skills"])
+    n_know = len(elements_by_type["knowledge"])
+    n_abil = len(abilities_cat)
+    total_rows = n_skills + n_know + n_abil
+    row_heights = [n_skills / total_rows, n_know / total_rows, n_abil / total_rows]
+    fig_height = max(1500, total_rows * 26 + 380)
 
     fig = make_subplots(
         rows=3, cols=1,
         row_heights=row_heights,
-        vertical_spacing=0.05,
-        subplot_titles=[f"{TYPE_LABELS[t]}  ({counts[t]} elements)" for t in TYPES],
+        vertical_spacing=0.06,
+        subplot_titles=[
+            f"Skills  ({n_skills} elements)",
+            f"Knowledge  ({n_know} elements)",
+            f"Abilities  ({n_abil} subcategories)",
+        ],
     )
 
     legend_shown: set[str] = set()
@@ -455,18 +798,19 @@ def build_ska_levels(results: Path, figures: Path) -> None:
             return True
         return False
 
-    for row, type_name in enumerate(TYPES, start=1):
+    ai_marker_color = METRIC_COLORS["workers"]
+
+    # ── Element-level subplots: skills (row 1), knowledge (row 2) ───────
+    for row, type_name in enumerate(["skills", "knowledge"], start=1):
         df = elements_by_type[type_name].copy()
-        df["sort_pct"] = df[ai_col] / df["eco_max"].replace(0, float("nan")) * 100
+        df["sort_pct"] = df["ai_max"] / df["eco_max"].replace(0, float("nan")) * 100
         df = df.sort_values("sort_pct", ascending=False)
 
         enames = df["element_name"].tolist()
-        ai_vals = df[ai_col].fillna(0).tolist()
+        ai_vals = df["ai_max"].fillna(0).tolist()
         ai_p95_vals = df["ai_95th"].fillna(0).tolist()
         ai_top10_vals = df["ai_top10"].fillna(0).tolist()
         emax_vals = df["eco_max"].fillna(0).tolist()
-        ep95_vals = df["eco_p95"].fillna(0).tolist()
-        etop10_vals = df["eco_top10"].fillna(0).tolist()
         emean_vals = df["eco_mean"].fillna(0).tolist()
 
         max_eco = max(emax_vals) if emax_vals else 1.0
@@ -478,7 +822,6 @@ def build_ska_levels(results: Path, figures: Path) -> None:
             for a, m in zip(ai_vals, emax_vals)
         ]
 
-        # Workforce max background bar (light gray)
         fig.add_trace(go.Bar(
             y=enames, x=emax_vals, orientation="h",
             name="Workforce Max",
@@ -487,17 +830,14 @@ def build_ska_levels(results: Path, figures: Path) -> None:
             hovertemplate="Max (workforce): %{x:.1f}<extra></extra>",
         ), row=row, col=1)
 
-        # AI max bar (paper primary color)
         fig.add_trace(go.Bar(
             y=enames, x=ai_vals, orientation="h",
-            name=ai_label,
+            name="AI Maximum",
             marker=dict(color=METRIC_COLORS["tasks"], opacity=0.88, line=dict(width=0)),
-            showlegend=_show(ai_col),
-            hovertemplate=f"{ai_label}: %{{x:.1f}}<extra></extra>",
+            showlegend=_show("ai_max"),
+            hovertemplate="AI Maximum: %{x:.1f}<extra></extra>",
         ), row=row, col=1)
 
-        # AI P95 marker — colored circle
-        ai_marker_color = METRIC_COLORS["workers"]  # Teal, distinct from bar blue
         fig.add_trace(go.Scatter(
             y=enames, x=ai_p95_vals, mode="markers",
             name="AI P95",
@@ -507,7 +847,6 @@ def build_ska_levels(results: Path, figures: Path) -> None:
             hovertemplate="AI P95: %{x:.1f}<extra></extra>",
         ), row=row, col=1)
 
-        # AI Top-10 marker — colored diamond
         fig.add_trace(go.Scatter(
             y=enames, x=ai_top10_vals, mode="markers",
             name="AI Top-10 Avg",
@@ -517,34 +856,15 @@ def build_ska_levels(results: Path, figures: Path) -> None:
             hovertemplate="AI Top-10 avg: %{x:.1f}<extra></extra>",
         ), row=row, col=1)
 
-        # Workforce P95 marker — dark tick
-        fig.add_trace(go.Scatter(
-            y=enames, x=ep95_vals, mode="markers",
-            name="Workforce P95",
-            marker=dict(color="#1a1a1a", symbol="line-ew", size=14, line=dict(width=3, color="#1a1a1a")),
-            showlegend=_show("ep95"),
-            hovertemplate="P95 (workforce): %{x:.1f}<extra></extra>",
-        ), row=row, col=1)
-
-        # Workforce Top-10 marker — diamond
-        fig.add_trace(go.Scatter(
-            y=enames, x=etop10_vals, mode="markers",
-            name="Workforce Top-10 Avg",
-            marker=dict(color="#1a1a1a", symbol="diamond", size=7, line=dict(width=1, color="#1a1a1a")),
-            showlegend=_show("etop10"),
-            hovertemplate="Top-10 avg (workforce): %{x:.1f}<extra></extra>",
-        ), row=row, col=1)
-
-        # Workforce Mean marker — circle
         fig.add_trace(go.Scatter(
             y=enames, x=emean_vals, mode="markers",
             name="Workforce Mean",
-            marker=dict(color="#1a1a1a", symbol="circle", size=7, line=dict(width=1, color="#1a1a1a")),
+            marker=dict(color="#1a1a1a", symbol="circle", size=7,
+                        line=dict(width=1, color="#1a1a1a")),
             showlegend=_show("emean"),
-            hovertemplate="Economy mean (workforce): %{x:.1f}<extra></extra>",
+            hovertemplate="Workforce mean: %{x:.1f}<extra></extra>",
         ), row=row, col=1)
 
-        # Percentage column
         fig.add_trace(go.Scatter(
             y=enames, x=[label_x] * len(enames), mode="text",
             text=pct_labels, textposition="middle right",
@@ -566,15 +886,66 @@ def build_ska_levels(results: Path, figures: Path) -> None:
             row=row, col=1,
         )
 
+    # ── Abilities subplot (row 3): per-subcategory bar ──────────────────
+    abil_sorted = abilities_cat.sort_values("ai_pct_of_max", ascending=False)
+    sub_labels = [
+        f"{r.subcategory}  (n={int(r.n_elements)})"
+        for r in abil_sorted.itertuples()
+    ]
+    abil_x = abil_sorted["ai_pct_of_max"].tolist()
+    abil_emean = abil_sorted["eco_mean_pct_of_max"].tolist()
+
+    # Background "100%" bar so the visual structure matches skills/knowledge
+    fig.add_trace(go.Bar(
+        y=sub_labels, x=[100] * len(sub_labels), orientation="h",
+        name="Workforce Max",
+        marker=dict(color="#e8e8e2", line=dict(width=0)),
+        showlegend=False,
+        hovertemplate="Workforce max: 100%<extra></extra>",
+    ), row=3, col=1)
+
+    fig.add_trace(go.Bar(
+        y=sub_labels, x=abil_x, orientation="h",
+        name="AI Maximum",
+        marker=dict(color=METRIC_COLORS["tasks"], opacity=0.88, line=dict(width=0)),
+        showlegend=False,
+        text=[f"{v:.0f}%" for v in abil_x],
+        textposition="outside",
+        textfont=dict(size=11, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
+        hovertemplate="Mean AI %% of workforce max: %{x:.1f}%%<extra></extra>",
+    ), row=3, col=1)
+
+    fig.add_trace(go.Scatter(
+        y=sub_labels, x=abil_emean, mode="markers",
+        name="Workforce Mean",
+        marker=dict(color="#1a1a1a", symbol="circle", size=7,
+                    line=dict(width=1, color="#1a1a1a")),
+        showlegend=False,
+        hovertemplate="Workforce mean (% of max): %{x:.1f}%<extra></extra>",
+    ), row=3, col=1)
+
+    fig.update_yaxes(
+        autorange="reversed", row=3, col=1,
+        tickfont=dict(size=12, color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+        showgrid=False, showline=False,
+    )
+    fig.update_xaxes(
+        range=[0, 115], ticksuffix="%",
+        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+        tickfont=dict(size=10, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
+        showline=False, zeroline=True, zerolinecolor=PAPER_PALETTE["grid"],
+        row=3, col=1,
+    )
+
     fig.update_layout(
         title=dict(
             text=(
-                f"AI Capability vs. Workforce Requirements Across SKA Elements"
+                "AI Capability vs. Workforce Requirements Across SKA Elements"
                 f"<br><span style='font-size:{SUBTITLE_FS}px;"
                 f"color:{PAPER_PALETTE['muted']}'>"
-                f"Bar = AI Max | Markers = AI P95 + Top-10 (teal) and Workforce P95 + Top-10 + Mean (black) | "
-                f"{CONFIG_SUBTITLE} | Importance ≥ 3"
-                f"</span>"
+                "Bar = AI Maximum, faint background = workforce max | "
+                "Teal markers = AI P95 + Top-10 | Black dot = workforce mean"
+                "</span>"
             ),
             font=dict(size=TITLE_FS, color=PAPER_PALETTE["text"], family=FONT_FAMILY),
             x=0.01, xanchor="left",
@@ -591,12 +962,12 @@ def build_ska_levels(results: Path, figures: Path) -> None:
             font=dict(size=LEGEND_FS, color=PAPER_PALETTE["neutral"]),
             bgcolor="rgba(0,0,0,0)", borderwidth=0,
         ),
-        margin=dict(l=270, r=80, t=90, b=100),
+        margin=dict(l=270, r=80, t=120, b=100),
     )
 
-    # Style subplot titles
+    type_label_starts = ("Skills  ", "Knowledge  ", "Abilities  ")
     for ann in fig.layout.annotations:
-        if hasattr(ann, "text") and any(ann.text.startswith(TYPE_LABELS[t]) for t in TYPES):
+        if hasattr(ann, "text") and any(ann.text.startswith(s) for s in type_label_starts):
             ann.font = dict(size=LABEL_FS, family=FONT_FAMILY, color=PAPER_PALETTE["text"])
 
     save_figure(fig, results / "figures" / "ska_levels.png", scale=2)
@@ -676,10 +1047,7 @@ def build_gwa_chart(results: Path, figures: Path) -> None:
     style_paper_figure(
         fig,
         "AI Task Exposure Across All General Work Activities",
-        subtitle=(
-            f"% tasks affected per GWA | Darker = more workers affected | "
-            f"{CONFIG_SUBTITLE}"
-        ),
+        subtitle="% tasks affected per GWA — darker bars carry more workers",
         height=height,
         width=PAPER_W,
         margin=dict(l=20, r=300, t=90, b=70),
@@ -774,7 +1142,6 @@ def build_major_categories(results: Path, figures: Path) -> None:
     style_paper_figure(
         fig,
         "AI Exposure by Major Occupational Category",
-        subtitle=CONFIG_SUBTITLE,
         height=height,
         width=PAPER_W + 200,
         margin=dict(l=20, r=100, t=90, b=50),
@@ -829,6 +1196,12 @@ def main() -> None:
 
     print("\n[5/5] Major Occupational Categories")
     build_major_categories(results, figures)
+
+    print("\n[combined A] Phys/Info + Job Zone — Stacked")
+    build_combined_stacked(results, figures)
+
+    print("\n[combined B] Phys × Zone — Faceted")
+    build_combined_faceted(results, figures)
 
     print("\n" + "=" * 60)
     print("Part 2 complete — figures in results/figures/ and figures/")

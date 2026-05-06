@@ -332,13 +332,12 @@ Paper writing uses `paper/writing_style_source.md` (style calibration) and `pape
 
 ### Part 1 — Scale, Convergence, Growth ("This is real")
 
-The credibility argument. Four chart groups:
+The credibility argument. Three chart groups:
 1. **Overview**: Five-config aggregate footprint — workers and wages as % of national totals
-2. **Convergence (internal)**: Spearman rank correlation heatmaps (lower triangle) across four independent sources (Claude Browser, Claude API, Copilot, MCP) at four aggregation levels
-3. **Convergence (external)**: 2×2 grid of rectangular 4×4 heatmaps — our four sources (rows) vs. four external academic benchmarks (Eloundou GPT-4 β, Eloundou Human β, AIOE 10-app mean, AIOE Reading Comprehension) at the same four aggregation levels. External benchmarks rolled up to SOC group level by unweighted mean across matched occupations.
-4. **Temporal**: % of employment with AI-exposed tasks over time (All Confirmed vs All Ceiling), plus per-date delta tables
+2. **Convergence (combined)**: One heatmap per agg level (2×2 grid). Y-axis = our 4 internal sources. X-axis = our 4 sources (lower triangle, separated by a vertical divider) + 4 external benchmarks (Eloundou GPT-4 β, Eloundou Human β, AIOE 10-app mean, AIOE Reading Comprehension). Single shared color bar with `zmin = floor(min observed)` to use the full palette range. External benchmarks rolled up to SOC group level by unweighted mean across matched occupations.
+3. **Temporal**: 3-panel growth chart (Workers Affected / Wages Affected / % Tasks Affected), each panel showing All Confirmed and All Ceiling lines. Plus a paired side-by-side data table (one column per config) trimmed to Date / Unique Tasks Rated (+ Δ) / AI Capability (+ Δ).
 
-Narrative arc: scale → internal multi-source convergence → convergence with independent academic work → growth trajectory. Does not characterize which sectors are most exposed (Part 2) or recommend actions (Part 3). Benchmark comparisons (Seampoint, Iceberg) are woven in briefly alongside the Eloundou/AIOE convergence chart as external validation evidence.
+Narrative arc: scale → multi-source convergence (internal + external in one view) → growth trajectory. Does not characterize which sectors are most exposed (Part 2) or recommend actions (Part 3). Benchmark comparisons (Seampoint, Iceberg) are woven in briefly alongside the convergence chart as external validation evidence.
 
 ### Part 2 — Characterization: Where AI Exposure Falls ("Here's what it is")
 
@@ -353,11 +352,12 @@ Narrative arc: physical/informational structure → preparation level gradient �
 
 ### Part 3 — Action: What To Do About It ("Here's what to do about it")
 
-In the middle of a content revamp. The previous draft (eight charts in three audience sections — Organizations, Policy, Individuals — plus a property-biplot framing chart and an augmentation-regime caveat) has been pared back. Currently three charts; audience scaffolding will be rebuilt as more charts come in.
+Four charts in narrative order:
 
-1. **Tech commodities top-25** by depth × breadth composite (reused from `economic_footprint/skills_landscape`).
-2. **Conv → Confirmed → Ceiling reach by major sector** — all 22 major occ categories on a stacked bar with three segments: Conversational confirmed base + Conv → Confirmed gap (focal, colored by workers added) + Confirmed → Ceiling extension. Sorted by Conv → Confirmed % tasks gap. Right-side annotations show pp / workers / wages deltas for both gaps.
-3. **AI intensity vs. median-rank anchor (full eco_2025 denominator)** — chart 15 from `exploratory/pct_norm_vs_eco/run_v3.py`. Major occ categories ranked by Σ pct (rated, equal 3-source bias-corrected) / Σ (freq × emp) over the full eco_2025 universe, anchored on Educational Instruction = 1.00×, with a dashed median line. Bars shaded by `pct_tasks_affected`. Imports v3 compute at function level — skips with a warning if the gitignored exploratory folder is absent.
+1. **Conv → Confirmed → Ceiling reach by major sector (top 10)** — top 10 majors by Conv→Confirmed % tasks gap, stacked into three segments: Conversational confirmed base (tasks-blue) + Conv → Confirmed agentic gap (focal, shaded by workers added) + Confirmed → Ceiling extension. Bar text inside segments shows +pp; right-side annotations show workers + wages deltas only (no pp).
+2. **Tech commodities top-25** by depth × breadth composite. Bar gradient is a workers-green + tasks-blue blend, label order is `% avg | workers | wages | occs | entries`.
+3. **Occupations Most At Risk Of Displacement (n=43)** — risk_score_audit Section 5f. Bars sorted by BLS projected employment decline 2024–2034 (absolute value). Bar shading = % tasks affected (tasks-blue gradient). Filter: pct > 50% AND pct trend > median AND emp proj < 0 AND SKA pct > median. Imports `_load_flag_df` and `_build_focused_set` from the exploratory audit module at function level; skips gracefully if the audit folder isn't available.
+4. **AI Usage Intensity by Sector** — chart 15 from `exploratory/pct_norm_vs_eco/run_v3.py`. Major occ categories ranked by Σ pct (rated, equal 3-source bias-corrected) / Σ (freq × emp) over the full eco_2025 universe, anchored on Educational Instruction = 1.00×, dashed median line. Bar gradient swapped to tasks-blue (light → dark). Imports v3 compute at function level.
 
 ---
 
@@ -371,7 +371,7 @@ Groups: High-profile/high-employment · AI-controversial/interesting · Utah-rel
 
 ## Exploratory Folder
 
-`analysis/exploratory/` is gitignored (with one carved-out exception, `all_paper_charts/`, see below) and outside the question system. It holds one-off charts that are interesting but don't belong in a formal question bucket. Nothing from here feeds into `question_findings/` or `report/`.
+`analysis/exploratory/` is gitignored, with two carved-out committed exceptions: `all_paper_charts/` (paper figure mirror) and `appendix_charts/` (auxiliary paper figures). Inside `all_paper_charts/` there is also a re-excluded gitignored sandbox at `all_paper_charts/offshoots/` for trying alternate variants of paper charts. The folder is otherwise outside the question system; nothing here feeds into `question_findings/` or `report/`.
 
 Each exploratory sub-folder must have:
 - `run.py` — script that produces all figures
@@ -383,7 +383,8 @@ The `<name>_report.md` is the primary deliverable. It should read like a short a
 
 | Sub-folder | What it makes |
 |------------|--------------|
-| `all_paper_charts/` | **Committed (gitignore exception).** Mirror of every figure currently in `analysis/paper/results/part_{1,2,3}/figures/`. `run.py` syncs the PNGs into `figures/part_{1,2,3}/` and regenerates `all_paper_charts.md`, which is a no-prose listing of every chart. Surfaces on GitHub so the paper's figure set is browsable in one place. |
+| `all_paper_charts/` | **Committed (gitignore exception).** Mirror of every figure currently in `analysis/paper/results/part_{1,2,3}/figures/`. `run.py` syncs the PNGs into `figures/part_{1,2,3}/`, drops a SKIP list of charts not in results.md, applies a CHART_ORDER per part (matches `paper/results/results.md`), and regenerates `all_paper_charts.md` (no-prose listing). Contains a re-excluded gitignored sub-folder `offshoots/` for trying alternate chart variants. |
+| `appendix_charts/` | **Committed (gitignore exception).** Auxiliary paper figures generated fresh by its own `run.py` (no copying from elsewhere). Currently produces `phys_zone_faceted.png` (Physical / Mixed / Non-physical panels of job zone violins, with per-row + per-column median+n labels) and `ska_full.png` (full element-level SKA across skills/knowledge/abilities with the complete workforce ladder Mean+P95+Top-10). Writes `appendix_charts.md` listing both. |
 | `ska_levels/` | AI imp×lv vs. workforce benchmarks (eco mean, top-10, p95) for every SKA element across three AI variants |
 | `ska_category_breakdown/` | Same per-element AI-vs-workforce data as the Part 2 paper SKA chart (all_confirmed, importance ≥ 3), rolled up to O*NET native categories from element_id prefixes — 7 skills subcategories (Content / Process / Social / Complex Problem Solving / Technical / Systems / Resource Management), 15 abilities subcategories (Cognitive split into Verbal / Idea Generation / Quantitative / Memory / Perceptual / Spatial / Attentiveness; Psychomotor split into Fine Manipulative / Control Movement / Reaction; Physical split into Strength / Endurance / Flexibility, Balance, and Coordination; Sensory split into Visual / Auditory and Speech), and 10 knowledge categories (Education and Training, Communications, Arts and Humanities, etc). Headline metric per category: mean of `ai_max / eco_max × 100`. Output: 4 PNGs (combined 3-panel + one per type), 2 CSVs (per-element + per-category), and `ska_category_breakdown_report.md` with category tables and element-level detail nested under each category. Findings: Education and Training (86%) tops Knowledge; Memory and Verbal (79%, 76%) top Abilities; Content and Process (71%, 68%) top Skills. Bottom of each: Transportation (48%), Control Movement (27%), Technical (49%). |
 | `zone_pivot_anatomy/` | Why zone 3 peaks on pivot cost; SKA overlap structure, sector composition, and scatter of at-risk occupations by zone |

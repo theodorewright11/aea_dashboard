@@ -134,14 +134,6 @@ The bottom of all three panels converges: Farming, Fishing, and Forestry (13.7%,
 
 ## Part 3 — Action: What To Do About It
 
-### Tech Commodities Where AI Has Reach
-
-![Tech Commodities](part_3/figures/tech_commodities.png)
-
-*Prose pending.*
-
----
-
 ### Conv → Confirmed → Ceiling Reach by Major Sector
 
 ![Conv → Confirmed → Ceiling](part_3/figures/conv_confirmed_ceiling_gap.png)
@@ -150,7 +142,23 @@ The bottom of all three panels converges: Farming, Fishing, and Forestry (13.7%,
 
 ---
 
-### AI Intensity vs. Median-Rank Anchor (Full eco_2025 Denominator)
+### Tech Commodities Where AI Has Reach
+
+![Tech Commodities](part_3/figures/tech_commodities.png)
+
+*Prose pending.*
+
+---
+
+### Occupations Most At Risk Of Displacement
+
+![Risk Score 5f — SKA-gated focused 43](part_3/figures/risk_score_5f.png)
+
+*Prose pending.*
+
+---
+
+### AI Usage Intensity by Sector
 
 ![AI Intensity Anchor](part_3/figures/intensity_anchor_fulleco.png)
 
