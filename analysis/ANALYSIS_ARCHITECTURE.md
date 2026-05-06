@@ -246,14 +246,32 @@ analysis/
     │                              conservative counterfactual (physical-flag +
     │                              d/m/s gate) recovers 4.2pp / 6.4M / $0.3T —
     │                              about 60% of plain conservative's cut.
-    │                              Office/Admin recovers +8.2pp, Sales +5.7pp,
-    │                              Healthcare Practitioners +5.3pp, Architecture
-    │                              +4.9pp. Revised recommendations: (a) DON'T
-    │                              adopt plain conservative as primary; either
-    │                              keep regular all_confirmed, adopt smart-
-    │                              conservative, or improve the physical
-    │                              classifier first; (b) keep freq as primary
-    │                              weight (unchanged from Stage B).
+    │                              Q1 resolution `ai_filter_comparison.py`:
+    │                              evaluates the user-built AI-share IWA filter
+    │                              (`final_all_confirmed_usage_ms_ai_phys_filtered_2026-02-12.csv`)
+    │                              — strips Microsoft contributions only on IWAs
+    │                              where AI share > 2× human share. Drops just
+    │                              305 (task, occ) pairs (vs plain conservative's
+    │                              2,160), all of which are a strict subset of
+    │                              plain conservative's drops. d/m/s of new
+    │                              drops matches the eco physical baseline
+    │                              almost exactly (d=2.91 vs 2.92), where plain
+    │                              conservative's drops sit halfway between
+    │                              physical and non-physical baselines (d=3.09).
+    │                              Sample drops are unambiguously physical —
+    │                              postural drainage, mail handling, food
+    │                              delivery, equipment demonstration. National
+    │                              headlines: regular 40% / 61M / $4T → new
+    │                              AI-filter 38.5% / 58.9M / $3.9T → plain
+    │                              conservative 33% / 51M / $3.5T. Spearman
+    │                              ρ vs regular at occ level: new=0.992,
+    │                              plain=0.938. **Final recommendations:** (Q1)
+    │                              adopt new AI-share filter as primary All
+    │                              Confirmed (re-point dataset name in
+    │                              backend/config.py to the new file), drop
+    │                              all_confirmed_conservative from
+    │                              ANALYSIS_CONFIGS, collapse to 5 configs;
+    │                              (Q2) keep freq as primary weight.
     ├── appendix_charts/         — COMMITTED (gitignore exception). Auxiliary
     │                              paper figures generated fresh by its own
     │                              run.py (no copying from elsewhere). Two
