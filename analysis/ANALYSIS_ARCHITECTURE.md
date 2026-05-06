@@ -201,6 +201,9 @@ analysis/
     │                              committed mirror. Same shape as
     │                              appendix_charts/: one run.py, one
     │                              offshoots.md, all charts generated fresh.
+    │                              Larger diagnostics may live in their own
+    │                              sub-folder with a self-contained run.py +
+    │                              README + report.md (also gitignored).
     │                              Currently produces:
     │                              (1) simple_mean_convergence — rebuilds the
     │                              paper convergence chart with internal
@@ -216,6 +219,24 @@ analysis/
     │                              sorted by Δ descending (biggest growers at
     │                              top). Top 10 picked per metric from the
     │                              latest All Confirmed snapshot.
+    │                              (5) weighting_config_test/ — sub-folder
+    │                              diagnostic for two paper-locking decisions.
+    │                              Stage A: regular vs all_confirmed_conservative
+    │                              (Microsoft physical-tasks-stripped) under freq
+    │                              weighting; ρ = 0.94 at occ level (NOT a cosmetic
+    │                              swap — physical-heavy majors drop 10–17pp,
+    │                              national 40% → 33% / 61M → 51M / $4T → $3.5T).
+    │                              Stage B: 6 weighting variants on all_confirmed
+    │                              — freq, freq×t, freq×imp×rel, imp×rel, t,
+    │                              none. Top-4 majors stable across all variants;
+    │                              Spearman ρ ≥ 0.96 vs freq at occ level. Ships
+    │                              a parallel ratio-of-totals compute pipeline
+    │                              (validated at ρ = 1.0000 vs dashboard's
+    │                              get_pct_tasks_affected). Recommendations:
+    │                              (a) switch primary to conservative + collapse
+    │                              to 5 configs; (b) keep freq as primary weight.
+    │                              `t` joined from
+    │                              `data/final_eco_2025_with_task_properties.csv`.
     ├── appendix_charts/         — COMMITTED (gitignore exception). Auxiliary
     │                              paper figures generated fresh by its own
     │                              run.py (no copying from elsewhere). Two
