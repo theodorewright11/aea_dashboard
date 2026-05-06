@@ -265,8 +265,7 @@ def build_overview(results: Path, figures: Path) -> None:
         "AI Economic Exposure Across Data Configurations",
         subtitle=(
             "Share of national tasks, employment, and wages exposed per "
-            "AI data configuration — one bar each for % tasks exposed, "
-            "workers exposed, and wages exposed."
+            "AI data configuration."
         ),
         height=PAPER_H + 140,
         margin=dict(l=20, r=60, t=140, b=110),
@@ -852,8 +851,8 @@ def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) 
         fig,
         "Tasks Rated And AI Capability Over Time",
         subtitle="Cream rows don't have reliable AI capability scores.",
-        height=height,
-        margin=dict(l=10, r=10, t=100, b=20),
+        height=height + 50,
+        margin=dict(l=10, r=10, t=170, b=20),
     )
 
     label_set = {ANALYSIS_CONFIG_LABELS[k] for k in TREND_CONFIGS}

@@ -1343,19 +1343,25 @@ def build_major_categories(results: Path, figures: Path) -> None:
     worker_ticks = _nice_ticks(workers_max)
     wage_ticks = _nice_ticks(wages_max)
 
+    def _strip_zero_decimal(s: str) -> str:
+        """Drop trailing .0 before unit suffix: '3.0M' → '3M', '$200.0B' → '$200B'."""
+        for unit in ("M", "B", "K", "T"):
+            s = s.replace(f".0{unit}", unit)
+        return s
+
     # Per-panel x-axis tick formatting. Use fmt_workers / fmt_wages directly
     # for ticktext so wages render as "$700B" rather than plotly's SI default
-    # of "$700G".
+    # of "$700G". Strip the .0 decimal from round-magnitude ticks.
     fig.update_xaxes(ticksuffix="%", row=1, col=1)
     fig.update_xaxes(
         tickvals=worker_ticks,
-        ticktext=[fmt_workers(v) for v in worker_ticks],
+        ticktext=[_strip_zero_decimal(fmt_workers(v)) for v in worker_ticks],
         title=dict(text="Workers Exposed", font=dict(size=LABEL_FS - 2)),
         row=1, col=2,
     )
     fig.update_xaxes(
         tickvals=wage_ticks,
-        ticktext=[fmt_wages(v) for v in wage_ticks],
+        ticktext=[_strip_zero_decimal(fmt_wages(v)) for v in wage_ticks],
         title=dict(text="Wages Exposed", font=dict(size=LABEL_FS - 2)),
         row=1, col=3,
     )
