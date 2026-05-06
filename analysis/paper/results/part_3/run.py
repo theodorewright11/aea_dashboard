@@ -132,15 +132,13 @@ def build_tech_commodities(results: Path, figures: Path) -> None:
         )
         .reset_index()
     )
-    pct_min, pct_max = agg["mean_pct_affected"].min(), agg["mean_pct_affected"].max()
-    wrk_min, wrk_max = agg["workers_affected"].min(), agg["workers_affected"].max()
-    agg["norm_pct"] = (agg["mean_pct_affected"] - pct_min) / max(pct_max - pct_min, 1e-9)
-    agg["norm_workers"] = (agg["workers_affected"] - wrk_min) / max(wrk_max - wrk_min, 1e-9)
-    agg["composite"] = np.sqrt(agg["norm_pct"] * agg["norm_workers"])
-    top = agg.sort_values("composite", ascending=False).head(25).copy()
+    # Method B for ranking: workers in scope (= Σ pct/100 × emp). This
+    # captures depth × breadth in clean worker units. Method A's
+    # mean_pct_affected becomes the % label and color.
+    top = agg.sort_values("workers_affected", ascending=False).head(25).copy()
     save_csv(top, results / "tech_commodities_top25.csv")
 
-    top = top.sort_values("composite", ascending=True)  # smallest at bottom for plotly
+    top = top.sort_values("workers_affected", ascending=True)  # plotly bottom-up
     labels = [
         f"{p:.1f}% avg | {fmt_workers(wk)} workers | {fmt_wages(wa)} wages | "
         f"{o} occs | {int(ne):,} entries"
@@ -152,7 +150,7 @@ def build_tech_commodities(results: Path, figures: Path) -> None:
 
     fig = go.Figure()
     fig.add_trace(go.Bar(
-        x=top["composite"],
+        x=top["workers_affected"],
         y=top["Commodity Title"],
         orientation="h",
         marker=dict(
@@ -160,7 +158,7 @@ def build_tech_commodities(results: Path, figures: Path) -> None:
             colorscale=[[0, BLEND_LIGHT], [1, BLEND_DARK]],
             showscale=True,
             colorbar=dict(
-                title=dict(text="Avg %<br>tasks", side="top",
+                title=dict(text="Avg %<br>tasks exposed", side="top",
                            font=dict(size=ANNOT_FS)),
                 ticksuffix="%",
                 tickfont=dict(size=ANNOT_FS),
@@ -177,17 +175,26 @@ def build_tech_commodities(results: Path, figures: Path) -> None:
 
     style_paper_figure(
         fig,
-        "Top 25 Tech Commodities — Where AI Has the Deepest and Broadest Reach",
-        subtitle="Composite = √(% tasks × workers), each min-max scaled to 0–1",
+        "Top 25 Tech Commodities by Task Exposure × Employment",
+        subtitle=(
+            "Bar length = workers in scope through the commodity (Σ pct × emp across "
+            "occupation × tool entries). Color = avg % tasks exposed (Method A average)."
+        ),
         height=900, width=PAPER_W + 100,
-        margin=dict(l=20, r=440, t=110, b=80),
+        margin=dict(l=20, r=460, t=130, b=90),
     )
     fig.update_xaxes(
-        title=dict(text="Depth × Breadth Composite (0–1)", font=dict(size=LABEL_FS)),
+        title=dict(text="Depth of Exposure × Breadth of Exposure (workers in scope)",
+                   font=dict(size=LABEL_FS)),
         showgrid=True, gridcolor=PAPER_PALETTE["grid"],
-        showticklabels=True, range=[0, 1.05],
+        showticklabels=True,
+        tickfont=dict(size=TICK_FS - 2, family=FONT_FAMILY),
     )
-    fig.update_yaxes(showgrid=False, showline=False, tickfont=dict(size=11))
+    fig.update_yaxes(
+        title=dict(text="Tech commodity", font=dict(size=LABEL_FS - 2)),
+        showgrid=False, showline=False,
+        tickfont=dict(size=11, family=FONT_FAMILY),
+    )
     fig.update_layout(bargap=0.25)
 
     save_figure(fig, results / "figures" / "tech_commodities.png", scale=2)
@@ -243,7 +250,7 @@ def build_conv_confirmed_ceiling_gap(results: Path, figures: Path) -> None:
 
     fig = go.Figure()
 
-    # Segment 1: Conversational base — tasks blue
+    # Segment 1: Conversational confirmed — tasks blue
     fig.add_trace(go.Bar(
         y=cats, x=df["pct_conv"], orientation="h",
         name="Conversational confirmed",
@@ -254,48 +261,56 @@ def build_conv_confirmed_ceiling_gap(results: Path, figures: Path) -> None:
         hovertemplate="<b>%{y}</b><br>Conversational: %{x:.1f}%<extra></extra>",
     ))
 
-    # Segment 2: Conv → Confirmed gap (focal — workers-added gradient)
+    # Segment 2: Agentic add (Conv → Confirmed gap), workers-shaded green
+    wk_min_v = float(df["wk_gap_cv_cf"].min())
+    wk_max_v = float(df["wk_gap_cv_cf"].max())
     fig.add_trace(go.Bar(
         y=cats, x=df["pct_gap_cv_cf"], orientation="h",
-        name="Conv → Confirmed (agentic)",
+        name="Agentic add",
         marker=dict(
             color=df["wk_gap_cv_cf"].values,
-            colorscale=[[0, BLEND_LIGHT], [1, BLEND_DARK]],
-            showscale=False,
+            colorscale=[[0, "#cfe5dc"], [1, "#3a6b5e"]],
+            cmin=wk_min_v, cmax=wk_max_v,
+            showscale=True,
+            colorbar=dict(
+                title=dict(text="Workers<br>added (agentic)", side="top",
+                           font=dict(size=ANNOT_FS, family=FONT_FAMILY)),
+                tickvals=[wk_min_v, wk_max_v],
+                ticktext=[fmt_workers(wk_min_v), fmt_workers(wk_max_v)],
+                tickfont=dict(size=ANNOT_FS - 1, family=FONT_FAMILY),
+                len=0.55, thickness=14,
+                x=1.005, xanchor="left",
+            ),
             line=dict(width=0),
         ),
-        text=[f"+{v:.0f}pp" for v in df["pct_gap_cv_cf"]],
+        text=[f"+{v:.0f}%" for v in df["pct_gap_cv_cf"]],
         textposition="inside", insidetextanchor="middle",
         textfont=dict(size=ANNOT_FS, color="white", family=FONT_FAMILY),
-        hovertemplate="<b>%{y}</b><br>Conv → Conf gap: +%{x:.1f}pp<extra></extra>",
+        hovertemplate="<b>%{y}</b><br>Agentic add: +%{x:.1f}%<extra></extra>",
     ))
 
-    # Segment 3: Confirmed → Ceiling extension
+    # Segment 3: Ceiling add (Confirmed → Ceiling) — wages tan
     fig.add_trace(go.Bar(
         y=cats, x=df["pct_gap_cf_ce"], orientation="h",
-        name="Confirmed → Ceiling",
-        marker=dict(color="#e8d9b8", opacity=0.85, line=dict(width=0)),
-        text=[f"+{v:.0f}pp" for v in df["pct_gap_cf_ce"]],
+        name="Ceiling add",
+        marker=dict(color="#e8d9b8", opacity=0.9, line=dict(width=0)),
+        text=[f"+{v:.0f}%" for v in df["pct_gap_cf_ce"]],
         textposition="inside", insidetextanchor="middle",
         textfont=dict(size=ANNOT_FS, color=PAPER_PALETTE["text_dark"], family=FONT_FAMILY),
-        hovertemplate="<b>%{y}</b><br>Conf → Ceil gap: +%{x:.1f}pp<extra></extra>",
+        hovertemplate="<b>%{y}</b><br>Ceiling add: +%{x:.1f}%<extra></extra>",
     ))
 
-    # Right-side annotations: split into two stacked annotations per row to
-    # avoid <br> rendering quirks in this plotly+kaleido combination.
-    n_rows = len(cats)
-    for idx, (cat, pct_ceil, w1, g1, w2, g2) in enumerate(zip(
-        cats, df["pct_ceil"],
+    # Right-side annotations: stacked two lines per row, only +workers / +wages
+    for idx, (w1, g1, w2, g2, pct_ceil) in enumerate(zip(
         df["wk_gap_cv_cf"], df["wg_gap_cv_cf"],
         df["wk_gap_cf_ce"], df["wg_gap_cf_ce"],
+        df["pct_ceil"],
     )):
-        # Each row occupies one categorical y position; offset by ±0.18 in
-        # the categorical axis to stack two text lines per row.
         fig.add_annotation(
             x=pct_ceil + 1.5,
             y=idx + 0.20,
             xref="x", yref="y",
-            text=f"Agentic: {fmt_workers(w1)} workers · {fmt_wages(g1)}",
+            text=f"Agentic add: +{fmt_workers(w1)} workers · +{fmt_wages(g1)}",
             showarrow=False,
             xanchor="left", yanchor="middle",
             font=dict(size=ANNOT_FS, color=PAPER_PALETTE["text"], family=FONT_FAMILY),
@@ -304,7 +319,7 @@ def build_conv_confirmed_ceiling_gap(results: Path, figures: Path) -> None:
             x=pct_ceil + 1.5,
             y=idx - 0.20,
             xref="x", yref="y",
-            text=f"Ceiling: {fmt_workers(w2)} workers · {fmt_wages(g2)}",
+            text=f"Ceiling add: +{fmt_workers(w2)} workers · +{fmt_wages(g2)}",
             showarrow=False,
             xanchor="left", yanchor="middle",
             font=dict(size=ANNOT_FS, color=PAPER_PALETTE["text"], family=FONT_FAMILY),
@@ -313,26 +328,28 @@ def build_conv_confirmed_ceiling_gap(results: Path, figures: Path) -> None:
     fig.update_layout(barmode="stack", bargap=0.25)
     style_paper_figure(
         fig,
-        "Conversational → Confirmed → Ceiling Reach by Major Sector (Top 10)",
-        subtitle="Sorted by Conv → Confirmed gap. Middle-segment color shades by workers added.",
-        height=600, width=PAPER_W + 250,
-        margin=dict(l=30, r=560, t=110, b=120),
+        "Top 10 Task Exposure Addition From Agentic AI by Major Occupational Category",
+        subtitle="Additional exposure from agentic AI use, then from MCP / ceiling reach",
+        height=640, width=PAPER_W + 350,
+        margin=dict(l=30, r=620, t=130, b=160),
     )
     x_top = max(df["pct_ceil"]) * 1.04
     fig.update_xaxes(
-        title=dict(text="% Tasks Affected", font=dict(size=LABEL_FS)),
+        title=dict(text="% Tasks Exposed", font=dict(size=LABEL_FS)),
         showgrid=True, gridcolor=PAPER_PALETTE["grid"],
         ticksuffix="%", range=[0, x_top],
         tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
     )
     fig.update_yaxes(
+        title=dict(text="Major occupational category", font=dict(size=LABEL_FS - 2)),
         showgrid=False, showline=False,
         tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
     )
     fig.update_layout(
         legend=dict(
             orientation="h",
-            yanchor="bottom", y=-0.18, xanchor="left", x=0,
+            yanchor="bottom", y=-0.24, xanchor="left", x=0,
+            traceorder="normal",
             font=dict(size=ANNOT_FS, family=FONT_FAMILY),
             bgcolor="rgba(255,255,255,0.9)",
         ),
@@ -428,37 +445,39 @@ def build_intensity_anchor_fulleco(results: Path, figures: Path) -> None:
         showlegend=False,
     ))
 
-    # Median reference line
+    # Median reference line — anchor is set so it sits at x = 1
     fig.add_vline(
-        x=median_lift, line_dash="dash",
+        x=1.0, line_dash="dash",
         line_color=PAPER_PALETTE["negative"], line_width=1.5,
     )
     fig.add_annotation(
-        x=median_lift, y=1.005,
+        x=1.0, y=1.005,
         xref="x", yref="paper",
-        text=f"median = {median_lift:.2f}x",
+        text="median",
         showarrow=False, xanchor="left", yanchor="bottom",
         font=dict(size=ANNOT_FS, color=PAPER_PALETTE["negative"], family=FONT_FAMILY),
     )
 
     style_paper_figure(
         fig,
-        "AI Usage Intensity by Sector",
+        f"Actual Equalized AI Usage as a Multiple of Median Usage ({anchor_major})",
         subtitle=(
-            f"Anchor: {anchor_major} = 1.00× — bars are usage per unit of economic activity, "
-            "shaded by % tasks affected"
+            "Σ pct ÷ Σ (freq × employment) for equalization — debiased to a "
+            "Claude / Copilot / ChatGPT GWA-distribution blend (work-related ChatGPT chat). "
+            "Bar shading = % tasks exposed."
         ),
-        height=820, width=PAPER_W,
-        margin=dict(l=30, r=140, t=110, b=110),
+        height=860, width=PAPER_W,
+        margin=dict(l=30, r=160, t=140, b=110),
     )
     x_top = max(plot_df["lift"]) * 1.18
     fig.update_xaxes(
-        title=dict(text="Usage relative to anchor (×)", font=dict(size=LABEL_FS)),
+        title=dict(text="Usage relative to median (×)", font=dict(size=LABEL_FS)),
         showgrid=True, gridcolor=PAPER_PALETTE["grid"],
         range=[0, x_top],
         tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
     )
     fig.update_yaxes(
+        title=dict(text="Major occupational category", font=dict(size=LABEL_FS - 2)),
         showgrid=False, showline=False,
         tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
     )
@@ -500,6 +519,7 @@ def build_risk_score_5f(results: Path, figures: Path) -> None:
 
     pct_min_f = float(s5f["pct"].min())
     pct_max_f = float(s5f["pct"].max())
+    pct_delta_med = float(flags_df["pct_delta"].median())
 
     fig = go.Figure()
     fig.add_trace(go.Bar(
@@ -508,11 +528,22 @@ def build_risk_score_5f(results: Path, figures: Path) -> None:
             color=s5f["pct"].values,
             colorscale=[[0, TASKS_LIGHT], [1, TASKS_DARK]],
             cmin=pct_min_f, cmax=pct_max_f,
+            showscale=True,
+            colorbar=dict(
+                title=dict(text="% Tasks<br>exposed", side="top",
+                           font=dict(size=ANNOT_FS, family=FONT_FAMILY)),
+                ticksuffix="%",
+                tickvals=[pct_min_f, pct_max_f],
+                ticktext=[f"{pct_min_f:.0f}%", f"{pct_max_f:.0f}%"],
+                tickfont=dict(size=ANNOT_FS - 1, family=FONT_FAMILY),
+                len=0.55, thickness=14,
+                x=1.005, xanchor="left",
+            ),
             line=dict(width=0),
         ),
         text=[
-            f"{r['emp_proj_pct']:+.1f}% emp proj  |  {r['major_short']}  |  "
-            f"pct {r['pct']:.0f}%  |  zone {int(r['job_zone'])}"
+            f"{r['emp_proj_pct']:+.1f}% emp proj  |  pct {r['pct']:.0f}%  |  "
+            f"zone {int(r['job_zone'])}  |  {r['major_short']}"
             for _, r in s5f.iterrows()
         ],
         textposition="outside",
@@ -523,18 +554,19 @@ def build_risk_score_5f(results: Path, figures: Path) -> None:
     ))
 
     n = len(s5f)
-    height = max(900, n * 25 + 220)
+    height = max(900, n * 25 + 240)
 
     style_paper_figure(
         fig,
-        f"Occupations Most At Risk Of Displacement (n={n})",
+        f"Occupations Most At Risk (n={n})",
         subtitle=(
-            "% tasks affected > 50, growth above median, BLS projects employment decline, "
-            "and AI capability exceeds median SKA need. "
-            "Bar shading: darker = higher % tasks affected."
+            f"Negative BLS employment projection 2024–2034 · "
+            f"Tasks exposed > 50% · "
+            f"Task exposure trend > median (median = {pct_delta_med:.1f}pp) · "
+            f"AI capability above median for occupation's SKA need"
         ),
-        height=height, width=PAPER_W + 200,
-        margin=dict(l=380, r=440, t=110, b=110),
+        height=height, width=PAPER_W + 280,
+        margin=dict(l=380, r=540, t=130, b=110),
     )
     fig.update_xaxes(
         title=dict(text="BLS projected employment decline 2024–2034 (%)",
@@ -543,6 +575,7 @@ def build_risk_score_5f(results: Path, figures: Path) -> None:
         tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
     )
     fig.update_yaxes(
+        title=dict(text="Occupation", font=dict(size=LABEL_FS - 2)),
         showgrid=False, showline=False,
         tickfont=dict(size=TICK_FS - 4, family=FONT_FAMILY),
     )

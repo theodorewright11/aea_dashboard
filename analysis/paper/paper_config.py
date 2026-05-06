@@ -29,13 +29,14 @@ HEATMAP_TEXT_FS: int = 18  # Correlation values inside heatmap cells
 TABLE_HEADER_FS: int = 14  # Table column headers
 TABLE_CELL_FS: int = 13    # Table cell text
 
-# ── Five-config colors ───────────────────────────────────────────────────
+# ── Six-config colors ────────────────────────────────────────────────────
 CONFIG_COLORS: dict[str, str] = {
-    "all_confirmed":      "#3a5f83",
-    "all_ceiling":        "#4a7c6f",
-    "human_conversation": "#c05621",
-    "agentic_confirmed":  "#7b5ea7",
-    "agentic_ceiling":    "#2e8b8b",
+    "all_confirmed":              "#3a5f83",
+    "all_ceiling":                "#4a7c6f",
+    "human_conversation":         "#c05621",
+    "agentic_confirmed":          "#7b5ea7",
+    "agentic_ceiling":            "#2e8b8b",
+    "all_confirmed_conservative": "#8b4789",
 }
 
 # ── Three-metric colors (muted, cohesive) ────────────────────────────────
@@ -49,10 +50,12 @@ METRIC_COLORS: dict[str, str] = {
 HEATMAP_LOW: str = "#f0e6d3"
 HEATMAP_HIGH: str = "#0d2b45"
 
-# ── Trend line colors (muted to match palette) ──────────────────────────
+# ── Trend line colors — match the aggregate (overview) palette so the
+# narrative reads consistently. all_ceiling lightened for legibility on
+# overlapping line charts.
 TREND_COLORS: dict[str, str] = {
-    "all_confirmed": "#4a7a94",
-    "all_ceiling":   "#6a9e8f",
+    "all_confirmed": "#3a5f83",   # CONFIG_COLORS slate blue
+    "all_ceiling":   "#7eaa9d",   # CONFIG_COLORS teal green, lightened
 }
 
 # ── Full palette (consolidated reference) ────────────────────────────────

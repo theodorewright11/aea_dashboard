@@ -48,6 +48,7 @@ CONFIG_ORDER: list[str] = [
     "human_conversation",
     "agentic_confirmed",
     "agentic_ceiling",
+    "all_confirmed_conservative",
 ]
 
 # ── Correlation sources ──────────────────────────────────────────────────
@@ -214,19 +215,22 @@ def build_overview(results: Path, figures: Path) -> None:
     plot_rows = list(reversed(rows))
     labels = [r["label"] for r in plot_rows]
 
+    # Bar order within each config: tasks → workers → wages (top to bottom
+    # within each grouped cluster). Plotly grouped bars stack first-trace
+    # at the bottom of the cluster, so add them in reverse.
     metrics = [
-        ("pct_tasks",   "% Tasks Affected",
+        ("pct_tasks",   "% Tasks Exposed",
          METRIC_COLORS["tasks"],
-         lambda r: f"{r['pct_tasks']:.1f}%"),
-        ("pct_workers", "Workers in AI-Exposed Occupations (% of economy employment)",
+         lambda r: f"{r['pct_tasks']:.1f}% tasks"),
+        ("pct_workers", "Workers In Scope (% of national employment)",
          METRIC_COLORS["workers"],
-         lambda r: f"{fmt_workers(r['workers'])}  ({r['pct_workers']:.1f}%)"),
-        ("pct_wages",   "Wages in AI-Exposed Occupations (% of economy wages)",
+         lambda r: f"{fmt_workers(r['workers'])} ({r['pct_workers']:.1f}%) workers"),
+        ("pct_wages",   "Wages In Scope (% of national wages)",
          METRIC_COLORS["wages"],
-         lambda r: f"{fmt_wages(r['wages'])}  ({r['pct_wages']:.1f}%)"),
+         lambda r: f"{fmt_wages(r['wages'])} ({r['pct_wages']:.1f}%) wages"),
     ]
 
-    for pct_key, name, color, fmt_fn in metrics:
+    for pct_key, name, color, fmt_fn in reversed(metrics):
         fig.add_trace(go.Bar(
             y=labels,
             x=[r[pct_key] for r in plot_rows],
@@ -236,26 +240,32 @@ def build_overview(results: Path, figures: Path) -> None:
             text=[fmt_fn(r) for r in plot_rows],
             textposition="inside",
             insidetextanchor="middle",
-            textfont=dict(size=INSIDE_FS, color="white", family=FONT_FAMILY),
+            textfont=dict(size=INSIDE_FS - 2, color="white", family=FONT_FAMILY),
         ))
 
+    # Reorder legend to read tasks → workers → wages even though traces
+    # were added in reverse for the cluster ordering.
     fig.update_layout(
         barmode="group",
-        bargap=0.25,
+        bargap=0.30,
         bargroupgap=0.06,
+        legend=dict(traceorder="reversed"),
         xaxis=dict(
-            title="% of National Total",
-            range=[0, 60],
+            title=dict(text="% of National Total", font=dict(size=LABEL_FS)),
+            range=[0, 65],
             ticksuffix="%",
         ),
-        yaxis=dict(tickfont=dict(size=LABEL_FS, family=FONT_FAMILY)),
+        yaxis=dict(
+            title=dict(text="Data Configuration", font=dict(size=LABEL_FS)),
+            tickfont=dict(size=LABEL_FS, family=FONT_FAMILY),
+        ),
     )
 
     style_paper_figure(
         fig,
-        "Aggregate AI Economic Footprint",
-        height=PAPER_H + 40,
-        margin=dict(l=20, r=60, t=70, b=90),
+        "AI Economic Exposure Across Data Configurations",
+        height=PAPER_H + 100,
+        margin=dict(l=20, r=60, t=70, b=110),
     )
 
     save_figure(fig, results / "figures" / "overview.png")
@@ -370,32 +380,34 @@ def _ext_at_level(ext_df: pd.DataFrame, col: str, agg_level: str) -> pd.Series:
     return work.groupby("group")[col].mean()
 
 
-def build_convergence(results: Path, figures: Path) -> None:
-    """One combined heatmap per agg level. Y-axis = our 4 internal sources.
-    X-axis = our 4 sources (lower triangle filled, diagonal/upper blank) + 4
-    external benchmarks = 8 cols. 2x2 grid across SOC levels. Single shared
-    color bar; zmin = min observed across all cells."""
+def _build_convergence_chart(
+    rows_keys: list[str],
+    rows_labels: list[str],
+    rows_data: dict[str, dict[str, pd.Series]],
+    title: str,
+    subtitle: str,
+    out_name: str,
+    csv_name: str,
+    results: Path,
+    figures: Path,
+    y_axis_title: str,
+) -> None:
+    """Build one combined heatmap (lower-tri internal + external block).
+
+    `rows_keys` and `rows_labels` define the y-axis. `rows_data` is a
+    nested dict {key → {level → pd.Series}} of pct_tasks_affected at
+    each SOC level.
+    """
     eloundou = _load_eloundou_occ()
     aioe = _compute_aioe_occ()
     ext_df = eloundou.merge(aioe, on="title_current", how="outer")
-    print(f"  External benchmarks loaded: {len(ext_df)} occs")
-
-    source_data: dict[str, dict[str, pd.Series]] = {}
-    for skey in CORR_ORDER:
-        ds = CORR_SOURCES[skey]["dataset"]
-        source_data[skey] = {}
-        for level in AGG_LEVELS:
-            df = _run_config(ds, level)
-            source_data[skey][level] = df.set_index("category")["pct_tasks_affected"]
-        print(f"  {CORR_SOURCES[skey]['label']}: loaded all levels")
 
     ext_keys = [k for k, _ in EXT_SOURCES]
     ext_labels = [lbl for _, lbl in EXT_SOURCES]
-    our_labels = CORR_LABELS
-    n = len(CORR_ORDER)
+    n = len(rows_keys)
     n_ext = len(EXT_SOURCES)
 
-    x_labels = list(our_labels) + list(ext_labels)
+    x_labels = list(rows_labels) + list(ext_labels)
     n_cols = len(x_labels)
 
     corr_records: list[dict] = []
@@ -406,11 +418,11 @@ def build_convergence(results: Path, figures: Path) -> None:
         mat = np.full((n, n_cols), np.nan)
         pmat = np.full((n, n_cols), np.nan)
 
-        # Internal block (lower triangle): rows 0..n-1 vs cols 0..n-1
+        # Internal block (lower triangle)
         for i in range(n):
             for j in range(i):
-                si = source_data[CORR_ORDER[i]][level]
-                sj = source_data[CORR_ORDER[j]][level]
+                si = rows_data[rows_keys[i]][level]
+                sj = rows_data[rows_keys[j]][level]
                 merged = pd.concat([si, sj], axis=1, join="inner").dropna()
                 if len(merged) < 3:
                     continue
@@ -419,15 +431,15 @@ def build_convergence(results: Path, figures: Path) -> None:
                 pmat[i, j] = pval
                 corr_records.append({
                     "level": level, "kind": "internal",
-                    "source_a": our_labels[i], "source_b": our_labels[j],
+                    "source_a": rows_labels[i], "source_b": rows_labels[j],
                     "rho": round(float(rho), 3),
                     "p_value": round(float(pval), 6),
                     "n": len(merged), "stars": _stars(pval),
                 })
 
-        # External block: rows 0..n-1 vs cols n..n+n_ext-1
-        for i, skey in enumerate(CORR_ORDER):
-            ours = source_data[skey][level]
+        # External block
+        for i, skey in enumerate(rows_keys):
+            ours = rows_data[skey][level]
             for k, ext_key in enumerate(ext_keys):
                 theirs = _ext_at_level(ext_df, ext_key, level)
                 merged = pd.concat(
@@ -441,7 +453,7 @@ def build_convergence(results: Path, figures: Path) -> None:
                 pmat[i, n + k] = pval
                 corr_records.append({
                     "level": level, "kind": "external",
-                    "source_a": our_labels[i], "source_b": ext_labels[k],
+                    "source_a": rows_labels[i], "source_b": ext_labels[k],
                     "rho": round(float(rho), 3),
                     "p_value": round(float(pval), 6),
                     "n": len(merged), "stars": _stars(pval),
@@ -450,18 +462,18 @@ def build_convergence(results: Path, figures: Path) -> None:
         matrices[level] = mat
         pmatrices[level] = pmat
 
-    save_csv(pd.DataFrame(corr_records), results / "spearman_combined.csv")
+    save_csv(pd.DataFrame(corr_records), results / csv_name)
 
-    # Shared color scale: zmin = min observed across all subplots, zmax = 1.0
     all_vals = np.concatenate([m[~np.isnan(m)] for m in matrices.values()])
-    z_min = float(np.floor(all_vals.min() * 20) / 20)  # round down to nearest 0.05
+    z_min = float(np.floor(all_vals.min() * 20) / 20)
     z_max = 1.0
 
+    # Generously spaced 2x2 grid for readability
     fig = make_subplots(
         rows=2, cols=2,
         subplot_titles=[AGG_TITLES[l] for l in AGG_LEVELS],
-        horizontal_spacing=0.10,
-        vertical_spacing=0.14,
+        horizontal_spacing=0.16,
+        vertical_spacing=0.20,
     )
 
     for idx, level in enumerate(AGG_LEVELS):
@@ -474,7 +486,7 @@ def build_convergence(results: Path, figures: Path) -> None:
             go.Heatmap(
                 z=mat.tolist(),
                 x=x_labels,
-                y=our_labels,
+                y=rows_labels,
                 colorscale=[[0, HEATMAP_LOW], [1, HEATMAP_HIGH]],
                 zmin=z_min, zmax=z_max,
                 showscale=(idx == 3),
@@ -496,16 +508,16 @@ def build_convergence(results: Path, figures: Path) -> None:
                     continue
                 norm = (val - z_min) / max(z_max - z_min, 1e-9)
                 txt_color = "white" if norm >= 0.55 else PAPER_PALETTE["text_dark"]
+                cell_fs = HEATMAP_TEXT_FS - 4 if n_cols >= 9 else HEATMAP_TEXT_FS - 2
                 fig.add_annotation(
-                    x=x_labels[j], y=our_labels[i],
+                    x=x_labels[j], y=rows_labels[i],
                     text=f"{val:.2f}{_stars(pmat[i, j])}",
                     showarrow=False,
-                    font=dict(size=HEATMAP_TEXT_FS - 2, family=FONT_FAMILY, color=txt_color),
+                    font=dict(size=cell_fs, family=FONT_FAMILY, color=txt_color),
                     xref=f"x{idx + 1}" if idx > 0 else "x",
                     yref=f"y{idx + 1}" if idx > 0 else "y",
                 )
 
-        # Vertical divider between internal and external blocks
         x_axis = f"x{idx + 1}" if idx > 0 else "x"
         y_axis = f"y{idx + 1}" if idx > 0 else "y"
         fig.add_shape(
@@ -516,18 +528,25 @@ def build_convergence(results: Path, figures: Path) -> None:
             line=dict(color=PAPER_PALETTE["text"], width=2),
         )
 
+    # Scale figure with column count for breathing room
+    fig_width = PAPER_W + max(0, (n_cols - 8) * 80)
+    fig_height = PAPER_H + 320
+
     style_paper_figure(
         fig,
-        "Spearman ρ — Internal Source Agreement and External Benchmark Convergence",
-        width=PAPER_W + 100,
-        height=PAPER_H + 240,
-        margin=dict(l=20, r=130, t=90, b=110),
+        title,
+        subtitle=subtitle,
+        width=fig_width,
+        height=fig_height,
+        margin=dict(l=40, r=160, t=110, b=170),
     )
 
+    # Asterisk legend pulled below the chart area, fully outside the
+    # plot region so it doesn't overlap with axis labels.
     fig.add_annotation(
         text=SIG_FOOTNOTE,
         xref="paper", yref="paper",
-        x=0, y=-0.08, xanchor="left", yanchor="top",
+        x=0, y=-0.18, xanchor="left", yanchor="top",
         showarrow=False,
         font=dict(size=ANNOT_FS, family=FONT_FAMILY,
                   color=PAPER_PALETTE["muted"]),
@@ -545,17 +564,85 @@ def build_convergence(results: Path, figures: Path) -> None:
         xkey = f"xaxis{i}" if i > 1 else "xaxis"
         ykey = f"yaxis{i}" if i > 1 else "yaxis"
         fig.layout[xkey].tickfont = dict(size=TICK_FS - 2, family=FONT_FAMILY)
-        fig.layout[ykey].tickfont = dict(size=TICK_FS - 1, family=FONT_FAMILY)
+        fig.layout[ykey].tickfont = dict(size=TICK_FS - 2, family=FONT_FAMILY)
         fig.layout[xkey].tickangle = -30
+        if y_axis_title:
+            fig.layout[ykey].title = dict(
+                text=y_axis_title,
+                font=dict(size=LABEL_FS - 2, family=FONT_FAMILY),
+            )
 
-    save_figure(fig, results / "figures" / "convergence.png")
-    _copy_fig(results, figures, "convergence.png")
-    print("  -> convergence.png")
+    save_figure(fig, results / "figures" / out_name)
+    _copy_fig(results, figures, out_name)
+    print(f"  -> {out_name}")
+
+
+def build_convergence(results: Path, figures: Path) -> None:
+    """Source-level external benchmark comparison: 4 internal sources
+    on the y-axis, 4 sources (lower-tri) + 4 external benchmarks on x."""
+    source_data: dict[str, dict[str, pd.Series]] = {}
+    for skey in CORR_ORDER:
+        ds = CORR_SOURCES[skey]["dataset"]
+        source_data[skey] = {}
+        for level in AGG_LEVELS:
+            df = _run_config(ds, level)
+            source_data[skey][level] = df.set_index("category")["pct_tasks_affected"]
+        print(f"  {CORR_SOURCES[skey]['label']}: loaded all levels")
+
+    _build_convergence_chart(
+        rows_keys=CORR_ORDER,
+        rows_labels=CORR_LABELS,
+        rows_data=source_data,
+        title="External Benchmark Comparison — by AI Source",
+        subtitle="Spearman ρ across our 4 internal sources and 4 academic benchmarks",
+        out_name="convergence.png",
+        csv_name="spearman_combined.csv",
+        results=results, figures=figures,
+        y_axis_title="Internal source",
+    )
+
+
+def build_convergence_configs(results: Path, figures: Path) -> None:
+    """Configuration-level external benchmark comparison: 6 ANALYSIS_CONFIGS
+    on the y-axis, 6 configs (lower-tri) + 4 external benchmarks on x."""
+    config_data: dict[str, dict[str, pd.Series]] = {}
+    for ckey in CONFIG_ORDER:
+        ds = ANALYSIS_CONFIGS[ckey]
+        config_data[ckey] = {}
+        for level in AGG_LEVELS:
+            df = _run_config(ds, level)
+            config_data[ckey][level] = df.set_index("category")["pct_tasks_affected"]
+        print(f"  {ANALYSIS_CONFIG_LABELS[ckey]}: loaded all levels")
+
+    _build_convergence_chart(
+        rows_keys=CONFIG_ORDER,
+        rows_labels=[ANALYSIS_CONFIG_LABELS[k] for k in CONFIG_ORDER],
+        rows_data=config_data,
+        title="External Benchmark Comparison — by Data Configuration",
+        subtitle="Spearman ρ across our 6 data configurations and 4 academic benchmarks",
+        out_name="convergence_configs.png",
+        csv_name="spearman_combined_configs.csv",
+        results=results, figures=figures,
+        y_axis_title="Data configuration",
+    )
 
 
 # ─────────────────────────────────────────────────────────────────────────
 # Chart 3: Temporal
 # ─────────────────────────────────────────────────────────────────────────
+
+# Earlier single-source dates added to the table (no AI capability since
+# they're only one source contributing).
+HISTORICAL_TABLE_ROWS: list[tuple[str, str]] = [
+    ("2024-09-30", "Microsoft"),
+    ("2024-12-23", "AEI Conv. v1"),
+]
+# Map historical dataset labels to actual backend dataset names.
+HISTORICAL_DATASET_NAMES: dict[str, str] = {
+    "Microsoft":     "Microsoft",
+    "AEI Conv. v1":  "AEI Conv 2024-12-23",
+}
+
 
 def _build_trend_data() -> pd.DataFrame:
     total_emp, total_wages = _get_national_totals()
@@ -598,12 +685,39 @@ def _build_trend_data() -> pd.DataFrame:
     return pd.DataFrame(trend_rows)
 
 
+def _build_historical_rows() -> list[dict]:
+    """Pre-March-2025 single-source rows for the table only.
+
+    Each row is one historical snapshot (Microsoft, AEI Conv. v1). AI
+    capability cell is barred (only one source contributing) but the
+    Unique Tasks Rated count is shown. These rows aren't included in the
+    line chart; only in the tables, prepended to BOTH config tables since
+    they predate the combined-confirmed series."""
+    rows: list[dict] = []
+    for date_str, source_label in HISTORICAL_TABLE_ROWS:
+        ds_name = HISTORICAL_DATASET_NAMES[source_label]
+        n_tasks = _count_tasks(ds_name)
+        rows.append({
+            "date": date_str,
+            "source_label": source_label,
+            "n_tasks": n_tasks,
+        })
+        print(f"  historical {date_str} ({source_label}): {n_tasks} tasks rated")
+    return rows
+
+
 def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) -> None:
-    """Two side-by-side trimmed tables (one per config) in a single figure.
-    Each table: Date | Unique Tasks Rated (+ Δ) | AI Capability (+ Δ)."""
+    """Two side-by-side per-config tables in one figure.
+
+    Each table includes 2024-09-30 (Microsoft only) and 2024-12-23 (AEI
+    Conv. v1) historical rows as the first two rows of BOTH config
+    tables — AI Capability barred for those rows since only one source
+    contributes (no "All Confirmed"/"All Ceiling" combination yet)."""
     highlight = PAPER_PALETTE["row_highlight"]
     white = PAPER_PALETTE["surface"]
-    ref_fill = PAPER_PALETTE["row_ref"]
+    historical_fill = "#f5f0e8"  # subtle cream to mark single-source rows
+
+    historical_rows = _build_historical_rows()
 
     fig = make_subplots(
         rows=1, cols=2,
@@ -624,10 +738,28 @@ def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) 
         col_dautoaug: list[str] = []
         date_fills: list[str] = []
 
+        # Historical single-source rows first
+        prev_n_tasks: int | None = None
+        for hr in historical_rows:
+            col_date.append(f"{fmt_date(hr['date'])} ({hr['source_label']})")
+            col_tasks.append(f"{int(hr['n_tasks']):,}")
+            if prev_n_tasks is None:
+                col_dtasks.append("—")
+            else:
+                dt = int(hr["n_tasks"]) - prev_n_tasks
+                col_dtasks.append(f"{'+' if dt >= 0 else ''}{dt:,}")
+            col_autoaug.append("—")
+            col_dautoaug.append("—")
+            date_fills.append(historical_fill)
+            prev_n_tasks = int(hr["n_tasks"])
+
+        # Combined-source rows
         for i, (_, r) in enumerate(sub.iterrows()):
-            is_start, is_end = i == 0, i == len(sub) - 1
-            if is_start:
-                col_date.append(f"Start: {fmt_date(r['date'])}")
+            is_start_combined = (i == 0)
+            is_end = (i == len(sub) - 1)
+
+            if is_start_combined:
+                col_date.append(f"Start combined: {fmt_date(r['date'])}")
             elif is_end:
                 col_date.append(f"End: {fmt_date(r['date'])}")
             else:
@@ -636,20 +768,26 @@ def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) 
             col_tasks.append(f"{int(r['n_tasks']):,}")
             col_autoaug.append(f"{r['avg_auto_aug']:.2f}")
 
-            if is_start:
+            curr_n_tasks = int(r["n_tasks"])
+            if prev_n_tasks is None:
                 col_dtasks.append("—")
+            else:
+                dt = curr_n_tasks - prev_n_tasks
+                col_dtasks.append(f"{'+' if dt >= 0 else ''}{dt:,}")
+            prev_n_tasks = curr_n_tasks
+
+            if is_start_combined:
                 col_dautoaug.append("—")
             else:
                 prev = sub.iloc[i - 1]
-                dt = int(r["n_tasks"] - prev["n_tasks"])
-                col_dtasks.append(f"{'+' if dt >= 0 else ''}{dt:,}")
                 da = float(r["avg_auto_aug"] - prev["avg_auto_aug"])
                 col_dautoaug.append(f"{'+' if da >= 0 else ''}{da:.2f}")
 
-            date_fills.append(highlight if (is_start or is_end) else white)
+            date_fills.append(highlight if (is_start_combined or is_end) else white)
 
         n_rows = len(col_date)
-        neutral_fills = [white] * n_rows
+        n_hist = len(historical_rows)
+        cell_fills = [historical_fill] * n_hist + [white] * (n_rows - n_hist)
 
         header_color = (PAPER_PALETTE["all_confirmed"]
                         if "confirmed" in config_key
@@ -666,8 +804,7 @@ def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) 
             cells=dict(
                 values=[col_date, col_tasks, col_dtasks, col_autoaug, col_dautoaug],
                 font=dict(size=TABLE_CELL_FS, family=FONT_FAMILY),
-                fill_color=[date_fills, neutral_fills, neutral_fills,
-                            neutral_fills, neutral_fills],
+                fill_color=[date_fills, cell_fills, cell_fills, cell_fills, cell_fills],
                 align="center",
                 height=32,
             ),
@@ -675,17 +812,19 @@ def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) 
 
     max_rows = max(
         len(trend_df[trend_df["config"] == k]) for k in TREND_CONFIGS
-    )
-    height = max(380, max_rows * 40 + 150)
+    ) + len(historical_rows)
+    # Header (40) + per-row (38) + title/subtitle/margin (180) — give the
+    # ceiling table enough room for all 9 rows + start/end highlights.
+    height = max(520, max_rows * 38 + 240)
 
     style_paper_figure(
         fig,
-        "Tasks rated and AI capability over time",
+        "Tasks Rated And AI Capability Over Time",
+        subtitle="Cream rows pre-date combined sources; AI capability requires multi-source coverage.",
         height=height,
-        margin=dict(l=10, r=10, t=80, b=20),
+        margin=dict(l=10, r=10, t=100, b=20),
     )
 
-    # Style the per-table title annotations
     label_set = {ANALYSIS_CONFIG_LABELS[k] for k in TREND_CONFIGS}
     for ann in fig.layout.annotations:
         if hasattr(ann, "text") and ann.text in label_set:
@@ -698,32 +837,46 @@ def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) 
 
 
 def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Path) -> None:
-    """Three side-by-side panels (Workers / Wages / % Tasks Affected),
-    each plotting all_confirmed and all_ceiling lines."""
+    """Three side-by-side panels (Tasks / Workers / Wages), each plotting
+    All Confirmed and All Sources (Ceiling) lines. Y-axis ranges are
+    tightened to the data band so growth shape is visible (instead of
+    starting at 0). Ceiling line drawn lighter than confirmed."""
     panels = [
-        ("workers", "Workers Affected", lambda v: fmt_workers(v),
-         lambda subset: subset["workers"]),
-        ("wages",   "Wages Affected",   lambda v: fmt_wages(v),
-         lambda subset: subset["wages"]),
-        ("pct",     "% Tasks Affected", lambda v: f"{v:.1f}%",
+        ("pct",     "% Tasks Exposed", "% Tasks Exposed",
+         lambda v: f"{v:.1f}%",
          lambda subset: subset["pct_tasks_affected"]),
+        ("workers", "Workers In Scope", "Workers",
+         lambda v: fmt_workers(v),
+         lambda subset: subset["workers"]),
+        ("wages",   "Wages In Scope",   "Wages (USD)",
+         lambda v: fmt_wages(v),
+         lambda subset: subset["wages"]),
     ]
 
     fig = make_subplots(
         rows=1, cols=3,
         subplot_titles=[p[1] for p in panels],
-        horizontal_spacing=0.08,
+        horizontal_spacing=0.10,
     )
 
-    for col_idx, (key, title, fmt_fn, getter) in enumerate(panels, start=1):
+    for col_idx, (key, _panel_title, y_axis_title, fmt_fn, getter) in enumerate(panels, start=1):
+        # Track values per panel for y-range
+        panel_vals: list[float] = []
         for config_key in TREND_CONFIGS:
             subset = trend_df[trend_df["config"] == config_key].sort_values("date")
             label = ANALYSIS_CONFIG_LABELS[config_key]
             color = TREND_COLORS[config_key]
             yvals = getter(subset)
+            panel_vals.extend(float(v) for v in yvals)
 
+            # Stagger label positions so the final all_ceiling label
+            # doesn't crash into the all_confirmed line.
             positions = ["top center"] * len(subset)
-            if len(subset) >= 2:
+            if config_key == "all_ceiling":
+                positions = ["bottom center"] * len(subset)
+                if len(subset) >= 2:
+                    positions[-1] = "bottom left"
+            elif len(subset) >= 2:
                 positions[-1] = "top left"
 
             fig.add_trace(go.Scatter(
@@ -737,31 +890,45 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
                 marker=dict(size=8, color=color),
                 text=[fmt_fn(v) for v in yvals],
                 textposition=positions,
-                textfont=dict(size=ANNOT_FS, color=color, family=FONT_FAMILY),
+                textfont=dict(size=ANNOT_FS - 1, color=color, family=FONT_FAMILY),
             ), row=1, col=col_idx)
 
-        if key == "pct":
-            fig.update_yaxes(ticksuffix="%", row=1, col=col_idx)
-        elif key == "wages":
-            fig.update_yaxes(tickprefix="$", row=1, col=col_idx)
+        # Tight y-range — pad the data band by ~12% top, ~8% bottom
+        if panel_vals:
+            v_lo, v_hi = min(panel_vals), max(panel_vals)
+            spread = v_hi - v_lo
+            pad_lo = spread * 0.10
+            pad_hi = spread * 0.20
+            y_min = max(0.0, v_lo - pad_lo)
+            y_max = v_hi + pad_hi
+        else:
+            y_min, y_max = 0.0, 1.0
 
-        fig.update_xaxes(
-            tickangle=-30,
+        if key == "pct":
+            fig.update_yaxes(ticksuffix="%", range=[y_min, y_max], row=1, col=col_idx)
+        elif key == "wages":
+            fig.update_yaxes(tickprefix="$", range=[y_min, y_max], row=1, col=col_idx)
+        else:
+            fig.update_yaxes(range=[y_min, y_max], row=1, col=col_idx)
+
+        fig.update_yaxes(
+            title=dict(text=y_axis_title, font=dict(size=LABEL_FS - 2)),
             tickfont=dict(size=ANNOT_FS, family=FONT_FAMILY),
             row=1, col=col_idx,
         )
-        fig.update_yaxes(
-            rangemode="tozero",
+        fig.update_xaxes(
+            title=dict(text="Snapshot date", font=dict(size=LABEL_FS - 2)),
+            tickangle=-30,
             tickfont=dict(size=ANNOT_FS, family=FONT_FAMILY),
             row=1, col=col_idx,
         )
 
     style_paper_figure(
         fig,
-        "AI exposure over time — confirmed vs. ceiling",
-        height=PAPER_H - 80,
+        "All Confirmed vs All Sources (Ceiling) Over Time",
+        height=PAPER_H - 60,
         width=PAPER_W + 100,
-        margin=dict(l=60, r=40, t=90, b=110),
+        margin=dict(l=80, r=40, t=90, b=110),
     )
 
     panel_titles = {p[1] for p in panels}
@@ -806,13 +973,16 @@ def main() -> None:
     print("Part 1: Scale, Convergence, Growth")
     print("=" * 60)
 
-    print("\n[1/3] Overview: Five-config aggregate footprint")
-    build_overview(results, figures)
-
-    print("\n[2/3] Convergence: combined internal + external")
+    print("\n[1/4] External benchmark comparison: by AI Source")
     build_convergence(results, figures)
 
-    print("\n[3/3] Temporal: Growth trends + data tables")
+    print("\n[2/4] External benchmark comparison: by Data Configuration")
+    build_convergence_configs(results, figures)
+
+    print("\n[3/4] Overview: Six-config aggregate footprint")
+    build_overview(results, figures)
+
+    print("\n[4/4] Temporal: Growth trends + data tables")
     build_temporal(results, figures)
 
     print("\n" + "=" * 60)

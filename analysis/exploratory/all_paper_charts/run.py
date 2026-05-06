@@ -27,15 +27,17 @@ PARTS: tuple[tuple[str, str], ...] = (
 # Canonical chart order per part, matching paper/results/results.md.
 CHART_ORDER: dict[str, list[str]] = {
     "part_1": [
-        "overview.png",
         "convergence.png",
+        "convergence_configs.png",
+        "overview.png",
         "temporal_trend.png",
         "temporal_tables.png",
     ],
     "part_2": [
         "phys_info_divide.png",
         "job_zone_violin.png",
-        "ska_levels.png",
+        "ska_skills.png",
+        "ska_knowledge_abilities.png",
         "gwa_exposure.png",
         "major_categories.png",
     ],
@@ -50,10 +52,13 @@ CHART_ORDER: dict[str, list[str]] = {
 # Charts to skip even if present in the source figures/ dir.
 # phys_zone_{stacked,faceted} are bonus part_2 outputs not in results.md;
 # the appendix carries the canonical version of phys_zone_faceted.
+# ska_levels.png is the old combined SKA chart; it's been split into
+# ska_skills.png and ska_knowledge_abilities.png.
 SKIP: set[str] = {
     "temporal_deltas.png",
     "phys_zone_stacked.png",
     "phys_zone_faceted.png",
+    "ska_levels.png",
 }
 
 

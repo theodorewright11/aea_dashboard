@@ -332,23 +332,28 @@ Paper writing uses `paper/writing_style_source.md` (style calibration) and `pape
 
 ### Part 1 — Scale, Convergence, Growth ("This is real")
 
-The credibility argument. Three chart groups:
-1. **Overview**: Five-config aggregate footprint — workers and wages as % of national totals
-2. **Convergence (combined)**: One heatmap per agg level (2×2 grid). Y-axis = our 4 internal sources. X-axis = our 4 sources (lower triangle, separated by a vertical divider) + 4 external benchmarks (Eloundou GPT-4 β, Eloundou Human β, AIOE 10-app mean, AIOE Reading Comprehension). Single shared color bar with `zmin = floor(min observed)` to use the full palette range. External benchmarks rolled up to SOC group level by unweighted mean across matched occupations.
-3. **Temporal**: 3-panel growth chart (Workers Affected / Wages Affected / % Tasks Affected), each panel showing All Confirmed and All Ceiling lines. Plus a paired side-by-side data table (one column per config) trimmed to Date / Unique Tasks Rated (+ Δ) / AI Capability (+ Δ).
+The credibility argument. Four chart groups, narrative ordered convergence → aggregate → temporal:
 
-Narrative arc: scale → multi-source convergence (internal + external in one view) → growth trajectory. Does not characterize which sectors are most exposed (Part 2) or recommend actions (Part 3). Benchmark comparisons (Seampoint, Iceberg) are woven in briefly alongside the convergence chart as external validation evidence.
+1. **External Benchmark Comparison — by AI Source**: 2×2 grid of 4×8 heatmaps. Y-axis = our 4 internal sources (Claude Browser, Claude API, Copilot, MCP). X-axis = our 4 sources (lower-tri) + 4 external benchmarks (Eloundou GPT-4 β, Eloundou Human β, AIOE 10-app mean, AIOE Reading Comprehension). Single shared color bar `zmin = floor(min observed)`.
+2. **External Benchmark Comparison — by Data Configuration**: 2×2 grid of 6×10 heatmaps. Y-axis = our 6 ANALYSIS_CONFIGS (now including `all_confirmed_conservative`). X-axis = 6 configs (lower-tri) + 4 external benchmarks. Same color scale, methodology, and external rollup as the source-level chart.
+3. **AI Economic Exposure Across Data Configurations** (the renamed "overview"): grouped horizontal bars per config, in Tasks → Workers → Wages order within each cluster. Includes the 6th config `all_confirmed_conservative`. Bar text: `36.1% tasks` / `61.3M (40.0%) workers` / `$4.0T (42.4%) wages`.
+4. **Temporal**:
+   - 3-panel growth chart (% Tasks Exposed / Workers / Wages), each panel showing All Confirmed (slate blue) and All Sources (Ceiling, lighter sage-green dashed). Y-ranges tightened to data band, not zero-anchored.
+   - Paired side-by-side per-config data table trimmed to Date / Unique Tasks Rated (+ Δ) / AI Capability (+ Δ). Two pre-March-2025 historical rows added at the top of BOTH tables (2024-09-30 Microsoft, 2024-12-23 AEI Conv. v1) with AI Capability barred (only one source contributes).
+
+Narrative arc: source-level convergence → config-level convergence → scale → growth trajectory. Benchmark comparisons (Seampoint, Iceberg) are woven in alongside the convergence charts as external validation evidence.
 
 ### Part 2 — Characterization: Where AI Exposure Falls ("Here's what it is")
 
-Five chart groups characterizing the structural distribution of AI exposure:
-1. **Physical/Informational Divide**: Box plots of % tasks affected by occupation group (Non-physical / Mixed / Physical, classified by proportion of physical tasks)
-2. **Job Zone**: Violin plots of % tasks affected by O*NET job zone (1–5), showing AI exposure peaks at Zone 4–5 (considerable/extensive prep)
-3. **SKA Levels**: AI Maximum of imp×lv vs. workforce benchmarks for every Skills, Abilities, and Knowledge element (3 subplots with workforce max, P95, top-10, mean markers)
-4. **Work Activities**: All GWAs ranked by % tasks affected, bar color intensity = workers affected, annotated with workers and wages
-5. **Major Categories**: All 22 major occupational categories in 3 side-by-side panels (% Tasks Affected, Workers Affected, Wages Affected)
+Six chart files (the SKA chart is split in two), characterizing the structural distribution of AI exposure:
+1. **Physical/Informational Divide** (`phys_info_divide.png`): horizontal box plots of % tasks exposed for Physical (>67% physical tasks) / Mixed (33–67%) / Non-physical (<33%) occupation groups.
+2. **Job Zone** (`job_zone_violin.png`): violin plots of % tasks exposed by O*NET job zone (1–5). Stats summary annotation parked top-right.
+3. **SKA — Skills** (`ska_skills.png`): per-element bars for all Skills. Bar = AI Top-10 average (rerank by `top10/eco_max`). Red diamond = AI Max, red circle = AI P95 (both white-outlined for visibility on the blue bar). Black dot = workforce mean. X-axis label: "Importance (1–5) × Level of expertise needed (1–7)" — value scale lives on the bars and right-side % column rather than tick labels.
+4. **SKA — Knowledge & Abilities** (`ska_knowledge_abilities.png`): two stacked panels, each showing subcategory rollups (Knowledge: 10 O*NET categories, Abilities: 15 O*NET subcategories). Each cell = mean across the elements in that subcategory. Subcategory labels carry `(N subcategories | M elements)`. Same marker scheme as Skills.
+5. **Work Activities** (`gwa_exposure.png`): all 37 GWAs ranked by % tasks exposed. Bar color encodes Workers In Scope via a vertical color-bar legend on the right (replacing the inline darker=more-workers gradient). Right-side text uses `|` separators.
+6. **Major Categories** (`major_categories.png`): all 22 major occupational categories in 3 side-by-side panels (% Tasks Exposed / Workers In Scope / Wages In Scope).
 
-Narrative arc: physical/informational structure → preparation level gradient → element-level capability profile → work activity rankings → sector-level view. Uses All Confirmed config throughout.
+Narrative arc: physical/informational structure → preparation level gradient → element-level skills profile → subcategory-level knowledge/abilities profile → work activity rankings → sector-level view. Uses All Confirmed config throughout. Subtitles dropped the config-restating boilerplate (the methods section sets the primary config).
 
 ### Part 3 — Action: What To Do About It ("Here's what to do about it")
 

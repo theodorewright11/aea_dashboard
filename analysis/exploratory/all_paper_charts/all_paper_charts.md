@@ -6,11 +6,14 @@ Mirror of every figure currently in `analysis/paper/results/part_1/figures/`, `p
 
 ## Part 1 — Scale, Convergence, Growth
 
-### overview.png
-![overview](figures/part_1/overview.png)
-
 ### convergence.png
 ![convergence](figures/part_1/convergence.png)
+
+### convergence_configs.png
+![convergence_configs](figures/part_1/convergence_configs.png)
+
+### overview.png
+![overview](figures/part_1/overview.png)
 
 ### temporal_trend.png
 ![temporal_trend](figures/part_1/temporal_trend.png)
@@ -28,8 +31,11 @@ Mirror of every figure currently in `analysis/paper/results/part_1/figures/`, `p
 ### job_zone_violin.png
 ![job_zone_violin](figures/part_2/job_zone_violin.png)
 
-### ska_levels.png
-![ska_levels](figures/part_2/ska_levels.png)
+### ska_skills.png
+![ska_skills](figures/part_2/ska_skills.png)
+
+### ska_knowledge_abilities.png
+![ska_knowledge_abilities](figures/part_2/ska_knowledge_abilities.png)
 
 ### gwa_exposure.png
 ![gwa_exposure](figures/part_2/gwa_exposure.png)

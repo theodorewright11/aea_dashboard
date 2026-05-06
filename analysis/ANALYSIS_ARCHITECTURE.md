@@ -142,8 +142,14 @@ analysis/
 │       ├── results.md           — Assembled Results section (Parts 1–3; update as parts complete)
 │       ├── part_1/              — Scale, Convergence, Growth — FIRST DRAFT COMPLETE
 │       │   ├── run.py, README.md, part_1.md, results/ (gitignored), figures/ (committed)
-│       ├── part_2/              — Characterization: Where AI Exposure Falls — FIRST DRAFT COMPLETE
+│       ├── part_2/              — Characterization: Where AI Exposure Falls — 6 charts
 │       │   ├── run.py, README.md, part_2.md, results/ (gitignored), figures/ (committed)
+│       │   ├── Figures (in order): phys_info_divide, job_zone_violin,
+│       │   │            ska_skills (element-level), ska_knowledge_abilities
+│       │   │            (subcategory-level, Knowledge + Abilities split into
+│       │   │            two stacked panels with `(N subcategories | M elements)`
+│       │   │            labels), gwa_exposure (vertical workers colorbar on
+│       │   │            side), major_categories
 │       └── part_3/              — Action: What To Do About It — 4 charts
 │           ├── run.py, README.md, part_3.md, results/ (gitignored), figures/ (committed)
 │           ├── Figures (in order): conv_confirmed_ceiling_gap (top 10),
@@ -190,11 +196,18 @@ analysis/
     │                              alternate chart variants without polluting
     │                              GitHub. Each thread has its own run.py +
     │                              README + results/. Currently:
-    │                              simple_mean_convergence/ (rebuilds the
+    │                              (1) simple_mean_convergence/ — rebuilds the
     │                              paper convergence chart with our internal
     │                              sources rolled up by simple-mean across
     │                              occupations, matching the methodology used
-    │                              for the external benchmarks).
+    │                              for the external benchmarks.
+    │                              (2) major_top10_trends/ — three-panel
+    │                              time-series for the top-10 major occ
+    │                              categories on % Tasks Exposed / Workers /
+    │                              Wages. Solid lines = All Confirmed,
+    │                              dashed = All Sources (Ceiling). Top 10
+    │                              picked per metric using the latest All
+    │                              Confirmed snapshot.
     ├── appendix_charts/         — COMMITTED (gitignore exception). Auxiliary
     │                              paper figures generated fresh by its own
     │                              run.py (no copying from elsewhere). Two
