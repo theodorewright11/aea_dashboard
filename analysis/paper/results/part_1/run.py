@@ -842,12 +842,10 @@ def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) 
 
 def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Path) -> None:
     """Three side-by-side panels (Tasks / Workers / Wages), each plotting
-    All Confirmed and All Sources (Ceiling) lines. Y-axis ranges are
-    tightened to the data band so growth shape is visible (instead of
-    starting at 0). Per-panel color: tasks=blue, workers=gold, wages=green.
-    Confirmed line drawn solid in primary metric color; ceiling line drawn
-    dashed in the lighter shade. Lines distinguished by dash pattern, not
-    legend swatch."""
+    All Confirmed and All Sources (Ceiling) lines. Per-panel metric color:
+    tasks=blue, workers=gold, wages=green. All Confirmed = solid line in
+    primary color; All Sources (Ceiling) = dashed line in lighter shade.
+    Y-axis ranges are tightened to the data band (not zero-anchored)."""
     panels = [
         ("pct",     "% Tasks Exposed", "% Tasks Exposed",     "tasks",
          lambda v: f"{v:.1f}%",
@@ -872,48 +870,63 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
         # Track values per panel for y-range
         panel_vals: list[float] = []
         for config_key in TREND_CONFIGS:
-            subset = trend_df[trend_df["config"] == config_key].sort_values("date")
+            subset = trend_df[trend_df["config"] == config_key].sort_values("date").reset_index(drop=True)
             label = ANALYSIS_CONFIG_LABELS[config_key]
             if config_key == "all_confirmed":
                 color = METRIC_COLORS[metric_key]
                 dash = "solid"
+                # Confirmed is the lower line — anchor end label below it
+                # so it doesn't crash up into the ceiling line.
+                end_position = "bottom right"
+                start_position = "bottom left"
             else:
                 color = METRIC_COLORS_LIGHT[metric_key]
                 dash = "dash"
+                # Ceiling is the upper line — anchor end label above it.
+                end_position = "top right"
+                start_position = "top left"
+            xvals = list(subset["date"])
             yvals = list(getter(subset))
             panel_vals.extend(float(v) for v in yvals)
 
-            # Confirmed line is the lower line — labels go BELOW it; ceiling
-            # line is the upper line — labels go ABOVE it. This keeps each
-            # label clear of the other line as well as its own markers.
-            if config_key == "all_confirmed":
-                positions = ["bottom center"] * len(subset)
-            else:
-                positions = ["top center"] * len(subset)
-
+            # 1. The line + markers (no per-point text).
             fig.add_trace(go.Scatter(
-                x=subset["date"],
-                y=yvals,
+                x=xvals, y=yvals,
                 name=label,
                 legendgroup=config_key,
-                showlegend=False,
-                mode="lines+markers+text",
+                showlegend=(col_idx == 1),
+                mode="lines+markers",
                 line=dict(color=color, width=3, dash=dash),
                 marker=dict(size=8, color=color),
-                text=[fmt_fn(v) for v in yvals],
-                textposition=positions,
-                textfont=dict(size=ANNOT_FS - 1, color=color, family=FONT_FAMILY),
+                hovertemplate=f"<b>{label}</b><br>%{{x}}<br>%{{y}}<extra></extra>",
                 cliponaxis=False,
             ), row=1, col=col_idx)
 
-        # Tight y-range — pad the data band so end labels and rotated tick
-        # labels don't crash into each other. Wider top pad accommodates
-        # the ceiling-line "top center" labels.
+            # 2. Endpoint-only labels (start + end), kept short and clear of
+            #    each other since the start/end x positions are well-separated.
+            if len(subset) >= 1:
+                idxs = [0] if len(subset) == 1 else [0, len(subset) - 1]
+                positions = [start_position, end_position] if len(idxs) == 2 else [end_position]
+                ep_x = [xvals[i] for i in idxs]
+                ep_y = [yvals[i] for i in idxs]
+                ep_text = [fmt_fn(yvals[i]) for i in idxs]
+                fig.add_trace(go.Scatter(
+                    x=ep_x, y=ep_y,
+                    mode="text",
+                    text=ep_text,
+                    textposition=positions,
+                    textfont=dict(size=ANNOT_FS, color=color, family=FONT_FAMILY),
+                    showlegend=False, hoverinfo="skip",
+                    cliponaxis=False,
+                ), row=1, col=col_idx)
+
+        # Tight y-range — wider top + bottom padding so endpoint labels fit
+        # without bumping into the panel title or the x-axis.
         if panel_vals:
             v_lo, v_hi = min(panel_vals), max(panel_vals)
             spread = v_hi - v_lo
             pad_lo = spread * 0.18
-            pad_hi = spread * 0.28
+            pad_hi = spread * 0.20
             y_min = max(0.0, v_lo - pad_lo)
             y_max = v_hi + pad_hi
         else:
@@ -941,10 +954,23 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
     style_paper_figure(
         fig,
         "All Confirmed vs All Sources (Ceiling) Over Time",
-        subtitle="Solid line: All Confirmed · Dashed line: All Sources (Ceiling)",
+        subtitle=(
+            "Tasks, workers, and wages exposed over the dataset window "
+            "(March 2025 – February 2026), with start- and end-point values labelled."
+        ),
         height=PAPER_H - 20,
         width=PAPER_W + 100,
-        margin=dict(l=80, r=60, t=110, b=110),
+        margin=dict(l=80, r=60, t=110, b=140),
+    )
+
+    # Restore a single bottom-aligned legend (one entry per config).
+    fig.update_layout(
+        legend=dict(
+            orientation="h",
+            yanchor="bottom", y=-0.30, xanchor="center", x=0.5,
+            font=dict(size=LEGEND_FS, family=FONT_FAMILY),
+            bgcolor="rgba(255,255,255,0.9)",
+        ),
     )
 
     panel_titles = {p[1] for p in panels}
