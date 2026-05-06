@@ -1189,7 +1189,10 @@ def build_gwa_chart(results: Path, figures: Path) -> None:
         hovertemplate="%{y}<br>%{x:.1f}% tasks<extra></extra>",
     ))
 
-    # Workers + wages annotations outside bars
+    # Workers + wages annotations outside bars. cliponaxis=False so the
+    # text isn't clipped at the right plot-area edge — without it, the
+    # labels get cut off no matter how wide the figure is.
+    pct_max = max(pct_vals)
     fig.add_trace(go.Scatter(
         y=categories,
         x=[v + 1.5 for v in pct_vals],
@@ -1199,6 +1202,7 @@ def build_gwa_chart(results: Path, figures: Path) -> None:
         textfont=dict(size=ANNOT_FS + 2, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
         showlegend=False,
         hoverinfo="skip",
+        cliponaxis=False,
     ))
 
     height = max(PAPER_H + 500, n_gwas * 42 + 320)
@@ -1212,12 +1216,16 @@ def build_gwa_chart(results: Path, figures: Path) -> None:
         margin=dict(l=20, r=1080, t=140, b=80),
     )
 
+    # Pad the x-axis so the right-side annotation block sits comfortably
+    # in-axis (belt + braces with cliponaxis=False above) and the longest
+    # label has 25–30% headroom past the bar tip.
     fig.update_xaxes(
         title=dict(text="% Tasks Exposed", font=dict(size=LABEL_FS + 2)),
         showgrid=True, gridcolor=PAPER_PALETTE["grid"],
         showline=True, linecolor=PAPER_PALETTE["grid"],
         ticksuffix="%",
         tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
+        range=[0, pct_max + 35],
     )
     fig.update_yaxes(
         title=dict(text="O*NET General Work Activity", font=dict(size=LABEL_FS)),
