@@ -192,22 +192,24 @@ analysis/
     │   │                          paper's figure set is browsable in one
     │   │                          place.
     │   └── offshoots/           — GITIGNORED sandbox carved out inside the
-    │                              committed mirror. Use this for trying
-    │                              alternate chart variants without polluting
-    │                              GitHub. Each thread has its own run.py +
-    │                              README + results/. Currently:
-    │                              (1) simple_mean_convergence/ — rebuilds the
-    │                              paper convergence chart with our internal
+    │                              committed mirror. Same shape as
+    │                              appendix_charts/: one run.py, one
+    │                              offshoots.md, all charts generated fresh.
+    │                              Currently produces:
+    │                              (1) simple_mean_convergence — rebuilds the
+    │                              paper convergence chart with internal
     │                              sources rolled up by simple-mean across
-    │                              occupations, matching the methodology used
-    │                              for the external benchmarks.
-    │                              (2) major_top10_trends/ — three-panel
-    │                              time-series for the top-10 major occ
-    │                              categories on % Tasks Exposed / Workers /
-    │                              Wages. Solid lines = All Confirmed,
-    │                              dashed = All Sources (Ceiling). Top 10
-    │                              picked per metric using the latest All
-    │                              Confirmed snapshot.
+    │                              occupations (matching the externals'
+    │                              methodology); plus a CSV comparing
+    │                              cell-by-cell rho against the paper rollup.
+    │                              (2-4) major_top10_trends_{pct,workers,wages}
+    │                              — top-10 major occ categories rendered as
+    │                              side-by-side per-config tables (All
+    │                              Confirmed | Ceiling). Modeled after the
+    │                              Part 1 temporal-tables pattern. Each table
+    │                              sorted by Δ descending (biggest growers at
+    │                              top). Top 10 picked per metric from the
+    │                              latest All Confirmed snapshot.
     ├── appendix_charts/         — COMMITTED (gitignore exception). Auxiliary
     │                              paper figures generated fresh by its own
     │                              run.py (no copying from elsewhere). Two
