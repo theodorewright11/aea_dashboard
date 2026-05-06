@@ -144,12 +144,18 @@ analysis/
 │       │   ├── run.py, README.md, part_1.md, results/ (gitignored), figures/ (committed)
 │       ├── part_2/              — Characterization: Where AI Exposure Falls — 6 charts
 │       │   ├── run.py, README.md, part_2.md, results/ (gitignored), figures/ (committed)
-│       │   ├── Figures (in order): phys_info_divide, job_zone_violin,
-│       │   │            ska_skills (element-level), ska_knowledge_abilities
-│       │   │            (subcategory-level, Knowledge + Abilities split into
-│       │   │            two stacked panels with `(N subcategories | M elements)`
-│       │   │            labels), gwa_exposure (vertical workers colorbar on
-│       │   │            side), major_categories
+│       │   ├── Figures (in order): phys_info_divide (ordered Physical →
+│       │   │            Mixed → Non-physical), job_zone_violin,
+│       │   │            ska_skills (element-level, normalized to % of
+│       │   │            workforce max — workforce-max bar always 100%,
+│       │   │            AI Top-10 overlay; same scaling as K&A),
+│       │   │            ska_knowledge_abilities (subcategory-level,
+│       │   │            Knowledge + Abilities split into two stacked panels
+│       │   │            with `(N subcategories | M elements)` labels;
+│       │   │            x range fixed [0, 100]%), gwa_exposure (vertical
+│       │   │            Workers Exposed colorbar on side), major_categories
+│       │   │            (% Tasks Exposed / Workers Exposed / Wages Exposed
+│       │   │            three-panel)
 │       └── part_3/              — Action: What To Do About It — 4 charts
 │           ├── run.py, README.md, part_3.md, results/ (gitignored), figures/ (committed)
 │           ├── Figures (in order): conv_confirmed_ceiling_gap (top 10),
@@ -842,3 +848,4 @@ Computed per occupation, based on the primary config (`all_confirmed`) unless ot
 - **MCP standalone for bias testing**: `"MCP Cumul. v4"` can be used to test zone/sector exposure patterns without user self-selection bias (it's tool specs, not usage data). Note that MCP has its own bias: tools are built for higher-zone workflows.
 - **SKA category analysis uses ai_pct_occ (not ai_pct_eco_mean)**: When computing SKA averages by occupation category, use `ai_pct_occ` (per-occ: ai_score / occ_score × 100) averaged across occupations. Do not use `ai_pct_eco_mean` (which divides by the mean occ_score across all occupations, not the specific occupation's score). The two are different and produce different category rankings.
 - **all_confirmed series starts at March 2025**: The 2024-09-30 and 2024-12-23 dates have been removed from all trend series. The September 2024 date was anchored by Microsoft Copilot only (AEI conversation and API data starts accumulating from December 2024), and December 2024 is similarly excluded. The series now starts at March 2025, where AEI + Microsoft data is available for all_confirmed. Do not re-add either 2024 date to any trend series.
+- **Part 1 temporal_tables historical rows**: The two cream rows above the line-chart series (Sep 2024, Dec 2024) pull task counts from the SAME combined dataset family the line chart uses — `AEI Both + Micro 2024-09-30/2024-12-23` for the All Confirmed table, `All 2024-09-30/2024-12-23` for the Ceiling table. Do NOT revert to `Microsoft` and `AEI Conv 2024-12-23` alone (the prior implementation), which under-counted the Dec 2024 row at 3,317 tasks. The combined union is 8,319 (Sep) and 9,067 (Dec) — both stay barred on AI Capability since multi-source coverage is too thin that early to compute a stable score.

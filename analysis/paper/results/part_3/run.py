@@ -158,7 +158,7 @@ def build_tech_commodities(results: Path, figures: Path) -> None:
             colorscale=[[0, BLEND_LIGHT], [1, BLEND_DARK]],
             showscale=True,
             colorbar=dict(
-                title=dict(text="Avg %<br>tasks exposed", side="top",
+                title=dict(text="% Software<br>Usage Exposed", side="top",
                            font=dict(size=ANNOT_FS)),
                 ticksuffix="%",
                 tickfont=dict(size=ANNOT_FS),
@@ -175,23 +175,23 @@ def build_tech_commodities(results: Path, figures: Path) -> None:
 
     style_paper_figure(
         fig,
-        "Top 25 Tech Commodities by Task Exposure × Employment",
+        "Top 25 O*NET Software Categories by Occupational Software Task Exposure × Employment",
         subtitle=(
-            "Bar length = workers in scope through the commodity (Σ pct × emp across "
-            "occupation × tool entries). Color = avg % tasks exposed (Method A average)."
+            "Bar length = software workers in scope through the category "
+            "(Σ pct × emp across occupation × tool entries)."
         ),
         height=900, width=PAPER_W + 100,
         margin=dict(l=20, r=460, t=130, b=90),
     )
     fig.update_xaxes(
-        title=dict(text="Depth of Exposure × Breadth of Exposure (workers in scope)",
+        title=dict(text="Software Workers In Scope",
                    font=dict(size=LABEL_FS)),
         showgrid=True, gridcolor=PAPER_PALETTE["grid"],
         showticklabels=True,
         tickfont=dict(size=TICK_FS - 2, family=FONT_FAMILY),
     )
     fig.update_yaxes(
-        title=dict(text="Tech commodity", font=dict(size=LABEL_FS - 2)),
+        title=dict(text="O*NET Software Category", font=dict(size=LABEL_FS - 2)),
         showgrid=False, showline=False,
         tickfont=dict(size=11, family=FONT_FAMILY),
     )
@@ -273,13 +273,13 @@ def build_conv_confirmed_ceiling_gap(results: Path, figures: Path) -> None:
             cmin=wk_min_v, cmax=wk_max_v,
             showscale=True,
             colorbar=dict(
-                title=dict(text="Workers<br>added (agentic)", side="top",
+                title=dict(text="Workers<br>Added (Agentic)", side="top",
                            font=dict(size=ANNOT_FS, family=FONT_FAMILY)),
                 tickvals=[wk_min_v, wk_max_v],
                 ticktext=[fmt_workers(wk_min_v), fmt_workers(wk_max_v)],
                 tickfont=dict(size=ANNOT_FS - 1, family=FONT_FAMILY),
                 len=0.55, thickness=14,
-                x=1.005, xanchor="left",
+                x=1.30, xanchor="left",
             ),
             line=dict(width=0),
         ),
@@ -329,9 +329,9 @@ def build_conv_confirmed_ceiling_gap(results: Path, figures: Path) -> None:
     style_paper_figure(
         fig,
         "Top 10 Task Exposure Addition From Agentic AI by Major Occupational Category",
-        subtitle="Additional exposure from agentic AI use, then from MCP / ceiling reach",
-        height=640, width=PAPER_W + 350,
-        margin=dict(l=30, r=620, t=130, b=160),
+        subtitle="Additional exposure from agentic AI use, then from MCP / ceiling exposure",
+        height=820, width=PAPER_W + 600,
+        margin=dict(l=30, r=820, t=140, b=180),
     )
     x_top = max(df["pct_ceil"]) * 1.04
     fig.update_xaxes(
@@ -341,7 +341,7 @@ def build_conv_confirmed_ceiling_gap(results: Path, figures: Path) -> None:
         tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
     )
     fig.update_yaxes(
-        title=dict(text="Major occupational category", font=dict(size=LABEL_FS - 2)),
+        title=dict(text="Major Occupational Category", font=dict(size=LABEL_FS - 2)),
         showgrid=False, showline=False,
         tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
     )
@@ -419,24 +419,28 @@ def build_intensity_anchor_fulleco(results: Path, figures: Path) -> None:
 
     plot_df = base.sort_values("lift", ascending=True).reset_index(drop=True)
     cvals = plot_df["pct_tasks_affected"].to_numpy(dtype=float)
-    cmin, cmax = cvals.min(), cvals.max()
-    if cmax > cmin:
-        ts = (cvals - cmin) / (cmax - cmin)
-    else:
-        ts = np.full_like(cvals, 0.5)
-
-    def _interp(t: float) -> str:
-        light = (207, 224, 236)  # #cfe0ec — tasks light
-        dark = (44, 79, 107)     # #2c4f6b — tasks dark
-        rgb = tuple(int(light[i] + max(0.0, min(1.0, t)) * (dark[i] - light[i])) for i in range(3))
-        return "#{:02x}{:02x}{:02x}".format(*rgb)
-
-    bar_colors = [_interp(t) for t in ts]
+    cmin, cmax = float(cvals.min()), float(cvals.max())
 
     fig = go.Figure()
     fig.add_trace(go.Bar(
         y=plot_df["category"], x=plot_df["lift"], orientation="h",
-        marker=dict(color=bar_colors, line=dict(width=0)),
+        marker=dict(
+            color=cvals,
+            colorscale=[[0, TASKS_LIGHT], [1, TASKS_DARK]],
+            cmin=cmin, cmax=cmax,
+            showscale=True,
+            colorbar=dict(
+                title=dict(text="% Tasks<br>Exposed", side="top",
+                           font=dict(size=ANNOT_FS, family=FONT_FAMILY)),
+                ticksuffix="%",
+                tickvals=[cmin, cmax],
+                ticktext=[f"{cmin:.0f}%", f"{cmax:.0f}%"],
+                tickfont=dict(size=ANNOT_FS - 1, family=FONT_FAMILY),
+                len=0.55, thickness=14,
+                x=1.005, xanchor="left",
+            ),
+            line=dict(width=0),
+        ),
         text=[f"{v:.2f}x" for v in plot_df["lift"]],
         textposition="outside",
         textfont=dict(size=12, color=PAPER_PALETTE["text"], family=FONT_FAMILY),
@@ -462,22 +466,21 @@ def build_intensity_anchor_fulleco(results: Path, figures: Path) -> None:
         fig,
         f"Actual Equalized AI Usage as a Multiple of Median Usage ({anchor_major})",
         subtitle=(
-            "Σ pct ÷ Σ (freq × employment) for equalization — debiased to a "
-            "Claude / Copilot / ChatGPT GWA-distribution blend (work-related ChatGPT chat). "
-            "Bar shading = % tasks exposed."
+            "Σ pct usage ÷ Σ (freq × employment) for equalization — debiased to a "
+            "Claude / Copilot / ChatGPT GWA-distribution blend (work-related ChatGPT chats)."
         ),
-        height=860, width=PAPER_W,
-        margin=dict(l=30, r=160, t=140, b=110),
+        height=860, width=PAPER_W + 100,
+        margin=dict(l=30, r=260, t=140, b=110),
     )
     x_top = max(plot_df["lift"]) * 1.18
     fig.update_xaxes(
-        title=dict(text="Usage relative to median (×)", font=dict(size=LABEL_FS)),
+        title=dict(text="Usage Relative to Median (×)", font=dict(size=LABEL_FS)),
         showgrid=True, gridcolor=PAPER_PALETTE["grid"],
         range=[0, x_top],
         tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
     )
     fig.update_yaxes(
-        title=dict(text="Major occupational category", font=dict(size=LABEL_FS - 2)),
+        title=dict(text="Major Occupational Category", font=dict(size=LABEL_FS - 2)),
         showgrid=False, showline=False,
         tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
     )
@@ -530,7 +533,7 @@ def build_risk_score_5f(results: Path, figures: Path) -> None:
             cmin=pct_min_f, cmax=pct_max_f,
             showscale=True,
             colorbar=dict(
-                title=dict(text="% Tasks<br>exposed", side="top",
+                title=dict(text="% Tasks<br>Exposed", side="top",
                            font=dict(size=ANNOT_FS, family=FONT_FAMILY)),
                 ticksuffix="%",
                 tickvals=[pct_min_f, pct_max_f],
@@ -542,7 +545,7 @@ def build_risk_score_5f(results: Path, figures: Path) -> None:
             line=dict(width=0),
         ),
         text=[
-            f"{r['emp_proj_pct']:+.1f}% emp proj  |  pct {r['pct']:.0f}%  |  "
+            f"{r['emp_proj_pct']:+.1f}% emp proj  |  {r['pct']:.0f}% tasks  |  "
             f"zone {int(r['job_zone'])}  |  {r['major_short']}"
             for _, r in s5f.iterrows()
         ],
@@ -562,14 +565,14 @@ def build_risk_score_5f(results: Path, figures: Path) -> None:
         subtitle=(
             f"Negative BLS employment projection 2024–2034 · "
             f"Tasks exposed > 50% · "
-            f"Task exposure trend > median (median = {pct_delta_med:.1f}pp) · "
+            f"Task exposure trend > median (median = {pct_delta_med:.1f}%) · "
             f"AI capability above median for occupation's SKA need"
         ),
         height=height, width=PAPER_W + 280,
         margin=dict(l=380, r=540, t=130, b=110),
     )
     fig.update_xaxes(
-        title=dict(text="BLS projected employment decline 2024–2034 (%)",
+        title=dict(text="BLS Projected Employment Decline 2024–2034 (%)",
                    font=dict(size=LABEL_FS)),
         showgrid=True, gridcolor=PAPER_PALETTE["grid"], ticksuffix="%",
         tickfont=dict(size=TICK_FS, family=FONT_FAMILY),

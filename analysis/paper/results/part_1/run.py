@@ -33,7 +33,7 @@ from analysis.paper.paper_config import (
     PAPER_W, PAPER_H,
     TITLE_FS, SUBTITLE_FS, INSIDE_FS, OUTSIDE_FS, TICK_FS, LABEL_FS,
     LEGEND_FS, ANNOT_FS, HEATMAP_TEXT_FS, TABLE_HEADER_FS, TABLE_CELL_FS,
-    METRIC_COLORS, HEATMAP_LOW, HEATMAP_HIGH,
+    METRIC_COLORS, METRIC_COLORS_LIGHT, HEATMAP_LOW, HEATMAP_HIGH,
     TREND_COLORS, PAPER_PALETTE,
     style_paper_figure, fmt_wages, fmt_workers, fmt_date,
 )
@@ -172,11 +172,7 @@ def _stars(p: float) -> str:
     return ""
 
 
-SIG_FOOTNOTE: str = (
-    "Significance: <b>*</b> p &lt; .05  &nbsp; "
-    "<b>**</b> p &lt; .01  &nbsp; "
-    "<b>***</b> p &lt; .001 (two-tailed Spearman)."
-)
+SIG_FOOTNOTE: str = "All correlations significant at p &lt; .001 (two-tailed Spearman)."
 
 
 # ─────────────────────────────────────────────────────────────────────────
@@ -222,10 +218,10 @@ def build_overview(results: Path, figures: Path) -> None:
         ("pct_tasks",   "% Tasks Exposed",
          METRIC_COLORS["tasks"],
          lambda r: f"{r['pct_tasks']:.1f}% tasks"),
-        ("pct_workers", "Workers In Scope (% of national employment)",
+        ("pct_workers", "Workers Exposed (% of National Employment)",
          METRIC_COLORS["workers"],
          lambda r: f"{fmt_workers(r['workers'])} ({r['pct_workers']:.1f}%) workers"),
-        ("pct_wages",   "Wages In Scope (% of national wages)",
+        ("pct_wages",   "Wages Exposed (% of National Wages)",
          METRIC_COLORS["wages"],
          lambda r: f"{fmt_wages(r['wages'])} ({r['pct_wages']:.1f}%) wages"),
     ]
@@ -511,7 +507,7 @@ def _build_convergence_chart(
                 cell_fs = HEATMAP_TEXT_FS - 4 if n_cols >= 9 else HEATMAP_TEXT_FS - 2
                 fig.add_annotation(
                     x=x_labels[j], y=rows_labels[i],
-                    text=f"{val:.2f}{_stars(pmat[i, j])}",
+                    text=f"{val:.2f}",
                     showarrow=False,
                     font=dict(size=cell_fs, family=FONT_FAMILY, color=txt_color),
                     xref=f"x{idx + 1}" if idx > 0 else "x",
@@ -560,13 +556,16 @@ def _build_convergence_chart(
                 color=PAPER_PALETTE["text"],
             )
 
+    # y-axis title only on the left column (panels 1 and 3) so it doesn't
+    # collide with the colorbar on the right-column panels.
+    left_col_axes = {1, 3}
     for i in range(1, 5):
         xkey = f"xaxis{i}" if i > 1 else "xaxis"
         ykey = f"yaxis{i}" if i > 1 else "yaxis"
         fig.layout[xkey].tickfont = dict(size=TICK_FS - 2, family=FONT_FAMILY)
         fig.layout[ykey].tickfont = dict(size=TICK_FS - 2, family=FONT_FAMILY)
         fig.layout[xkey].tickangle = -30
-        if y_axis_title:
+        if y_axis_title and i in left_col_axes:
             fig.layout[ykey].title = dict(
                 text=y_axis_title,
                 font=dict(size=LABEL_FS - 2, family=FONT_FAMILY),
@@ -598,7 +597,7 @@ def build_convergence(results: Path, figures: Path) -> None:
         out_name="convergence.png",
         csv_name="spearman_combined.csv",
         results=results, figures=figures,
-        y_axis_title="Internal source",
+        y_axis_title="Internal Source",
     )
 
 
@@ -623,7 +622,7 @@ def build_convergence_configs(results: Path, figures: Path) -> None:
         out_name="convergence_configs.png",
         csv_name="spearman_combined_configs.csv",
         results=results, figures=figures,
-        y_axis_title="Data configuration",
+        y_axis_title="Data Configuration",
     )
 
 
@@ -631,16 +630,23 @@ def build_convergence_configs(results: Path, figures: Path) -> None:
 # Chart 3: Temporal
 # ─────────────────────────────────────────────────────────────────────────
 
-# Earlier single-source dates added to the table (no AI capability since
-# they're only one source contributing).
-HISTORICAL_TABLE_ROWS: list[tuple[str, str]] = [
-    ("2024-09-30", "Microsoft"),
-    ("2024-12-23", "AEI Conv. v1"),
-]
-# Map historical dataset labels to actual backend dataset names.
-HISTORICAL_DATASET_NAMES: dict[str, str] = {
-    "Microsoft":     "Microsoft",
-    "AEI Conv. v1":  "AEI Conv 2024-12-23",
+# Earlier dates added to the table (cream rows). AI Capability is barred
+# because the all_confirmed / all_ceiling combined series doesn't have
+# enough source coverage on these dates to compute a stable score, but the
+# combined "tasks rated" count is still meaningful — we draw it from the
+# date-matched all_confirmed / all_ceiling files (`AEI Both + Micro` /
+# `All` respectively), which mirror the line-chart series.
+HISTORICAL_DATES: list[str] = ["2024-09-30", "2024-12-23"]
+# Per-config dataset names for the historical task counts.
+HISTORICAL_DATASETS: dict[str, dict[str, str]] = {
+    "all_confirmed": {
+        "2024-09-30": "AEI Both + Micro 2024-09-30",
+        "2024-12-23": "AEI Both + Micro 2024-12-23",
+    },
+    "all_ceiling": {
+        "2024-09-30": "All 2024-09-30",
+        "2024-12-23": "All 2024-12-23",
+    },
 }
 
 
@@ -685,39 +691,35 @@ def _build_trend_data() -> pd.DataFrame:
     return pd.DataFrame(trend_rows)
 
 
-def _build_historical_rows() -> list[dict]:
-    """Pre-March-2025 single-source rows for the table only.
+def _build_historical_rows(config_key: str) -> list[dict]:
+    """Cream-row task counts for the dates that pre-date the line chart.
 
-    Each row is one historical snapshot (Microsoft, AEI Conv. v1). AI
-    capability cell is barred (only one source contributing) but the
-    Unique Tasks Rated count is shown. These rows aren't included in the
-    line chart; only in the tables, prepended to BOTH config tables since
-    they predate the combined-confirmed series."""
+    The All Confirmed and All Ceiling tables each pull their historical
+    rows from the same combined-source dataset family that the line chart
+    uses (AEI Both + Micro for confirmed, All for ceiling). Sep 2024 only
+    has Microsoft contributing, so the count there is Microsoft's rated
+    set; Dec 2024 has Microsoft + AEI Conv v1, and the AEI Both + Micro /
+    All files contain the union."""
     rows: list[dict] = []
-    for date_str, source_label in HISTORICAL_TABLE_ROWS:
-        ds_name = HISTORICAL_DATASET_NAMES[source_label]
+    for date_str in HISTORICAL_DATES:
+        ds_name = HISTORICAL_DATASETS[config_key][date_str]
         n_tasks = _count_tasks(ds_name)
-        rows.append({
-            "date": date_str,
-            "source_label": source_label,
-            "n_tasks": n_tasks,
-        })
-        print(f"  historical {date_str} ({source_label}): {n_tasks} tasks rated")
+        rows.append({"date": date_str, "n_tasks": n_tasks})
+        print(f"  historical {date_str} ({config_key}, {ds_name}): {n_tasks} tasks rated")
     return rows
 
 
 def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) -> None:
     """Two side-by-side per-config tables in one figure.
 
-    Each table includes 2024-09-30 (Microsoft only) and 2024-12-23 (AEI
-    Conv. v1) historical rows as the first two rows of BOTH config
-    tables — AI Capability barred for those rows since only one source
-    contributes (no "All Confirmed"/"All Ceiling" combination yet)."""
+    Each table includes Sep 2024 and Dec 2024 historical rows pulled from
+    that table's own dataset family (AEI Both + Micro for confirmed, All
+    for ceiling). AI Capability cell is barred for those rows because the
+    confirmed/ceiling AI-capability metric isn't well-defined that early
+    in the series (only one or two sources contributing)."""
     highlight = PAPER_PALETTE["row_highlight"]
     white = PAPER_PALETTE["surface"]
-    historical_fill = "#f5f0e8"  # subtle cream to mark single-source rows
-
-    historical_rows = _build_historical_rows()
+    historical_fill = "#f5f0e8"  # subtle cream to mark historical rows
 
     fig = make_subplots(
         rows=1, cols=2,
@@ -731,6 +733,8 @@ def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) 
         if sub.empty:
             continue
 
+        historical_rows = _build_historical_rows(config_key)
+
         col_date: list[str] = []
         col_tasks: list[str] = []
         col_dtasks: list[str] = []
@@ -738,10 +742,10 @@ def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) 
         col_dautoaug: list[str] = []
         date_fills: list[str] = []
 
-        # Historical single-source rows first
+        # Historical (cream) rows first — combined-dataset task counts.
         prev_n_tasks: int | None = None
         for hr in historical_rows:
-            col_date.append(f"{fmt_date(hr['date'])} ({hr['source_label']})")
+            col_date.append(fmt_date(hr["date"]))
             col_tasks.append(f"{int(hr['n_tasks']):,}")
             if prev_n_tasks is None:
                 col_dtasks.append("—")
@@ -753,13 +757,13 @@ def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) 
             date_fills.append(historical_fill)
             prev_n_tasks = int(hr["n_tasks"])
 
-        # Combined-source rows
+        # Series rows (the line-chart range)
         for i, (_, r) in enumerate(sub.iterrows()):
             is_start_combined = (i == 0)
             is_end = (i == len(sub) - 1)
 
             if is_start_combined:
-                col_date.append(f"Start combined: {fmt_date(r['date'])}")
+                col_date.append(f"Series start: {fmt_date(r['date'])}")
             elif is_end:
                 col_date.append(f"End: {fmt_date(r['date'])}")
             else:
@@ -786,7 +790,7 @@ def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) 
             date_fills.append(highlight if (is_start_combined or is_end) else white)
 
         n_rows = len(col_date)
-        n_hist = len(historical_rows)
+        n_hist = len(HISTORICAL_DATES)
         cell_fills = [historical_fill] * n_hist + [white] * (n_rows - n_hist)
 
         header_color = (PAPER_PALETTE["all_confirmed"]
@@ -812,7 +816,7 @@ def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) 
 
     max_rows = max(
         len(trend_df[trend_df["config"] == k]) for k in TREND_CONFIGS
-    ) + len(historical_rows)
+    ) + len(HISTORICAL_DATES)
     # Header (40) + per-row (38) + title/subtitle/margin (180) — give the
     # ceiling table enough room for all 9 rows + start/end highlights.
     height = max(520, max_rows * 38 + 240)
@@ -820,7 +824,7 @@ def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) 
     style_paper_figure(
         fig,
         "Tasks Rated And AI Capability Over Time",
-        subtitle="Cream rows pre-date combined sources; AI capability requires multi-source coverage.",
+        subtitle="Cream rows don't have reliable AI capability scores.",
         height=height,
         margin=dict(l=10, r=10, t=100, b=20),
     )
@@ -840,15 +844,18 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
     """Three side-by-side panels (Tasks / Workers / Wages), each plotting
     All Confirmed and All Sources (Ceiling) lines. Y-axis ranges are
     tightened to the data band so growth shape is visible (instead of
-    starting at 0). Ceiling line drawn lighter than confirmed."""
+    starting at 0). Per-panel color: tasks=blue, workers=gold, wages=green.
+    Confirmed line drawn solid in primary metric color; ceiling line drawn
+    dashed in the lighter shade. Lines distinguished by dash pattern, not
+    legend swatch."""
     panels = [
-        ("pct",     "% Tasks Exposed", "% Tasks Exposed",
+        ("pct",     "% Tasks Exposed", "% Tasks Exposed",     "tasks",
          lambda v: f"{v:.1f}%",
          lambda subset: subset["pct_tasks_affected"]),
-        ("workers", "Workers In Scope", "Workers",
+        ("workers", "Workers Exposed", "Workers Exposed",     "workers",
          lambda v: fmt_workers(v),
          lambda subset: subset["workers"]),
-        ("wages",   "Wages In Scope",   "Wages (USD)",
+        ("wages",   "Wages Exposed",   "Wages Exposed (USD)", "wages",
          lambda v: fmt_wages(v),
          lambda subset: subset["wages"]),
     ]
@@ -859,46 +866,54 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
         horizontal_spacing=0.10,
     )
 
-    for col_idx, (key, _panel_title, y_axis_title, fmt_fn, getter) in enumerate(panels, start=1):
+    for col_idx, (key, _panel_title, y_axis_title, metric_key, fmt_fn, getter) in enumerate(
+        panels, start=1
+    ):
         # Track values per panel for y-range
         panel_vals: list[float] = []
         for config_key in TREND_CONFIGS:
             subset = trend_df[trend_df["config"] == config_key].sort_values("date")
             label = ANALYSIS_CONFIG_LABELS[config_key]
-            color = TREND_COLORS[config_key]
-            yvals = getter(subset)
+            if config_key == "all_confirmed":
+                color = METRIC_COLORS[metric_key]
+                dash = "solid"
+            else:
+                color = METRIC_COLORS_LIGHT[metric_key]
+                dash = "dash"
+            yvals = list(getter(subset))
             panel_vals.extend(float(v) for v in yvals)
 
-            # Stagger label positions so the final all_ceiling label
-            # doesn't crash into the all_confirmed line.
-            positions = ["top center"] * len(subset)
-            if config_key == "all_ceiling":
+            # Confirmed line is the lower line — labels go BELOW it; ceiling
+            # line is the upper line — labels go ABOVE it. This keeps each
+            # label clear of the other line as well as its own markers.
+            if config_key == "all_confirmed":
                 positions = ["bottom center"] * len(subset)
-                if len(subset) >= 2:
-                    positions[-1] = "bottom left"
-            elif len(subset) >= 2:
-                positions[-1] = "top left"
+            else:
+                positions = ["top center"] * len(subset)
 
             fig.add_trace(go.Scatter(
                 x=subset["date"],
                 y=yvals,
                 name=label,
                 legendgroup=config_key,
-                showlegend=(col_idx == 1),
+                showlegend=False,
                 mode="lines+markers+text",
-                line=dict(color=color, width=3),
+                line=dict(color=color, width=3, dash=dash),
                 marker=dict(size=8, color=color),
                 text=[fmt_fn(v) for v in yvals],
                 textposition=positions,
                 textfont=dict(size=ANNOT_FS - 1, color=color, family=FONT_FAMILY),
+                cliponaxis=False,
             ), row=1, col=col_idx)
 
-        # Tight y-range — pad the data band by ~12% top, ~8% bottom
+        # Tight y-range — pad the data band so end labels and rotated tick
+        # labels don't crash into each other. Wider top pad accommodates
+        # the ceiling-line "top center" labels.
         if panel_vals:
             v_lo, v_hi = min(panel_vals), max(panel_vals)
             spread = v_hi - v_lo
-            pad_lo = spread * 0.10
-            pad_hi = spread * 0.20
+            pad_lo = spread * 0.18
+            pad_hi = spread * 0.28
             y_min = max(0.0, v_lo - pad_lo)
             y_max = v_hi + pad_hi
         else:
@@ -917,7 +932,7 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
             row=1, col=col_idx,
         )
         fig.update_xaxes(
-            title=dict(text="Snapshot date", font=dict(size=LABEL_FS - 2)),
+            title=dict(text="Snapshot Date", font=dict(size=LABEL_FS - 2)),
             tickangle=-30,
             tickfont=dict(size=ANNOT_FS, family=FONT_FAMILY),
             row=1, col=col_idx,
@@ -926,9 +941,10 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
     style_paper_figure(
         fig,
         "All Confirmed vs All Sources (Ceiling) Over Time",
-        height=PAPER_H - 60,
+        subtitle="Solid line: All Confirmed · Dashed line: All Sources (Ceiling)",
+        height=PAPER_H - 20,
         width=PAPER_W + 100,
-        margin=dict(l=80, r=40, t=90, b=110),
+        margin=dict(l=80, r=60, t=110, b=110),
     )
 
     panel_titles = {p[1] for p in panels}

@@ -40,10 +40,18 @@ CONFIG_COLORS: dict[str, str] = {
 }
 
 # ── Three-metric colors (muted, cohesive) ────────────────────────────────
+# Tasks = blue · Workers = gold · Wages = green-teal (money association).
 METRIC_COLORS: dict[str, str] = {
     "tasks":   "#4a7a94",   # Muted slate blue
-    "workers": "#6a9e8f",   # Muted sage teal
-    "wages":   "#c4a76c",   # Warm tan (closer to heatmap low)
+    "workers": "#c4a76c",   # Warm tan / gold
+    "wages":   "#6a9e8f",   # Muted sage teal (money green)
+}
+
+# Lighter shades for ceiling lines (and other "secondary" overlays).
+METRIC_COLORS_LIGHT: dict[str, str] = {
+    "tasks":   "#90b3c4",   # Lighter slate blue
+    "workers": "#dcc395",   # Lighter gold
+    "wages":   "#9bc1b3",   # Lighter sage
 }
 
 # ── Heatmap scale ────────────────────────────────────────────────────────

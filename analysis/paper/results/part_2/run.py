@@ -46,14 +46,15 @@ PRIMARY_KEY = "all_confirmed"
 PRIMARY_DATASET = ANALYSIS_CONFIGS[PRIMARY_KEY]
 PRIMARY_LABEL = ANALYSIS_CONFIG_LABELS[PRIMARY_KEY]
 
-# Physical/informational thresholds (matches exploratory)
+# Physical/informational thresholds (matches exploratory).
+# Display order is Physical → Mixed → Non-physical, top to bottom.
 PHYS_LOWER = 33.0
 PHYS_UPPER = 67.0
-OCC_GROUPS = ["Non-physical", "Mixed", "Physical"]
+OCC_GROUPS = ["Physical", "Mixed", "Non-physical"]
 GROUP_COLORS = {
-    "Non-physical": METRIC_COLORS["tasks"],    # Slate blue
-    "Mixed":        METRIC_COLORS["workers"],   # Sage teal
-    "Physical":     METRIC_COLORS["wages"],     # Warm tan
+    "Non-physical": METRIC_COLORS["tasks"],     # Slate blue
+    "Mixed":        METRIC_COLORS["workers"],   # Gold
+    "Physical":     METRIC_COLORS["wages"],     # Sage green
 }
 
 # Job zone labels
@@ -233,7 +234,7 @@ def build_phys_info_divide(results: Path, figures: Path) -> None:
         showline=True, linecolor=PAPER_PALETTE["grid"],
     )
     fig.update_yaxes(
-        title=dict(text="Occupation group", font=dict(size=LABEL_FS - 2)),
+        title=dict(text="Occupation Group", font=dict(size=LABEL_FS - 2)),
         showgrid=False, showline=False,
         tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
     )
@@ -355,7 +356,7 @@ def build_job_zone_violin(results: Path, figures: Path) -> None:
         showline=True, linecolor=PAPER_PALETTE["grid"],
     )
     fig.update_yaxes(
-        title=dict(text="Job zone (O*NET preparation level)", font=dict(size=LABEL_FS - 2)),
+        title=dict(text="Job Zone (O*NET Preparation Level)", font=dict(size=LABEL_FS - 2)),
         showgrid=False, showline=False,
         tickfont=dict(size=TICK_FS - 1, family=FONT_FAMILY),
     )
@@ -795,79 +796,70 @@ def _compute_subcategory_rollup(
 def _build_ska_skills_chart(
     elements_df: pd.DataFrame, results: Path, figures: Path
 ) -> None:
-    """Skills only — element-level. Bar = AI Top-10 mean (rerank by
-    top10/eco_max). Red diamond = AI Max, red circle = AI P95. Black
-    dot = workforce mean."""
+    """Skills only — element-level. All values normalized to % of workforce
+    max (eco_max), so the workforce-max bar is always 100% and the AI
+    Top-10 bar is the AI capability as % of that ceiling. Markers and the
+    workforce mean dot are also % of eco_max — same scaling as the K&A
+    chart."""
     df = elements_df.copy()
-    df["sort_pct"] = df["ai_top10"] / df["eco_max"].replace(0, float("nan")) * 100
-    df = df.sort_values("sort_pct", ascending=False).reset_index(drop=True)
+    df["ai_top10_pct"] = df["ai_top10"] / df["eco_max"].replace(0, float("nan")) * 100
+    df["ai_p95_pct"]   = df["ai_95th"]  / df["eco_max"].replace(0, float("nan")) * 100
+    df["ai_max_pct"]   = df["ai_max"]   / df["eco_max"].replace(0, float("nan")) * 100
+    df["eco_mean_pct"] = df["eco_mean"] / df["eco_max"].replace(0, float("nan")) * 100
+    df = df.sort_values("ai_top10_pct", ascending=False).reset_index(drop=True)
 
     enames = df["element_name"].tolist()
-    bar_vals = df["ai_top10"].fillna(0).tolist()
-    p95_vals = df["ai_95th"].fillna(0).tolist()
-    max_vals = df["ai_max"].fillna(0).tolist()
-    emax_vals = df["eco_max"].fillna(0).tolist()
-    emean_vals = df["eco_mean"].fillna(0).tolist()
-
-    max_eco = max(emax_vals) if emax_vals else 1.0
-    label_x = max_eco * 1.07
-    x_range_max = max_eco * 1.20
-
-    pct_labels = [
-        f"{a / m * 100:.0f}%" if m > 0 else "-"
-        for a, m in zip(bar_vals, emax_vals)
-    ]
+    bar_vals = df["ai_top10_pct"].fillna(0).tolist()
+    p95_vals = df["ai_p95_pct"].fillna(0).tolist()
+    max_vals = df["ai_max_pct"].fillna(0).tolist()
+    emean_vals = df["eco_mean_pct"].fillna(0).tolist()
 
     fig = go.Figure()
 
     fig.add_trace(go.Bar(
-        y=enames, x=emax_vals, orientation="h",
+        y=enames, x=[100] * len(enames), orientation="h",
         name="Workforce Max",
         marker=dict(color="#e8e8e2", line=dict(width=0)),
-        hovertemplate="Workforce max: %{x:.1f}<extra></extra>",
+        hovertemplate="Workforce max: 100%<extra></extra>",
     ))
     fig.add_trace(go.Bar(
         y=enames, x=bar_vals, orientation="h",
         name="AI Top-10 Avg",
         marker=dict(color=METRIC_COLORS["tasks"], opacity=0.88, line=dict(width=0)),
-        hovertemplate="AI Top-10 avg: %{x:.1f}<extra></extra>",
+        text=[f"{v:.0f}%" for v in bar_vals],
+        textposition="outside",
+        textfont=dict(size=12, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
+        hovertemplate="AI Top-10 avg (% of workforce max): %{x:.1f}%<extra></extra>",
     ))
     fig.add_trace(go.Scatter(
         y=enames, x=p95_vals, mode="markers",
         name="AI P95",
-        marker=dict(color=AI_MARKER_COLOR, symbol="circle", size=11,
-                    line=dict(width=2, color="white")),
-        hovertemplate="AI P95: %{x:.1f}<extra></extra>",
+        marker=dict(color=AI_MARKER_COLOR, symbol="circle", size=11),
+        hovertemplate="AI P95 (% of workforce max): %{x:.1f}%<extra></extra>",
     ))
     fig.add_trace(go.Scatter(
         y=enames, x=max_vals, mode="markers",
         name="AI Max",
-        marker=dict(color=AI_MARKER_COLOR, symbol="diamond", size=12,
-                    line=dict(width=2, color="white")),
-        hovertemplate="AI Max: %{x:.1f}<extra></extra>",
+        marker=dict(color=AI_MARKER_COLOR, symbol="diamond", size=12),
+        hovertemplate="AI Max (% of workforce max): %{x:.1f}%<extra></extra>",
     ))
     fig.add_trace(go.Scatter(
         y=enames, x=emean_vals, mode="markers",
         name="Workforce Mean",
         marker=dict(color="#1a1a1a", symbol="circle", size=8,
                     line=dict(width=1, color="#1a1a1a")),
-        hovertemplate="Workforce mean: %{x:.1f}<extra></extra>",
-    ))
-    fig.add_trace(go.Scatter(
-        y=enames, x=[label_x] * len(enames), mode="text",
-        text=pct_labels, textposition="middle right",
-        textfont=dict(size=12, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
-        showlegend=False, hoverinfo="skip",
+        hovertemplate="Workforce mean (% of workforce max): %{x:.1f}%<extra></extra>",
     ))
 
-    fig_height = max(1100, len(enames) * 28 + 280)
+    fig_height = max(1100, len(enames) * 28 + 320)
     fig.update_layout(
         title=dict(
             text=(
-                "AI Capability vs. Workforce Requirements — O*NET Skills"
+                "AI Capability as % of Workforce Max — O*NET Skills"
                 f"<br><span style='font-size:{SUBTITLE_FS}px;"
                 f"color:{PAPER_PALETTE['muted']}'>"
-                "Bar = AI Top-10 average · Red diamond = AI Max · Red circle = AI P95 · Black dot = workforce mean"
+                "Bar = AI Top-10 average · Red diamond = AI Max · "
+                "Red circle = AI P95 · Black dot = workforce mean"
                 "</span>"
             ),
             font=dict(size=TITLE_FS, color=PAPER_PALETTE["text"], family=FONT_FAMILY),
@@ -881,11 +873,11 @@ def _build_ska_skills_chart(
         barmode="overlay",
         legend=dict(
             orientation="h",
-            yanchor="top", y=-0.03, xanchor="center", x=0.5,
+            yanchor="top", y=-0.10, xanchor="center", x=0.5,
             font=dict(size=LEGEND_FS, color=PAPER_PALETTE["neutral"]),
             bgcolor="rgba(0,0,0,0)", borderwidth=0,
         ),
-        margin=dict(l=290, r=90, t=120, b=120),
+        margin=dict(l=290, r=140, t=120, b=160),
     )
     fig.update_yaxes(
         title=dict(text="O*NET Skill", font=dict(size=LABEL_FS - 2)),
@@ -895,12 +887,16 @@ def _build_ska_skills_chart(
     )
     fig.update_xaxes(
         title=dict(
-            text="Importance (1–5) × Level of expertise needed (1–7)",
+            text=(
+                "Mean AI Capability as % of Workforce Max "
+                "(AI Top-10 average ÷ Occupation Max for the Element, Across Elements)"
+            ),
             font=dict(size=LABEL_FS - 2),
         ),
-        range=[0, x_range_max],
+        range=[0, 100], ticksuffix="%",
         showgrid=True, gridcolor=PAPER_PALETTE["grid"],
-        showticklabels=False,
+        showticklabels=True,
+        tickfont=dict(size=12, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
         showline=False, zeroline=True, zerolinecolor=PAPER_PALETTE["grid"],
     )
 
@@ -928,7 +924,7 @@ def _build_ska_subcategory_chart(
     fig = make_subplots(
         rows=2, cols=1,
         row_heights=row_heights,
-        vertical_spacing=0.04,
+        vertical_spacing=0.10,
         subplot_titles=[
             f"Knowledge  ({n_know} subcategories | {n_know_elements} elements)",
             f"Abilities  ({n_abil} subcategories | {n_abil_elements} elements)",
@@ -970,8 +966,7 @@ def _build_ska_subcategory_chart(
         fig.add_trace(go.Scatter(
             y=sub_labels, x=df["ai_p95_pct"], mode="markers",
             name="AI P95",
-            marker=dict(color=AI_MARKER_COLOR, symbol="circle", size=11,
-                        line=dict(width=2, color="white")),
+            marker=dict(color=AI_MARKER_COLOR, symbol="circle", size=11),
             showlegend=_show("ai_p95"),
             hovertemplate="AI P95 (% of max): %{x:.1f}%<extra></extra>",
         ), row=row, col=1)
@@ -979,8 +974,7 @@ def _build_ska_subcategory_chart(
         fig.add_trace(go.Scatter(
             y=sub_labels, x=df["ai_max_pct"], mode="markers",
             name="AI Max",
-            marker=dict(color=AI_MARKER_COLOR, symbol="diamond", size=12,
-                        line=dict(width=2, color="white")),
+            marker=dict(color=AI_MARKER_COLOR, symbol="diamond", size=12),
             showlegend=_show("ai_max"),
             hovertemplate="AI Max (% of max): %{x:.1f}%<extra></extra>",
         ), row=row, col=1)
@@ -1000,7 +994,7 @@ def _build_ska_subcategory_chart(
             showgrid=False, showline=False,
         )
         fig.update_xaxes(
-            range=[0, 130], ticksuffix="%",
+            range=[0, 100], ticksuffix="%",
             showgrid=True, gridcolor=PAPER_PALETTE["grid"],
             tickfont=dict(size=12, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
             showline=False, zeroline=True, zerolinecolor=PAPER_PALETTE["grid"],
@@ -1009,31 +1003,34 @@ def _build_ska_subcategory_chart(
 
     # Y axis titles per subplot
     fig.update_yaxes(
-        title=dict(text="O*NET Knowledge category", font=dict(size=LABEL_FS - 2)),
+        title=dict(text="O*NET Knowledge Subcategory", font=dict(size=LABEL_FS - 2)),
         row=1, col=1,
     )
     fig.update_yaxes(
-        title=dict(text="O*NET Ability subcategory", font=dict(size=LABEL_FS - 2)),
+        title=dict(text="O*NET Ability Subcategory", font=dict(size=LABEL_FS - 2)),
         row=2, col=1,
     )
     fig.update_xaxes(
         title=dict(
-            text="Mean AI capability as % of workforce max (across elements in subcategory)",
+            text=(
+                "Mean AI Capability as % of Workforce Max "
+                "(AI Top-10 Average ÷ Occupation Max for the Element, Across Elements)"
+            ),
             font=dict(size=LABEL_FS - 2),
         ),
         row=2, col=1,
     )
 
-    fig_height = max(900, total * 35 + 320)
+    fig_height = max(900, total * 35 + 380)
 
     fig.update_layout(
         title=dict(
             text=(
-                "AI Capability vs. Workforce Requirements — O*NET Knowledge and Abilities"
+                "AI Capability as % of Workforce Max — O*NET Knowledge and Abilities"
                 f"<br><span style='font-size:{SUBTITLE_FS}px;"
                 f"color:{PAPER_PALETTE['muted']}'>"
-                "Mean across the elements in each subcategory · "
-                "Bar = AI Top-10 avg · Red diamond = AI Max · Red circle = AI P95 · Black dot = workforce mean"
+                "Bar = AI Top-10 average · Red diamond = AI Max · "
+                "Red circle = AI P95 · Black dot = workforce mean"
                 "</span>"
             ),
             font=dict(size=TITLE_FS, color=PAPER_PALETTE["text"], family=FONT_FAMILY),
@@ -1047,11 +1044,11 @@ def _build_ska_subcategory_chart(
         barmode="overlay",
         legend=dict(
             orientation="h",
-            yanchor="top", y=-0.03, xanchor="center", x=0.5,
+            yanchor="top", y=-0.10, xanchor="center", x=0.5,
             font=dict(size=LEGEND_FS, color=PAPER_PALETTE["neutral"]),
             bgcolor="rgba(0,0,0,0)", borderwidth=0,
         ),
-        margin=dict(l=300, r=80, t=120, b=120),
+        margin=dict(l=300, r=80, t=120, b=180),
     )
 
     panel_starts = ("Knowledge  ", "Abilities  ")
@@ -1153,7 +1150,7 @@ def build_gwa_chart(results: Path, figures: Path) -> None:
     wages_vals = gwa_df["wages_affected"].tolist()
 
     annotations = [
-        f"{fmt_workers(w)} workers | {fmt_wages(wg)} wages"
+        f"{fmt_workers(w)} workers exposed | {fmt_wages(wg)} wages exposed"
         for w, wg in zip(workers_vals, wages_vals)
     ]
 
@@ -1170,14 +1167,14 @@ def build_gwa_chart(results: Path, figures: Path) -> None:
             colorscale=[[0, "#b8cfe0"], [1, "#1a4f73"]],
             showscale=True,
             colorbar=dict(
-                title=dict(text="Workers<br>in scope", side="top",
+                title=dict(text="Workers<br>Exposed", side="top",
                            font=dict(size=ANNOT_FS, family=FONT_FAMILY)),
                 tickfont=dict(size=ANNOT_FS - 1, family=FONT_FAMILY),
                 tickvals=[min(workers_vals), max(workers_vals)],
                 ticktext=[fmt_workers(min(workers_vals)),
                           fmt_workers(max(workers_vals))],
                 len=0.55, thickness=14,
-                x=1.005, xanchor="left",
+                x=1.32, xanchor="left",
             ),
             line=dict(width=0),
         ),
@@ -1207,10 +1204,10 @@ def build_gwa_chart(results: Path, figures: Path) -> None:
     style_paper_figure(
         fig,
         "Task Exposure Across All O*NET General Work Activities",
-        subtitle=f"% tasks exposed per GWA across {n_gwas} activities — bar color = workers in scope",
+        subtitle=f"Share of tasks exposed per GWA across {n_gwas} activities",
         height=height,
-        width=PAPER_W + 100,
-        margin=dict(l=20, r=420, t=140, b=80),
+        width=PAPER_W + 600,
+        margin=dict(l=20, r=820, t=140, b=80),
     )
 
     fig.update_xaxes(
@@ -1257,7 +1254,7 @@ def build_major_categories(results: Path, figures: Path) -> None:
 
     fig = make_subplots(
         rows=1, cols=3,
-        subplot_titles=["% Tasks Exposed", "Workers In Scope", "Wages In Scope"],
+        subplot_titles=["% Tasks Exposed", "Workers Exposed", "Wages Exposed"],
         horizontal_spacing=0.12,
         shared_yaxes=True,
     )
@@ -1313,12 +1310,12 @@ def build_major_categories(results: Path, figures: Path) -> None:
 
     # Y-axis title only on first panel
     fig.update_yaxes(
-        title=dict(text="Major occupational category", font=dict(size=LABEL_FS - 2)),
+        title=dict(text="Major Occupational Category", font=dict(size=LABEL_FS - 2)),
         tickfont=dict(size=TICK_FS - 2, family=FONT_FAMILY),
         row=1, col=1,
     )
 
-    panel_titles = {"% Tasks Exposed", "Workers In Scope", "Wages In Scope"}
+    panel_titles = {"% Tasks Exposed", "Workers Exposed", "Wages Exposed"}
     for ann in fig.layout.annotations:
         if hasattr(ann, "text") and ann.text in panel_titles:
             ann.font = dict(size=LABEL_FS, family=FONT_FAMILY, color=PAPER_PALETTE["text"])
