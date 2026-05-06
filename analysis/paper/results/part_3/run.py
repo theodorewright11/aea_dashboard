@@ -377,7 +377,6 @@ def build_intensity_anchor_fulleco(results: Path, figures: Path) -> None:
         from analysis.exploratory.pct_norm_vs_eco.run_v3 import (
             compute_v3_intensity,
             compute_major_full_eco_denominator,
-            compute_major_pct_tasks_affected,
         )
     except ImportError as exc:
         print(f"  -> SKIPPED: exploratory/pct_norm_vs_eco not available ({exc})")
@@ -395,7 +394,12 @@ def build_intensity_anchor_fulleco(results: Path, figures: Path) -> None:
     base["ratio_full_pct"] = (
         base["ratio_full"] / total_full * 100.0 if total_full > 0 else 0.0
     )
-    pct_aff = compute_major_pct_tasks_affected()
+    # Pull pct_tasks_affected from the same dashboard pipeline that drives
+    # the Part 2 major_categories chart so the colorbar values match
+    # exactly. The exploratory `compute_major_pct_tasks_affected` only sums
+    # over rated task-occ pairs and produces a different (higher) number.
+    major_df = _run_config(PRIMARY_DATASET, "major")
+    pct_aff = major_df.set_index("category")["pct_tasks_affected"]
     base["pct_tasks_affected"] = base["category"].map(pct_aff).fillna(0.0)
 
     # Anchor major: 12th of 22 sorted ascending on chart 12's rated-denom

@@ -858,8 +858,9 @@ def _build_ska_skills_chart(
                 "AI Capability as % of Workforce Max — O*NET Skills"
                 f"<br><span style='font-size:{SUBTITLE_FS}px;"
                 f"color:{PAPER_PALETTE['muted']}'>"
-                "Bar = AI Top-10 average · Red diamond = AI Max · "
-                "Red circle = AI P95 · Black dot = workforce mean"
+                "Gray bar = workforce maximum (the highest occupational need "
+                "for the element, set to 100%). Blue bar = AI Top-10 average "
+                "as a share of that workforce maximum."
                 "</span>"
             ),
             font=dict(size=TITLE_FS, color=PAPER_PALETTE["text"], family=FONT_FAMILY),
@@ -888,8 +889,8 @@ def _build_ska_skills_chart(
     fig.update_xaxes(
         title=dict(
             text=(
-                "Mean AI Capability as % of Workforce Max "
-                "(AI Top-10 average ÷ Occupation Max for the Element, Across Elements)"
+                "AI Capability as % of Workforce Max "
+                "(AI Top-10 Average ÷ Occupation Max for the Element)"
             ),
             font=dict(size=LABEL_FS - 2),
         ),
@@ -1013,8 +1014,8 @@ def _build_ska_subcategory_chart(
     fig.update_xaxes(
         title=dict(
             text=(
-                "Mean AI Capability as % of Workforce Max "
-                "(AI Top-10 Average ÷ Occupation Max for the Element, Across Elements)"
+                "AI Capability as % of Workforce Max — "
+                "Average across the subcategory of (AI Top-10 ÷ Occupation Max per Element)"
             ),
             font=dict(size=LABEL_FS - 2),
         ),
@@ -1029,8 +1030,9 @@ def _build_ska_subcategory_chart(
                 "AI Capability as % of Workforce Max — O*NET Knowledge and Abilities"
                 f"<br><span style='font-size:{SUBTITLE_FS}px;"
                 f"color:{PAPER_PALETTE['muted']}'>"
-                "Bar = AI Top-10 average · Red diamond = AI Max · "
-                "Red circle = AI P95 · Black dot = workforce mean"
+                "Gray bar = workforce maximum (highest occupational need per element, "
+                "set to 100%). Blue bar = AI Top-10 average as a share of that maximum, "
+                "averaged across the subcategory."
                 "</span>"
             ),
             font=dict(size=TITLE_FS, color=PAPER_PALETTE["text"], family=FONT_FAMILY),
@@ -1168,20 +1170,20 @@ def build_gwa_chart(results: Path, figures: Path) -> None:
             showscale=True,
             colorbar=dict(
                 title=dict(text="Workers<br>Exposed", side="top",
-                           font=dict(size=ANNOT_FS, family=FONT_FAMILY)),
-                tickfont=dict(size=ANNOT_FS - 1, family=FONT_FAMILY),
+                           font=dict(size=ANNOT_FS + 2, family=FONT_FAMILY)),
+                tickfont=dict(size=ANNOT_FS + 1, family=FONT_FAMILY),
                 tickvals=[min(workers_vals), max(workers_vals)],
                 ticktext=[fmt_workers(min(workers_vals)),
                           fmt_workers(max(workers_vals))],
-                len=0.55, thickness=14,
-                x=1.32, xanchor="left",
+                len=0.55, thickness=18,
+                x=1.30, xanchor="left",
             ),
             line=dict(width=0),
         ),
         text=[f"{v:.1f}%" for v in pct_vals],
         textposition="inside",
         insidetextanchor="end",
-        textfont=dict(size=INSIDE_FS - 5, color="white", family=FONT_FAMILY),
+        textfont=dict(size=INSIDE_FS - 1, color="white", family=FONT_FAMILY),
         cliponaxis=False,
         showlegend=False,
         hovertemplate="%{y}<br>%{x:.1f}% tasks<extra></extra>",
@@ -1194,32 +1196,33 @@ def build_gwa_chart(results: Path, figures: Path) -> None:
         mode="text",
         text=annotations,
         textposition="middle right",
-        textfont=dict(size=ANNOT_FS, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
+        textfont=dict(size=ANNOT_FS + 2, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
         showlegend=False,
         hoverinfo="skip",
     ))
 
-    height = max(PAPER_H + 250, n_gwas * 28 + 280)
+    height = max(PAPER_H + 500, n_gwas * 42 + 320)
 
     style_paper_figure(
         fig,
         "Task Exposure Across All O*NET General Work Activities",
         subtitle=f"Share of tasks exposed per GWA across {n_gwas} activities",
         height=height,
-        width=PAPER_W + 600,
-        margin=dict(l=20, r=820, t=140, b=80),
+        width=PAPER_W + 1100,
+        margin=dict(l=20, r=1080, t=140, b=80),
     )
 
     fig.update_xaxes(
-        title=dict(text="% Tasks Exposed", font=dict(size=LABEL_FS)),
+        title=dict(text="% Tasks Exposed", font=dict(size=LABEL_FS + 2)),
         showgrid=True, gridcolor=PAPER_PALETTE["grid"],
         showline=True, linecolor=PAPER_PALETTE["grid"],
         ticksuffix="%",
+        tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
     )
     fig.update_yaxes(
-        title=dict(text="O*NET General Work Activity", font=dict(size=LABEL_FS - 2)),
+        title=dict(text="O*NET General Work Activity", font=dict(size=LABEL_FS)),
         showgrid=False, showline=False,
-        tickfont=dict(size=TICK_FS - 2, family=FONT_FAMILY),
+        tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
     )
 
     save_figure(fig, results / "figures" / "gwa_exposure.png", scale=2)
@@ -1300,12 +1303,37 @@ def build_major_categories(results: Path, figures: Path) -> None:
     style_paper_figure(
         fig,
         "AI Exposure by Major Occupational Category",
-        height=height,
+        subtitle=(
+            f"All {n_cats} major SOC categories ranked by % tasks exposed; "
+            "workers exposed and wages exposed shown alongside."
+        ),
+        height=height + 60,
         width=PAPER_W + 200,
-        margin=dict(l=20, r=100, t=90, b=50),
+        margin=dict(l=20, r=100, t=140, b=110),
     )
 
-    fig.update_xaxes(showgrid=False, showticklabels=False, showline=False, zeroline=False)
+    fig.update_xaxes(
+        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+        showticklabels=True, showline=True, linecolor=PAPER_PALETTE["grid"],
+        zeroline=True, zerolinecolor=PAPER_PALETTE["grid"],
+        tickfont=dict(size=TICK_FS - 2, family=FONT_FAMILY),
+    )
+    # Per-panel x-axis tick formatting
+    fig.update_xaxes(ticksuffix="%", row=1, col=1)
+    fig.update_xaxes(
+        tickformat="~s",
+        title=dict(text="Workers Exposed", font=dict(size=LABEL_FS - 2)),
+        row=1, col=2,
+    )
+    fig.update_xaxes(
+        tickprefix="$", tickformat="~s",
+        title=dict(text="Wages Exposed", font=dict(size=LABEL_FS - 2)),
+        row=1, col=3,
+    )
+    fig.update_xaxes(
+        title=dict(text="% Tasks Exposed", font=dict(size=LABEL_FS - 2)),
+        row=1, col=1,
+    )
     fig.update_yaxes(showgrid=False, showline=False)
 
     # Y-axis title only on first panel

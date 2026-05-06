@@ -76,15 +76,18 @@ TREND_CONFIGS: list[str] = ["all_confirmed", "all_ceiling"]
 # work. The convergence_external chart correlates our four internal sources
 # against each of these benchmarks at the same four SOC aggregation levels.
 EXT_SOURCES: list[tuple[str, str]] = [
-    ("gpt_beta",   "Eloundou GPT-4 β"),
-    ("human_beta", "Eloundou Human β"),
-    ("aioe_mean",  "AIOE mean (10 apps)"),
-    ("aioe_rc",    "AIOE Reading Compr."),
+    ("gpt_beta",      "Eloundou GPT-4 β"),
+    ("human_beta",    "Eloundou Human β"),
+    ("aioe_mean",     "AIOE mean (10 apps)"),
+    ("aioe_rc",       "AIOE Reading Compr."),
+    ("schaal_overall", "Schaal Overall"),
+    ("schaal_da",     "Schaal DA"),
 ]
 
 GPTS_CSV = ANALYSIS_DIR / "data" / "gpts_are_gpts_occ_data.csv"
 AIOE_MATRIX_PATH = ANALYSIS_DIR / "data" / "aioe_ability_matrix.csv"
 ABILITIES_PATH = ANALYSIS_DIR / "data" / "abilities_v30.1.csv"
+SCHAAL_INDICES_CSV = ANALYSIS_DIR / "data" / "Comparison of Indices.csv"
 
 
 # ─────────────────────────────────────────────────────────────────────────
@@ -172,7 +175,7 @@ def _stars(p: float) -> str:
     return ""
 
 
-SIG_FOOTNOTE: str = "All correlations significant at p &lt; .001 (two-tailed Spearman)."
+SIG_NOTE: str = "All correlations significant at p < .001 (two-tailed Spearman)."
 
 
 # ─────────────────────────────────────────────────────────────────────────
@@ -260,8 +263,12 @@ def build_overview(results: Path, figures: Path) -> None:
     style_paper_figure(
         fig,
         "AI Economic Exposure Across Data Configurations",
-        height=PAPER_H + 100,
-        margin=dict(l=20, r=60, t=70, b=110),
+        subtitle=(
+            "Share of national task volume, employment, and wages exposed "
+            "across the six AI data configurations."
+        ),
+        height=PAPER_H + 140,
+        margin=dict(l=20, r=60, t=140, b=110),
     )
 
     save_figure(fig, results / "figures" / "overview.png")
@@ -286,6 +293,24 @@ def _load_eloundou_occ() -> pd.DataFrame:
         "human_beta":    pd.to_numeric(df["human_rating_beta"], errors="coerce") * 100.0,
     })
     assert out["gpt_beta"].notna().any(), "Eloundou gpt_beta is all NaN after load"
+    return out
+
+
+def _load_schaal_occ() -> pd.DataFrame:
+    """Schaal 2025 occupation-level scores from `Comparison of Indices.csv`.
+    Title joins exactly to title_current. Returns title_current,
+    schaal_overall (auto_w), schaal_da (da_w)."""
+    df = pd.read_csv(SCHAAL_INDICES_CSV)
+    assert "title" in df.columns, f"title column missing in {SCHAAL_INDICES_CSV}"
+    for c in ("auto_w", "da_w"):
+        assert c in df.columns, f"{c} column missing in {SCHAAL_INDICES_CSV}"
+    out = pd.DataFrame({
+        "title_current":   df["title"].astype(str),
+        "schaal_overall":  pd.to_numeric(df["auto_w"], errors="coerce"),
+        "schaal_da":       pd.to_numeric(df["da_w"],   errors="coerce"),
+    })
+    assert out["schaal_overall"].notna().any(), "Schaal auto_w is all NaN after load"
+    assert out["schaal_da"].notna().any(),      "Schaal da_w is all NaN after load"
     return out
 
 
@@ -396,7 +421,10 @@ def _build_convergence_chart(
     """
     eloundou = _load_eloundou_occ()
     aioe = _compute_aioe_occ()
-    ext_df = eloundou.merge(aioe, on="title_current", how="outer")
+    schaal = _load_schaal_occ()
+    ext_df = eloundou.merge(aioe, on="title_current", how="outer").merge(
+        schaal, on="title_current", how="outer"
+    )
 
     ext_keys = [k for k, _ in EXT_SOURCES]
     ext_labels = [lbl for _, lbl in EXT_SOURCES]
@@ -526,26 +554,16 @@ def _build_convergence_chart(
 
     # Scale figure with column count for breathing room
     fig_width = PAPER_W + max(0, (n_cols - 8) * 80)
-    fig_height = PAPER_H + 320
+    fig_height = PAPER_H + 360
 
+    full_subtitle = f"{subtitle}. {SIG_NOTE}"
     style_paper_figure(
         fig,
         title,
-        subtitle=subtitle,
+        subtitle=full_subtitle,
         width=fig_width,
         height=fig_height,
-        margin=dict(l=40, r=160, t=110, b=170),
-    )
-
-    # Asterisk legend pulled below the chart area, fully outside the
-    # plot region so it doesn't overlap with axis labels.
-    fig.add_annotation(
-        text=SIG_FOOTNOTE,
-        xref="paper", yref="paper",
-        x=0, y=-0.18, xanchor="left", yanchor="top",
-        showarrow=False,
-        font=dict(size=ANNOT_FS, family=FONT_FAMILY,
-                  color=PAPER_PALETTE["muted"]),
+        margin=dict(l=40, r=160, t=170, b=140),
     )
 
     agg_title_set = set(AGG_TITLES.values())
@@ -593,7 +611,7 @@ def build_convergence(results: Path, figures: Path) -> None:
         rows_labels=CORR_LABELS,
         rows_data=source_data,
         title="External Benchmark Comparison — by AI Source",
-        subtitle="Spearman ρ across our 4 internal sources and 4 academic benchmarks",
+        subtitle="Spearman ρ across our 4 internal sources and 6 academic benchmarks",
         out_name="convergence.png",
         csv_name="spearman_combined.csv",
         results=results, figures=figures,
@@ -618,7 +636,7 @@ def build_convergence_configs(results: Path, figures: Path) -> None:
         rows_labels=[ANALYSIS_CONFIG_LABELS[k] for k in CONFIG_ORDER],
         rows_data=config_data,
         title="External Benchmark Comparison — by Data Configuration",
-        subtitle="Spearman ρ across our 6 data configurations and 4 academic benchmarks",
+        subtitle="Spearman ρ across our 6 data configurations and 6 academic benchmarks",
         out_name="convergence_configs.png",
         csv_name="spearman_combined_configs.csv",
         results=results, figures=figures,
@@ -720,6 +738,7 @@ def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) 
     highlight = PAPER_PALETTE["row_highlight"]
     white = PAPER_PALETTE["surface"]
     historical_fill = "#f5f0e8"  # subtle cream to mark historical rows
+    total_eco_tasks = _get_eco_task_count()
 
     fig = make_subplots(
         rows=1, cols=2,
@@ -798,12 +817,19 @@ def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) 
                         else PAPER_PALETTE["all_ceiling"])
 
         fig.add_trace(go.Table(
+            columnwidth=[120, 180, 60, 110, 60],
             header=dict(
-                values=["Date", "Unique<br>Tasks Rated", "Δ", "AI Capability<br>(0–5)", "Δ"],
+                values=[
+                    "Date",
+                    f"Unique Tasks Rated<br>(of {total_eco_tasks:,} total in O*NET)",
+                    "Δ",
+                    "AI Capability<br>(0–5)",
+                    "Δ",
+                ],
                 font=dict(size=TABLE_HEADER_FS, family=FONT_FAMILY, color="white"),
                 fill_color=header_color,
                 align="center",
-                height=40,
+                height=48,
             ),
             cells=dict(
                 values=[col_date, col_tasks, col_dtasks, col_autoaug, col_dautoaug],
@@ -1005,9 +1031,9 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
             "Tasks, workers, and wages exposed over the dataset window "
             "(March 2025 – February 2026)."
         ),
-        height=PAPER_H + 40,
+        height=PAPER_H + 90,
         width=PAPER_W + 100,
-        margin=dict(l=80, r=60, t=110, b=160),
+        margin=dict(l=80, r=60, t=170, b=160),
     )
 
     # Bottom-aligned legend driven by the neutral dummy traces.
