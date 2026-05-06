@@ -1170,20 +1170,20 @@ def build_gwa_chart(results: Path, figures: Path) -> None:
             showscale=True,
             colorbar=dict(
                 title=dict(text="Workers<br>Exposed", side="top",
-                           font=dict(size=ANNOT_FS + 2, family=FONT_FAMILY)),
-                tickfont=dict(size=ANNOT_FS + 1, family=FONT_FAMILY),
+                           font=dict(size=ANNOT_FS + 6, family=FONT_FAMILY)),
+                tickfont=dict(size=ANNOT_FS + 5, family=FONT_FAMILY),
                 tickvals=[min(workers_vals), max(workers_vals)],
                 ticktext=[fmt_workers(min(workers_vals)),
                           fmt_workers(max(workers_vals))],
-                len=0.55, thickness=18,
-                x=1.30, xanchor="left",
+                len=0.55, thickness=22,
+                x=1.05, xanchor="left",
             ),
             line=dict(width=0),
         ),
         text=[f"{v:.1f}%" for v in pct_vals],
         textposition="inside",
         insidetextanchor="end",
-        textfont=dict(size=INSIDE_FS - 1, color="white", family=FONT_FAMILY),
+        textfont=dict(size=INSIDE_FS + 4, color="white", family=FONT_FAMILY),
         cliponaxis=False,
         showlegend=False,
         hovertemplate="%{y}<br>%{x:.1f}% tasks<extra></extra>",
@@ -1199,38 +1199,38 @@ def build_gwa_chart(results: Path, figures: Path) -> None:
         mode="text",
         text=annotations,
         textposition="middle right",
-        textfont=dict(size=ANNOT_FS + 2, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
+        textfont=dict(size=ANNOT_FS + 7, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
         showlegend=False,
         hoverinfo="skip",
         cliponaxis=False,
     ))
 
-    height = max(PAPER_H + 500, n_gwas * 42 + 320)
+    height = max(PAPER_H + 800, n_gwas * 62 + 420)
 
     style_paper_figure(
         fig,
         "Task Exposure Across All O*NET General Work Activities",
         subtitle=f"Share of tasks exposed per GWA across {n_gwas} activities",
         height=height,
-        width=PAPER_W + 1100,
-        margin=dict(l=20, r=1080, t=140, b=80),
+        width=PAPER_W + 1500,
+        margin=dict(l=40, r=720, t=180, b=110),
     )
 
     # Pad the x-axis so the right-side annotation block sits comfortably
     # in-axis (belt + braces with cliponaxis=False above) and the longest
     # label has 25–30% headroom past the bar tip.
     fig.update_xaxes(
-        title=dict(text="% Tasks Exposed", font=dict(size=LABEL_FS + 2)),
+        title=dict(text="% Tasks Exposed", font=dict(size=LABEL_FS + 6)),
         showgrid=True, gridcolor=PAPER_PALETTE["grid"],
         showline=True, linecolor=PAPER_PALETTE["grid"],
         ticksuffix="%",
-        tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
+        tickfont=dict(size=TICK_FS + 4, family=FONT_FAMILY),
         range=[0, pct_max + 35],
     )
     fig.update_yaxes(
-        title=dict(text="O*NET General Work Activity", font=dict(size=LABEL_FS)),
+        title=dict(text="O*NET General Work Activity", font=dict(size=LABEL_FS + 4)),
         showgrid=False, showline=False,
-        tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
+        tickfont=dict(size=TICK_FS + 3, family=FONT_FAMILY),
     )
 
     save_figure(fig, results / "figures" / "gwa_exposure.png", scale=2)
