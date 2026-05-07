@@ -272,6 +272,39 @@ analysis/
     │                              all_confirmed_conservative from
     │                              ANALYSIS_CONFIGS, collapse to 5 configs;
     │                              (Q2) keep freq as primary weight.
+    ├── all_paper_charts_aei_only/ — Sibling of `all_paper_charts/` but
+    │                              regenerates every paper figure with the
+    │                              `all_confirmed` config swapped from
+    │                              `AEI Both + Micro 2026-02-12` (AEI Conv +
+    │                              AEI API + Microsoft) to `AEI Both 2026-02-12`
+    │                              (final_aei_all_usage_2026-02-12.csv —
+    │                              AEI Conv + AEI API only, no Microsoft).
+    │                              Trend series swaps to the AEI Both family at
+    │                              the same four dates the all_confirmed line
+    │                              uses (Mar 2025, Aug 2025, Nov 2025, Feb
+    │                              2026). Other configs (all_ceiling,
+    │                              human_conversation, agentic_*,
+    │                              all_confirmed_conservative) untouched —
+    │                              multi-config charts (overview,
+    │                              convergence_configs, conv_confirmed_ceiling_gap)
+    │                              keep the same structure with only the
+    │                              all_confirmed bar/series swapped. Historical
+    │                              task-count rows in temporal_tables.png (Sep
+    │                              2024, Dec 2024) keep `AEI Both + Micro`
+    │                              because no `AEI Both 2024-09-30` snapshot
+    │                              exists. Mechanism: backup committed paper
+    │                              figures in memory → mutate
+    │                              `ANALYSIS_CONFIGS["all_confirmed"]` and
+    │                              `ANALYSIS_CONFIG_SERIES["all_confirmed"]` →
+    │                              reload-and-run each
+    │                              `analysis.paper.results.part_{1,2,3}.run`
+    │                              so module-level
+    │                              `PRIMARY_DATASET = ANALYSIS_CONFIGS[...]`
+    │                              picks up the new value → copy regenerated
+    │                              PNGs to local `figures/part_{1,2,3}/` →
+    │                              restore paper figures + configs in a
+    │                              `finally` block. GITIGNORED (not added as a
+    │                              third gitignore exception).
     ├── appendix_charts/         — COMMITTED (gitignore exception). Auxiliary
     │                              paper figures generated fresh by its own
     │                              run.py (no copying from elsewhere). Two
