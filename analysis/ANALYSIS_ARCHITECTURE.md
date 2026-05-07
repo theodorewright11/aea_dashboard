@@ -670,6 +670,60 @@ analysis/
                                    Computer/Math
                                    passes Life Sciences in chart 14, revealing that Life Sciences'
                                    lead in 12 was partly a small-denominator artifact.
+    ├── physical_delimiter_correlation/ — How much of the part_1 paper
+    │                              convergence is just the binary
+    │                              physical / non-physical task cut?
+    │                              Two variants. **Variant A** —
+    │                              naive physical pct from eco_2025
+    │                              only: pct_A[occ] = Σ freq[non-phys]
+    │                              ÷ Σ freq[all] × 100, no auto-aug,
+    │                              ratio-of-totals at major / minor /
+    │                              broad / occ. **Variant B** — the
+    │                              dashboard pipeline run with
+    │                              physical_mode="exclude" (auto-aug
+    │                              ON), so both numerator and
+    │                              denominator are restricted to non-
+    │                              physical tasks. Replicates the
+    │                              part_1 convergence layout (2×2 grid
+    │                              of heatmaps, one panel per SOC
+    │                              level) for: (1) variant A vs all
+    │                              comparators (4 sources + 6 configs
+    │                              + 6 external benchmarks),
+    │                              (2) variant B sources convergence
+    │                              (mirror of paper convergence.png),
+    │                              (3) variant B configs convergence
+    │                              (mirror of convergence_configs.png).
+    │                              Plus three supporting charts:
+    │                              occ-level scatter pct_A vs
+    │                              all_confirmed colored by major,
+    │                              raw-vs-partial ρ (controlling for
+    │                              pct_A) per source vs all_confirmed,
+    │                              and pct_A by major sector.
+    │                              **Headlines:** variant A vs
+    │                              all_confirmed = 0.80 major / 0.66
+    │                              occ; variant A vs AIOE Reading
+    │                              Compr = 0.94 major (higher than
+    │                              any single internal source hits
+    │                              AIOE in the paper); variant A vs
+    │                              all_confirmed_conservative = 1.00
+    │                              major (conservative is essentially
+    │                              the physical filter applied to MS
+    │                              tasks). Partial correlation drops:
+    │                              Claude Browser 0.81 → 0.66, MCP
+    │                              0.67 → 0.40 (most physical-
+    │                              explained), Copilot 0.81 → 0.70
+    │                              (most resistant). Variant B
+    │                              cross-source ρ at occ level
+    │                              degrades sharply: Copilot × Claude
+    │                              Browser drops to 0.20, MCP × Copilot
+    │                              0.15. Within-AEI agreement (Browser
+    │                              × API) holds at 0.95 major / 0.77
+    │                              occ. Eloundou benchmarks survive
+    │                              the physical control better than
+    │                              AIOE or Schaal (which are themselves
+    │                              heavily structured around the
+    │                              cognitive-vs-physical cut). 6 PNGs
+    │                              + 5 CSVs + report.
     └── onet_economy_baseline/   — Pure structural panorama of the U.S.
                                    occupational economy (O*NET + BLS only,
                                    no AI data). 62 PNGs across 8 numbered
