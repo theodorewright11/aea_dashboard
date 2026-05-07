@@ -670,6 +670,59 @@ analysis/
                                    Computer/Math
                                    passes Life Sciences in chart 14, revealing that Life Sciences'
                                    lead in 12 was partly a small-denominator artifact.
+    ├── microsoft_iwa_contribution/ — What does Microsoft (Copilot)
+    │                              uniquely add to all_confirmed beyond
+    │                              what AEI already covers, and which of
+    │                              those additions ride on the IWA-level
+    │                              scoring mechanic (Microsoft scores an
+    │                              IWA → score gets applied to every
+    │                              eco_2025 task in that IWA)? Two
+    │                              analyses. **A. Microsoft-unique
+    │                              pairs** — set M = (task_norm, soc_2010)
+    │                              pairs in `final_microsoft.csv`, set E
+    │                              = pairs in `final_aei_all_usage_
+    │                              2026-02-12.csv`. M − E broken down by
+    │                              major, occupation, IWA, % physical.
+    │                              **B. IWA overlap** — split IWAs into
+    │                              AEI-only / overlap / MS-only.
+    │                              For overlap IWAs, count "extras"
+    │                              (pairs in MS but not in AEI). 7 PNGs
+    │                              + 10 CSVs + report. **Headlines:**
+    │                              5,939 of 9,047 MS pairs (65.6%) are
+    │                              MS-unique; 5,917 of those (99.6%) sit
+    │                              in IWAs AEI ALSO touches but for tasks
+    │                              AEI didn't rate. Microsoft's marginal
+    │                              contribution is volume, not breadth —
+    │                              AEI covers 297 IWAs vs MS's 136, with
+    │                              135 of MS's 136 in the overlap (only
+    │                              1 MS-only IWA, 162 AEI-only).
+    │                              MS-unique pairs are 35.7% physical
+    │                              overall but bimodal at the major
+    │                              level: Production (69% phys, 585
+    │                              pairs), Installation/Maint (74%, 333),
+    │                              Healthcare Pract (29%, 462) on top
+    │                              alongside cognitive Computer/Math
+    │                              (5%, 331), Management (9%, 354),
+    │                              Business/Finance (9%, 346). Top
+    │                              occupations: Electrical Drafters,
+    │                              Software QA Testers, Architectural
+    │                              Drafters, News Analysts. Top IWAs by
+    │                              extras: "Adjust equipment to ensure
+    │                              adequate performance" (96.8% phys,
+    │                              217 extras), "Measure physical
+    │                              characteristics of materials" (89%,
+    │                              183), "Maintain current knowledge"
+    │                              (2.2%, 179, applied across 158
+    │                              occupations). The honest split: ~half
+    │                              the extras are physical-equipment
+    │                              IWAs where IWA-expansion introduces
+    │                              real noise, ~half are cross-cutting
+    │                              cognitive IWAs where it adds
+    │                              legitimate coverage AEI's bottom-up
+    │                              observation pipeline misses. Closes
+    │                              loop with `weighting_config_test/
+    │                              physical_filter_audit.py` and the
+    │                              AI-share filter solution.
     ├── physical_delimiter_correlation/ — How much of the part_1 paper
     │                              convergence is just the binary
     │                              physical / non-physical task cut?
