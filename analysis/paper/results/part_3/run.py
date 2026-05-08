@@ -371,15 +371,15 @@ def build_conv_confirmed_ceiling_gap(results: Path, figures: Path) -> None:
 
 def build_intensity_anchor_fulleco(results: Path, figures: Path) -> None:
     try:
-        from analysis.exploratory.pct_norm_vs_eco.run import (
+        from analysis.exploratory.audit_pct_norm_eco.run import (
             BIAS_VARIANTS, compute_bias_ratios,
         )
-        from analysis.exploratory.pct_norm_vs_eco.run_v3 import (
+        from analysis.exploratory.audit_pct_norm_eco.run_v3 import (
             compute_v3_intensity,
             compute_major_full_eco_denominator,
         )
     except ImportError as exc:
-        print(f"  -> SKIPPED: exploratory/pct_norm_vs_eco not available ({exc})")
+        print(f"  -> SKIPPED: exploratory/audit_pct_norm_eco not available ({exc})")
         return
 
     base = compute_v3_intensity(
@@ -502,11 +502,11 @@ def build_intensity_anchor_fulleco(results: Path, figures: Path) -> None:
 
 def build_risk_score_5f(results: Path, figures: Path) -> None:
     try:
-        from analysis.exploratory.risk_score_audit.run import (
+        from analysis.exploratory.audit_risk_score.run import (
             _load_flag_df, _build_focused_set,
         )
     except ImportError as exc:
-        print(f"  -> SKIPPED: exploratory/risk_score_audit not available ({exc})")
+        print(f"  -> SKIPPED: exploratory/audit_risk_score not available ({exc})")
         return
 
     flags_df = _load_flag_df()

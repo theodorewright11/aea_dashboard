@@ -16,8 +16,6 @@ ROOT = Path(__file__).resolve().parent.parent
 BACKEND_DIR = ROOT / "backend"
 DATA_DIR = ROOT / "data"
 ANALYSIS_DIR = ROOT / "analysis"
-QUESTIONS_DIR = ANALYSIS_DIR / "questions"
-REPORT_DIR = ANALYSIS_DIR / "report"
 
 # Add backend to sys.path so `from backend.compute import ...` works,
 # and also add backend dir itself so compute.py's `from config import ...` resolves.
@@ -131,11 +129,6 @@ def ensure_results_dir(question_dir: Path) -> Path:
     results.mkdir(parents=True, exist_ok=True)
     (results / "figures").mkdir(exist_ok=True)
     return results
-
-
-def question_dir(name: str) -> Path:
-    """Return the path to a question folder by name."""
-    return QUESTIONS_DIR / name
 
 
 # ── Five primary analysis configs ─────────────────────────────────────────────

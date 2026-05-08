@@ -1,172 +1,100 @@
-# ANALYSIS_CLAUDE.md — Analysis Agent Instructions
+# ANALYSIS_CLAUDE.md — Rules for Working in `analysis/`
 
-Rules specific to working in the `analysis/` folder. Read this alongside the project-level `CLAUDE.md` — this supplements, does not replace it.
+How to do work in this folder. Read alongside the project-level `CLAUDE.md` — this supplements, does not replace it.
 
----
-
-## Writing Style — Question Reports
-
-When writing question reports, narratives, or any prose deliverables for the question system, follow the writing style reference in `analysis/questions/writing_style_reference.md`. The key points: conversational-analytical register, loose form but rigorous logic, no hedging filler, no bureaucratic framing, no AI-sounding connectors. Don't force it — the goal is to sound like a sharp person reasoning through data, not to match a template. Keep things as concise as they should be; don't pad sections.
-
-## Writing Style — Paper
-
-When writing paper sections, follow two references in `analysis/paper/`:
-- **`writing_style_source.md`** — ~30 pages of source writing. Read this to calibrate voice, argument structure, parenthetical usage, and organizational patterns.
-- **`paper_writing_style.md`** — Condensed dos and don'ts for paper writing. Follow these rules. When in doubt, default to the pattern structure from the source reference.
+For *what* the folder is for, see `ANALYSIS_PRD.md`. For *how to navigate it* (folder map, compute APIs, formulas), see `ANALYSIS_ARCHITECTURE.md`.
 
 ---
 
 ## Before Starting Any Analysis Task
 
 1. Read project-level `CLAUDE.md` and `PRD.md`.
-2. Read `ANALYSIS_PRD.md` (what the analysis system does, question catalog, five configs).
-3. Read `ANALYSIS_ARCHITECTURE.md` (folder structure, compute access, SKA formula, output standards).
-4. If the task touches SKA computation, re-read the SKA formula section in `ANALYSIS_ARCHITECTURE.md` before writing any code.
-5. This very important - If the task is ambiguous about scope, which sub-question it belongs to, or how a metric should be computed — **ask before implementing**.
+2. Read `ANALYSIS_PRD.md` (purpose, audiences, the five configs, what gets produced).
+3. Read `ANALYSIS_ARCHITECTURE.md` if your task touches compute, formulas, or folder structure.
+4. **If the task touches SKA computation**, re-read the SKA formula section in `ANALYSIS_ARCHITECTURE.md` before writing any code.
+5. **If the task is ambiguous** about scope, where new code belongs, or how a metric should be computed — **ask before implementing**. Do not guess.
 
 ---
 
-## Paper Folder
+## Where New Work Goes
 
-`analysis/paper/` contains infrastructure for the research paper. Each main section of the paper gets its own subfolder (e.g., `results/`). Within each section, parts follow the same sub-folder pattern as question folders: `run.py`, `README.md`, `results/` (gitignored), `figures/` (committed).
+| Type of work | Goes in |
+|--------------|---------|
+| Paper section / paper figure | `analysis/paper/results/part_{1,2,3}/` (whichever part is right) |
+| Methodology audit (does X really matter? is Y robust?) | `analysis/exploratory/audit_<topic>/` |
+| External-index comparison (replicate paper Z, line it up with ours) | `analysis/exploratory/extcompare_<source>/` |
+| Variant / mirror of a paper figure | `analysis/exploratory/paperinfra_<topic>/` |
+| Per-element or structural deep dive | `analysis/exploratory/deepdive_<topic>/` |
+| One-off exploration with no clear bucket | `analysis/exploratory/<descriptive_name>/` (assign a prefix later if it turns into a real thread) |
 
-- Paper sections are `.md` files. They will be stitched together once all parts are complete.
-- Charts follow the `PAPER_PALETTE` defined in `analysis/paper/paper_config.py` — readable style (big text, fill space), descriptive titles, subtle config footer.
-- Run scripts from project root: `venv/Scripts/python -m analysis.paper.results.part_1.run`
-- Paper writing style is separate from question report style — see "Writing Style — Paper" above.
-
----
-
-## Exploratory Folder
-
-`analysis/exploratory/` is for one-off charts only. Do not put research findings, formal question outputs, or anything that feeds into a report here. Do not sync anything from `exploratory/` to `question_findings/` or `report/`. Do not add `exploratory/` sub-folders to the question catalog in `ANALYSIS_PRD.md` as active question buckets.
-
-**Nothing in `exploratory/` is committed to git** except for two carved-out exceptions: `analysis/exploratory/all_paper_charts/` (mirror of the paper's committed figures) and `analysis/exploratory/appendix_charts/` (auxiliary paper figures), both surfaced on GitHub via `!` rules in `.gitignore`. There is also a re-excluded gitignored sandbox at `all_paper_charts/offshoots/` for trying alternate chart variants — that one is NOT committed. Outside of those carved-out folders, do not use `git add -f` or any other mechanism to force-add exploratory files. Figures reference `results/figures/` paths (which work locally after running the script).
-
-Each exploratory sub-folder must have: `run.py`, `README.md` (metadata), `<name>_report.md` (findings writeup with narrative and inline figures), and `results/` (auto-created). The `<name>_report.md` is required — it is the primary deliverable for the analysis.
+**Do not create new question buckets** under `_archive/questions/`. That system is frozen.
 
 ---
 
-## Question Workflow
+## Required Sub-folder Layout
 
-- A question prompt produces outputs for **its own sub-folder only**. It does not touch `report/report.md`. The aggregate report is updated by a separate dedicated prompt.
-- Each sub-question has: `README.md`, `<name>_report.md`, `run.py`, `results/` (gitignored), `figures/` (committed key figures so the report loads on github).
-- Top-level question folders (e.g., `job_exposure/`) additionally have a `README.md` and a `job_exposure_report.md` that synthesizes all sub-questions.
-- Run scripts from project root: `venv/Scripts/python -m analysis.questions.job_exposure.<sub_question>.run`
+Every exploratory sub-folder must have:
 
-## Syncing to question_findings/
+- `run.py` — the script. Runnable as `venv/Scripts/python -m analysis.exploratory.<folder>.run` from project root.
+- `README.md` — what the folder is, what it produces, how to run it, and what's in the output (a small file table is plenty).
+- `<name>_report.md` — the findings writeup. Narrative prose with inline figures referencing `results/figures/` paths. This is the primary deliverable.
+- `results/` — auto-created by the script (use `ensure_results_dir()` from `analysis.config`). Gitignored.
+- `figures/` — only for committed exploratory folders (currently `paperinfra_all_charts/` and `paperinfra_appendix/`). Most folders skip this.
 
-Whenever a `*_report.md` is created or updated, copy it to `analysis/question_findings/` and rewrite its image paths to resolve from that folder.
+Paper parts follow the same shape under `analysis/paper/results/part_N/`, plus a `part_N.md` for the prose.
 
-**Naming convention:**
-- Bucket-level reports (`questions/{bucket}/{bucket}_report.md`) → `question_findings/{bucket}_report.md`
-- Sub-question reports (`questions/{bucket}/{sub}/{sub}_report.md`) → `question_findings/{bucket}__{sub}_report.md`
-
-**Image path rewriting:** All `![caption](path)` image references must be updated to point back to the original `figures/` directory:
-- Bucket reports: prepend `../questions/{bucket}/` to each image path
-- Sub-question reports: prepend `../questions/{bucket}/{sub}/` to each image path
-
-Do not rewrite link-only syntax `[text](url)` or any path beginning with `http`.
-
-## Aggregate Report Format
-
-Top-level `<bucket>_report.md` files follow a specific structure. Use `job_exposure/job_exposure_report.md` as the canonical reference. Requirements:
-
-- **Header line**: config summary on the first line — `*Primary config: ... | ... | ...*`
-- **Opening paragraph**: 4–6 sentence summary of the full bucket's through-line (not an abstract — more like "here's the punchline before the reasoning").
-- **Numbered sections, one per sub-question**: each section opens with `*Full detail: [<name>_report.md](<sub-folder>/<name>_report.md)*` on its own line, then provides a narrative synthesis of that sub-question's findings — not a copy of the sub-report, but a distillation that stands on its own.
-- **Embedded figures**: key figures from each sub-folder's committed `figures/` dir, referenced with relative paths from the aggregate report (e.g., `sector_footprint/figures/aggregate_totals.png`). Every section should have at least one figure. Use `![Caption](relative/path)` format.
-- **Cross-Cutting Findings section**: 4–6 findings that span multiple sub-questions and couldn't appear in any single sub-report. Bold the finding name, then one paragraph of reasoning.
-- **Key Takeaways section**: numbered list, 5–7 items, each starting with a **bolded key number or fact** followed by one sentence of context.
-- **Sub-Report Index**: a table with columns Sub-Analysis | Report | What It Answers. Link the report filename.
-- **Config Reference**: a table with columns Config Key | Dataset | Role. Match the five ANALYSIS_CONFIGS exactly.
-
-## Rolling Aggregate Reports (report/ folder)
-
-The `analysis/report/` folder contains two documents that roll up findings across all active question buckets. These are the primary deliverables for stakeholders and paper authors. They are NOT auto-generated — they require a dedicated update pass when significant new results exist.
-
-**Two-document structure:**
-
-### `report_brief.md` — Highlighted Stories (3–8 findings)
-
-The short-form report. Tells the 3–8 most compelling stories across all analysis buckets. Intended audience: policymakers, paper reviewers, anyone who wants the main takeaways in one place.
-
-Format requirements:
-- **Opening paragraph** (1–2 sentences): scope and primary config.
-- **One overview figure** showing aggregate scale (e.g., five-config totals). This is the first figure in the document.
-- **One section per story** (3–8 total). Each section has:
-  - A header that states the finding, not the topic — skimming the headers alone should convey the paper's thesis. Example: "Zero to 145: The High-Exposure Tier Was Created During the Study Window", not "Temporal Analysis".
-  - Narrative prose in the conversational-analytical voice (see `writing_style_reference.md`). Walk through the reasoning, not just the conclusion.
-  - 1–2 figures from the relevant bucket's committed `figures/` dir. Figure paths use `../questions/{bucket}/...` relative to `report/`.
-  - A `*Full analysis: [...](...)*` link to the relevant bucket report.
-- **"Where to Go Next" section** at the end: links to `report.md` and to all eight bucket reports.
-- **Config reference footer** (one line).
-
-How to pick stories (in priority order):
-1. Findings that are counterintuitive or gap-filling relative to existing literature.
-2. Findings where the data produces a number or pattern that would change how a policymaker acts.
-3. Findings that are cross-validated by multiple independent sources or methods.
-4. Findings that are methodological contributions (not just results).
-5. Personal preference / editorial judgment.
-Cap at 8 stories. Past 8 becomes unwieldy for a "highlights" format. Below 3 feels thin.
-
-### `report.md` — Full Comprehensive Report
-
-The long-form report. Covers all active analysis buckets with depth. Intended audience: researchers, paper co-authors, anyone who wants the full picture with all supporting figures.
-
-Format requirements:
-- **Opening paragraph**: 3–5 sentences on scope, primary config, and what's new since the last version.
-- **Table of contents**: one entry per chapter, with anchor links.
-- **One chapter per active analysis bucket** (currently 8 buckets). Each chapter:
-  - Opens with `*Full detail: [bucket_report.md](...)*` link.
-  - Has a `*Primary config: ...*` line.
-  - Covers the key findings from that bucket with sub-sections. Section headers state findings, not topics.
-  - Embeds key figures (1–3 per sub-section) using `../questions/{bucket}/...` paths.
-  - Does NOT reproduce the full bucket report verbatim — synthesizes and distills, with forward-links for depth.
-- **Cross-Cutting Findings section**: 5–8 findings that span multiple buckets.
-- **Sub-Report Index table**: one row per bucket with columns Bucket | Report | Core Question.
-- **Config Reference table**: five configs.
-
-### Updating the Reports
-
-When new sub-question results are produced or an existing bucket report is updated:
-
-1. Identify which chapter of `report.md` covers that bucket and update the relevant sub-sections. Update numbers, figures, and narrative to reflect the new results.
-2. Assess whether any of the 8 stories in `report_brief.md` need updating. If a story's key numbers changed, update the narrative and figures. If a new result is more compelling than an existing story, consider swapping.
-3. If a new bucket is added (new top-level question folder), add a chapter to `report.md` and assess whether any finding from it warrants a story slot in `report_brief.md`.
-4. Do NOT update `report.md` or `report_brief.md` as part of a question-specific prompt. These are updated only by a dedicated report-update prompt.
-
-Figure path convention from `report/`: `../questions/{bucket}/{sub-folder}/figures/{filename}.png`
-
-## Data and Compute Rules
-
-- **SKA is real-time.** Never pre-save SKA outputs as static CSVs and load them later. Always call `compute_ska(pct, ska_data)` fresh from `analysis.data.compute_ska`. The five configs in `ANALYSIS_CONFIGS` produce different pct inputs → different AI capability scores.
-- **Use `get_pct_tasks_affected()` from `analysis.config`** to get pct for a single dataset. Do not build the config dict by hand in question scripts.
-- **Use `ANALYSIS_CONFIGS` and `ANALYSIS_CONFIG_SERIES`** from `analysis.config` for the canonical five configs. Do not hardcode dataset names in question scripts.
-- **`analysis/data/tech_skills_simple.csv`** is the static n_software lookup. It is generated by `analysis/data/compute_tech_skills.py` and committed. Do not regenerate it unless `technology_skills_v30.1.csv` is updated.
-- **Trend analysis** uses `ANALYSIS_CONFIG_SERIES` for the time series per config. For SKA gap trends, recompute at first and last date only (not all intermediate dates).
+---
 
 ## Code Quality (analysis-specific)
 
-Follow project `CLAUDE.md` Python rules, plus:
-- All `run.py` scripts must be runnable as `python -m analysis.questions.job_exposure.<sub>.run` from project root.
+Follows project `CLAUDE.md` Python rules, plus:
+
+- `run.py` scripts must be runnable as `python -m analysis.exploratory.<folder>.run` from project root.
 - Use `ensure_results_dir()` from `analysis.config` to create `results/` and `results/figures/`.
-- Use `COLORS`, `FONT_FAMILY`, `CATEGORY_PALETTE` from `analysis.utils` for all charts. Never hardcode colors in question scripts.
-- Every `run.py` must copy key figures to a committed `figures/` dir and call `generate_pdf()` at the end.
+- Use `COLORS`, `FONT_FAMILY`, `CATEGORY_PALETTE`, `style_figure()`, `save_figure()`, `save_csv()` from `analysis.utils` for consistent output. Never hardcode colors.
+- Paper figures additionally use `style_paper_figure()` and `PAPER_PALETTE` from `analysis/paper/paper_config.py`.
+- Every `run.py` should copy key figures into a local `figures/` dir at the end if they're committed (paper parts; the two paperinfra exceptions).
 
-## Charts and Dashboard Reproduction
+---
 
-**`analysis/charts.md`** is the single consolidated reference for all committed analysis figures and how to reproduce them (or not) on the live dashboard. It covers every sub-question across all nine active buckets.
+## Data and Compute Rules
 
-When adding a new figure to a `run.py`:
-- Add an entry in `analysis/charts.md` under the appropriate bucket/sub-question section.
-- Specify the chart type, what it shows, and either the dashboard reproduction steps or "Not reproducible" with the reason.
+- **SKA is real-time.** Never pre-save SKA outputs as static CSVs and load them later. Always call `compute_ska(pct, ska_data)` fresh from `analysis.data.compute_ska`. The five configs in `ANALYSIS_CONFIGS` produce different `pct` inputs → different AI capability scores.
+- **Use `get_pct_tasks_affected()` from `analysis.config`** to get pct for a single dataset. Do not build the config dict by hand in scripts.
+- **Use `ANALYSIS_CONFIGS` and `ANALYSIS_CONFIG_SERIES`** from `analysis.config` for the canonical five configs and their time series. Do not hardcode dataset names.
+- **`analysis/data/tech_skills_simple.csv`** is the static `n_software` lookup. Generated by `analysis/data/compute_tech_skills.py` and committed. Do not regenerate unless `technology_skills_v30.1.csv` is updated.
+- **Trend analysis** uses `ANALYSIS_CONFIG_SERIES` for the time series per config. For SKA gap trends, recompute at first and last date only (not all intermediate dates).
 
-**Chart formatting rules:**
-- Horizontal bar charts using `make_horizontal_bar` must pass the DataFrame sorted `ascending=False` (largest first). `make_horizontal_bar` uses `autorange="reversed"` on the y-axis — passing ascending=True will render smallest at top.
-- For raw `go.Figure` horizontal bars (without `make_horizontal_bar`), sort `ascending=True` (smallest first) so the largest value renders at the top of the chart.
-- Reports use opening paragraphs (no `## TLDR` heading and no `**TLDR:**` prefix). Just a plain paragraph immediately after the config line and `---` divider.
-- State/geo labels should be uppercase in all bar charts.
+---
+
+## Writing Style
+
+Two distinct registers, depending on what you're producing:
+
+### Paper sections — `analysis/paper/`
+
+Follow two references in `analysis/paper/`:
+- **`writing_style_source.md`** — ~30 pages of source writing. Read to calibrate voice, argument structure, parenthetical usage, organizational patterns.
+- **`paper_writing_style.md`** — Condensed dos and don'ts. Follow these rules. When in doubt, default to the patterns in the source reference.
+
+### Exploratory reports / narrative reports — anywhere else
+
+Follow `analysis/writing_style_reference.md`. The key points: conversational-analytical register, loose form but rigorous logic, no hedging filler, no bureaucratic framing, no AI-sounding connectors. Don't force it — the goal is to sound like a sharp person reasoning through data, not to match a template. Keep things as concise as they should be; don't pad sections.
+
+State/geo labels uppercase in bar charts. Reports open with a plain paragraph (no `## TLDR` heading and no `**TLDR:**` prefix).
+
+---
+
+## Cross-References to Watch
+
+The paper imports from two exploratory folders. If you rename or move either, update the imports:
+
+- `analysis/paper/results/part_3/run.py` → `analysis.exploratory.audit_pct_norm_eco.run` and `.run_v3` (chart 15)
+- `analysis/paper/results/part_3/run.py` → `analysis.exploratory.audit_risk_score.run` (5f flags + focused-set helpers)
+
+Both imports are wrapped in `try/except ImportError` so the paper still runs if exploratory is absent.
+
+---
 
 ## Pitfalls
 
@@ -174,3 +102,5 @@ When adding a new figure to a `run.py`:
 - SKA importance filter (≥ 3) must be applied **per occupation row**, not globally. An element that is unimportant in one occupation is still valid in others.
 - O*NET `title` in v30.1 files matches `title_current` in eco_2025. If match rate < 90%, log a warning and investigate.
 - For pivot distance: if a job zone has fewer than 10 high-risk or low-risk occupations, use whatever is available (`min(10, n)`).
+
+(More technical pitfalls are in `ANALYSIS_ARCHITECTURE.md` Common Pitfalls section.)

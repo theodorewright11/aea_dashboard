@@ -1,6 +1,6 @@
-# appendix_charts
+# paperinfra_appendix
 
-Auxiliary figures that don't fit in the main paper but should be on hand. Committed to git via a gitignore exception (`!analysis/exploratory/appendix_charts/**`).
+Auxiliary figures that don't fit in the main paper but should be on hand. Committed to git via a gitignore exception (`!analysis/exploratory/paperinfra_appendix/**`).
 
 Each chart is generated fresh by `run.py` (no copying from `paper/results/`).
 
@@ -12,7 +12,7 @@ Each chart is generated fresh by `run.py` (no copying from `paper/results/`).
 ## Run
 
 ```
-venv/Scripts/python -m analysis.exploratory.appendix_charts.run
+venv/Scripts/python -m analysis.exploratory.paperinfra_appendix.run
 ```
 
 ## Files

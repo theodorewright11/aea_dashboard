@@ -1,7 +1,7 @@
-"""Sync all paper figures into one place + regenerate all_paper_charts.md.
+"""Sync all paper figures into paperinfra_all_charts/ + regenerate all_paper_charts.md.
 
 Mirrors each `analysis/paper/results/part_{1,2,3}/figures/` dir into
-`analysis/exploratory/all_paper_charts/figures/part_{1,2,3}/` and rewrites
+`analysis/exploratory/paperinfra_all_charts/figures/part_{1,2,3}/` and rewrites
 `all_paper_charts.md`. Chart order matches `paper/results/results.md`;
 unknown PNGs (figures present in figures/ but not in CHART_ORDER) are
 appended at the end of their part. Run after any paper figure update.

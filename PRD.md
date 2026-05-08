@@ -223,24 +223,24 @@ A page summarizing the project's purpose, full computation methodology with equa
 
 ## 4. Core Metrics
 
-### % Tasks Affected
-The share of an occupation's total weighted task completion that is attributable to AI-exposed tasks.
+These are the headline metrics every page surfaces. Each is defined here in plain language; the full computational formulas live on the About page (in-product) and in `ARCHITECTURE.md` §4 (technical reference).
 
-Computed as the ratio of AI-weighted task completion to baseline (ECO) task completion: `sum of AI task weights / sum of ECO task weights × 100`. This is always a ratio-of-totals, never an average of percentages. The ECO baseline represents the occupation's full task profile without any AI scoring applied.
+### % Tasks Affected
+The share of an occupation's total weighted task completion that is attributable to AI-exposed tasks. Always a ratio-of-totals, never an average of percentages. The ECO baseline represents the occupation's full task profile without any AI scoring applied.
 
 ### Workers Affected
-The number of workers in an occupation whose work is partially AI-exposed. Computed as `(% Tasks Affected / 100) × total employment`. This does not mean these workers will be replaced — it means this fraction of the workforce's aggregate task load overlaps with current AI capability.
+The number of workers in an occupation whose work is partially AI-exposed. This does not mean these workers will be replaced — it means this fraction of the workforce's aggregate task load overlaps with current AI capability.
 
 ### Wages Affected
-The dollar volume of wages associated with AI-exposed task work. Computed as `(% Tasks Affected / 100) × employment × median annual wage`. Displayed with adaptive units: billions ($B) when ≥ $1B, millions ($M) when ≥ $1M, thousands ($K) when ≥ $1K, otherwise raw dollars.
+The dollar volume of wages associated with AI-exposed task work. Displayed with adaptive units: billions ($B) when ≥ $1B, millions ($M) when ≥ $1M, thousands ($K) when ≥ $1K, otherwise raw dollars.
 
 ### Auto-Aug Score (Automatability / Augmentation)
-A 0–5 scale rating of how automatable or augmentable a specific task is by AI. Scores come from the AI dataset sources (AEI, MCP, Microsoft). When the auto-aug multiplier is enabled, each task's weight is scaled by `auto_aug_mean / 5`, so tasks rated as highly automatable contribute more to the exposure calculation and tasks rated as minimally automatable contribute less.
+A 0–5 scale rating of how automatable or augmentable a specific task is by AI. Scores come from the AI dataset sources (AEI, MCP, Microsoft). When the auto-aug multiplier is enabled, tasks rated as highly automatable contribute more to the exposure calculation and tasks rated as minimally automatable contribute less.
 
 ### Pct (Share of AI Conversations)
 The percentage of AI conversations (from AEI/MCP/Microsoft data) that involved a given task. Values are already in percent form (e.g., 0.4 means 0.4%). This measures how frequently AI systems are actually being used for a task, as opposed to the auto-aug score which measures capability.
 
-### Decimal Formatting
+### Display formatting
 - **Auto-aug scores**: 1 decimal place (e.g., 3.2)
 - **Pct (share of conversations)**: 4 decimal places (e.g., 0.0042)
 - **MCP server ratings**: 1 decimal place

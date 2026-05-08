@@ -21,7 +21,7 @@ Paper writing uses TWO references (both in this folder):
 1. `writing_style_source.md` — Read to calibrate voice, argument structure, and organizational patterns
 2. `paper_writing_style.md` — Follow these rules for condensed dos/don'ts
 
-Question reports use a separate reference: `analysis/questions/writing_style_reference.md`
+Question reports (now archived under `analysis/_archive/questions/`) used a separate reference: `analysis/writing_style_reference.md`
 
 ## Running Charts
 

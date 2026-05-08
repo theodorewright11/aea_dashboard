@@ -1,22 +1,26 @@
 # Manual
 delta/
 analysis/exploratory/*
-!analysis/exploratory/all_paper_charts/
-!analysis/exploratory/all_paper_charts/**
-!analysis/exploratory/appendix_charts/
-!analysis/exploratory/appendix_charts/**
+!analysis/exploratory/paperinfra_all_charts/
+!analysis/exploratory/paperinfra_all_charts/**
+!analysis/exploratory/paperinfra_appendix/
+!analysis/exploratory/paperinfra_appendix/**
 # Re-exclude regenerable outputs inside the committed exploratory folders
-analysis/exploratory/appendix_charts/results/
+analysis/exploratory/paperinfra_appendix/results/
 # Offshoots is a gitignored sandbox carved out inside the (committed) mirror
-analysis/exploratory/all_paper_charts/offshoots/
+analysis/exploratory/paperinfra_all_charts/offshoots/
 
-# Analysis generated outputs (regenerate with: venv/Scripts/python -m analysis.run_all)
-analysis/questions/**/results/
+# Analysis generated outputs (archived question results stay gitignored)
+analysis/_archive/questions/**/results/
 analysis/paper/results/*/results/
 analysis/data
 
+# Archived exploratory folders — were always gitignored under exploratory/,
+# stay gitignored after move into _archive/
+analysis/_archive/exploratory_old/
+
 # Writing style references (not committed)
-analysis/questions/writing_style_reference.md
+analysis/writing_style_reference.md
 analysis/paper/writing_style_source.md
 analysis/paper/paper_writing_style.md
 

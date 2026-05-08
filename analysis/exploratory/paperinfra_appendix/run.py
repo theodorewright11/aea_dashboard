@@ -13,7 +13,7 @@ Two charts produced fresh by this run.py (no copying from elsewhere):
    element level.
 
 Run from project root:
-    venv/Scripts/python -m analysis.exploratory.appendix_charts.run
+    venv/Scripts/python -m analysis.exploratory.paperinfra_appendix.run
 """
 from __future__ import annotations
 

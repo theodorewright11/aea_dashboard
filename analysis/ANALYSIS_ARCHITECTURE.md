@@ -1,6 +1,8 @@
 # ANALYSIS_ARCHITECTURE.md — Analysis System Architecture
 
-Technical reference for the `analysis/` folder. Does not repeat information in the main `ARCHITECTURE.md`.
+Technical reference for the `analysis/` folder: folder map, compute access, locked-in formulas, output standards, and cross-references between live components.
+
+For *what* the analysis system is for, see `ANALYSIS_PRD.md`. For *how to work in it*, see `ANALYSIS_CLAUDE.md`.
 
 ---
 
@@ -8,861 +10,134 @@ Technical reference for the `analysis/` folder. Does not repeat information in t
 
 ```
 analysis/
+├── ANALYSIS_PRD.md          — What the analysis system is for
 ├── ANALYSIS_CLAUDE.md       — Agent rules for analysis work
-├── ANALYSIS_PRD.md          — Question catalog, audiences, five configs
 ├── ANALYSIS_ARCHITECTURE.md — This file
-├── charts.md                — Dashboard reproduction guide for all committed figures (all buckets)
 ├── config.py                — Shared paths, ANALYSIS_CONFIGS, ANALYSIS_CONFIG_SERIES,
 │                              OCCS_OF_INTEREST, get_pct_tasks_affected(), helpers
-├── utils.py                 — Chart styling, PDF generation, save helpers
-├── run_all.py               — Reference only (broken; old dataset names)
+├── utils.py                 — Chart styling (style_figure, save_figure), PDF generation,
+│                              COLORS, FONT_FAMILY, CATEGORY_PALETTE
+├── writing_style_reference.md — Style guide for question-style narrative reports
+│                                (gitignored; lifted out of archived questions/)
 ├── data/
-│   ├── skills_v30.1.csv         — O*NET v30.1 skills (base file, do not delete)
+│   ├── skills_v30.1.csv         — O*NET v30.1 skills (base file)
 │   ├── abilities_v30.1.csv      — O*NET v30.1 abilities (base file)
 │   ├── knowledge_v30.1.csv      — O*NET v30.1 knowledge (base file)
 │   ├── technology_skills_v30.1.csv — O*NET v30.1 tech skills (base file)
 │   ├── tech_skills_simple.csv   — Static: soc_code, title, n_software (generated)
 │   ├── compute_ska.py           — Real-time SKA gap computation module
 │   ├── compute_tech_skills.py   — Generates tech_skills_simple.csv
-│   └── old_scripts/             — Reference only (notebook + old ratio script)
-├── questions/
-│   ├── _template/
-│   ├── economic_footprint/      — Active question bucket
-│   │   ├── README.md
-│   │   ├── economic_footprint_report.md
-│   │   ├── sector_footprint/
-│   │   ├── skills_landscape/
-│   │   ├── job_structure/
-│   │   ├── ai_modes/
-│   │   ├── trends/
-│   │   ├── state_profiles/
-│   │   └── work_activities/
-│   ├── job_exposure/            — Active question bucket
-│   │   ├── README.md
-│   │   ├── job_exposure_report.md
-│   │   ├── exposure_state/
-│   │   ├── job_risk_scoring/
-│   │   ├── worker_resilience/          — SKA gap analysis; tips for 3 occupations
-│   │   │   └── ska_deep_dive/          — Element trends, cross-config, category breakdown, most-subsumed occs
-│   │   ├── pivot_distance/
-│   │   ├── audience_framing/
-│   │   └── occs_of_interest/
-│   ├── work_activity_exposure/  — Active question bucket
-│   │   ├── README.md
-│   │   ├── work_activity_exposure_report.md
-│   │   ├── exposure_state/
-│   │   ├── activity_robustness/
-│   │   ├── education_lens/
-│   │   └── audience_framing/
-│   ├── potential_growth/        — Active question bucket
-│   │   ├── README.md
-│   │   ├── potential_growth_report.md
-│   │   ├── adoption_gap/
-│   │   ├── wage_potential/
-│   │   ├── automation_opportunity/
-│   │   └── audience_framing/
-│   ├── source_agreement/        — Active question bucket
-│   │   ├── README.md
-│   │   ├── source_agreement_report.md
-│   │   ├── ranking_agreement/
-│   │   ├── score_distributions/
-│   │   ├── source_portraits/
-│   │   └── marginal_contributions/
-│   ├── agentic_usage/           — Active question bucket
-│   │   ├── README.md
-│   │   ├── agentic_usage_report.md
-│   │   ├── exposure_state/
-│   │   ├── sector_footprint/
-│   │   ├── work_activities/
-│   │   ├── mcp_profile/
-│   │   └── trends/
-│   └── field_benchmarks/        — Active question bucket
-│       ├── README.md
-│       ├── field_benchmarks_report.md
-│       ├── automation_share/
-│       ├── wage_impact/
-│       ├── utah_benchmarks/
-│       ├── theoretical_vs_confirmed/
-│       ├── sector_breakdown/
-│       ├── work_activity_comparison/
-│       └── platform_landscape/
-│   ├── state_clusters/          — Active question bucket
-│   │   ├── README.md
-│   │   ├── state_clusters_report.md
-│   │   ├── risk_profile/        — Cluster by employment-weighted risk tier distribution
-│   │   ├── activity_signature/  — Cluster by GWA share of AI-exposed employment
-│   │   ├── agentic_profile/     — Cluster by agentic intensity (agentic/confirmed) per sector
-│   │   ├── adoption_gap/        — Cluster by ceiling-confirmed gap ratio per sector
-│   │   └── cluster_convergence/ — ARI matrix + state stability across all 5 schemes
-│   ├── time_trends/             — Active question bucket
-│   │   ├── README.md
-│   │   ├── time_trends_report.md
-│   │   ├── trajectory_shapes/   — Classify occupations by growth pattern (6 types)
-│   │   ├── tier_churn/          — Exposure tier transitions and sector stability
-│   │   ├── confirmed_ceiling_convergence/ — Confirmed/ceiling ratio trend nationally + by sector
-│   │   ├── wa_tipping_points/   — IWA threshold crossings (10%, 33%, 66%) and approaching IWAs
-│   │   └── occs_timeline/       — Full time-series for the 29 named occupations of interest
-│   ├── workforce_meeting/       — Active question bucket (presentation deliverable)
-│   │   ├── README.md
-│   │   ├── workforce_meeting_report.md
-│   │   ├── run.py
-│   │   └── figures/             — 14 committed chart PNGs
-│   ├── workforce_meeting_v2/    — V2: charts only, larger fonts, non-technical framing
-│   │   ├── README.md
-│   │   ├── workforce_meeting_v2_report.md
-│   │   ├── run.py
-│   │   └── figures/             — 11 committed chart PNGs
-│   └── workforce_sig_meeting/   — Presentation deliverable; methodology
-│       │                          table on Chief Executives at top of
-│       │                          report (6 of 31 sample tasks; footer
-│       │                          math runs the dashboard's freq × auto-aug
-│       │                          formula on all 31 tasks → 50.7% / 87.4K /
-│       │                          $18B). Reuses paper part_1 trend, all 5
-│       │                          part_2 charts, and part_3 tech_commodities.
-│       │                          Custom charts: gap_to_ceiling_wages
-│       │                          (top sectors by all_confirmed →
-│       │                          all_ceiling wage gap, stacked
-│       │                          confirmed-+-extension on a wages
-│       │                          x-axis) and conv_allconfirmed_ceiling
-│       │                          (3-bar variant: Conversational →
-│       │                          All Confirmed → Ceiling).
-│       ├── README.md
-│       ├── workforce_sig_meeting_report.md
-│       ├── run.py
-│       └── figures/             — 2 committed chart PNGs
-├── question_findings/           — Flat copies of question .md reports
-├── report/
-│   └── report.md                — Rolling aggregate report
-├── paper/                       — Research paper infrastructure
+│   └── ai_capability_method_comparison.ipynb — Defends 95th-percentile threshold
+├── paper/                   — Research paper infrastructure
 │   ├── paper_config.py          — PAPER_PALETTE, chart constants, style_paper_figure()
 │   ├── writing_style_source.md  — ~30 pages of source writing for style calibration
 │   ├── paper_writing_style.md   — Condensed dos/don'ts for paper writing
-│   ├── working_paper_outline.md — Draft structure reference only (not final, may be outdated)
-│   └── results/                 — Results section (NOT gitignored — section name)
-│       ├── results.md           — Assembled Results section (Parts 1–3; update as parts complete)
-│       ├── part_1/              — Scale, Convergence, Growth — FIRST DRAFT COMPLETE
-│       │   ├── run.py, README.md, part_1.md, results/ (gitignored), figures/ (committed)
-│       ├── part_2/              — Characterization: Where AI Exposure Falls — 6 charts
-│       │   ├── run.py, README.md, part_2.md, results/ (gitignored), figures/ (committed)
-│       │   ├── Figures (in order): phys_info_divide (ordered Physical →
-│       │   │            Mixed → Non-physical), job_zone_violin,
-│       │   │            ska_skills (element-level, normalized to % of
-│       │   │            workforce max — workforce-max bar always 100%,
-│       │   │            AI Top-10 overlay; same scaling as K&A),
-│       │   │            ska_knowledge_abilities (subcategory-level,
-│       │   │            Knowledge + Abilities split into two stacked panels
-│       │   │            with `(N subcategories | M elements)` labels;
-│       │   │            x range fixed [0, 100]%), gwa_exposure (vertical
-│       │   │            Workers Exposed colorbar on side), major_categories
-│       │   │            (% Tasks Exposed / Workers Exposed / Wages Exposed
-│       │   │            three-panel)
-│       └── part_3/              — Action: What To Do About It — 4 charts
-│           ├── run.py, README.md, part_3.md, results/ (gitignored), figures/ (committed)
-│           ├── Figures (in order): conv_confirmed_ceiling_gap (top 10),
-│           │            tech_commodities, risk_score_5f,
-│           │            intensity_anchor_fulleco
-│           └── Cross-references: economic_footprint/skills_landscape (tech_skills pipeline,
-│                                 reimplemented in paper styling);
-│                                 exploratory/pct_norm_vs_eco/run_v3.py
-│                                 (chart 15 — function-level import, skips
-│                                 gracefully if exploratory folder absent);
-│                                 exploratory/risk_score_audit/run.py
-│                                 (5f flags + focused-set helpers, function-level
-│                                 import, paper-styled rendering)
-└── exploratory/                 — Gitignored except for two carved-out
-    │                              committed sub-folders: `all_paper_charts/`
-    │                              and `appendix_charts/` (see below).
-    │                              Outside those exceptions, nothing in this
-    │                              folder is committed — do not use git add -f.
-    │                              One-off charts only; no reports fed into
-    │                              question_findings/ or report/. Each sub-folder
-    │                              has: run.py, README.md, <name>_report.md
-    │                              (findings writeup with inline figures referencing
-    │                              results/figures/ paths), and results/ (auto-created).
-    │                              Gitignore mechanic: `analysis/exploratory/*`
-    │                              excludes everything inside, then
-    │                              `!analysis/exploratory/all_paper_charts/**`
-    │                              and `!analysis/exploratory/appendix_charts/**`
-    │                              re-include the two exceptions; a final rule
-    │                              `analysis/exploratory/all_paper_charts/offshoots/`
-    │                              re-excludes the offshoots sandbox.
-    ├── all_paper_charts/        — COMMITTED (gitignore exception). Mirror
-    │   │                          of every figure currently in
-    │   │                          analysis/paper/results/part_{1,2,3}/figures/.
-    │   │                          run.py syncs the PNGs into
-    │   │                          figures/part_{1,2,3}/, applies a SKIP set
-    │   │                          (charts not in results.md) + CHART_ORDER
-    │   │                          (per-part canonical order), and regenerates
-    │   │                          all_paper_charts.md (no-prose chart
-    │   │                          listing). Surfaces on GitHub so the
-    │   │                          paper's figure set is browsable in one
-    │   │                          place.
-    │   └── offshoots/           — GITIGNORED sandbox carved out inside the
-    │                              committed mirror. Same shape as
-    │                              appendix_charts/: one run.py, one
-    │                              offshoots.md, all charts generated fresh.
-    │                              Larger diagnostics may live in their own
-    │                              sub-folder with a self-contained run.py +
-    │                              README + report.md (also gitignored).
-    │                              Currently produces:
-    │                              (1) simple_mean_convergence — rebuilds the
-    │                              paper convergence chart with internal
-    │                              sources rolled up by simple-mean across
-    │                              occupations (matching the externals'
-    │                              methodology); plus a CSV comparing
-    │                              cell-by-cell rho against the paper rollup.
-    │                              (2-4) major_top10_trends_{pct,workers,wages}
-    │                              — top-10 major occ categories rendered as
-    │                              side-by-side per-config tables (All
-    │                              Confirmed | Ceiling). Modeled after the
-    │                              Part 1 temporal-tables pattern. Each table
-    │                              sorted by Δ descending (biggest growers at
-    │                              top). Top 10 picked per metric from the
-    │                              latest All Confirmed snapshot.
-    │                              (5) weighting_config_test/ — sub-folder
-    │                              diagnostic for two paper-locking decisions.
-    │                              Stage A: regular vs all_confirmed_conservative
-    │                              (Microsoft physical-tasks-stripped) under freq
-    │                              weighting; ρ = 0.94 at occ level (NOT a cosmetic
-    │                              swap — physical-heavy majors drop 10–17pp,
-    │                              national 40% → 33% / 61M → 51M / $4T → $3.5T).
-    │                              Stage B: 6 weighting variants on all_confirmed
-    │                              — freq, freq×t, freq×imp×rel, imp×rel, t,
-    │                              none. Top-4 majors stable across all variants;
-    │                              Spearman ρ ≥ 0.96 vs freq at occ level. Ships
-    │                              a parallel ratio-of-totals compute pipeline
-    │                              (validated at ρ = 1.0000 vs dashboard's
-    │                              get_pct_tasks_affected). `t` joined from
-    │                              `data/final_eco_2025_with_task_properties.csv`.
-    │                              Q1 follow-up `physical_filter_audit.py`:
-    │                              row-set diff between regular and conservative
-    │                              datasets — all 3,116 dropped rows are
-    │                              physical=True (sanity passes), but 41.9% of
-    │                              the 2,160 unique dropped pairs land in INFO
-    │                              majors. 223 mislabel candidates have d, m,
-    │                              AND s all above eco median (top: bank-teller
-    │                              cash entry, cashier checkout transactions,
-    │                              library checkouts, payroll entries). Smart-
-    │                              conservative counterfactual (physical-flag +
-    │                              d/m/s gate) recovers 4.2pp / 6.4M / $0.3T —
-    │                              about 60% of plain conservative's cut.
-    │                              Q1 resolution `ai_filter_comparison.py`:
-    │                              evaluates the user-built AI-share IWA filter
-    │                              (`final_all_confirmed_usage_ms_ai_phys_filtered_2026-02-12.csv`)
-    │                              — strips Microsoft contributions only on IWAs
-    │                              where AI share > 2× human share. Drops just
-    │                              305 (task, occ) pairs (vs plain conservative's
-    │                              2,160), all of which are a strict subset of
-    │                              plain conservative's drops. d/m/s of new
-    │                              drops matches the eco physical baseline
-    │                              almost exactly (d=2.91 vs 2.92), where plain
-    │                              conservative's drops sit halfway between
-    │                              physical and non-physical baselines (d=3.09).
-    │                              Sample drops are unambiguously physical —
-    │                              postural drainage, mail handling, food
-    │                              delivery, equipment demonstration. National
-    │                              headlines: regular 40% / 61M / $4T → new
-    │                              AI-filter 38.5% / 58.9M / $3.9T → plain
-    │                              conservative 33% / 51M / $3.5T. Spearman
-    │                              ρ vs regular at occ level: new=0.992,
-    │                              plain=0.938. **Final recommendations:** (Q1)
-    │                              adopt new AI-share filter as primary All
-    │                              Confirmed (re-point dataset name in
-    │                              backend/config.py to the new file), drop
-    │                              all_confirmed_conservative from
-    │                              ANALYSIS_CONFIGS, collapse to 5 configs;
-    │                              (Q2) keep freq as primary weight.
-    ├── all_paper_charts_aei_only/ — Sibling of `all_paper_charts/` but
-    │                              regenerates every paper figure with the
-    │                              `all_confirmed` config swapped from
-    │                              `AEI Both + Micro 2026-02-12` (AEI Conv +
-    │                              AEI API + Microsoft) to `AEI Both 2026-02-12`
-    │                              (final_aei_all_usage_2026-02-12.csv —
-    │                              AEI Conv + AEI API only, no Microsoft).
-    │                              Trend series swaps to the AEI Both family at
-    │                              the same four dates the all_confirmed line
-    │                              uses (Mar 2025, Aug 2025, Nov 2025, Feb
-    │                              2026). Other configs (all_ceiling,
-    │                              human_conversation, agentic_*,
-    │                              all_confirmed_conservative) untouched —
-    │                              multi-config charts (overview,
-    │                              convergence_configs, conv_confirmed_ceiling_gap)
-    │                              keep the same structure with only the
-    │                              all_confirmed bar/series swapped. Historical
-    │                              task-count rows in temporal_tables.png (Sep
-    │                              2024, Dec 2024) keep `AEI Both + Micro`
-    │                              because no `AEI Both 2024-09-30` snapshot
-    │                              exists. Mechanism: backup committed paper
-    │                              figures in memory → mutate
-    │                              `ANALYSIS_CONFIGS["all_confirmed"]` and
-    │                              `ANALYSIS_CONFIG_SERIES["all_confirmed"]` →
-    │                              reload-and-run each
-    │                              `analysis.paper.results.part_{1,2,3}.run`
-    │                              so module-level
-    │                              `PRIMARY_DATASET = ANALYSIS_CONFIGS[...]`
-    │                              picks up the new value → copy regenerated
-    │                              PNGs to local `figures/part_{1,2,3}/` →
-    │                              restore paper figures + configs in a
-    │                              `finally` block. GITIGNORED (not added as a
-    │                              third gitignore exception).
-    ├── appendix_charts/         — COMMITTED (gitignore exception). Auxiliary
-    │                              paper figures generated fresh by its own
-    │                              run.py (no copying from elsewhere). Two
-    │                              charts: phys_zone_faceted (Physical /
-    │                              Mixed / Non-physical panels of job zone
-    │                              violins, with per-row + per-column
-    │                              median+n labels added) and ska_full (full
-    │                              element-level SKA across skills /
-    │                              knowledge / abilities with the complete
-    │                              workforce ladder Mean+P95+Top-10). Writes
-    │                              appendix_charts.md listing both.
-    ├── job_breakdown/           — Per-occupation SKA + task breakdown for 3 EOR-adjacent
-    │                              occupations (HR Specialists, Compensation Specialists,
-    │                              Customer Service Reps); replicates worker_resilience pattern
-    ├── ska_levels/              — AI imp×lv vs. workforce benchmarks for every SKA element
-    ├── ska_category_breakdown/  — Same per-element data as the Part 2 paper SKA
-    │                              chart (all_confirmed, imp ≥ 3) rolled up to
-    │                              O*NET native categories via element_id prefix.
-    │                              7 skills subcategories, 15 abilities
-    │                              subcategories, 10 knowledge categories. 4 PNGs
-    │                              (combined 3-panel + per-type) + 2 CSVs +
-    │                              ska_category_breakdown_report.md with category
-    │                              tables and element-level detail nested under
-    │                              each category.
-    ├── zone_pivot_anatomy/      — Why zone 3 peaks on pivot cost; overlap structure and
-    │                              sector composition of at-risk occupations by zone
-    ├── physical_informational_divide/ — Physical vs. informational occupation split;
-    │                              structural task distributions (GWA/IWA/DWA 3×2 panels);
-    │                              AI exposure analysis: pct distribution, IWA workers
-    │                              concentration, auto-aug breakdown (task type × coverage ×
-    │                              dataset), GWA concentration curve, auto-aug vs pct scatter
-    ├── aioe_comparison/         — Felten/Raj/Seamans AIOE 52×10 matrix vs. our
-    │                              pct_tasks_affected. Per-occ AIOE score = ratio-of-sums
-    │                              of imp×lv×ability_cap over imp≥3 ability rows. Three
-    │                              variants: row-mean across 10 apps, Language Modeling
-    │                              column only, Reading Comprehension column only. 18 charts
-    │                              spanning occ-level scatter, SOC-level convergence (focused
-    │                              + all-sources), 4-aggregate-panel ability ranking (sorted
-    │                              by mean/RC/LM), per-ability SKA-aggregate vs AIOE
-    │                              comparisons, per-AI-app ρ breakdown at 3 SKA aggregates,
-    │                              occ-level full heatmap.
-    ├── claude_lab/              — Claude's autonomous research workspace on the AEA
-    │                              data. Operates as an independent researcher, not a
-    │                              directed analyst. Has its own CLAUDE.md (agent spec
-    │                              with autonomous-researcher framing), research_log.md
-    │                              (single rolling synthesis updated every session),
-    │                              INVENTORY.md (meta log of sub-folders, open threads,
-    │                              accreted conventions, paper-flag candidates),
-    │                              README.md, and lib/ for shared helpers. Each thread
-    │                              is a named sub-folder with run.py + results/ +
-    │                              notes.md (and optionally <topic>_report.md).
-    │                              Synthesis reports may live at the workspace root.
-    │                              Folder is gitignored entirely. Folder used to be
-    │                              called action_levers/; the seed sub-folder
-    │                              initial_action_charts/ retains that historical name
-    │                              and produces six charts on what to do about
-    │                              widespread exposure (complementarity quadrant,
-    │                              sectoral velocity, wage resilience matrix, resilience
-    │                              differential, trade-up corridors, bottleneck
-    │                              activity atlas) — all under all_confirmed. Future
-    │                              sub-folders pursue whatever Claude finds worth
-    │                              investigating. Promotion to paper/ is gated by the
-    │                              user.
-    ├── schaal_substitution/     — Replicates the chart types from
-    │                              `paper/results/part_1` + `part_2` (minus
-    │                              correlations and temporal) using Schaal 2025's
-    │                              per-task scores from merged_tasks_full.csv
-    │                              in place of our pipeline's auto_aug_mean.
-    │                              Schaal score normalized as score / 2 to
-    │                              match the original auto_aug_mean / 5 0-1
-    │                              multiplier mechanic. Two versions per chart:
-    │                              "economy" (Schaal applied to every eco_2025
-    │                              task with a score) and "confirmed" (Schaal
-    │                              applied only to task-occ pairs that ALSO
-    │                              appear in all_confirmed). Five score
-    │                              variants run through the full pipeline:
-    │                              auto_avg (Schaal Overall, eq. 1), pv_avg
-    │                              (Performance Variance / Moravec proxy),
-    │                              da_avg (Data Abundance), tk_avg (Tacit
-    │                              Knowledge — high = MINIMAL TK required =
-    │                              MORE automatable, system-prompt convention),
-    │                              ag_avg (Algorithmic Efficiency Gap). Six
-    │                              chart types per variant (overview, phys/info,
-    │                              job zone, GWA, major categories, SKA via
-    │                              compute_ska piped with Schaal-derived pct)
-    │                              x 11 PNGs each + 1 cross-variant comparison
-    │                              chart = 56 PNGs total in
-    │                              results/figures/{auto,pv,da,tk,ag,_comparison}/.
-    │                              Per-variant findings: DA closest to
-    │                              observed-usage (Office/Admin + Computer/Math
-    │                              top); TK is the cleanest Moravec test
-    │                              (high-skill expert work consistently bottom
-    │                              — supports seniority-biased technological
-    │                              change); PV inverts intuitions
-    │                              (Arts/Education on top via high human
-    │                              performance variance); AG essentially a
-    │                              phys/info cut. No single subhypothesis
-    │                              reproduces Schaal Overall — the four-factor
-    │                              average is doing real work.
-    ├── external_indices_correlation/ — Three analyses against Schaal 2025
-    │                              (Cambridge ERA AI Governance Research Fellowship,
-    │                              "A theory-based AI automation exposure index:
-    │                              Applying Moravec's Paradox to the US labor
-    │                              market") replication data.
-    │                              (1) SOC convergence heatmap: Spearman ρ of
-    │                              our 4 internal sources + 5 ANALYSIS_CONFIGS
-    │                              (9 rows) against all 16 external AI/automation
-    │                              exposure indices in `Comparison of Indices.csv`
-    │                              — Schaal's own Moravec index (overall auto_w
-    │                              + 4 subhypotheses PV/DA/TK/AG; tk_w is
-    │                              inverted-coded, high = MORE tacit knowledge
-    │                              required = LESS automatable), Eloundou α/β/γ,
-    │                              Webb software/robot/ai, SML, AIOE base felten,
-    │                              Frey-Osborne, Autor routine cog/manual. Four
-    │                              SOC levels stacked vertically, pairwise dropna
-    │                              per cell, diverging color scale, significance
-    │                              asterisks. Negative ρ against pre-LLM indices
-    │                              reproduces Schaal's Figure 4 paradigm-shift
-    │                              finding from a third independent methodology.
-    │                              (2) Task-level scatter: Schaal's per-task
-    │                              auto_avg from `merged_tasks_full.csv` vs our
-    │                              auto_aug_mean per (task_normalized,
-    │                              soc_code_2019_full). 5-panel one-per-config
-    │                              + 4-panel subhypothesis breakdown. Joins on
-    │                              normalized task text + 2019 SOC; AEI-only
-    │                              datasets (only soc_code_2010 in file) bridged
-    │                              to 2019 via the AEI Both + Micro crosswalk;
-    │                              GWA/IWA/DWA expansion deduped via
-    │                              groupby([task_norm, soc]).first(). Task-level
-    │                              ρ (0.07–0.30) is much weaker than occ-level
-    │                              ρ (0.5–0.6) — agreement is between-occupation,
-    │                              not within. (3) Group-level auto_aug vs
-    │                              Schaal heatmap (group_auto_aug_vs_schaal.png):
-    │                              two stacked 4×5 heatmaps, rows = SOC levels,
-    │                              cols = Schaal's 5 score columns from
-    │                              merged_tasks_full.csv. Cells = Spearman ρ
-    │                              between group-level avg auto_aug_mean (from
-    │                              all_confirmed) and group-level avg Schaal
-    │                              score. Two methods applied symmetrically:
-    │                              Method A zero-fill (avg over ALL eco
-    │                              task-occ pairs in group, missing = 0) and
-    │                              Method B rated-only (only pairs with both
-    │                              ratings). Schaal DA strongest predictor
-    │                              (ρ ≈ 0.83 at major under Method A); Schaal
-    │                              TK negative (observed Claude usage
-    │                              concentrates in high-tacit-knowledge fields).
-    │                              Four PNGs + 5 CSVs total.
-    ├── task_properties_correlation/ — Correlates 12 LLM-rated task
-    │                              properties (m, d, s, r, h, e, t, tf, df,
-    │                              de, nt, ac) from
-    │                              `data/final_eco_2025_with_task_properties.csv`
-    │                              against 4 internal sources + 6 configs
-    │                              (5 ANALYSIS_CONFIGS + new
-    │                              `all_confirmed_conservative` from
-    │                              `final_all_confirmed_usage_ms_nonphysical_2026-02-12.csv`,
-    │                              registered in backend/config.py as
-    │                              "AEI Both + Micro Conservative 2026-02-12")
-    │                              at major/minor/broad/occupation. Two
-    │                              methodologies: Method A (group-mean of
-    │                              property × weight, weight ∈ {raw, freq,
-    │                              t}); Method B (composite as synthetic
-    │                              auto_aug, plugged into the dashboard's
-    │                              pct pipeline — composite min-max scaled
-    │                              to [0,1], synth_pct = 100 × Σ(weight ×
-    │                              comp_norm) / Σ(weight) — produces a pct
-    │                              series structurally identical to real
-    │                              pct, eliminating group-size effects).
-    │                              Two composites: A = (d·m·s·h)/(r·tf·df),
-    │                              B = d·m·s. Each runs full-eco and
-    │                              confirmed-only (Schaal Method B parallel
-    │                              — restricted to (task, occ) pairs in
-    │                              all_confirmed). Plus paper convergence
-    │                              rerun: reproduces paper/results/part_1
-    │                              convergence + convergence_external
-    │                              charts under both freq and t weighting,
-    │                              with Composite-A-as-auto-aug as a 5th
-    │                              source row. Headlines: (1) raw `s` ranks
-    │                              SOC majors at ρ = +0.84 against our pct,
-    │                              raw `d` at +0.80 — property signal was
-    │                              buried by freq weighting before. (2)
-    │                              Composite B (d·m·s) outperforms A at
-    │                              every weighting (raw +0.66 vs +0.32,
-    │                              ×t +0.71 vs +0.53, Method B ×freq +0.67
-    │                              vs +0.39) — friction denominator hurts
-    │                              because friction terms have wide per-
-    │                              task variance amplified multiplicatively.
-    │                              (3) Confirmed-only filter decreases
-    │                              strongest predictors (s_raw drops
-    │                              −0.19) — restricting to tasks AI sees
-    │                              removes discriminative tail. (4) Paper
-    │                              convergence with t ≈ freq (internal
-    │                              5×5 mean ρ at major: 0.65 vs 0.66;
-    │                              external 5×4: 0.69 vs 0.71) — cross-
-    │                              source story robust to per-task weight.
-    │                              (5) all_confirmed_conservative tracks
-    │                              all_confirmed almost identically; t-
-    │                              weighted composite slightly stronger.
-    │                              Headline single number: ρ +0.71 at
-    │                              major (Method A, Composite B, ×t, full
-    │                              eco) — what 12 LLM-rated properties +
-    │                              one slim formula can do without seeing
-    │                              any usage data. 6 PNGs + 6 CSVs.
-    ├── crashing_waves_vs_rising_tides/ — Empirical comparison to Mertens et
-    │                              al. (2026), "Crashing Waves vs. Rising
-    │                              Tides" (arXiv 2604.01363). Two parts.
-    │                              Part A tests cross-occupation distribution
-    │                              shape of Δpct_tasks_affected between
-    │                              snapshots — histograms with shape stats
-    │                              (Gini/kurtosis/skew/concentration), Lorenz
-    │                              curves, lift profile by initial-exposure
-    │                              decile, rank stability over time,
-    │                              per-period violins, growth-by-major
-    │                              sorted by paper β. Run for both
-    │                              `all_confirmed` (4 dates) and `all_ceiling`
-    │                              (8 dates). Headline: capability (ceiling)
-    │                              is tide-shaped (Gini 0.39, smooth lift),
-    │                              adoption (confirmed) is wave-shaped
-    │                              (Gini 0.65, concentrated in already-
-    │                              exposed occupations). Part B encodes
-    │                              Mertens Table 1 betas per major and
-    │                              computes three forward-risk scores per
-    │                              occupation restricted to the six sig-β
-    │                              majors: already_score = pct × |β|,
-    │                              headroom_score = (100−pct) × |β|,
-    │                              combined_score = p(1−p)|β|·100. 13 PNGs
-    │                              + 11 CSVs. The "already" cut surfaces
-    │                              the most policy-relevant front-of-the-
-    │                              wave list (Electronics Engineers,
-    │                              Investment Fund Managers, Architects,
-    │                              Graphic Designers, PR Specialists,
-    │                              Concierges); the "headroom" cut is
-    │                              dominated by Personal Care/Service
-    │                              because |β|=0.93 there is roughly double
-    │                              the next steepest.
-    ├── risk_score_audit/        — Diagnostic on the
-    │                              `job_exposure/job_risk_scoring` 8-flag
-    │                              composite; framing question for Part 3
-    │                              of the paper. Two methodological
-    │                              overrides applied locally (not in
-    │                              compute_ska.py or job_risk_scoring):
-    │                              (i) SKA AI capability uses top-10 mean
-    │                              instead of p95; (ii) flag 6 fires on
-    │                              eco_2025's `emp_change_pct_2024_2034 < 0`
-    │                              (BLS 2024–2034 employment projection)
-    │                              instead of DWS outlook ∈ {2,3} — 248
-    │                              of 923 occs project negative change.
-    │                              Four sections.
-    │                              (1) Flag-validity: eta² of each flag
-    │                              vs. pct_physical, job_zone, major. F5
-    │                              (zone in 1–3) is tautological with
-    │                              job_zone (η²=1.00), F7 (software>med)
-    │                              is heavily structural (η²≈0.42 across
-    │                              all three cuts), F1 moderate (0.12 zone,
-    │                              0.36 major), F6 (emp proj<0) much less
-    │                              structural than the old DWS version
-    │                              (0.05/0.11/0.29 vs prior 0.13/0.20/0.30
-    │                              — the swap reduces structural
-    │                              contamination of flag 6), F2/F3/F4/F8
-    │                              mostly independent.
-    │                              (2) SKA mechanicalness (top-10 mean):
-    │                              OLS R²(ska_pct ~ pct_physical) = 0.03,
-    │                              R²(~ job_zone) = 0.19, combined 0.22;
-    │                              direction on zone reversed from upstream
-    │                              intuition (lower-zone occs have HIGHER
-    │                              SKA pct because their requirement floor
-    │                              is lower).
-    │                              (3) Level-vs-trend: 8 contingencies.
-    │                              pct level × pct trend has 21% off-diag
-    │                              at median (φ=0.57) / 11% at p75 (φ=0.72);
-    │                              SKA × SKA tighter under top-10 mean
-    │                              (10/6% off-diag, φ=0.80/0.83); cross
-    │                              pairings φ ≈ 0.
-    │                              (4) Flagging variants (9): A (pct>50%),
-    │                              B (pct>p75), D (pct>50% + trend top
-    │                              half) essentially identical (~230 occs,
-    │                              Jaccard 0.94–0.98). C (pct>50% + emp
-    │                              proj<0) drops to 59 occs (was 83 with
-    │                              DWS). E (trimmed 4-flag) is 200 occs /
-    │                              87% Jaccard with A. F (full 8-flag) is
-    │                              109 occs / 46% Jaccard with A and
-    │                              structurally biased (61% zone 1–3 vs
-    │                              30% baseline; 44% emp proj<0 vs 25%).
-    │                              Three quad-intersect variants (pct +
-    │                              SKA>med + pct trend>med + emp proj<0):
-    │                              G (pct>50%) → 43 occs, H (pct>median)
-    │                              → 62 occs, I (pct>p75) → 41 occs. G≈I
-    │                              (Jaccard 0.95); H is the only one with
-    │                              distinct content (admits 19 mid-exposure
-    │                              trajectory occs). All three are 76–84%
-    │                              zone 1–3 and 100% emp proj<0 by
-    │                              construction. Recommendation: four
-    │                              defensible options — A (raw cut), E
-    │                              (trimmed), C (pct ∩ emp proj decline),
-    │                              H (forward-looking watch list). Avoid F,
-    │                              B/D (≈ A), G/I (≈ each other).
-    │                              Section 5 produces 4 chart variations
-    │                              (5a–5d) on a focused 56-occ set
-    │                              (pct>50% & trend>med & emp proj<0,
-    │                              with flag for whether SKA>med also
-    │                              fires — 43 SKA-gated, 13 added when
-    │                              SKA filter dropped). The 13 added are
-    │                              mostly Zone 4–5 educators + research-
-    │                              adjacent professionals + Computer/Math
-    │                              knowledge workers — a forward-looking
-    │                              professional tier vs. the SKA-gated
-    │                              clerical core. 5a bar by pct, 5b bar
-    │                              by emp projection, 5c scatter, 5d
-    │                              stacked bar by major. Intended for
-    │                              the next chat to pull into Part 3.
-    │                              Side-deliverables: focused_set.csv
-    │                              (the 56 occs with tier flag),
-    │                              ska_below_100_top10.csv (250 occs
-    │                              with SKA top-10 mean <100%, vs 735
-    │                              under p95). 10 PNGs + 9 CSVs.
-    └── pct_norm_vs_eco/         — AI usage distribution (Σ pct_normalized) vs. economic
-                                   baseline (freq×emp / freq-allocated emp), renormalized
-                                   to 100%. Overhauled: two configs (all_confirmed and
-                                   aei_all_usage), seven levels (major/minor/broad/occ/
-                                   gwa/iwa/dwa), two eco scopes (config-scoped vs. full
-                                   eco_2025), and five bias variants (no_bias, equal
-                                   3-source consensus, chatgpt_2x/5x/10x). Bias correction
-                                   divides each task's pct by bias_ratio[gwa] =
-                                   claude_share / consensus_share, averaging across GWAs
-                                   for multi-mapped tasks at occ-hierarchy levels. Source
-                                   GWA shares (AEI, Copilot, ChatGPT) hardcoded from
-                                   published distributions. Coverage: GWA + major have
-                                   all bias × both configs × both eco (40 charts each);
-                                   other levels are all_confirmed only, equal bias only,
-                                   both eco (4 charts each × 5 = 20). 100 PNGs total.
-                                   V2 add-on (run_v2.py + pct_norm_vs_eco_report_v2.md):
-                                   20 intensity-ranking charts + diagnostics table. Per-cat
-                                   ratio = Σ pct (bias-corrected) / Σ (freq×emp), renormed
-                                   to 100%. Single-color horiz bar, top-30 + bot-10.
-                                   Coverage: 8 base levels (major/minor/broad/occ/gwa/iwa/
-                                   dwa/task) with config-scoped denominator, +2 ChatGPT-5×
-                                   variants, +2 full eco_2025 denominator variants, +4
-                                   auto_aug-weighted variants, +4 smoothing variants (sqrt
-                                   and additive shrinkage with α=median den on major + gwa).
-                                   Plus major_diagnostics.csv + major_raw_numerator.png
-                                   showing per-major task counts, eco coverage, raw Σ pct
-                                   (with and without auto_aug), and all three ratio
-                                   variants' shares. Same bias-correction code as v1.
-                                   V3 add-on (run_v3.py + pct_norm_vs_eco_report_v3.md):
-                                   11 major-only intensity charts varying source dataset
-                                   and bias correction. Same per-cat ratio metric as v2.
-                                   Datasets: all_confirmed, microsoft_only (final_microsoft.csv),
-                                   aei_all (Conv+API), aei_conv (final_aei_human_usage_2026-02-12.csv),
-                                   aei_api (final_aei_agentic_usage_2026-02-12.csv). Charts:
-                                   01–05 are dataset variants no_bias; 06–09 are dataset
-                                   variants with equal 3-source bias correction (all_confirmed,
-                                   aei_all, aei_conv, aei_api); 10–11 are synthetic-from-prior
-                                   charts where Copilot's / ChatGPT's published GWA share is
-                                   spread evenly across unique eco_2025 tasks per GWA, summed
-                                   for tasks in multiple GWAs, then deduped to (task, occ)
-                                   pairs over the full eco_2025 universe. Charts 10–11 use
-                                   the full eco_2025 denominator; 01–09 use rated-task
-                                   denominator. Outputs: 24 PNGs in figures/v3/, 24 per-chart
-                                   CSVs in results/v3/, plus all_variants_combined.csv (long)
-                                   and all_variants_wide.csv (rows=major, cols=chart_id).
-                                   Chart 18 (analyze_chart15_trend_and_configs.py) traces chart
-                                   15's lift over the four all_confirmed snapshot dates
-                                   (Mar 2025 → Feb 2026) — Life Sciences stable ~20×, Computer/Math
-                                   nearly doubles 5.4× → 10.3×, bottom of chart flat throughout.
-                                   Charts 19–24 reproduce chart 15's metric across six configs
-                                   (all_confirmed, all_ceiling, human_conversation,
-                                   agentic_confirmed, agentic_ceiling, all_confirmed_conservative).
-                                   Headline: agentic_confirmed (AEI API) is the outlier — Computer/
-                                   Math 44.4× passes Life Sciences for first place; non-agentic
-                                   configs are stable to ~10% on the top end. Combined CSVs
-                                   (19_24_configs_combined / _wide) sit alongside.
-                                   Charts 12–17 reanchor chart 06 (all_confirmed bias-corrected)
-                                   on Educational Instruction (the higher of the two median-rank
-                                   majors out of 22) so it reads as 1.00×, with a dashed median
-                                   line drawn at the lift distribution's statistical median.
-                                   12 = basic ratio (Σ pct / Σ ew), 13 = sqrt-den smoothing
-                                   (Σ pct / √Σ ew), 14 = additive smoothing (Σ pct /
-                                   (Σ ew + α), α = median den). 15 = same numerator as 12 but
-                                   denominator = full eco_2025 (Σ freq×emp over ALL eco_2025
-                                   tasks per major, not only rated tasks) — captures "AI usage
-                                   per unit of WHOLE economic activity" rather than per unit of
-                                   rated activity. 16 = chart 12 with auto-aug weighting on the
-                                   numerator (each adj_pct multiplied by auto_aug_mean / 5
-                                   before summing — high-automatability tasks contribute more).
-                                   17 = chart 15 with the same auto-aug weighting (full-eco
-                                   denominator). Top of chart compresses from 25.5× (basic) →
-                                   5.8× (sqrt) → 5.7× (additive). Chart 15 puts Life Sciences at
-                                   20.4× and Computer/Math at 10.2× (vs 8.5× under chart 12),
-                                   reflecting that the dataset rates a higher share of
-                                   Computer/Math tasks than the average sector. Auto-aug
-                                   weighting (16 / 17) bumps the top-3 majors up roughly 5–10%
-                                   in lift terms (e.g. Life Sciences 25.5× → 27.7× from 12 → 16,
-                                   20.4× → 22.2× from 15 → 17) — same headline ranking. Charts
-                                   12, 15, 16, 17 bars are color-shaded by pct_tasks_affected
-                                   (darker = higher), computed from the standard dashboard
-                                   formula on the all_confirmed dataset at major level.
-                                   Computer/Math
-                                   passes Life Sciences in chart 14, revealing that Life Sciences'
-                                   lead in 12 was partly a small-denominator artifact.
-    ├── microsoft_iwa_contribution/ — What does Microsoft (Copilot)
-    │                              uniquely add to all_confirmed beyond
-    │                              what AEI already covers, and which of
-    │                              those additions ride on the IWA-level
-    │                              scoring mechanic (Microsoft scores an
-    │                              IWA → score gets applied to every
-    │                              eco_2025 task in that IWA)? Two
-    │                              analyses. **A. Microsoft-unique
-    │                              pairs** — set M = (task_norm, soc_2010)
-    │                              pairs in `final_microsoft.csv`, set E
-    │                              = pairs in `final_aei_all_usage_
-    │                              2026-02-12.csv`. M − E broken down by
-    │                              major, occupation, IWA, % physical.
-    │                              **B. IWA overlap** — split IWAs into
-    │                              AEI-only / overlap / MS-only.
-    │                              For overlap IWAs, count "extras"
-    │                              (pairs in MS but not in AEI). 7 PNGs
-    │                              + 10 CSVs + report. **Headlines:**
-    │                              5,939 of 9,047 MS pairs (65.6%) are
-    │                              MS-unique; 5,917 of those (99.6%) sit
-    │                              in IWAs AEI ALSO touches but for tasks
-    │                              AEI didn't rate. Microsoft's marginal
-    │                              contribution is volume, not breadth —
-    │                              AEI covers 297 IWAs vs MS's 136, with
-    │                              135 of MS's 136 in the overlap (only
-    │                              1 MS-only IWA, 162 AEI-only).
-    │                              MS-unique pairs are 35.7% physical
-    │                              overall but bimodal at the major
-    │                              level: Production (69% phys, 585
-    │                              pairs), Installation/Maint (74%, 333),
-    │                              Healthcare Pract (29%, 462) on top
-    │                              alongside cognitive Computer/Math
-    │                              (5%, 331), Management (9%, 354),
-    │                              Business/Finance (9%, 346). Top
-    │                              occupations: Electrical Drafters,
-    │                              Software QA Testers, Architectural
-    │                              Drafters, News Analysts. Top IWAs by
-    │                              extras: "Adjust equipment to ensure
-    │                              adequate performance" (96.8% phys,
-    │                              217 extras), "Measure physical
-    │                              characteristics of materials" (89%,
-    │                              183), "Maintain current knowledge"
-    │                              (2.2%, 179, applied across 158
-    │                              occupations). The honest split: ~half
-    │                              the extras are physical-equipment
-    │                              IWAs where IWA-expansion introduces
-    │                              real noise, ~half are cross-cutting
-    │                              cognitive IWAs where it adds
-    │                              legitimate coverage AEI's bottom-up
-    │                              observation pipeline misses. Closes
-    │                              loop with `weighting_config_test/
-    │                              physical_filter_audit.py` and the
-    │                              AI-share filter solution.
-    ├── physical_delimiter_correlation/ — How much of the part_1 paper
-    │                              convergence is just the binary
-    │                              physical / non-physical task cut?
-    │                              Two variants. **Variant A** —
-    │                              naive physical pct from eco_2025
-    │                              only: pct_A[occ] = Σ freq[non-phys]
-    │                              ÷ Σ freq[all] × 100, no auto-aug,
-    │                              ratio-of-totals at major / minor /
-    │                              broad / occ. **Variant B** — the
-    │                              dashboard pipeline run with
-    │                              physical_mode="exclude" (auto-aug
-    │                              ON), so both numerator and
-    │                              denominator are restricted to non-
-    │                              physical tasks. Replicates the
-    │                              part_1 convergence layout (2×2 grid
-    │                              of heatmaps, one panel per SOC
-    │                              level) for: (1) variant A vs all
-    │                              comparators (4 sources + 6 configs
-    │                              + 6 external benchmarks),
-    │                              (2) variant B sources convergence
-    │                              (mirror of paper convergence.png),
-    │                              (3) variant B configs convergence
-    │                              (mirror of convergence_configs.png).
-    │                              Plus three supporting charts:
-    │                              occ-level scatter pct_A vs
-    │                              all_confirmed colored by major,
-    │                              raw-vs-partial ρ (controlling for
-    │                              pct_A) per source vs all_confirmed,
-    │                              and pct_A by major sector.
-    │                              **Headlines:** variant A vs
-    │                              all_confirmed = 0.80 major / 0.66
-    │                              occ; variant A vs AIOE Reading
-    │                              Compr = 0.94 major (higher than
-    │                              any single internal source hits
-    │                              AIOE in the paper); variant A vs
-    │                              all_confirmed_conservative = 1.00
-    │                              major (conservative is essentially
-    │                              the physical filter applied to MS
-    │                              tasks). Partial correlation drops:
-    │                              Claude Browser 0.81 → 0.66, MCP
-    │                              0.67 → 0.40 (most physical-
-    │                              explained), Copilot 0.81 → 0.70
-    │                              (most resistant). Variant B
-    │                              cross-source ρ at occ level
-    │                              degrades sharply: Copilot × Claude
-    │                              Browser drops to 0.20, MCP × Copilot
-    │                              0.15. Within-AEI agreement (Browser
-    │                              × API) holds at 0.95 major / 0.77
-    │                              occ. Eloundou benchmarks survive
-    │                              the physical control better than
-    │                              AIOE or Schaal (which are themselves
-    │                              heavily structured around the
-    │                              cognitive-vs-physical cut). 6 PNGs
-    │                              + 5 CSVs + report.
-    └── onet_economy_baseline/   — Pure structural panorama of the U.S.
-                                   occupational economy (O*NET + BLS only,
-                                   no AI data). 62 PNGs across 8 numbered
-                                   families: (1) overall makeup distributions
-                                   (emp / wage histograms, zone / outlook /
-                                   phys-class bars), (2) makeup by SOC level
-                                   (all 22 majors + top 30 minors + top 30
-                                   broads — emp / wages / avg zone / avg wage
-                                   per group), (3) phys / mixed / non-phys
-                                   split (avg zone, avg wage, composition-by-
-                                   major stacked, phys × zone heatmap, phys ×
-                                   outlook heatmap), (4) job zone deep dive
-                                   (avg wage by zone, avg pct phys by zone,
-                                   major × zone emp + wage heatmaps), (5) SKA
-                                   levels at imp ≥ 3 using O*NET native
-                                   subgroupings — Cognitive / Psychomotor /
-                                   Physical / Sensory Abilities; Content /
-                                   Process / Social / Complex Problem Solving
-                                   / Technical / Systems / Resource Management
-                                   Skills; 10 knowledge domains — with
-                                   subgroup × major heatmaps for each of
-                                   abilities / skills / knowledge plus
-                                   subgroup × zone and subgroup × phys class
-                                   for abilities, (6) physical-vs-non-physical
-                                   SKA share per occupation (Psychomotor +
-                                   Physical Abilities + manual subset of
-                                   Technical Skills counted as physical;
-                                   Sensory tracked separately and rolled into
-                                   non-physical for the binary cut) by major
-                                   / zone / phys class / wage quartile + a
-                                   wage scatter, (7) work activities GWA /
-                                   IWA / DWA with employment allocated
-                                   equally across each occupation's tasks —
-                                   emp + wages + avg zone bars for GWAs, top
-                                   30 IWAs and DWAs by emp, GWA × phys class
-                                   / GWA × zone / GWA × major heatmaps, (8)
-                                   cross-cuts — wage × zone violins, wage ×
-                                   phys class violins, wage × pct_physical
-                                   scatter, avg SKA × wage scatter, SKA ×
-                                   zone violins, emp × major × phys class
-                                   stacked. Figures filename-prefixed by
-                                   family number for easy browsing. Loads
-                                   eco_raw via backend.compute (gives
-                                   job_zone + dws_star_rating) and the three
-                                   O*NET v30.1 SKA files directly. SKA
-                                   physical-class classification driven by
-                                   element_id prefix (1.A.2 / 1.A.3 → physical;
-                                   1.A.1 → cognitive; 1.A.4 → sensory) plus
-                                   per-element override on Technical Skills
-                                   2.B.3.* (Repairing / Equipment Maintenance
-                                   / etc → physical; Programming / Operations
-                                   Analysis / etc → non-physical).
+│   ├── working_paper_outline.md — Draft structure reference (not final)
+│   └── results/                 — Results section (NOT gitignored — section content)
+│       ├── results.md           — Assembled Results section (Parts 1–3)
+│       ├── part_1/              — Scale, Convergence, Growth — first draft complete
+│       ├── part_2/              — Characterization: Where AI Exposure Falls
+│       └── part_3/              — Action: What To Do About It
+│           Each part has: run.py, README.md, part_N.md, results/ (gitignored),
+│           figures/ (committed). See each part's README for chart-by-chart detail.
+│
+├── exploratory/             — Live exploratory analysis. Folder is gitignored
+│   │                          except for two carved-out paperinfra folders
+│   │                          (see "Gitignore exceptions" below). Each sub-folder
+│   │                          has run.py, README.md, <name>_report.md, results/.
+│   │                          Naming convention: <bucket>_<topic> for
+│   │                          discoverability via `ls`.
+│   │
+│   │   ── paperinfra_*  — Mirrors / variants of paper figures (committed)
+│   ├── paperinfra_all_charts/   — Mirror of every committed paper figure
+│   │                              (part_1/2/3) regenerated via sync script,
+│   │                              with all_paper_charts.md listing each one.
+│   │                              Has gitignored offshoots/ sandbox for variants
+│   │                              (e.g. simple_mean_convergence,
+│   │                              major_top10_trends_*, weighting_config_test)
+│   ├── paperinfra_aei_only/     — Same mirror with all_confirmed swapped to
+│   │                              AEI-only (no Microsoft). Gitignored.
+│   ├── paperinfra_appendix/     — Auxiliary paper figures (phys_zone_faceted,
+│   │                              ska_full). Committed.
+│   │
+│   │   ── extcompare_*  — Comparisons against external indices (gitignored)
+│   ├── extcompare_schaal/       — Replicates Part 1+2 chart types using
+│   │                              Schaal 2025 per-task scores in place of our
+│   │                              auto-aug. 5 score variants × 11 PNGs.
+│   ├── extcompare_indices/      — SOC convergence heatmap of our 9
+│   │                              sources/configs vs. all 16 external indices
+│   │                              (Schaal, Eloundou, Webb, SML, AIOE,
+│   │                              Frey-Osborne, Autor). Plus Schaal task-level
+│   │                              scatter and group-level heatmaps.
+│   ├── extcompare_mertens/      — Mertens 2026 "tide vs wave" replication;
+│   │                              uses paper βs to flag forward-risk occs.
+│   ├── extcompare_eloundou/     — T0–T4 label count matrices and auto-aug
+│   │                              distributions joined onto our datasets via
+│   │                              Eloundou's labeling TSV.
+│   │
+│   │   ── audit_*  — Methodology audits / robustness (gitignored)
+│   ├── audit_task_properties/   — 12 LLM-rated task properties (m/d/s/...) vs.
+│   │                              our pct; how far you can get with no usage data.
+│   ├── audit_risk_score/        — Audits the 8-flag job-risk composite;
+│   │                              produces the 56-occ "focused set" used by
+│   │                              paper part_3's risk_score_5f figure.
+│   │                              IMPORTED BY paper/results/part_3/run.py.
+│   ├── audit_physical_delim/    — How much of paper convergence is just the
+│   │                              physical/non-physical cut.
+│   ├── audit_microsoft_iwa/     — Microsoft's marginal contribution beyond AEI;
+│   │                              IWA-level extras audit. Closes loop with the
+│   │                              AI-share filter solution.
+│   ├── audit_pct_norm_eco/      — AI usage Σpct vs. economic baseline;
+│   │                              intensity-anchor lift charts. Source of
+│   │                              paper part_3's intensity_anchor_fulleco
+│   │                              (chart 15). IMPORTED BY paper/results/part_3/run.py
+│   │                              (function-level, skips gracefully if absent).
+│   │
+│   │   ── deepdive_*  — Per-element / structural deep dives (gitignored)
+│   ├── deepdive_ska_categories/ — Part 2 SKA chart rolled up to O*NET native
+│   │                              category groupings.
+│   ├── deepdive_onet_economy/   — 62-chart structural panorama of the U.S.
+│   │                              occupational economy (no AI data).
+│   │
+│   └── claude_lab/              — Claude's autonomous research workspace.
+│                                  Has its own CLAUDE.md, research_log.md,
+│                                  INVENTORY.md. Each thread is a sub-folder
+│                                  with run.py + results/ + notes.md.
+│
+└── _archive/                — Frozen historical work (do not edit)
+    ├── questions/               — Question-bucket analysis system (8 active
+    │                              buckets when frozen). Each bucket has
+    │                              run.py + bucket_report.md + sub-folders.
+    │                              Patterns referenced from this code (SKA
+    │                              formula, risk scoring) remain live.
+    ├── question_findings/       — Flat copies of bucket reports for browsing
+    ├── report/                  — Rolling aggregate reports (report.md +
+    │                              report_brief.md). Image paths use
+    │                              ../questions/... which still resolves
+    │                              after the move.
+    └── exploratory_old/         — Stale exploratory analyses superseded by
+                                   paper sections, question buckets, or other
+                                   exploratory folders. Includes job_breakdown,
+                                   ska_levels, zone_pivot_anatomy,
+                                   physical_informational_divide,
+                                   method_weighting_sensitivity,
+                                   gpts_are_gpts_comparison, aioe_comparison.
 ```
+
+### Gitignore exceptions
+
+The exploratory folder is gitignored (`analysis/exploratory/*`) with two carved-out commits:
+
+```
+!analysis/exploratory/paperinfra_all_charts/
+!analysis/exploratory/paperinfra_all_charts/**
+!analysis/exploratory/paperinfra_appendix/
+!analysis/exploratory/paperinfra_appendix/**
+analysis/exploratory/paperinfra_appendix/results/         (re-excluded — regenerable)
+analysis/exploratory/paperinfra_all_charts/offshoots/     (re-excluded — sandbox)
+```
+
+Outside these exceptions, do not use `git add -f`.
 
 ---
 
@@ -881,7 +156,8 @@ from analysis.config import (
 
 # SKA computation (real-time, not cached)
 from analysis.data.compute_ska import load_ska_data, compute_ska
-# SKAResult fields: .ai_capability, .eco_baseline, .eco_baseline_p95, .occ_gaps, .occ_element_scores
+# SKAResult fields: .ai_capability, .eco_baseline, .eco_baseline_p95,
+#                   .occ_gaps, .occ_element_scores
 
 # Backend compute (same engine as the dashboard)
 from backend.compute import get_group_data, get_explorer_occupations, load_eco_raw
@@ -916,8 +192,7 @@ def get_wa_data(dataset_name: str, level: str = "iwa") -> pd.DataFrame:
     }
     result = compute_work_activities(settings)
     # Most ANALYSIS_CONFIGS are is_aei=False → results come back as "mcp_group"
-    # Exception: agentic_confirmed uses AEI API 2026-02-12 (is_aei=True) → comes back as "aei_group"
-    # (uses eco_2025 O*NET baseline; consistent across all five configs)
+    # Exception: agentic_confirmed uses AEI API (is_aei=True) → "aei_group"
     group = result.get("mcp_group") or result.get("aei_group")
     if group is None:
         return pd.DataFrame()
@@ -926,11 +201,11 @@ def get_wa_data(dataset_name: str, level: str = "iwa") -> pd.DataFrame:
 
 # Each row: {"category": str, "pct_tasks_affected": float,
 #             "workers_affected": float, "wages_affected": float}
-
+#
 # Note: raw AEI datasets (is_aei=True, e.g. "AEI Both 2026-02-12") use eco_2015
-# baseline and come back as "aei_group". Do NOT mix aei_group and mcp_group results.
+# baseline → "aei_group". Do NOT mix aei_group and mcp_group results.
 # Four of five ANALYSIS_CONFIGS are is_aei=False (eco_2025 baseline for WA).
-# agentic_confirmed (AEI API 2026-02-12) is is_aei=True → eco_2015 baseline for WA, aei_group path.
+# agentic_confirmed (AEI API 2026-02-12) is is_aei=True → eco_2015 baseline.
 ```
 
 ### compute_ska() pattern
@@ -941,8 +216,10 @@ ska_data = load_ska_data()   # load once per script
 for config_key, dataset_name in ANALYSIS_CONFIGS.items():
     pct = get_pct_tasks_affected(dataset_name)
     result = compute_ska(pct, ska_data)
-    # result.occ_gaps: title_current, skills_gap, abilities_gap, knowledge_gap, overall_gap
-    # result.occ_element_scores["skills"]: title_current, element_name, occ_score, ai_score, gap
+    # result.occ_gaps: title_current, skills_gap, abilities_gap,
+    #                  knowledge_gap, overall_gap
+    # result.occ_element_scores["skills"]: title_current, element_name,
+    #                                       occ_score, ai_score, gap
 ```
 
 ---
@@ -979,56 +256,45 @@ for config_key, dataset_name in ANALYSIS_CONFIGS.items():
 
 **SKA trend:** recompute at first and last date of `ANALYSIS_CONFIG_SERIES[config_key]` only; compute `delta_gap = last_overall_gap − first_overall_gap`.
 
-**Note:** The 95th percentile threshold for `ai_capability` is defended in the notebook `analysis/data/ai_capability_method_comparison.ipynb`.
+**Note:** The 95th percentile threshold for `ai_capability` is defended in `analysis/data/ai_capability_method_comparison.ipynb`.
+
 
 ---
 
-## Risk Scoring Flags
+## Cross-References (live ↔ live)
 
-Computed per occupation, based on the primary config (`all_confirmed`) unless otherwise noted.
+The paper imports from two exploratory folders (function-level, with try/except so the paper still runs if exploratory is absent):
 
-**Weighted scoring:** Flags 1–2 (strongest exposure signals) get weight 2. Flags 3–8 (supporting signals) get weight 1. Maximum possible score = 10.
+- `paper/results/part_3/run.py` → `analysis.exploratory.audit_pct_norm_eco.run` and `.run_v3` (chart 15: `intensity_anchor_fulleco`)
+- `paper/results/part_3/run.py` → `analysis.exploratory.audit_risk_score.run` (5f flags + focused-set helpers for `risk_score_5f`)
 
-| Flag | Weight | Condition |
-|------|--------|-----------|
-| 1 | 2 | `pct_tasks_affected > 50%` (absolute threshold) |
-| 2 | 2 | `overall_pct > median` (SKA percentage) |
-| 3 | 1 | `pct_delta > 0 AND > median(pct_delta)` |
-| 4 | 1 | `ska_delta > 0 AND > median(ska_delta)` |
-| 5 | 1 | `job_zone ∈ {1, 2, 3}` |
-| 6 | 1 | `outlook ∈ {2, 3}` |
-| 7 | 1 | `n_software > median` |
-| 8 | 1 | `auto_avg_with_vals > median` |
+If you rename or move either exploratory folder, update both imports in `paper/results/part_3/run.py` and the corresponding lines in `paper/results/part_3/README.md`.
 
-**Exposure gate:** If `pct_tasks_affected < 33%`, the occupation cannot be classified as high risk regardless of weighted score — downgrades to Mod-High.
-
-**Tiers:** 8–10 = High, 5–7 = Mod-High, 3–4 = Mod-Low, 0–2 = Low.
+The paper also reuses the tech_skills pipeline conceptually from the archived `_archive/questions/economic_footprint/skills_landscape/` (reimplemented in paper styling), but no Python import dependency.
 
 ---
 
 ## Output Standards
 
 ### Figures
-- Use `style_figure()` and `save_figure()` from `analysis.utils`. Never hardcode colors.
-- Save to `results/figures/` (all figures) and `figures/` (committed key figures).
-- Run `run.py` copies key figures from results to the committed `figures/` dir.
+- Use `style_figure()` and `save_figure()` from `analysis.utils`. Never hardcode colors — use `COLORS`, `CATEGORY_PALETTE`, `FONT_FAMILY`.
+- Save to `results/figures/` (all figures); copy key figures to `figures/` (committed) at the end of `run.py`.
+- Paper figures additionally use `style_paper_figure()` and `PAPER_PALETTE` from `paper/paper_config.py`.
 
 ### CSVs
 - Always include headers and descriptive column names.
 - Round floats to 2–4 decimal places as appropriate.
 
 ### Reports
+- Each exploratory sub-folder has a `<name>_report.md` with full narrative and inline figures referencing `results/figures/` paths (which work locally after running the script).
+- For paper-style writing, see `paper/paper_writing_style.md` and `paper/writing_style_source.md`.
+- For question-style narrative writing (now archived), see `writing_style_reference.md`.
 
-**Sub-question reports** (`<sub-folder>/<name>_report.md`):
-- Full narrative with inline figures (referenced from the sub-folder's committed `figures/` dir).
-- Ends with a Config section (dataset, method, settings used) and a Files table.
-- `run.py` calls `generate_pdf(md_path, pdf_path)` at the end.
-
-**Aggregate reports** (`<bucket>/<bucket>_report.md`):
-- One per top-level question bucket. See `job_exposure/job_exposure_report.md` as the canonical example.
-- Structure: config header line → opening summary paragraph → numbered sections (one per sub-question, each opening with `*Full detail: [...](...)*` link) → Cross-Cutting Findings → Key Takeaways → Sub-Report Index table → Config Reference table.
-- Each section must embed at least one figure from the relevant sub-folder's committed `figures/` dir using relative paths (e.g., `sector_footprint/figures/aggregate_totals.png`).
-- Written in the conversational-analytical voice from `writing_style_reference.md` — reasoning through findings, not summarizing bullet points.
+### Chart formatting
+- Horizontal bar charts using `make_horizontal_bar` must pass the DataFrame sorted `ascending=False` (largest first). `make_horizontal_bar` uses `autorange="reversed"` on the y-axis — passing ascending=True will render smallest at top.
+- For raw `go.Figure` horizontal bars (without `make_horizontal_bar`), sort `ascending=True` (smallest first) so the largest value renders at the top.
+- State/geo labels should be uppercase in all bar charts.
+- Reports use opening paragraphs (no `## TLDR` heading and no `**TLDR:**` prefix).
 
 ---
 
@@ -1040,9 +306,10 @@ Computed per occupation, based on the primary config (`all_confirmed`) unless ot
 - **Trend flags need at least 2 dates**: configs with only one date (e.g., Microsoft) cannot produce trend flags.
 - **Pivot distance**: use `min(10, n)` if a job zone has fewer than 10 high-risk or low-risk occupations.
 - **n_software from tech_skills_simple.csv**: joined by `title` not `soc_code`, since title_current is what we have at the occ level.
-- **Outlook is a non-linear 0-5 scale**: ECO 2025 DWS star rating is NOT ordered severity. 5=strongest outlook+high wages, 4=good outlook+high wages, 3=moderate outlook+low-mod wages, 2=high wages+limited outlook, 1=low wages+strong outlook, 0=limited outlook+low wages. Ratings 1 and 2 represent different tradeoffs, not ordered severity. Based on Utah projected openings (90%), growth rate (10%), and median wages.
-- **MCP standalone for bias testing**: `"MCP Cumul. v4"` can be used to test zone/sector exposure patterns without user self-selection bias (it's tool specs, not usage data). Note that MCP has its own bias: tools are built for higher-zone workflows.
-- **SKA category analysis uses ai_pct_occ (not ai_pct_eco_mean)**: When computing SKA averages by occupation category, use `ai_pct_occ` (per-occ: ai_score / occ_score × 100) averaged across occupations. Do not use `ai_pct_eco_mean` (which divides by the mean occ_score across all occupations, not the specific occupation's score). The two are different and produce different category rankings.
-- **all_confirmed series starts at March 2025**: The 2024-09-30 and 2024-12-23 dates have been removed from all trend series. The September 2024 date was anchored by Microsoft Copilot only (AEI conversation and API data starts accumulating from December 2024), and December 2024 is similarly excluded. The series now starts at March 2025, where AEI + Microsoft data is available for all_confirmed. Do not re-add either 2024 date to any trend series.
-- **Part 1 temporal_tables historical rows**: The two cream rows above the line-chart series (Sep 2024, Dec 2024) pull task counts from the SAME combined dataset family the line chart uses — `AEI Both + Micro 2024-09-30/2024-12-23` for the All Confirmed table, `All 2024-09-30/2024-12-23` for the Ceiling table. Do NOT revert to `Microsoft` and `AEI Conv 2024-12-23` alone (the prior implementation), which under-counted the Dec 2024 row at 3,317 tasks. The combined union is 8,319 (Sep) and 9,067 (Dec) — both stay barred on AI Capability since multi-source coverage is too thin that early to compute a stable score.
-- **Part 3 intensity_anchor_fulleco colorbar (% Tasks Exposed)**: Pull the colorbar values via `_run_config(PRIMARY_DATASET, "major")` (the same dashboard pipeline that drives the Part 2 `major_categories` chart). Do NOT use `compute_major_pct_tasks_affected` from `exploratory/pct_norm_vs_eco/run_v3.py` — that function restricts to rated task-occ pairs only and produces noticeably higher numbers (53–76%) that don't match the rest of the paper. The dashboard pipeline applies the same auto-aug × freq × emp ratio over the full eco baseline that all the other Part 2 / Part 3 charts use.
+- **Outlook is non-linear, not ordered severity**: ECO 2025 DWS star rating represents tradeoffs, not severity. 5=strong outlook+high wages, 4=good outlook+high wages, 3=moderate, 2=high wages+limited outlook, 1=low wages+strong outlook, 0=limited+low wages. Based on Utah projected openings (90%), growth rate (10%), median wages.
+- **MCP standalone for bias testing**: `"MCP Cumul. v4"` can test zone/sector exposure patterns without user self-selection bias (it's tool specs, not usage data). Note MCP has its own bias: tools built for higher-zone workflows.
+- **SKA category analysis uses ai_pct_occ (not ai_pct_eco_mean)**: When computing SKA averages by occupation category, use `ai_pct_occ` (per-occ: ai_score / occ_score × 100) averaged across occupations. `ai_pct_eco_mean` divides by the mean occ_score across all occupations, which is different.
+- **`pct_tasks_affected` is already a ratio-of-totals (0-100)**: never average it across occupations to get a group pct — re-derive from task_comps.
+- **all_confirmed series starts at March 2025**: the 2024-09-30 and 2024-12-23 dates have been removed from all trend series. Sep 2024 was anchored by Microsoft Copilot only (AEI starts Dec 2024); Dec 2024 is similarly excluded. Do not re-add either 2024 date.
+- **Part 1 temporal_tables historical rows**: the two cream rows above the line-chart series (Sep 2024, Dec 2024) pull task counts from the SAME combined dataset family the line chart uses — `AEI Both + Micro 2024-09-30/2024-12-23` for All Confirmed; `All 2024-09-30/2024-12-23` for Ceiling. Do NOT revert to `Microsoft` and `AEI Conv 2024-12-23` alone — that under-counts the Dec 2024 row.
+- **Part 3 intensity_anchor_fulleco colorbar (% Tasks Exposed)**: Pull colorbar values via `_run_config(PRIMARY_DATASET, "major")` (the dashboard pipeline that drives Part 2 `major_categories`). Do NOT use `compute_major_pct_tasks_affected` from `audit_pct_norm_eco/run_v3.py` — that function restricts to rated task-occ pairs only and produces 53–76% values that don't match the rest of the paper.
