@@ -98,6 +98,15 @@ analysis/
 │   │                              category groupings.
 │   ├── deepdive_onet_economy/   — 62-chart structural panorama of the U.S.
 │   │                              occupational economy (no AI data).
+│   ├── deepdive_mcp_aei_did/    — DiD feasibility: does MCP coverage of an
+│   │                              occupation's tasks cause a differential
+│   │                              change in AEI conv/agentic usage? Runs the
+│   │                              full matrix (5 AEI families × 2 outcomes × 3
+│   │                              treatment defs × 2 phys filters) with pre-
+│   │                              trends + DiD. Headline: pct_tasks_affected
+│   │                              fails parallel trends mechanically; on the
+│   │                              clean cell (sum_pct_norm × share_any), DiD
+│   │                              ≈ 0 for Conv. snapshot, marginal + for Both.
 │   │
 │   └── claude_lab/              — Claude's autonomous research workspace.
 │                                  Has its own CLAUDE.md, research_log.md,
