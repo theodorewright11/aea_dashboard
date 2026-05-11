@@ -1668,12 +1668,19 @@ def build_gwa_chart(results: Path, figures: Path) -> None:
     # used to bucket occupations as Non-physical / Mixed / Physical, so a
     # GWA whose phys segment crosses 67 reads as predominantly physical,
     # and one whose phys segment stays under 33 reads as predominantly
-    # non-physical. White-dashed so they cut visibly through the colored
-    # segments (the bar fills the full 0-100% width).
-    fig.add_vline(x=33, line=dict(color="white", width=1.5, dash="dash"),
-                  row=1, col=6, opacity=0.9)
-    fig.add_vline(x=67, line=dict(color="white", width=1.5, dash="dash"),
-                  row=1, col=6, opacity=0.9)
+    # non-physical. Dark gray with strong opacity so the line reads
+    # consistently against colored bars and the white row gaps between
+    # bars; "above" layer so the line is never hidden by the bars.
+    fig.add_vline(
+        x=33, layer="above",
+        line=dict(color="#1a1a1a", width=1.4, dash="dash"),
+        row=1, col=6, opacity=0.85,
+    )
+    fig.add_vline(
+        x=67, layer="above",
+        line=dict(color="#1a1a1a", width=1.4, dash="dash"),
+        row=1, col=6, opacity=0.85,
+    )
 
     fig.update_yaxes(showgrid=False, showline=False)
     fig.update_yaxes(
