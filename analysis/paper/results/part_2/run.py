@@ -231,14 +231,25 @@ def _get_national_totals() -> tuple[float, float]:
 def _load_occ_structural() -> pd.DataFrame:
     """Load eco_2025 and compute per-occupation structural data:
     pct_physical, occ_group, job_zone.
+
+    pct_physical is computed over UNIQUE (occ, task) pairs — eco_2025 expands
+    each task across its GWA/IWA/DWA classifications, and that expansion is
+    not proportional between physical and non-physical tasks. Counting raw
+    rows weights tasks by their WA-expansion factor and produces the wrong
+    per-occ physical share. This matches the dashboard backend pipeline.
     """
     eco = pd.read_csv(DATA_DIR / "final_eco_2025.csv")
     assert "title_current" in eco.columns
     assert "physical" in eco.columns
     assert "job_zone" in eco.columns
+    assert "task_normalized" in eco.columns
+
+    # Dedup on (occ, task) before counting. job_zone, emp, wage are occ-level
+    # constants so the dedup leaves them untouched.
+    eco_unique = eco.drop_duplicates(["title_current", "task_normalized"])
 
     occ = (
-        eco.groupby("title_current")
+        eco_unique.groupby("title_current")
         .agg(
             n_tasks=("physical", "count"),
             n_physical=("physical", "sum"),
@@ -980,13 +991,16 @@ def _gwa_phys_task_shares() -> dict[str, dict[str, float]]:
 
 def _load_occ_phys_map() -> pd.Series:
     """title_current → pct_physical (occ-level), used to color SKA element
-    rows by the average physicality of their user base. Computed from
-    eco_2025 the same way the box-plot did: n_physical / n_tasks × 100
-    per occupation, no employment weighting."""
+    rows by the average physicality of their user base. Counts UNIQUE
+    (occ, task) pairs (eco_2025 expands tasks across GWA/IWA/DWA, and that
+    expansion is not proportional between physical and non-physical tasks),
+    so dedup is required before the n_physical / n_tasks division. Matches
+    `_load_occ_structural` and the dashboard backend pipeline."""
     eco = pd.read_csv(DATA_DIR / "final_eco_2025.csv",
-                       usecols=["title_current", "physical"])
-    eco["physical_bool"] = eco["physical"].apply(_coerce_phys_bool)
-    grouped = eco.groupby("title_current")["physical_bool"].agg(["sum", "count"])
+                       usecols=["title_current", "task_normalized", "physical"])
+    eco_unique = eco.drop_duplicates(["title_current", "task_normalized"])
+    eco_unique["physical_bool"] = eco_unique["physical"].apply(_coerce_phys_bool)
+    grouped = eco_unique.groupby("title_current")["physical_bool"].agg(["sum", "count"])
     pct_phys = (grouped["sum"] / grouped["count"] * 100.0).fillna(0.0)
     return pct_phys
 
