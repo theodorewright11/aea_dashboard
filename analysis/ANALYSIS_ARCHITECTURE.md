@@ -74,6 +74,16 @@ analysis/
 │   ├── extcompare_eloundou/     — T0–T4 label count matrices and auto-aug
 │   │                              distributions joined onto our datasets via
 │   │                              Eloundou's labeling TSV.
+│   ├── extcompare_manning_ac/   — Replicates Manning & Aguirre (2026)
+│   │                              Adaptive Capacity Index on our universe.
+│   │                              2-of-4 components (skill transferability +
+│   │                              log-wage as wealth proxy); skips age and
+│   │                              density. Two charts: AC vs exposure
+│   │                              scatter (paper Figure 1 replication —
+│   │                              vulnerable pocket 5.8M / 3.9% vs paper
+│   │                              6.1M / 4.2%) and a per-Skill durable-demand
+│   │                              ranking (extension: same emp × (1+growth)
+│   │                              weighting applied skill-side).
 │   │
 │   │   ── audit_*  — Methodology audits / robustness (gitignored)
 │   ├── audit_task_properties/   — 12 LLM-rated task properties (m/d/s/...) vs.
