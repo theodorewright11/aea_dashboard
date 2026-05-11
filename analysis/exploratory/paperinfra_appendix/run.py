@@ -619,17 +619,26 @@ def build_nonphys_gwa_diff_phys_excluded(
 
     style_paper_figure(
         fig,
-        "Within non-physical occupations: General Work Activity composition (physical tasks excluded)",
+        "Within non-physical occupations: GWA composition (physical tasks excluded)",
         subtitle=(
-            f"Per occupation, share of unique tasks in each GWA, computed over only the non-physical tasks of each occ. "
-            f"Quartiles by All Confirmed % tasks affected, restricted to occs with pct_physical &lt; 33% "
-            f"(n top = {n_top}, bot = {n_bot}). Top {TOP_DIFF_N} GWAs by absolute share gap on each side. "
-            f"Tests whether the GWA composition signal is a pct_physical residual proxy — if the same GWAs appear here as in the raw chart with similar magnitudes, it is not."
+            "Per occupation, share of unique tasks in each GWA, computed over only the non-physical tasks of each occ. "
+            f"Quartiles by All Confirmed % tasks affected, restricted to occs with pct_physical &lt; 33% (n top = {n_top}, bot = {n_bot})."
+            f"<br>Top {TOP_DIFF_N} GWAs by absolute share gap on each side. "
+            "Robustness test: if the same GWAs appear here as in the raw chart, the structural signal is not just a pct_physical residual."
         ),
-        width=PAPER_W + 200,   # extra width for two long-label panels
-        height=820,
-        margin=dict(l=20, r=40, t=140, b=110),
+        width=PAPER_W + 300,   # wider canvas so labels + leader text don't clip
+        height=900,            # taller so x-axis title clears bottom margin
+        margin=dict(l=20, r=40, t=160, b=170),
     )
+
+    # Centered horizontal legend below the panels (default sits flush left)
+    fig.update_layout(legend=dict(
+        orientation="h",
+        yanchor="top", y=-0.12,
+        xanchor="center", x=0.5,
+        font=dict(size=LEGEND_FS, family=FONT_FAMILY),
+        bgcolor="rgba(0,0,0,0)",
+    ))
 
     # Style panel subtitle annotations to match the paper aesthetic
     panel_titles = {
@@ -862,8 +871,149 @@ def build_major_de_nt_plane(results: Path, figures: Path) -> None:
     print("  -> major_de_nt_plane.png")
 
 
+def _load_deepdive_csv(name: str) -> pd.DataFrame | None:
+    """Pull a CSV from the deepdive folder if it exists; None if not."""
+    src = (ROOT / "analysis" / "exploratory" / "deepdive_within_nonphys_signal"
+           / "results" / name)
+    if not src.exists():
+        return None
+    return pd.read_csv(src)
+
+
+def _df_to_md_table(df: pd.DataFrame, fmt: str = "{:+.2f}",
+                    int_cols: tuple[str, ...] = ()) -> str:
+    """Render a small DataFrame as a GitHub-flavored markdown table with the
+    first column rendered as-is (label) and remaining columns formatted via
+    `fmt`. int_cols are rendered as integers."""
+    cols = list(df.columns)
+    header = "| " + " | ".join(cols) + " |"
+    sep = "| " + " | ".join(["---"] * len(cols)) + " |"
+    rows = [header, sep]
+    for _, row in df.iterrows():
+        cells = [str(row[cols[0]])]
+        for c in cols[1:]:
+            val = row[c]
+            if c in int_cols:
+                cells.append(f"{int(val)}" if pd.notna(val) else "—")
+            elif pd.isna(val):
+                cells.append("—")
+            else:
+                cells.append(fmt.format(val))
+        rows.append("| " + " | ".join(cells) + " |")
+    return "\n".join(rows)
+
+
+def _build_appendix_tables_section() -> str:
+    """Build the markdown section that holds the two within-non-phys
+    discrimination tables + the property correlation table. Each one is read
+    fresh from the deepdive folder's CSVs; if any is missing, that subsection
+    falls back to a single 'Not generated' line."""
+    fric = _load_deepdive_csv("nonphys_friction_weighted_variants_matrix.csv")
+    cap = _load_deepdive_csv("nonphys_capability_weighted_variants_matrix.csv")
+    cor = _load_deepdive_csv("property_phys_exposure_correlations.csv")
+
+    parts: list[str] = []
+    parts.append("---\n\n## Within-non-phys discrimination — friction × weight\n")
+    parts.append(
+        "Cohen's d on the same top vs bottom exposure quartile of the 409 "
+        "non-physical occupations (n=103 each), with each friction-property "
+        "composite computed as a per-occ weighted mean across the occ's "
+        "unique tasks. Negative d = top quartile lower on the property "
+        "(predicted friction direction).\n"
+    )
+    if fric is not None:
+        parts.append(_df_to_md_table(fric, fmt="{:+.2f}") + "\n")
+        parts.append(
+            "Reading: every three-property combination of r/tf/df hits "
+            "|d| ≈ 1.5; single props top out at 1.35. Choice of weight "
+            "barely matters (× freq drags d down ~0.15; × imp and × rel are "
+            "within rounding error of raw; × value is consistently the "
+            "weakest). The combination is what carries the signal, not the "
+            "algebraic form, and not the per-task weight.\n"
+        )
+    else:
+        parts.append("_Friction matrix not generated yet — run "
+                     "`analysis.exploratory.deepdive_within_nonphys_signal.run`._\n")
+
+    parts.append("---\n\n## Within-non-phys discrimination — capability × weight\n")
+    parts.append(
+        "Same shape as the friction table but on the three capability "
+        "enablers (m / d / s). Predicted direction: top quartile HIGHER on "
+        "capability (positive d). Composites include each prop alone, the "
+        "sum / mean of all three, the slim two-prop products (d·s, d·m, "
+        "m·s), and the audit_task_properties Composite B (d·m·s).\n"
+    )
+    if cap is not None:
+        parts.append(_df_to_md_table(cap, fmt="{:+.2f}") + "\n")
+        parts.append(
+            "Reading: `s` alone is the strongest single discriminator "
+            "(|d| = 0.66 raw → 0.76 × value). `d` is second (0.48 → 0.62). "
+            "`m` is essentially noise within non-phys (|d| < 0.20). "
+            "Adding `m` to anything *hurts* (d·m < d alone; m·s < s alone). "
+            "Composite B (d·m·s) is worse than `s` alone. The audit_task_"
+            "properties result that `s` carries most of the capability "
+            "signal holds inside non-phys too, and the lift from layering "
+            "`d` on top of `s` is small. Notably, capability d-values top "
+            "out at 0.76 — meaningfully smaller than the 1.51 the friction "
+            "composites reach. **Inside non-phys, friction discriminates "
+            "exposure better than capability does.**\n"
+        )
+    else:
+        parts.append("_Capability matrix not generated yet — run "
+                     "`analysis.exploratory.deepdive_within_nonphys_signal.run`._\n")
+
+    parts.append("---\n\n## Property × pct_physical × pct_tasks_affected — Spearman ρ\n")
+    parts.append(
+        "How much each LLM-rated property tracks (a) pct_physical and "
+        "(b) pct_tasks_affected, both economy-wide (n=923) and inside the "
+        "non-physical cut (n=409). The economy-wide columns show capability "
+        "and forward-looking props are heavily entangled with the phys/"
+        "non-phys split; the within-non-phys columns show how much *direct* "
+        "discriminative signal each prop carries after that cut.\n"
+    )
+    if cor is not None:
+        # Reduce to a friendlier 5-column table
+        view = cor[[
+            "property",
+            "rho_vs_phys_all_eco", "rho_vs_pct_all_eco",
+            "rho_vs_phys_within_nonphys", "rho_vs_pct_within_nonphys",
+        ]].copy()
+        view.columns = [
+            "property",
+            "ρ vs phys (all eco, n=923)",
+            "ρ vs pct (all eco, n=923)",
+            "ρ vs phys (non-phys, n=409)",
+            "ρ vs pct (non-phys, n=409)",
+        ]
+        parts.append(_df_to_md_table(view, fmt="{:+.2f}") + "\n")
+        parts.append(
+            "Reading, in order:\n"
+            "1. **Economy-wide, capability props are strongly negative against "
+            "pct_physical** (s = −0.67, d = −0.59, m = +0.12 is the outlier). "
+            "Every forward-looking prop (de, nt, ac) sits at −0.59 to −0.62. "
+            "These props are partially proxying the cognitive/physical cut.\n"
+            "2. **Economy-wide vs pct_tasks_affected mirrors that:** s = +0.67, "
+            "d = +0.58, de = +0.52. The same props that anti-correlate with "
+            "pct_physical positively correlate with exposure.\n"
+            "3. **Inside non-phys, capability ρ-vs-phys collapses to |ρ| ≤ 0.13.** "
+            "There's not much pct_physical residual to leak through, which is "
+            "consistent with the chart-0 diagnostic finding that pct_physical "
+            "leaves ~89% of within-non-phys variance unexplained.\n"
+            "4. **Inside non-phys, friction wins for direct discrimination:** "
+            "r = −0.44, df = −0.34, tf = −0.27 against pct. The strongest "
+            "capability prop is s at +0.25. So once you cut to non-phys, "
+            "the discriminative work shifts from capability to friction.\n"
+        )
+    else:
+        parts.append("_Correlation table not generated yet — run "
+                     "`analysis.exploratory.deepdive_within_nonphys_signal.run`._\n")
+
+    return "\n".join(parts)
+
+
 def write_markdown() -> None:
     md_path = HERE / "appendix_charts.md"
+    extra = _build_appendix_tables_section()
     md_path.write_text(
         "# Appendix figures\n"
         "\n"
@@ -905,7 +1055,9 @@ def write_markdown() -> None:
         "All-Confirmed % tasks affected. Dashed lines at the per-axis "
         "medians split the plane into four readable quadrants.\n"
         "\n"
-        "![major_de_nt_plane](figures/major_de_nt_plane.png)\n",
+        "![major_de_nt_plane](figures/major_de_nt_plane.png)\n"
+        "\n"
+        + extra,
         encoding="utf-8",
     )
     print(f"  -> {md_path.relative_to(ROOT)}")
