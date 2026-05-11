@@ -98,6 +98,13 @@ analysis/
 │   │                              category groupings.
 │   ├── deepdive_onet_economy/   — 62-chart structural panorama of the U.S.
 │   │                              occupational economy (no AI data).
+│   ├── deepdive_within_nonphys_signal/  — What differentiates high- vs
+│   │                              low-exposure non-physical occupations
+│   │                              (friction props, GWA composition, SKA imp×lvl
+│   │                              profile, plus interaction scatters), and
+│   │                              demand-elasticity / new-task-creation makeup
+│   │                              by major / GWA / Part 3 focused-set.
+│   │                              10 charts, 2 paper-candidate threads.
 │   ├── deepdive_mcp_aei_did/    — DiD feasibility: does MCP coverage of an
 │   │                              occupation's tasks cause a differential
 │   │                              change in AEI conv/agentic usage? Runs the
