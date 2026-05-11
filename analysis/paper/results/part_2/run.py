@@ -920,6 +920,64 @@ SKA_BAR_COLOR_BY_TIER: dict[str, str] = {
 }
 
 
+def _major_phys_mix_shares(occ_struct: pd.DataFrame) -> dict[str, dict[str, float]]:
+    """Per-major % of occupations in each phys/mixed/non-phys bucket.
+
+    `occ_struct` is the output of `_load_occ_structural()`. We join it to
+    eco_2025's title_current → major mapping and tally occ_group shares
+    per major. The result is consumed by panel 6 of the major trio."""
+    from backend.compute import load_eco_raw
+    eco = load_eco_raw()
+    occ_to_major = (
+        eco[["title_current", "major_occ_category"]]
+        .drop_duplicates()
+        .set_index("title_current")["major_occ_category"]
+    )
+    df = occ_struct[["title_current", "occ_group"]].copy()
+    df["major"] = df["title_current"].map(occ_to_major)
+    df = df.dropna(subset=["major"])
+
+    out: dict[str, dict[str, float]] = {}
+    for major, grp in df.groupby("major"):
+        total = len(grp)
+        if total == 0:
+            continue
+        counts = grp["occ_group"].value_counts()
+        out[str(major)] = {
+            "pct_physical":     float(counts.get("Physical", 0)     / total * 100.0),
+            "pct_mixed":        float(counts.get("Mixed", 0)        / total * 100.0),
+            "pct_non_physical": float(counts.get("Non-physical", 0) / total * 100.0),
+            "n_occs":           total,
+        }
+    return out
+
+
+def _gwa_phys_task_shares() -> dict[str, dict[str, float]]:
+    """Per-GWA % of tasks that are physical vs non-physical.
+
+    Dedupes to (task_normalized, gwa_title) before tallying, since eco_2025
+    expands tasks across the work-activity hierarchy. Two-segment readout
+    (no "mixed" — task physical flag is binary)."""
+    cols = ["task_normalized", "gwa_title", "physical"]
+    df = pd.read_csv(DATA_DIR / "final_eco_2025.csv", usecols=cols)
+    df = df.dropna(subset=["gwa_title"])
+    df = df.groupby(["task_normalized", "gwa_title"], sort=False, as_index=False).first()
+    df["physical_bool"] = df["physical"].apply(_coerce_phys_bool)
+
+    out: dict[str, dict[str, float]] = {}
+    for gwa, grp in df.groupby("gwa_title"):
+        total = len(grp)
+        if total == 0:
+            continue
+        n_phys = int(grp["physical_bool"].sum())
+        out[str(gwa)] = {
+            "pct_physical":     float(n_phys / total * 100.0),
+            "pct_non_physical": float((total - n_phys) / total * 100.0),
+            "n_tasks":          total,
+        }
+    return out
+
+
 def _load_occ_phys_map() -> pd.Series:
     """title_current → pct_physical (occ-level), used to color SKA element
     rows by the average physicality of their user base. Computed from
@@ -1446,6 +1504,9 @@ def build_gwa_chart(results: Path, figures: Path) -> None:
 
     n_gwas = len(base)
 
+    # Per-GWA phys task shares for panel 6.
+    gwa_phys = _gwa_phys_task_shares()
+
     # Reverse for plotly: top of chart = highest-pct GWA.
     categories_r = list(reversed(base["category"].tolist()))
     pct_a_r     = list(reversed(base["pct_a"].fillna(0.0).tolist()))
@@ -1453,18 +1514,22 @@ def build_gwa_chart(results: Path, figures: Path) -> None:
     pct_r       = list(reversed(base["pct_tasks_affected"].tolist()))
     workers_r   = list(reversed(base["workers_affected"].tolist()))
     wages_r     = list(reversed(base["wages_affected"].tolist()))
+    pct_phys_r  = [gwa_phys.get(c, {}).get("pct_physical",     0.0) for c in categories_r]
+    pct_non_r   = [gwa_phys.get(c, {}).get("pct_non_physical", 0.0) for c in categories_r]
 
     fig = make_subplots(
-        rows=1, cols=5,
+        rows=1, cols=6,
         shared_yaxes=True,
-        horizontal_spacing=0.04,
+        horizontal_spacing=0.03,
         subplot_titles=[
             "Variant A: Non-Phys Task Share",
             "Variant B: % in Non-Phys Work",
             "% Tasks Exposed (All Confirmed)",
             "Workers Exposed (All Confirmed)",
             "Wages Exposed (All Confirmed)",
+            "Phys Mix (Tasks)",
         ],
+        column_widths=[1.0, 1.0, 1.0, 1.0, 1.0, 0.55],
     )
 
     VARIANT_A_COLOR = "#7a9ab8"
@@ -1518,6 +1583,22 @@ def build_gwa_chart(results: Path, figures: Path) -> None:
         cliponaxis=False, showlegend=False,
     ), row=1, col=5)
 
+    # Panel 6 — per-GWA task phys-mix stacked bar (2-segment, since the
+    # task physical flag is binary at the task level). Uses `base` to stack
+    # manually so the other panels' single-trace bars don't get squeezed.
+    fig.add_trace(go.Bar(
+        y=categories_r, x=pct_phys_r, base=0, orientation="h",
+        marker=dict(color=GROUP_COLORS["Physical"], line=dict(width=0)),
+        name="% Physical tasks", showlegend=True,
+        hovertemplate="Physical: %{x:.0f}%<extra></extra>",
+    ), row=1, col=6)
+    fig.add_trace(go.Bar(
+        y=categories_r, x=pct_non_r, base=pct_phys_r, orientation="h",
+        marker=dict(color=GROUP_COLORS["Non-physical"], line=dict(width=0)),
+        name="% Non-physical tasks", showlegend=True,
+        hovertemplate="Non-physical: %{x:.0f}%<extra></extra>",
+    ), row=1, col=6)
+
     height = max(PAPER_H + 600, n_gwas * 38 + 320)
 
     style_paper_figure(
@@ -1526,11 +1607,12 @@ def build_gwa_chart(results: Path, figures: Path) -> None:
         subtitle=(
             f"All {n_gwas} GWAs ranked by All Confirmed % tasks exposed. "
             "Variant A = naive non-physical task share within the GWA's task pool. "
-            "Variant B = AI exposure restricted to non-physical tasks."
+            "Variant B = AI exposure restricted to non-physical tasks. "
+            "Right panel: share of each GWA's tasks classified as Physical vs Non-Physical."
         ),
         height=height,
-        width=PAPER_W + 800,
-        margin=dict(l=40, r=80, t=160, b=110),
+        width=PAPER_W + 1000,
+        margin=dict(l=40, r=80, t=170, b=140),
     )
 
     import math
@@ -1575,6 +1657,12 @@ def build_gwa_chart(results: Path, figures: Path) -> None:
         title=dict(text="Wages Exposed", font=dict(size=LABEL_FS - 4)),
         row=1, col=5,
     )
+    fig.update_xaxes(
+        range=[0, 100], dtick=25,
+        ticksuffix="%", tickfont=dict(size=TICK_FS - 4, family=FONT_FAMILY),
+        title=dict(text="% of GWA's tasks", font=dict(size=LABEL_FS - 4)),
+        row=1, col=6,
+    )
 
     fig.update_yaxes(showgrid=False, showline=False)
     fig.update_yaxes(
@@ -1589,13 +1677,22 @@ def build_gwa_chart(results: Path, figures: Path) -> None:
         "% Tasks Exposed (All Confirmed)",
         "Workers Exposed (All Confirmed)",
         "Wages Exposed (All Confirmed)",
+        "Phys Mix (Tasks)",
     }
     for ann in fig.layout.annotations:
         if hasattr(ann, "text") and ann.text in panel_titles:
             ann.font = dict(size=LABEL_FS - 2, family=FONT_FAMILY,
                             color=PAPER_PALETTE["text"])
 
-    fig.update_layout(bargap=0.3)
+    fig.update_layout(
+        bargap=0.3,
+        legend=dict(
+            orientation="h",
+            yanchor="top", y=-0.04, xanchor="center", x=0.5,
+            font=dict(size=LEGEND_FS - 2, family=FONT_FAMILY),
+            bgcolor="rgba(255,255,255,0.9)",
+        ),
+    )
 
     save_figure(fig, results / "figures" / "gwa_exposure.png", scale=2)
     _copy_fig(results, figures, "gwa_exposure.png")
@@ -1663,27 +1760,34 @@ def build_major_categories(results: Path, figures: Path) -> None:
     workers_r   = list(reversed(base["workers_affected"].tolist()))
     wages_r     = list(reversed(base["wages_affected"].tolist()))
 
-    # n_occs by phys bucket (replaces the dropped box plot's distributional
-    # readout). Computed off the same eco_2025 baseline the variant pipeline
-    # uses, so the bucket cuts (<33 / 33-67 / >67 % physical) stay aligned.
+    # n_occs by phys bucket — global totals, used in the chart subtitle and
+    # for the per-major stacked bar in panel 6. Same cuts (<33 / 33-67 / >67
+    # % physical) the variant pipeline uses.
     occ_struct = _load_occ_structural()
     bucket_counts = occ_struct.groupby("occ_group").size().to_dict()
     n_phys = int(bucket_counts.get("Physical", 0))
     n_mix  = int(bucket_counts.get("Mixed", 0))
     n_non  = int(bucket_counts.get("Non-physical", 0))
 
+    # Per-major occupation phys-mix shares for the 6th panel.
+    major_phys_mix = _major_phys_mix_shares(occ_struct)
+    pct_phys_r = [major_phys_mix.get(c, {}).get("pct_physical",     0.0) for c in categories_r]
+    pct_mix_r  = [major_phys_mix.get(c, {}).get("pct_mixed",        0.0) for c in categories_r]
+    pct_non_r  = [major_phys_mix.get(c, {}).get("pct_non_physical", 0.0) for c in categories_r]
+
     fig = make_subplots(
-        rows=1, cols=5,
+        rows=1, cols=6,
         subplot_titles=[
             "Variant A: Non-Phys Task Share",
             "Variant B: % Tasks Exposed in Non-Phys Work",
             "% Tasks Exposed (All Confirmed)",
             "Workers Exposed (All Confirmed)",
             "Wages Exposed (All Confirmed)",
+            "Phys Mix (Occs)",
         ],
-        horizontal_spacing=0.05,
+        horizontal_spacing=0.04,
         shared_yaxes=True,
-        column_widths=[1.0, 1.0, 1.0, 1.0, 1.0],
+        column_widths=[1.0, 1.0, 1.0, 1.0, 1.0, 0.55],
     )
 
     # Use the workers/wages metric palette for the all_confirmed reading,
@@ -1740,6 +1844,30 @@ def build_major_categories(results: Path, figures: Path) -> None:
         showlegend=False, cliponaxis=False,
     ), row=1, col=5)
 
+    # Panel 6 — per-major occupation phys-mix stacked bar. Uses `base` for
+    # manual stacking instead of barmode="stack" so the other panels'
+    # single-trace bars don't get squeezed.
+    base_mix = pct_phys_r
+    base_non = [p + m for p, m in zip(pct_phys_r, pct_mix_r)]
+    fig.add_trace(go.Bar(
+        y=categories_r, x=pct_phys_r, base=0, orientation="h",
+        marker=dict(color=GROUP_COLORS["Physical"], line=dict(width=0)),
+        name="% Physical occs", showlegend=True,
+        hovertemplate="Physical: %{x:.0f}%<extra></extra>",
+    ), row=1, col=6)
+    fig.add_trace(go.Bar(
+        y=categories_r, x=pct_mix_r, base=base_mix, orientation="h",
+        marker=dict(color=GROUP_COLORS["Mixed"], line=dict(width=0)),
+        name="% Mixed occs", showlegend=True,
+        hovertemplate="Mixed: %{x:.0f}%<extra></extra>",
+    ), row=1, col=6)
+    fig.add_trace(go.Bar(
+        y=categories_r, x=pct_non_r, base=base_non, orientation="h",
+        marker=dict(color=GROUP_COLORS["Non-physical"], line=dict(width=0)),
+        name="% Non-physical occs", showlegend=True,
+        hovertemplate="Non-physical: %{x:.0f}%<extra></extra>",
+    ), row=1, col=6)
+
     height = max(PAPER_H + 200, n_cats * 36 + 220)
 
     style_paper_figure(
@@ -1749,11 +1877,12 @@ def build_major_categories(results: Path, figures: Path) -> None:
             f"All {n_cats} major SOC categories ranked by All Confirmed % tasks exposed. "
             "Variant A = naive non-physical task share (no AI signal). "
             "Variant B = % tasks exposed restricted to non-physical work. "
-            f"Occupations by physical mix: {n_phys} Physical · {n_mix} Mixed · {n_non} Non-physical."
+            "Right panel: share of each major's occupations classified Physical / Mixed / Non-Physical. "
+            f"Economy-wide totals: {n_phys} Physical · {n_mix} Mixed · {n_non} Non-physical occupations."
         ),
         height=height + 60,
-        width=PAPER_W + 700,
-        margin=dict(l=20, r=80, t=160, b=110),
+        width=PAPER_W + 900,
+        margin=dict(l=20, r=80, t=160, b=160),
     )
 
     fig.update_xaxes(
@@ -1798,6 +1927,12 @@ def build_major_categories(results: Path, figures: Path) -> None:
         title=dict(text="Wages Exposed", font=dict(size=LABEL_FS - 4)),
         row=1, col=5,
     )
+    fig.update_xaxes(
+        range=[0, 100], dtick=25,
+        ticksuffix="%", tickfont=dict(size=TICK_FS - 4, family=FONT_FAMILY),
+        title=dict(text="% of major's occs", font=dict(size=LABEL_FS - 4)),
+        row=1, col=6,
+    )
 
     fig.update_yaxes(showgrid=False, showline=False)
     fig.update_yaxes(
@@ -1812,13 +1947,22 @@ def build_major_categories(results: Path, figures: Path) -> None:
         "% Tasks Exposed (All Confirmed)",
         "Workers Exposed (All Confirmed)",
         "Wages Exposed (All Confirmed)",
+        "Phys Mix (Occs)",
     }
     for ann in fig.layout.annotations:
         if hasattr(ann, "text") and ann.text in panel_titles:
             ann.font = dict(size=LABEL_FS - 2, family=FONT_FAMILY,
                             color=PAPER_PALETTE["text"])
 
-    fig.update_layout(bargap=0.3)
+    fig.update_layout(
+        bargap=0.3,
+        legend=dict(
+            orientation="h",
+            yanchor="top", y=-0.06, xanchor="center", x=0.5,
+            font=dict(size=LEGEND_FS - 2, family=FONT_FAMILY),
+            bgcolor="rgba(255,255,255,0.9)",
+        ),
+    )
 
     save_figure(fig, results / "figures" / "major_categories.png", scale=2)
     _copy_fig(results, figures, "major_categories.png")
