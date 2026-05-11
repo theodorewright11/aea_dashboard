@@ -1599,6 +1599,15 @@ def build_gwa_chart(results: Path, figures: Path) -> None:
         hovertemplate="Non-physical: %{x:.0f}%<extra></extra>",
     ), row=1, col=6)
 
+    # Dummy invisible trace carrying just a dashed-line glyph for the legend,
+    # so readers know what the 33/67 reference lines mean.
+    fig.add_trace(go.Scatter(
+        x=[None], y=[None], mode="lines",
+        line=dict(color="#1a1a1a", width=1.4, dash="dash"),
+        name="33% / 67% phys-mix bucket cuts",
+        showlegend=True, hoverinfo="skip",
+    ), row=1, col=6)
+
     height = max(PAPER_H + 600, n_gwas * 38 + 320)
 
     style_paper_figure(
