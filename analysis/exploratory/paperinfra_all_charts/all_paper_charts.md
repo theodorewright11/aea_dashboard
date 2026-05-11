@@ -59,5 +59,8 @@ Mirror of every figure currently in `analysis/paper/results/part_1/figures/`, `p
 ### risk_score_5f.png
 ![risk_score_5f](figures/part_3/risk_score_5f.png)
 
+### state_exposure_at_risk.png
+![state_exposure_at_risk](figures/part_3/state_exposure_at_risk.png)
+
 ### intensity_anchor_fulleco.png
 ![intensity_anchor_fulleco](figures/part_3/intensity_anchor_fulleco.png)

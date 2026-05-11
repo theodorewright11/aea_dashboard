@@ -45,6 +45,7 @@ CHART_ORDER: dict[str, list[str]] = {
         "conv_confirmed_ceiling_gap.png",
         "tech_commodities.png",
         "risk_score_5f.png",
+        "state_exposure_at_risk.png",
         "intensity_anchor_fulleco.png",
     ],
 }

@@ -139,6 +139,14 @@ The darkest bars (most workers) aren't always at the top. Handling and Moving Ob
 
 ---
 
+### State Exposure vs. Most-At-Risk Concentration
+
+![State exposure vs. most-at-risk concentration](part_3/figures/state_exposure_at_risk.png)
+
+*Prose pending.*
+
+---
+
 ### AI Usage Intensity by Sector
 
 ![AI Intensity Anchor](part_3/figures/intensity_anchor_fulleco.png)
