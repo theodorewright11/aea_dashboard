@@ -454,9 +454,9 @@ export default function OccupationReport({ config }: Props) {
         }}>
           Pick your occupation and see, in one place, where AI already does the work, where you still
           have an advantage, what tasks to delegate, and how your role compares to similar ones. All numbers
-          are drawn from the dashboard&apos;s <strong>all-confirmed (conservative)</strong> dataset:
+          are drawn from the dashboard&apos;s <strong>all-confirmed</strong> dataset:
           measured AI usage across Anthropic Claude conversations, AEI API/agentic tool-use, and Microsoft
-          Copilot, with physical Microsoft tasks excluded.
+          Copilot.
         </p>
       </header>
 

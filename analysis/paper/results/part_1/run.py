@@ -48,7 +48,6 @@ CONFIG_ORDER: list[str] = [
     "human_conversation",
     "agentic_confirmed",
     "agentic_ceiling",
-    "all_confirmed_conservative",
 ]
 
 # ── Correlation sources ──────────────────────────────────────────────────

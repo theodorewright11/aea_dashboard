@@ -5,8 +5,8 @@ Composes one big payload for a single occupation, drawn from the dashboard's
 existing compute pipeline plus the SKA gap / intensity / tech / risk logic
 that the analysis folder uses for its tips-and-tricks worker_resilience runs.
 
-Everything is computed against the **conservative all-confirmed** dataset
-(`AEI Both + Micro Conservative 2026-02-12`) to match the framing used in
+Everything is computed against the **all-confirmed** dataset
+(`AEI Both + Micro 2026-02-12`) to match the framing used in
 worker_resilience. Per-task auto_aug values come from the explorer task
 lookup — same source breakdown shown in the explorers' task accordion.
 
@@ -42,7 +42,7 @@ from compute import (
 
 # ── Constants ─────────────────────────────────────────────────────────────────
 
-PRIMARY_DATASET: str = "AEI Both + Micro Conservative 2026-02-12"
+PRIMARY_DATASET: str = "AEI Both + Micro 2026-02-12"
 
 # Time series we walk for the trend sparkline. Mirrors all_confirmed in
 # analysis/config.py: ANALYSIS_CONFIG_SERIES["all_confirmed"].
@@ -343,7 +343,7 @@ def _ska_top10_per_element() -> pd.DataFrame:
     return df
 
 
-# ── Pct loaders (one geo, occupation level, conservative dataset) ─────────────
+# ── Pct loaders (one geo, occupation level, primary dataset) ─────────────────
 
 def _pct_for(dataset_name: str, geo: str = "nat") -> pd.Series:
     """Run the full compute pipeline for one dataset → Series keyed by title_current.
@@ -650,7 +650,7 @@ def _intensity_rank_table() -> dict[str, dict]:
     needed = {"task_normalized", "title_current", "major_occ_category", "gwa_title",
               "pct_normalized", "freq_mean", "emp_tot_nat_2024"}
     missing = needed - set(df.columns)
-    assert not missing, f"Conservative dataset missing columns: {missing}"
+    assert not missing, f"Primary dataset missing columns: {missing}"
     for c in ("pct_normalized", "freq_mean", "emp_tot_nat_2024"):
         df[c] = pd.to_numeric(df[c], errors="coerce")
 

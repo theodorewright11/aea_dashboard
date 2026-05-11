@@ -136,22 +136,20 @@ def ensure_results_dir(question_dir: Path) -> Path:
 # All use method="freq" (time-weighted), use_auto_aug=True, geo="nat".
 # These are the canonical configs for job_exposure and subsequent analyses.
 ANALYSIS_CONFIGS: dict[str, str] = {
-    "all_ceiling":               "All 2026-02-18",               # AEI Both + MCP + Microsoft — ceiling
-    "human_conversation":        "AEI Conv + Micro 2026-02-12",  # confirmed human conversation usage
-    "agentic_confirmed":         "AEI API 2026-02-12",           # confirmed agentic tool-use (AEI API only)
-    "all_confirmed":             "AEI Both + Micro 2026-02-12",  # all confirmed usage (conv + API + Microsoft)
-    "agentic_ceiling":           "MCP + API 2026-02-18",         # agentic ceiling (most recent)
-    "all_confirmed_conservative": "AEI Both + Micro Conservative 2026-02-12",  # all confirmed with MS physical tasks stripped
+    "all_ceiling":        "All 2026-02-18",               # AEI Both + MCP + Microsoft — ceiling
+    "human_conversation": "AEI Conv + Micro 2026-02-12",  # confirmed human conversation usage
+    "agentic_confirmed":  "AEI API 2026-02-12",           # confirmed agentic tool-use (AEI API only)
+    "all_confirmed":      "AEI Both + Micro 2026-02-12",  # all confirmed usage (conv + API + Microsoft)
+    "agentic_ceiling":    "MCP + API 2026-02-18",         # agentic ceiling (most recent)
 }
 
 # Config labels for charts/reports
 ANALYSIS_CONFIG_LABELS: dict[str, str] = {
-    "all_ceiling":               "All Sources (Ceiling)",
-    "human_conversation":        "Conversational Confirmed",
-    "agentic_confirmed":         "Agentic Confirmed",
-    "all_confirmed":             "All Confirmed",
-    "agentic_ceiling":           "Agentic Ceiling",
-    "all_confirmed_conservative": "All Confirmed (Conservative)",
+    "all_ceiling":        "All Sources (Ceiling)",
+    "human_conversation": "Conversational Confirmed",
+    "agentic_confirmed":  "Agentic Confirmed",
+    "all_confirmed":      "All Confirmed",
+    "agentic_ceiling":    "Agentic Ceiling",
 }
 
 # Full time series for each config (for trend analysis)

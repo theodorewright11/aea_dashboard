@@ -57,7 +57,7 @@ The dashboard has nine pages accessible from the top navigation bar. The **defau
 
 A personal, actionable report for a single occupation. Built for workers who want to know — for their specific job — what AI already does well, where they still hold an advantage, what tasks to consider delegating, and how their role compares to similar ones.
 
-**Source dataset:** All headline metrics, the SKA gap reference, the risk score, the intensity rank, and the trend sparkline are drawn from `AEI Both + Micro Conservative 2026-02-12` (all-confirmed usage with Microsoft's physical tasks stripped). Per-source auto-aug values on individual tasks come from the same explorer task lookup the rest of the dashboard uses (AEI Conv. v1–v5 → AEI Conv max column; AEI API v3–v5 → AEI API max column; Microsoft and MCP from their own datasets).
+**Source dataset:** All headline metrics, the SKA gap reference, the risk score, the intensity rank, and the trend sparkline are drawn from `AEI Both + Micro 2026-02-12` (all-confirmed usage: AEI conversation + API + Microsoft Copilot). Per-source auto-aug values on individual tasks come from the same explorer task lookup the rest of the dashboard uses (AEI Conv. v1–v5 → AEI Conv max column; AEI API v3–v5 → AEI API max column; Microsoft and MCP from their own datasets).
 
 **What questions it answers:**
 - Given my occupation, which tasks could AI take over, augment, or hasn't reached yet?

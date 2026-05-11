@@ -29,14 +29,13 @@ HEATMAP_TEXT_FS: int = 18  # Correlation values inside heatmap cells
 TABLE_HEADER_FS: int = 14  # Table column headers
 TABLE_CELL_FS: int = 13    # Table cell text
 
-# ── Six-config colors ────────────────────────────────────────────────────
+# ── Five-config colors ───────────────────────────────────────────────────
 CONFIG_COLORS: dict[str, str] = {
-    "all_confirmed":              "#3a5f83",
-    "all_ceiling":                "#4a7c6f",
-    "human_conversation":         "#c05621",
-    "agentic_confirmed":          "#7b5ea7",
-    "agentic_ceiling":            "#2e8b8b",
-    "all_confirmed_conservative": "#8b4789",
+    "all_confirmed":      "#3a5f83",
+    "all_ceiling":        "#4a7c6f",
+    "human_conversation": "#c05621",
+    "agentic_confirmed":  "#7b5ea7",
+    "agentic_ceiling":    "#2e8b8b",
 }
 
 # ── Three-metric colors (muted, cohesive) ────────────────────────────────
