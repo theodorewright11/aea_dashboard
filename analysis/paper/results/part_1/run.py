@@ -921,6 +921,35 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
     # between markers, regardless of zoom or aspect ratio.
     LABEL_YSHIFT_PX = 18
 
+    # Horizons (days from final observed date) for the linear extrapolation
+    # band on each panel. 2-year ceiling chosen because longer horizons are
+    # statistically indefensible given 4–6 observed snapshots.
+    EXTRAP_HORIZONS_DAYS: list[tuple[str, int]] = [
+        ("6mo", 183),
+        ("1yr", 365),
+        ("2yr", 730),
+    ]
+
+    def _linear_fit_project(dates: list[str], yvals: list[float],
+                            horizon_days: list[int]) -> tuple[list[pd.Timestamp], list[float]]:
+        """OLS y = a + b·t on observed (date, value) points; project values at each
+        horizon past the final observed date. Returns (future_dates, future_values).
+
+        Linear is the simplest defensible "if recent rate continues" frame for a
+        2-year window. Pretends nothing past linear; saturation is out of scope."""
+        if len(dates) < 2:
+            return [], []
+        ts = [pd.Timestamp(d) for d in dates]
+        t0 = ts[0]
+        x = np.array([(t - t0).days for t in ts], dtype=float)
+        y = np.array(yvals, dtype=float)
+        b, a = np.polyfit(x, y, deg=1)
+        last_x = x[-1]
+        future_xs = [last_x + h for h in horizon_days]
+        future_ts = [t0 + pd.Timedelta(days=int(fx)) for fx in future_xs]
+        future_ys = [float(a + b * fx) for fx in future_xs]
+        return future_ts, future_ys
+
     def _spaced_label_indices(dates: list[str], min_days: int = 25) -> set[int]:
         """Pick which date indices get a value label drawn.
 
@@ -975,6 +1004,34 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
                 cliponaxis=False,
             ), row=1, col=col_idx)
 
+            # Linear "if-recent-rate-continued" projection extending past
+            # the final observed point at 6mo / 1yr / 2yr horizons.
+            horizon_days = [d for _, d in EXTRAP_HORIZONS_DAYS]
+            future_ts, future_ys = _linear_fit_project(xvals, yvals, horizon_days)
+            if future_ts:
+                proj_x = [pd.Timestamp(xvals[-1])] + future_ts
+                proj_y = [yvals[-1]] + future_ys
+                fig.add_trace(go.Scatter(
+                    x=proj_x, y=proj_y,
+                    mode="lines+markers",
+                    line=dict(color=color, width=2, dash="dot"),
+                    marker=dict(size=7, color=color, symbol="x"),
+                    showlegend=False,
+                    hovertemplate=f"<b>{label} (linear proj.)</b><br>%{{x}}<br>%{{y}}<extra></extra>",
+                    cliponaxis=False,
+                    opacity=0.7,
+                ), row=1, col=col_idx)
+                panel_vals.extend(future_ys)
+                for (hz_label, _), t, v in zip(EXTRAP_HORIZONS_DAYS, future_ts, future_ys):
+                    fig.add_annotation(
+                        x=t, y=v,
+                        xref=x_ref, yref=y_ref,
+                        text=f"{hz_label}: {fmt_fn(v)}",
+                        showarrow=False,
+                        yshift=yshift,
+                        font=dict(size=ANNOT_FS - 2, color=color, family=FONT_FAMILY),
+                    )
+
             # Per-point value labels as annotations with explicit pixel
             # yshift — ensures the line never overlaps the text. Skip
             # labels for dates within 25 days of the next kept label so
@@ -1028,7 +1085,9 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
         "All Confirmed vs All Sources (Ceiling) Over Time",
         subtitle=(
             "Tasks, workers, and wages exposed over the dataset window "
-            "(March 2025 – February 2026)."
+            "(March 2025 – February 2026). Dotted segments extend each line "
+            "with a linear OLS fit through observed points, marking 6mo / 1yr / 2yr "
+            "horizons if the recent rate continued."
         ),
         height=PAPER_H + 90,
         width=PAPER_W + 100,

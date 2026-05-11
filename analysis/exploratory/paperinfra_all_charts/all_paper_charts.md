@@ -25,9 +25,6 @@ Mirror of every figure currently in `analysis/paper/results/part_1/figures/`, `p
 
 ## Part 2 — Characterization
 
-### phys_info_divide.png
-![phys_info_divide](figures/part_2/phys_info_divide.png)
-
 ### job_zone_violin.png
 ![job_zone_violin](figures/part_2/job_zone_violin.png)
 
@@ -42,6 +39,12 @@ Mirror of every figure currently in `analysis/paper/results/part_1/figures/`, `p
 
 ### major_categories.png
 ![major_categories](figures/part_2/major_categories.png)
+
+### job_zone_violin_nonphys.png
+![job_zone_violin_nonphys](figures/part_2/job_zone_violin_nonphys.png)
+
+### major_categories_trend.png
+![major_categories_trend](figures/part_2/major_categories_trend.png)
 
 ---
 

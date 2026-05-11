@@ -69,7 +69,8 @@ from analysis.utils import (
 )
 
 HERE = Path(__file__).resolve().parent
-DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent.parent / "analysis" / "data"
+# Depth raised by one parent since the questions/ folder moved under _archive/.
+DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent.parent.parent / "analysis" / "data"
 TECH_SKILLS_FILE = DATA_DIR / "tech_skills_simple.csv"
 
 PRIMARY_KEY = "all_confirmed"

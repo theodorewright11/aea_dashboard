@@ -25,6 +25,7 @@ from plotly.subplots import make_subplots
 from analysis.config import (
     ANALYSIS_CONFIGS,
     ANALYSIS_CONFIG_LABELS,
+    ANALYSIS_CONFIG_SERIES,
     ROOT,
     ensure_results_dir,
     get_pct_tasks_affected,
@@ -80,14 +81,20 @@ def _copy_fig(results: Path, figures: Path, name: str) -> None:
     shutil.copy(results / "figures" / name, figures / name)
 
 
-def _run_config(dataset_name: str, agg_level: str = "occupation") -> pd.DataFrame:
+def _run_config(
+    dataset_name: str,
+    agg_level: str = "occupation",
+    physical_mode: str = "all",
+) -> pd.DataFrame:
+    """Run the dashboard pipeline. `physical_mode='exclude'` strips physical
+    tasks from both numerator and denominator (used by variant B charts)."""
     from backend.compute import get_group_data
     config = {
         "selected_datasets": [dataset_name],
         "combine_method": "Average",
         "method": "freq",
         "use_auto_aug": True,
-        "physical_mode": "all",
+        "physical_mode": physical_mode,
         "geo": "nat",
         "agg_level": agg_level,
         "sort_by": "% Tasks Affected",
@@ -96,11 +103,120 @@ def _run_config(dataset_name: str, agg_level: str = "occupation") -> pd.DataFram
         "context_size": 3,
     }
     data = get_group_data(config)
-    assert data is not None, f"No data for {dataset_name}"
+    assert data is not None, f"No data for {dataset_name} ({physical_mode}, {agg_level})"
     df: pd.DataFrame = data["df"]
     group_col: str = data["group_col"]
     df = df.rename(columns={group_col: "category"})
     return df
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# Structural variants: Variant A (eco-only non-phys task share, ratio of
+# totals) and Variant B (dashboard pipeline restricted to non-phys tasks).
+# Both serve the major-cat trio at the top of Part 2 and the GWA quintet.
+# ─────────────────────────────────────────────────────────────────────────
+
+LEVEL_COL: dict[str, str] = {
+    "major":      "major_occ_category",
+    "minor":      "minor_occ_category",
+    "broad":      "broad_occ",
+    "occupation": "title_current",
+}
+
+
+def _coerce_phys_bool(val) -> bool:
+    """Mirror backend.compute._phys_bool. eco rows store physical as
+    1/0/True/False/'True'/'False' depending on import path."""
+    if isinstance(val, bool):
+        return val
+    if val is None or (isinstance(val, float) and np.isnan(val)):
+        return False
+    if isinstance(val, (int, np.integer)):
+        return bool(val)
+    if isinstance(val, str):
+        return val.strip().lower() in {"true", "1", "yes", "y"}
+    return bool(val)
+
+
+def compute_variant_a(agg_level: str = "major") -> pd.DataFrame:
+    """Variant A — naive non-physical task share by group, freq-weighted.
+
+    For each task-occ pair: w_all = freq_mean, w_nonphys = freq_mean if
+    non-physical else 0. Per group (occupation / broad / minor / major):
+    pct_A = Σ w_nonphys / Σ w_all × 100  (ratio of totals).
+
+    Returns DataFrame with columns: category, pct_tasks_affected.
+    """
+    cols = [
+        "title_current", "task_normalized",
+        "broad_occ", "minor_occ_category", "major_occ_category",
+        "physical", "freq_mean",
+    ]
+    df = pd.read_csv(DATA_DIR / "final_eco_2025.csv", usecols=cols)
+    df = df.groupby(["title_current", "task_normalized"], sort=False, as_index=False).first()
+    df["physical_bool"] = df["physical"].apply(_coerce_phys_bool)
+    df["freq_mean"] = df["freq_mean"].fillna(0.0).astype(float)
+    df["w_all"]      = df["freq_mean"]
+    df["w_nonphys"]  = np.where(df["physical_bool"], 0.0, df["freq_mean"])
+
+    gc = LEVEL_COL[agg_level]
+    agg = df.groupby(gc, sort=False, as_index=False).agg(
+        num=("w_nonphys", "sum"),
+        den=("w_all", "sum"),
+    )
+    agg["pct_tasks_affected"] = (
+        agg["num"] / agg["den"].replace(0, np.nan) * 100.0
+    ).fillna(0.0)
+    return agg.rename(columns={gc: "category"})[["category", "pct_tasks_affected"]]
+
+
+def compute_variant_a_gwa() -> pd.DataFrame:
+    """Variant A at GWA level: pct_A per GWA = Σ freq_mean[non-phys] /
+    Σ freq_mean[all] within the GWA's task pool. eco_2025 expands tasks by
+    work-activity so we group on (task_normalized, gwa_title) rather than
+    deduping by task alone."""
+    cols = ["task_normalized", "gwa_title", "physical", "freq_mean"]
+    df = pd.read_csv(DATA_DIR / "final_eco_2025.csv", usecols=cols)
+    df = df.dropna(subset=["gwa_title"])
+    df = df.groupby(["task_normalized", "gwa_title"], sort=False, as_index=False).first()
+    df["physical_bool"] = df["physical"].apply(_coerce_phys_bool)
+    df["freq_mean"] = df["freq_mean"].fillna(0.0).astype(float)
+    df["w_all"]     = df["freq_mean"]
+    df["w_nonphys"] = np.where(df["physical_bool"], 0.0, df["freq_mean"])
+    agg = df.groupby("gwa_title", sort=False, as_index=False).agg(
+        num=("w_nonphys", "sum"),
+        den=("w_all", "sum"),
+    )
+    agg["pct_tasks_affected"] = (
+        agg["num"] / agg["den"].replace(0, np.nan) * 100.0
+    ).fillna(0.0)
+    return agg.rename(columns={"gwa_title": "category"})[["category", "pct_tasks_affected"]]
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# Trend helpers — linear OLS projection (mirrors Part 1's extrapolation)
+# ─────────────────────────────────────────────────────────────────────────
+
+def _linear_project(dates: list[pd.Timestamp], yvals: list[float],
+                    horizon_days: int) -> tuple[float, float, float]:
+    """OLS y = a + b·t. Returns (slope_b_per_day, projected_y, r_squared).
+
+    Linear is the simplest defensible "if recent rate continues" model
+    given 4-snapshot input series; longer horizons need richer models."""
+    if len(dates) < 2:
+        return 0.0, float(yvals[-1] if yvals else 0.0), 0.0
+    t0 = dates[0]
+    x = np.array([(t - t0).days for t in dates], dtype=float)
+    y = np.array(yvals, dtype=float)
+    b, a = np.polyfit(x, y, deg=1)
+    last_x = x[-1]
+    projected = float(a + b * (last_x + horizon_days))
+    # r²
+    y_pred = a + b * x
+    ss_res = float(np.sum((y - y_pred) ** 2))
+    ss_tot = float(np.sum((y - y.mean()) ** 2))
+    r2 = 1.0 - ss_res / ss_tot if ss_tot > 0 else 1.0
+    return float(b), projected, r2
 
 
 def _get_national_totals() -> tuple[float, float]:
@@ -256,17 +372,27 @@ def build_job_zone_violin(results: Path, figures: Path) -> None:
     occ = occ.dropna(subset=["pct_tasks_affected", "job_zone"])
     occ["job_zone"] = occ["job_zone"].astype(int)
 
-    # Summary stats
+    # Summary stats — including phys-mix breakdown per zone
     zone_stats = []
     for z in sorted(occ["job_zone"].unique()):
         sub = occ[occ["job_zone"] == z]
+        n_total = len(sub)
+        n_phys = int((sub["occ_group"] == "Physical").sum())
+        n_mix  = int((sub["occ_group"] == "Mixed").sum())
+        n_non  = int((sub["occ_group"] == "Non-physical").sum())
         zone_stats.append({
             "job_zone": z,
-            "n_occs": len(sub),
+            "n_occs": n_total,
             "median_pct": round(float(sub["pct_tasks_affected"].median()), 1),
             "mean_pct": round(float(sub["pct_tasks_affected"].mean()), 1),
             "q25": round(float(sub["pct_tasks_affected"].quantile(0.25)), 1),
             "q75": round(float(sub["pct_tasks_affected"].quantile(0.75)), 1),
+            "n_physical":     n_phys,
+            "n_mixed":        n_mix,
+            "n_non_physical": n_non,
+            "pct_physical":     round(n_phys / n_total * 100, 1) if n_total else 0.0,
+            "pct_mixed":        round(n_mix / n_total * 100, 1) if n_total else 0.0,
+            "pct_non_physical": round(n_non / n_total * 100, 1) if n_total else 0.0,
         })
     stats_df = pd.DataFrame(zone_stats)
     save_csv(stats_df, results / "job_zone_summary.csv")
@@ -280,19 +406,30 @@ def build_job_zone_violin(results: Path, figures: Path) -> None:
         5: "#1a4f73",  # Deep slate
     }
 
-    fig = go.Figure()
-
     zones = sorted(occ["job_zone"].unique())
+    zone_labels_full = [
+        f"{ZONE_LABELS.get(z, f'Zone {z}')}  (n={int(occ[occ['job_zone'] == z].shape[0])})"
+        for z in zones
+    ]
+
+    # Two-panel layout: violins on the left, phys-mix stacked bar on the right.
+    # Shared y-axis ordering so each zone row aligns. The phys-mix panel is
+    # narrow (~15% width) so it reads as an overlay, not a competing chart.
+    fig = make_subplots(
+        rows=1, cols=2,
+        shared_yaxes=True,
+        column_widths=[0.85, 0.15],
+        horizontal_spacing=0.02,
+        subplot_titles=["", "Phys Mix"],
+    )
+
     for z in zones:
         sub = occ[occ["job_zone"] == z]
-        n = len(sub)
-        med = sub["pct_tasks_affected"].median()
-        mean = sub["pct_tasks_affected"].mean()
         label = ZONE_LABELS.get(z, f"Zone {z}")
-
         fig.add_trace(go.Violin(
             x=sub["pct_tasks_affected"],
-            name=f"{label}  (n={n})",
+            y=[f"{label}  (n={len(sub)})"] * len(sub),
+            name=f"{label}  (n={len(sub)})",
             marker_color=zone_colors[z],
             line_color=zone_colors[z],
             fillcolor=zone_colors[z],
@@ -302,64 +439,124 @@ def build_job_zone_violin(results: Path, figures: Path) -> None:
             orientation="h",
             side="positive",
             width=0.8,
-        ))
+            showlegend=False,
+            hovertemplate=f"{label}<br>%{{x:.1f}}%<extra></extra>",
+        ), row=1, col=1)
 
-    fig.update_layout(
-        yaxis=dict(
-            categoryorder="array",
-            categoryarray=[
-                f"{ZONE_LABELS.get(z, f'Zone {z}')}  (n={int(occ[occ['job_zone'] == z].shape[0])})"
-                for z in reversed(zones)
-            ],
-        ),
+    # Phys-mix stacked bar: one row per zone, three segments (Phys / Mixed /
+    # Non-physical) using the same palette as the major trio. Legend shown
+    # below the chart.
+    y_labels = []
+    for r in zone_stats:
+        z = r["job_zone"]
+        zone_label = ZONE_LABELS.get(z, f"Zone {z}")
+        y_labels.append(f"{zone_label}  (n={int(r['n_occs'])})")
+    pct_phys_arr = [r["pct_physical"]     for r in zone_stats]
+    pct_mix_arr  = [r["pct_mixed"]        for r in zone_stats]
+    pct_non_arr  = [r["pct_non_physical"] for r in zone_stats]
+
+    fig.add_trace(go.Bar(
+        x=pct_phys_arr, y=y_labels, orientation="h",
+        marker=dict(color=GROUP_COLORS["Physical"], line=dict(width=0)),
+        name="% Physical occs",
+        showlegend=True,
+        hovertemplate="Physical: %{x:.0f}%<extra></extra>",
+    ), row=1, col=2)
+    fig.add_trace(go.Bar(
+        x=pct_mix_arr, y=y_labels, orientation="h",
+        marker=dict(color=GROUP_COLORS["Mixed"], line=dict(width=0)),
+        name="% Mixed occs",
+        showlegend=True,
+        hovertemplate="Mixed: %{x:.0f}%<extra></extra>",
+    ), row=1, col=2)
+    fig.add_trace(go.Bar(
+        x=pct_non_arr, y=y_labels, orientation="h",
+        marker=dict(color=GROUP_COLORS["Non-physical"], line=dict(width=0)),
+        name="% Non-physical occs",
+        showlegend=True,
+        hovertemplate="Non-physical: %{x:.0f}%<extra></extra>",
+    ), row=1, col=2)
+
+    annot_text = "<br>".join(
+        f"Zone {r['job_zone']}: median {r['median_pct']:.1f}%, mean {r['mean_pct']:.1f}%"
+        for r in zone_stats
     )
-
-    # Add annotation with stats
-    annot_lines = []
-    for row in zone_stats:
-        z = row["job_zone"]
-        annot_lines.append(
-            f"Zone {z}: median {row['median_pct']:.1f}%, "
-            f"mean {row['mean_pct']:.1f}%"
-        )
-    annot_text = "<br>".join(annot_lines)
-
     fig.add_annotation(
         text=annot_text,
-        xref="paper", yref="paper",
-        x=0.98, y=0.98,
+        xref="x", yref="paper",
+        x=99, y=0.98,
         showarrow=False,
         font=dict(size=ANNOT_FS, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
         align="right",
         xanchor="right", yanchor="top",
         bgcolor="rgba(255,255,255,0.85)",
         bordercolor=PAPER_PALETTE["grid"],
-        borderwidth=1,
-        borderpad=6,
+        borderwidth=1, borderpad=6,
     )
 
     style_paper_figure(
         fig,
-        "Task Exposure by Job Zone",
-        subtitle=f"Distribution of % tasks exposed by O*NET job zone across {len(occ)} occupations",
-        height=600,
-        width=PAPER_W,
-        margin=dict(l=80, r=60, t=100, b=80),
+        "Task Exposure by Job Zone (with Physical Mix Overlay)",
+        subtitle=(
+            f"Distribution of % tasks exposed by O*NET job zone across {len(occ)} occupations. "
+            "Right panel: share of each zone's occupations that are Physical / Mixed / Non-Physical."
+        ),
+        height=700,
+        width=PAPER_W + 80,
+        margin=dict(l=80, r=60, t=110, b=170),
     )
 
-    fig.update_layout(showlegend=False)
+    # Order zones from top to bottom (highest zone at top).
+    cat_array = list(reversed(zone_labels_full))
+    fig.update_yaxes(
+        categoryorder="array",
+        categoryarray=cat_array,
+        showgrid=False, showline=False,
+        tickfont=dict(size=TICK_FS - 1, family=FONT_FAMILY),
+        title=dict(text="Job Zone (O*NET Preparation Level)", font=dict(size=LABEL_FS - 2)),
+        row=1, col=1,
+    )
+    fig.update_yaxes(
+        categoryorder="array",
+        categoryarray=cat_array,
+        showgrid=False, showline=False,
+        showticklabels=False,
+        row=1, col=2,
+    )
 
     fig.update_xaxes(
         title=dict(text="% Tasks Exposed", font=dict(size=LABEL_FS)),
         range=[0, 100], dtick=10,
         showgrid=True, gridcolor=PAPER_PALETTE["grid"],
         showline=True, linecolor=PAPER_PALETTE["grid"],
+        row=1, col=1,
     )
-    fig.update_yaxes(
-        title=dict(text="Job Zone (O*NET Preparation Level)", font=dict(size=LABEL_FS - 2)),
-        showgrid=False, showline=False,
-        tickfont=dict(size=TICK_FS - 1, family=FONT_FAMILY),
+    fig.update_xaxes(
+        range=[0, 100], dtick=25,
+        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+        showline=True, linecolor=PAPER_PALETTE["grid"],
+        ticksuffix="%",
+        tickfont=dict(size=TICK_FS - 3, family=FONT_FAMILY),
+        title=dict(text="% of zone", font=dict(size=LABEL_FS - 4)),
+        row=1, col=2,
     )
+
+    fig.update_layout(
+        barmode="stack",
+        legend=dict(
+            orientation="h",
+            yanchor="top", y=-0.18, xanchor="center", x=0.5,
+            font=dict(size=LEGEND_FS - 1, family=FONT_FAMILY),
+            bgcolor="rgba(255,255,255,0.9)",
+        ),
+    )
+
+    # Force the right-panel subplot title down so it doesn't collide with
+    # the main figure title.
+    for ann in fig.layout.annotations:
+        if hasattr(ann, "text") and ann.text == "Phys Mix":
+            ann.font = dict(size=LABEL_FS - 2, family=FONT_FAMILY,
+                            color=PAPER_PALETTE["text"])
 
     save_figure(fig, results / "figures" / "job_zone_violin.png")
     _copy_fig(results, figures, "job_zone_violin.png")
@@ -637,8 +834,13 @@ def _compute_ska_variants(
     onet_df: pd.DataFrame,
     pct_series: pd.Series,
     type_name: str,
+    phys_map: Optional[pd.Series] = None,
 ) -> pd.DataFrame:
-    """Compute AI and workforce imp×lv variants per element for one SKA type."""
+    """Compute AI and workforce imp×lv variants per element for one SKA
+    type. `phys_map` is an optional title_current → pct_physical Series;
+    when present, each element record carries `phys_score` (unweighted
+    mean of pct_physical across occs with imp ≥ 3 for that element) and
+    `phys_tier` (Physical / Mixed / Non-physical bucket)."""
     df = onet_df.copy()
     df["pct"] = df["title"].map(pct_series)
     df = df.dropna(subset=["pct", "importance", "level"])
@@ -647,6 +849,8 @@ def _compute_ska_variants(
 
     df["occ_score"] = df["importance"] * df["level"]
     df["ai_product"] = (df["pct"] / 100.0) * df["occ_score"]
+    if phys_map is not None:
+        df["pct_physical_occ"] = df["title"].map(phys_map)
 
     records = []
     for element_name, grp in df.groupby("element_name"):
@@ -657,7 +861,7 @@ def _compute_ska_variants(
         top_n_ai = min(TOP_N_FOR_AVERAGE, n_ai)
         top_n_occ = min(TOP_N_FOR_AVERAGE, n_occ)
 
-        records.append({
+        rec = {
             "element_name": element_name,
             "type": type_name,
             "n_occs": n_ai,
@@ -668,7 +872,13 @@ def _compute_ska_variants(
             "eco_p95": float(occ_vals.quantile(0.95)) if n_occ >= 2 else (float(occ_vals.iloc[0]) if n_occ == 1 else float("nan")),
             "eco_top10": float(occ_vals.nlargest(top_n_occ).mean()) if n_occ >= 1 else float("nan"),
             "eco_mean": float(occ_vals.mean()) if n_occ >= 1 else float("nan"),
-        })
+        }
+        if phys_map is not None:
+            phys_vals = grp["pct_physical_occ"].dropna()
+            phys_score = float(phys_vals.mean()) if len(phys_vals) else float("nan")
+            rec["phys_score"] = phys_score
+            rec["phys_tier"] = _phys_tier(phys_score) if pd.notna(phys_score) else "Non-physical"
+        records.append(rec)
 
     return pd.DataFrame(records)
 
@@ -700,6 +910,36 @@ KNOWLEDGE_CATEGORY: dict[str, str] = {
 # Muted red for AI markers — visible on blue without being aggressive
 AI_MARKER_COLOR = "#a04444"
 
+# SKA AI Top-10 bar color per phys-mix tier. Uses the same Physical / Mixed
+# / Non-physical palette as the major trio so the structural cut tracks
+# visually across Part 2.
+SKA_BAR_COLOR_BY_TIER: dict[str, str] = {
+    "Non-physical": METRIC_COLORS["tasks"],     # Slate blue — same as default tasks
+    "Mixed":        METRIC_COLORS["wages"],     # Sage green
+    "Physical":     METRIC_COLORS["workers"],   # Gold / yellow
+}
+
+
+def _load_occ_phys_map() -> pd.Series:
+    """title_current → pct_physical (occ-level), used to color SKA element
+    rows by the average physicality of their user base. Computed from
+    eco_2025 the same way the box-plot did: n_physical / n_tasks × 100
+    per occupation, no employment weighting."""
+    eco = pd.read_csv(DATA_DIR / "final_eco_2025.csv",
+                       usecols=["title_current", "physical"])
+    eco["physical_bool"] = eco["physical"].apply(_coerce_phys_bool)
+    grouped = eco.groupby("title_current")["physical_bool"].agg(["sum", "count"])
+    pct_phys = (grouped["sum"] / grouped["count"] * 100.0).fillna(0.0)
+    return pct_phys
+
+
+def _phys_tier(pct_physical: float) -> str:
+    if pct_physical > PHYS_UPPER:
+        return "Physical"
+    if pct_physical < PHYS_LOWER:
+        return "Non-physical"
+    return "Mixed"
+
 
 def _ability_subcat(eid: str) -> str:
     parts = eid.split(".")
@@ -720,6 +960,7 @@ def _compute_subcategory_rollup(
     onet_path: Path,
     pct_series: pd.Series,
     cat_fn,
+    phys_map: Optional[pd.Series] = None,
 ) -> pd.DataFrame:
     """Per-subcategory rollup of element-level AI capability metrics.
 
@@ -755,6 +996,8 @@ def _compute_subcategory_rollup(
 
     pivoted["occ_score"] = pivoted["importance"] * pivoted["level"]
     pivoted["ai_product"] = (pivoted["pct"] / 100.0) * pivoted["occ_score"]
+    if phys_map is not None:
+        pivoted["pct_physical_occ"] = pivoted["title"].map(phys_map)
 
     elem_rows = []
     for (eid, ename), grp in pivoted.groupby(["element_id", "element_name"]):
@@ -762,7 +1005,7 @@ def _compute_subcategory_rollup(
         occ_vals = grp["occ_score"]
         n = len(ai_vals)
         top_n = min(TOP_N_FOR_AVERAGE, n)
-        elem_rows.append({
+        rec = {
             "element_id": eid,
             "element_name": ename,
             "subcategory": cat_fn(eid),
@@ -771,21 +1014,31 @@ def _compute_subcategory_rollup(
             "ai_max": float(ai_vals.max()),
             "eco_max": float(occ_vals.max()),
             "eco_mean": float(occ_vals.mean()),
-        })
+        }
+        if phys_map is not None:
+            phys_vals = grp["pct_physical_occ"].dropna()
+            rec["phys_score"] = float(phys_vals.mean()) if len(phys_vals) else float("nan")
+        elem_rows.append(rec)
     elem_df = pd.DataFrame(elem_rows)
     for col in ["ai_top10", "ai_p95", "ai_max", "eco_mean"]:
         elem_df[f"{col}_pct"] = elem_df[col] / elem_df["eco_max"] * 100.0
 
     cat_rows = []
     for sub, grp in elem_df.groupby("subcategory"):
-        cat_rows.append({
+        row = {
             "subcategory": sub,
             "n_elements": len(grp),
             "ai_top10_pct": float(grp["ai_top10_pct"].mean()),
             "ai_p95_pct":   float(grp["ai_p95_pct"].mean()),
             "ai_max_pct":   float(grp["ai_max_pct"].mean()),
             "eco_mean_pct": float(grp["eco_mean_pct"].mean()),
-        })
+        }
+        if "phys_score" in grp.columns:
+            phys_vals = grp["phys_score"].dropna()
+            phys_score_cat = float(phys_vals.mean()) if len(phys_vals) else float("nan")
+            row["phys_score"] = phys_score_cat
+            row["phys_tier"]  = _phys_tier(phys_score_cat) if pd.notna(phys_score_cat) else "Non-physical"
+        cat_rows.append(row)
     return (
         pd.DataFrame(cat_rows)
         .sort_values("ai_top10_pct", ascending=False)
@@ -814,6 +1067,14 @@ def _build_ska_skills_chart(
     max_vals = df["ai_max_pct"].fillna(0).tolist()
     emean_vals = df["eco_mean_pct"].fillna(0).tolist()
 
+    # Per-element phys tier color. Falls back to the default tasks color
+    # if the phys_tier column is absent (older calls without phys_map).
+    if "phys_tier" in df.columns:
+        bar_colors = [SKA_BAR_COLOR_BY_TIER.get(t, METRIC_COLORS["tasks"])
+                      for t in df["phys_tier"].fillna("Non-physical")]
+    else:
+        bar_colors = [METRIC_COLORS["tasks"]] * len(enames)
+
     fig = go.Figure()
 
     fig.add_trace(go.Bar(
@@ -825,12 +1086,22 @@ def _build_ska_skills_chart(
     fig.add_trace(go.Bar(
         y=enames, x=bar_vals, orientation="h",
         name="AI Top-10 Avg",
-        marker=dict(color=METRIC_COLORS["tasks"], opacity=0.88, line=dict(width=0)),
+        marker=dict(color=bar_colors, opacity=0.88, line=dict(width=0)),
         text=[f"{v:.0f}%" for v in bar_vals],
         textposition="outside",
         textfont=dict(size=12, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
         hovertemplate="AI Top-10 avg (% of workforce max): %{x:.1f}%<extra></extra>",
     ))
+
+    # Phys-tier legend entries — invisible bars carrying just the colored
+    # marker so the legend can document the three-bucket coloring.
+    for tier, tier_color in SKA_BAR_COLOR_BY_TIER.items():
+        fig.add_trace(go.Bar(
+            y=[None], x=[None], orientation="h",
+            name=f"Bar color: {tier} occ mix",
+            marker=dict(color=tier_color, opacity=0.88, line=dict(width=0)),
+            showlegend=True, hoverinfo="skip",
+        ))
     fig.add_trace(go.Scatter(
         y=enames, x=p95_vals, mode="markers",
         name="AI P95",
@@ -953,10 +1224,16 @@ def _build_ska_subcategory_chart(
             hovertemplate="Workforce max: 100%<extra></extra>",
         ), row=row, col=1)
 
+        if "phys_tier" in df.columns:
+            bar_colors = [SKA_BAR_COLOR_BY_TIER.get(t, METRIC_COLORS["tasks"])
+                          for t in df["phys_tier"].fillna("Non-physical")]
+        else:
+            bar_colors = [METRIC_COLORS["tasks"]] * len(sub_labels)
+
         fig.add_trace(go.Bar(
             y=sub_labels, x=df["ai_top10_pct"], orientation="h",
             name="AI Top-10 Avg",
-            marker=dict(color=METRIC_COLORS["tasks"], opacity=0.88, line=dict(width=0)),
+            marker=dict(color=bar_colors, opacity=0.88, line=dict(width=0)),
             showlegend=_show("ai_top10"),
             text=[f"{v:.0f}%" for v in df["ai_top10_pct"]],
             textposition="outside",
@@ -1001,6 +1278,16 @@ def _build_ska_subcategory_chart(
             showline=False, zeroline=True, zerolinecolor=PAPER_PALETTE["grid"],
             row=row, col=1,
         )
+
+    # Phys-tier legend entries — invisible bars carrying just the colored
+    # marker so the legend documents the three-bucket coloring.
+    for tier, tier_color in SKA_BAR_COLOR_BY_TIER.items():
+        fig.add_trace(go.Bar(
+            y=[None], x=[None], orientation="h",
+            name=f"Bar color: {tier} occ mix",
+            marker=dict(color=tier_color, opacity=0.88, line=dict(width=0)),
+            showlegend=True, hoverinfo="skip",
+        ), row=1, col=1)
 
     # Y axis titles per subplot
     fig.update_yaxes(
@@ -1067,21 +1354,22 @@ def _build_ska_subcategory_chart(
 def build_ska_levels(results: Path, figures: Path) -> None:
     pct = get_pct_tasks_affected(PRIMARY_DATASET)
     ska_data = load_ska_data()
+    phys_map = _load_occ_phys_map()
 
     # Skills — element level (per-element bars)
-    skills_df = _compute_ska_variants(ska_data.skills, pct, "skills")
+    skills_df = _compute_ska_variants(ska_data.skills, pct, "skills", phys_map=phys_map)
     print(f"    skills: {len(skills_df)} elements")
 
     # Knowledge — subcategory rollup (10 categories from O*NET 2.C.1–2.C.10)
     know_path = ROOT / "analysis" / "data" / "knowledge_v30.1.csv"
-    knowledge_cat = _compute_subcategory_rollup(know_path, pct, _knowledge_cat)
+    knowledge_cat = _compute_subcategory_rollup(know_path, pct, _knowledge_cat, phys_map=phys_map)
     n_know_elements = _count_elements(know_path, pct)
     print(f"    knowledge (subcategory): {len(knowledge_cat)} subcategories "
           f"({n_know_elements} elements)")
 
     # Abilities — subcategory rollup (15 subcategories under 1.A.1–1.A.4)
     abil_path = ROOT / "analysis" / "data" / "abilities_v30.1.csv"
-    abilities_cat = _compute_subcategory_rollup(abil_path, pct, _ability_subcat)
+    abilities_cat = _compute_subcategory_rollup(abil_path, pct, _ability_subcat, phys_map=phys_map)
     n_abil_elements = _count_elements(abil_path, pct)
     print(f"    abilities (subcategory): {len(abilities_cat)} subcategories "
           f"({n_abil_elements} elements)")
@@ -1139,103 +1427,201 @@ def _count_elements(onet_path: Path, pct_series: pd.Series) -> int:
 # ─────────────────────────────────────────────────────────────────────────
 
 def build_gwa_chart(results: Path, figures: Path) -> None:
-    gwa_df = _get_wa_data(PRIMARY_DATASET, "gwa")
-    assert not gwa_df.empty, "No GWA data returned"
+    """Five-panel GWA quintet matching the major trio: variant A % |
+    variant B % | all_confirmed % | workers | wages. All ~41 GWAs visible,
+    shared y-axis ordered by all_confirmed % tasks descending."""
+    base = _get_wa_data(PRIMARY_DATASET, "gwa")
+    variant_a = compute_variant_a_gwa()
+    variant_b_df = _get_wa_data_with_phys(PRIMARY_DATASET, "gwa", physical_mode="exclude")
+    assert not base.empty,      "all_confirmed GWA data is empty"
+    assert not variant_a.empty, "variant_a GWA data is empty"
+    assert not variant_b_df.empty, "variant_b GWA data is empty"
 
-    gwa_df = gwa_df.sort_values("pct_tasks_affected", ascending=True)
-    save_csv(gwa_df, results / "gwa_exposure.csv")
+    base = base.sort_values("pct_tasks_affected", ascending=False).reset_index(drop=True)
+    a_map = variant_a.set_index("category")["pct_tasks_affected"]
+    b_map = variant_b_df.set_index("category")["pct_tasks_affected"]
+    base["pct_a"] = base["category"].map(a_map)
+    base["pct_b"] = base["category"].map(b_map)
+    save_csv(base, results / "gwa_exposure.csv")
 
-    n_gwas = len(gwa_df)
-    categories = gwa_df["category"].tolist()
-    pct_vals = gwa_df["pct_tasks_affected"].tolist()
-    workers_vals = gwa_df["workers_affected"].tolist()
-    wages_vals = gwa_df["wages_affected"].tolist()
+    n_gwas = len(base)
 
-    annotations = [
-        f"{fmt_workers(w)} workers exposed | {fmt_wages(wg)} wages exposed"
-        for w, wg in zip(workers_vals, wages_vals)
-    ]
+    # Reverse for plotly: top of chart = highest-pct GWA.
+    categories_r = list(reversed(base["category"].tolist()))
+    pct_a_r     = list(reversed(base["pct_a"].fillna(0.0).tolist()))
+    pct_b_r     = list(reversed(base["pct_b"].fillna(0.0).tolist()))
+    pct_r       = list(reversed(base["pct_tasks_affected"].tolist()))
+    workers_r   = list(reversed(base["workers_affected"].tolist()))
+    wages_r     = list(reversed(base["wages_affected"].tolist()))
 
-    fig = go.Figure()
+    fig = make_subplots(
+        rows=1, cols=5,
+        shared_yaxes=True,
+        horizontal_spacing=0.04,
+        subplot_titles=[
+            "Variant A: Non-Phys Task Share",
+            "Variant B: % in Non-Phys Work",
+            "% Tasks Exposed (All Confirmed)",
+            "Workers Exposed (All Confirmed)",
+            "Wages Exposed (All Confirmed)",
+        ],
+    )
 
-    # Single bar trace; color encodes workers via heatmap-style colorscale
-    # so we can surface a vertical color bar legend on the side.
+    VARIANT_A_COLOR = "#7a9ab8"
+    VARIANT_B_COLOR = "#3a6f8f"
+
     fig.add_trace(go.Bar(
-        y=categories,
-        x=pct_vals,
-        orientation="h",
-        marker=dict(
-            color=workers_vals,
-            colorscale=[[0, "#b8cfe0"], [1, "#1a4f73"]],
-            showscale=True,
-            colorbar=dict(
-                title=dict(text="Workers<br>Exposed", side="top",
-                           font=dict(size=ANNOT_FS + 6, family=FONT_FAMILY)),
-                tickfont=dict(size=ANNOT_FS + 5, family=FONT_FAMILY),
-                tickvals=[min(workers_vals), max(workers_vals)],
-                ticktext=[fmt_workers(min(workers_vals)),
-                          fmt_workers(max(workers_vals))],
-                len=0.55, thickness=22,
-                x=1.05, xanchor="left",
-            ),
-            line=dict(width=0),
-        ),
-        text=[f"{v:.1f}%" for v in pct_vals],
-        textposition="inside",
-        insidetextanchor="end",
-        textfont=dict(size=INSIDE_FS + 4, color="white", family=FONT_FAMILY),
-        cliponaxis=False,
-        showlegend=False,
-        hovertemplate="%{y}<br>%{x:.1f}% tasks<extra></extra>",
-    ))
+        y=categories_r, x=pct_a_r, orientation="h",
+        marker=dict(color=VARIANT_A_COLOR, line=dict(width=0)),
+        text=[f"{v:.0f}%" for v in pct_a_r],
+        textposition="inside", insidetextanchor="end",
+        textfont=dict(size=INSIDE_FS - 2, color="white", family=FONT_FAMILY),
+        cliponaxis=False, showlegend=False,
+        hovertemplate="Variant A: %{x:.1f}%<extra></extra>",
+    ), row=1, col=1)
 
-    # Workers + wages annotations outside bars. cliponaxis=False so the
-    # text isn't clipped at the right plot-area edge — without it, the
-    # labels get cut off no matter how wide the figure is.
-    pct_max = max(pct_vals)
-    fig.add_trace(go.Scatter(
-        y=categories,
-        x=[v + 1.5 for v in pct_vals],
-        mode="text",
-        text=annotations,
-        textposition="middle right",
-        textfont=dict(size=ANNOT_FS + 7, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
-        showlegend=False,
-        hoverinfo="skip",
-        cliponaxis=False,
-    ))
+    fig.add_trace(go.Bar(
+        y=categories_r, x=pct_b_r, orientation="h",
+        marker=dict(color=VARIANT_B_COLOR, line=dict(width=0)),
+        text=[f"{v:.0f}%" for v in pct_b_r],
+        textposition="inside", insidetextanchor="end",
+        textfont=dict(size=INSIDE_FS - 2, color="white", family=FONT_FAMILY),
+        cliponaxis=False, showlegend=False,
+        hovertemplate="Variant B: %{x:.1f}%<extra></extra>",
+    ), row=1, col=2)
 
-    height = max(PAPER_H + 800, n_gwas * 62 + 420)
+    fig.add_trace(go.Bar(
+        y=categories_r, x=pct_r, orientation="h",
+        marker=dict(color=METRIC_COLORS["tasks"], line=dict(width=0)),
+        text=[f"{v:.0f}%" for v in pct_r],
+        textposition="inside", insidetextanchor="end",
+        textfont=dict(size=INSIDE_FS - 2, color="white", family=FONT_FAMILY),
+        cliponaxis=False, showlegend=False,
+        hovertemplate="All Confirmed: %{x:.1f}%<extra></extra>",
+    ), row=1, col=3)
+
+    fig.add_trace(go.Bar(
+        y=categories_r, x=workers_r, orientation="h",
+        marker=dict(color=METRIC_COLORS["workers"], line=dict(width=0)),
+        text=[fmt_workers(v) for v in workers_r],
+        textposition="inside", insidetextanchor="end",
+        textfont=dict(size=INSIDE_FS - 2, color="white", family=FONT_FAMILY),
+        cliponaxis=False, showlegend=False,
+    ), row=1, col=4)
+
+    fig.add_trace(go.Bar(
+        y=categories_r, x=wages_r, orientation="h",
+        marker=dict(color=METRIC_COLORS["wages"], line=dict(width=0)),
+        text=[fmt_wages(v) for v in wages_r],
+        textposition="inside", insidetextanchor="end",
+        textfont=dict(size=INSIDE_FS - 2, color="white", family=FONT_FAMILY),
+        cliponaxis=False, showlegend=False,
+    ), row=1, col=5)
+
+    height = max(PAPER_H + 600, n_gwas * 38 + 320)
 
     style_paper_figure(
         fig,
-        "Task Exposure Across All O*NET General Work Activities",
-        subtitle=f"Share of tasks exposed per GWA across {n_gwas} activities",
+        "Task Exposure Across All O*NET General Work Activities — Variants A, B, and All Confirmed",
+        subtitle=(
+            f"All {n_gwas} GWAs ranked by All Confirmed % tasks exposed. "
+            "Variant A = naive non-physical task share within the GWA's task pool. "
+            "Variant B = AI exposure restricted to non-physical tasks."
+        ),
         height=height,
-        width=PAPER_W + 1500,
-        margin=dict(l=40, r=720, t=180, b=110),
+        width=PAPER_W + 800,
+        margin=dict(l=40, r=80, t=160, b=110),
     )
 
-    # Pad the x-axis so the right-side annotation block sits comfortably
-    # in-axis (belt + braces with cliponaxis=False above) and the longest
-    # label has 25–30% headroom past the bar tip.
+    import math
+
+    def _nice_ticks(max_val: float, n_ticks: int = 4) -> list[float]:
+        if max_val <= 0:
+            return [0.0]
+        raw_step = max_val / (n_ticks - 1)
+        magnitude = 10 ** math.floor(math.log10(raw_step))
+        step = math.ceil(raw_step / magnitude) * magnitude
+        ticks = [step * i for i in range(n_ticks + 1)]
+        return [t for t in ticks if t <= max_val * 1.05]
+
+    def _strip_zero_decimal(s: str) -> str:
+        for unit in ("M", "B", "K", "T"):
+            s = s.replace(f".0{unit}", unit)
+        return s
+
+    workers_max = float(base["workers_affected"].max())
+    wages_max   = float(base["wages_affected"].max())
+    worker_ticks = _nice_ticks(workers_max)
+    wage_ticks   = _nice_ticks(wages_max)
+
     fig.update_xaxes(
-        title=dict(text="% Tasks Exposed", font=dict(size=LABEL_FS + 6)),
         showgrid=True, gridcolor=PAPER_PALETTE["grid"],
         showline=True, linecolor=PAPER_PALETTE["grid"],
-        ticksuffix="%",
-        tickfont=dict(size=TICK_FS + 4, family=FONT_FAMILY),
-        range=[0, pct_max + 35],
+        zeroline=True, zerolinecolor=PAPER_PALETTE["grid"],
+        tickfont=dict(size=TICK_FS - 2, family=FONT_FAMILY),
     )
+    fig.update_xaxes(ticksuffix="%", title=dict(text="% (Variant A)",         font=dict(size=LABEL_FS - 4)), row=1, col=1)
+    fig.update_xaxes(ticksuffix="%", title=dict(text="% (Variant B)",         font=dict(size=LABEL_FS - 4)), row=1, col=2)
+    fig.update_xaxes(ticksuffix="%", title=dict(text="% Tasks Exposed",       font=dict(size=LABEL_FS - 4)), row=1, col=3)
+    fig.update_xaxes(
+        tickvals=worker_ticks,
+        ticktext=[_strip_zero_decimal(fmt_workers(v)) for v in worker_ticks],
+        title=dict(text="Workers Exposed", font=dict(size=LABEL_FS - 4)),
+        row=1, col=4,
+    )
+    fig.update_xaxes(
+        tickvals=wage_ticks,
+        ticktext=[_strip_zero_decimal(fmt_wages(v)) for v in wage_ticks],
+        title=dict(text="Wages Exposed", font=dict(size=LABEL_FS - 4)),
+        row=1, col=5,
+    )
+
+    fig.update_yaxes(showgrid=False, showline=False)
     fig.update_yaxes(
-        title=dict(text="O*NET General Work Activity", font=dict(size=LABEL_FS + 4)),
-        showgrid=False, showline=False,
-        tickfont=dict(size=TICK_FS + 3, family=FONT_FAMILY),
+        title=dict(text="O*NET General Work Activity", font=dict(size=LABEL_FS - 2)),
+        tickfont=dict(size=TICK_FS - 2, family=FONT_FAMILY),
+        row=1, col=1,
     )
+
+    panel_titles = {
+        "Variant A: Non-Phys Task Share",
+        "Variant B: % in Non-Phys Work",
+        "% Tasks Exposed (All Confirmed)",
+        "Workers Exposed (All Confirmed)",
+        "Wages Exposed (All Confirmed)",
+    }
+    for ann in fig.layout.annotations:
+        if hasattr(ann, "text") and ann.text in panel_titles:
+            ann.font = dict(size=LABEL_FS - 2, family=FONT_FAMILY,
+                            color=PAPER_PALETTE["text"])
+
+    fig.update_layout(bargap=0.3)
 
     save_figure(fig, results / "figures" / "gwa_exposure.png", scale=2)
     _copy_fig(results, figures, "gwa_exposure.png")
     print("  -> gwa_exposure.png")
+
+
+def _get_wa_data_with_phys(dataset_name: str, level: str, physical_mode: str) -> pd.DataFrame:
+    """Variant of _get_wa_data that lets the caller override physical_mode
+    (variant B uses 'exclude')."""
+    from backend.compute import compute_work_activities
+    settings = {
+        "selected_datasets": [dataset_name],
+        "combine_method": "Average",
+        "method": "freq",
+        "use_auto_aug": True,
+        "physical_mode": physical_mode,
+        "geo": "nat",
+        "sort_by": "workers_affected",
+        "top_n": 9999,
+    }
+    result = compute_work_activities(settings)
+    group = result.get("mcp_group") or result.get("aei_group")
+    if group is None:
+        return pd.DataFrame()
+    rows = group.get(level, [])
+    return pd.DataFrame(rows) if rows else pd.DataFrame()
 
 
 # ─────────────────────────────────────────────────────────────────────────
@@ -1243,81 +1629,131 @@ def build_gwa_chart(results: Path, figures: Path) -> None:
 # ─────────────────────────────────────────────────────────────────────────
 
 def build_major_categories(results: Path, figures: Path) -> None:
-    df = _run_config(PRIMARY_DATASET, "major")
-    assert not df.empty, "No major category data"
+    """Five-panel major trio: variant A % | variant B % | all_confirmed %
+    | all_confirmed workers | all_confirmed wages.
 
-    # Sort by pct_tasks_affected descending for consistent ordering
-    df = df.sort_values("pct_tasks_affected", ascending=False).reset_index(drop=True)
-    save_csv(df, results / "major_categories.csv")
+    Variant A — naive non-phys task share (eco only, no AI). Variant B —
+    pipeline pct restricted to non-physical tasks on both sides. The
+    all_confirmed reading occupies the right three panels just like the
+    old major_categories.png. A trailing annotation reports n_occs by
+    physical bucket (Phys / Mixed / Non-physical), since the box plot
+    that used to carry that distribution has been removed from Part 2."""
+    base = _run_config(PRIMARY_DATASET, "major")
+    variant_a = compute_variant_a("major")
+    variant_b = _run_config(PRIMARY_DATASET, "major", physical_mode="exclude")
+    assert not base.empty,      "all_confirmed major data is empty"
+    assert not variant_a.empty, "variant_a major data is empty"
+    assert not variant_b.empty, "variant_b major data is empty"
 
-    categories = df["category"].tolist()
-    pct_vals = df["pct_tasks_affected"].tolist()
-    workers_vals = df["workers_affected"].tolist()
-    wages_vals = df["wages_affected"].tolist()
+    base = base.sort_values("pct_tasks_affected", ascending=False).reset_index(drop=True)
+    a_map = variant_a.set_index("category")["pct_tasks_affected"]
+    b_map = variant_b.set_index("category")["pct_tasks_affected"]
+    base["pct_a"] = base["category"].map(a_map)
+    base["pct_b"] = base["category"].map(b_map)
+    save_csv(base, results / "major_categories.csv")
 
-    # Reverse for Plotly (top = first) — we want highest at top
-    categories_r = list(reversed(categories))
-    pct_r = list(reversed(pct_vals))
-    workers_r = list(reversed(workers_vals))
-    wages_r = list(reversed(wages_vals))
-
+    categories = base["category"].tolist()
     n_cats = len(categories)
 
+    # Reverse for plotly: top of chart = highest-pct major.
+    categories_r = list(reversed(categories))
+    pct_a_r     = list(reversed(base["pct_a"].fillna(0.0).tolist()))
+    pct_b_r     = list(reversed(base["pct_b"].fillna(0.0).tolist()))
+    pct_r       = list(reversed(base["pct_tasks_affected"].tolist()))
+    workers_r   = list(reversed(base["workers_affected"].tolist()))
+    wages_r     = list(reversed(base["wages_affected"].tolist()))
+
+    # n_occs by phys bucket (replaces the dropped box plot's distributional
+    # readout). Computed off the same eco_2025 baseline the variant pipeline
+    # uses, so the bucket cuts (<33 / 33-67 / >67 % physical) stay aligned.
+    occ_struct = _load_occ_structural()
+    bucket_counts = occ_struct.groupby("occ_group").size().to_dict()
+    n_phys = int(bucket_counts.get("Physical", 0))
+    n_mix  = int(bucket_counts.get("Mixed", 0))
+    n_non  = int(bucket_counts.get("Non-physical", 0))
+
     fig = make_subplots(
-        rows=1, cols=3,
-        subplot_titles=["% Tasks Exposed", "Workers Exposed", "Wages Exposed"],
-        horizontal_spacing=0.12,
+        rows=1, cols=5,
+        subplot_titles=[
+            "Variant A: Non-Phys Task Share",
+            "Variant B: % Tasks Exposed in Non-Phys Work",
+            "% Tasks Exposed (All Confirmed)",
+            "Workers Exposed (All Confirmed)",
+            "Wages Exposed (All Confirmed)",
+        ],
+        horizontal_spacing=0.05,
         shared_yaxes=True,
+        column_widths=[1.0, 1.0, 1.0, 1.0, 1.0],
     )
 
-    # Panel 1: % Tasks Affected
+    # Use the workers/wages metric palette for the all_confirmed reading,
+    # and a desaturated neutral tone for variants A and B (structural
+    # framing — they're scaffolding for the all_confirmed columns).
+    VARIANT_A_COLOR = "#7a9ab8"
+    VARIANT_B_COLOR = "#3a6f8f"
+
+    fig.add_trace(go.Bar(
+        y=categories_r, x=pct_a_r, orientation="h",
+        marker=dict(color=VARIANT_A_COLOR, line=dict(width=0)),
+        text=[f"{v:.1f}%" for v in pct_a_r],
+        textposition="outside",
+        textfont=dict(size=ANNOT_FS - 2, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
+        showlegend=False, cliponaxis=False,
+        hovertemplate="Variant A: %{x:.1f}%<extra></extra>",
+    ), row=1, col=1)
+
+    fig.add_trace(go.Bar(
+        y=categories_r, x=pct_b_r, orientation="h",
+        marker=dict(color=VARIANT_B_COLOR, line=dict(width=0)),
+        text=[f"{v:.1f}%" for v in pct_b_r],
+        textposition="outside",
+        textfont=dict(size=ANNOT_FS - 2, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
+        showlegend=False, cliponaxis=False,
+        hovertemplate="Variant B: %{x:.1f}%<extra></extra>",
+    ), row=1, col=2)
+
     fig.add_trace(go.Bar(
         y=categories_r, x=pct_r, orientation="h",
-        name="% Tasks Affected",
         marker=dict(color=METRIC_COLORS["tasks"], line=dict(width=0)),
         text=[f"{v:.1f}%" for v in pct_r],
         textposition="outside",
-        textfont=dict(size=ANNOT_FS, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
-        showlegend=False,
-        cliponaxis=False,
-    ), row=1, col=1)
+        textfont=dict(size=ANNOT_FS - 2, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
+        showlegend=False, cliponaxis=False,
+        hovertemplate="All Confirmed: %{x:.1f}%<extra></extra>",
+    ), row=1, col=3)
 
-    # Panel 2: Workers Affected
     fig.add_trace(go.Bar(
         y=categories_r, x=workers_r, orientation="h",
-        name="Workers Affected",
         marker=dict(color=METRIC_COLORS["workers"], line=dict(width=0)),
         text=[fmt_workers(v) for v in workers_r],
         textposition="outside",
-        textfont=dict(size=ANNOT_FS, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
-        showlegend=False,
-        cliponaxis=False,
-    ), row=1, col=2)
+        textfont=dict(size=ANNOT_FS - 2, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
+        showlegend=False, cliponaxis=False,
+    ), row=1, col=4)
 
-    # Panel 3: Wages Affected
     fig.add_trace(go.Bar(
         y=categories_r, x=wages_r, orientation="h",
-        name="Wages Affected",
         marker=dict(color=METRIC_COLORS["wages"], line=dict(width=0)),
         text=[fmt_wages(v) for v in wages_r],
         textposition="outside",
-        textfont=dict(size=ANNOT_FS, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
-        showlegend=False,
-        cliponaxis=False,
-    ), row=1, col=3)
+        textfont=dict(size=ANNOT_FS - 2, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
+        showlegend=False, cliponaxis=False,
+    ), row=1, col=5)
 
-    height = max(PAPER_H + 200, n_cats * 32 + 200)
+    height = max(PAPER_H + 200, n_cats * 36 + 220)
 
     style_paper_figure(
         fig,
-        "AI Exposure by Major Occupational Category",
+        "AI Exposure by Major Occupational Category — Variants A, B, and All Confirmed",
         subtitle=(
-            f"All {n_cats} major SOC categories ranked by % tasks exposed; "
-            "workers exposed and wages exposed shown alongside."
+            f"All {n_cats} major SOC categories ranked by All Confirmed % tasks exposed. "
+            "Variant A = naive non-physical task share (no AI signal). "
+            "Variant B = % tasks exposed restricted to non-physical work. "
+            f"Occupations by physical mix: {n_phys} Physical · {n_mix} Mixed · {n_non} Non-physical."
         ),
         height=height + 60,
-        width=PAPER_W + 200,
-        margin=dict(l=20, r=100, t=140, b=110),
+        width=PAPER_W + 700,
+        margin=dict(l=20, r=80, t=160, b=110),
     )
 
     fig.update_xaxes(
@@ -1328,7 +1764,6 @@ def build_major_categories(results: Path, figures: Path) -> None:
     )
 
     def _nice_ticks(max_val: float, n_ticks: int = 5) -> list[float]:
-        """Round-step tickvals from 0 up to ~max_val."""
         import math
         if max_val <= 0:
             return [0.0]
@@ -1338,56 +1773,351 @@ def build_major_categories(results: Path, figures: Path) -> None:
         ticks = [step * i for i in range(n_ticks + 1)]
         return [t for t in ticks if t <= max_val * 1.05]
 
-    workers_max = max(workers_vals)
-    wages_max = max(wages_vals)
+    workers_max = float(base["workers_affected"].max())
+    wages_max   = float(base["wages_affected"].max())
     worker_ticks = _nice_ticks(workers_max)
-    wage_ticks = _nice_ticks(wages_max)
+    wage_ticks   = _nice_ticks(wages_max)
 
     def _strip_zero_decimal(s: str) -> str:
-        """Drop trailing .0 before unit suffix: '3.0M' → '3M', '$200.0B' → '$200B'."""
         for unit in ("M", "B", "K", "T"):
             s = s.replace(f".0{unit}", unit)
         return s
 
-    # Per-panel x-axis tick formatting. Use fmt_workers / fmt_wages directly
-    # for ticktext so wages render as "$700B" rather than plotly's SI default
-    # of "$700G". Strip the .0 decimal from round-magnitude ticks.
-    fig.update_xaxes(ticksuffix="%", row=1, col=1)
+    fig.update_xaxes(ticksuffix="%", title=dict(text="% (Variant A)", font=dict(size=LABEL_FS - 4)), row=1, col=1)
+    fig.update_xaxes(ticksuffix="%", title=dict(text="% (Variant B)", font=dict(size=LABEL_FS - 4)), row=1, col=2)
+    fig.update_xaxes(ticksuffix="%", title=dict(text="% Tasks Exposed", font=dict(size=LABEL_FS - 4)), row=1, col=3)
     fig.update_xaxes(
         tickvals=worker_ticks,
         ticktext=[_strip_zero_decimal(fmt_workers(v)) for v in worker_ticks],
-        title=dict(text="Workers Exposed", font=dict(size=LABEL_FS - 2)),
-        row=1, col=2,
+        title=dict(text="Workers Exposed", font=dict(size=LABEL_FS - 4)),
+        row=1, col=4,
     )
     fig.update_xaxes(
         tickvals=wage_ticks,
         ticktext=[_strip_zero_decimal(fmt_wages(v)) for v in wage_ticks],
-        title=dict(text="Wages Exposed", font=dict(size=LABEL_FS - 2)),
-        row=1, col=3,
+        title=dict(text="Wages Exposed", font=dict(size=LABEL_FS - 4)),
+        row=1, col=5,
     )
-    fig.update_xaxes(
-        title=dict(text="% Tasks Exposed", font=dict(size=LABEL_FS - 2)),
-        row=1, col=1,
-    )
-    fig.update_yaxes(showgrid=False, showline=False)
 
-    # Y-axis title only on first panel
+    fig.update_yaxes(showgrid=False, showline=False)
     fig.update_yaxes(
         title=dict(text="Major Occupational Category", font=dict(size=LABEL_FS - 2)),
         tickfont=dict(size=TICK_FS - 2, family=FONT_FAMILY),
         row=1, col=1,
     )
 
-    panel_titles = {"% Tasks Exposed", "Workers Exposed", "Wages Exposed"}
+    panel_titles = {
+        "Variant A: Non-Phys Task Share",
+        "Variant B: % Tasks Exposed in Non-Phys Work",
+        "% Tasks Exposed (All Confirmed)",
+        "Workers Exposed (All Confirmed)",
+        "Wages Exposed (All Confirmed)",
+    }
     for ann in fig.layout.annotations:
         if hasattr(ann, "text") and ann.text in panel_titles:
-            ann.font = dict(size=LABEL_FS, family=FONT_FAMILY, color=PAPER_PALETTE["text"])
+            ann.font = dict(size=LABEL_FS - 2, family=FONT_FAMILY,
+                            color=PAPER_PALETTE["text"])
 
     fig.update_layout(bargap=0.3)
 
     save_figure(fig, results / "figures" / "major_categories.png", scale=2)
     _copy_fig(results, figures, "major_categories.png")
     print("  -> major_categories.png")
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# Chart: Major-cat 2-year linear trend projection (per-panel top 10 movers)
+# ─────────────────────────────────────────────────────────────────────────
+
+PROJECTION_DAYS = 730  # 2 years
+
+
+def _major_trend_series() -> pd.DataFrame:
+    """Stack the all_confirmed series at major level into long form.
+
+    Columns: date, category, pct_tasks_affected, workers_affected, wages_affected.
+    Uses ANALYSIS_CONFIG_SERIES['all_confirmed'] (which excludes the 2024
+    dates per the trend-series invariant)."""
+    series = ANALYSIS_CONFIG_SERIES["all_confirmed"]
+    rows = []
+    for ds in series:
+        date_str = ds.rsplit(" ", 1)[-1]
+        df = _run_config(ds, "major")
+        for _, r in df.iterrows():
+            rows.append({
+                "date": pd.Timestamp(date_str),
+                "category": r["category"],
+                "pct_tasks_affected": float(r["pct_tasks_affected"]),
+                "workers_affected":   float(r["workers_affected"]),
+                "wages_affected":     float(r["wages_affected"]),
+            })
+        print(f"  loaded {ds}: {len(df)} majors")
+    return pd.DataFrame(rows)
+
+
+def build_major_categories_trend(results: Path, figures: Path) -> None:
+    """Per-panel top-10 movers chart: bars show current (final-snapshot)
+    value with a lighter projected-delta segment extending the bar to its
+    2-year linear projection. Ranked within each panel by the absolute
+    delta from the first to the final observed snapshot."""
+    trend = _major_trend_series()
+    save_csv(trend, results / "major_trend_data.csv")
+
+    metrics = [
+        ("pct_tasks_affected", "% Tasks Exposed", "tasks",  lambda v: f"{v:.1f}%"),
+        ("workers_affected",   "Workers Exposed", "workers", fmt_workers),
+        ("wages_affected",     "Wages Exposed",   "wages",   fmt_wages),
+    ]
+
+    fig = make_subplots(
+        rows=1, cols=3,
+        subplot_titles=[m[1] for m in metrics],
+        horizontal_spacing=0.28,
+    )
+
+    summary_rows = []
+
+    for col_idx, (metric, panel_title, metric_key, fmt_fn) in enumerate(metrics, start=1):
+        per_major: list[dict] = []
+        for cat, sub in trend.groupby("category"):
+            sub = sub.sort_values("date")
+            dates = list(sub["date"])
+            yvals = list(sub[metric])
+            if len(dates) < 2 or yvals[-1] == 0 and yvals[0] == 0:
+                continue
+            slope_per_day, projected, r2 = _linear_project(dates, yvals, PROJECTION_DAYS)
+            per_major.append({
+                "category":  cat,
+                "current":   yvals[-1],
+                "first":     yvals[0],
+                "jump":      yvals[-1] - yvals[0],
+                "projected": projected,
+                "delta_proj": projected - yvals[-1],
+                "r2":        r2,
+            })
+            summary_rows.append({
+                "metric": metric, "category": cat,
+                "first": yvals[0], "current": yvals[-1],
+                "jump_observed": yvals[-1] - yvals[0],
+                "projected_2yr": projected,
+                "delta_projected_2yr": projected - yvals[-1],
+                "r2": r2,
+            })
+
+        per_df = pd.DataFrame(per_major)
+        per_df = per_df.iloc[per_df["jump"].abs().argsort()[::-1]].head(10)
+        # Sort ascending for plotly (largest at top)
+        per_df = per_df.sort_values("jump", ascending=True)
+
+        cats   = per_df["category"].tolist()
+        curr   = per_df["current"].tolist()
+        proj_d = per_df["delta_proj"].tolist()
+        jumps  = per_df["jump"].tolist()
+        proj_v = per_df["projected"].tolist()
+        r2s    = per_df["r2"].tolist()
+
+        # Two stacked traces: current value (solid) + projected delta (faint).
+        # Negative projected deltas plot as negative offsets so the bar shrinks
+        # toward 0; honest visual encoding either way.
+        fig.add_trace(go.Bar(
+            y=cats, x=curr, orientation="h",
+            marker=dict(color=METRIC_COLORS[metric_key], line=dict(width=0)),
+            name="Current (Feb 2026)",
+            showlegend=(col_idx == 1),
+            hovertemplate="Current: %{x}<extra></extra>",
+        ), row=1, col=col_idx)
+
+        fig.add_trace(go.Bar(
+            y=cats, x=proj_d, orientation="h",
+            marker=dict(
+                color=METRIC_COLORS[metric_key],
+                opacity=0.35,
+                line=dict(width=0),
+                pattern=dict(shape="/", solidity=0.25, fgcolor="white"),
+            ),
+            name="2-yr linear projection",
+            showlegend=(col_idx == 1),
+            hovertemplate="Projected delta: %{x}<extra></extra>",
+        ), row=1, col=col_idx)
+
+        # Right-side annotations: "→ 2yr {value} ({+delta})". Short form;
+        # observed delta is implicit in the bar length itself.
+        x_ref = "x" if col_idx == 1 else f"x{col_idx}"
+        y_ref = "y" if col_idx == 1 else f"y{col_idx}"
+        max_x = float(max(c + max(0.0, d) for c, d in zip(curr, proj_d)) or 1.0)
+        for cat, c_v, j_v, p_v in zip(cats, curr, jumps, proj_v):
+            proj_sign = "+" if p_v - c_v >= 0 else ""
+            text = f"  2yr {fmt_fn(p_v)} ({proj_sign}{fmt_fn(p_v - c_v)})"
+            fig.add_annotation(
+                x=c_v + max(0.0, p_v - c_v), y=cat,
+                xref=x_ref, yref=y_ref,
+                text=text,
+                showarrow=False,
+                xanchor="left", yanchor="middle",
+                font=dict(size=ANNOT_FS - 2, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
+            )
+
+        fig.update_xaxes(
+            range=[0, max_x * 1.40],
+            showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+            showline=True, linecolor=PAPER_PALETTE["grid"],
+            zeroline=True, zerolinecolor=PAPER_PALETTE["grid"],
+            tickfont=dict(size=TICK_FS - 2, family=FONT_FAMILY),
+            title=dict(text=panel_title, font=dict(size=LABEL_FS - 2)),
+            row=1, col=col_idx,
+        )
+        if metric == "pct_tasks_affected":
+            fig.update_xaxes(ticksuffix="%", row=1, col=col_idx)
+
+        fig.update_yaxes(
+            showgrid=False, showline=False,
+            tickfont=dict(size=TICK_FS - 2, family=FONT_FAMILY),
+            row=1, col=col_idx,
+        )
+
+    save_csv(pd.DataFrame(summary_rows), results / "major_trend_projections.csv")
+
+    style_paper_figure(
+        fig,
+        "Major Occupational Category — 2-Year Linear Trend Projection",
+        subtitle=(
+            "Per-metric top 10 movers ranked by absolute observed change from "
+            "first to final snapshot. Solid bar = current Feb 2026 value. Faint "
+            "hatched segment = projected 2-year linear OLS extension. Right-side "
+            "text shows the projected 2-year value with the projected delta. "
+            "Linear extrapolation assumes the recent rate continues."
+        ),
+        height=940,
+        width=PAPER_W + 1400,
+        margin=dict(l=20, r=80, t=180, b=130),
+    )
+
+    fig.update_layout(
+        barmode="stack",
+        legend=dict(
+            orientation="h",
+            yanchor="bottom", y=-0.20, xanchor="center", x=0.5,
+            font=dict(size=LEGEND_FS, family=FONT_FAMILY),
+            bgcolor="rgba(255,255,255,0.9)",
+        ),
+    )
+
+    panel_titles = {m[1] for m in metrics}
+    for ann in fig.layout.annotations:
+        if hasattr(ann, "text") and ann.text in panel_titles:
+            ann.font = dict(size=LABEL_FS - 2, family=FONT_FAMILY,
+                            color=PAPER_PALETTE["text"])
+
+    save_figure(fig, results / "figures" / "major_categories_trend.png", scale=2)
+    _copy_fig(results, figures, "major_categories_trend.png")
+    print("  -> major_categories_trend.png")
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# Chart: Job zone violin restricted to non-physical occupations
+# ─────────────────────────────────────────────────────────────────────────
+
+def build_job_zone_violin_nonphys(results: Path, figures: Path) -> None:
+    """Same chart as build_job_zone_violin but restricted to occupations
+    with pct_physical < PHYS_LOWER. Useful for testing whether the zone
+    pattern survives stripping the phys/non-phys structural cut."""
+    occ = _load_occ_structural()
+    pct = get_pct_tasks_affected(PRIMARY_DATASET)
+    occ["pct_tasks_affected"] = occ["title_current"].map(pct)
+    occ = occ.dropna(subset=["pct_tasks_affected", "job_zone"])
+    occ = occ[occ["occ_group"] == "Non-physical"].copy()
+    occ["job_zone"] = occ["job_zone"].astype(int)
+
+    if occ.empty:
+        print("  -> job_zone_violin_nonphys.png SKIPPED (no non-physical occs)")
+        return
+
+    zone_stats = []
+    for z in sorted(occ["job_zone"].unique()):
+        sub = occ[occ["job_zone"] == z]
+        zone_stats.append({
+            "job_zone": z,
+            "n_occs": len(sub),
+            "median_pct": round(float(sub["pct_tasks_affected"].median()), 1),
+            "mean_pct":   round(float(sub["pct_tasks_affected"].mean()), 1),
+            "q25": round(float(sub["pct_tasks_affected"].quantile(0.25)), 1),
+            "q75": round(float(sub["pct_tasks_affected"].quantile(0.75)), 1),
+        })
+    save_csv(pd.DataFrame(zone_stats), results / "job_zone_nonphys_summary.csv")
+
+    fig = go.Figure()
+    zones = sorted(occ["job_zone"].unique())
+    for z in zones:
+        sub = occ[occ["job_zone"] == z]
+        label = ZONE_LABELS.get(z, f"Zone {z}")
+        fig.add_trace(go.Violin(
+            x=sub["pct_tasks_affected"],
+            name=f"{label}  (n={len(sub)})",
+            marker_color=ZONE_COLORS[z],
+            line_color=ZONE_COLORS[z],
+            fillcolor=ZONE_COLORS[z],
+            opacity=0.7,
+            box_visible=True,
+            meanline_visible=True,
+            orientation="h",
+            side="positive",
+            width=0.8,
+        ))
+
+    fig.update_layout(
+        yaxis=dict(
+            categoryorder="array",
+            categoryarray=[
+                f"{ZONE_LABELS.get(z, f'Zone {z}')}  (n={int(occ[occ['job_zone'] == z].shape[0])})"
+                for z in reversed(zones)
+            ],
+        ),
+    )
+
+    annot_text = "<br>".join(
+        f"Zone {r['job_zone']}: median {r['median_pct']:.1f}%, mean {r['mean_pct']:.1f}%"
+        for r in zone_stats
+    )
+    fig.add_annotation(
+        text=annot_text,
+        xref="paper", yref="paper",
+        x=0.98, y=0.98,
+        showarrow=False,
+        font=dict(size=ANNOT_FS, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
+        align="right",
+        xanchor="right", yanchor="top",
+        bgcolor="rgba(255,255,255,0.85)",
+        bordercolor=PAPER_PALETTE["grid"],
+        borderwidth=1, borderpad=6,
+    )
+
+    style_paper_figure(
+        fig,
+        "Task Exposure by Job Zone — Non-Physical Occupations Only",
+        subtitle=(
+            f"Distribution of % tasks exposed by O*NET job zone across {len(occ)} "
+            "non-physical occupations (pct_physical < 33%)."
+        ),
+        height=600,
+        width=PAPER_W,
+        margin=dict(l=80, r=60, t=100, b=80),
+    )
+    fig.update_layout(showlegend=False)
+    fig.update_xaxes(
+        title=dict(text="% Tasks Exposed", font=dict(size=LABEL_FS)),
+        range=[0, 100], dtick=10,
+        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+        showline=True, linecolor=PAPER_PALETTE["grid"],
+    )
+    fig.update_yaxes(
+        title=dict(text="Job Zone (O*NET Preparation Level)", font=dict(size=LABEL_FS - 2)),
+        showgrid=False, showline=False,
+        tickfont=dict(size=TICK_FS - 1, family=FONT_FAMILY),
+    )
+
+    save_figure(fig, results / "figures" / "job_zone_violin_nonphys.png")
+    _copy_fig(results, figures, "job_zone_violin_nonphys.png")
+    print("  -> job_zone_violin_nonphys.png")
 
 
 # ─────────────────────────────────────────────────────────────────────────
@@ -1403,26 +2133,32 @@ def main() -> None:
     print("Part 2: Characterization — Where AI Exposure Falls")
     print("=" * 60)
 
-    print("\n[1/5] Physical / Informational Divide")
-    build_phys_info_divide(results, figures)
-
-    print("\n[2/5] Job Zone Violin")
-    build_job_zone_violin(results, figures)
-
-    print("\n[3/5] SKA Levels (AI Max)")
-    build_ska_levels(results, figures)
-
-    print("\n[4/5] Work Activities (GWA)")
-    build_gwa_chart(results, figures)
-
-    print("\n[5/5] Major Occupational Categories")
+    print("\n[1/6] Major Occupational Categories (Variant A | B | All Confirmed)")
     build_major_categories(results, figures)
 
-    print("\n[combined A] Phys/Info + Job Zone — Stacked")
-    build_combined_stacked(results, figures)
+    print("\n[2/6] Major Categories — 2-Year Trend Projection")
+    build_major_categories_trend(results, figures)
 
-    print("\n[combined B] Phys × Zone — Faceted")
-    build_combined_faceted(results, figures)
+    print("\n[3/6] Job Zone Violin (with phys-mix overlay)")
+    build_job_zone_violin(results, figures)
+
+    print("\n[4/6] Job Zone Violin — Non-Physical Occupations Only")
+    build_job_zone_violin_nonphys(results, figures)
+
+    print("\n[5/6] Work Activities (GWA Quintet)")
+    build_gwa_chart(results, figures)
+
+    print("\n[6/6] SKA Levels (with phys-mix coloring)")
+    build_ska_levels(results, figures)
+
+    # Clear stale figures from the previous Part 2 order (box plot +
+    # phys/zone combined charts). The committed appendix folder still
+    # carries phys_zone_faceted, so we are not losing the cross-tab view.
+    for stale in ("phys_info_divide.png", "phys_zone_stacked.png", "phys_zone_faceted.png"):
+        for d in (results / "figures", figures):
+            p = d / stale
+            if p.exists():
+                p.unlink()
 
     print("\n" + "=" * 60)
     print("Part 2 complete — figures in results/figures/ and figures/")

@@ -44,19 +44,33 @@ In March 2025, the all-confirmed estimate put 46.6 million workers in scope, 30.
 
 ## Part 2 — Where Is AI In The Workforce
 
-### The Physical/Informational Divide
+### Major Occupational Categories (with Physical / Non-Physical Structural Lens)
 
-![Physical/Informational Divide](part_2/figures/phys_info_divide.png)
+![Major Categories — Variants A, B, All Confirmed](part_2/figures/major_categories.png)
 
-The most basic structural question about AI exposure is whether it respects the divide between physical and informational work. It does, and it's not subtle. Occupations where fewer than a third of tasks are physical (393 occupations, roughly 43% of the total) have a median AI task exposure of 48.1%. Occupations where more than two-thirds of tasks are physical (310 occupations) sit at 17.2% median. Mixed occupations (220, those in the 33-67% physical range) land at 33.0%. The interquartile ranges barely overlap: non-physical occupations' Q1 (33.6%) is above the physical group's Q3 (26.7%).
+Part 2 opens at major-cat granularity rather than the old occupation-bucket box plot, with the physical / non-physical structural cut threaded directly into the chart. The five panels read left to right as: **Variant A** — the naive non-physical task share per major (no AI signal at all, just a freq-weighted ratio of how much of a major's task time is non-physical); **Variant B** — % tasks exposed restricted to non-physical tasks on both sides of the calculation; then the **All Confirmed** trio of % tasks / workers / wages. The major-by-major n_occs by physical-bucket counts appear in the subtitle so the underlying distribution stays in view.
 
-This isn't a finding about AI preferring white-collar work in some vague sense. It's a measurement of where current AI systems are actually being used. The data comes from confirmed conversation logs, API usage, and enterprise assessment, not from theoretical capability scoring. When real people and real systems interact with AI to accomplish work tasks, the tasks they're accomplishing are overwhelmingly informational. The physical occupations that do show up with moderate exposure (the outliers reaching 50-60% in the box plot) tend to be ones where the informational component of the job is substantial despite the physical classification (think supervisory roles in construction or equipment inspection).
+Reading across the panels surfaces the structural-vs-discriminatory split: a major where Variant A and All Confirmed sit close together (Computer/Math, Business/Finance) is one where the AI exposure reading basically tracks the structural cognitive share. A major where Variant B and All Confirmed are similar but Variant A is much lower (Healthcare Support, Building & Grounds Cleaning) is one where AI exposure on the small cognitive sub-economy of the major is high, even though the major as a whole is dominated by physical work.
+
+---
+
+### Major Occupational Categories — 2-Year Trend Projection
+
+![Major Categories Trend](part_2/figures/major_categories_trend.png)
+
+Per-metric top 10 movers ranked by absolute observed change first → final snapshot. Solid bar = current Feb 2026 value; faint hatched extension = 2-year linear OLS projection. The projection is a "if recent rate continues" thought experiment, not a forecast; the 4-snapshot input series doesn't support richer growth models at this horizon.
 
 ---
 
 ### Job Zone and Preparation Level
 
 ![Job Zone Violin](part_2/figures/job_zone_violin.png)
+
+The right-side stacked bar shows the share of each zone's occupations that are Physical / Mixed / Non-Physical, making the structural composition of each zone visible alongside its exposure distribution.
+
+![Job Zone Violin — Non-Physical Occupations Only](part_2/figures/job_zone_violin_nonphys.png)
+
+Restricting the same chart to occupations with `pct_physical < 33%` tests whether the zone signal is just a phys/non-phys proxy. The zone ordering broadly survives the restriction.
 
 Job zone is O*NET's classification of how much preparation an occupation requires: Zone 1 is little or no preparation, Zone 5 is extensive (think physicians, lawyers, senior engineers). The relationship between preparation level and AI exposure is not linear, and the shape matters.
 
@@ -98,19 +112,6 @@ The darkest bars (most workers) aren't always at the top. Handling and Moving Ob
 
 ---
 
-### Major Occupational Categories
-
-![Major Categories](part_2/figures/major_categories.png)
-
-The three-panel view of all 22 major occupational categories shows the three metrics side by side: percentage of tasks affected, total workers in scope, and total wages in scope. Each panel tells a different part of the story, and the categories that lead on one metric don't necessarily lead on the others.
-
-Computer and Mathematical occupations lead on % tasks affected at 65.7%, but rank 8th in workers (3.3M) and 5th in wages ($331B) because the sector is relatively small. Sales occupations rank 2nd on % tasks affected (59.5%) and jump to 2nd in workers (7.6M) because the sector is large. Office and Administrative Support ranks 4th on % tasks (51.1%) but 1st in workers (11.2M) and 2nd in wages ($533B) because it's the largest major category in the economy.
-
-Management Occupations present an interesting case. At 35.5% task exposure, they rank 12th on percentage, below the median. But because management positions carry high wages, they rank 1st in wages affected ($614B) and 5th in workers (4.8M). AI exposure in management roles represents a relatively small share of the work but an outsized share of the economic value.
-
-The bottom of all three panels converges: Farming, Fishing, and Forestry (13.7%, 41K workers, $1.7B wages) and Construction and Extraction (13.9%, 1.3M workers, $85.6B) consistently rank at or near the bottom. These are sectors where the work is fundamentally physical, and current AI systems have minimal demonstrated overlap with their task profiles.
-
----
 
 ## Part 3 — Action: What To Do About It
 

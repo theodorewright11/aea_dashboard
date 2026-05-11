@@ -270,6 +270,79 @@ for config_key, dataset_name in ANALYSIS_CONFIGS.items():
 
 ---
 
+## Variant A / Variant B (Part 2 Structural Overlay)
+
+Two structural lenses run through the major-cat and GWA charts in Part 2,
+encoding the physical / non-physical cut as a first-class comparison axis.
+
+**Variant A — Naive Physical Pct.** Per (occupation or GWA, after deduping
+by (task, occ) or (task, gwa_title)):
+
+```
+pct_A = Σ freq_mean[non-physical tasks] / Σ freq_mean[all tasks] × 100
+```
+
+No AI signal touches it. Rolled to major / minor / broad / occupation
+via ratio of totals. Implemented as `compute_variant_a(agg_level)` and
+`compute_variant_a_gwa()` in `paper/results/part_2/run.py`.
+
+**Variant B — Within Non-Phys Real Pct.** The dashboard pipeline
+(`backend.compute.get_group_data`) run with `physical_mode="exclude"`.
+Both numerator and denominator restricted to non-physical tasks. Auto-aug
+ON, freq weighting. The Part 2 `_run_config(...)` helper takes a
+`physical_mode` parameter for this purpose.
+
+Variant A is the prediction you'd get if you knew nothing about AI other
+than "non-physical tasks are AI-touchable." Variant B is what the AI
+data says is happening *inside* the cognitive sub-economy. The gap
+between Variant A and the All Confirmed reading is the within-non-phys
+discriminatory signal in the AI data.
+
+---
+
+## SKA element phys-mix score
+
+Used by `ska_skills.png` and `ska_knowledge_abilities.png` to color the
+AI Top-10 bars by the physical mix of the element's user base.
+
+Per element (Skills, Knowledge, or Ability):
+
+```
+phys_score = mean(pct_physical[occ]) over occs with imp ≥ 3 for that element
+```
+
+Unweighted mean — no employment weighting. Mapped to three tiers using
+the same `<33% / 33–67% / >67%` cuts as the major chart's phys buckets:
+Non-physical (slate blue), Mixed (sage green), Physical (gold).
+
+`pct_physical[occ]` is loaded via `_load_occ_phys_map()` —
+`n_physical / n_tasks × 100` per occupation from eco_2025, same formula
+as the (now removed) `phys_info_divide.png` box plot used.
+
+Subcategory bars (Knowledge + Abilities chart) inherit a single tier
+color from the mean of their elements' phys scores.
+
+---
+
+## Linear trend projection (Parts 1 & 2)
+
+Both `temporal_trend.png` (Part 1) and `major_categories_trend.png`
+(Part 2) extrapolate observed snapshot series via a simple OLS fit:
+
+```python
+b, a = np.polyfit(days_since_t0, y, deg=1)
+projected = a + b * (last_x + horizon_days)
+```
+
+Part 1 marks 6mo / 1yr / 2yr horizons on each line; Part 2 marks the
+2yr endpoint per major × metric. Linear is the simplest defensible
+"if recent rate continued" frame given 4-snapshot input series; longer
+horizons need richer growth models (logistic, log-linear). The Part 2
+helper `_linear_project(dates, yvals, horizon_days)` also returns R²
+for downstream quality flagging.
+
+---
+
 ## Cross-References (live ↔ live)
 
 The paper imports from two exploratory folders (function-level, with try/except so the paper still runs if exploratory is absent):
@@ -322,3 +395,8 @@ The paper also reuses the tech_skills pipeline conceptually from the archived `_
 - **all_confirmed series starts at March 2025**: the 2024-09-30 and 2024-12-23 dates have been removed from all trend series. Sep 2024 was anchored by Microsoft Copilot only (AEI starts Dec 2024); Dec 2024 is similarly excluded. Do not re-add either 2024 date.
 - **Part 1 temporal_tables historical rows**: the two cream rows above the line-chart series (Sep 2024, Dec 2024) pull task counts from the SAME combined dataset family the line chart uses — `AEI Both + Micro 2024-09-30/2024-12-23` for All Confirmed; `All 2024-09-30/2024-12-23` for Ceiling. Do NOT revert to `Microsoft` and `AEI Conv 2024-12-23` alone — that under-counts the Dec 2024 row.
 - **Part 3 intensity_anchor_fulleco colorbar (% Tasks Exposed)**: Pull colorbar values via `_run_config(PRIMARY_DATASET, "major")` (the dashboard pipeline that drives Part 2 `major_categories`). Do NOT use `compute_major_pct_tasks_affected` from `audit_pct_norm_eco/run_v3.py` — that function restricts to rated task-occ pairs only and produces 53–76% values that don't match the rest of the paper.
+- **Variant A dedup is per-(occ, task)**: eco_2025 expands tasks across GWA/IWA/DWA, so a naive `groupby(major)` would count each task once per work-activity row. `compute_variant_a` dedupes to `(title_current, task_normalized)` before aggregating. For GWA-level variant A, dedup on `(task_normalized, gwa_title)` instead — the same task can legitimately appear in multiple GWAs.
+- **`physical_mode="exclude"` (variant B) requires the backend pipeline**: variant B can't be computed from eco-only data the way variant A can — it needs auto-aug × pct on rated tasks, restricted to non-phys on both sides. Always go through `_run_config(..., physical_mode="exclude")` or `_get_wa_data_with_phys(..., physical_mode="exclude")`.
+- **SKA phys-mix score is unweighted**: Use plain `mean(pct_physical)` across occs with imp ≥ 3 for the element — no employment weighting. The point is the structural physicality of the *element's user base*, not the workforce footprint.
+- **Linear trend extrapolation is "if-rate-continues", not a forecast**: 4-snapshot OLS over 11 months is not a defensible forecast at 2-year horizons. The chart subtitles label it as such; never present the projected values as predictions in prose.
+- **`analysis._archive.questions.*` imports**: `audit_risk_score/run.py` and the part_3 risk_score_5f chart pull live constants from `analysis._archive.questions.job_exposure.job_risk_scoring.run`. The DATA_DIR resolution there counts 6 parents to land at `analysis/data` after the move under `_archive/`. If you reorganize `_archive/` again, bump the parent count to match.
