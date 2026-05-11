@@ -1664,6 +1664,17 @@ def build_gwa_chart(results: Path, figures: Path) -> None:
         row=1, col=6,
     )
 
+    # 33% and 67% reference lines on the phys-mix panel — same thresholds
+    # used to bucket occupations as Non-physical / Mixed / Physical, so a
+    # GWA whose phys segment crosses 67 reads as predominantly physical,
+    # and one whose phys segment stays under 33 reads as predominantly
+    # non-physical. White-dashed so they cut visibly through the colored
+    # segments (the bar fills the full 0-100% width).
+    fig.add_vline(x=33, line=dict(color="white", width=1.5, dash="dash"),
+                  row=1, col=6, opacity=0.9)
+    fig.add_vline(x=67, line=dict(color="white", width=1.5, dash="dash"),
+                  row=1, col=6, opacity=0.9)
+
     fig.update_yaxes(showgrid=False, showline=False)
     fig.update_yaxes(
         title=dict(text="O*NET General Work Activity", font=dict(size=LABEL_FS - 2)),
