@@ -352,12 +352,13 @@ for downstream quality flagging.
 
 ## Cross-References (live ↔ live)
 
-The paper imports from two exploratory folders (function-level, with try/except so the paper still runs if exploratory is absent):
+The paper imports from three exploratory folders (function-level, with try/except so the paper still runs if exploratory is absent):
 
-- `paper/results/part_3/run.py` → `analysis.exploratory.audit_pct_norm_eco.run` and `.run_v3` (chart 15: `intensity_anchor_fulleco`)
+- `paper/results/part_3/run.py` → `analysis.exploratory.audit_pct_norm_eco.run` and `.run_v3` (chart: `intensity_anchor_fulleco`)
 - `paper/results/part_3/run.py` → `analysis.exploratory.audit_risk_score.run` (5f flags + focused-set helpers for `risk_score_5f`)
+- `paper/results/part_3/run.py` → `analysis.exploratory.deepdive_state_signal.run` (per-state feature table + focused-set state-share for `state_exposure_at_risk`)
 
-If you rename or move either exploratory folder, update both imports in `paper/results/part_3/run.py` and the corresponding lines in `paper/results/part_3/README.md`.
+If you rename or move any of these exploratory folders, update the imports in `paper/results/part_3/run.py` and the corresponding lines in `paper/results/part_3/README.md`.
 
 The paper also reuses the tech_skills pipeline conceptually from the archived `_archive/questions/economic_footprint/skills_landscape/` (reimplemented in paper styling), but no Python import dependency.
 
@@ -407,3 +408,4 @@ The paper also reuses the tech_skills pipeline conceptually from the archived `_
 - **SKA phys-mix score is unweighted**: Use plain `mean(pct_physical)` across occs with imp ≥ 3 for the element — no employment weighting. The point is the structural physicality of the *element's user base*, not the workforce footprint.
 - **Linear trend extrapolation is "if-rate-continues", not a forecast**: 4-snapshot OLS over 11 months is not a defensible forecast at 2-year horizons. The chart subtitles label it as such; never present the projected values as predictions in prose.
 - **`analysis._archive.questions.*` imports**: `audit_risk_score/run.py` and the part_3 risk_score_5f chart pull live constants from `analysis._archive.questions.job_exposure.job_risk_scoring.run`. The DATA_DIR resolution there counts 6 parents to land at `analysis/data` after the move under `_archive/`. If you reorganize `_archive/` again, bump the parent count to match.
+- **Focused set is ~10–13% of state employment, not 38 niche occupations**: the SKA-gated 38-occ "Most At Risk" set used by `risk_score_5f` and `state_exposure_at_risk` includes very-large-employment declining roles (Retail Salespersons 3.8M, Customer Service Reps 2.7M, Office Clerks 2.5M, Secretaries 1.7M, Bookkeepers 1.5M). Together the 38 cover ~20M U.S. workers (~12.9% of total emp). When computing per-state shares, the headline values land in the 4–12% range — that's not a bug, it's the structural shape of the focused set. Do not under-scale the chart's x-axis on this expectation.

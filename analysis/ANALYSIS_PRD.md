@@ -55,7 +55,7 @@ The primary current deliverable. Three parts:
 
 - **Part 1 — Scale, Convergence, Growth** (first draft complete). Establishes the magnitude of AI exposure, shows that independent measurement sources converge on similar rankings, and traces how confirmed usage has grown.
 - **Part 2 — Characterization: Where AI Exposure Falls** (in progress). The shape of exposure — physical/informational divide, job zones, SKA breakdown, work activities, major occupational categories.
-- **Part 3 — Action: What To Do About It** (in progress). Adoption gap, technology commodity exposure, the focused-set risk score, sector-level intensity anchoring.
+- **Part 3 — Action: What To Do About It** (in progress). Adoption gap, technology commodity exposure, the focused-set risk score, state-level exposure-vs-at-risk split, sector-level intensity anchoring.
 
 Each part has its own `run.py`, `README.md`, and committed `figures/` directory. The assembled prose lives in `paper/results/results.md`. Paper writing follows a separate style reference (`paper/writing_style_source.md` + `paper/paper_writing_style.md`).
 

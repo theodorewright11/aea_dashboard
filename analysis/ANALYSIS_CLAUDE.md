@@ -87,12 +87,13 @@ State/geo labels uppercase in bar charts. Reports open with a plain paragraph (n
 
 ## Cross-References to Watch
 
-The paper imports from two exploratory folders. If you rename or move either, update the imports:
+The paper imports from three exploratory folders. If you rename or move any of them, update the imports:
 
 - `analysis/paper/results/part_3/run.py` → `analysis.exploratory.audit_pct_norm_eco.run` and `.run_v3` (chart 15)
 - `analysis/paper/results/part_3/run.py` → `analysis.exploratory.audit_risk_score.run` (5f flags + focused-set helpers)
+- `analysis/paper/results/part_3/run.py` → `analysis.exploratory.deepdive_state_signal.run` (state exposure vs. focused-set chart — reuses the focused-set helper transitively via audit_risk_score)
 
-Both imports are wrapped in `try/except ImportError` so the paper still runs if exploratory is absent.
+All imports are wrapped in `try/except ImportError` so the paper still runs if exploratory is absent.
 
 ---
 

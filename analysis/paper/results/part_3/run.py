@@ -1,11 +1,13 @@
 """
 Part 3 — Action: What To Do About It
 
-Two figures so far. Audience scaffolding will be reintroduced as more
-charts come in.
+Audience scaffolding will be reintroduced as more charts come in.
 
-  1. Tech commodities composite (top-25)
-  2. Conv → Confirmed → Ceiling gap by major occ category
+  1. Conv → Confirmed → Ceiling gap by major occ category
+  2. Tech commodities composite (top-25)
+  3. Risk score 5f — Occupations Most At Risk (SKA-gated focused set)
+  4. State exposure vs. Most-At-Risk concentration (2-panel)
+  5. AI intensity vs. median-rank anchor (full eco_2025)
 
 Run from project root:
     venv/Scripts/python -m analysis.paper.results.part_3.run
@@ -28,11 +30,12 @@ from analysis.config import (
 )
 from analysis.utils import FONT_FAMILY, save_csv, save_figure
 from analysis.paper.paper_config import (
-    PAPER_W,
+    PAPER_W, PAPER_H,
     ANNOT_FS, LABEL_FS, TICK_FS, INSIDE_FS,
     METRIC_COLORS, PAPER_PALETTE,
     style_paper_figure, fmt_wages, fmt_workers,
 )
+from plotly.subplots import make_subplots
 
 HERE = Path(__file__).resolve().parent
 ANALYSIS_DATA_DIR = ROOT / "analysis" / "data"
@@ -594,6 +597,140 @@ def build_risk_score_5f(results: Path, figures: Path) -> None:
 
 
 # ─────────────────────────────────────────────────────────────────────────
+# Figure 5: State Exposure vs. Most-At-Risk Concentration
+# Two-panel horizontal bar (% emp exposed | % emp in "Most At Risk" set).
+# Computation runs through deepdive_state_signal (gitignored exploratory);
+# skips gracefully if that folder isn't present.
+# ─────────────────────────────────────────────────────────────────────────
+
+def build_state_exposure_at_risk(results: Path, figures: Path) -> None:
+    try:
+        from analysis.exploratory.deepdive_state_signal.run import (
+            STATE_GEOS, _load_occ_table, _load_focused_set,
+            _load_ska_overall_pct, compute_state_metrics,
+        )
+    except ImportError as exc:
+        print(f"  -> SKIPPED: exploratory/deepdive_state_signal not available ({exc})")
+        return
+
+    occ = _load_occ_table()
+    ska_overall = _load_ska_overall_pct()
+    focused = _load_focused_set()
+    state_df = compute_state_metrics(occ, ska_overall, focused)
+
+    save_csv(
+        state_df[["geo", "total_emp", "pct_emp_wtd", "focused_share_pct"]]
+        .sort_values("pct_emp_wtd", ascending=False),
+        results / "state_exposure_at_risk.csv",
+        float_format="%.3f",
+    )
+
+    plot = state_df.dropna(
+        subset=["pct_emp_wtd", "focused_share_pct"]
+    ).copy()
+    plot = plot.sort_values("pct_emp_wtd", ascending=False).reset_index(drop=True)
+    n_focused = len(focused)
+    n_states = len(plot)
+
+    # Plotly: bottom-up traces; reverse for top-down y-axis rendering.
+    geos_r    = list(reversed(plot["geo"].str.upper().tolist()))
+    emp_r     = list(reversed(plot["pct_emp_wtd"].tolist()))
+    focused_r = list(reversed(plot["focused_share_pct"].tolist()))
+
+    panel_left  = "% of State Employment Exposed"
+    panel_right = (
+        f"% of State Employment in 'Most At Risk' Occupations (n={n_focused})"
+    )
+
+    fig = make_subplots(
+        rows=1, cols=2,
+        subplot_titles=[panel_left, panel_right],
+        horizontal_spacing=0.08,
+        shared_yaxes=True,
+    )
+
+    # Left — broad exposure. Workers gold (matches the major_categories
+    # "Workers" panel color so the metric reads as a workforce-share number).
+    fig.add_trace(go.Bar(
+        y=geos_r, x=emp_r, orientation="h",
+        marker=dict(color=METRIC_COLORS["workers"], line=dict(width=0)),
+        text=[f"{v:.1f}%" for v in emp_r],
+        textposition="outside",
+        textfont=dict(size=ANNOT_FS - 1, color=PAPER_PALETTE["neutral"],
+                      family=FONT_FAMILY),
+        showlegend=False, cliponaxis=False,
+        hovertemplate="<b>%{y}</b><br>Exposed: %{x:.1f}%<extra></extra>",
+    ), row=1, col=1)
+
+    # Right — at-risk concentration. Wages sage green (distinct from left so
+    # the visual reversal pops).
+    fig.add_trace(go.Bar(
+        y=geos_r, x=focused_r, orientation="h",
+        marker=dict(color=METRIC_COLORS["wages"], line=dict(width=0)),
+        text=[f"{v:.1f}%" for v in focused_r],
+        textposition="outside",
+        textfont=dict(size=ANNOT_FS - 1, color=PAPER_PALETTE["neutral"],
+                      family=FONT_FAMILY),
+        showlegend=False, cliponaxis=False,
+        hovertemplate="<b>%{y}</b><br>Most At Risk: %{x:.2f}%<extra></extra>",
+    ), row=1, col=2)
+
+    height = max(PAPER_H + 250, n_states * 30 + 240)
+
+    style_paper_figure(
+        fig,
+        "AI Exposure by State — Broad Exposure vs. Most-At-Risk Concentration",
+        subtitle=(
+            "Left: share of each state's employment in occupations with AI-exposed "
+            "tasks. Right: share of each state's employment in the occupations "
+            "identified as Most At Risk (see prior chart). States ranked by the "
+            "left panel — note how knowledge-economy states (DC, MA, WA, CA) top "
+            f"the left panel but bottom the right. {n_states} states (50 + DC)."
+        ),
+        height=height,
+        width=PAPER_W,
+        margin=dict(l=40, r=80, t=160, b=110),
+    )
+
+    fig.update_xaxes(
+        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+        showticklabels=True, showline=True, linecolor=PAPER_PALETTE["grid"],
+        zeroline=True, zerolinecolor=PAPER_PALETTE["grid"],
+        tickfont=dict(size=TICK_FS - 2, family=FONT_FAMILY),
+        ticksuffix="%",
+    )
+    fig.update_xaxes(
+        title=dict(text="Share of state employment exposed (%)",
+                   font=dict(size=LABEL_FS - 4)),
+        row=1, col=1,
+    )
+    fig.update_xaxes(
+        title=dict(text="Share of state employment in Most-At-Risk occupations (%)",
+                   font=dict(size=LABEL_FS - 4)),
+        row=1, col=2,
+    )
+
+    fig.update_yaxes(showgrid=False, showline=False)
+    fig.update_yaxes(
+        title=dict(text="State", font=dict(size=LABEL_FS - 2)),
+        tickfont=dict(size=TICK_FS - 2, family=FONT_FAMILY),
+        row=1, col=1,
+    )
+
+    panel_set = {panel_left, panel_right}
+    for ann in fig.layout.annotations:
+        if hasattr(ann, "text") and ann.text in panel_set:
+            ann.font = dict(size=LABEL_FS - 2, family=FONT_FAMILY,
+                            color=PAPER_PALETTE["text"])
+
+    fig.update_layout(bargap=0.28)
+
+    save_figure(fig, results / "figures" / "state_exposure_at_risk.png", scale=2)
+    _copy_fig(results, figures, "state_exposure_at_risk.png")
+    print("  -> state_exposure_at_risk.png")
+
+
+# ─────────────────────────────────────────────────────────────────────────
 # Main
 # ─────────────────────────────────────────────────────────────────────────
 
@@ -606,16 +743,19 @@ def main() -> None:
     print("Part 3: Action — What To Do About It")
     print("=" * 64)
 
-    print("\n[1/4] Conv -> Confirmed -> Ceiling gap by major (top 10)")
+    print("\n[1/5] Conv -> Confirmed -> Ceiling gap by major (top 10)")
     build_conv_confirmed_ceiling_gap(results, figures)
 
-    print("\n[2/4] Tech commodities composite")
+    print("\n[2/5] Tech commodities composite")
     build_tech_commodities(results, figures)
 
-    print("\n[3/4] Risk score 5f — SKA-gated focused 43")
+    print("\n[3/5] Risk score 5f — SKA-gated focused 43")
     build_risk_score_5f(results, figures)
 
-    print("\n[4/4] AI intensity vs. median-rank anchor (full eco_2025)")
+    print("\n[4/5] State exposure vs. Most-At-Risk concentration")
+    build_state_exposure_at_risk(results, figures)
+
+    print("\n[5/5] AI intensity vs. median-rank anchor (full eco_2025)")
     build_intensity_anchor_fulleco(results, figures)
 
     print("\n" + "=" * 64)
