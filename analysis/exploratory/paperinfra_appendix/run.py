@@ -20,6 +20,7 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -77,9 +78,14 @@ def _copy_fig(results: Path, figures: Path, name: str) -> None:
 
 
 def _load_occ_structural() -> pd.DataFrame:
+    """Per-occ pct_physical, computed over UNIQUE (occ, task) pairs.
+    See ANALYSIS_ARCHITECTURE.md Common Pitfalls — eco_2025 expands tasks
+    across GWA/IWA/DWA non-proportionally between physical and non-physical
+    tasks, so dedup is required before counting."""
     eco = pd.read_csv(DATA_DIR / "final_eco_2025.csv")
+    eco_unique = eco.drop_duplicates(["title_current", "task_normalized"])
     occ = (
-        eco.groupby("title_current")
+        eco_unique.groupby("title_current")
         .agg(
             n_tasks=("physical", "count"),
             n_physical=("physical", "sum"),
@@ -485,6 +491,377 @@ def build_ska_full(results: Path, figures: Path) -> None:
     print("  -> ska_full.png")
 
 
+# ──────────────────────────────────────────────────────────────────────────
+# Chart 3: nonphys_gwa_diff_phys_excluded
+# Within non-physical occupations, what kinds of work separate the more-
+# from the less-exposed — restricted to non-physical tasks on both sides
+# so the GWA composition signal can't be a phys-residual proxy.
+# ──────────────────────────────────────────────────────────────────────────
+
+PHYS_NONPHYS_THRESHOLD = 33.0
+TOP_DIFF_N = 12
+COLOR_HIGH_EXP = METRIC_COLORS["tasks"]
+COLOR_LOW_EXP = METRIC_COLORS["workers"]
+
+
+def _split_top_bottom_nonphys(pct_series: pd.Series) -> tuple[list[str], list[str]]:
+    q1 = pct_series.quantile(0.25)
+    q3 = pct_series.quantile(0.75)
+    top = sorted(pct_series[pct_series >= q3].index.tolist())
+    bot = sorted(pct_series[pct_series <= q1].index.tolist())
+    return top, bot
+
+
+def build_nonphys_gwa_diff_phys_excluded(
+    results: Path, figures: Path,
+) -> None:
+    eco = pd.read_csv(DATA_DIR / "final_eco_2025.csv")
+    occ = _load_occ_structural()
+
+    # Non-physical occupation set (pct_physical < 33%)
+    nonphys_titles = set(
+        occ.loc[occ["pct_physical"] < PHYS_NONPHYS_THRESHOLD, "title_current"]
+    )
+
+    # Quartile split on All Confirmed pct_tasks_affected, restricted to non-phys
+    pct = get_pct_tasks_affected(PRIMARY_DATASET)
+    pct_nonphys = pct.loc[pct.index.isin(nonphys_titles)].dropna()
+    top_occs, bot_occs = _split_top_bottom_nonphys(pct_nonphys)
+    n_top, n_bot = len(top_occs), len(bot_occs)
+
+    # Drop physical tasks, recompute per-occ GWA shares
+    eco_nonphys = eco[eco["physical"] != 1]
+    sub = eco_nonphys.drop_duplicates(
+        ["title_current", "task_normalized", "gwa_title"]
+    )
+    counts = (sub.groupby(["title_current", "gwa_title"]).size()
+              .rename("n").reset_index())
+    totals = counts.groupby("title_current")["n"].sum().rename("total")
+    counts = counts.join(totals, on="title_current")
+    counts["share"] = counts["n"] / counts["total"]
+    wide = counts.pivot(index="title_current", columns="gwa_title",
+                        values="share").fillna(0.0)
+
+    top_mean = wide.loc[wide.index.isin(top_occs)].mean(axis=0)
+    bot_mean = wide.loc[wide.index.isin(bot_occs)].mean(axis=0)
+    diff = pd.DataFrame({
+        "top_mean": top_mean,
+        "bot_mean": bot_mean,
+        "diff": top_mean - bot_mean,
+    }).sort_values("diff", ascending=False)
+    diff = diff[diff.index.astype(str).str.strip() != ""].dropna()
+
+    save_csv(
+        diff.reset_index().rename(columns={"index": "gwa_title"}),
+        results / "nonphys_gwa_diff_phys_excluded.csv",
+        float_format="%.4f",
+    )
+
+    pos = diff.head(TOP_DIFF_N).iloc[::-1]   # largest positive at top
+    neg = diff.tail(TOP_DIFF_N)               # largest negative at bottom
+
+    fig = make_subplots(
+        rows=1, cols=2,
+        horizontal_spacing=0.40,
+        subplot_titles=(
+            "<b>Over-represented in HIGH-exposure non-phys occs</b>",
+            "<b>Over-represented in LOW-exposure non-phys occs</b>",
+        ),
+    )
+
+    def _add_panel(side_df: pd.DataFrame, col_idx: int) -> None:
+        labels = side_df.index.tolist()
+        fig.add_trace(go.Bar(
+            y=labels, x=side_df["top_mean"] * 100,
+            orientation="h",
+            name=f"Top quartile share (n={n_top})",
+            marker=dict(color=COLOR_HIGH_EXP, line=dict(width=0)),
+            text=[f"{v*100:.1f}%" for v in side_df["top_mean"]],
+            textposition="outside",
+            textfont=dict(size=ANNOT_FS, family=FONT_FAMILY),
+            cliponaxis=False,
+            showlegend=(col_idx == 1),
+            hovertemplate="<b>%{y}</b><br>top share: %{x:.2f}%<extra></extra>",
+        ), row=1, col=col_idx)
+        fig.add_trace(go.Bar(
+            y=labels, x=side_df["bot_mean"] * 100,
+            orientation="h",
+            name=f"Bottom quartile share (n={n_bot})",
+            marker=dict(color=COLOR_LOW_EXP, line=dict(width=0)),
+            text=[f"{v*100:.1f}%" for v in side_df["bot_mean"]],
+            textposition="outside",
+            textfont=dict(size=ANNOT_FS, family=FONT_FAMILY),
+            cliponaxis=False,
+            showlegend=(col_idx == 1),
+            hovertemplate="<b>%{y}</b><br>bot share: %{x:.2f}%<extra></extra>",
+        ), row=1, col=col_idx)
+
+    _add_panel(pos, 1)
+    _add_panel(neg, 2)
+
+    # Panel-specific x-axis ranges so labels never clip
+    pos_max = max(pos["top_mean"].max(), pos["bot_mean"].max()) * 100
+    neg_max = max(neg["top_mean"].max(), neg["bot_mean"].max()) * 100
+    fig.update_xaxes(
+        title="Mean task-share within group (%) — non-physical tasks only",
+        range=[0, pos_max * 1.18], row=1, col=1,
+    )
+    fig.update_xaxes(
+        title="Mean task-share within group (%) — non-physical tasks only",
+        range=[0, neg_max * 1.18], row=1, col=2,
+    )
+    fig.update_yaxes(
+        tickfont=dict(size=TICK_FS - 1, family=FONT_FAMILY),
+        automargin=True,
+    )
+
+    fig.update_layout(barmode="group", bargap=0.30, bargroupgap=0.10)
+
+    style_paper_figure(
+        fig,
+        "Within non-physical occupations: General Work Activity composition (physical tasks excluded)",
+        subtitle=(
+            f"Per occupation, share of unique tasks in each GWA, computed over only the non-physical tasks of each occ. "
+            f"Quartiles by All Confirmed % tasks affected, restricted to occs with pct_physical &lt; 33% "
+            f"(n top = {n_top}, bot = {n_bot}). Top {TOP_DIFF_N} GWAs by absolute share gap on each side. "
+            f"Tests whether the GWA composition signal is a pct_physical residual proxy — if the same GWAs appear here as in the raw chart with similar magnitudes, it is not."
+        ),
+        width=PAPER_W + 200,   # extra width for two long-label panels
+        height=820,
+        margin=dict(l=20, r=40, t=140, b=110),
+    )
+
+    # Style panel subtitle annotations to match the paper aesthetic
+    panel_titles = {
+        "<b>Over-represented in HIGH-exposure non-phys occs</b>",
+        "<b>Over-represented in LOW-exposure non-phys occs</b>",
+    }
+    for ann in fig.layout.annotations:
+        if hasattr(ann, "text") and ann.text in panel_titles:
+            ann.font = dict(size=LABEL_FS, family=FONT_FAMILY,
+                            color=PAPER_PALETTE["text"])
+
+    save_figure(
+        fig, results / "figures" / "nonphys_gwa_diff_phys_excluded.png",
+        scale=2,
+    )
+    _copy_fig(results, figures, "nonphys_gwa_diff_phys_excluded.png")
+    print("  -> nonphys_gwa_diff_phys_excluded.png")
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# Chart 4: major_de_nt_plane
+# Each major plotted on the demand-elasticity × new-task-creation plane.
+# Dot size ~ workers affected; color ~ % tasks affected (All Confirmed).
+# Labels positioned with collision-avoidance to stay readable.
+# ──────────────────────────────────────────────────────────────────────────
+
+def _major_pct_and_workers() -> pd.DataFrame:
+    """Major-level pct_tasks_affected and workers_affected from All Confirmed."""
+    from backend.compute import get_group_data
+    rows = []
+    for sort_by, val_col in [("% Tasks Affected", "pct_tasks_affected"),
+                             ("Workers Affected", "workers_affected")]:
+        data = get_group_data({
+            "selected_datasets": [PRIMARY_DATASET],
+            "combine_method": "Average", "method": "freq", "use_auto_aug": True,
+            "physical_mode": "all", "geo": "nat", "agg_level": "major",
+            "sort_by": sort_by, "top_n": 9999,
+            "search_query": "", "context_size": 3,
+        })
+        df = data["df"].rename(columns={data["group_col"]: "major"})
+        rows.append(df.set_index("major")[val_col])
+    return pd.concat(rows, axis=1)
+
+
+def build_major_de_nt_plane(results: Path, figures: Path) -> None:
+    """Per-major mean of de and nt computed over the major's UNIQUE tasks
+    (deduped on (major, task_normalized)). Color = % tasks affected; size =
+    workers affected. Quadrant lines at medians."""
+    eco = pd.read_csv(DATA_DIR / "final_eco_2025_with_task_properties.csv")
+    sub = eco.drop_duplicates(["major_occ_category", "task_normalized"])
+    means = sub.groupby("major_occ_category")[["de", "nt"]].mean()
+
+    extras = _major_pct_and_workers()
+    means = means.join(extras, how="left").dropna()
+    means["short"] = means.index.str.replace(" Occupations", "", regex=False)
+
+    save_csv(
+        means.reset_index(), results / "major_de_nt_plane.csv",
+        float_format="%.3f",
+    )
+
+    de_med = float(means["de"].median())
+    nt_med = float(means["nt"].median())
+    pct_min, pct_max = float(means["pct_tasks_affected"].min()), float(means["pct_tasks_affected"].max())
+
+    # Hand-tuned label offsets per major. Each entry is (dx, dy) in axis units;
+    # positive dx pushes label right, positive dy pushes label up. Designed so
+    # the upper-right growth-quadrant cluster fans out radially with leader
+    # lines. Anything not listed gets a neutral upward placement.
+    # All offsets in axis units. Upper-right cluster is densely packed so
+    # those labels get pushed quite far out with leader lines back to dots.
+    # Per-major label offsets in axis units. Aggressive for the dense
+    # upper-right cluster so leader lines fan out without overlapping.
+    OFFSETS: dict[str, tuple[float, float]] = {
+        # Right side of plot (E)
+        "Community and Social Service":                      (0.07,  0.07),   # NE
+        "Educational Instruction and Library":               (0.20, -0.05),   # E
+        "Healthcare Practitioners and Technical":            (0.25, -0.16),   # ESE
+        "Arts, Design, Entertainment, Sports, and Media":    (0.07, -0.25),   # SSE
+        "Business and Financial Operations":                 (-0.10, -0.23),  # SSW
+        # Left side of cluster (W)
+        "Computer and Mathematical":                         (-0.40, -0.05),  # W
+        "Life, Physical, and Social Science":                (-0.45, 0.04),   # W
+        "Architecture and Engineering":                      (-0.30, 0.18),   # NW
+        "Management":                                        (-0.05, 0.22),   # N
+        # Middle band
+        "Legal":                                             (-0.13, 0.08),
+        "Protective Service":                                (0.07,  0.08),
+        # Right-middle cluster
+        "Sales and Related":                                 (0.17,  0.07),
+        "Healthcare Support":                                (-0.08, -0.10),
+        # Lower band
+        "Office and Administrative Support":                 (0.25, -0.02),
+        "Food Preparation and Serving Related":              (-0.07, -0.13),
+        "Building and Grounds Cleaning and Maintenance":     (-0.22, -0.06),
+        "Personal Care and Service":                         (0.13,  0.07),
+        "Farming, Fishing, and Forestry":                    (0.00,  0.10),
+        "Transportation and Material Moving":                (0.00, -0.12),
+        "Installation, Maintenance, and Repair":             (0.16,  0.05),
+        "Production":                                        (0.00, -0.12),
+        "Construction and Extraction":                       (0.00,  0.10),
+    }
+    means["dx"] = means.index.map(lambda m: OFFSETS.get(m, (0.0, 0.05))[0])
+    means["dy"] = means.index.map(lambda m: OFFSETS.get(m, (0.0, 0.05))[1])
+
+    fig = go.Figure()
+
+    # Build manual size scaling so the smallest dot is visible and the
+    # largest is bounded; sqrt scaling on workers_affected.
+    sizes = np.sqrt(means["workers_affected"].values) * 0.0018 + 18
+    # Markers only — labels are added separately as annotations with leaders
+    fig.add_trace(go.Scatter(
+        x=means["de"], y=means["nt"], mode="markers",
+        marker=dict(
+            size=sizes,
+            color=means["pct_tasks_affected"],
+            colorscale=[[0, COLOR_LOW_EXP], [1, COLOR_HIGH_EXP]],
+            cmin=pct_min, cmax=pct_max,
+            colorbar=dict(
+                title=dict(text="% tasks<br>affected",
+                           font=dict(size=ANNOT_FS, family=FONT_FAMILY)),
+                tickfont=dict(size=ANNOT_FS - 1, family=FONT_FAMILY),
+                len=0.65, thickness=14,
+                x=1.02, xanchor="left",
+            ),
+            line=dict(width=0.8, color="#2a2a2a"),
+            opacity=0.92,
+        ),
+        text=means["short"],
+        hovertemplate=(
+            "<b>%{text}</b><br>de: %{x:.2f}<br>nt: %{y:.2f}<br>"
+            "% tasks affected: %{marker.color:.1f}%<extra></extra>"
+        ),
+        cliponaxis=False, showlegend=False,
+    ))
+
+    # Per-major leader-line annotations. In plotly, when showarrow=True the
+    # text is rendered at (x, y) and the arrow tail sits at (ax, ay). So the
+    # OFFSET position goes in (x, y) and the dot position in (ax, ay).
+    for major, row in means.iterrows():
+        dx = float(row["dx"])
+        dy = float(row["dy"])
+        # Anchor the text on the side closer to the dot so the leader doesn't
+        # cut through the label.
+        if dx > 0.02:
+            xa = "left"
+        elif dx < -0.02:
+            xa = "right"
+        else:
+            xa = "center"
+        ya = "bottom" if dy > 0 else "top"
+        show_arrow = abs(dx) > 0.02 or abs(dy) > 0.05
+        fig.add_annotation(
+            # text + arrowhead position (where the label is drawn)
+            x=row["de"] + dx, y=row["nt"] + dy,
+            # arrow tail position (the dot itself)
+            ax=row["de"], ay=row["nt"],
+            xref="x", yref="y", axref="x", ayref="y",
+            text=row["short"],
+            showarrow=show_arrow,
+            arrowhead=0, arrowwidth=0.7, arrowcolor=PAPER_PALETTE["muted"],
+            standoff=2, startstandoff=8,   # gap on both ends so leader is clean
+            xanchor=xa, yanchor=ya,
+            font=dict(size=ANNOT_FS + 1, family=FONT_FAMILY,
+                      color=PAPER_PALETTE["text"]),
+        )
+
+    # Quadrant lines at medians
+    fig.add_vline(x=de_med, line=dict(color=PAPER_PALETTE["muted"],
+                                      width=1, dash="dash"))
+    fig.add_hline(y=nt_med, line=dict(color=PAPER_PALETTE["muted"],
+                                      width=1, dash="dash"))
+
+    # Quadrant text annotations parked at corners with proper anchoring.
+    # Padding chosen wide enough that leader-line labels in the upper-right
+    # cluster have somewhere to go without leaving the plot.
+    x_lo = float(means["de"].min()) - 0.20
+    x_hi = float(means["de"].max()) + 0.30
+    y_lo = float(means["nt"].min()) - 0.20
+    y_hi = float(means["nt"].max()) + 0.30
+
+    quadrant_annotations = [
+        (x_hi, y_hi, "right", "top",
+         "<b>HIGH de · HIGH nt</b><br>growth quadrant",
+         PAPER_PALETTE["positive"]),
+        (x_lo, y_lo, "left", "bottom",
+         "<b>LOW de · LOW nt</b><br>least dynamic",
+         PAPER_PALETTE["negative"]),
+        (x_hi, y_lo, "right", "bottom",
+         "HIGH de · LOW nt<br>cheaper, fewer new roles",
+         PAPER_PALETTE["neutral"]),
+        (x_lo, y_hi, "left", "top",
+         "LOW de · HIGH nt<br>not cheaper, but new roles",
+         PAPER_PALETTE["neutral"]),
+    ]
+    for x, y, xa, ya, text, color in quadrant_annotations:
+        fig.add_annotation(
+            x=x, y=y, text=text, showarrow=False,
+            xanchor=xa, yanchor=ya,
+            font=dict(size=ANNOT_FS + 1, family=FONT_FAMILY, color=color),
+        )
+
+    fig.update_xaxes(
+        title="Mean demand elasticity (de) — task-level mean of LLM rating, 1-5",
+        range=[x_lo, x_hi],
+    )
+    fig.update_yaxes(
+        title="Mean new task creation (nt) — task-level mean of LLM rating, 1-5",
+        range=[y_lo, y_hi],
+    )
+
+    style_paper_figure(
+        fig,
+        "Demand elasticity × new task creation by major occupational category",
+        subtitle=(
+            f"Per-major mean of LLM-rated task properties across the major's unique tasks (deduped on (major, task)). "
+            f"Dot size ∝ √(workers affected, All Confirmed); color = major's % tasks affected. "
+            f"<br>Dashed lines at the per-axis medians (de={de_med:.2f}, nt={nt_med:.2f}). "
+            f"de = how much demand expands if the task gets cheaper; nt = whether automation generates new human roles. (Both 1-5.)"
+        ),
+        width=PAPER_W + 300,
+        height=860,
+        margin=dict(l=90, r=160, t=160, b=110),
+    )
+
+    save_figure(
+        fig, results / "figures" / "major_de_nt_plane.png", scale=2,
+    )
+    _copy_fig(results, figures, "major_de_nt_plane.png")
+    print("  -> major_de_nt_plane.png")
+
+
 def write_markdown() -> None:
     md_path = HERE / "appendix_charts.md"
     md_path.write_text(
@@ -502,7 +879,33 @@ def write_markdown() -> None:
         "\n"
         "## ska_full\n"
         "\n"
-        "![ska_full](figures/ska_full.png)\n",
+        "![ska_full](figures/ska_full.png)\n"
+        "\n"
+        "---\n"
+        "\n"
+        "## nonphys_gwa_diff_phys_excluded\n"
+        "\n"
+        "Within the 409 non-physical occupations, the General Work Activity "
+        "composition that separates the high-exposure quartile from the "
+        "low-exposure quartile, computed over only the non-physical tasks of "
+        "each occupation. The chart functions as a robustness test on the "
+        "raw composition diff: if the same GWAs appear here as in the raw "
+        "chart, the structural signal is not a pct_physical residual proxy.\n"
+        "\n"
+        "![nonphys_gwa_diff_phys_excluded](figures/nonphys_gwa_diff_phys_excluded.png)\n"
+        "\n"
+        "---\n"
+        "\n"
+        "## major_de_nt_plane\n"
+        "\n"
+        "Each of the 22 SOC major occupational categories plotted on the "
+        "demand-elasticity × new-task-creation plane (LLM-rated task "
+        "properties, 1–5 scale, averaged per major over unique tasks). Dot "
+        "size scales with workers affected; color encodes the major's "
+        "All-Confirmed % tasks affected. Dashed lines at the per-axis "
+        "medians split the plane into four readable quadrants.\n"
+        "\n"
+        "![major_de_nt_plane](figures/major_de_nt_plane.png)\n",
         encoding="utf-8",
     )
     print(f"  -> {md_path.relative_to(ROOT)}")
@@ -517,11 +920,17 @@ def main() -> None:
     print("Appendix figures")
     print("=" * 60)
 
-    print("\n[1/2] phys_zone_faceted (modified)")
+    print("\n[1/4] phys_zone_faceted (modified)")
     build_phys_zone_faceted(results, figures)
 
-    print("\n[2/2] ska_full (full element-level SKA)")
+    print("\n[2/4] ska_full (full element-level SKA)")
     build_ska_full(results, figures)
+
+    print("\n[3/4] nonphys_gwa_diff_phys_excluded (within-non-phys structural)")
+    build_nonphys_gwa_diff_phys_excluded(results, figures)
+
+    print("\n[4/4] major_de_nt_plane (forward-looking quadrant)")
+    build_major_de_nt_plane(results, figures)
 
     print("\nWriting appendix_charts.md")
     write_markdown()
