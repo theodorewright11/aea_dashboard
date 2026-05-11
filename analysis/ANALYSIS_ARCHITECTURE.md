@@ -114,6 +114,19 @@ analysis/
 │   │                              fails parallel trends mechanically; on the
 │   │                              clean cell (sum_pct_norm × share_any), DiD
 │   │                              ≈ 0 for Conv. snapshot, marginal + for Both.
+│   ├── deepdive_phys_complementarity/ — Three-layer phys/non-phys
+│   │                              complementarity probe: (A) within-occ
+│   │                              freq × imp × rel balance + SKA
+│   │                              cognitive-vs-physical ability balance,
+│   │                              (B) within-GWA same two signals plus a
+│   │                              synthetic emp × share-weighted SKA profile
+│   │                              per GWA, (C) cross-occ SKA L1 nearest-
+│   │                              neighbor 3×3 bucket matrix. Headline: SKA
+│   │                              neighborhood is near-bimodal — Non-Physical
+│   │                              (84%) and Physical (79%) are tight same-
+│   │                              bucket skill islands; Mixed occupations are
+│   │                              the only bridge population. all_confirmed
+│   │                              primary.
 │   │
 │   └── claude_lab/              — Claude's autonomous research workspace.
 │                                  Has its own CLAUDE.md, research_log.md,
