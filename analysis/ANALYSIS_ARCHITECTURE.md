@@ -68,7 +68,10 @@ analysis/
 │   │                              sources/configs vs. all 16 external indices
 │   │                              (Schaal, Eloundou, Webb, SML, AIOE,
 │   │                              Frey-Osborne, Autor). Plus Schaal task-level
-│   │                              scatter and group-level heatmaps.
+│   │                              scatter, group-level heatmaps, and a
+│   │                              magnitude-scatter pair (occ + major) of
+│   │                              all_confirmed vs. 4 external indices
+│   │                              rescaled to 0–100 (Pearson r + MAD + bias).
 │   ├── extcompare_mertens/      — Mertens 2026 "tide vs wave" replication;
 │   │                              uses paper βs to flag forward-risk occs.
 │   ├── extcompare_eloundou/     — T0–T4 label count matrices and auto-aug
