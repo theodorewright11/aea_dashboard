@@ -65,13 +65,14 @@ analysis/
 │   │                              Schaal 2025 per-task scores in place of our
 │   │                              auto-aug. 5 score variants × 11 PNGs.
 │   ├── extcompare_indices/      — SOC convergence heatmap of our 9
-│   │                              sources/configs vs. all 16 external indices
+│   │                              sources/configs vs. all 17 external indices
 │   │                              (Schaal, Eloundou, Webb, SML, AIOE,
-│   │                              Frey-Osborne, Autor). Plus Schaal task-level
-│   │                              scatter, group-level heatmaps, and a
-│   │                              magnitude-scatter pair (occ + major) of
-│   │                              all_confirmed vs. 4 external indices
-│   │                              rescaled to 0–100 (Pearson r + MAD + bias).
+│   │                              Frey-Osborne, Autor, Tomlinson AI App.).
+│   │                              Plus Schaal task-level scatter, group-level
+│   │                              heatmaps, and a magnitude-scatter pair (occ
+│   │                              + major) of all_confirmed vs. 4 external
+│   │                              indices rescaled to 0–100 (Pearson r + MAD
+│   │                              + bias).
 │   ├── extcompare_mertens/      — Mertens 2026 "tide vs wave" replication;
 │   │                              uses paper βs to flag forward-risk occs.
 │   ├── extcompare_eloundou/     — T0–T4 label count matrices and auto-aug
