@@ -77,12 +77,24 @@ TREND_CONFIGS: list[str] = ["all_confirmed", "all_ceiling"]
 EXT_SOURCES: list[tuple[str, str]] = [
     ("gpt_beta",      "Eloundou GPT-4 β"),
     ("human_beta",    "Eloundou Human β"),
-    ("aioe_mean",     "AIOE mean (10 apps)"),
+    ("aioe_mean",     "AIOE Overall"),
     ("aioe_rc",       "AIOE Reading Compr."),
     ("schaal_overall", "Schaal Overall"),
     ("schaal_da",     "Schaal DA"),
+    ("schaal_ag",     "Schaal AG"),
     ("tomlinson_copilot", "Tomlinson (Copilot)"),
 ]
+
+# Cells to gray out as contaminated by the Copilot task-filter pipeline
+# (Eloundou labels were used to filter which Copilot tasks were included,
+# so any correlation between a Copilot-containing measure and an Eloundou
+# benchmark double-counts that signal). Keys are (row_label, col_label)
+# pairs matching the labels rendered on each chart.
+ELOUNDOU_LABELS: set[str] = {"Eloundou GPT-4 β", "Eloundou Human β"}
+CONTAMINATED_SOURCE_ROWS: set[str] = {"Copilot"}
+CONTAMINATED_CONFIG_ROWS: set[str] = {
+    "All Confirmed", "All Sources (Ceiling)", "Conversational Confirmed",
+}
 
 GPTS_CSV = ANALYSIS_DIR / "data" / "gpts_are_gpts_occ_data.csv"
 AIOE_MATRIX_PATH = ANALYSIS_DIR / "data" / "aioe_ability_matrix.csv"
@@ -300,18 +312,20 @@ def _load_eloundou_occ() -> pd.DataFrame:
 def _load_schaal_occ() -> pd.DataFrame:
     """Schaal 2025 occupation-level scores from `Comparison of Indices.csv`.
     Title joins exactly to title_current. Returns title_current,
-    schaal_overall (auto_w), schaal_da (da_w)."""
+    schaal_overall (auto_w), schaal_da (da_w), schaal_ag (ag_w)."""
     df = pd.read_csv(SCHAAL_INDICES_CSV)
     assert "title" in df.columns, f"title column missing in {SCHAAL_INDICES_CSV}"
-    for c in ("auto_w", "da_w"):
+    for c in ("auto_w", "da_w", "ag_w"):
         assert c in df.columns, f"{c} column missing in {SCHAAL_INDICES_CSV}"
     out = pd.DataFrame({
         "title_current":   df["title"].astype(str),
         "schaal_overall":  pd.to_numeric(df["auto_w"], errors="coerce"),
         "schaal_da":       pd.to_numeric(df["da_w"],   errors="coerce"),
+        "schaal_ag":       pd.to_numeric(df["ag_w"],   errors="coerce"),
     })
     assert out["schaal_overall"].notna().any(), "Schaal auto_w is all NaN after load"
     assert out["schaal_da"].notna().any(),      "Schaal da_w is all NaN after load"
+    assert out["schaal_ag"].notna().any(),      "Schaal ag_w is all NaN after load"
     return out
 
 
@@ -430,13 +444,18 @@ def _build_convergence_chart(
     results: Path,
     figures: Path,
     y_axis_title: str,
+    contaminated_rows: set[str] | None = None,
 ) -> None:
     """Build one combined heatmap (lower-tri internal + external block).
 
     `rows_keys` and `rows_labels` define the y-axis. `rows_data` is a
     nested dict {key → {level → pd.Series}} of pct_tasks_affected at
-    each SOC level.
+    each SOC level. `contaminated_rows` is the set of row labels whose
+    correlations against ELOUNDOU_LABELS columns should be visually
+    grayed out (the Eloundou-filter contamination on Copilot-containing
+    measures).
     """
+    contaminated_rows = contaminated_rows or set()
     eloundou = _load_eloundou_occ()
     aioe = _compute_aioe_occ()
     schaal = _load_schaal_occ()
@@ -452,8 +471,13 @@ def _build_convergence_chart(
     n = len(rows_keys)
     n_ext = len(EXT_SOURCES)
 
-    x_labels = list(rows_labels) + list(ext_labels)
+    # Insert one blank column between the internal block and the external
+    # block to visually separate the two groups. The gap column sits at
+    # position `n` (index n in the matrix, label "" so no x-tick renders).
+    GAP_LABEL = " "
+    x_labels = list(rows_labels) + [GAP_LABEL] + list(ext_labels)
     n_cols = len(x_labels)
+    EXT_OFFSET = n + 1   # column index where external block starts
 
     corr_records: list[dict] = []
     matrices: dict[str, np.ndarray] = {}
@@ -482,7 +506,7 @@ def _build_convergence_chart(
                     "n": len(merged), "stars": _stars(pval),
                 })
 
-        # External block
+        # External block (offset by 1 to skip the gap column)
         for i, skey in enumerate(rows_keys):
             ours = rows_data[skey][level]
             for k, ext_key in enumerate(ext_keys):
@@ -494,8 +518,8 @@ def _build_convergence_chart(
                 if len(merged) < 3:
                     continue
                 rho, pval = stats.spearmanr(merged["x"], merged["y"])
-                mat[i, n + k] = rho
-                pmat[i, n + k] = pval
+                mat[i, EXT_OFFSET + k] = rho
+                pmat[i, EXT_OFFSET + k] = pval
                 corr_records.append({
                     "level": level, "kind": "external",
                     "source_a": rows_labels[i], "source_b": ext_labels[k],
@@ -513,13 +537,21 @@ def _build_convergence_chart(
     z_min = float(np.floor(all_vals.min() * 20) / 20)
     z_max = 1.0
 
-    # Generously spaced 2x2 grid for readability
+    # Generously spaced 2x2 grid for readability. Extra vertical spacing
+    # gives the "Internal" / "External" group headers room to sit above
+    # each panel without colliding with the subplot title.
     fig = make_subplots(
         rows=2, cols=2,
         subplot_titles=[AGG_TITLES[l] for l in AGG_LEVELS],
         horizontal_spacing=0.16,
-        vertical_spacing=0.20,
+        vertical_spacing=0.28,
     )
+
+    # Cell number font — bigger for readability per paper feedback
+    cell_fs = HEATMAP_TEXT_FS - 1     # 17pt regardless of column count
+
+    contam_color = "rgba(200, 200, 200, 0.92)"
+    contam_text  = "#777777"
 
     for idx, level in enumerate(AGG_LEVELS):
         row_pos = idx // 2 + 1
@@ -536,6 +568,7 @@ def _build_convergence_chart(
                 zmin=z_min, zmax=z_max,
                 showscale=(idx == 3),
                 hoverinfo="z",
+                xgap=2, ygap=2,
                 colorbar=dict(
                     title=dict(text="Spearman ρ",
                                font=dict(size=LABEL_FS, family=FONT_FAMILY)),
@@ -546,28 +579,70 @@ def _build_convergence_chart(
             row=row_pos, col=col_pos,
         )
 
+        x_axis = f"x{idx + 1}" if idx > 0 else "x"
+        y_axis = f"y{idx + 1}" if idx > 0 else "y"
+
         for i in range(n):
             for j in range(n_cols):
                 val = mat[i, j]
                 if np.isnan(val):
                     continue
-                norm = (val - z_min) / max(z_max - z_min, 1e-9)
-                txt_color = "white" if norm >= 0.55 else PAPER_PALETTE["text_dark"]
-                cell_fs = HEATMAP_TEXT_FS - 4 if n_cols >= 9 else HEATMAP_TEXT_FS - 2
+
+                # Contamination check: row label is in contaminated set AND
+                # this column is one of the Eloundou columns. Apply gray
+                # overlay first (so annotation sits on top), then render
+                # the value in muted text.
+                row_label = rows_labels[i]
+                col_label = x_labels[j]
+                is_contam = (row_label in contaminated_rows
+                             and col_label in ELOUNDOU_LABELS)
+
+                if is_contam:
+                    fig.add_shape(
+                        type="rect",
+                        x0=j - 0.5, x1=j + 0.5,
+                        y0=i - 0.5, y1=i + 0.5,
+                        xref=x_axis, yref=y_axis,
+                        fillcolor=contam_color,
+                        line=dict(width=0),
+                        layer="above",
+                    )
+                    txt_color = contam_text
+                else:
+                    norm = (val - z_min) / max(z_max - z_min, 1e-9)
+                    txt_color = "white" if norm >= 0.55 else PAPER_PALETTE["text_dark"]
+
                 fig.add_annotation(
                     x=x_labels[j], y=rows_labels[i],
                     text=f"{val:.2f}",
                     showarrow=False,
                     font=dict(size=cell_fs, family=FONT_FAMILY, color=txt_color),
-                    xref=f"x{idx + 1}" if idx > 0 else "x",
-                    yref=f"y{idx + 1}" if idx > 0 else "y",
+                    xref=x_axis, yref=y_axis,
                 )
 
-        x_axis = f"x{idx + 1}" if idx > 0 else "x"
-        y_axis = f"y{idx + 1}" if idx > 0 else "y"
+        # Group header annotations centered above each block. Positioned
+        # in axis coordinates (x = block midpoint), with a pixel yshift
+        # so they sit just above the top edge of the heatmap regardless
+        # of zoom level.
+        internal_mid = (n - 1) / 2.0
+        external_mid = EXT_OFFSET + (n_ext - 1) / 2.0
+        for header_text, header_x in [("Internal", internal_mid),
+                                       ("External", external_mid)]:
+            fig.add_annotation(
+                x=header_x, y=n - 0.5,
+                text=f"<b>{header_text}</b>",
+                showarrow=False,
+                xanchor="center", yanchor="bottom",
+                yshift=14,
+                font=dict(size=LABEL_FS + 1, family=FONT_FAMILY,
+                          color=PAPER_PALETTE["text"]),
+                xref=x_axis, yref=y_axis,
+            )
+
+        # Vertical divider between internal and external blocks
         fig.add_shape(
             type="line",
-            x0=n - 0.5, x1=n - 0.5,
+            x0=n - 0.5 + 0.5, x1=n - 0.5 + 0.5,  # midpoint of the gap col
             y0=-0.5, y1=n - 0.5,
             xref=x_axis, yref=y_axis,
             line=dict(color=PAPER_PALETTE["text"], width=2),
@@ -575,7 +650,7 @@ def _build_convergence_chart(
 
     # Scale figure with column count for breathing room
     fig_width = PAPER_W + max(0, (n_cols - 8) * 80)
-    fig_height = PAPER_H + 360
+    fig_height = PAPER_H + 540   # taller for gap + group headers + legend strip
 
     full_subtitle = f"{subtitle}. {SIG_NOTE}"
     style_paper_figure(
@@ -584,16 +659,57 @@ def _build_convergence_chart(
         subtitle=full_subtitle,
         width=fig_width,
         height=fig_height,
-        margin=dict(l=40, r=160, t=170, b=140),
+        margin=dict(l=40, r=160, t=180, b=240),
     )
 
+    # Bump subplot titles higher and embiggen so they don't visually collide
+    # with the new "Internal" / "External" group headers placed below them.
     agg_title_set = set(AGG_TITLES.values())
     for ann in fig.layout.annotations:
         if hasattr(ann, "text") and ann.text in agg_title_set:
             ann.font = dict(
-                size=LABEL_FS + 1, family=FONT_FAMILY,
+                size=LABEL_FS + 3, family=FONT_FAMILY,
                 color=PAPER_PALETTE["text"],
             )
+            ann.yshift = 32
+
+    # Contamination legend — shown only when something is grayed out.
+    # Placed in the bottom margin, below the angled x-tick labels. The
+    # swatch is rendered as a real paper-coordinate rectangle because
+    # Plotly's PNG export ignores HTML background-color in spans.
+    if contaminated_rows:
+        # Swatch position (paper coords). Pushed well below the heatmap
+        # so it sits clear of the angled tick labels.
+        sx0, sx1 = 0.085, 0.130
+        sy0, sy1 = -0.150, -0.110
+        fig.add_shape(
+            type="rect",
+            xref="paper", yref="paper",
+            x0=sx0, x1=sx1, y0=sy0, y1=sy1,
+            fillcolor=contam_color,
+            line=dict(color=contam_text, width=1),
+            layer="above",
+        )
+        fig.add_annotation(
+            xref="paper", yref="paper",
+            x=(sx0 + sx1) / 2, y=(sy0 + sy1) / 2,
+            text="0.00",
+            showarrow=False,
+            xanchor="center", yanchor="middle",
+            font=dict(size=ANNOT_FS + 2, family=FONT_FAMILY, color=contam_text),
+        )
+        fig.add_annotation(
+            xref="paper", yref="paper",
+            x=sx1 + 0.010, y=(sy0 + sy1) / 2,
+            xanchor="left", yanchor="middle",
+            text=("<b>Eloundou-contaminated cell</b> — Eloundou's task labels "
+                  "were used to filter Copilot tasks, so correlations between "
+                  "a Copilot-containing measure and an Eloundou benchmark "
+                  "double-count that signal. Values shown for transparency."),
+            showarrow=False,
+            font=dict(size=ANNOT_FS + 1, family=FONT_FAMILY,
+                      color=PAPER_PALETTE["text"]),
+        )
 
     # y-axis title only on the left column (panels 1 and 3) so it doesn't
     # collide with the colorbar on the right-column panels.
@@ -631,12 +747,13 @@ def build_convergence(results: Path, figures: Path) -> None:
         rows_keys=CORR_ORDER,
         rows_labels=CORR_LABELS,
         rows_data=source_data,
-        title="External Benchmark Comparison — by AI Source",
-        subtitle="Spearman ρ across our 4 internal sources and 6 academic benchmarks",
+        title="Internal and External Benchmark Comparison — by AI Source",
+        subtitle="Spearman ρ across our internal sources and academic benchmarks",
         out_name="convergence.png",
         csv_name="spearman_combined.csv",
         results=results, figures=figures,
         y_axis_title="Internal Source",
+        contaminated_rows=CONTAMINATED_SOURCE_ROWS,
     )
 
 
@@ -656,12 +773,13 @@ def build_convergence_configs(results: Path, figures: Path) -> None:
         rows_keys=CONFIG_ORDER,
         rows_labels=[ANALYSIS_CONFIG_LABELS[k] for k in CONFIG_ORDER],
         rows_data=config_data,
-        title="External Benchmark Comparison — by Data Configuration",
-        subtitle="Spearman ρ across our 6 data configurations and 6 academic benchmarks",
+        title="Internal and External Benchmark Comparison — by Data Configuration",
+        subtitle="Spearman ρ across our data configurations and academic benchmarks",
         out_name="convergence_configs.png",
         csv_name="spearman_combined_configs.csv",
         results=results, figures=figures,
         y_axis_title="Data Configuration",
+        contaminated_rows=CONTAMINATED_CONFIG_ROWS,
     )
 
 
