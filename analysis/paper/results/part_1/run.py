@@ -1092,7 +1092,9 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
     # Pixel offset for value labels above/below each marker. This is a
     # fixed pixel shift so labels stay clear of the line as it curves
     # between markers, regardless of zoom or aspect ratio.
-    LABEL_YSHIFT_PX = 18
+    LABEL_YSHIFT_PX = 26
+    LABEL_FS_DATA = 14      # Per-point data labels
+    LABEL_FS_HORIZON = 13   # Projection horizon labels
 
     # Horizons (days from final observed date) for the linear extrapolation
     # band on each panel. 2-year ceiling chosen because longer horizons are
@@ -1178,8 +1180,14 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
             ), row=1, col=col_idx)
 
             # Linear "if-recent-rate-continued" projection extending past
-            # the final observed point at 6mo / 1yr / 2yr horizons.
+            # the final observed point. Only the 2yr horizon gets a value
+            # label — the 6mo / 1yr points carry the line shape but would
+            # crowd the panel if labeled.
             horizon_days = [d for _, d in EXTRAP_HORIZONS_DAYS]
+            twoyr_idx = next(
+                (i for i, (lbl, _) in enumerate(EXTRAP_HORIZONS_DAYS) if lbl == "2yr"),
+                len(EXTRAP_HORIZONS_DAYS) - 1,
+            )
             future_ts, future_ys = _linear_fit_project(xvals, yvals, horizon_days)
             if future_ts:
                 proj_x = [pd.Timestamp(xvals[-1])] + future_ts
@@ -1195,31 +1203,57 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
                     opacity=0.7,
                 ), row=1, col=col_idx)
                 panel_vals.extend(future_ys)
-                for (hz_label, _), t, v in zip(EXTRAP_HORIZONS_DAYS, future_ts, future_ys):
-                    fig.add_annotation(
-                        x=t, y=v,
-                        xref=x_ref, yref=y_ref,
-                        text=f"{hz_label}: {fmt_fn(v)}",
-                        showarrow=False,
-                        yshift=yshift,
-                        font=dict(size=ANNOT_FS - 2, color=color, family=FONT_FAMILY),
-                    )
+                hz_label, _ = EXTRAP_HORIZONS_DAYS[twoyr_idx]
+                fig.add_annotation(
+                    x=future_ts[twoyr_idx], y=future_ys[twoyr_idx],
+                    xref=x_ref, yref=y_ref,
+                    text=f"{hz_label}: {fmt_fn(future_ys[twoyr_idx])}",
+                    showarrow=False,
+                    yshift=yshift,
+                    font=dict(size=LABEL_FS_HORIZON, color=color, family=FONT_FAMILY),
+                )
 
-            # Per-point value labels as annotations with explicit pixel
-            # yshift — ensures the line never overlaps the text. Skip
-            # labels for dates within 25 days of the next kept label so
-            # close-clustered dates (e.g. Feb 12 / Feb 18) don't stack.
-            kept = _spaced_label_indices(xvals)
+            # Per-point value labels on the observed data line. Confirmed
+            # (primary lens) gets every spaced point labeled; ceiling has
+            # ~10 observations so we keep only the first and last to avoid
+            # crowding the panel. For tightly clustered confirmed labels
+            # (gap < CLOSE_GAP_DAYS), we stagger the y-position so the
+            # earlier label sits one row further from the line — keeps both
+            # readable without dropping either.
+            CLOSE_GAP_DAYS = 120
+            STAGGER_PX = 16
+            if config_key == "all_confirmed":
+                kept_set = _spaced_label_indices(xvals)
+            elif len(xvals) >= 2:
+                kept_set = {0, len(xvals) - 1}
+            else:
+                kept_set = set(range(len(xvals)))
+
+            # Compute per-label yshift, applying stagger to a kept label
+            # whose neighbour to the right is within CLOSE_GAP_DAYS.
+            kept_sorted = sorted(kept_set)
+            kept_ts = {i: pd.Timestamp(xvals[i]) for i in kept_sorted}
+            per_label_yshift: dict[int, int] = {}
+            for pos, i in enumerate(kept_sorted):
+                shift = yshift
+                if pos + 1 < len(kept_sorted):
+                    nxt = kept_sorted[pos + 1]
+                    if (kept_ts[nxt] - kept_ts[i]).days < CLOSE_GAP_DAYS:
+                        # Push earlier label further from the line (same
+                        # direction as yshift — away from the marker).
+                        shift = yshift + (-STAGGER_PX if yshift < 0 else STAGGER_PX)
+                per_label_yshift[i] = shift
+
             for i, (x_i, y_i) in enumerate(zip(xvals, yvals)):
-                if i not in kept:
+                if i not in kept_set:
                     continue
                 fig.add_annotation(
                     x=x_i, y=y_i,
                     xref=x_ref, yref=y_ref,
                     text=fmt_fn(y_i),
                     showarrow=False,
-                    yshift=yshift,
-                    font=dict(size=ANNOT_FS - 1, color=color, family=FONT_FAMILY),
+                    yshift=per_label_yshift[i],
+                    font=dict(size=LABEL_FS_DATA, color=color, family=FONT_FAMILY),
                 )
 
         # Tight y-range — leave enough room above and below the data band
@@ -1228,7 +1262,7 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
             v_lo, v_hi = min(panel_vals), max(panel_vals)
             spread = v_hi - v_lo
             pad_lo = spread * 0.22
-            pad_hi = spread * 0.22
+            pad_hi = spread * 0.30  # extra room for the 2yr projection label
             y_min = max(0.0, v_lo - pad_lo)
             y_max = v_hi + pad_hi
         else:
@@ -1258,13 +1292,13 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
         "All Confirmed vs All Sources (Ceiling) Over Time",
         subtitle=(
             "Tasks, workers, and wages exposed over the dataset window "
-            "(March 2025 – February 2026). Dotted segments extend each line "
-            "with a linear OLS fit through observed points, marking 6mo / 1yr / 2yr "
-            "horizons if the recent rate continued."
+            "(March 2025 – February 2026).<br>"
+            "Dotted segments extend each line with a linear OLS fit through "
+            "observed points, labeled at the 2yr horizon if the recent rate continued."
         ),
         height=PAPER_H + 90,
         width=PAPER_W + 100,
-        margin=dict(l=80, r=60, t=170, b=160),
+        margin=dict(l=80, r=60, t=200, b=160),
     )
 
     # Bottom-aligned legend driven by the neutral dummy traces.

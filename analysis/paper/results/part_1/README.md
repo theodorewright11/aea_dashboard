@@ -9,7 +9,7 @@ First section of the Results chapter. First draft complete. Content in `part_1.m
 | `overview.png` | Five-config aggregate footprint: % tasks, workers, and wages as % of national totals (blue/teal/gold bars) |
 | `convergence.png` | 2x2 Spearman rank correlation heatmaps at four SOC levels. Each panel combines an internal lower-triangle block (4 sources × 4 sources: Claude Browser, Claude API, Copilot, MCP) with a rectangular external block (4 sources × 7 external benchmarks: Eloundou GPT-4 β, Eloundou Human β, AIOE mean, AIOE Reading Comprehension, Schaal Overall, Schaal DA, Tomlinson (Copilot)) |
 | `convergence_configs.png` | Same 2x2 layout but rows are the 5 ANALYSIS_CONFIGS (All Confirmed, All Ceiling, Conversational Confirmed, Agentic Confirmed, Agentic Ceiling) instead of the 4 individual sources. Internal lower-triangle 5×5 + external rectangle 5×7. |
-| `temporal_trend.png` | Three-panel line chart (% tasks / workers / wages) over time, All Confirmed (solid) vs All Ceiling (dashed). Each line is extended past its final observation with a dotted linear OLS projection marking 6mo / 1yr / 2yr horizons (assumes recent rate continues). |
+| `temporal_trend.png` | Three-panel line chart (% tasks / workers / wages) over time, All Confirmed (solid) vs All Ceiling (dashed). Each line is extended past its final observation with a dotted linear OLS projection, labeled at the 2yr horizon. Confirmed data points are labeled at each spaced observation; ceiling shows only first + last observed labels. |
 | `temporal_table_all_confirmed.png` | Growth data table for All Confirmed: tasks, workers, wages, auto-aug, coverage per date |
 | `temporal_table_all_ceiling.png` | Growth data table for All Sources (Ceiling): same columns |
 
