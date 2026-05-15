@@ -568,7 +568,6 @@ def _build_convergence_chart(
                 zmin=z_min, zmax=z_max,
                 showscale=(idx == 3),
                 hoverinfo="z",
-                xgap=2, ygap=2,
                 colorbar=dict(
                     title=dict(text="Spearman ρ",
                                font=dict(size=LABEL_FS, family=FONT_FAMILY)),
@@ -689,14 +688,6 @@ def _build_convergence_chart(
             fillcolor=contam_color,
             line=dict(color=contam_text, width=1),
             layer="above",
-        )
-        fig.add_annotation(
-            xref="paper", yref="paper",
-            x=(sx0 + sx1) / 2, y=(sy0 + sy1) / 2,
-            text="0.00",
-            showarrow=False,
-            xanchor="center", yanchor="middle",
-            font=dict(size=ANNOT_FS + 2, family=FONT_FAMILY, color=contam_text),
         )
         fig.add_annotation(
             xref="paper", yref="paper",
