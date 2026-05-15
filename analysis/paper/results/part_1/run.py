@@ -96,6 +96,21 @@ CONTAMINATED_CONFIG_ROWS: set[str] = {
     "All Confirmed", "All Sources (Ceiling)", "Conversational Confirmed",
 }
 
+# Long category labels get wrapped onto two lines for axis tick display
+# (tick text only — the underlying category keys stay unchanged so cell
+# annotations and contamination checks continue to match against the
+# original strings).
+TICK_LABEL_WRAPS: dict[str, str] = {
+    "Conversational Confirmed": "Conversational<br>Confirmed",
+    "All Sources (Ceiling)":    "All Sources<br>(Ceiling)",
+    "Agentic Confirmed":        "Agentic<br>Confirmed",
+    "Agentic Ceiling":          "Agentic<br>Ceiling",
+}
+
+
+def _wrap_tick_labels(labels: list[str]) -> list[str]:
+    return [TICK_LABEL_WRAPS.get(lbl, lbl) for lbl in labels]
+
 GPTS_CSV = ANALYSIS_DIR / "data" / "gpts_are_gpts_occ_data.csv"
 AIOE_MATRIX_PATH = ANALYSIS_DIR / "data" / "aioe_ability_matrix.csv"
 ABILITIES_PATH = ANALYSIS_DIR / "data" / "abilities_v30.1.csv"
@@ -479,6 +494,15 @@ def _build_convergence_chart(
     n_cols = len(x_labels)
     EXT_OFFSET = n + 1   # column index where external block starts
 
+    # Display copies — wrap long category names onto two lines (<br>) on
+    # the y-axis only. (Wrapping x-axis labels makes adjacent labels'
+    # second lines collide once they're rotated -30°, so the x-axis keeps
+    # the original single-line labels.) Cell annotations and contamination
+    # checks key off the originals; plotly uses the display labels for
+    # axis ticks.
+    x_labels_disp = list(x_labels)
+    rows_labels_disp = _wrap_tick_labels(rows_labels)
+
     corr_records: list[dict] = []
     matrices: dict[str, np.ndarray] = {}
     pmatrices: dict[str, np.ndarray] = {}
@@ -563,8 +587,8 @@ def _build_convergence_chart(
         fig.add_trace(
             go.Heatmap(
                 z=mat.tolist(),
-                x=x_labels,
-                y=rows_labels,
+                x=x_labels_disp,
+                y=rows_labels_disp,
                 colorscale=[[0, HEATMAP_LOW], [1, HEATMAP_HIGH]],
                 zmin=z_min, zmax=z_max,
                 showscale=(idx == 3),
@@ -613,7 +637,7 @@ def _build_convergence_chart(
                     txt_color = "white" if norm >= 0.55 else PAPER_PALETTE["text_dark"]
 
                 fig.add_annotation(
-                    x=x_labels[j], y=rows_labels[i],
+                    x=x_labels_disp[j], y=rows_labels_disp[i],
                     text=f"{val:.2f}",
                     showarrow=False,
                     font=dict(size=cell_fs, family=FONT_FAMILY, color=txt_color),
