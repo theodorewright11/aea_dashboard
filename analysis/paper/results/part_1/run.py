@@ -81,12 +81,14 @@ EXT_SOURCES: list[tuple[str, str]] = [
     ("aioe_rc",       "AIOE Reading Compr."),
     ("schaal_overall", "Schaal Overall"),
     ("schaal_da",     "Schaal DA"),
+    ("tomlinson_copilot", "Tomlinson (Copilot)"),
 ]
 
 GPTS_CSV = ANALYSIS_DIR / "data" / "gpts_are_gpts_occ_data.csv"
 AIOE_MATRIX_PATH = ANALYSIS_DIR / "data" / "aioe_ability_matrix.csv"
 ABILITIES_PATH = ANALYSIS_DIR / "data" / "abilities_v30.1.csv"
 SCHAAL_INDICES_CSV = ANALYSIS_DIR / "data" / "Comparison of Indices.csv"
+TOMLINSON_CSV = ANALYSIS_DIR / "data" / "ai_applicability_scores.csv"
 
 
 # ─────────────────────────────────────────────────────────────────────────
@@ -313,6 +315,23 @@ def _load_schaal_occ() -> pd.DataFrame:
     return out
 
 
+def _load_tomlinson_occ() -> pd.DataFrame:
+    """Tomlinson, Jaffe, Wang, Counts & Suri (2025) AI applicability score per
+    SOC, derived from ~100k Bing Copilot conversations × O*NET IWA weights
+    × LLM completion + scope. Title joins exactly to title_current. Returns
+    title_current, tomlinson_copilot."""
+    df = pd.read_csv(TOMLINSON_CSV)
+    assert "title" in df.columns, f"title column missing in {TOMLINSON_CSV}"
+    assert "ai_applicability_score" in df.columns, \
+        f"ai_applicability_score column missing in {TOMLINSON_CSV}"
+    out = pd.DataFrame({
+        "title_current":      df["title"].astype(str),
+        "tomlinson_copilot":  pd.to_numeric(df["ai_applicability_score"], errors="coerce"),
+    }).dropna(subset=["tomlinson_copilot"])
+    assert not out.empty, "Tomlinson scores are all NaN after load"
+    return out
+
+
 def _compute_aioe_occ() -> pd.DataFrame:
     """Per-occupation AIOE scores computed as ratio-of-sums of imp×lv×ability_cap
     over imp≥3 ability rows (per Felten/Raj/Seamans framing). Two variants:
@@ -421,8 +440,11 @@ def _build_convergence_chart(
     eloundou = _load_eloundou_occ()
     aioe = _compute_aioe_occ()
     schaal = _load_schaal_occ()
-    ext_df = eloundou.merge(aioe, on="title_current", how="outer").merge(
-        schaal, on="title_current", how="outer"
+    tomlinson = _load_tomlinson_occ()
+    ext_df = (
+        eloundou.merge(aioe,      on="title_current", how="outer")
+                .merge(schaal,    on="title_current", how="outer")
+                .merge(tomlinson, on="title_current", how="outer")
     )
 
     ext_keys = [k for k, _ in EXT_SOURCES]
