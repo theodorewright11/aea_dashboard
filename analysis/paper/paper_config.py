@@ -26,8 +26,8 @@ LABEL_FS: int = 16         # Axis titles
 LEGEND_FS: int = 15        # Legend items
 ANNOT_FS: int = 12         # Footnotes
 HEATMAP_TEXT_FS: int = 18  # Correlation values inside heatmap cells
-TABLE_HEADER_FS: int = 14  # Table column headers
-TABLE_CELL_FS: int = 13    # Table cell text
+TABLE_HEADER_FS: int = 18  # Table column headers
+TABLE_CELL_FS: int = 16    # Table cell text
 
 # ── Five-config colors ───────────────────────────────────────────────────
 CONFIG_COLORS: dict[str, str] = {

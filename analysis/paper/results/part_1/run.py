@@ -839,6 +839,54 @@ HISTORICAL_DATASETS: dict[str, dict[str, str]] = {
     },
 }
 
+# Per-snapshot "Source Release" labels — what was newly released on each
+# snapshot date. Shown as a column in the temporal_tables figure to let
+# readers see at a glance which source family's update is driving each
+# row's change in tasks rated / auto-aug score.
+SOURCE_RELEASE_LABELS: dict[str, str] = {
+    "2024-09-30": "Microsoft",
+    "2024-12-23": "AEI Browser v1",
+    "2025-03-06": "AEI Browser v2",
+    "2025-04-24": "MCP v1",
+    "2025-05-24": "MCP v2",
+    "2025-07-23": "MCP v3",
+    "2025-08-11": "AEI Browser v3 + AEI API v3",
+    "2025-11-13": "AEI Browser v4 + AEI API v4",
+    "2026-02-12": "AEI Browser v5 + AEI API v5",
+    "2026-02-18": "MCP v4",
+}
+
+# Light → deep green gradient for the two Δ columns. Lightest end is
+# nearly white so small positive deltas stay legible; darkest end is a
+# muted sage so the biggest additions visually pop without overwhelming.
+DELTA_GRADIENT_LO: tuple[int, int, int] = (245, 250, 247)
+DELTA_GRADIENT_HI: tuple[int, int, int] = (122, 178, 150)
+DELTA_NEUTRAL: str = "#ffffff"
+
+
+def _delta_gradient(values: list[float | None], historical_fill: str) -> list[str]:
+    """Map a column of delta values to a light→deep green gradient by
+    magnitude. ``None`` entries (e.g. "—" or historical placeholders) get
+    the historical fill; non-positive entries stay white."""
+    pos_vals = [v for v in values if v is not None and v > 0]
+    if not pos_vals:
+        return [historical_fill if v is None else DELTA_NEUTRAL for v in values]
+    max_v = max(pos_vals)
+    out: list[str] = []
+    for v in values:
+        if v is None:
+            out.append(historical_fill)
+            continue
+        if v <= 0 or max_v == 0:
+            out.append(DELTA_NEUTRAL)
+            continue
+        t = v / max_v
+        r = int(DELTA_GRADIENT_LO[0] + (DELTA_GRADIENT_HI[0] - DELTA_GRADIENT_LO[0]) * t)
+        g = int(DELTA_GRADIENT_LO[1] + (DELTA_GRADIENT_HI[1] - DELTA_GRADIENT_LO[1]) * t)
+        b = int(DELTA_GRADIENT_LO[2] + (DELTA_GRADIENT_HI[2] - DELTA_GRADIENT_LO[2]) * t)
+        out.append(f"rgb({r},{g},{b})")
+    return out
+
 
 def _build_trend_data() -> pd.DataFrame:
     total_emp, total_wages = _get_national_totals()
@@ -927,24 +975,32 @@ def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) 
         historical_rows = _build_historical_rows(config_key)
 
         col_date: list[str] = []
+        col_source: list[str] = []
         col_tasks: list[str] = []
         col_dtasks: list[str] = []
         col_autoaug: list[str] = []
         col_dautoaug: list[str] = []
         date_fills: list[str] = []
+        # Numeric copies of the delta columns drive the gradient coloring.
+        dtasks_vals: list[float | None] = []
+        dautoaug_vals: list[float | None] = []
 
         # Historical (cream) rows first — combined-dataset task counts.
         prev_n_tasks: int | None = None
         for hr in historical_rows:
             col_date.append(fmt_date(hr["date"]))
+            col_source.append(SOURCE_RELEASE_LABELS.get(hr["date"], "—"))
             col_tasks.append(f"{int(hr['n_tasks']):,}")
             if prev_n_tasks is None:
                 col_dtasks.append("—")
+                dtasks_vals.append(None)
             else:
                 dt = int(hr["n_tasks"]) - prev_n_tasks
                 col_dtasks.append(f"{'+' if dt >= 0 else ''}{dt:,}")
+                dtasks_vals.append(float(dt))
             col_autoaug.append("—")
             col_dautoaug.append("—")
+            dautoaug_vals.append(None)
             date_fills.append(historical_fill)
             prev_n_tasks = int(hr["n_tasks"])
 
@@ -960,23 +1016,28 @@ def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) 
             else:
                 col_date.append(fmt_date(r["date"]))
 
+            col_source.append(SOURCE_RELEASE_LABELS.get(r["date"], "—"))
             col_tasks.append(f"{int(r['n_tasks']):,}")
             col_autoaug.append(f"{r['avg_auto_aug']:.2f}")
 
             curr_n_tasks = int(r["n_tasks"])
             if prev_n_tasks is None:
                 col_dtasks.append("—")
+                dtasks_vals.append(None)
             else:
                 dt = curr_n_tasks - prev_n_tasks
                 col_dtasks.append(f"{'+' if dt >= 0 else ''}{dt:,}")
+                dtasks_vals.append(float(dt))
             prev_n_tasks = curr_n_tasks
 
             if is_start_combined:
                 col_dautoaug.append("—")
+                dautoaug_vals.append(None)
             else:
                 prev = sub.iloc[i - 1]
                 da = float(r["avg_auto_aug"] - prev["avg_auto_aug"])
                 col_dautoaug.append(f"{'+' if da >= 0 else ''}{da:.2f}")
+                dautoaug_vals.append(da)
 
             date_fills.append(highlight if (is_start_combined or is_end) else white)
 
@@ -984,46 +1045,59 @@ def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) 
         n_hist = len(HISTORICAL_DATES)
         cell_fills = [historical_fill] * n_hist + [white] * (n_rows - n_hist)
 
+        # Gradient fills for the two Δ columns (positive only; historical
+        # rows keep the cream fill via the helper's None handling).
+        dtasks_fills = _delta_gradient(dtasks_vals, historical_fill)
+        dautoaug_fills = _delta_gradient(dautoaug_vals, historical_fill)
+
         header_color = (PAPER_PALETTE["all_confirmed"]
                         if "confirmed" in config_key
                         else PAPER_PALETTE["all_ceiling"])
 
         fig.add_trace(go.Table(
-            columnwidth=[120, 180, 60, 110, 60],
+            columnwidth=[160, 240, 220, 90, 200, 100],
             header=dict(
                 values=[
                     "Date",
-                    f"Unique Tasks Rated<br>(of {total_eco_tasks:,} total in O*NET)",
-                    "Δ",
-                    "AI Capability<br>(0–5)",
-                    "Δ",
+                    "Source Release",
+                    f"Unique Tasks Rated<br>(of {total_eco_tasks:,} in O*NET)",
+                    "Δ Tasks",
+                    "Auto-Aug Score<br>(0–5, avg across<br>rated tasks)",
+                    "Δ Auto-Aug",
                 ],
                 font=dict(size=TABLE_HEADER_FS, family=FONT_FAMILY, color="white"),
                 fill_color=header_color,
                 align="center",
-                height=48,
+                height=82,
             ),
             cells=dict(
-                values=[col_date, col_tasks, col_dtasks, col_autoaug, col_dautoaug],
+                values=[col_date, col_source, col_tasks, col_dtasks, col_autoaug, col_dautoaug],
                 font=dict(size=TABLE_CELL_FS, family=FONT_FAMILY),
-                fill_color=[date_fills, cell_fills, cell_fills, cell_fills, cell_fills],
+                fill_color=[
+                    date_fills, cell_fills, cell_fills,
+                    dtasks_fills, cell_fills, dautoaug_fills,
+                ],
                 align="center",
-                height=32,
+                height=42,
             ),
         ), row=1, col=col_idx)
 
     max_rows = max(
         len(trend_df[trend_df["config"] == k]) for k in TREND_CONFIGS
     ) + len(HISTORICAL_DATES)
-    # Header (40) + per-row (38) + title/subtitle/margin (180) — give the
-    # ceiling table enough room for all 9 rows + start/end highlights.
-    height = max(520, max_rows * 38 + 240)
+    # Header (82 px, 3-line at 18 pt) + per-row (42 px at 16 pt) + title/
+    # subtitle/margin (~280 px). Plotly tables apparently consume ~1.5×
+    # the requested cell height in vertical layout, so we budget generously
+    # and let the bottom margin absorb any excess — better that than
+    # clipping the last row of the ceiling table.
+    height = max(820, 82 + int(max_rows * 60) + 280)
 
     style_paper_figure(
         fig,
-        "Tasks Rated And AI Capability Over Time",
-        subtitle="Cream rows don't have reliable AI capability scores.",
-        height=height + 50,
+        "Tasks Rated And Auto-Aug Score Over Time",
+        subtitle="Cream rows don't have reliable Auto-Aug scores.",
+        width=PAPER_W + 500,
+        height=height,
         margin=dict(l=10, r=10, t=170, b=20),
     )
 
