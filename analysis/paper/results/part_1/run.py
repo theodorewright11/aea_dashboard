@@ -537,18 +537,19 @@ def _build_convergence_chart(
     z_min = float(np.floor(all_vals.min() * 20) / 20)
     z_max = 1.0
 
-    # Generously spaced 2x2 grid for readability. Extra vertical spacing
-    # gives the "Internal" / "External" group headers room to sit above
-    # each panel without colliding with the subplot title.
+    # Tight 2x2 grid — panels pushed close together so the heatmap content
+    # itself takes up more of the figure area. Vertical spacing still has
+    # to leave room for the "Internal" / "External" group headers above
+    # each panel + the subplot title above those.
     fig = make_subplots(
         rows=2, cols=2,
         subplot_titles=[AGG_TITLES[l] for l in AGG_LEVELS],
-        horizontal_spacing=0.16,
-        vertical_spacing=0.28,
+        horizontal_spacing=0.09,
+        vertical_spacing=0.20,
     )
 
-    # Cell number font — bigger for readability per paper feedback
-    cell_fs = HEATMAP_TEXT_FS - 1     # 17pt regardless of column count
+    # Cell number font — bumped past HEATMAP_TEXT_FS for readability
+    cell_fs = HEATMAP_TEXT_FS + 2     # 20pt regardless of column count
 
     contam_color = "rgba(200, 200, 200, 0.92)"
     contam_text  = "#777777"
@@ -570,9 +571,9 @@ def _build_convergence_chart(
                 hoverinfo="z",
                 colorbar=dict(
                     title=dict(text="Spearman ρ",
-                               font=dict(size=LABEL_FS, family=FONT_FAMILY)),
+                               font=dict(size=LABEL_FS + 2, family=FONT_FAMILY)),
                     len=0.45, y=0.22,
-                    tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
+                    tickfont=dict(size=TICK_FS + 1, family=FONT_FAMILY),
                 ),
             ),
             row=row_pos, col=col_pos,
@@ -632,8 +633,8 @@ def _build_convergence_chart(
                 text=f"<b>{header_text}</b>",
                 showarrow=False,
                 xanchor="center", yanchor="bottom",
-                yshift=14,
-                font=dict(size=LABEL_FS + 1, family=FONT_FAMILY,
+                yshift=12,
+                font=dict(size=LABEL_FS + 4, family=FONT_FAMILY,
                           color=PAPER_PALETTE["text"]),
                 xref=x_axis, yref=y_axis,
             )
@@ -647,9 +648,10 @@ def _build_convergence_chart(
             line=dict(color=PAPER_PALETTE["text"], width=2),
         )
 
-    # Scale figure with column count for breathing room
+    # Width unchanged from the previous version — just shrink margins
+    # so the panels themselves are larger inside the same canvas.
     fig_width = PAPER_W + max(0, (n_cols - 8) * 80)
-    fig_height = PAPER_H + 540   # taller for gap + group headers + legend strip
+    fig_height = PAPER_H + 540
 
     full_subtitle = f"{subtitle}. {SIG_NOTE}"
     style_paper_figure(
@@ -658,16 +660,16 @@ def _build_convergence_chart(
         subtitle=full_subtitle,
         width=fig_width,
         height=fig_height,
-        margin=dict(l=40, r=160, t=180, b=240),
+        margin=dict(l=20, r=120, t=170, b=220),
     )
 
-    # Bump subplot titles higher and embiggen so they don't visually collide
-    # with the new "Internal" / "External" group headers placed below them.
+    # Bump subplot titles up + embiggen so they sit clear of the
+    # "Internal" / "External" group headers placed below them.
     agg_title_set = set(AGG_TITLES.values())
     for ann in fig.layout.annotations:
         if hasattr(ann, "text") and ann.text in agg_title_set:
             ann.font = dict(
-                size=LABEL_FS + 3, family=FONT_FAMILY,
+                size=LABEL_FS + 6, family=FONT_FAMILY,
                 color=PAPER_PALETTE["text"],
             )
             ann.yshift = 32
@@ -698,7 +700,7 @@ def _build_convergence_chart(
                   "a Copilot-containing measure and an Eloundou benchmark "
                   "double-count that signal. Values shown for transparency."),
             showarrow=False,
-            font=dict(size=ANNOT_FS + 1, family=FONT_FAMILY,
+            font=dict(size=ANNOT_FS + 3, family=FONT_FAMILY,
                       color=PAPER_PALETTE["text"]),
         )
 
@@ -708,13 +710,13 @@ def _build_convergence_chart(
     for i in range(1, 5):
         xkey = f"xaxis{i}" if i > 1 else "xaxis"
         ykey = f"yaxis{i}" if i > 1 else "yaxis"
-        fig.layout[xkey].tickfont = dict(size=TICK_FS - 2, family=FONT_FAMILY)
-        fig.layout[ykey].tickfont = dict(size=TICK_FS - 2, family=FONT_FAMILY)
+        fig.layout[xkey].tickfont = dict(size=TICK_FS + 1, family=FONT_FAMILY)
+        fig.layout[ykey].tickfont = dict(size=TICK_FS + 1, family=FONT_FAMILY)
         fig.layout[xkey].tickangle = -30
         if y_axis_title and i in left_col_axes:
             fig.layout[ykey].title = dict(
                 text=y_axis_title,
-                font=dict(size=LABEL_FS - 2, family=FONT_FAMILY),
+                font=dict(size=LABEL_FS + 1, family=FONT_FAMILY),
             )
 
     save_figure(fig, results / "figures" / out_name)

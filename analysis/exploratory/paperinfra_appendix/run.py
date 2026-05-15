@@ -871,6 +871,319 @@ def build_major_de_nt_plane(results: Path, figures: Path) -> None:
     print("  -> major_de_nt_plane.png")
 
 
+def build_convergence_full(results: Path, figures: Path) -> None:
+    """Full square correlation matrix: every internal measure (4 AI sources +
+    5 ANALYSIS_CONFIGS) and every external benchmark (8 academic indices)
+    on both x and y axes, lower-triangular cells only. Two panels stacked
+    vertically: Major SOC level (n ≈ 22) and Occupation level (n ≈ 900).
+
+    A blank gap row + gap column separate the internal section from the
+    external section on both axes. Cell rendering, gray-out, and the
+    contamination legend follow the conventions of the main paper charts.
+    """
+    from scipy import stats
+    from analysis.paper.results.part_1.run import (
+        CORR_SOURCES, CORR_ORDER, CORR_LABELS,
+        CONFIG_ORDER,
+        EXT_SOURCES,
+        ELOUNDOU_LABELS,
+        CONTAMINATED_SOURCE_ROWS, CONTAMINATED_CONFIG_ROWS,
+        SIG_NOTE,
+        _run_config,
+        _load_eloundou_occ, _compute_aioe_occ,
+        _load_schaal_occ, _load_tomlinson_occ,
+        _ext_at_level, _stars,
+    )
+    from analysis.paper.paper_config import (
+        HEATMAP_TEXT_FS, HEATMAP_LOW, HEATMAP_HIGH,
+    )
+
+    from analysis.config import ANALYSIS_CONFIG_LABELS
+
+    LEVELS = [("major", "Major level"), ("occupation", "Occ level")]
+
+    # ── Internal measures ────────────────────────────────────────────
+    internal_keys = list(CORR_ORDER) + list(CONFIG_ORDER)
+    internal_labels = (list(CORR_LABELS)
+                       + [ANALYSIS_CONFIG_LABELS[k] for k in CONFIG_ORDER])
+    n_int = len(internal_keys)
+
+    internal_data: dict[str, dict[str, pd.Series]] = {}
+    for skey in CORR_ORDER:
+        ds = CORR_SOURCES[skey]["dataset"]
+        internal_data[skey] = {}
+        for lvl, _ in LEVELS:
+            df = _run_config(ds, lvl)
+            internal_data[skey][lvl] = df.set_index("category")["pct_tasks_affected"]
+        print(f"  {CORR_SOURCES[skey]['label']}: loaded {[l for l, _ in LEVELS]}")
+    for ckey in CONFIG_ORDER:
+        ds = ANALYSIS_CONFIGS[ckey]
+        internal_data[ckey] = {}
+        for lvl, _ in LEVELS:
+            df = _run_config(ds, lvl)
+            internal_data[ckey][lvl] = df.set_index("category")["pct_tasks_affected"]
+        print(f"  {ANALYSIS_CONFIG_LABELS[ckey]}: loaded {[l for l, _ in LEVELS]}")
+
+    # ── External measures ────────────────────────────────────────────
+    eloundou = _load_eloundou_occ()
+    aioe = _compute_aioe_occ()
+    schaal = _load_schaal_occ()
+    tomlinson = _load_tomlinson_occ()
+    ext_df = (eloundou.merge(aioe,      on="title_current", how="outer")
+                       .merge(schaal,    on="title_current", how="outer")
+                       .merge(tomlinson, on="title_current", how="outer"))
+
+    ext_keys = [k for k, _ in EXT_SOURCES]
+    ext_labels = [lbl for _, lbl in EXT_SOURCES]
+    n_ext = len(ext_keys)
+
+    external_data: dict[str, dict[str, pd.Series]] = {}
+    for ekey in ext_keys:
+        external_data[ekey] = {}
+        for lvl, _ in LEVELS:
+            external_data[ekey][lvl] = _ext_at_level(ext_df, ekey, lvl)
+    print(f"  External benchmarks: loaded {n_ext} columns × {len(LEVELS)} levels")
+
+    # ── Layout: gap inserted between internal and external on each axis
+    all_keys = internal_keys + ext_keys
+    all_labels = internal_labels + ext_labels
+    all_data = {**internal_data, **external_data}
+    n_meas = n_int + n_ext           # 17
+
+    GAP_LABEL = " "
+    layout_labels = list(internal_labels) + [GAP_LABEL] + list(ext_labels)
+    n_layout = len(layout_labels)    # 18
+    EXT_OFFSET = n_int + 1
+
+    def m2l(m_idx: int) -> int:
+        """measure index → layout index (skipping the gap row/col at n_int)"""
+        return m_idx if m_idx < n_int else m_idx + 1
+
+    contaminated_internals = CONTAMINATED_SOURCE_ROWS | CONTAMINATED_CONFIG_ROWS
+
+    # ── Compute lower-tri correlations ───────────────────────────────
+    matrices: dict[str, np.ndarray] = {}
+    pmatrices: dict[str, np.ndarray] = {}
+    records: list[dict] = []
+
+    for level, _ in LEVELS:
+        mat = np.full((n_layout, n_layout), np.nan)
+        pmat = np.full((n_layout, n_layout), np.nan)
+        for i in range(n_meas):
+            for j in range(i):
+                key_i, key_j = all_keys[i], all_keys[j]
+                si = all_data[key_i][level]
+                sj = all_data[key_j][level]
+                merged = pd.concat([si, sj], axis=1, join="inner").dropna()
+                if len(merged) < 3:
+                    continue
+                rho, pval = stats.spearmanr(merged.iloc[:, 0], merged.iloc[:, 1])
+                li, lj = m2l(i), m2l(j)
+                mat[li, lj] = rho
+                pmat[li, lj] = pval
+                records.append({
+                    "level": level,
+                    "measure_a": all_labels[i],
+                    "measure_b": all_labels[j],
+                    "rho": round(float(rho), 3),
+                    "p_value": round(float(pval), 6),
+                    "n": len(merged),
+                    "stars": _stars(pval),
+                })
+        matrices[level] = mat
+        pmatrices[level] = pmat
+        print(f"  {level}: {int(np.isfinite(mat).sum())} cells filled")
+
+    save_csv(pd.DataFrame(records), results / "spearman_combined_full.csv")
+
+    # ── Render: 2 panels stacked vertically ──────────────────────────
+    all_vals = np.concatenate([m[~np.isnan(m)] for m in matrices.values()])
+    z_min = float(np.floor(all_vals.min() * 20) / 20)
+    z_max = 1.0
+
+    fig = make_subplots(
+        rows=2, cols=1,
+        subplot_titles=[title for _, title in LEVELS],
+        vertical_spacing=0.10,
+    )
+
+    cell_fs = HEATMAP_TEXT_FS - 4   # 14pt — denser than the main charts
+    contam_color = "rgba(200, 200, 200, 0.92)"
+    contam_text  = "#777777"
+
+    for idx, (level, _) in enumerate(LEVELS):
+        row_pos = idx + 1
+        mat = matrices[level]
+        pmat = pmatrices[level]
+
+        fig.add_trace(
+            go.Heatmap(
+                z=mat.tolist(),
+                x=layout_labels,
+                y=layout_labels,
+                colorscale=[[0, HEATMAP_LOW], [1, HEATMAP_HIGH]],
+                zmin=z_min, zmax=z_max,
+                showscale=(idx == 0),
+                hoverinfo="z",
+                colorbar=dict(
+                    title=dict(text="Spearman ρ",
+                               font=dict(size=LABEL_FS, family=FONT_FAMILY)),
+                    len=0.40, y=0.78,
+                    tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
+                ),
+            ),
+            row=row_pos, col=1,
+        )
+
+        x_axis = f"x{idx + 1}" if idx > 0 else "x"
+        y_axis = f"y{idx + 1}" if idx > 0 else "y"
+
+        # Cell annotations + contamination overlays
+        for li in range(n_layout):
+            for lj in range(n_layout):
+                val = mat[li, lj]
+                if np.isnan(val):
+                    continue
+                row_label = layout_labels[li]
+                col_label = layout_labels[lj]
+                # Eloundou × Copilot-containing on either axis is contaminated
+                contam_pair = (
+                    (row_label in ELOUNDOU_LABELS and col_label in contaminated_internals)
+                    or (col_label in ELOUNDOU_LABELS and row_label in contaminated_internals)
+                )
+                if contam_pair:
+                    fig.add_shape(
+                        type="rect",
+                        x0=lj - 0.5, x1=lj + 0.5,
+                        y0=li - 0.5, y1=li + 0.5,
+                        xref=x_axis, yref=y_axis,
+                        fillcolor=contam_color,
+                        line=dict(width=0),
+                        layer="above",
+                    )
+                    txt_color = contam_text
+                else:
+                    norm = (val - z_min) / max(z_max - z_min, 1e-9)
+                    txt_color = "white" if norm >= 0.55 else PAPER_PALETTE["text_dark"]
+                fig.add_annotation(
+                    x=col_label, y=row_label,
+                    text=f"{val:.2f}",
+                    showarrow=False,
+                    font=dict(size=cell_fs, family=FONT_FAMILY, color=txt_color),
+                    xref=x_axis, yref=y_axis,
+                )
+
+        # X-axis group headers (above each column block)
+        internal_x_mid = (n_int - 1) / 2.0
+        external_x_mid = EXT_OFFSET + (n_ext - 1) / 2.0
+        for header_text, header_x in [("Internal", internal_x_mid),
+                                       ("External", external_x_mid)]:
+            fig.add_annotation(
+                x=header_x, y=n_layout - 0.5,
+                text=f"<b>{header_text}</b>",
+                showarrow=False,
+                xanchor="center", yanchor="bottom",
+                yshift=14,
+                font=dict(size=LABEL_FS + 1, family=FONT_FAMILY,
+                          color=PAPER_PALETTE["text"]),
+                xref=x_axis, yref=y_axis,
+            )
+
+        # Y-axis group headers (left of each row block, rotated). Plotly
+        # heatmaps put the first y label at the bottom by default, so the
+        # internal section is at the bottom and the external section at top.
+        internal_y_mid = (n_int - 1) / 2.0
+        external_y_mid = EXT_OFFSET + (n_ext - 1) / 2.0
+        for header_text, header_y in [("Internal", internal_y_mid),
+                                       ("External", external_y_mid)]:
+            fig.add_annotation(
+                x=0, y=header_y,
+                text=f"<b>{header_text}</b>",
+                showarrow=False,
+                xanchor="right", yanchor="middle",
+                xshift=-160,
+                textangle=-90,
+                font=dict(size=LABEL_FS + 1, family=FONT_FAMILY,
+                          color=PAPER_PALETTE["text"]),
+                xref=x_axis, yref=y_axis,
+            )
+
+        # Vertical + horizontal dividers between internal and external blocks
+        fig.add_shape(
+            type="line",
+            x0=n_int, x1=n_int,
+            y0=-0.5, y1=n_layout - 0.5,
+            xref=x_axis, yref=y_axis,
+            line=dict(color=PAPER_PALETTE["text"], width=2),
+        )
+        fig.add_shape(
+            type="line",
+            x0=-0.5, x1=n_layout - 0.5,
+            y0=n_int, y1=n_int,
+            xref=x_axis, yref=y_axis,
+            line=dict(color=PAPER_PALETTE["text"], width=2),
+        )
+
+    # ── Figure-level styling ─────────────────────────────────────────
+    fig_width = PAPER_W + 600          # ~2000 px wide
+    fig_height = 1700                  # tall enough for 2 stacked dense panels
+
+    style_paper_figure(
+        fig,
+        title=("Internal and External Benchmark Comparison — "
+               "Full Matrix"),
+        subtitle=("Spearman ρ across all internal sources, data "
+                  f"configurations, and academic benchmarks. {SIG_NOTE}"),
+        width=fig_width,
+        height=fig_height,
+        margin=dict(l=260, r=160, t=140, b=200),
+    )
+
+    # Bump subplot titles
+    panel_title_set = {title for _, title in LEVELS}
+    for ann in fig.layout.annotations:
+        if hasattr(ann, "text") and ann.text in panel_title_set:
+            ann.font = dict(size=LABEL_FS + 3, family=FONT_FAMILY,
+                            color=PAPER_PALETTE["text"])
+            ann.yshift = 32
+
+    # Tick fonts
+    for i in range(1, 3):
+        xkey = f"xaxis{i}" if i > 1 else "xaxis"
+        ykey = f"yaxis{i}" if i > 1 else "yaxis"
+        fig.layout[xkey].tickfont = dict(size=TICK_FS - 2, family=FONT_FAMILY)
+        fig.layout[ykey].tickfont = dict(size=TICK_FS - 2, family=FONT_FAMILY)
+        fig.layout[xkey].tickangle = -30
+
+    # Contamination legend (bottom-left, paper coords, real swatch)
+    sx0, sx1 = 0.085, 0.130
+    sy0, sy1 = -0.090, -0.060
+    fig.add_shape(
+        type="rect",
+        xref="paper", yref="paper",
+        x0=sx0, x1=sx1, y0=sy0, y1=sy1,
+        fillcolor=contam_color,
+        line=dict(color=contam_text, width=1),
+        layer="above",
+    )
+    fig.add_annotation(
+        xref="paper", yref="paper",
+        x=sx1 + 0.010, y=(sy0 + sy1) / 2,
+        xanchor="left", yanchor="middle",
+        text=("<b>Eloundou-contaminated cell</b> — Eloundou's task labels "
+              "were used to filter Copilot tasks, so correlations between "
+              "a Copilot-containing measure and an Eloundou benchmark "
+              "double-count that signal. Values shown for transparency."),
+        showarrow=False,
+        font=dict(size=ANNOT_FS + 1, family=FONT_FAMILY,
+                  color=PAPER_PALETTE["text"]),
+    )
+
+    save_figure(fig, results / "figures" / "convergence_full.png")
+    _copy_fig(results, figures, "convergence_full.png")
+    print("  -> convergence_full.png")
+
+
 def _load_deepdive_csv(name: str) -> pd.DataFrame | None:
     """Pull a CSV from the deepdive folder if it exists; None if not."""
     src = (ROOT / "analysis" / "exploratory" / "deepdive_within_nonphys_signal"
@@ -1057,6 +1370,21 @@ def write_markdown() -> None:
         "\n"
         "![major_de_nt_plane](figures/major_de_nt_plane.png)\n"
         "\n"
+        "---\n"
+        "\n"
+        "## convergence_full\n"
+        "\n"
+        "Combined version of the two main convergence charts (Part 1 — "
+        "`convergence` and `convergence_configs`): the four internal AI "
+        "sources and five `ANALYSIS_CONFIGS` data configurations are stacked "
+        "on a single y-axis (9 rows). The x-axis carries those same nine "
+        "measures as a lower-triangular internal block, then the gap "
+        "column, then the eight external academic benchmarks. Cell "
+        "rendering, group headers, and the Eloundou-contamination gray-out "
+        "match the main paper charts exactly.\n"
+        "\n"
+        "![convergence_full](figures/convergence_full.png)\n"
+        "\n"
         + extra,
         encoding="utf-8",
     )
@@ -1072,17 +1400,20 @@ def main() -> None:
     print("Appendix figures")
     print("=" * 60)
 
-    print("\n[1/4] phys_zone_faceted (modified)")
+    print("\n[1/5] phys_zone_faceted (modified)")
     build_phys_zone_faceted(results, figures)
 
-    print("\n[2/4] ska_full (full element-level SKA)")
+    print("\n[2/5] ska_full (full element-level SKA)")
     build_ska_full(results, figures)
 
-    print("\n[3/4] nonphys_gwa_diff_phys_excluded (within-non-phys structural)")
+    print("\n[3/5] nonphys_gwa_diff_phys_excluded (within-non-phys structural)")
     build_nonphys_gwa_diff_phys_excluded(results, figures)
 
-    print("\n[4/4] major_de_nt_plane (forward-looking quadrant)")
+    print("\n[4/5] major_de_nt_plane (forward-looking quadrant)")
     build_major_de_nt_plane(results, figures)
+
+    print("\n[5/5] convergence_full (sources + configs vs. external benchmarks)")
+    build_convergence_full(results, figures)
 
     print("\nWriting appendix_charts.md")
     write_markdown()

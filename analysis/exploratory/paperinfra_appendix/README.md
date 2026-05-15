@@ -10,6 +10,7 @@ Each chart is generated fresh by `run.py` (no copying from `paper/results/`).
 - **ska_full** — element-level SKA chart for skills, knowledge, and abilities, with the full ladder of workforce reference markers (Mean, P95, Top-10). The Part 2 chart trims this for the main text; this preserves the full version with abilities at the element level.
 - **nonphys_gwa_diff_phys_excluded** — within the 409 non-physical occupations (`pct_physical < 33%`), the General Work Activity composition gap between the top and bottom exposure quartile, computed over only the non-physical tasks of each occupation. Robustness test: confirms the GWA discrimination signal is not just a pct_physical residual proxy.
 - **major_de_nt_plane** — each of the 22 SOC major occupational categories on the demand-elasticity × new-task-creation plane (LLM-rated task properties, 1-5). Dot size ∝ workers affected; color = % tasks affected from All Confirmed. Dashed lines at the per-axis medians.
+- **convergence_full** — combined version of Part 1's `convergence` and `convergence_configs` charts. All 4 internal AI sources + 5 `ANALYSIS_CONFIGS` data configurations on a single y-axis (9 rows); same 9 measures as a lower-tri internal block on x, then the 8 external academic benchmarks. Reuses the paper builder so cell rendering, group headers, and Eloundou contamination gray-out match the main charts exactly.
 
 ## Run
 
