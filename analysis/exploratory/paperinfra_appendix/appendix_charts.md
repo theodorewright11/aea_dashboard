@@ -32,6 +32,22 @@ Each of the 22 SOC major occupational categories plotted on the demand-elasticit
 
 ---
 
+## convergence_full
+
+Combined version of the two main convergence charts (Part 1 — `convergence` and `convergence_configs`): the four internal AI sources and five `ANALYSIS_CONFIGS` data configurations are stacked on a single y-axis (9 rows). The x-axis carries those same nine measures as a lower-triangular internal block, then the gap column, then the eight external academic benchmarks. Cell rendering, group headers, and the Eloundou-contamination gray-out match the main paper charts exactly.
+
+![convergence_full](figures/convergence_full.png)
+
+---
+
+## overview_no_autoaug
+
+Paper part_1 `overview` recomputed with `use_auto_aug=False`. Each affected task contributes its full freq weight regardless of its 0–5 automatability score. Inside-bar text carries `Δ±X.Xpp` vs. the paper chart; black tick marks the paper-chart value's position on each bar.
+
+![overview_no_autoaug](figures/overview_no_autoaug.png)
+
+---
+
 ## Within-non-phys discrimination — friction × weight
 
 Cohen's d on the same top vs bottom exposure quartile of the 409 non-physical occupations (n=103 each), with each friction-property composite computed as a per-occ weighted mean across the occ's unique tasks. Negative d = top quartile lower on the property (predicted friction direction).

@@ -798,9 +798,13 @@ def build_convergence_configs(results: Path, figures: Path) -> None:
             config_data[ckey][level] = df.set_index("category")["pct_tasks_affected"]
         print(f"  {ANALYSIS_CONFIG_LABELS[ckey]}: loaded all levels")
 
+    # Reverse for heatmap so top→bottom y-axis matches the overview chart's
+    # config order. Plotly heatmaps plot row 0 at the BOTTOM, so passing
+    # reversed(CONFIG_ORDER) makes CONFIG_ORDER[0] = "all_confirmed" land at TOP.
+    cfg_keys_y = list(reversed(CONFIG_ORDER))
     _build_convergence_chart(
-        rows_keys=CONFIG_ORDER,
-        rows_labels=[ANALYSIS_CONFIG_LABELS[k] for k in CONFIG_ORDER],
+        rows_keys=cfg_keys_y,
+        rows_labels=[ANALYSIS_CONFIG_LABELS[k] for k in cfg_keys_y],
         rows_data=config_data,
         title="Internal and External Benchmark Comparison — by Data Configuration",
         subtitle="Spearman ρ across our data configurations and academic benchmarks",

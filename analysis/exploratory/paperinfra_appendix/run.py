@@ -1227,11 +1227,160 @@ def _national_totals_emp_wages() -> tuple[float, float]:
     return total_emp, total_wages
 
 
+def _compute_paper_overview_rows(total_emp: float, total_wages: float) -> list[dict]:
+    """Reproduce the paper part_1 build_overview values (auto_aug=True, method=freq)
+    so variant charts can show delta-vs-paper."""
+    rows: list[dict] = []
+    for key in OVERVIEW_CONFIG_ORDER:
+        ds = ANALYSIS_CONFIGS[key]
+        df = _run_overview_config(ds, use_auto_aug=True)
+        workers = float(df["workers_affected"].sum())
+        wages = float(df["wages_affected"].sum())
+        pct_tasks = float(df["pct_tasks_affected"].mean())
+        rows.append({
+            "config": key,
+            "pct_tasks": round(pct_tasks, 1),
+            "pct_workers": round(workers / total_emp * 100, 1),
+            "pct_wages": round(wages / total_wages * 100, 1),
+        })
+    return rows
+
+
+def _render_overview_with_deltas(
+    rows: list[dict],
+    paper_rows: list[dict],
+    title: str,
+    subtitle: str,
+    out_name: str,
+    results: Path,
+    figures: Path,
+    x_range_max: float = 75.0,
+) -> None:
+    """Render the overview chart with delta-vs-paper annotated inside each bar
+    AND a thin vertical marker on each bar at the paper chart's value (so the
+    reader can see where the original landed without flipping back)."""
+    paper_lookup = {p["config"]: p for p in paper_rows}
+
+    fig = go.Figure()
+    plot_rows = list(reversed(rows))
+    labels = [r["label"] for r in plot_rows]
+
+    metrics = [
+        ("pct_tasks",   "Tasks Exposed",
+         METRIC_COLORS["tasks"], "pct_tasks",
+         lambda r, d: f"{r['pct_tasks']:.1f}%  Δ{d:+.1f}pp"),
+        ("pct_workers", "Workers Exposed (% of National Employment)",
+         METRIC_COLORS["workers"], "pct_workers",
+         lambda r, d: f"{fmt_workers(r['workers'])} ({r['pct_workers']:.1f}%)  Δ{d:+.1f}pp"),
+        ("pct_wages",   "Wages Exposed (% of National Wages)",
+         METRIC_COLORS["wages"], "pct_wages",
+         lambda r, d: f"{fmt_wages(r['wages'])} ({r['pct_wages']:.1f}%)  Δ{d:+.1f}pp"),
+    ]
+
+    for pct_key, name, color, paper_key, fmt_fn in reversed(metrics):
+        texts = []
+        for r in plot_rows:
+            paper_val = paper_lookup[r["config"]][paper_key]
+            delta = r[pct_key] - paper_val
+            texts.append(fmt_fn(r, delta))
+        fig.add_trace(go.Bar(
+            y=labels,
+            x=[r[pct_key] for r in plot_rows],
+            name=name,
+            orientation="h",
+            marker=dict(color=color, line=dict(width=0)),
+            text=texts,
+            textposition="inside",
+            insidetextanchor="middle",
+            textfont=dict(size=INSIDE_FS - 4, color="white", family=FONT_FAMILY),
+        ))
+
+    # Vertical "where the paper chart landed" markers, one per bar in each cluster.
+    # Grouped-bar y offsets: with 3 traces and bargap=0.30, each cluster spans
+    # 0.70 in y units, with bargroupgap=0.06 between sub-bars. We compute the
+    # exact center and height of each sub-bar so the tick fully covers it.
+    n_per_cluster = 3
+    bargap = 0.30
+    bargroupgap = 0.06
+    cluster_span = 1.0 - bargap                       # 0.70
+    bar_pitch = cluster_span / n_per_cluster          # spacing between sub-bar centers (≈ 0.233)
+    bar_height = bar_pitch * (1.0 - bargroupgap)      # actual sub-bar height (≈ 0.219)
+    half_span = cluster_span / 2.0                    # 0.35
+    # Plotly grouped bars order: trace 0 at the BOTTOM of the cluster.
+    # Our metrics were added in reverse so wages=trace0, workers=trace1, tasks=trace2.
+    sub_centers = {
+        "pct_wages":   -half_span + 0.5 * bar_pitch,
+        "pct_workers": -half_span + 1.5 * bar_pitch,
+        "pct_tasks":   -half_span + 2.5 * bar_pitch,
+    }
+    shapes = []
+    for y_idx, r in enumerate(plot_rows):
+        paper_r = paper_lookup[r["config"]]
+        for paper_key in ("pct_tasks", "pct_workers", "pct_wages"):
+            xv = paper_r[paper_key]
+            yc = y_idx + sub_centers[paper_key]
+            shapes.append(dict(
+                type="line",
+                xref="x", yref="y",
+                x0=xv, x1=xv,
+                y0=yc - bar_height / 2.0,
+                y1=yc + bar_height / 2.0,
+                line=dict(color="rgba(20,20,20,0.95)", width=2),
+                layer="above",
+            ))
+
+    # Legend-only entry explaining the black tick. Scatter with a vertical-line
+    # marker so the legend swatch reads as a tick, not a horizontal line.
+    fig.add_trace(go.Scatter(
+        x=[None], y=[None],
+        mode="markers",
+        marker=dict(
+            symbol="line-ns",
+            color="rgba(20,20,20,0.95)",
+            size=14,
+            line=dict(color="rgba(20,20,20,0.95)", width=2),
+        ),
+        name="Paper-chart value (Δ baseline)",
+        showlegend=True,
+        hoverinfo="skip",
+    ))
+
+    fig.update_layout(
+        barmode="group",
+        bargap=0.30,
+        bargroupgap=0.06,
+        legend=dict(traceorder="reversed"),
+        xaxis=dict(
+            title=dict(text="% of National Total", font=dict(size=LABEL_FS)),
+            range=[0, x_range_max],
+            ticksuffix="%",
+        ),
+        yaxis=dict(
+            title=dict(text="Data Configuration", font=dict(size=LABEL_FS)),
+            tickfont=dict(size=LABEL_FS, family=FONT_FAMILY),
+        ),
+        shapes=shapes,
+    )
+
+    style_paper_figure(
+        fig, title, subtitle=subtitle,
+        height=PAPER_H + 140,
+        margin=dict(l=20, r=60, t=140, b=110),
+    )
+
+    save_figure(fig, results / "figures" / out_name)
+    _copy_fig(results, figures, out_name)
+    print(f"  -> {out_name}")
+
+
 def build_overview_no_autoaug(results: Path, figures: Path) -> None:
     """Variant of paper part_1 build_overview with auto_aug weighting off.
     Every affected task contributes its full freq weight regardless of its
-    0–5 automatability rating. Same five configs, same layout."""
+    0–5 automatability rating. Same five configs, same layout. Each bar
+    carries the delta-vs-paper-chart in percentage points (and a small
+    black tick on the bar at the paper chart's value)."""
     total_emp, total_wages = _national_totals_emp_wages()
+    paper_rows = _compute_paper_overview_rows(total_emp, total_wages)
 
     rows: list[dict] = []
     for key in OVERVIEW_CONFIG_ORDER:
@@ -1258,66 +1407,17 @@ def build_overview_no_autoaug(results: Path, figures: Path) -> None:
 
     save_csv(pd.DataFrame(rows), results / "overview_no_autoaug_totals.csv")
 
-    fig = go.Figure()
-    plot_rows = list(reversed(rows))
-    labels = [r["label"] for r in plot_rows]
-
-    metrics = [
-        ("pct_tasks",   "Tasks Exposed",
-         METRIC_COLORS["tasks"],
-         lambda r: f"{r['pct_tasks']:.1f}% tasks"),
-        ("pct_workers", "Workers Exposed (% of National Employment)",
-         METRIC_COLORS["workers"],
-         lambda r: f"{fmt_workers(r['workers'])} ({r['pct_workers']:.1f}%) workers"),
-        ("pct_wages",   "Wages Exposed (% of National Wages)",
-         METRIC_COLORS["wages"],
-         lambda r: f"{fmt_wages(r['wages'])} ({r['pct_wages']:.1f}%) wages"),
-    ]
-
-    for pct_key, name, color, fmt_fn in reversed(metrics):
-        fig.add_trace(go.Bar(
-            y=labels,
-            x=[r[pct_key] for r in plot_rows],
-            name=name,
-            orientation="h",
-            marker=dict(color=color, line=dict(width=0)),
-            text=[fmt_fn(r) for r in plot_rows],
-            textposition="inside",
-            insidetextanchor="middle",
-            textfont=dict(size=INSIDE_FS - 2, color="white", family=FONT_FAMILY),
-        ))
-
-    fig.update_layout(
-        barmode="group",
-        bargap=0.30,
-        bargroupgap=0.06,
-        legend=dict(traceorder="reversed"),
-        xaxis=dict(
-            title=dict(text="% of National Total", font=dict(size=LABEL_FS)),
-            range=[0, 65],
-            ticksuffix="%",
-        ),
-        yaxis=dict(
-            title=dict(text="Data Configuration", font=dict(size=LABEL_FS)),
-            tickfont=dict(size=LABEL_FS, family=FONT_FAMILY),
-        ),
-    )
-
-    style_paper_figure(
-        fig,
-        "AI Economic Exposure Across Data Configurations — No Auto-Aug Weighting",
+    _render_overview_with_deltas(
+        rows, paper_rows,
+        title="AI Economic Exposure Across Data Configurations — No Auto-Aug Weighting",
         subtitle=(
-            "Share of national tasks, employment, and wages exposed per AI "
-            "data configuration. Each affected task contributes its full "
-            "frequency weight regardless of its 0–5 automatability score."
+            "Each affected task contributes its full freq weight regardless of its 0–5 automatability score."
+            "<br>Δ inside each bar = delta vs. the paper chart in percentage points."
         ),
-        height=PAPER_H + 140,
-        margin=dict(l=20, r=60, t=140, b=110),
+        out_name="overview_no_autoaug.png",
+        results=results, figures=figures,
+        x_range_max=75.0,
     )
-
-    save_figure(fig, results / "figures" / "overview_no_autoaug.png")
-    _copy_fig(results, figures, "overview_no_autoaug.png")
-    print("  -> overview_no_autoaug.png")
 
 
 def _load_deepdive_csv(name: str) -> pd.DataFrame | None:
@@ -1521,6 +1621,18 @@ def write_markdown() -> None:
         "\n"
         "![convergence_full](figures/convergence_full.png)\n"
         "\n"
+        "---\n"
+        "\n"
+        "## overview_no_autoaug\n"
+        "\n"
+        "Paper part_1 `overview` recomputed with `use_auto_aug=False`. Each "
+        "affected task contributes its full freq weight regardless of its "
+        "0–5 automatability score. Inside-bar text carries `Δ±X.Xpp` vs. the "
+        "paper chart; black tick marks the paper-chart value's position on "
+        "each bar.\n"
+        "\n"
+        "![overview_no_autoaug](figures/overview_no_autoaug.png)\n"
+        "\n"
         + extra,
         encoding="utf-8",
     )
@@ -1536,16 +1648,16 @@ def main() -> None:
     print("Appendix figures")
     print("=" * 60)
 
-    print("\n[1/5] phys_zone_faceted (modified)")
+    print("\n[1/6] phys_zone_faceted (modified)")
     build_phys_zone_faceted(results, figures)
 
-    print("\n[2/5] ska_full (full element-level SKA)")
+    print("\n[2/6] ska_full (full element-level SKA)")
     build_ska_full(results, figures)
 
-    print("\n[3/5] nonphys_gwa_diff_phys_excluded (within-non-phys structural)")
+    print("\n[3/6] nonphys_gwa_diff_phys_excluded (within-non-phys structural)")
     build_nonphys_gwa_diff_phys_excluded(results, figures)
 
-    print("\n[4/5] major_de_nt_plane (forward-looking quadrant)")
+    print("\n[4/6] major_de_nt_plane (forward-looking quadrant)")
     build_major_de_nt_plane(results, figures)
 
     print("\n[5/6] convergence_full (sources + configs vs. external benchmarks)")
