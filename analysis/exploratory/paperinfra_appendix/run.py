@@ -27,6 +27,7 @@ from plotly.subplots import make_subplots
 
 from analysis.config import (
     ANALYSIS_CONFIGS,
+    ANALYSIS_CONFIG_LABELS,
     ROOT,
     ensure_results_dir,
     get_pct_tasks_affected,
@@ -36,9 +37,20 @@ from analysis.utils import FONT_FAMILY, save_figure, save_csv
 from analysis.paper.paper_config import (
     PAPER_W, PAPER_H,
     TITLE_FS, SUBTITLE_FS, LABEL_FS, TICK_FS, ANNOT_FS, LEGEND_FS,
+    INSIDE_FS,
     METRIC_COLORS, PAPER_PALETTE,
+    fmt_workers, fmt_wages,
     style_paper_figure,
 )
+
+# Match paper part_1 ordering (top → bottom in chart = first → last here)
+OVERVIEW_CONFIG_ORDER: list[str] = [
+    "all_confirmed",
+    "human_conversation",
+    "agentic_confirmed",
+    "agentic_ceiling",
+    "all_ceiling",
+]
 
 HERE = Path(__file__).resolve().parent
 DATA_DIR = ROOT / "data"
@@ -1184,6 +1196,130 @@ def build_convergence_full(results: Path, figures: Path) -> None:
     print("  -> convergence_full.png")
 
 
+def _run_overview_config(dataset_name: str, use_auto_aug: bool) -> pd.DataFrame:
+    from backend.compute import get_group_data
+    config = {
+        "selected_datasets": [dataset_name],
+        "combine_method": "Average",
+        "method": "freq",
+        "use_auto_aug": use_auto_aug,
+        "physical_mode": "all",
+        "geo": "nat",
+        "agg_level": "occupation",
+        "sort_by": "% Tasks Affected",
+        "top_n": 9999,
+        "search_query": "",
+        "context_size": 3,
+    }
+    data = get_group_data(config)
+    assert data is not None, f"No data for {dataset_name}"
+    df: pd.DataFrame = data["df"]
+    group_col: str = data["group_col"]
+    return df.rename(columns={group_col: "category"})
+
+
+def _national_totals_emp_wages() -> tuple[float, float]:
+    from backend.compute import load_eco_raw
+    eco = load_eco_raw()
+    occ = eco.drop_duplicates(subset=["title_current"])
+    total_emp = float(occ["emp_tot_nat_2024"].sum())
+    total_wages = float((occ["emp_tot_nat_2024"] * occ["a_med_nat_2024"]).sum())
+    return total_emp, total_wages
+
+
+def build_overview_no_autoaug(results: Path, figures: Path) -> None:
+    """Variant of paper part_1 build_overview with auto_aug weighting off.
+    Every affected task contributes its full freq weight regardless of its
+    0–5 automatability rating. Same five configs, same layout."""
+    total_emp, total_wages = _national_totals_emp_wages()
+
+    rows: list[dict] = []
+    for key in OVERVIEW_CONFIG_ORDER:
+        ds = ANALYSIS_CONFIGS[key]
+        label = ANALYSIS_CONFIG_LABELS[key]
+        df = _run_overview_config(ds, use_auto_aug=False)
+
+        workers = float(df["workers_affected"].sum())
+        wages = float(df["wages_affected"].sum())
+        pct_tasks = float(df["pct_tasks_affected"].mean())
+        pct_workers = workers / total_emp * 100
+        pct_wages = wages / total_wages * 100
+
+        rows.append({
+            "config": key, "label": label,
+            "pct_tasks": round(pct_tasks, 1),
+            "pct_workers": round(pct_workers, 1),
+            "pct_wages": round(pct_wages, 1),
+            "workers": workers, "wages": wages,
+        })
+        print(f"  {label}: {pct_tasks:.1f}% tasks, "
+              f"{fmt_workers(workers)} ({pct_workers:.1f}%), "
+              f"{fmt_wages(wages)} ({pct_wages:.1f}%)")
+
+    save_csv(pd.DataFrame(rows), results / "overview_no_autoaug_totals.csv")
+
+    fig = go.Figure()
+    plot_rows = list(reversed(rows))
+    labels = [r["label"] for r in plot_rows]
+
+    metrics = [
+        ("pct_tasks",   "Tasks Exposed",
+         METRIC_COLORS["tasks"],
+         lambda r: f"{r['pct_tasks']:.1f}% tasks"),
+        ("pct_workers", "Workers Exposed (% of National Employment)",
+         METRIC_COLORS["workers"],
+         lambda r: f"{fmt_workers(r['workers'])} ({r['pct_workers']:.1f}%) workers"),
+        ("pct_wages",   "Wages Exposed (% of National Wages)",
+         METRIC_COLORS["wages"],
+         lambda r: f"{fmt_wages(r['wages'])} ({r['pct_wages']:.1f}%) wages"),
+    ]
+
+    for pct_key, name, color, fmt_fn in reversed(metrics):
+        fig.add_trace(go.Bar(
+            y=labels,
+            x=[r[pct_key] for r in plot_rows],
+            name=name,
+            orientation="h",
+            marker=dict(color=color, line=dict(width=0)),
+            text=[fmt_fn(r) for r in plot_rows],
+            textposition="inside",
+            insidetextanchor="middle",
+            textfont=dict(size=INSIDE_FS - 2, color="white", family=FONT_FAMILY),
+        ))
+
+    fig.update_layout(
+        barmode="group",
+        bargap=0.30,
+        bargroupgap=0.06,
+        legend=dict(traceorder="reversed"),
+        xaxis=dict(
+            title=dict(text="% of National Total", font=dict(size=LABEL_FS)),
+            range=[0, 65],
+            ticksuffix="%",
+        ),
+        yaxis=dict(
+            title=dict(text="Data Configuration", font=dict(size=LABEL_FS)),
+            tickfont=dict(size=LABEL_FS, family=FONT_FAMILY),
+        ),
+    )
+
+    style_paper_figure(
+        fig,
+        "AI Economic Exposure Across Data Configurations — No Auto-Aug Weighting",
+        subtitle=(
+            "Share of national tasks, employment, and wages exposed per AI "
+            "data configuration. Each affected task contributes its full "
+            "frequency weight regardless of its 0–5 automatability score."
+        ),
+        height=PAPER_H + 140,
+        margin=dict(l=20, r=60, t=140, b=110),
+    )
+
+    save_figure(fig, results / "figures" / "overview_no_autoaug.png")
+    _copy_fig(results, figures, "overview_no_autoaug.png")
+    print("  -> overview_no_autoaug.png")
+
+
 def _load_deepdive_csv(name: str) -> pd.DataFrame | None:
     """Pull a CSV from the deepdive folder if it exists; None if not."""
     src = (ROOT / "analysis" / "exploratory" / "deepdive_within_nonphys_signal"
@@ -1412,8 +1548,11 @@ def main() -> None:
     print("\n[4/5] major_de_nt_plane (forward-looking quadrant)")
     build_major_de_nt_plane(results, figures)
 
-    print("\n[5/5] convergence_full (sources + configs vs. external benchmarks)")
+    print("\n[5/6] convergence_full (sources + configs vs. external benchmarks)")
     build_convergence_full(results, figures)
+
+    print("\n[6/6] overview_no_autoaug (paper part_1 overview, no auto_aug)")
+    build_overview_no_autoaug(results, figures)
 
     print("\nWriting appendix_charts.md")
     write_markdown()

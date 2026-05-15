@@ -44,10 +44,10 @@ DATA_DIR = ROOT / "data"
 # ── Config display order ─────────────────────────────────────────────────
 CONFIG_ORDER: list[str] = [
     "all_confirmed",
-    "all_ceiling",
     "human_conversation",
     "agentic_confirmed",
     "agentic_ceiling",
+    "all_ceiling",
 ]
 
 # ── Correlation sources ──────────────────────────────────────────────────
@@ -231,7 +231,7 @@ def build_overview(results: Path, figures: Path) -> None:
     # within each grouped cluster). Plotly grouped bars stack first-trace
     # at the bottom of the cluster, so add them in reverse.
     metrics = [
-        ("pct_tasks",   "% Tasks Exposed",
+        ("pct_tasks",   "Tasks Exposed",
          METRIC_COLORS["tasks"],
          lambda r: f"{r['pct_tasks']:.1f}% tasks"),
         ("pct_workers", "Workers Exposed (% of National Employment)",
@@ -571,9 +571,9 @@ def _build_convergence_chart(
                 hoverinfo="z",
                 colorbar=dict(
                     title=dict(text="Spearman ρ",
-                               font=dict(size=LABEL_FS + 2, family=FONT_FAMILY)),
+                               font=dict(size=LABEL_FS + 4, family=FONT_FAMILY)),
                     len=0.45, y=0.22,
-                    tickfont=dict(size=TICK_FS + 1, family=FONT_FAMILY),
+                    tickfont=dict(size=TICK_FS + 4, family=FONT_FAMILY),
                 ),
             ),
             row=row_pos, col=col_pos,
@@ -657,10 +657,22 @@ def _build_convergence_chart(
     style_paper_figure(
         fig,
         title,
-        subtitle=full_subtitle,
+        subtitle="",
         width=fig_width,
         height=fig_height,
-        margin=dict(l=20, r=120, t=170, b=220),
+        margin=dict(l=20, r=120, t=210, b=300),
+    )
+
+    # Re-attach subtitle at a bumped font size (the global SUBTITLE_FS=15
+    # reads small on this dense chart) and with a clear gap below it before
+    # the subplot titles start. The extra <br> adds vertical breathing room
+    # between subtitle and the "Major level" / "Minor level" subplot titles.
+    bumped_subtitle_fs = SUBTITLE_FS + 4   # 19pt
+    muted = PAPER_PALETTE["muted"]
+    fig.layout.title.text = (
+        f"{title}"
+        f"<br><span style='font-size:{bumped_subtitle_fs}px;color:{muted}'>"
+        f"{full_subtitle}</span>"
     )
 
     # Bump subplot titles up + embiggen so they sit clear of the
@@ -682,7 +694,7 @@ def _build_convergence_chart(
         # Swatch position (paper coords). Pushed well below the heatmap
         # so it sits clear of the angled tick labels.
         sx0, sx1 = 0.085, 0.130
-        sy0, sy1 = -0.150, -0.110
+        sy0, sy1 = -0.230, -0.190
         fig.add_shape(
             type="rect",
             xref="paper", yref="paper",
@@ -696,11 +708,11 @@ def _build_convergence_chart(
             x=sx1 + 0.010, y=(sy0 + sy1) / 2,
             xanchor="left", yanchor="middle",
             text=("<b>Eloundou-contaminated cell</b> — Eloundou's task labels "
-                  "were used to filter Copilot tasks, so correlations between "
-                  "a Copilot-containing measure and an Eloundou benchmark "
-                  "double-count that signal. Values shown for transparency."),
+                  "were used to filter Copilot tasks, so correlations between a "
+                  "Copilot-containing measure and an Eloundou<br>"
+                  "benchmark double-count that signal. Values shown for transparency."),
             showarrow=False,
-            font=dict(size=ANNOT_FS + 3, family=FONT_FAMILY,
+            font=dict(size=ANNOT_FS + 5, family=FONT_FAMILY,
                       color=PAPER_PALETTE["text"]),
         )
 
