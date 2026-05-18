@@ -78,6 +78,12 @@ analysis/
 │   ├── extcompare_eloundou/     — T0–T4 label count matrices and auto-aug
 │   │                              distributions joined onto our datasets via
 │   │                              Eloundou's labeling TSV.
+│   ├── extcompare_eloundou_diff/ — Difference (not correlation) between our
+│   │                              pct_tasks_affected and Eloundou GPT-4 β:
+│   │                              scatter, Bland–Altman, and SOC-major
+│   │                              diverging bars on raw / zscore / percentile
+│   │                              bases for all_confirmed + all_ceiling.
+│   │                              7 figures; appendix-figure candidate.
 │   │
 │   │   ── audit_*  — Methodology audits / robustness (gitignored)
 │   ├── audit_task_properties/   — 12 LLM-rated task properties (m/d/s/...) vs.
