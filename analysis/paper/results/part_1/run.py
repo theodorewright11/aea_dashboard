@@ -67,6 +67,15 @@ AGG_TITLES: dict[str, str] = {
     "broad": "Broad level",
     "occupation": "Occ level",
 }
+# Display word for the level in a chart title, and short slug for filenames.
+LEVEL_TITLE_WORD: dict[str, str] = {
+    "major": "Major", "minor": "Minor", "broad": "Broad",
+    "occupation": "Occupation",
+}
+LEVEL_FILE_SHORT: dict[str, str] = {
+    "major": "major", "minor": "minor", "broad": "broad",
+    "occupation": "occ",
+}
 
 TREND_CONFIGS: list[str] = ["all_confirmed", "all_ceiling"]
 
@@ -459,17 +468,23 @@ def _build_convergence_chart(
     results: Path,
     figures: Path,
     y_axis_title: str,
+    levels: list[str] | None = None,
     contaminated_rows: set[str] | None = None,
 ) -> None:
     """Build one combined heatmap (lower-tri internal + external block).
 
     `rows_keys` and `rows_labels` define the y-axis. `rows_data` is a
     nested dict {key → {level → pd.Series}} of pct_tasks_affected at
-    each SOC level. `contaminated_rows` is the set of row labels whose
-    correlations against ELOUNDOU_LABELS columns should be visually
+    each SOC level. `levels` selects which SOC levels become panels —
+    panels are stacked vertically (one column) so each one renders at
+    the full figure width, keeping fonts legible when the figure is
+    scaled into the paper. `contaminated_rows` is the set of row labels
+    whose correlations against ELOUNDOU_LABELS columns should be visually
     grayed out (the Eloundou-filter contamination on Copilot-containing
     measures).
     """
+    levels = levels or ["major", "occupation"]
+    n_levels = len(levels)
     contaminated_rows = contaminated_rows or set()
     eloundou = _load_eloundou_occ()
     aioe = _compute_aioe_occ()
@@ -507,7 +522,7 @@ def _build_convergence_chart(
     matrices: dict[str, np.ndarray] = {}
     pmatrices: dict[str, np.ndarray] = {}
 
-    for level in AGG_LEVELS:
+    for level in levels:
         mat = np.full((n, n_cols), np.nan)
         pmat = np.full((n, n_cols), np.nan)
 
@@ -561,15 +576,16 @@ def _build_convergence_chart(
     z_min = float(np.floor(all_vals.min() * 20) / 20)
     z_max = 1.0
 
-    # Tight 2x2 grid — panels pushed close together so the heatmap content
-    # itself takes up more of the figure area. Vertical spacing still has
-    # to leave room for the "Internal" / "External" group headers above
-    # each panel + the subplot title above those.
+    # One panel per SOC level (stacked if more than one) so each panel
+    # spans the full figure width — this keeps the cell numbers and tick
+    # labels legible once the figure is scaled into the paper. For a
+    # single-level chart the SOC level is already in the figure title, so
+    # the per-panel subplot title is suppressed.
     fig = make_subplots(
-        rows=2, cols=2,
-        subplot_titles=[AGG_TITLES[l] for l in AGG_LEVELS],
-        horizontal_spacing=0.09,
-        vertical_spacing=0.20,
+        rows=n_levels, cols=1,
+        subplot_titles=([AGG_TITLES[l] for l in levels]
+                        if n_levels > 1 else [""]),
+        vertical_spacing=0.13,
     )
 
     # Cell number font — bumped past HEATMAP_TEXT_FS for readability
@@ -578,9 +594,9 @@ def _build_convergence_chart(
     contam_color = "rgba(200, 200, 200, 0.92)"
     contam_text  = "#777777"
 
-    for idx, level in enumerate(AGG_LEVELS):
-        row_pos = idx // 2 + 1
-        col_pos = idx % 2 + 1
+    for idx, level in enumerate(levels):
+        row_pos = idx + 1
+        col_pos = 1
         mat = matrices[level]
         pmat = pmatrices[level]
 
@@ -591,12 +607,12 @@ def _build_convergence_chart(
                 y=rows_labels_disp,
                 colorscale=[[0, HEATMAP_LOW], [1, HEATMAP_HIGH]],
                 zmin=z_min, zmax=z_max,
-                showscale=(idx == 3),
+                showscale=(idx == 0),
                 hoverinfo="z",
                 colorbar=dict(
                     title=dict(text="Spearman ρ",
                                font=dict(size=LABEL_FS + 4, family=FONT_FAMILY)),
-                    len=0.45, y=0.22,
+                    len=0.55, y=0.5,
                     tickfont=dict(size=TICK_FS + 4, family=FONT_FAMILY),
                 ),
             ),
@@ -672,10 +688,10 @@ def _build_convergence_chart(
             line=dict(color=PAPER_PALETTE["text"], width=2),
         )
 
-    # Width unchanged from the previous version — just shrink margins
-    # so the panels themselves are larger inside the same canvas.
+    # Each panel spans the full width; figure height scales with the
+    # number of stacked panels.
     fig_width = PAPER_W + max(0, (n_cols - 8) * 80)
-    fig_height = PAPER_H + 540
+    fig_height = 520 + n_levels * 640
 
     full_subtitle = f"{subtitle}. {SIG_NOTE}"
     style_paper_figure(
@@ -684,7 +700,7 @@ def _build_convergence_chart(
         subtitle="",
         width=fig_width,
         height=fig_height,
-        margin=dict(l=20, r=120, t=210, b=300),
+        margin=dict(l=60, r=120, t=210, b=300),
     )
 
     # Re-attach subtitle at a bumped font size (the global SUBTITLE_FS=15
@@ -740,16 +756,14 @@ def _build_convergence_chart(
                       color=PAPER_PALETTE["text"]),
         )
 
-    # y-axis title only on the left column (panels 1 and 3) so it doesn't
-    # collide with the colorbar on the right-column panels.
-    left_col_axes = {1, 3}
-    for i in range(1, 5):
+    # Every panel is full-width (stacked), so the y-axis title goes on all.
+    for i in range(1, n_levels + 1):
         xkey = f"xaxis{i}" if i > 1 else "xaxis"
         ykey = f"yaxis{i}" if i > 1 else "yaxis"
         fig.layout[xkey].tickfont = dict(size=TICK_FS + 1, family=FONT_FAMILY)
         fig.layout[ykey].tickfont = dict(size=TICK_FS + 1, family=FONT_FAMILY)
         fig.layout[xkey].tickangle = -30
-        if y_axis_title and i in left_col_axes:
+        if y_axis_title:
             fig.layout[ykey].title = dict(
                 text=y_axis_title,
                 font=dict(size=LABEL_FS + 1, family=FONT_FAMILY),
@@ -760,30 +774,42 @@ def _build_convergence_chart(
     print(f"  -> {out_name}")
 
 
+# SOC levels shown in the main-paper convergence charts. Minor and Broad
+# move to the appendix (full-matrix style) so the main charts can stay at
+# two stacked panels — wide enough to keep every font ≥ 8pt once scaled
+# into the paper.
+MAIN_CONVERGENCE_LEVELS: list[str] = ["major", "occupation"]
+
+
 def build_convergence(results: Path, figures: Path) -> None:
     """Source-level external benchmark comparison: 4 internal sources
-    on the y-axis, 4 sources (lower-tri) + 4 external benchmarks on x."""
+    on the y-axis, 4 sources (lower-tri) + external benchmarks on x.
+    One single-panel chart per SOC level (Major, Occupation)."""
     source_data: dict[str, dict[str, pd.Series]] = {}
     for skey in CORR_ORDER:
         ds = CORR_SOURCES[skey]["dataset"]
         source_data[skey] = {}
-        for level in AGG_LEVELS:
+        for level in MAIN_CONVERGENCE_LEVELS:
             df = _run_config(ds, level)
             source_data[skey][level] = df.set_index("category")["pct_tasks_affected"]
-        print(f"  {CORR_SOURCES[skey]['label']}: loaded all levels")
+        print(f"  {CORR_SOURCES[skey]['label']}: loaded {MAIN_CONVERGENCE_LEVELS}")
 
-    _build_convergence_chart(
-        rows_keys=CORR_ORDER,
-        rows_labels=CORR_LABELS,
-        rows_data=source_data,
-        title="Internal and External Benchmark Comparison — by AI Source",
-        subtitle="Spearman ρ across our internal sources and academic benchmarks",
-        out_name="convergence.png",
-        csv_name="spearman_combined.csv",
-        results=results, figures=figures,
-        y_axis_title="Internal Source",
-        contaminated_rows=CONTAMINATED_SOURCE_ROWS,
-    )
+    for level in MAIN_CONVERGENCE_LEVELS:
+        short = LEVEL_FILE_SHORT[level]
+        _build_convergence_chart(
+            rows_keys=CORR_ORDER,
+            rows_labels=CORR_LABELS,
+            rows_data=source_data,
+            title=("Internal and External Benchmark Comparison — by AI "
+                   f"Source ({LEVEL_TITLE_WORD[level]} Level)"),
+            subtitle="Spearman ρ across our internal sources and academic benchmarks",
+            out_name=f"convergence_{short}.png",
+            csv_name=f"spearman_combined_{short}.csv",
+            results=results, figures=figures,
+            y_axis_title="Internal Source",
+            levels=[level],
+            contaminated_rows=CONTAMINATED_SOURCE_ROWS,
+        )
 
 
 def build_convergence_configs(results: Path, figures: Path) -> None:
@@ -793,27 +819,31 @@ def build_convergence_configs(results: Path, figures: Path) -> None:
     for ckey in CONFIG_ORDER:
         ds = ANALYSIS_CONFIGS[ckey]
         config_data[ckey] = {}
-        for level in AGG_LEVELS:
+        for level in MAIN_CONVERGENCE_LEVELS:
             df = _run_config(ds, level)
             config_data[ckey][level] = df.set_index("category")["pct_tasks_affected"]
-        print(f"  {ANALYSIS_CONFIG_LABELS[ckey]}: loaded all levels")
+        print(f"  {ANALYSIS_CONFIG_LABELS[ckey]}: loaded {MAIN_CONVERGENCE_LEVELS}")
 
     # Reverse for heatmap so top→bottom y-axis matches the overview chart's
     # config order. Plotly heatmaps plot row 0 at the BOTTOM, so passing
     # reversed(CONFIG_ORDER) makes CONFIG_ORDER[0] = "all_confirmed" land at TOP.
     cfg_keys_y = list(reversed(CONFIG_ORDER))
-    _build_convergence_chart(
-        rows_keys=cfg_keys_y,
-        rows_labels=[ANALYSIS_CONFIG_LABELS[k] for k in cfg_keys_y],
-        rows_data=config_data,
-        title="Internal and External Benchmark Comparison — by Data Configuration",
-        subtitle="Spearman ρ across our data configurations and academic benchmarks",
-        out_name="convergence_configs.png",
-        csv_name="spearman_combined_configs.csv",
-        results=results, figures=figures,
-        y_axis_title="Data Configuration",
-        contaminated_rows=CONTAMINATED_CONFIG_ROWS,
-    )
+    for level in MAIN_CONVERGENCE_LEVELS:
+        short = LEVEL_FILE_SHORT[level]
+        _build_convergence_chart(
+            rows_keys=cfg_keys_y,
+            rows_labels=[ANALYSIS_CONFIG_LABELS[k] for k in cfg_keys_y],
+            rows_data=config_data,
+            title=("Internal and External Benchmark Comparison — by Data "
+                   f"Configuration ({LEVEL_TITLE_WORD[level]} Level)"),
+            subtitle="Spearman ρ across our data configurations and academic benchmarks",
+            out_name=f"convergence_configs_{short}.png",
+            csv_name=f"spearman_combined_configs_{short}.csv",
+            results=results, figures=figures,
+            y_axis_title="Data Configuration",
+            levels=[level],
+            contaminated_rows=CONTAMINATED_CONFIG_ROWS,
+        )
 
 
 # ─────────────────────────────────────────────────────────────────────────

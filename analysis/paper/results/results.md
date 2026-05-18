@@ -6,7 +6,9 @@
 
 ### External Benchmark Comparison — by AI Source
 
-![External Benchmark Comparison — Source-level](part_1/figures/convergence.png)
+![External Benchmark Comparison — Source-level, Major](part_1/figures/convergence_major.png)
+
+![External Benchmark Comparison — Source-level, Occupation](part_1/figures/convergence_occ.png)
 
 *Prose pending update for new chart.*
 
@@ -14,7 +16,9 @@
 
 ### External Benchmark Comparison — by Data Configuration
 
-![External Benchmark Comparison — Config-level](part_1/figures/convergence_configs.png)
+![External Benchmark Comparison — Config-level, Major](part_1/figures/convergence_configs_major.png)
+
+![External Benchmark Comparison — Config-level, Occupation](part_1/figures/convergence_configs_occ.png)
 
 *Prose pending.*
 

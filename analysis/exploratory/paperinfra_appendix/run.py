@@ -1,16 +1,22 @@
 """Appendix figures.
 
-Two charts produced fresh by this run.py (no copying from elsewhere):
+Charts produced fresh by this run.py (no copying from elsewhere), ordered
+to match the paper's chart flow — correlation, aggregate economy, trend,
+then SKA:
 
-1. phys_zone_faceted — three panels (Physical | Mixed | Non-physical) of
-   job zone violins, with per-row (job zone) and per-column (phys group)
-   median + n labels in addition to per-cell annotations.
-
-2. ska_full — element-level SKA chart for skills, abilities, knowledge,
+1. convergence_full — full square correlation matrix, one chart per SOC
+   level (major / minor / broad / occ).
+2. overview_no_autoaug — paper part_1 `overview` recomputed with
+   `use_auto_aug=False`.
+3. temporal_trend_nonphys — single-panel non-physical variant of Part 1's
+   `temporal_trend`.
+4. ska_full — element-level SKA chart for skills, abilities, knowledge,
    with the full ladder of workforce references (mean, P95, top-10). The
    Part 2 chart trims this down for readability in the main text; the
    appendix preserves the full version with abilities included at the
    element level.
+5. nonphys_gwa_diff_phys_excluded — within-non-phys GWA composition gap
+   between the top and bottom exposure quartile (robustness check).
 
 Run from project root:
     venv/Scripts/python -m analysis.exploratory.paperinfra_appendix.run
@@ -28,6 +34,7 @@ from plotly.subplots import make_subplots
 from analysis.config import (
     ANALYSIS_CONFIGS,
     ANALYSIS_CONFIG_LABELS,
+    ANALYSIS_CONFIG_SERIES,
     ROOT,
     ensure_results_dir,
     get_pct_tasks_affected,
@@ -38,7 +45,7 @@ from analysis.paper.paper_config import (
     PAPER_W, PAPER_H,
     TITLE_FS, SUBTITLE_FS, LABEL_FS, TICK_FS, ANNOT_FS, LEGEND_FS,
     INSIDE_FS,
-    METRIC_COLORS, PAPER_PALETTE,
+    METRIC_COLORS, METRIC_COLORS_LIGHT, PAPER_PALETTE,
     fmt_workers, fmt_wages,
     style_paper_figure,
 )
@@ -112,170 +119,8 @@ def _load_occ_structural() -> pd.DataFrame:
     return occ
 
 
-def _occ_with_pct() -> pd.DataFrame:
-    occ = _load_occ_structural()
-    pct = get_pct_tasks_affected(PRIMARY_DATASET)
-    occ["pct_tasks_affected"] = occ["title_current"].map(pct)
-    occ = occ.dropna(subset=["pct_tasks_affected", "job_zone"])
-    occ["job_zone"] = occ["job_zone"].astype(int)
-    return occ
-
-
 # ──────────────────────────────────────────────────────────────────────────
-# Chart 1: phys_zone_faceted (modified)
-# ──────────────────────────────────────────────────────────────────────────
-
-def build_phys_zone_faceted(results: Path, figures: Path) -> None:
-    occ = _occ_with_pct()
-    zones = sorted(occ["job_zone"].unique())
-
-    rows_csv = []
-    for grp in OCC_GROUPS:
-        for z in zones:
-            sub = occ[(occ["occ_group"] == grp) & (occ["job_zone"] == z)]
-            rows_csv.append({
-                "occ_group": grp,
-                "job_zone": z,
-                "n_occs": len(sub),
-                "median_pct": (round(float(sub["pct_tasks_affected"].median()), 1)
-                               if len(sub) else None),
-                "mean_pct": (round(float(sub["pct_tasks_affected"].mean()), 1)
-                             if len(sub) else None),
-            })
-    save_csv(pd.DataFrame(rows_csv), results / "phys_zone_crosstab.csv")
-
-    # Panel titles include column-level (group) n + median across all zones
-    panel_titles: list[str] = []
-    for grp in OCC_GROUPS:
-        sub = occ[occ["occ_group"] == grp]
-        med = sub["pct_tasks_affected"].median()
-        panel_titles.append(
-            f"{grp}<br><sub>n={len(sub)} · median {med:.0f}%</sub>"
-        )
-
-    fig = make_subplots(
-        rows=1, cols=3,
-        shared_yaxes=True,
-        horizontal_spacing=0.05,
-        subplot_titles=panel_titles,
-    )
-
-    y_labels = [f"Zone {z}" for z in zones]
-
-    for col_idx, grp in enumerate(OCC_GROUPS, start=1):
-        grp_df = occ[occ["occ_group"] == grp]
-        for z in zones:
-            sub = grp_df[grp_df["job_zone"] == z]
-            label = f"Zone {z}"
-            if len(sub) == 0:
-                fig.add_trace(go.Scatter(
-                    x=[None], y=[label],
-                    mode="markers",
-                    marker=dict(opacity=0),
-                    showlegend=False, hoverinfo="skip",
-                ), row=1, col=col_idx)
-                continue
-            fig.add_trace(go.Violin(
-                x=sub["pct_tasks_affected"],
-                y=[label] * len(sub),
-                marker_color=ZONE_COLORS[z],
-                line_color=ZONE_COLORS[z],
-                fillcolor=ZONE_COLORS[z],
-                opacity=0.7,
-                box_visible=True,
-                meanline_visible=True,
-                orientation="h",
-                side="positive",
-                width=0.9,
-                points=False,
-                showlegend=False,
-                name=f"{grp} — {label}",
-                hovertemplate=f"{grp}, {label}<br>%{{x:.1f}}%<extra></extra>",
-            ), row=1, col=col_idx)
-
-        # Per-cell n + median annotation, parked at far left of each panel
-        # (avoids overlapping the density tails which sit on the right).
-        for z in zones:
-            sub = grp_df[grp_df["job_zone"] == z]
-            if len(sub) == 0:
-                txt = "n=0"
-            else:
-                med = sub["pct_tasks_affected"].median()
-                txt = f"n={len(sub)} · med {med:.0f}%"
-            fig.add_annotation(
-                x=2, y=f"Zone {z}",
-                xref=f"x{'' if col_idx == 1 else col_idx}",
-                yref=f"y{'' if col_idx == 1 else col_idx}",
-                text=txt,
-                showarrow=False,
-                xanchor="left", yanchor="middle",
-                font=dict(size=ANNOT_FS - 2,
-                          color=PAPER_PALETTE["neutral"],
-                          family=FONT_FAMILY),
-                bgcolor="rgba(255,255,255,0.85)",
-            )
-
-    y_order = [f"Zone {z}" for z in reversed(zones)]
-    for col_idx in range(1, 4):
-        fig.update_yaxes(
-            categoryorder="array",
-            categoryarray=y_order,
-            showgrid=False, showline=False,
-            tickfont=dict(size=TICK_FS - 1, family=FONT_FAMILY),
-            row=1, col=col_idx,
-        )
-        fig.update_xaxes(
-            range=[0, 100], dtick=20,
-            showgrid=True, gridcolor=PAPER_PALETTE["grid"],
-            showline=True, linecolor=PAPER_PALETTE["grid"],
-            row=1, col=col_idx,
-        )
-        if col_idx == 2:
-            fig.update_xaxes(
-                title=dict(text="% Tasks Affected", font=dict(size=LABEL_FS)),
-                row=1, col=col_idx,
-            )
-
-    # Per-row (zone) summary label, anchored beside the y-axis on the left.
-    # Pooled across all three panels.
-    for z in zones:
-        sub = occ[occ["job_zone"] == z]
-        med = sub["pct_tasks_affected"].median()
-        fig.add_annotation(
-            x=-0.025, y=f"Zone {z}",
-            xref="paper",
-            yref="y",
-            text=f"<b>n={len(sub)}</b><br>med {med:.0f}%",
-            showarrow=False,
-            xanchor="right", yanchor="middle", align="right",
-            font=dict(size=ANNOT_FS - 1,
-                      color=PAPER_PALETTE["neutral"],
-                      family=FONT_FAMILY),
-        )
-
-    style_paper_figure(
-        fig,
-        "AI Exposure by Physical Mix × Preparation Level",
-        subtitle=f"Job zone violins within each occupation group ({len(occ)} occupations)",
-        height=720,
-        width=PAPER_W + 80,
-        margin=dict(l=160, r=60, t=140, b=80),
-    )
-
-    # Style the panel titles (kept smaller because they wrap)
-    panel_title_set = set(panel_titles)
-    for ann in fig.layout.annotations:
-        if hasattr(ann, "text") and ann.text in panel_title_set:
-            ann.font = dict(size=LABEL_FS - 1, family=FONT_FAMILY,
-                            color=PAPER_PALETTE["text"])
-
-    save_figure(fig, results / "figures" / "phys_zone_faceted.png", scale=2)
-    _copy_fig(results, figures, "phys_zone_faceted.png")
-    print("  -> phys_zone_faceted.png")
-
-
-# ──────────────────────────────────────────────────────────────────────────
-# Chart 2: ska_full — original element-level SKA with full workforce ladder
+# ska_full — original element-level SKA with full workforce ladder
 # ──────────────────────────────────────────────────────────────────────────
 
 def _compute_ska_variants(
@@ -504,7 +349,7 @@ def build_ska_full(results: Path, figures: Path) -> None:
 
 
 # ──────────────────────────────────────────────────────────────────────────
-# Chart 3: nonphys_gwa_diff_phys_excluded
+# nonphys_gwa_diff_phys_excluded
 # Within non-physical occupations, what kinds of work separate the more-
 # from the less-exposed — restricted to non-physical tasks on both sides
 # so the GWA composition signal can't be a phys-residual proxy.
@@ -670,224 +515,17 @@ def build_nonphys_gwa_diff_phys_excluded(
     print("  -> nonphys_gwa_diff_phys_excluded.png")
 
 
-# ──────────────────────────────────────────────────────────────────────────
-# Chart 4: major_de_nt_plane
-# Each major plotted on the demand-elasticity × new-task-creation plane.
-# Dot size ~ workers affected; color ~ % tasks affected (All Confirmed).
-# Labels positioned with collision-avoidance to stay readable.
-# ──────────────────────────────────────────────────────────────────────────
-
-def _major_pct_and_workers() -> pd.DataFrame:
-    """Major-level pct_tasks_affected and workers_affected from All Confirmed."""
-    from backend.compute import get_group_data
-    rows = []
-    for sort_by, val_col in [("% Tasks Affected", "pct_tasks_affected"),
-                             ("Workers Affected", "workers_affected")]:
-        data = get_group_data({
-            "selected_datasets": [PRIMARY_DATASET],
-            "combine_method": "Average", "method": "freq", "use_auto_aug": True,
-            "physical_mode": "all", "geo": "nat", "agg_level": "major",
-            "sort_by": sort_by, "top_n": 9999,
-            "search_query": "", "context_size": 3,
-        })
-        df = data["df"].rename(columns={data["group_col"]: "major"})
-        rows.append(df.set_index("major")[val_col])
-    return pd.concat(rows, axis=1)
-
-
-def build_major_de_nt_plane(results: Path, figures: Path) -> None:
-    """Per-major mean of de and nt computed over the major's UNIQUE tasks
-    (deduped on (major, task_normalized)). Color = % tasks affected; size =
-    workers affected. Quadrant lines at medians."""
-    eco = pd.read_csv(DATA_DIR / "final_eco_2025_with_task_properties.csv")
-    sub = eco.drop_duplicates(["major_occ_category", "task_normalized"])
-    means = sub.groupby("major_occ_category")[["de", "nt"]].mean()
-
-    extras = _major_pct_and_workers()
-    means = means.join(extras, how="left").dropna()
-    means["short"] = means.index.str.replace(" Occupations", "", regex=False)
-
-    save_csv(
-        means.reset_index(), results / "major_de_nt_plane.csv",
-        float_format="%.3f",
-    )
-
-    de_med = float(means["de"].median())
-    nt_med = float(means["nt"].median())
-    pct_min, pct_max = float(means["pct_tasks_affected"].min()), float(means["pct_tasks_affected"].max())
-
-    # Hand-tuned label offsets per major. Each entry is (dx, dy) in axis units;
-    # positive dx pushes label right, positive dy pushes label up. Designed so
-    # the upper-right growth-quadrant cluster fans out radially with leader
-    # lines. Anything not listed gets a neutral upward placement.
-    # All offsets in axis units. Upper-right cluster is densely packed so
-    # those labels get pushed quite far out with leader lines back to dots.
-    # Per-major label offsets in axis units. Aggressive for the dense
-    # upper-right cluster so leader lines fan out without overlapping.
-    OFFSETS: dict[str, tuple[float, float]] = {
-        # Right side of plot (E)
-        "Community and Social Service":                      (0.07,  0.07),   # NE
-        "Educational Instruction and Library":               (0.20, -0.05),   # E
-        "Healthcare Practitioners and Technical":            (0.25, -0.16),   # ESE
-        "Arts, Design, Entertainment, Sports, and Media":    (0.07, -0.25),   # SSE
-        "Business and Financial Operations":                 (-0.10, -0.23),  # SSW
-        # Left side of cluster (W)
-        "Computer and Mathematical":                         (-0.40, -0.05),  # W
-        "Life, Physical, and Social Science":                (-0.45, 0.04),   # W
-        "Architecture and Engineering":                      (-0.30, 0.18),   # NW
-        "Management":                                        (-0.05, 0.22),   # N
-        # Middle band
-        "Legal":                                             (-0.13, 0.08),
-        "Protective Service":                                (0.07,  0.08),
-        # Right-middle cluster
-        "Sales and Related":                                 (0.17,  0.07),
-        "Healthcare Support":                                (-0.08, -0.10),
-        # Lower band
-        "Office and Administrative Support":                 (0.25, -0.02),
-        "Food Preparation and Serving Related":              (-0.07, -0.13),
-        "Building and Grounds Cleaning and Maintenance":     (-0.22, -0.06),
-        "Personal Care and Service":                         (0.13,  0.07),
-        "Farming, Fishing, and Forestry":                    (0.00,  0.10),
-        "Transportation and Material Moving":                (0.00, -0.12),
-        "Installation, Maintenance, and Repair":             (0.16,  0.05),
-        "Production":                                        (0.00, -0.12),
-        "Construction and Extraction":                       (0.00,  0.10),
-    }
-    means["dx"] = means.index.map(lambda m: OFFSETS.get(m, (0.0, 0.05))[0])
-    means["dy"] = means.index.map(lambda m: OFFSETS.get(m, (0.0, 0.05))[1])
-
-    fig = go.Figure()
-
-    # Build manual size scaling so the smallest dot is visible and the
-    # largest is bounded; sqrt scaling on workers_affected.
-    sizes = np.sqrt(means["workers_affected"].values) * 0.0018 + 18
-    # Markers only — labels are added separately as annotations with leaders
-    fig.add_trace(go.Scatter(
-        x=means["de"], y=means["nt"], mode="markers",
-        marker=dict(
-            size=sizes,
-            color=means["pct_tasks_affected"],
-            colorscale=[[0, COLOR_LOW_EXP], [1, COLOR_HIGH_EXP]],
-            cmin=pct_min, cmax=pct_max,
-            colorbar=dict(
-                title=dict(text="% tasks<br>affected",
-                           font=dict(size=ANNOT_FS, family=FONT_FAMILY)),
-                tickfont=dict(size=ANNOT_FS - 1, family=FONT_FAMILY),
-                len=0.65, thickness=14,
-                x=1.02, xanchor="left",
-            ),
-            line=dict(width=0.8, color="#2a2a2a"),
-            opacity=0.92,
-        ),
-        text=means["short"],
-        hovertemplate=(
-            "<b>%{text}</b><br>de: %{x:.2f}<br>nt: %{y:.2f}<br>"
-            "% tasks affected: %{marker.color:.1f}%<extra></extra>"
-        ),
-        cliponaxis=False, showlegend=False,
-    ))
-
-    # Per-major leader-line annotations. In plotly, when showarrow=True the
-    # text is rendered at (x, y) and the arrow tail sits at (ax, ay). So the
-    # OFFSET position goes in (x, y) and the dot position in (ax, ay).
-    for major, row in means.iterrows():
-        dx = float(row["dx"])
-        dy = float(row["dy"])
-        # Anchor the text on the side closer to the dot so the leader doesn't
-        # cut through the label.
-        if dx > 0.02:
-            xa = "left"
-        elif dx < -0.02:
-            xa = "right"
-        else:
-            xa = "center"
-        ya = "bottom" if dy > 0 else "top"
-        show_arrow = abs(dx) > 0.02 or abs(dy) > 0.05
-        fig.add_annotation(
-            # text + arrowhead position (where the label is drawn)
-            x=row["de"] + dx, y=row["nt"] + dy,
-            # arrow tail position (the dot itself)
-            ax=row["de"], ay=row["nt"],
-            xref="x", yref="y", axref="x", ayref="y",
-            text=row["short"],
-            showarrow=show_arrow,
-            arrowhead=0, arrowwidth=0.7, arrowcolor=PAPER_PALETTE["muted"],
-            standoff=2, startstandoff=8,   # gap on both ends so leader is clean
-            xanchor=xa, yanchor=ya,
-            font=dict(size=ANNOT_FS + 1, family=FONT_FAMILY,
-                      color=PAPER_PALETTE["text"]),
-        )
-
-    # Quadrant lines at medians
-    fig.add_vline(x=de_med, line=dict(color=PAPER_PALETTE["muted"],
-                                      width=1, dash="dash"))
-    fig.add_hline(y=nt_med, line=dict(color=PAPER_PALETTE["muted"],
-                                      width=1, dash="dash"))
-
-    # Quadrant text annotations parked at corners with proper anchoring.
-    # Padding chosen wide enough that leader-line labels in the upper-right
-    # cluster have somewhere to go without leaving the plot.
-    x_lo = float(means["de"].min()) - 0.20
-    x_hi = float(means["de"].max()) + 0.30
-    y_lo = float(means["nt"].min()) - 0.20
-    y_hi = float(means["nt"].max()) + 0.30
-
-    quadrant_annotations = [
-        (x_hi, y_hi, "right", "top",
-         "<b>HIGH de · HIGH nt</b><br>growth quadrant",
-         PAPER_PALETTE["positive"]),
-        (x_lo, y_lo, "left", "bottom",
-         "<b>LOW de · LOW nt</b><br>least dynamic",
-         PAPER_PALETTE["negative"]),
-        (x_hi, y_lo, "right", "bottom",
-         "HIGH de · LOW nt<br>cheaper, fewer new roles",
-         PAPER_PALETTE["neutral"]),
-        (x_lo, y_hi, "left", "top",
-         "LOW de · HIGH nt<br>not cheaper, but new roles",
-         PAPER_PALETTE["neutral"]),
-    ]
-    for x, y, xa, ya, text, color in quadrant_annotations:
-        fig.add_annotation(
-            x=x, y=y, text=text, showarrow=False,
-            xanchor=xa, yanchor=ya,
-            font=dict(size=ANNOT_FS + 1, family=FONT_FAMILY, color=color),
-        )
-
-    fig.update_xaxes(
-        title="Mean demand elasticity (de) — task-level mean of LLM rating, 1-5",
-        range=[x_lo, x_hi],
-    )
-    fig.update_yaxes(
-        title="Mean new task creation (nt) — task-level mean of LLM rating, 1-5",
-        range=[y_lo, y_hi],
-    )
-
-    style_paper_figure(
-        fig,
-        "Demand elasticity × new task creation by major occupational category",
-        subtitle=(
-            f"Per-major mean of LLM-rated task properties across the major's unique tasks (deduped on (major, task)). "
-            f"Dot size ∝ √(workers affected, All Confirmed); color = major's % tasks affected. "
-            f"<br>Dashed lines at the per-axis medians (de={de_med:.2f}, nt={nt_med:.2f}). "
-            f"de = how much demand expands if the task gets cheaper; nt = whether automation generates new human roles. (Both 1-5.)"
-        ),
-        width=PAPER_W + 300,
-        height=860,
-        margin=dict(l=90, r=160, t=160, b=110),
-    )
-
-    save_figure(
-        fig, results / "figures" / "major_de_nt_plane.png", scale=2,
-    )
-    _copy_fig(results, figures, "major_de_nt_plane.png")
-    print("  -> major_de_nt_plane.png")
-
-
-def build_convergence_full(results: Path, figures: Path) -> None:
+def build_convergence_full(
+    results: Path,
+    figures: Path,
+    levels: list[tuple[str, str]] | None = None,
+    out_name: str = "convergence_full.png",
+    csv_name: str = "spearman_combined_full.csv",
+) -> None:
     """Full square correlation matrix: every internal measure (4 AI sources +
     5 ANALYSIS_CONFIGS) and every external benchmark (8 academic indices)
     on both x and y axes, lower-triangular cells only. Two panels stacked
-    vertically: Major SOC level (n ≈ 22) and Occupation level (n ≈ 900).
+    vertically — `levels` selects which SOC levels (default Major + Occ).
 
     A blank gap row + gap column separate the internal section from the
     external section on both axes. Cell rendering, gray-out, and the
@@ -912,7 +550,7 @@ def build_convergence_full(results: Path, figures: Path) -> None:
 
     from analysis.config import ANALYSIS_CONFIG_LABELS
 
-    LEVELS = [("major", "Major level"), ("occupation", "Occ level")]
+    LEVELS = levels or [("major", "Major level"), ("occupation", "Occ level")]
 
     # ── Internal measures ────────────────────────────────────────────
     internal_keys = list(CORR_ORDER) + list(CONFIG_ORDER)
@@ -1006,15 +644,16 @@ def build_convergence_full(results: Path, figures: Path) -> None:
         pmatrices[level] = pmat
         print(f"  {level}: {int(np.isfinite(mat).sum())} cells filled")
 
-    save_csv(pd.DataFrame(records), results / "spearman_combined_full.csv")
+    save_csv(pd.DataFrame(records), results / csv_name)
 
     # ── Render: 2 panels stacked vertically ──────────────────────────
     all_vals = np.concatenate([m[~np.isnan(m)] for m in matrices.values()])
     z_min = float(np.floor(all_vals.min() * 20) / 20)
     z_max = 1.0
 
+    n_panels = len(LEVELS)
     fig = make_subplots(
-        rows=2, cols=1,
+        rows=n_panels, cols=1,
         subplot_titles=[title for _, title in LEVELS],
         vertical_spacing=0.10,
     )
@@ -1040,7 +679,7 @@ def build_convergence_full(results: Path, figures: Path) -> None:
                 colorbar=dict(
                     title=dict(text="Spearman ρ",
                                font=dict(size=LABEL_FS, family=FONT_FAMILY)),
-                    len=0.40, y=0.78,
+                    len=0.55, y=0.5,
                     tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
                 ),
             ),
@@ -1138,17 +777,18 @@ def build_convergence_full(results: Path, figures: Path) -> None:
 
     # ── Figure-level styling ─────────────────────────────────────────
     fig_width = PAPER_W + 600          # ~2000 px wide
-    fig_height = 1700                  # tall enough for 2 stacked dense panels
+    fig_height = 360 + n_panels * 770  # scales with the number of panels
 
+    level_names = " & ".join(t.replace(" level", "") for _, t in LEVELS)
     style_paper_figure(
         fig,
         title=("Internal and External Benchmark Comparison — "
-               "Full Matrix"),
+               f"Full Matrix ({level_names})"),
         subtitle=("Spearman ρ across all internal sources, data "
                   f"configurations, and academic benchmarks. {SIG_NOTE}"),
         width=fig_width,
         height=fig_height,
-        margin=dict(l=260, r=160, t=140, b=200),
+        margin=dict(l=260, r=160, t=210, b=320),
     )
 
     # Bump subplot titles
@@ -1160,16 +800,17 @@ def build_convergence_full(results: Path, figures: Path) -> None:
             ann.yshift = 32
 
     # Tick fonts
-    for i in range(1, 3):
+    for i in range(1, n_panels + 1):
         xkey = f"xaxis{i}" if i > 1 else "xaxis"
         ykey = f"yaxis{i}" if i > 1 else "yaxis"
         fig.layout[xkey].tickfont = dict(size=TICK_FS - 2, family=FONT_FAMILY)
         fig.layout[ykey].tickfont = dict(size=TICK_FS - 2, family=FONT_FAMILY)
         fig.layout[xkey].tickangle = -30
 
-    # Contamination legend (bottom-left, paper coords, real swatch)
+    # Contamination legend (bottom-left, paper coords, real swatch).
+    # Pushed well below the angled x-tick labels.
     sx0, sx1 = 0.085, 0.130
-    sy0, sy1 = -0.090, -0.060
+    sy0, sy1 = -0.195, -0.160
     fig.add_shape(
         type="rect",
         xref="paper", yref="paper",
@@ -1191,9 +832,9 @@ def build_convergence_full(results: Path, figures: Path) -> None:
                   color=PAPER_PALETTE["text"]),
     )
 
-    save_figure(fig, results / "figures" / "convergence_full.png")
-    _copy_fig(results, figures, "convergence_full.png")
-    print("  -> convergence_full.png")
+    save_figure(fig, results / "figures" / out_name)
+    _copy_fig(results, figures, out_name)
+    print(f"  -> {out_name}")
 
 
 def _run_overview_config(dataset_name: str, use_auto_aug: bool) -> pd.DataFrame:
@@ -1570,9 +1211,49 @@ def write_markdown() -> None:
         "\n"
         "---\n"
         "\n"
-        "## phys_zone_faceted\n"
+        "## convergence_full\n"
         "\n"
-        "![phys_zone_faceted](figures/phys_zone_faceted.png)\n"
+        "Full square correlation matrix — every internal measure (4 AI "
+        "sources + 5 `ANALYSIS_CONFIGS` data configurations) and every "
+        "external academic benchmark on both axes, lower-triangular cells "
+        "only, split into an Internal block and an External block by a gap "
+        "row/column. One chart per SOC level: Major, Minor, Broad, and "
+        "Occupation. Cell rendering, group headers, and the "
+        "Eloundou-contamination gray-out match the main paper charts.\n"
+        "\n"
+        "![convergence_full_major](figures/convergence_full_major.png)\n"
+        "\n"
+        "![convergence_full_minor](figures/convergence_full_minor.png)\n"
+        "\n"
+        "![convergence_full_broad](figures/convergence_full_broad.png)\n"
+        "\n"
+        "![convergence_full_occ](figures/convergence_full_occ.png)\n"
+        "\n"
+        "---\n"
+        "\n"
+        "## overview_no_autoaug\n"
+        "\n"
+        "Paper part_1 `overview` recomputed with `use_auto_aug=False`. Each "
+        "affected task contributes its full freq weight regardless of its "
+        "0–5 automatability score. Inside-bar text carries `Δ±X.Xpp` vs. the "
+        "paper chart; black tick marks the paper-chart value's position on "
+        "each bar.\n"
+        "\n"
+        "![overview_no_autoaug](figures/overview_no_autoaug.png)\n"
+        "\n"
+        "---\n"
+        "\n"
+        "## temporal_trend_nonphys\n"
+        "\n"
+        "Single-panel non-physical variant of Part 1's `temporal_trend`. "
+        "Shares the linear-OLS 2yr projection, the staggered confirmed-data "
+        "labels, and the first-and-last-only ceiling labels with the main "
+        "chart. Workers and wages panels are intentionally omitted: deriving "
+        "a non-phys workers / wages number requires splitting each "
+        "occupation's employment between its physical and non-physical task "
+        "load, which is out of scope for this view.\n"
+        "\n"
+        "![temporal_trend_nonphys](figures/temporal_trend_nonphys.png)\n"
         "\n"
         "---\n"
         "\n"
@@ -1593,50 +1274,266 @@ def write_markdown() -> None:
         "\n"
         "![nonphys_gwa_diff_phys_excluded](figures/nonphys_gwa_diff_phys_excluded.png)\n"
         "\n"
-        "---\n"
-        "\n"
-        "## major_de_nt_plane\n"
-        "\n"
-        "Each of the 22 SOC major occupational categories plotted on the "
-        "demand-elasticity × new-task-creation plane (LLM-rated task "
-        "properties, 1–5 scale, averaged per major over unique tasks). Dot "
-        "size scales with workers affected; color encodes the major's "
-        "All-Confirmed % tasks affected. Dashed lines at the per-axis "
-        "medians split the plane into four readable quadrants.\n"
-        "\n"
-        "![major_de_nt_plane](figures/major_de_nt_plane.png)\n"
-        "\n"
-        "---\n"
-        "\n"
-        "## convergence_full\n"
-        "\n"
-        "Combined version of the two main convergence charts (Part 1 — "
-        "`convergence` and `convergence_configs`): the four internal AI "
-        "sources and five `ANALYSIS_CONFIGS` data configurations are stacked "
-        "on a single y-axis (9 rows). The x-axis carries those same nine "
-        "measures as a lower-triangular internal block, then the gap "
-        "column, then the eight external academic benchmarks. Cell "
-        "rendering, group headers, and the Eloundou-contamination gray-out "
-        "match the main paper charts exactly.\n"
-        "\n"
-        "![convergence_full](figures/convergence_full.png)\n"
-        "\n"
-        "---\n"
-        "\n"
-        "## overview_no_autoaug\n"
-        "\n"
-        "Paper part_1 `overview` recomputed with `use_auto_aug=False`. Each "
-        "affected task contributes its full freq weight regardless of its "
-        "0–5 automatability score. Inside-bar text carries `Δ±X.Xpp` vs. the "
-        "paper chart; black tick marks the paper-chart value's position on "
-        "each bar.\n"
-        "\n"
-        "![overview_no_autoaug](figures/overview_no_autoaug.png)\n"
-        "\n"
         + extra,
         encoding="utf-8",
     )
     print(f"  -> {md_path.relative_to(ROOT)}")
+
+
+def _run_config_nonphys(dataset_name: str, agg_level: str = "occupation") -> pd.DataFrame:
+    """Mirror of part_1's `_run_config` but with `physical_mode='exclude'`
+    (drop physical tasks). Local copy because part_1's helper hardcodes
+    physical_mode='all'.
+
+    Note: `apply_physical_filter` accepts only 'all' / 'exclude' / 'only'
+    and silently ignores anything else — using 'non_phys' or similar reads
+    as 'all', which is a real foot-gun. Sanity-check by comparing row
+    counts or sums against the unfiltered run if you touch this."""
+    from backend.compute import get_group_data
+    config = {
+        "selected_datasets": [dataset_name],
+        "combine_method": "Average",
+        "method": "freq",
+        "use_auto_aug": True,
+        "physical_mode": "exclude",
+        "geo": "nat",
+        "agg_level": agg_level,
+        "sort_by": "% Tasks Affected",
+        "top_n": 9999,
+        "search_query": "",
+        "context_size": 3,
+    }
+    data = get_group_data(config)
+    assert data is not None, f"No data for {dataset_name}"
+    df: pd.DataFrame = data["df"]
+    group_col: str = data["group_col"]
+    df = df.rename(columns={group_col: "category"})
+    return df
+
+
+def build_temporal_trend_nonphys(results: Path, figures: Path) -> None:
+    """Single-panel % tasks exposed trend, non-physical tasks only.
+
+    Mirrors the main paper `temporal_trend` (Part 1) but applies
+    `physical_mode='non_phys'` across the time series. Workers and
+    wages panels are omitted: a non-phys workers number would require
+    splitting each occupation's employment between its phys / non-phys
+    task load, which is out of scope for this view."""
+    trend_configs = ["all_confirmed", "all_ceiling"]
+
+    # ── 1. Build trend data ──────────────────────────────────────────
+    trend_rows: list[dict] = []
+    for config_key in trend_configs:
+        series = ANALYSIS_CONFIG_SERIES[config_key]
+        label = ANALYSIS_CONFIG_LABELS[config_key]
+        for ds_name in series:
+            date_str = ds_name.rsplit(" ", 1)[-1]
+            df = _run_config_nonphys(ds_name, "occupation")
+            pct_tasks = float(df["pct_tasks_affected"].mean())
+            trend_rows.append({
+                "config": config_key,
+                "label": label,
+                "date": date_str,
+                "dataset": ds_name,
+                "pct_tasks_affected": round(pct_tasks, 1),
+            })
+            print(f"  {label} {date_str}: {pct_tasks:.1f}% (non-phys only)")
+    trend_df = pd.DataFrame(trend_rows)
+    save_csv(trend_df, results / "temporal_trend_nonphys.csv")
+
+    # ── 2. Local copies of part_1's chart helpers ────────────────────
+    LABEL_YSHIFT_PX = 26
+    LABEL_FS_DATA = 14
+    LABEL_FS_HORIZON = 13
+    EXTRAP_HORIZONS_DAYS: list[tuple[str, int]] = [
+        ("6mo", 183), ("1yr", 365), ("2yr", 730),
+    ]
+
+    def _linear_fit_project(dates: list[str], yvals: list[float],
+                            horizon_days: list[int]) -> tuple[list[pd.Timestamp], list[float]]:
+        if len(dates) < 2:
+            return [], []
+        ts = [pd.Timestamp(d) for d in dates]
+        t0 = ts[0]
+        x = np.array([(t - t0).days for t in ts], dtype=float)
+        y = np.array(yvals, dtype=float)
+        b, a = np.polyfit(x, y, deg=1)
+        last_x = x[-1]
+        future_xs = [last_x + h for h in horizon_days]
+        future_ts = [t0 + pd.Timedelta(days=int(fx)) for fx in future_xs]
+        future_ys = [float(a + b * fx) for fx in future_xs]
+        return future_ts, future_ys
+
+    def _spaced_label_indices(dates: list[str], min_days: int = 25) -> set[int]:
+        if not dates:
+            return set()
+        parsed = [pd.Timestamp(d) for d in dates]
+        keep = [len(dates) - 1]
+        for i in range(len(dates) - 2, -1, -1):
+            if (parsed[keep[-1]] - parsed[i]).days >= min_days:
+                keep.append(i)
+        return set(keep)
+
+    # ── 3. Build chart (single panel) ────────────────────────────────
+    fig = go.Figure()
+    metric_key = "tasks"
+
+    # Neutral-gray dummy traces for the legend (solid + dashed).
+    legend_color = PAPER_PALETTE["text"]
+    legend_anchor_x = trend_df["date"].iloc[0]
+    fig.add_trace(go.Scatter(
+        x=[legend_anchor_x], y=[None], mode="lines",
+        name=ANALYSIS_CONFIG_LABELS["all_confirmed"],
+        line=dict(color=legend_color, width=3, dash="solid"),
+        showlegend=True, hoverinfo="skip",
+    ))
+    fig.add_trace(go.Scatter(
+        x=[legend_anchor_x], y=[None], mode="lines",
+        name=ANALYSIS_CONFIG_LABELS["all_ceiling"],
+        line=dict(color=legend_color, width=3, dash="dash"),
+        showlegend=True, hoverinfo="skip",
+    ))
+
+    panel_vals: list[float] = []
+    for config_key in trend_configs:
+        subset = trend_df[trend_df["config"] == config_key].sort_values("date").reset_index(drop=True)
+        label = ANALYSIS_CONFIG_LABELS[config_key]
+        if config_key == "all_confirmed":
+            color = METRIC_COLORS[metric_key]
+            dash = "solid"
+            yshift = -LABEL_YSHIFT_PX
+        else:
+            color = METRIC_COLORS_LIGHT[metric_key]
+            dash = "dash"
+            yshift = LABEL_YSHIFT_PX
+
+        xvals = list(subset["date"])
+        yvals = [float(v) for v in subset["pct_tasks_affected"]]
+        panel_vals.extend(yvals)
+
+        fig.add_trace(go.Scatter(
+            x=xvals, y=yvals,
+            name=label,
+            showlegend=False,
+            mode="lines+markers",
+            line=dict(color=color, width=3, dash=dash),
+            marker=dict(size=8, color=color),
+            hovertemplate=f"<b>{label}</b><br>%{{x}}<br>%{{y}}%<extra></extra>",
+            cliponaxis=False,
+        ))
+
+        # Linear 2yr projection (label only the 2yr horizon).
+        horizon_days = [d for _, d in EXTRAP_HORIZONS_DAYS]
+        twoyr_idx = next(
+            (i for i, (lbl, _) in enumerate(EXTRAP_HORIZONS_DAYS) if lbl == "2yr"),
+            len(EXTRAP_HORIZONS_DAYS) - 1,
+        )
+        future_ts, future_ys = _linear_fit_project(xvals, yvals, horizon_days)
+        if future_ts:
+            proj_x = [pd.Timestamp(xvals[-1])] + future_ts
+            proj_y = [yvals[-1]] + future_ys
+            fig.add_trace(go.Scatter(
+                x=proj_x, y=proj_y,
+                mode="lines+markers",
+                line=dict(color=color, width=2, dash="dot"),
+                marker=dict(size=7, color=color, symbol="x"),
+                showlegend=False,
+                hovertemplate=f"<b>{label} (linear proj.)</b><br>%{{x}}<br>%{{y}}%<extra></extra>",
+                cliponaxis=False,
+                opacity=0.7,
+            ))
+            panel_vals.extend(future_ys)
+            hz_label, _ = EXTRAP_HORIZONS_DAYS[twoyr_idx]
+            fig.add_annotation(
+                x=future_ts[twoyr_idx], y=future_ys[twoyr_idx],
+                text=f"{hz_label}: {future_ys[twoyr_idx]:.1f}%",
+                showarrow=False,
+                yshift=yshift,
+                font=dict(size=LABEL_FS_HORIZON, color=color, family=FONT_FAMILY),
+            )
+
+        # Per-point data labels: confirmed → all spaced points (with stagger
+        # for tight clusters); ceiling → first + last only.
+        CLOSE_GAP_DAYS = 120
+        STAGGER_PX = 16
+        if config_key == "all_confirmed":
+            kept_set = _spaced_label_indices(xvals)
+        elif len(xvals) >= 2:
+            kept_set = {0, len(xvals) - 1}
+        else:
+            kept_set = set(range(len(xvals)))
+
+        kept_sorted = sorted(kept_set)
+        kept_ts = {i: pd.Timestamp(xvals[i]) for i in kept_sorted}
+        per_label_yshift: dict[int, int] = {}
+        for pos, i in enumerate(kept_sorted):
+            shift = yshift
+            if pos + 1 < len(kept_sorted):
+                nxt = kept_sorted[pos + 1]
+                if (kept_ts[nxt] - kept_ts[i]).days < CLOSE_GAP_DAYS:
+                    shift = yshift + (-STAGGER_PX if yshift < 0 else STAGGER_PX)
+            per_label_yshift[i] = shift
+
+        for i, (x_i, y_i) in enumerate(zip(xvals, yvals)):
+            if i not in kept_set:
+                continue
+            fig.add_annotation(
+                x=x_i, y=y_i,
+                text=f"{y_i:.1f}%",
+                showarrow=False,
+                yshift=per_label_yshift[i],
+                font=dict(size=LABEL_FS_DATA, color=color, family=FONT_FAMILY),
+            )
+
+    # Tight y-range with extra headroom above for the 2yr projection label.
+    if panel_vals:
+        v_lo, v_hi = min(panel_vals), max(panel_vals)
+        spread = v_hi - v_lo
+        y_min = max(0.0, v_lo - spread * 0.22)
+        y_max = v_hi + spread * 0.30
+    else:
+        y_min, y_max = 0.0, 1.0
+
+    fig.update_yaxes(
+        ticksuffix="%",
+        range=[y_min, y_max],
+        title=dict(text="% Tasks Exposed (non-physical only)",
+                   font=dict(size=LABEL_FS - 2)),
+        tickfont=dict(size=ANNOT_FS, family=FONT_FAMILY),
+    )
+    fig.update_xaxes(
+        title=dict(text="Snapshot Date", font=dict(size=LABEL_FS - 2)),
+        tickangle=-30,
+        tickfont=dict(size=ANNOT_FS, family=FONT_FAMILY),
+    )
+
+    style_paper_figure(
+        fig,
+        "All Confirmed vs All Sources (Ceiling) Over Time — Non-physical Tasks Only",
+        subtitle=(
+            "Share of non-physical task completions exposed to AI, over the "
+            "dataset window (March 2025 – February 2026).<br>"
+            "Dotted segments extend each line with a linear OLS fit through "
+            "observed points, labeled at the 2yr horizon if the recent rate "
+            "continued. Workers / wages panels omitted — see note in README."
+        ),
+        height=PAPER_H + 90,
+        width=PAPER_W,
+        margin=dict(l=80, r=60, t=200, b=160),
+    )
+    fig.update_layout(
+        legend=dict(
+            orientation="h",
+            yanchor="bottom", y=-0.32, xanchor="center", x=0.5,
+            font=dict(size=LEGEND_FS, family=FONT_FAMILY),
+            bgcolor="rgba(255,255,255,0.9)",
+        ),
+    )
+
+    save_figure(fig, results / "figures" / "temporal_trend_nonphys.png")
+    shutil.copy(results / "figures" / "temporal_trend_nonphys.png",
+                figures / "temporal_trend_nonphys.png")
+    print("  -> temporal_trend_nonphys.png")
 
 
 def main() -> None:
@@ -1648,23 +1545,30 @@ def main() -> None:
     print("Appendix figures")
     print("=" * 60)
 
-    print("\n[1/6] phys_zone_faceted (modified)")
-    build_phys_zone_faceted(results, figures)
+    print("\n[1/5] convergence_full (one full-matrix per SOC level)")
+    for lvl_key, lvl_title in [("major", "Major level"),
+                                ("minor", "Minor level"),
+                                ("broad", "Broad level"),
+                                ("occupation", "Occ level")]:
+        short = "occ" if lvl_key == "occupation" else lvl_key
+        build_convergence_full(
+            results, figures,
+            levels=[(lvl_key, lvl_title)],
+            out_name=f"convergence_full_{short}.png",
+            csv_name=f"spearman_combined_full_{short}.csv",
+        )
 
-    print("\n[2/6] ska_full (full element-level SKA)")
+    print("\n[2/5] overview_no_autoaug (paper part_1 overview, no auto_aug)")
+    build_overview_no_autoaug(results, figures)
+
+    print("\n[3/5] temporal_trend_nonphys (Part 1 trend, non-physical tasks only)")
+    build_temporal_trend_nonphys(results, figures)
+
+    print("\n[4/5] ska_full (full element-level SKA)")
     build_ska_full(results, figures)
 
-    print("\n[3/6] nonphys_gwa_diff_phys_excluded (within-non-phys structural)")
+    print("\n[5/5] nonphys_gwa_diff_phys_excluded (within-non-phys structural)")
     build_nonphys_gwa_diff_phys_excluded(results, figures)
-
-    print("\n[4/6] major_de_nt_plane (forward-looking quadrant)")
-    build_major_de_nt_plane(results, figures)
-
-    print("\n[5/6] convergence_full (sources + configs vs. external benchmarks)")
-    build_convergence_full(results, figures)
-
-    print("\n[6/6] overview_no_autoaug (paper part_1 overview, no auto_aug)")
-    build_overview_no_autoaug(results, figures)
 
     print("\nWriting appendix_charts.md")
     write_markdown()

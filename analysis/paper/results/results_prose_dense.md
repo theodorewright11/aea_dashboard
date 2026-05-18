@@ -16,7 +16,9 @@ Conventions used below:
 
 ### External Benchmark Comparison — by AI Source
 
-![convergence.png](part_1/figures/convergence.png)
+![convergence_major.png](part_1/figures/convergence_major.png)
+
+![convergence_occ.png](part_1/figures/convergence_occ.png)
 
 This figure is a 2×2 grid of four lower-triangle Spearman correlation heatmaps. Each panel is one aggregation level (top-left major, top-right minor, bottom-left broad, bottom-right occupation). Each panel shows pairwise rank correlations between four independent AI scoring sources: Claude Browser (AEI Conv 2026-02-12), Claude API (AEI API 2026-02-12), Copilot (Microsoft), and MCP (MCP Cumul. v4). All values significant at p<0.001.
 
@@ -58,7 +60,9 @@ Range across all 24 cells: 0.55 to 0.98. Highest pair at every level: Claude API
 
 ### External Benchmark Comparison — by Data Configuration
 
-![convergence_configs.png](part_1/figures/convergence_configs.png)
+![convergence_configs_major.png](part_1/figures/convergence_configs_major.png)
+
+![convergence_configs_occ.png](part_1/figures/convergence_configs_occ.png)
 
 Same 2×2 grid structure, but the sources are the five canonical analysis configs (All Confirmed, All Sources (Ceiling), Conversational Confirmed, Agentic Confirmed, Agentic Ceiling). Lower-triangle 5×5 heatmaps. 10 unique pairwise correlations per panel.
 

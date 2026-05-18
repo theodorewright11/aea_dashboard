@@ -16,7 +16,9 @@ That our ceiling (50.3%) lands right on top of Seampoint's independent estimate 
 
 ## The Convergence Argument
 
-![Spearman ρ on % Tasks Affected](figures/convergence.png)
+![Spearman ρ on % Tasks Affected — Major](figures/convergence_major.png)
+
+![Spearman ρ on % Tasks Affected — Occupation](figures/convergence_occ.png)
 
 Big numbers are one thing. The more important question is whether they hold up when you measure the same phenomenon from genuinely different directions. The convergence chart makes a different argument than the scale chart: not *how much*, but *how confident*.
 

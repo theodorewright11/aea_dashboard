@@ -1819,12 +1819,12 @@ def build_major_categories(results: Path, figures: Path) -> None:
     fig = make_subplots(
         rows=1, cols=6,
         subplot_titles=[
-            "Variant A: Non-Phys Task Share",
-            "Variant B: % Tasks Exposed in Non-Phys Work",
-            "% Tasks Exposed (All Confirmed)",
-            "Workers Exposed (All Confirmed)",
-            "Wages Exposed (All Confirmed)",
-            "Phys Mix (Occs)",
+            "Variant A:<br>Non-Phys Task Share",
+            "Variant B: % Tasks<br>Exposed in Non-Phys Work",
+            "% Tasks Exposed<br>(All Confirmed)",
+            "Workers Exposed<br>(All Confirmed)",
+            "Wages Exposed<br>(All Confirmed)",
+            "Phys Mix<br>(Occs)",
         ],
         horizontal_spacing=0.04,
         shared_yaxes=True,
@@ -1837,13 +1837,17 @@ def build_major_categories(results: Path, figures: Path) -> None:
     VARIANT_A_COLOR = "#7a9ab8"
     VARIANT_B_COLOR = "#3a6f8f"
 
+    inside_font  = dict(size=OUTSIDE_FS, color="white",                    family=FONT_FAMILY)
+    outside_font = dict(size=OUTSIDE_FS, color=PAPER_PALETTE["text"],      family=FONT_FAMILY)
+
     fig.add_trace(go.Bar(
         y=categories_r, x=pct_a_r, orientation="h",
         marker=dict(color=VARIANT_A_COLOR, line=dict(width=0)),
         text=[f"{v:.1f}%" for v in pct_a_r],
-        textposition="outside",
-        textfont=dict(size=ANNOT_FS - 2, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
-        showlegend=False, cliponaxis=False,
+        textposition="auto",
+        insidetextfont=inside_font,
+        outsidetextfont=outside_font,
+        showlegend=False, cliponaxis=False, constraintext="none",
         hovertemplate="Variant A: %{x:.1f}%<extra></extra>",
     ), row=1, col=1)
 
@@ -1851,9 +1855,10 @@ def build_major_categories(results: Path, figures: Path) -> None:
         y=categories_r, x=pct_b_r, orientation="h",
         marker=dict(color=VARIANT_B_COLOR, line=dict(width=0)),
         text=[f"{v:.1f}%" for v in pct_b_r],
-        textposition="outside",
-        textfont=dict(size=ANNOT_FS - 2, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
-        showlegend=False, cliponaxis=False,
+        textposition="auto",
+        insidetextfont=inside_font,
+        outsidetextfont=outside_font,
+        showlegend=False, cliponaxis=False, constraintext="none",
         hovertemplate="Variant B: %{x:.1f}%<extra></extra>",
     ), row=1, col=2)
 
@@ -1861,9 +1866,10 @@ def build_major_categories(results: Path, figures: Path) -> None:
         y=categories_r, x=pct_r, orientation="h",
         marker=dict(color=METRIC_COLORS["tasks"], line=dict(width=0)),
         text=[f"{v:.1f}%" for v in pct_r],
-        textposition="outside",
-        textfont=dict(size=ANNOT_FS - 2, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
-        showlegend=False, cliponaxis=False,
+        textposition="auto",
+        insidetextfont=inside_font,
+        outsidetextfont=outside_font,
+        showlegend=False, cliponaxis=False, constraintext="none",
         hovertemplate="All Confirmed: %{x:.1f}%<extra></extra>",
     ), row=1, col=3)
 
@@ -1871,18 +1877,20 @@ def build_major_categories(results: Path, figures: Path) -> None:
         y=categories_r, x=workers_r, orientation="h",
         marker=dict(color=METRIC_COLORS["workers"], line=dict(width=0)),
         text=[fmt_workers(v) for v in workers_r],
-        textposition="outside",
-        textfont=dict(size=ANNOT_FS - 2, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
-        showlegend=False, cliponaxis=False,
+        textposition="auto",
+        insidetextfont=inside_font,
+        outsidetextfont=outside_font,
+        showlegend=False, cliponaxis=False, constraintext="none",
     ), row=1, col=4)
 
     fig.add_trace(go.Bar(
         y=categories_r, x=wages_r, orientation="h",
         marker=dict(color=METRIC_COLORS["wages"], line=dict(width=0)),
         text=[fmt_wages(v) for v in wages_r],
-        textposition="outside",
-        textfont=dict(size=ANNOT_FS - 2, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
-        showlegend=False, cliponaxis=False,
+        textposition="auto",
+        insidetextfont=inside_font,
+        outsidetextfont=outside_font,
+        showlegend=False, cliponaxis=False, constraintext="none",
     ), row=1, col=5)
 
     # Panel 6 — per-major occupation phys-mix stacked bar. Uses `base` for
@@ -1917,20 +1925,21 @@ def build_major_categories(results: Path, figures: Path) -> None:
         subtitle=(
             f"All {n_cats} major SOC categories ranked by All Confirmed % tasks exposed. "
             "Variant A = naive non-physical task share (no AI signal). "
-            "Variant B = % tasks exposed restricted to non-physical work. "
+            "Variant B = % tasks exposed restricted to non-physical work."
+            "<br>"
             "Right panel: share of each major's occupations classified Physical / Mixed / Non-Physical. "
             f"Economy-wide totals: {n_phys} Physical · {n_mix} Mixed · {n_non} Non-physical occupations."
         ),
-        height=height + 60,
+        height=height + 140,
         width=PAPER_W + 900,
-        margin=dict(l=20, r=80, t=160, b=160),
+        margin=dict(l=340, r=110, t=240, b=160),
     )
 
     fig.update_xaxes(
         showgrid=True, gridcolor=PAPER_PALETTE["grid"],
         showticklabels=True, showline=True, linecolor=PAPER_PALETTE["grid"],
         zeroline=True, zerolinecolor=PAPER_PALETTE["grid"],
-        tickfont=dict(size=TICK_FS - 2, family=FONT_FAMILY),
+        tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
     )
 
     def _nice_ticks(max_val: float, n_ticks: int = 5) -> list[float]:
@@ -1953,46 +1962,46 @@ def build_major_categories(results: Path, figures: Path) -> None:
             s = s.replace(f".0{unit}", unit)
         return s
 
-    fig.update_xaxes(ticksuffix="%", title=dict(text="% (Variant A)", font=dict(size=LABEL_FS - 4)), row=1, col=1)
-    fig.update_xaxes(ticksuffix="%", title=dict(text="% (Variant B)", font=dict(size=LABEL_FS - 4)), row=1, col=2)
-    fig.update_xaxes(ticksuffix="%", title=dict(text="% Tasks Exposed", font=dict(size=LABEL_FS - 4)), row=1, col=3)
+    fig.update_xaxes(ticksuffix="%", title=dict(text="% (Variant A)", font=dict(size=LABEL_FS)), row=1, col=1)
+    fig.update_xaxes(ticksuffix="%", title=dict(text="% (Variant B)", font=dict(size=LABEL_FS)), row=1, col=2)
+    fig.update_xaxes(ticksuffix="%", title=dict(text="% Tasks Exposed", font=dict(size=LABEL_FS)), row=1, col=3)
     fig.update_xaxes(
         tickvals=worker_ticks,
         ticktext=[_strip_zero_decimal(fmt_workers(v)) for v in worker_ticks],
-        title=dict(text="Workers Exposed", font=dict(size=LABEL_FS - 4)),
+        title=dict(text="Workers Exposed", font=dict(size=LABEL_FS)),
         row=1, col=4,
     )
     fig.update_xaxes(
         tickvals=wage_ticks,
         ticktext=[_strip_zero_decimal(fmt_wages(v)) for v in wage_ticks],
-        title=dict(text="Wages Exposed", font=dict(size=LABEL_FS - 4)),
+        title=dict(text="Wages Exposed", font=dict(size=LABEL_FS)),
         row=1, col=5,
     )
     fig.update_xaxes(
         range=[0, 100], dtick=25,
-        ticksuffix="%", tickfont=dict(size=TICK_FS - 4, family=FONT_FAMILY),
-        title=dict(text="% of major's occs", font=dict(size=LABEL_FS - 4)),
+        ticksuffix="%", tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
+        title=dict(text="% of major's occs", font=dict(size=LABEL_FS)),
         row=1, col=6,
     )
 
     fig.update_yaxes(showgrid=False, showline=False)
     fig.update_yaxes(
-        title=dict(text="Major Occupational Category", font=dict(size=LABEL_FS - 2)),
-        tickfont=dict(size=TICK_FS - 2, family=FONT_FAMILY),
+        title=dict(text="Major Occupational Category", font=dict(size=LABEL_FS + 2)),
+        tickfont=dict(size=TICK_FS + 1, family=FONT_FAMILY),
         row=1, col=1,
     )
 
     panel_titles = {
-        "Variant A: Non-Phys Task Share",
-        "Variant B: % Tasks Exposed in Non-Phys Work",
-        "% Tasks Exposed (All Confirmed)",
-        "Workers Exposed (All Confirmed)",
-        "Wages Exposed (All Confirmed)",
-        "Phys Mix (Occs)",
+        "Variant A:<br>Non-Phys Task Share",
+        "Variant B: % Tasks<br>Exposed in Non-Phys Work",
+        "% Tasks Exposed<br>(All Confirmed)",
+        "Workers Exposed<br>(All Confirmed)",
+        "Wages Exposed<br>(All Confirmed)",
+        "Phys Mix<br>(Occs)",
     }
     for ann in fig.layout.annotations:
         if hasattr(ann, "text") and ann.text in panel_titles:
-            ann.font = dict(size=LABEL_FS - 2, family=FONT_FAMILY,
+            ann.font = dict(size=LABEL_FS + 2, family=FONT_FAMILY,
                             color=PAPER_PALETTE["text"])
 
     fig.update_layout(
@@ -2000,7 +2009,7 @@ def build_major_categories(results: Path, figures: Path) -> None:
         legend=dict(
             orientation="h",
             yanchor="top", y=-0.06, xanchor="center", x=0.5,
-            font=dict(size=LEGEND_FS - 2, family=FONT_FAMILY),
+            font=dict(size=LEGEND_FS + 1, family=FONT_FAMILY),
             bgcolor="rgba(255,255,255,0.9)",
         ),
     )
