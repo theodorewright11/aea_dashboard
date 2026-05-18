@@ -32,7 +32,7 @@ export default function Footer() {
         backgroundColor: "#f2f2ef",
       }}
     >
-      <span>Source: 2025 O*NET &middot; 2024 BLS OEWS &middot; Anthropic Economic Index &middot; Microsoft Copilot &middot; MCP Server Classification</span>
+      <span>Source: 2025 O*NET &middot; 2025 BLS OEWS &middot; Anthropic Economic Index &middot; Microsoft Copilot &middot; MCP Server Classification</span>
       <span style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
         <a
           href="https://github.com/theodorewright11/aea_dashboard"

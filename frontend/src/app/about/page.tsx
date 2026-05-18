@@ -157,7 +157,7 @@ export default function AboutPage() {
             Workers Affected = (% Tasks Affected / 100) &times; Employment
           </div>
           <p style={{ ...bodyStyle, fontSize: 12, color: "var(--text-muted)" }}>
-            Employment figures from BLS OEWS 2024 (national or Utah).
+            Employment figures from BLS OEWS 2025 (national or Utah).
           </p>
 
           <SubHead>Wages Affected</SubHead>
@@ -219,7 +219,7 @@ export default function AboutPage() {
               importance ratings
             </li>
             <li style={liStyle}>
-              <strong style={{ fontWeight: 600 }}>BLS OEWS 2024</strong> &mdash; Employment and
+              <strong style={{ fontWeight: 600 }}>BLS OEWS 2025</strong> &mdash; Employment and
               median annual wage by occupation, national and Utah
             </li>
             <li style={liStyle}>

@@ -112,10 +112,10 @@ def build_state_gap_features() -> tuple[pd.DataFrame, list[str]]:
     occ_df = eco.groupby("title_current").first().reset_index()
 
     state_geos = sorted([
-        col.replace("emp_tot_", "").replace("_2024", "")
+        col.replace("emp_tot_", "").replace("_2025", "")
         for col in occ_df.columns
-        if col.startswith("emp_tot_") and col.endswith("_2024")
-        and col.replace("emp_tot_", "").replace("_2024", "") not in ("nat", "")
+        if col.startswith("emp_tot_") and col.endswith("_2025")
+        and col.replace("emp_tot_", "").replace("_2025", "") not in ("nat", "")
     ])
 
     occ_df["pct_confirmed"] = occ_df["title_current"].map(pct_confirmed).fillna(0.0)
@@ -128,7 +128,7 @@ def build_state_gap_features() -> tuple[pd.DataFrame, list[str]]:
 
     rows = []
     for geo in state_geos:
-        emp_col = f"emp_tot_{geo}_2024"
+        emp_col = f"emp_tot_{geo}_2025"
         if emp_col not in occ_df.columns:
             continue
 

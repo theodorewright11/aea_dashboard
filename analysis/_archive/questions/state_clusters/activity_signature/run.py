@@ -19,14 +19,14 @@ Approach:
   3. Compute freq-based emp fraction per task within each occupation:
          _emp_frac = freq_mean / sum(freq_mean per occ)
   4. For each state geo, compute task-level employment:
-         task_emp = _emp_frac × emp_tot_{geo}_2024
+         task_emp = _emp_frac × emp_tot_{geo}_2025
   5. Aggregate task_emp by gwa_title per state → GWA employment shares
   6. Build state × GWA feature matrix (shares)
   7. K-means (k=5) clustering
   8. Compare to sector-composition clusters
 
 Note on employment split: eco_raw already contains per-state employment columns
-(emp_tot_{geo}_2024), so no API calls are needed. The freq-based split is the
+(emp_tot_{geo}_2025), so no API calls are needed. The freq-based split is the
 same "Time" method used in the dashboard and other analyses.
 
 Outputs:
@@ -126,9 +126,9 @@ def build_state_gwa_features() -> tuple[pd.DataFrame, list[str]]:
 
     # Identify state emp columns (exclude national)
     state_geos = [
-        col.replace("emp_tot_", "").replace("_2024", "")
+        col.replace("emp_tot_", "").replace("_2025", "")
         for col in eco_dedup.columns
-        if col.startswith("emp_tot_") and col.endswith("_2024") and col != "emp_tot_nat_2024"
+        if col.startswith("emp_tot_") and col.endswith("_2025") and col != "emp_tot_nat_2025"
     ]
     state_geos = [g for g in state_geos if g != "nat"]
 
@@ -137,7 +137,7 @@ def build_state_gwa_features() -> tuple[pd.DataFrame, list[str]]:
     rows = []
 
     for geo in state_geos:
-        emp_col = f"emp_tot_{geo}_2024"
+        emp_col = f"emp_tot_{geo}_2025"
         if emp_col not in eco_dedup.columns:
             continue
 

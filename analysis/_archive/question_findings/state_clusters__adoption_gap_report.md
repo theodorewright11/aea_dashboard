@@ -71,7 +71,7 @@ Where the gap *does* vary is across sectors within states. Transportation, Produ
 |---|---|
 | Confirmed dataset | AEI Both + Micro 2026-02-12 (all_confirmed) |
 | Ceiling dataset | All 2026-02-18 (all_ceiling) |
-| Employment | eco_2025 emp_tot_{geo}_2024 per occupation |
+| Employment | eco_2025 emp_tot_{geo}_2025 per occupation |
 | Feature | Gap ratio = (ceiling − confirmed workers) / confirmed workers by sector |
 | Min workers | 100 confirmed workers in sector per state to include ratio |
 | Clustering | k-means k=5, StandardScaler, n_init=20 |

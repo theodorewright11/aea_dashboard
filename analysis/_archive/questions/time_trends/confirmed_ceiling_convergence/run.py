@@ -93,7 +93,7 @@ def main() -> None:
     # ── 0. Load eco employment weights once ──────────────────────────────────
     from backend.compute import load_eco_raw
     eco = load_eco_raw()
-    emp_col = "emp_tot_nat_2024"
+    emp_col = "emp_tot_nat_2025"
     eco_emp = (
         eco.drop_duplicates("title_current")
         .set_index("title_current")[emp_col]

@@ -164,8 +164,8 @@ def load_eco_baseline(method: str, physical_mode: str, geo: str) -> Optional[pd.
     if eco.empty:
         return None
 
-    emp_col  = f"emp_tot_{geo}_2024"
-    wage_col = f"a_med_{geo}_2024"
+    emp_col  = f"emp_tot_{geo}_2025"
+    wage_col = f"a_med_{geo}_2025"
     result = dedup_and_compute(eco, "title_current", emp_col, wage_col, method, False)
     _eco_baseline_cache[key] = result
     return result
@@ -283,8 +283,8 @@ def compute_single_dataset(
     if df.empty:
         return None
 
-    emp_col  = f"emp_tot_{geo}_2024"
-    wage_col = f"a_med_{geo}_2024"
+    emp_col  = f"emp_tot_{geo}_2025"
+    wage_col = f"a_med_{geo}_2025"
 
     if is_aei:
         crosswalk = load_crosswalk()
@@ -570,8 +570,8 @@ def _compute_wa_for_group(
     top_n         = int(settings.get("top_n", 20))
     sort_by       = settings.get("sort_by", "workers_affected")
 
-    emp_col  = f"emp_tot_{geo}_2024"
-    wage_col = f"a_med_{geo}_2024"
+    emp_col  = f"emp_tot_{geo}_2025"
+    wage_col = f"a_med_{geo}_2025"
 
     # -- Load ECO baseline
     eco_raw = load_eco2015_raw() if use_eco2015 else load_eco_raw()
@@ -1063,12 +1063,12 @@ def get_explorer_occupations(geo: str = "nat", selected_sources: Optional[frozen
         return base
 
     # Resolve geo columns with fallback to national
-    emp_col = f"emp_tot_{geo}_2024"
-    wage_col = f"a_med_{geo}_2024"
+    emp_col = f"emp_tot_{geo}_2025"
+    wage_col = f"a_med_{geo}_2025"
     if emp_col not in eco.columns:
-        emp_col = "emp_tot_nat_2024"
+        emp_col = "emp_tot_nat_2025"
     if wage_col not in eco.columns:
-        wage_col = "a_med_nat_2024"
+        wage_col = "a_med_nat_2025"
 
     # Build occ→emp/wage lookup for this geo
     occ_emp_wage = eco.groupby("title_current").agg(
@@ -1532,12 +1532,12 @@ def get_explorer_groups(geo: str = "nat", selected_sources: Optional[frozenset] 
         return base
 
     # Resolve geo columns with fallback to national
-    emp_col = f"emp_tot_{geo}_2024"
-    wage_col = f"a_med_{geo}_2024"
+    emp_col = f"emp_tot_{geo}_2025"
+    wage_col = f"a_med_{geo}_2025"
     if emp_col not in eco.columns:
-        emp_col = "emp_tot_nat_2024"
+        emp_col = "emp_tot_nat_2025"
     if wage_col not in eco.columns:
-        wage_col = "a_med_nat_2024"
+        wage_col = "a_med_nat_2025"
 
     # Build occ→emp/wage lookup for this geo
     occ_agg = eco.groupby("title_current").agg(
@@ -1593,12 +1593,12 @@ def get_wa_explorer_data(geo: str = "nat", selected_sources: Optional[frozenset]
     lookup = _build_explorer_task_lookup()
 
     # Resolve geo columns with fallback to national
-    emp_col = f"emp_tot_{geo}_2024"
-    wage_col = f"a_med_{geo}_2024"
+    emp_col = f"emp_tot_{geo}_2025"
+    wage_col = f"a_med_{geo}_2025"
     if emp_col not in eco.columns:
-        emp_col = "emp_tot_nat_2024"
+        emp_col = "emp_tot_nat_2025"
     if wage_col not in eco.columns:
-        wage_col = "a_med_nat_2024"
+        wage_col = "a_med_nat_2025"
 
     needed_cols = [
         "title_current", "task_normalized", "task",
@@ -1745,12 +1745,12 @@ def get_wa_tasks_for_activity(level: str, name: str, geo: str = "nat") -> list:
         return []
 
     # Resolve geo columns with fallback to national
-    emp_col_name = f"emp_tot_{geo}_2024"
-    wage_col_name = f"a_med_{geo}_2024"
+    emp_col_name = f"emp_tot_{geo}_2025"
+    wage_col_name = f"a_med_{geo}_2025"
     if emp_col_name not in eco.columns:
-        emp_col_name = "emp_tot_nat_2024"
+        emp_col_name = "emp_tot_nat_2025"
     if wage_col_name not in eco.columns:
-        wage_col_name = "a_med_nat_2024"
+        wage_col_name = "a_med_nat_2025"
 
     # Filter to this activity
     act_df = eco[eco[act_col] == name].copy()
@@ -1866,12 +1866,12 @@ def get_all_tasks(geo: str = "nat") -> list:
     lookup = _build_explorer_task_lookup()
 
     # Resolve geo columns with fallback to national
-    emp_col_name = f"emp_tot_{geo}_2024"
-    wage_col_name = f"a_med_{geo}_2024"
+    emp_col_name = f"emp_tot_{geo}_2025"
+    wage_col_name = f"a_med_{geo}_2025"
     if emp_col_name not in eco.columns:
-        emp_col_name = "emp_tot_nat_2024"
+        emp_col_name = "emp_tot_nat_2025"
     if wage_col_name not in eco.columns:
-        wage_col_name = "a_med_nat_2024"
+        wage_col_name = "a_med_nat_2025"
 
     # Get unique tasks with their metadata (use first occurrence for text/hierarchy)
     task_cols = ["task_normalized", "task", "dwa_title", "iwa_title", "gwa_title", "physical"]
@@ -2016,12 +2016,12 @@ def get_all_eco_task_rows(geo: str = "nat", selected_sources: Optional[frozenset
     top_mcps_lookup = _build_top_mcps_lookup()
 
     # Resolve geo columns with fallback to national
-    emp_col_name = f"emp_tot_{geo}_2024"
-    wage_col_name = f"a_med_{geo}_2024"
+    emp_col_name = f"emp_tot_{geo}_2025"
+    wage_col_name = f"a_med_{geo}_2025"
     if emp_col_name not in eco.columns:
-        emp_col_name = "emp_tot_nat_2024"
+        emp_col_name = "emp_tot_nat_2025"
     if wage_col_name not in eco.columns:
-        wage_col_name = "a_med_nat_2024"
+        wage_col_name = "a_med_nat_2025"
 
     # Pre-compute weighted emp allocation (freq and value methods)
     task_dedup = eco.drop_duplicates(subset=["title_current", "task_normalized"]).copy()
@@ -2255,13 +2255,13 @@ def compute_task_changes(from_dataset: str, to_dataset: str, geo: str = "nat") -
         merged["pct_normalized_from"] = np.nan
 
     # Resolve geo columns with fallback to national
-    geo_emp_col = f"emp_tot_{geo}_2024"
-    geo_wage_col = f"a_med_{geo}_2024"
+    geo_emp_col = f"emp_tot_{geo}_2025"
+    geo_wage_col = f"a_med_{geo}_2025"
     if eco25 is not None:
         if geo_emp_col not in eco25.columns:
-            geo_emp_col = "emp_tot_nat_2024"
+            geo_emp_col = "emp_tot_nat_2025"
         if geo_wage_col not in eco25.columns:
-            geo_wage_col = "a_med_nat_2024"
+            geo_wage_col = "a_med_nat_2025"
 
     # Enrich with eco_2025 metadata (one row per (task_normalized, title_current))
     eco_meta: Optional[pd.DataFrame] = None

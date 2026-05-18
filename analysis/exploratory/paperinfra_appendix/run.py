@@ -1222,8 +1222,8 @@ def _national_totals_emp_wages() -> tuple[float, float]:
     from backend.compute import load_eco_raw
     eco = load_eco_raw()
     occ = eco.drop_duplicates(subset=["title_current"])
-    total_emp = float(occ["emp_tot_nat_2024"].sum())
-    total_wages = float((occ["emp_tot_nat_2024"] * occ["a_med_nat_2024"]).sum())
+    total_emp = float(occ["emp_tot_nat_2025"].sum())
+    total_wages = float((occ["emp_tot_nat_2025"] * occ["a_med_nat_2025"]).sum())
     return total_emp, total_wages
 
 

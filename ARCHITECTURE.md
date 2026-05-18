@@ -107,8 +107,8 @@ These live in `analysis/data/` rather than `data/` for historical reasons (the a
 | `pct_normalized` | float | Share of AI conversations involving this task. **Already in percent form** (0.4 = 0.4%, NOT 40%) |
 | `physical` | bool | Truly physical task |
 | `date` | str | Dataset snapshot date |
-| `emp_tot_{geo}_2024` | float | BLS OEWS 2024 employment per geography (nat, al, ak, ..., wy, gu, pr, vi) |
-| `a_med_{geo}_2024` | float | BLS OEWS 2024 median annual wage per geography |
+| `emp_tot_{geo}_2025` | float | BLS OEWS 2025 employment per geography (nat, al, ak, ..., wy, gu, pr, vi) |
+| `a_med_{geo}_2025` | float | BLS OEWS 2025 median annual wage per geography |
 | `dws_star_rating` | 1–5 | ECO 2025 only — DWS job outlook star rating |
 | `job_zone` | 1–5 | ECO 2025 only — O*NET job zone |
 | `task_prop` | float | ECO 2025 only — ratio of 2025/2015 tasks per occupation |

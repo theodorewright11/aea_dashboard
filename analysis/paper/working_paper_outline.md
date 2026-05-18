@@ -108,7 +108,7 @@
 - Step 2: Add SOC major occupational categories and broad counts from SOC Structure 2019.
 - Step 3: Add 2024 wage and employment data.
     - 3.1: Crosswalk from 2010 to 2019 SOC codes for wage/employment merging.
-    - 3.2: National wage data from OEWS May 2024. Fallback chain: detailed SOC → broad SOC → O*NET scraped wages (Jan 2020) with 1.24x inflation factor → hourly↔annual conversion.
+    - 3.2: National wage data from OEWS May 2025. Fallback chain: detailed SOC → broad SOC → O*NET scraped wages (Jan 2020) with 1.24x inflation factor → hourly↔annual conversion.
     - 3.3: State (Utah) wage data. Fallback: hourly↔annual conversion → national wages.
     - 3.4: National employment. Fallback to broad category divided by broad_counts. Division by duplicate 2019 SOC count to avoid double-counting. Sum per occupation for finals.
     - 3.5: State (Utah) employment. Fallback: national employment × (Utah total emp / national total emp) proportion.

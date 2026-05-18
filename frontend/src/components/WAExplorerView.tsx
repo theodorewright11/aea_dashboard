@@ -91,7 +91,7 @@ const COLUMNS: ColDef[] = [
   { key: "dwa_col",      label: "DWA",             width: 220, numeric: false, tooltip: "Detailed Work Activity" },
   { key: "iwa_col",      label: "IWA",             width: 200, numeric: false, tooltip: "Intermediate Work Activity" },
   { key: "gwa_col",      label: "GWA",             width: 180, numeric: false, tooltip: "Generalized Work Activity" },
-  { key: "emp",          label: "Emp",              width: 90,  numeric: true,  tooltip: "Total employment (BLS OEWS 2024) across occupations in this activity" },
+  { key: "emp",          label: "Emp",              width: 90,  numeric: true,  tooltip: "Total employment (BLS OEWS 2025) across occupations in this activity" },
   { key: "wage",         label: "Med Wage",         width: 90,  numeric: true,  tooltip: "Employment-weighted median annual wage" },
   { key: "phys_col",     label: "Phys",             width: 52,  numeric: false, tooltip: "Physical task (requires physical presence)" },
   { key: "freq_col",     label: "Freq",             width: 70,  numeric: true,  tooltip: "O*NET task frequency (0\u201310)" },

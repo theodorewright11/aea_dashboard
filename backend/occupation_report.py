@@ -648,14 +648,14 @@ def _intensity_rank_table() -> dict[str, dict]:
     bias = _equal_consensus_bias_ratios()
     df = pd.read_csv(fpath, low_memory=False)
     needed = {"task_normalized", "title_current", "major_occ_category", "gwa_title",
-              "pct_normalized", "freq_mean", "emp_tot_nat_2024"}
+              "pct_normalized", "freq_mean", "emp_tot_nat_2025"}
     missing = needed - set(df.columns)
     assert not missing, f"Primary dataset missing columns: {missing}"
-    for c in ("pct_normalized", "freq_mean", "emp_tot_nat_2024"):
+    for c in ("pct_normalized", "freq_mean", "emp_tot_nat_2025"):
         df[c] = pd.to_numeric(df[c], errors="coerce")
 
     ai = df[df["pct_normalized"].notna()].copy()
-    ai["eco_weight"] = ai["freq_mean"].fillna(0.0) * ai["emp_tot_nat_2024"].fillna(0.0)
+    ai["eco_weight"] = ai["freq_mean"].fillna(0.0) * ai["emp_tot_nat_2025"].fillna(0.0)
 
     # ── Occupation level: dedupe (task, occ), bias-correct via avg over occ's GWAs
     dedup_occ = ai.drop_duplicates(["task_normalized", "title_current"])[
@@ -801,12 +801,12 @@ def _raw_emp_wage(title: str, geo: str) -> tuple[Optional[float], Optional[float
     eco = load_eco_raw()
     if eco is None:
         return None, None
-    emp_col  = f"emp_tot_{geo}_2024"
-    wage_col = f"a_med_{geo}_2024"
+    emp_col  = f"emp_tot_{geo}_2025"
+    wage_col = f"a_med_{geo}_2025"
     if emp_col not in eco.columns:
-        emp_col = "emp_tot_nat_2024"
+        emp_col = "emp_tot_nat_2025"
     if wage_col not in eco.columns:
-        wage_col = "a_med_nat_2024"
+        wage_col = "a_med_nat_2025"
     sub = eco[eco["title_current"] == title]
     if sub.empty:
         return None, None

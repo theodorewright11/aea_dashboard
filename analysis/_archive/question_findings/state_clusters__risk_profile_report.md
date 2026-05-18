@@ -60,7 +60,7 @@ The weak ARI is itself informative: knowing what sector a state's economy is in 
 |---|---|
 | Dataset | AEI Both + Micro 2026-02-12 (all_confirmed) |
 | Risk tiers | From job_exposure/job_risk_scoring/results/risk_scores_primary.csv |
-| Employment | eco_2025 emp_tot_{geo}_2024 per occupation |
+| Employment | eco_2025 emp_tot_{geo}_2025 per occupation |
 | Feature | [pct_high, pct_moderate, pct_low] workers-affected by tier |
 | Clustering | k-means k=5, StandardScaler, n_init=20 |
 

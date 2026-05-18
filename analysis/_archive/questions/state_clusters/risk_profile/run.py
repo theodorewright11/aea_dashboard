@@ -12,7 +12,7 @@ together?
 Approach:
   1. Load risk_scores_primary.csv → title_current → risk_tier (and pct_tasks_affected)
   2. Load eco_raw (eco_2025) → extract per-state occupation employment from
-     emp_tot_{geo}_2024 columns
+     emp_tot_{geo}_2025 columns
   3. For each state: compute employment-weighted pct of workers in high/moderate/low
      risk tiers among the AI-exposed population (workers_affected = pct/100 × emp)
   4. Feature matrix: state × [pct_high, pct_moderate, pct_low]
@@ -102,7 +102,7 @@ def build_state_risk_features() -> pd.DataFrame:
     """
     Build state × risk-tier feature matrix using eco_raw employment.
 
-    For each state geo, occupation employment comes from emp_tot_{geo}_2024
+    For each state geo, occupation employment comes from emp_tot_{geo}_2025
     in eco_raw. Workers affected = (pct_tasks_affected / 100) × employment.
     We split those workers across risk tiers and normalize to shares.
     """
@@ -119,9 +119,9 @@ def build_state_risk_features() -> pd.DataFrame:
 
     # Identify state emp columns
     state_geos = [
-        col.replace("emp_tot_", "").replace("_2024", "")
+        col.replace("emp_tot_", "").replace("_2025", "")
         for col in occ_df.columns
-        if col.startswith("emp_tot_") and col.endswith("_2024") and col != "emp_tot_nat_2024"
+        if col.startswith("emp_tot_") and col.endswith("_2025") and col != "emp_tot_nat_2025"
     ]
     # Remove national
     state_geos = [g for g in state_geos if g != "nat"]
@@ -132,7 +132,7 @@ def build_state_risk_features() -> pd.DataFrame:
 
     rows = []
     for geo in state_geos:
-        emp_col = f"emp_tot_{geo}_2024"
+        emp_col = f"emp_tot_{geo}_2025"
         if emp_col not in occ_df.columns:
             continue
 

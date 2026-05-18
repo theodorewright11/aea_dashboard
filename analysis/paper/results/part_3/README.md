@@ -20,7 +20,7 @@ All Confirmed (`final_all_confirmed_usage_2026-02-12`) | National | Freq (time-w
 - `tech_commodities` — uses `analysis/data/technology_skills_v30.1.csv`.
 - `conv_confirmed_ceiling_gap` — runs three configs side by side: `human_conversation`, `all_confirmed`, `all_ceiling`.
 - `risk_score_5f` — imports from `analysis/exploratory/audit_risk_score/run.py` (gitignored; skipped with a warning if absent).
-- `state_exposure_at_risk` — imports from `analysis/exploratory/deepdive_state_signal/run.py` (gitignored; skipped with a warning if absent). Uses the same focused set as `risk_score_5f`, plus per-state employment from `emp_tot_{geo}_2024` in eco_2025.
+- `state_exposure_at_risk` — imports from `analysis/exploratory/deepdive_state_signal/run.py` (gitignored; skipped with a warning if absent). Uses the same focused set as `risk_score_5f`, plus per-state employment from `emp_tot_{geo}_2025` in eco_2025.
 - `intensity_anchor_fulleco` — imports from `analysis/exploratory/audit_pct_norm_eco/run_v3.py`. The exploratory folder is gitignored, so this build step is skipped (with a warning) on machines without the v3 script available.
 
 ## Run

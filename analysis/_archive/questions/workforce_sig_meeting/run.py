@@ -292,8 +292,8 @@ def build_methodology_breakdown(results: Path) -> dict:
     sum_baseline = float(merged["weight_baseline"].sum())
     sum_ai = float(merged["weight_ai"].sum())
     pct = sum_ai / sum_baseline * 100.0
-    emp = float(ce_eco["emp_tot_nat_2024"].iloc[0])
-    wage = float(ce_eco["a_med_nat_2024"].iloc[0])
+    emp = float(ce_eco["emp_tot_nat_2025"].iloc[0])
+    wage = float(ce_eco["a_med_nat_2025"].iloc[0])
     workers = pct / 100.0 * emp
     wages = workers * wage
 

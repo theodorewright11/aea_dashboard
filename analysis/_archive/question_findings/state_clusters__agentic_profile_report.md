@@ -76,7 +76,7 @@ This contrasts with, say, the risk-profile finding where some states (PR, VI) ha
 |---|---|
 | Agentic dataset | AEI API 2026-02-12 (agentic_confirmed) |
 | Confirmed dataset | AEI Both + Micro 2026-02-12 (all_confirmed) |
-| Employment | eco_2025 emp_tot_{geo}_2024 per occupation |
+| Employment | eco_2025 emp_tot_{geo}_2025 per occupation |
 | Feature | Agentic intensity per sector (agentic workers / confirmed workers) — 22 sectors |
 | Clustering | k-means k=5, StandardScaler, n_init=20 |
 

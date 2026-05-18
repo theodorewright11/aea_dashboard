@@ -139,9 +139,9 @@ $$
 
 `final_eco_2025.csv` and `final_eco_2015.csv` have `auto_aug_mean = NaN` and `pct_normalized = 0` by design. They provide only the task inventory + survey fields and serve as the **denominator** in every `pct_tasks_affected` calculation (§2.3).
 
-### 1.4 Employment & Wages: `emp_tot_{geo}_2024`, `a_med_{geo}_2024`
+### 1.4 Employment & Wages: `emp_tot_{geo}_2025`, `a_med_{geo}_2025`
 
-Sourced from BLS OEWS 2024 national (`oews_national_2024.csv`) and state-level files (`oews_states_2024.csv`). 55 geographies total: `nat` + 50 states + DC + Guam + Puerto Rico + USVI.
+Sourced from BLS OEWS 2025 national (`oews_national_2025.csv`) and state-level files (`oews_states_2025.csv`). 55 geographies total: `nat` + 50 states + DC + Guam + Puerto Rico + USVI.
 
 **Decimal SOC adjustment (E1.4.1).** O*NET uses decimal SOC codes (e.g. `11-1011.00`, `11-1011.03`); BLS reports at 6-digit level. Without adjustment, emp would be counted once per decimal variant. The pipeline reallocates:
 
@@ -217,7 +217,7 @@ Everything downstream of the raw CSVs. All computations live in [backend/compute
 
 **Notation.**
 - $T$ = set of tasks (each is a `(title, task_normalized)` pair after deduplication)
-- $f_t, r_t, i_t, a_t, e_o, w_o$ = `freq_mean`, `relevance`, `importance`, `auto_aug_mean`, `emp_tot_{geo}_2024`, `a_med_{geo}_2024`
+- $f_t, r_t, i_t, a_t, e_o, w_o$ = `freq_mean`, `relevance`, `importance`, `auto_aug_mean`, `emp_tot_{geo}_2025`, `a_med_{geo}_2025`
 - Superscripts $\text{AI}$ and $\text{ECO}$ denote AI dataset vs. ECO baseline.
 
 ### 2.1 Task Completion Weight: `task_comp`

@@ -184,7 +184,7 @@ def _get_ska_elements() -> dict[str, pd.DataFrame]:
 def _get_utah_totals() -> tuple[float, float]:
     """Return (total_workers, total_wages) for all Utah occupations.
 
-    Sums emp_tot_ut_2024 across unique occupations in the eco baseline.
+    Sums emp_tot_ut_2025 across unique occupations in the eco baseline.
     Total wages = sum of emp * a_med (annual median wage) across unique occs.
     """
     from backend.compute import load_eco_raw
@@ -192,8 +192,8 @@ def _get_utah_totals() -> tuple[float, float]:
     eco = load_eco_raw()
     assert eco is not None, "Could not load eco baseline"
 
-    emp_col = "emp_tot_ut_2024"
-    wage_col = "a_med_ut_2024"
+    emp_col = "emp_tot_ut_2025"
+    wage_col = "a_med_ut_2025"
 
     # One row per (occupation × task) — deduplicate to one row per occupation
     occ = eco[["title_current", emp_col, wage_col]].drop_duplicates("title_current")

@@ -123,10 +123,10 @@ def build_state_agentic_features() -> tuple[pd.DataFrame, list[str]]:
 
     # Identify state emp columns
     state_geos = sorted([
-        col.replace("emp_tot_", "").replace("_2024", "")
+        col.replace("emp_tot_", "").replace("_2025", "")
         for col in occ_df.columns
-        if col.startswith("emp_tot_") and col.endswith("_2024") and col != "emp_tot_nat_2024"
-        and col.replace("emp_tot_", "").replace("_2024", "") != "nat"
+        if col.startswith("emp_tot_") and col.endswith("_2025") and col != "emp_tot_nat_2025"
+        and col.replace("emp_tot_", "").replace("_2025", "") != "nat"
     ])
 
     # Map occupation → pct (fill 0 for unmatched)
@@ -140,7 +140,7 @@ def build_state_agentic_features() -> tuple[pd.DataFrame, list[str]]:
 
     rows = []
     for geo in state_geos:
-        emp_col = f"emp_tot_{geo}_2024"
+        emp_col = f"emp_tot_{geo}_2025"
         if emp_col not in occ_df.columns:
             continue
 

@@ -45,7 +45,7 @@ Datasets are organized into four categories:
 
 **O*NET (2025 and 2015)** — The U.S. Department of Labor's Occupational Information Network provides the task inventory (what work each occupation involves), the work activity hierarchy (GWA → IWA → DWA), and survey-derived measures of task frequency, importance, and relevance. The 2025 edition is the primary task baseline; the 2015 edition is used as the baseline for AEI work-activity analysis (since AEI uses 2010 SOC codes that align with the older task set).
 
-**BLS Occupational Employment and Wage Statistics (OEWS 2024)** — Employment counts and median annual wages by occupation, available at national level and for all 50 U.S. states, D.C., and select territories (Guam, Puerto Rico, U.S. Virgin Islands). These figures translate percentage-based exposure into concrete worker and dollar impacts.
+**BLS Occupational Employment and Wage Statistics (OEWS 2025)** — Employment counts and median annual wages by occupation, available at national level and for all 50 U.S. states, D.C., and select territories (Guam, Puerto Rico, U.S. Virgin Islands). These figures translate percentage-based exposure into concrete worker and dollar impacts.
 
 ---
 
@@ -304,7 +304,7 @@ Tooltips on each bar show the delta versus the same category in the other group,
 **What the dashboard does NOT do:**
 - **Predict job loss or replacement.** The metrics show task-level exposure overlap with AI capability, not employment forecasts. A high % Tasks Affected does not mean those workers will lose their jobs.
 - **Capture all AI capabilities.** The AI scoring sources measure what current systems (Claude, MCP tools, Microsoft Copilot) can do as of their snapshot dates. Capabilities not captured in these datasets are not reflected.
-- **Provide real-time data.** All data is from past snapshots. AEI Conv. snapshot data spans Dec 2024–Nov 2025; AEI cumulative variants aggregate all interactions through each snapshot date; MCP Cumul. spans Apr 2025–Feb 2026; Microsoft is a single Sep 2024 snapshot. BLS employment/wage data is from 2024 OEWS.
+- **Provide real-time data.** All data is from past snapshots. AEI Conv. snapshot data spans Dec 2024–Nov 2025; AEI cumulative variants aggregate all interactions through each snapshot date; MCP Cumul. spans Apr 2025–Feb 2026; Microsoft is a single Sep 2024 snapshot. BLS employment/wage data is from 2025 OEWS.
 - **Cover non-U.S. labor markets.** Employment and wage data cover U.S. national, all 50 states, D.C., and select territories. The occupational taxonomy (O*NET / SOC) is U.S.-specific.
 
 **Edge cases and caveats:**

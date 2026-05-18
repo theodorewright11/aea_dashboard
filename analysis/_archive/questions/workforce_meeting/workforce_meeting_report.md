@@ -15,7 +15,7 @@ These apply to every chart in this set:
 - **"Affected" does not mean "replaced."** A worker is counted as affected if any meaningful share of their tasks overlap with demonstrated AI capability.
 - **The analysis assumes full adoption.** The numbers reflect what would happen if every worker in an affected occupation used AI for all the tasks AI can currently do. Actual adoption is lower. Think of these as the ceiling of current-capability exposure, not a snapshot of current deployment.
 - **Scores come from multiple AI sources.** "All Confirmed" is an aggregate of capabilities across Claude conversation data, Claude API data, and Microsoft Copilot data.
-- **Utah employment from BLS 2024 OEWS.** 
+- **Utah employment from BLS 2025 OEWS.** 
 
 ---
 
@@ -189,7 +189,7 @@ These apply to every chart in this set:
 | Agentic | AEI API 2026-02-12 |
 | Method | freq (time-weighted) |
 | Auto-aug | ON |
-| Geography | Utah (BLS 2024 OEWS) |
+| Geography | Utah (BLS 2025 OEWS) |
 | Utah total employment | 1,709,790 |
 | Trend window | 2025-03-06 → 2026-02-12 |
 
