@@ -39,9 +39,9 @@ Every exploratory sub-folder must have:
 - `README.md` — what the folder is, what it produces, how to run it, and what's in the output (a small file table is plenty).
 - `<name>_report.md` — the findings writeup. Narrative prose with inline figures referencing `results/figures/` paths. This is the primary deliverable.
 - `results/` — auto-created by the script (use `ensure_results_dir()` from `analysis.config`). Gitignored.
-- `figures/` — only for committed exploratory folders (currently `paperinfra_all_charts/` and `paperinfra_appendix/`). Most folders skip this.
+- `figures/` — committed only for the paper folders under `analysis/paper/results/` (the part folders and `appendix/`). Exploratory folders are all gitignored, so they skip this.
 
-Paper parts follow the same shape under `analysis/paper/results/part_N/`, plus a `part_N.md` for the prose.
+Paper parts follow the same shape under `analysis/paper/results/part_N/` (and `analysis/paper/results/appendix/`): `run.py`, `README.md`, `figures/`, gitignored `results/`. There are no per-part `.md` files — every paper figure is listed, chart-only and in order, in `analysis/paper/results/results.md`.
 
 ---
 

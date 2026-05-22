@@ -57,7 +57,7 @@ The primary current deliverable. Three parts:
 - **Part 2 — Characterization: Where AI Exposure Falls** (in progress). The shape of exposure — physical/informational divide, job zones, SKA breakdown, work activities, major occupational categories.
 - **Part 3 — Action: What To Do About It** (in progress). Adoption gap, technology commodity exposure, the focused-set risk score, state-level exposure-vs-at-risk split, sector-level intensity anchoring.
 
-Each part has its own `run.py`, `README.md`, and committed `figures/` directory. The assembled prose lives in `paper/results/results.md`. Paper writing follows a separate style reference (`paper/writing_style_source.md` + `paper/paper_writing_style.md`).
+Each part has its own `run.py`, `README.md`, and committed `figures/` directory. An `appendix/` folder (same shape) holds auxiliary figures. The assembled `paper/results/results.md` is a chart-only listing — every paper figure (Parts 1–3 then appendix) in order, no prose. Paper writing follows a separate style reference (`paper/writing_style_source.md` + `paper/paper_writing_style.md`).
 
 ### 2. Exploratory analyses (`analysis/exploratory/`)
 
@@ -68,7 +68,7 @@ One-off deep dives motivated by paper drafting or open methodology questions. Ea
 - `audit_*` — methodology audits (task properties, risk score, physical filter, weighting, etc.)
 - `deepdive_*` — per-element / structural deep dives
 
-Two folders are committed via gitignore exception (`paperinfra_all_charts/`, `paperinfra_appendix/`); the rest are local-only.
+The entire `exploratory/` folder is local-only (gitignored). Committed paper figures — including the auxiliary appendix figures — live under `analysis/paper/results/` instead.
 
 `claude_lab/` is a separate autonomous-research workspace that operates by its own conventions.
 

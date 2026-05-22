@@ -1,14 +1,6 @@
 # Manual
 delta/
 analysis/exploratory/*
-!analysis/exploratory/paperinfra_all_charts/
-!analysis/exploratory/paperinfra_all_charts/**
-!analysis/exploratory/paperinfra_appendix/
-!analysis/exploratory/paperinfra_appendix/**
-# Re-exclude regenerable outputs inside the committed exploratory folders
-analysis/exploratory/paperinfra_appendix/results/
-# Offshoots is a gitignored sandbox carved out inside the (committed) mirror
-analysis/exploratory/paperinfra_all_charts/offshoots/
 
 # Analysis generated outputs (archived question results stay gitignored)
 analysis/_archive/questions/**/results/

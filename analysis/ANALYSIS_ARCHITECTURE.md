@@ -34,31 +34,32 @@ analysis/
 │   ├── paper_writing_style.md   — Condensed dos/don'ts for paper writing
 │   ├── working_paper_outline.md — Draft structure reference (not final)
 │   └── results/                 — Results section (NOT gitignored — section content)
-│       ├── results.md           — Assembled Results section (Parts 1–3)
-│       ├── part_1/              — Scale, Convergence, Growth — first draft complete
+│       ├── results.md           — Assembled chart-only Results: every paper figure
+│       │                          (Parts 1–3 then appendix) in order, no prose.
+│       ├── part_1/              — Scale, Convergence, Growth
 │       ├── part_2/              — Characterization: Where AI Exposure Falls
-│       └── part_3/              — Action: What To Do About It
-│           Each part has: run.py, README.md, part_N.md, results/ (gitignored),
-│           figures/ (committed). See each part's README for chart-by-chart detail.
+│       ├── part_3/              — Action: What To Do About It
+│       │     Each part has: run.py, README.md, results/ (gitignored),
+│       │     figures/ (committed). See each part's README for chart detail.
+│       │     (No per-part .md — all charts are listed in results.md.)
+│       └── appendix/            — Auxiliary paper figures (convergence_full_*,
+│                                  overview_no_autoaug, temporal_trend_nonphys,
+│                                  ska_full, nonphys_gwa_diff_phys_excluded).
+│                                  run.py + README.md + figures/ (committed);
+│                                  no own .md — charts appended to results.md.
 │
-├── exploratory/             — Live exploratory analysis. Folder is gitignored
-│   │                          except for two carved-out paperinfra folders
-│   │                          (see "Gitignore exceptions" below). Each sub-folder
-│   │                          has run.py, README.md, <name>_report.md, results/.
+├── exploratory/             — Live exploratory analysis. Folder is fully
+│   │                          gitignored. Each sub-folder has run.py,
+│   │                          README.md, <name>_report.md, results/.
 │   │                          Naming convention: <bucket>_<topic> for
 │   │                          discoverability via `ls`.
+│   │                          (Paper-figure mirrors/appendix no longer live
+│   │                          here — the appendix moved to paper/results/appendix/
+│   │                          and the all-charts mirror was removed.)
 │   │
-│   │   ── paperinfra_*  — Mirrors / variants of paper figures (committed)
-│   ├── paperinfra_all_charts/   — Mirror of every committed paper figure
-│   │                              (part_1/2/3) regenerated via sync script,
-│   │                              with all_paper_charts.md listing each one.
-│   │                              Has gitignored offshoots/ sandbox for variants
-│   │                              (e.g. simple_mean_convergence,
-│   │                              major_top10_trends_*, weighting_config_test)
-│   ├── paperinfra_aei_only/     — Same mirror with all_confirmed swapped to
-│   │                              AEI-only (no Microsoft). Gitignored.
-│   ├── paperinfra_appendix/     — Auxiliary paper figures (phys_zone_faceted,
-│   │                              ska_full). Committed.
+│   │   ── paperinfra_*  — Mirrors / variants of paper figures (gitignored)
+│   ├── paperinfra_aei_only/     — Mirror of paper charts with all_confirmed
+│   │                              swapped to AEI-only (no Microsoft). Gitignored.
 │   │
 │   │   ── extcompare_*  — Comparisons against external indices (gitignored)
 │   ├── extcompare_schaal/       — Replicates Part 1+2 chart types using
@@ -165,18 +166,9 @@ analysis/
 
 ### Gitignore exceptions
 
-The exploratory folder is gitignored (`analysis/exploratory/*`) with two carved-out commits:
+The exploratory folder is fully gitignored (`analysis/exploratory/*`) — there are no carved-out commits. Committed paper figures live under `analysis/paper/results/` (the part folders and `appendix/`), which is not gitignored; each `*/results/` subfolder there is re-excluded as regenerable (`analysis/paper/results/*/results/`).
 
-```
-!analysis/exploratory/paperinfra_all_charts/
-!analysis/exploratory/paperinfra_all_charts/**
-!analysis/exploratory/paperinfra_appendix/
-!analysis/exploratory/paperinfra_appendix/**
-analysis/exploratory/paperinfra_appendix/results/         (re-excluded — regenerable)
-analysis/exploratory/paperinfra_all_charts/offshoots/     (re-excluded — sandbox)
-```
-
-Outside these exceptions, do not use `git add -f`.
+Do not use `git add -f` to commit anything under `analysis/exploratory/`.
 
 ---
 

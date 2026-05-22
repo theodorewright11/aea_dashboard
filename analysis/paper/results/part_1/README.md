@@ -1,6 +1,6 @@
 # Part 1 — Scale, Convergence, Growth
 
-First section of the Results chapter. First draft complete. Content in `part_1.md`.
+First section of the Results chapter. Its charts are listed (chart-only, in order) in `analysis/paper/results/results.md`.
 
 ## Charts Produced
 
