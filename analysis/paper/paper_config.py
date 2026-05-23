@@ -16,18 +16,61 @@ from analysis.utils import COLORS, FONT_FAMILY
 PAPER_W: int = 1400
 PAPER_H: int = 787
 
-# ── Typography (px) ──────────────────────────────────────────────────────
-TITLE_FS: int = 22
-SUBTITLE_FS: int = 15
-INSIDE_FS: int = 19       # Primary values inside bars
-OUTSIDE_FS: int = 16      # Secondary info outside bars / data labels
-TICK_FS: int = 15          # Axis tick labels
-LABEL_FS: int = 16         # Axis titles
-LEGEND_FS: int = 15        # Legend items
-ANNOT_FS: int = 12         # Footnotes
-HEATMAP_TEXT_FS: int = 18  # Correlation values inside heatmap cells
-TABLE_HEADER_FS: int = 18  # Table column headers
-TABLE_CELL_FS: int = 16    # Table cell text
+# ── Print geometry ───────────────────────────────────────────────────────
+# Every paper figure is placed at this column width in the manuscript.
+# Print pt for a font of `f` px on a `W`-px-wide canvas:
+#   pt = f × PAPER_COL_INCHES × PT_PER_INCH / W
+# Inverting to size fonts to a pt target:
+#   px = pt × W / (PAPER_COL_INCHES × PT_PER_INCH)
+PAPER_COL_INCHES: float = 6.5
+PT_PER_INCH: float = 72.0
+
+# ── Standardized font ladder (print pt @ 6.5" column) ────────────────────
+# Single source of truth. Every paper figure resolves its chrome from this
+# via paper_fonts(width). Ratios: title 1.22× ticks · panel/axis 1.11× ticks.
+FONT_PT_LADDER: dict[str, float] = {
+    "title":          11.0,   # Chart title
+    "panel_title":    10.0,   # Subplot / facet title
+    "axis_title":     10.0,   # Axis title
+    "tick":            9.0,   # Tick labels
+    "legend":          9.0,   # Legend items
+    "in_chart_floor":  8.0,   # Hard floor — data labels, cell text, annotations
+}
+
+
+def paper_fonts(canvas_width_px: int = PAPER_W) -> dict[str, int]:
+    """Resolve the standardized pt ladder into pixel sizes for a given canvas width.
+
+    Use this in every paper figure so the printed pt size stays constant
+    regardless of canvas width. Sizes are rounded to integer px.
+    """
+    px_per_pt = canvas_width_px / (PAPER_COL_INCHES * PT_PER_INCH)
+    return {role: max(1, round(pt * px_per_pt)) for role, pt in FONT_PT_LADDER.items()}
+
+
+def paper_floor_px(canvas_width_px: int = PAPER_W) -> int:
+    """Minimum legal font size in px for in-chart text on a given canvas.
+
+    Any data label, cell value, annotation, or inside-bar text must be ≥ this.
+    """
+    return paper_fonts(canvas_width_px)["in_chart_floor"]
+
+
+# ── Typography (px) — derived from the ladder at default PAPER_W ─────────
+# These names are kept for back-compat with existing chart scripts. New
+# code should call paper_fonts(width) directly so off-1400 canvases scale.
+_PX = paper_fonts(PAPER_W)
+TITLE_FS: int = _PX["title"]
+SUBTITLE_FS: int = _PX["tick"]      # subtitles removed from paper, kept for legacy callers
+INSIDE_FS: int = _PX["tick"]        # Primary values inside bars
+OUTSIDE_FS: int = _PX["tick"]       # Secondary info outside bars / data labels
+TICK_FS: int = _PX["tick"]          # Axis tick labels
+LABEL_FS: int = _PX["axis_title"]   # Axis titles
+LEGEND_FS: int = _PX["legend"]      # Legend items
+ANNOT_FS: int = _PX["in_chart_floor"]   # Footnotes — at the floor
+HEATMAP_TEXT_FS: int = _PX["tick"]      # Correlation values inside heatmap cells
+TABLE_HEADER_FS: int = _PX["tick"]      # Table column headers
+TABLE_CELL_FS: int = _PX["in_chart_floor"]   # Table cell text — at the floor
 
 # ── Five-config colors ───────────────────────────────────────────────────
 CONFIG_COLORS: dict[str, str] = {
@@ -132,23 +175,23 @@ def style_paper_figure(
 ) -> go.Figure:
     """Apply consistent paper styling to a Plotly figure.
 
-    No source attribution or config subtitle by default — the paper's
-    methods section handles that context.
+    Font sizes are derived from the standardized pt ladder via paper_fonts(width),
+    so off-1400 canvases (e.g. convergence matrices) print at the same pt size as
+    everything else. Subtitles are intentionally ignored — paper figures carry no
+    in-image subtitle; that text belongs in the figure caption.
     """
-    title_html = title
     if subtitle:
-        muted = PAPER_PALETTE["muted"]
-        title_html += (
-            f"<br><span style='font-size:{SUBTITLE_FS}px;"
-            f"color:{muted}'>{subtitle}</span>"
-        )
+        # Subtitles are not rendered on paper figures. Caller can keep passing
+        # one for back-compat; we silently drop it.
+        pass
 
+    px = paper_fonts(width)
     m = margin or dict(l=20, r=60, t=90, b=70)
 
     fig.update_layout(
         title=dict(
-            text=title_html,
-            font=dict(size=TITLE_FS, color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+            text=title,
+            font=dict(size=px["title"], color=PAPER_PALETTE["text"], family=FONT_FAMILY),
             x=0.01, xanchor="left",
         ),
         font=dict(family=FONT_FAMILY, color=PAPER_PALETTE["text"]),
@@ -158,7 +201,7 @@ def style_paper_figure(
         height=height,
         margin=m,
         legend=dict(
-            font=dict(size=LEGEND_FS, family=FONT_FAMILY),
+            font=dict(size=px["legend"], family=FONT_FAMILY),
             orientation="h",
             yanchor="top", y=-0.08, xanchor="left", x=0,
         ),
@@ -166,13 +209,13 @@ def style_paper_figure(
 
     fig.update_xaxes(
         gridcolor=PAPER_PALETTE["grid"],
-        tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
-        title_font=dict(size=LABEL_FS, family=FONT_FAMILY),
+        tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+        title_font=dict(size=px["axis_title"], family=FONT_FAMILY),
     )
     fig.update_yaxes(
         gridcolor=PAPER_PALETTE["grid"],
-        tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
-        title_font=dict(size=LABEL_FS, family=FONT_FAMILY),
+        tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+        title_font=dict(size=px["axis_title"], family=FONT_FAMILY),
     )
 
     return fig

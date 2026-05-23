@@ -87,13 +87,65 @@ State/geo labels uppercase in bar charts. Reports open with a plain paragraph (n
 
 ## Paper Chart Formatting
 
-Rules for any figure under `analysis/paper/results/` that gets pasted into the paper. Every figure is placed at **6.5 inch (468 pt) column width**.
+Rules for any figure under `analysis/paper/results/` that gets pasted into the paper. Every figure is placed at **6.5 inch column width**.
 
-- **Minimum 8 pt fonts.** A font of `f` logical px on a `W`-px-wide canvas prints at `f × 468 / W` pt. So the floor is `f ≥ 8 × W / 468`. On the default `W = 1400` canvas that means **the smallest in-chart font must be ≥ 24 px** (ticks, axis titles, data labels, legend, annotations — all of them). Scale the rest up from there, keeping the visual hierarchy (title largest). Note `scale` in `save_figure()` does not change this — it multiplies pixels uniformly, so px→pt is scale-independent.
-- **No subtitles.** Pass `subtitle=""` to `style_paper_figure()`. The gray subtitle text becomes the figure caption in the paper, not part of the image.
-- **≥ 300 DPI.** Already satisfied by `save_figure(scale=3)` (1400 px × 3 = 4200 px ÷ 6.5 in ≈ 645 ppi). Keep `scale ≥ 2`. Pixel count is what matters for paste quality; kaleido does not embed a DPI tag (write one only if a reviewer's checker requires it).
-- **Judge per chart.** To clear the 8 pt floor you can either raise the font constants on a 1400 px canvas or shrink the canvas width — pick whichever keeps that chart uncrowded. Text-dense multi-panel grids (e.g. the convergence matrices) often need a layout tweak, not just bigger numbers.
-- **Workflow:** edit one chart at a time. Regenerate, verify the smallest font clears 8 pt, then stop and get approval before moving to the next.
+- **≥ 300 DPI.** `save_figure(scale=3)` on a 1400 px canvas prints at ≈ 645 ppi. Keep `scale ≥ 2`.
+- **No subtitles.** `style_paper_figure()` silently drops any `subtitle` arg — that text becomes the figure caption in the paper, not part of the image.
+- **8 pt floor.** Nothing in the rendered image — chrome or in-chart text — prints below 8 pt at 6.5″ column width. The helper enforces this for chrome automatically; in-chart text is the caller's responsibility.
+
+### Standard pt ladder (single source of truth)
+
+Defined in `analysis/paper/paper_config.py` as `FONT_PT_LADDER` and resolved to pixels per canvas width by `paper_fonts(W)`:
+
+| Role | Print size | px @ W=1400 |
+|---|---|---|
+| Chart title | 11 pt | 33 |
+| Panel / subplot title | 10 pt | 30 |
+| Axis title | 10 pt | 30 |
+| Tick labels | 9 pt | 27 |
+| Legend | 9 pt | 27 |
+| In-chart text (floor) | 8 pt | 24 |
+
+Math: `px = pt × W / (6.5 × 72)`. The helper rounds to integer px.
+
+`style_paper_figure(fig, title, width=W)` applies title, axis title, tick, and legend sizes from `paper_fonts(W)`. Panel/subplot titles and any in-chart text (data labels, cell values, annotations, inside-bar text, table cells, heatmap values) are the caller's responsibility — pull them from the same dict:
+
+```python
+from analysis.paper.paper_config import paper_fonts, style_paper_figure, PAPER_W
+
+W = 1200  # narrower than default — convergence matrix, say
+px = paper_fonts(W)
+
+# subplot titles (faceted plot annotations)
+for ann in fig.layout.annotations:
+    ann.font = dict(size=px["panel_title"], family=FONT_FAMILY)
+
+# data labels, cell text, etc. — must be ≥ px["in_chart_floor"]
+fig.update_traces(textfont=dict(size=px["tick"]))
+
+style_paper_figure(fig, "Title here", width=W)
+```
+
+### Sizing model — always proportional
+
+Never hardcode font px in chart scripts. Pull every size from `paper_fonts(width)` so a chart that needs a narrower or wider canvas auto-scales and still clears the 8 pt floor.
+
+For dense layouts (convergence matrices, big tables, many-bar charts) that can't fit standard chrome, **shrink the canvas width** rather than dropping below the ladder. `paper_fonts(W)` will produce smaller px values but the print pt stays at 11/10/9/9 — that's the whole point of the proportional model.
+
+### `style_paper_figure()` gotcha
+
+`style_paper_figure()` calls `update_xaxes`/`update_yaxes` internally and overwrites any axis font you set beforehand. If you need per-axis overrides, apply them **after** the call:
+
+```python
+style_paper_figure(fig, "...", width=W)
+fig.update_xaxes(tickfont=dict(size=px["in_chart_floor"], family=FONT_FAMILY))  # tighter
+```
+
+Legend / title fonts set via `fig.update_layout()` after `style_paper_figure()` also survive.
+
+### Workflow
+
+Edit one chart at a time. Regenerate, verify the smallest in-chart font clears the 8 pt floor, then stop and get approval before moving to the next.
 
 ## Cross-References to Watch
 
