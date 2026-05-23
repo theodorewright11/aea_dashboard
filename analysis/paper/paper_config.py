@@ -37,6 +37,22 @@ FONT_PT_LADDER: dict[str, float] = {
     "in_chart_floor":  8.0,   # Hard floor — data labels, cell text, annotations
 }
 
+# Hierarchy invariants — enforced at import so an invalid ladder crashes
+# the chart script instead of shipping a malformed figure.
+assert (
+    FONT_PT_LADDER["title"]
+    >= FONT_PT_LADDER["panel_title"]
+    >= FONT_PT_LADDER["axis_title"]
+    >= FONT_PT_LADDER["tick"]
+    >= FONT_PT_LADDER["in_chart_floor"]
+), "FONT_PT_LADDER violates hierarchy: title ≥ panel ≥ axis ≥ tick ≥ floor"
+assert FONT_PT_LADDER["legend"] == FONT_PT_LADDER["tick"], (
+    "FONT_PT_LADDER: legend must equal tick size"
+)
+assert FONT_PT_LADDER["in_chart_floor"] >= 8.0, (
+    "FONT_PT_LADDER: in_chart_floor cannot drop below 8 pt (paper readability rule)"
+)
+
 
 def paper_fonts(canvas_width_px: int = PAPER_W) -> dict[str, int]:
     """Resolve the standardized pt ladder into pixel sizes for a given canvas width.
