@@ -108,6 +108,8 @@ Defined in `analysis/paper/paper_config.py` as `FONT_PT_LADDER` and resolved to 
 
 Math: `px = pt × W / (6.5 × 72)`. The helper rounds to integer px.
 
+**Hierarchy is enforced.** `paper_config.py` asserts at import that `title ≥ panel_title ≥ axis_title ≥ tick ≥ in_chart_floor`, that `legend == tick`, and that `in_chart_floor ≥ 8 pt`. Editing `FONT_PT_LADDER` to violate any of these crashes every paper chart script on import — fix the ladder, don't loosen the assert.
+
 `style_paper_figure(fig, title, width=W)` applies title, axis title, tick, and legend sizes from `paper_fonts(W)`. Panel/subplot titles and any in-chart text (data labels, cell values, annotations, inside-bar text, table cells, heatmap values) are the caller's responsibility — pull them from the same dict:
 
 ```python
