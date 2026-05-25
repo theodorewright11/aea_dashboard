@@ -847,16 +847,37 @@ def _national_totals_emp_wages() -> tuple[float, float]:
     return total_emp, total_wages
 
 
+def _eco_tc_by_occ_app() -> pd.Series:
+    """Per-occupation eco baseline task_comp sum (freq, no auto-aug, all phys).
+    Denominator for the economy-wide ratio-of-totals % tasks number — mirrors
+    `_eco_task_comp_by_occ` in part_1/run.py."""
+    from backend.compute import load_eco_baseline
+    eco = load_eco_baseline(method="freq", physical_mode="all", geo="nat")
+    return eco.groupby("title_current")["task_comp"].sum()
+
+
+def _econ_pct_tasks(df: pd.DataFrame, eco_tc_by_occ: pd.Series) -> float:
+    """Ratio-of-totals % tasks across all (task, occ) pairs in the economy:
+    Σ_occ (pct[occ]/100 × eco_tc[occ]) / Σ_occ eco_tc[occ] × 100."""
+    eco_tc_total = float(eco_tc_by_occ.sum())
+    if eco_tc_total <= 0:
+        return 0.0
+    eco_aligned = df["category"].map(eco_tc_by_occ).fillna(0.0)
+    ai_tc_total = float(((df["pct_tasks_affected"] / 100.0) * eco_aligned).sum())
+    return ai_tc_total / eco_tc_total * 100.0
+
+
 def _compute_paper_overview_rows(total_emp: float, total_wages: float) -> list[dict]:
     """Reproduce the paper part_1 build_overview values (auto_aug=True, method=freq)
     so variant charts can show delta-vs-paper."""
+    eco_tc_by_occ = _eco_tc_by_occ_app()
     rows: list[dict] = []
     for key in OVERVIEW_CONFIG_ORDER:
         ds = ANALYSIS_CONFIGS[key]
         df = _run_overview_config(ds, use_auto_aug=True)
         workers = float(df["workers_affected"].sum())
         wages = float(df["wages_affected"].sum())
-        pct_tasks = float(df["pct_tasks_affected"].mean())
+        pct_tasks = _econ_pct_tasks(df, eco_tc_by_occ)
         rows.append({
             "config": key,
             "pct_tasks": round(pct_tasks, 1),
@@ -1088,6 +1109,7 @@ def build_overview_no_autoaug(results: Path, figures: Path) -> None:
     black tick on the bar at the paper chart's value)."""
     total_emp, total_wages = _national_totals_emp_wages()
     paper_rows = _compute_paper_overview_rows(total_emp, total_wages)
+    eco_tc_by_occ = _eco_tc_by_occ_app()
 
     rows: list[dict] = []
     for key in OVERVIEW_CONFIG_ORDER:
@@ -1097,7 +1119,7 @@ def build_overview_no_autoaug(results: Path, figures: Path) -> None:
 
         workers = float(df["workers_affected"].sum())
         wages = float(df["wages_affected"].sum())
-        pct_tasks = float(df["pct_tasks_affected"].mean())
+        pct_tasks = _econ_pct_tasks(df, eco_tc_by_occ)
         pct_workers = workers / total_emp * 100
         pct_wages = wages / total_wages * 100
 

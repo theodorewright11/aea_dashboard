@@ -164,6 +164,15 @@ def _get_national_totals() -> tuple[float, float]:
     return total_emp, total_wages
 
 
+def _eco_task_comp_by_occ() -> pd.Series:
+    """Per-occupation eco baseline task_comp sum (freq, no auto-aug, all phys).
+    Used as the economy-wide denominator for the overview chart's ratio-of-
+    totals % tasks number."""
+    from backend.compute import load_eco_baseline
+    eco = load_eco_baseline(method="freq", physical_mode="all", geo="nat")
+    return eco.groupby("title_current")["task_comp"].sum()
+
+
 def _get_eco_task_count() -> int:
     from backend.compute import load_eco_raw
     eco = load_eco_raw()
@@ -245,6 +254,8 @@ SIG_NOTE: str = "All correlations significant at p < .001 (two-tailed Spearman).
 
 def build_overview(results: Path, figures: Path) -> None:
     total_emp, total_wages = _get_national_totals()
+    eco_tc_by_occ = _eco_task_comp_by_occ()
+    eco_tc_total = float(eco_tc_by_occ.sum())
 
     rows: list[dict] = []
     for key in CONFIG_ORDER:
@@ -254,7 +265,12 @@ def build_overview(results: Path, figures: Path) -> None:
 
         workers = float(df["workers_affected"].sum())
         wages = float(df["wages_affected"].sum())
-        pct_tasks = float(df["pct_tasks_affected"].mean())
+        # Ratio-of-totals across all (task, occ) pairs in the economy:
+        # numerator is each occ's ai_task_comp (= pct[occ]/100 × eco_tc[occ]);
+        # denominator is the economy-wide eco_tc sum.
+        eco_tc_aligned = df["category"].map(eco_tc_by_occ).fillna(0.0)
+        ai_tc_total = float(((df["pct_tasks_affected"] / 100.0) * eco_tc_aligned).sum())
+        pct_tasks = (ai_tc_total / eco_tc_total * 100.0) if eco_tc_total > 0 else 0.0
         pct_workers = workers / total_emp * 100
         pct_wages = wages / total_wages * 100
 
