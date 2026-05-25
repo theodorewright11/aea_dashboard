@@ -1437,37 +1437,68 @@ def build_temporal_trend_nonphys(results: Path, figures: Path) -> None:
     def _item_width_nonphys(label: str) -> float:
         return LEG_LINE_LEN + LEG_TEXT_GAP + len(label) * char_w
 
-    # Same series order as the lines themselves; first two ride row 1,
-    # the third (physical-tasks) sits alone on row 2 (matches the
-    # previous auto-layout's wrap behavior).
-    legend_rows: list[list[tuple[str, str, str]]] = [
+    # Same series order as the lines themselves; first two ride row 1.
+    # Row 2 holds the physical-tasks series alongside the OLS projection
+    # style key. The projection isn't a series of its own — it's a style
+    # annotation over each line — so we render it once in neutral text
+    # color and use the 4th tuple slot to flag the dotted+× swatch.
+    PROJ_LABEL = "2-yr Linear OLS Projection"
+    legend_rows: list[list[tuple[str, str, str, bool]]] = [
         [
-            (series_spec[0][3], series_spec[0][4], series_spec[0][5]),
-            (series_spec[1][3], series_spec[1][4], series_spec[1][5]),
+            (series_spec[0][3], series_spec[0][4], series_spec[0][5], False),
+            (series_spec[1][3], series_spec[1][4], series_spec[1][5], False),
         ],
         [
-            (series_spec[2][3], series_spec[2][4], series_spec[2][5]),
+            (series_spec[2][3], series_spec[2][4], series_spec[2][5], False),
+            (PROJ_LABEL, PAPER_PALETTE["text"], "dot", True),
         ],
     ]
 
     for row_idx, row_items in enumerate(legend_rows):
         row_total_w = (
-            sum(_item_width_nonphys(lbl) for lbl, _, _ in row_items)
+            sum(_item_width_nonphys(lbl) for lbl, _, _, _ in row_items)
             + LEG_ITEM_SPACING * (len(row_items) - 1)
         )
         cursor_x = 0.5 - row_total_w / 2
         leg_y = LEG_ROW1_Y if row_idx == 0 else LEG_ROW2_Y
-        for label, color, dash_style in row_items:
+        for label, color, dash_style, is_proj in row_items:
             line_start = cursor_x
             line_end = cursor_x + LEG_LINE_LEN
             text_x = line_end + LEG_TEXT_GAP
-            fig.add_shape(
-                type="line",
-                xref="paper", yref="paper",
-                x0=line_start, x1=line_end,
-                y0=leg_y, y1=leg_y,
-                line=dict(color=color, width=3, dash=dash_style),
-            )
+            if is_proj:
+                # Two short dotted segments straddling a centered ×,
+                # mirroring the chart's dotted-line + × marker pattern
+                # without overlap.
+                gap_half = 0.006
+                mid_x = (line_start + line_end) / 2
+                fig.add_shape(
+                    type="line", xref="paper", yref="paper",
+                    x0=line_start, x1=mid_x - gap_half,
+                    y0=leg_y, y1=leg_y,
+                    line=dict(color=color, width=2, dash="dot"),
+                )
+                fig.add_shape(
+                    type="line", xref="paper", yref="paper",
+                    x0=mid_x + gap_half, x1=line_end,
+                    y0=leg_y, y1=leg_y,
+                    line=dict(color=color, width=2, dash="dot"),
+                )
+                fig.add_annotation(
+                    xref="paper", yref="paper",
+                    x=mid_x, y=leg_y,
+                    text="×", showarrow=False,
+                    xanchor="center", yanchor="middle",
+                    font=dict(size=TRENDNP_LEGEND_FS, family=FONT_FAMILY,
+                              color=color),
+                )
+            else:
+                fig.add_shape(
+                    type="line",
+                    xref="paper", yref="paper",
+                    x0=line_start, x1=line_end,
+                    y0=leg_y, y1=leg_y,
+                    line=dict(color=color, width=3, dash=dash_style),
+                )
             fig.add_annotation(
                 xref="paper", yref="paper",
                 x=text_x, y=leg_y,
@@ -1477,6 +1508,7 @@ def build_temporal_trend_nonphys(results: Path, figures: Path) -> None:
                           color=PAPER_PALETTE["text"]),
             )
             cursor_x += _item_width_nonphys(label) + LEG_ITEM_SPACING
+
     # style_paper_figure resets axis tick/title fonts — re-apply ours.
     fig.update_xaxes(
         tickfont=dict(size=TRENDNP_TICK_FS, family=FONT_FAMILY),
