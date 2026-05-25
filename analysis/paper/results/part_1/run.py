@@ -1000,6 +1000,8 @@ def _delta_gradient(values: list[float | None], historical_fill: str) -> list[st
 def _build_trend_data() -> pd.DataFrame:
     total_emp, total_wages = _get_national_totals()
     eco_tasks = _get_eco_task_count()
+    eco_tc_by_occ = _eco_task_comp_by_occ()
+    eco_tc_total = float(eco_tc_by_occ.sum())
 
     trend_rows: list[dict] = []
     for config_key in TREND_CONFIGS:
@@ -1012,7 +1014,11 @@ def _build_trend_data() -> pd.DataFrame:
             workers = float(df["workers_affected"].sum())
             wages = float(df["wages_affected"].sum())
             pct_emp = workers / total_emp * 100
-            pct_tasks = float(df["pct_tasks_affected"].mean())  # unweighted
+            # Ratio-of-totals across all (task, occ) pairs in the economy
+            # (matches the overview chart's % tasks number).
+            eco_tc_aligned = df["category"].map(eco_tc_by_occ).fillna(0.0)
+            ai_tc_total = float(((df["pct_tasks_affected"] / 100.0) * eco_tc_aligned).sum())
+            pct_tasks = (ai_tc_total / eco_tc_total * 100.0) if eco_tc_total > 0 else 0.0
             n_tasks = _count_tasks(ds_name)
             auto_aug = _avg_auto_aug(ds_name)
 

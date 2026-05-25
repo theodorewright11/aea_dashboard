@@ -1207,13 +1207,30 @@ def build_temporal_trend_nonphys(results: Path, figures: Path) -> None:
     ]
 
     # ── 1. Build trend data ──────────────────────────────────────────
+    # Pre-compute the eco_task_comp denominator for each physical mode in
+    # use, so the % tasks number is a ratio-of-totals across the matching
+    # eco subset (non-physical tasks only / physical tasks only).
+    from backend.compute import load_eco_baseline
+    eco_tc_by_mode: dict[str, pd.Series] = {}
+    for phys_mode in {p for _, p, _, _, _, _ in series_spec}:
+        eco_phys = load_eco_baseline(method="freq", physical_mode=phys_mode, geo="nat")
+        eco_tc_by_mode[phys_mode] = (
+            eco_phys.groupby("title_current")["task_comp"].sum()
+        )
+
     trend_rows: list[dict] = []
     for config_key, phys_mode, series_key, label, _color, _dash in series_spec:
         series = ANALYSIS_CONFIG_SERIES[config_key]
+        eco_tc_by_occ = eco_tc_by_mode[phys_mode]
+        eco_tc_total = float(eco_tc_by_occ.sum())
         for ds_name in series:
             date_str = ds_name.rsplit(" ", 1)[-1]
             df = _run_config_phys_mode(ds_name, phys_mode, "occupation")
-            pct_tasks = float(df["pct_tasks_affected"].mean())
+            # Ratio-of-totals across (task, occ) pairs in the matching eco
+            # subset (phys-filtered both sides).
+            eco_tc_aligned = df["category"].map(eco_tc_by_occ).fillna(0.0)
+            ai_tc_total = float(((df["pct_tasks_affected"] / 100.0) * eco_tc_aligned).sum())
+            pct_tasks = (ai_tc_total / eco_tc_total * 100.0) if eco_tc_total > 0 else 0.0
             trend_rows.append({
                 "series": series_key,
                 "config": config_key,
