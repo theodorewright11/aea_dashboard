@@ -2592,7 +2592,7 @@ def build_state_clusters_each_ranked(results: Path, figures: Path) -> None:
         ),
     )
 
-    save_figure(fig, results / "figures" / "state_clusters_each_ranked.png", scale=2)
+    save_figure(fig, results / "figures" / "state_clusters_each_ranked.png", scale=3)
     shutil.copy(
         results / "figures" / "state_clusters_each_ranked.png",
         figures / "state_clusters_each_ranked.png",
