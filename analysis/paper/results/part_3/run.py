@@ -828,7 +828,7 @@ def build_risk_score_5f(results: Path, figures: Path) -> None:
     # build_tech_commodities() does — full positioning control for
     # label-left + gradient-right, centered on the whole PNG.
     MARGIN_L, MARGIN_R = 520, 120
-    MARGIN_T, MARGIN_B = 130, 240
+    MARGIN_T, MARGIN_B = 90, 150
     plot_area_px = W - MARGIN_L - MARGIN_R
     canvas_center_paper = (W / 2 - MARGIN_L) / plot_area_px
 
@@ -878,9 +878,10 @@ def build_risk_score_5f(results: Path, figures: Path) -> None:
     )
 
     n = len(s5f)
-    # All labels are now single-line (truncated), so per-row drops back to
-    # ~56 px — plenty for a 9 pt print tick label without overlap.
-    height = max(900, n * 56 + MARGIN_T + MARGIN_B)
+    # All labels are single-line (truncated). y-tick drops to the 8 pt
+    # floor and per-row to 32 so the 38-row chart fits a single page —
+    # height lands ~1450 px → ~6.7" at the 1400 px / 6.5" canvas.
+    height = max(600, n * 32 + MARGIN_T + MARGIN_B)
 
     # Tight x range so bars fill more of the chart width. Tasks column
     # sits right after the longest bar; x_top is set so the tasks text
@@ -965,9 +966,12 @@ def build_risk_score_5f(results: Path, figures: Path) -> None:
     fig.update_yaxes(
         title=dict(text="Occupation", font=dict(size=axis_px, family=FONT_FAMILY)),
         showgrid=False, showline=False,
-        tickfont=dict(size=tick_px, family=FONT_FAMILY),
+        tickfont=dict(size=floor_px, family=FONT_FAMILY),
+        # Force every category label — plotly auto-thins categorical
+        # ticks at this tight pitch otherwise.
+        tickmode="array", tickvals=y_labels, ticktext=y_labels,
     )
-    fig.update_layout(bargap=0.22)
+    fig.update_layout(bargap=0.15)
 
     save_figure(fig, results / "figures" / "risk_score_5f.png", scale=2)
     _copy_fig(results, figures, "risk_score_5f.png")
