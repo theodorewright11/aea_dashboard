@@ -235,20 +235,25 @@ def _build_one_ska_full_chart(
     else:
         bar_colors = [METRIC_COLORS["tasks"]] * len(labels)
 
-    margin_t, margin_b = 70, 310
+    margin_t, margin_b = 60, 230
     margin_r = 60
-    fig_height = max(1100, len(labels) * 42 + margin_t + margin_b)
-    # Left margin = rotated y-axis title (~30 px) + longest tick label + buffer.
-    # Skills/Knowledge keep a generous 13 px/char allowance because their long
-    # labels read most naturally with breathing room from the rotated title.
-    # Abilities tightens to ~7 px/char so the tick labels sit close to the
-    # y-axis title rather than floating in empty space. Automargin disabled
-    # below so Plotly honors these values exactly.
+    # y-tick font drops to the 8 pt floor (set in update_yaxes below) so the
+    # per-row pitch can compress from 42 → 32. Bottom margin holds axis
+    # title (~50 px) + the tightened 3-row legend (~170 px) + buffer.
+    fig_height = max(800, len(labels) * 32 + margin_t + margin_b)
+    # Left margin = rotated y-axis title (~30 px) + longest tick label
+    # (~11–12 px/char at 8 pt Inter on the appendix's wider canvas) +
+    # buffer. Skills/Knowledge factor is 13 because their longest labels
+    # ("Management of Personnel Resources  (Resource Management)" — 56
+    # chars) would otherwise overflow into the rotated y-axis title.
+    # Abilities sits at factor 12 — its longest label is similar length
+    # but real glyph width is slightly tighter, and factor 13 left a
+    # visible empty band between the rotated title and the labels.
     max_label_chars = max(len(lab) for lab in labels)
     if type_label == "Abilities":
         margin_l = max(220, max_label_chars * 12 + 90)
     else:
-        margin_l = max(480, max_label_chars * 13 + 110)
+        margin_l = max(440, max_label_chars * 13 + 110)
 
     fig = go.Figure()
 
@@ -276,7 +281,7 @@ def _build_one_ska_full_chart(
     fig.add_trace(go.Scatter(
         y=labels, x=max_vals, mode="markers",
         name="AI Max",
-        marker=dict(color=AI_MARKER_COLOR, symbol="diamond", size=14,
+        marker=dict(color=AI_MARKER_COLOR, symbol="diamond", size=11,
                     opacity=0.75),
         hovertemplate="AI Max (% of workforce max): %{x:.1f}%<extra></extra>",
         showlegend=False,
@@ -284,7 +289,7 @@ def _build_one_ska_full_chart(
     fig.add_trace(go.Scatter(
         y=labels, x=emean_vals, mode="markers",
         name="Workforce Mean",
-        marker=dict(color=WORKFORCE_MEAN_COLOR, symbol="circle", size=10,
+        marker=dict(color=WORKFORCE_MEAN_COLOR, symbol="circle", size=8,
                     opacity=0.75,
                     line=dict(width=1, color=WORKFORCE_MEAN_COLOR)),
         hovertemplate="Workforce mean (% of workforce max): %{x:.1f}%<extra></extra>",
@@ -333,7 +338,7 @@ def _build_one_ska_full_chart(
         autorange=False, range=[len(labels) - 0.5, -0.3],
         automargin=False,  # honor margin_l exactly; don't auto-expand
         tickmode="array", tickvals=labels, ticktext=labels,
-        tickfont=dict(size=px["tick"], color=PAPER_PALETTE["text"],
+        tickfont=dict(size=px["in_chart_floor"], color=PAPER_PALETTE["text"],
                       family=FONT_FAMILY),
         showgrid=False, showline=False,
     )
@@ -357,20 +362,18 @@ def _build_one_ska_full_chart(
 
 
 def build_ska_full(results: Path, figures: Path) -> None:
-    """Three separate appendix charts — one per SKA type (skills, knowledge,
-    abilities) — at the element level. Mirrors the main-body framing."""
+    """Two appendix SKA charts — knowledge and abilities — at the element
+    level. The skills element-level chart was promoted to the main body
+    (part_2/ska_skills.png) so it no longer ships here."""
     from analysis.paper.results.part_2.run import (
         _load_occ_phys_map,
-        _ability_subcat, _knowledge_cat, _skills_subcat,
+        _ability_subcat, _knowledge_cat,
     )
 
     pct = get_pct_tasks_affected(PRIMARY_DATASET)
     ska_data = load_ska_data()
     phys_map = _load_occ_phys_map()
 
-    skill_subcat = _element_subcat_lookup(
-        ROOT / "analysis" / "data" / "skills_v30.1.csv", _skills_subcat,
-    )
     know_subcat = _element_subcat_lookup(
         ROOT / "analysis" / "data" / "knowledge_v30.1.csv", _knowledge_cat,
     )
@@ -379,7 +382,6 @@ def build_ska_full(results: Path, figures: Path) -> None:
     )
 
     specs = [
-        ("skills",    "Skills",    ska_data.skills,    skill_subcat, "ska_skills_full.png"),
         ("knowledge", "Knowledge", ska_data.knowledge, know_subcat,  "ska_knowledge_full.png"),
         ("abilities", "Abilities", ska_data.abilities, abil_subcat,  "ska_abilities_full.png"),
     ]

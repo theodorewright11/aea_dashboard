@@ -1241,10 +1241,12 @@ def draw_ska_manual_legend(
     unicode glyph at `color`). Used by every SKA chart so swatch/symbol
     sizing stays identical across main body and appendix."""
     # Sizes — chosen as middle ground; same across all SKA charts.
-    swatch_w, swatch_h = 30, 20
-    text_gap = 14
-    inter_gap = 60
-    row_pitch = 50
+    # Pitch/swatch tightened from 50/20 so the legend block doesn't
+    # dominate the bottom margin of these (already tall) charts.
+    swatch_w, swatch_h = 26, 16
+    text_gap = 12
+    inter_gap = 50
+    row_pitch = 34
     symbol_font_px = legend_font_px + 4
 
     plot_left_px = margin_l
@@ -1261,10 +1263,10 @@ def draw_ska_manual_legend(
     def fig_y_to_paper(y_from_top):
         return (plot_bottom_px - y_from_top) / plot_h_px
 
-    # Row 1 sits ~150 px below the plot bottom — clears the x-axis ticks and
+    # Row 1 sits ~100 px below the plot bottom — clears the x-axis ticks and
     # the axis title (which itself sits 50–60 px below the plot via standoff),
-    # with a comfortable whitespace buffer before the legend.
-    row1_from_top = plot_bottom_px + 150
+    # with a small whitespace buffer before the legend.
+    row1_from_top = plot_bottom_px + 100
 
     # Each row is independently centered on the figure midpoint so the
     # legend is centered with respect to the whole PNG (not the plot area,
@@ -1526,139 +1528,6 @@ def _compute_subcategory_rollup(
     )
 
 
-def _build_ska_skills_chart(
-    elements_df: pd.DataFrame, results: Path, figures: Path
-) -> None:
-    """Skills only — element-level. All values normalized to % of workforce
-    max (eco_max), so the workforce-max bar is always 100% and the AI
-    Top-10 bar is the AI capability as % of that ceiling. Markers and the
-    workforce mean dot are also % of eco_max — same scaling as the K&A
-    chart."""
-    px = paper_fonts(PAPER_W)
-
-    df = elements_df.copy()
-    df["ai_top10_pct"] = df["ai_top10"] / df["eco_max"].replace(0, float("nan")) * 100
-    df["ai_max_pct"]   = df["ai_max"]   / df["eco_max"].replace(0, float("nan")) * 100
-    df["eco_mean_pct"] = df["eco_mean"] / df["eco_max"].replace(0, float("nan")) * 100
-    df = df.sort_values("ai_top10_pct", ascending=False).reset_index(drop=True)
-
-    enames = df["element_name"].tolist()
-    bar_vals = df["ai_top10_pct"].fillna(0).tolist()
-    max_vals = df["ai_max_pct"].fillna(0).tolist()
-    emean_vals = df["eco_mean_pct"].fillna(0).tolist()
-
-    # Per-element phys tier color. Falls back to the default tasks color
-    # if the phys_tier column is absent (older calls without phys_map).
-    if "phys_tier" in df.columns:
-        bar_colors = [SKA_BAR_COLOR_BY_TIER.get(t, METRIC_COLORS["tasks"])
-                      for t in df["phys_tier"].fillna("Non-physical")]
-    else:
-        bar_colors = [METRIC_COLORS["tasks"]] * len(enames)
-
-    fig = go.Figure()
-
-    fig.add_trace(go.Bar(
-        y=enames, x=[100] * len(enames), orientation="h",
-        name="Workforce Max",
-        marker=dict(color="#e8e8e2", line=dict(width=0)),
-        hovertemplate="Workforce max: 100%<extra></extra>",
-        showlegend=False,
-    ))
-    fig.add_trace(go.Bar(
-        y=enames, x=bar_vals, orientation="h",
-        name="AI Top-10 Avg",
-        marker=dict(color=bar_colors, opacity=0.88, line=dict(width=0)),
-        text=[f"{v:.0f}%" for v in bar_vals],
-        textposition="outside",
-        textfont=dict(size=px["in_chart_floor"],
-                      color=PAPER_PALETTE["text"], family=FONT_FAMILY),
-        hovertemplate="AI Top-10 avg (% of workforce max): %{x:.1f}%<extra></extra>",
-        showlegend=False,
-    ))
-    fig.add_trace(go.Scatter(
-        y=enames, x=max_vals, mode="markers",
-        name="AI Max",
-        marker=dict(color=AI_MARKER_COLOR, symbol="diamond", size=14,
-                    opacity=0.75),
-        hovertemplate="AI Max (% of workforce max): %{x:.1f}%<extra></extra>",
-        showlegend=False,
-    ))
-    fig.add_trace(go.Scatter(
-        y=enames, x=emean_vals, mode="markers",
-        name="Workforce Mean",
-        marker=dict(color=WORKFORCE_MEAN_COLOR, symbol="circle", size=10,
-                    opacity=0.75,
-                    line=dict(width=1, color=WORKFORCE_MEAN_COLOR)),
-        hovertemplate="Workforce mean (% of workforce max): %{x:.1f}%<extra></extra>",
-        showlegend=False,
-    ))
-
-    # Layout — rows need ≥42px to clear 9pt (27px) tick font. Bottom margin
-    # holds axis title (~50 px) + 3 legend rows (3×50 px) + whitespace buffer.
-    # Left margin fits the longest skill label (~7 px/char at 9 pt Inter) plus
-    # the rotated y-axis title (~30 px) plus a small buffer — tight enough that
-    # the tick labels sit close to the y-axis title rather than floating in
-    # empty space. Right margin is narrow so the bars run close to the figure's
-    # right edge.
-    max_label = max(len(e) for e in enames)
-    margin_t, margin_b = 70, 310
-    margin_l, margin_r = max(180, max_label * 12 + 90), 60
-    fig_height = max(1100, len(enames) * 42 + margin_t + margin_b)
-
-    draw_ska_manual_legend(
-        fig, ska_legend_rows(),
-        fig_width=PAPER_W, fig_height=fig_height,
-        margin_l=margin_l, margin_r=margin_r,
-        margin_t=margin_t, margin_b=margin_b,
-        legend_font_px=px["legend"],
-    )
-
-    fig.update_layout(
-        title=dict(
-            text="AI Capability as % of Workforce Max — O*NET Skills",
-            font=dict(size=px["title"], color=PAPER_PALETTE["text"], family=FONT_FAMILY),
-            x=0.01, xanchor="left",
-        ),
-        height=fig_height,
-        width=PAPER_W,
-        font=dict(family=FONT_FAMILY, size=px["tick"], color=PAPER_PALETTE["text"]),
-        plot_bgcolor=PAPER_PALETTE["surface"],
-        paper_bgcolor=PAPER_PALETTE["surface"],
-        barmode="overlay",
-        showlegend=False,
-        margin=dict(l=margin_l, r=margin_r, t=margin_t, b=margin_b),
-    )
-    fig.update_yaxes(
-        title=dict(text="O*NET Skill",
-                   font=dict(size=px["axis_title"], family=FONT_FAMILY),
-                   standoff=max(0, margin_l - 40)),
-        type="category",
-        # Tight range — drop the default 0.5-unit category padding on each
-        # end so the first/last bars sit flush with the plot frame.
-        autorange=False, range=[len(enames) - 0.5, -0.3],
-        automargin=False,
-        tickmode="array", tickvals=enames, ticktext=enames,
-        tickfont=dict(size=px["tick"], color=PAPER_PALETTE["text"], family=FONT_FAMILY),
-        showgrid=False, showline=False,
-    )
-    fig.update_xaxes(
-        title=dict(
-            text="AI Capability as % of Workforce Max",
-            font=dict(size=px["axis_title"], family=FONT_FAMILY),
-            standoff=15,
-        ),
-        range=[0, 100], ticksuffix="%",
-        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
-        showticklabels=True,
-        tickfont=dict(size=px["tick"], color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
-        showline=False, zeroline=True, zerolinecolor=PAPER_PALETTE["grid"],
-    )
-
-    save_figure(fig, results / "figures" / "ska_skills.png", scale=2)
-    _copy_fig(results, figures, "ska_skills.png")
-    print("  -> ska_skills.png")
-
-
 def _build_ska_subcategory_chart(
     knowledge_df: pd.DataFrame,
     abilities_df: pd.DataFrame,
@@ -1678,14 +1547,13 @@ def _build_ska_subcategory_chart(
     row_heights = [n_know / total, n_abil / total]
 
     # Pick a left margin that fits the longest "Subcategory  (n=X)" label
-    # (~7 px/char at 9 pt Inter) plus the rotated y-axis title (~30 px) and
-    # a small left-edge buffer. Tight enough that tick labels sit close to
-    # the y-axis title rather than floating in empty space.
+    # (~7 px/char at 8 pt Inter — y-tick dropped to the floor below) plus
+    # the rotated y-axis title (~30 px) and a small left-edge buffer.
     max_label = max(
         len(f"{r.subcategory}  (n={int(r.n_elements)})")
         for df in (knowledge_df, abilities_df) for r in df.itertuples()
     )
-    margin_l = max(200, max_label * 12 + 90)
+    margin_l = max(180, max_label * 11 + 90)
 
     fig = make_subplots(
         rows=2, cols=1,
@@ -1751,7 +1619,8 @@ def _build_ska_subcategory_chart(
             autorange="reversed", row=row, col=1,
             type="category",
             tickmode="array", tickvals=sub_labels, ticktext=sub_labels,
-            tickfont=dict(size=px["tick"], color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+            tickfont=dict(size=px["in_chart_floor"], color=PAPER_PALETTE["text"],
+                          family=FONT_FAMILY),
             showgrid=False, showline=False,
         )
         fig.update_xaxes(
@@ -1763,18 +1632,22 @@ def _build_ska_subcategory_chart(
         )
 
     # Y axis titles per subplot — large standoff pushes the rotated title
-    # flush with the figure's left edge.
+    # flush with the figure's left edge. Title font shrunk to 9 pt (tick
+    # size) so the rotated text fits within the compressed panel height.
     yt_standoff = max(0, margin_l - 40)
+    # "O*NET" prefix dropped (already present in the chart title) so the
+    # rotated title fits within the compressed panel 1 height (10 rows
+    # × 32 px = 320 px plot).
     fig.update_yaxes(
-        title=dict(text="O*NET Knowledge Subcategory",
-                   font=dict(size=px["axis_title"], family=FONT_FAMILY),
+        title=dict(text="Knowledge Subcategory",
+                   font=dict(size=px["tick"], family=FONT_FAMILY),
                    standoff=yt_standoff),
         automargin=False,
         row=1, col=1,
     )
     fig.update_yaxes(
-        title=dict(text="O*NET Ability Subcategory",
-                   font=dict(size=px["axis_title"], family=FONT_FAMILY),
+        title=dict(text="Ability Subcategory",
+                   font=dict(size=px["tick"], family=FONT_FAMILY),
                    standoff=yt_standoff),
         automargin=False,
         row=2, col=1,
@@ -1788,9 +1661,9 @@ def _build_ska_subcategory_chart(
         row=2, col=1,
     )
 
-    margin_t, margin_b = 140, 310
+    margin_t, margin_b = 120, 230
     margin_r = 80
-    fig_height = max(900, total * 42 + margin_t + margin_b)
+    fig_height = max(700, total * 32 + margin_t + margin_b)
 
     draw_ska_manual_legend(
         fig, ska_legend_rows(),
@@ -1856,7 +1729,21 @@ def build_ska_levels(results: Path, figures: Path) -> None:
     save_csv(abilities_cat, results / "ska_abilities_by_subcategory.csv",
              float_format="%.2f")
 
-    _build_ska_skills_chart(skills_df, results, figures)
+    # Main-body skills chart is the full-element version (previously lived
+    # in the appendix as ska_skills_full). Same bar/marker/legend framing
+    # as the knowledge/abilities subcategory chart below; replaces the
+    # earlier subcategory-rollup-only main-body skills chart.
+    from analysis.paper.results.appendix.run import (
+        _build_one_ska_full_chart, _element_subcat_lookup,
+    )
+    skill_subcat = _element_subcat_lookup(
+        ROOT / "analysis" / "data" / "skills_v30.1.csv", _skills_subcat,
+    )
+    _build_one_ska_full_chart(
+        skills_df, "Skills", skill_subcat,
+        "ska_skills.png", results, figures,
+    )
+
     _build_ska_subcategory_chart(
         knowledge_cat, abilities_cat,
         n_know_elements, n_abil_elements,

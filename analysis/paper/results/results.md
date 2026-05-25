@@ -88,10 +88,6 @@
 
 ![Eloundou divergence by Major Occupational Category — z-score basis](appendix/figures/eloundou_divergence_major.png)
 
-### Appendix — Full Element-Level SKA (Skills)
-
-![SKA Skills full](appendix/figures/ska_skills_full.png)
-
 ### Appendix — Full Element-Level SKA (Knowledge)
 
 ![SKA Knowledge full](appendix/figures/ska_knowledge_full.png)
