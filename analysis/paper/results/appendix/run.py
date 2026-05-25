@@ -2364,7 +2364,7 @@ def build_gwa_wkrs_wages(results: Path, figures: Path) -> None:
         "AI Exposure by General Work Activity",
         n_cats=n_cats,
         panel_titles=set(),
-        bottom_margin=170,  # 1-line axis titles only
+        bottom_margin=130,  # 1-line axis titles only
     )
 
     # % axis uses the same uniform [0, 100] / [0, 50, 100] presentation

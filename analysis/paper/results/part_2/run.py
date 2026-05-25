@@ -2537,7 +2537,7 @@ def build_major_categories_wkrs_wages(results: Path, figures: Path) -> None:
 # at the major's 130 px/row would print past 18 inches; 110 keeps the
 # print height under ~15" while still giving each 2-line label and bar
 # enough vertical room (the 2-line label is ~80 px tall at 9 pt).
-_GWA_ROW_HEIGHT = 110
+_GWA_ROW_HEIGHT = 80
 
 
 def _gwa_base_data() -> pd.DataFrame:
@@ -2566,16 +2566,22 @@ def _style_gwa_split(
     title: str,
     n_cats: int,
     panel_titles: set[str],
-    bottom_margin: int = 260,
+    bottom_margin: int = 180,
 ) -> None:
     """Layout shared by the GWA split charts. Same canvas/font apparatus
     as `_style_major_split` but with a smaller per-row height (41 rows
-    vs 22 for majors)."""
-    height = max(PAPER_H + 460, n_cats * _GWA_ROW_HEIGHT + 480)
+    vs 22 for majors). Per-row pitch tightened to 80 — with 8 pt y-tick
+    font, two wrapped lines fit in ~58 px so 80 leaves a small breathing
+    gap. Top margin cut to 110 (title is 11 pt). Default bottom_margin
+    180 covers a 2-line axis title; callers with longer titles pass a
+    larger value (height auto-adjusts)."""
+    TOP_MARGIN = 110
+    BOTTOM_DEFAULT = 180
+    height = max(PAPER_H + 200, n_cats * _GWA_ROW_HEIGHT + TOP_MARGIN + BOTTOM_DEFAULT)
     # Add/subtract the bottom-margin delta from total height so the
-    # plot area stays constant whether the caller asks for more (3-line
+    # plot area stays constant whether the caller asks for more (4-line
     # axis title) or less (1-line title) bottom space.
-    height += bottom_margin - 260
+    height += bottom_margin - BOTTOM_DEFAULT
     fig.update_layout(
         title=dict(
             text=title,
@@ -2588,8 +2594,8 @@ def _style_gwa_split(
         paper_bgcolor=PAPER_PALETTE["surface"],
         width=_MAJ_CANVAS_W,
         height=height,
-        margin=dict(l=110, r=110, t=160, b=bottom_margin),
-        bargap=0.2,
+        margin=dict(l=110, r=110, t=TOP_MARGIN, b=bottom_margin),
+        bargap=0.15,
         showlegend=False,
     )
     fig.update_xaxes(
@@ -2602,7 +2608,7 @@ def _style_gwa_split(
     )
     fig.update_yaxes(showgrid=False, showline=False)
     fig.update_yaxes(
-        tickfont=dict(size=_MAJ_TICK_FS, family=FONT_FAMILY),
+        tickfont=dict(size=_MAJ_YTICK_FS, family=FONT_FAMILY),
         automargin=True,
         ticklabelstandoff=2,
         ticks="",
@@ -2692,7 +2698,7 @@ def build_gwa_pct(results: Path, figures: Path) -> None:
         "AI Exposure by General Work Activity",
         n_cats=n_cats,
         panel_titles=set(),
-        bottom_margin=360,  # middle-panel axis title runs to 4 lines
+        bottom_margin=260,  # middle-panel axis title runs to 4 lines
     )
     # Uniform [0, 100] range with ticks [0, 50, 100] across all three
     # percentage panels — matches the major-cat chart so the scale
