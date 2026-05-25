@@ -2404,6 +2404,9 @@ def build_gwa_wkrs_wages(results: Path, figures: Path) -> None:
             font=dict(size=_MAJ_LABEL_FS),
             standoff=4,
         ),
+        # Force every category label — plotly auto-thins categorical ticks
+        # when the plot is short; tickmode="array" pins one label per bar.
+        tickmode="array", tickvals=categories_r, ticktext=categories_r,
         row=1, col=1,
     )
 

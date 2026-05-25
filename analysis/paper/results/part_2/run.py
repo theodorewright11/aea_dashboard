@@ -2159,12 +2159,61 @@ def _wrap_major_label(label: str, max_chars: int = 22) -> str:
     return _balanced_wrap(label.replace(" Occupations", ""), max_chars)
 
 
+# Single-line GWA labels for paper charts. Long O*NET names get a
+# hand-picked shorter form so 41 rows fit on one page without wrapping
+# (a per-row pitch tight enough for one line of 8 pt text would cause
+# 2-line wraps to collide). Shortenings preserve the semantic core of
+# the GWA — trimming connectives, abbreviating "Information" → "Info"
+# only where needed, and using "/" for list-or-list expansions.
+_GWA_SHORT_LABELS: dict[str, str] = {
+    "Interpreting the Meaning of Information for Others":
+        "Interpreting Information for Others",
+    "Communicating with People Outside the Organization":
+        "Communicating with People Outside Org",
+    "Establishing and Maintaining Interpersonal Relationships":
+        "Establishing Interpersonal Relationships",
+    "Providing Consultation and Advice to Others":
+        "Providing Consultation and Advice",
+    "Organizing, Planning, and Prioritizing Work":
+        "Planning and Prioritizing Work",
+    "Performing for or Working Directly with the Public":
+        "Performing for or with the Public",
+    "Judging the Qualities of Objects, Services, or People":
+        "Judging Qualities of Objects/People",
+    "Evaluating Information to Determine Compliance with Standards":
+        "Evaluating Compliance with Standards",
+    "Resolving Conflicts and Negotiating with Others":
+        "Resolving Conflicts and Negotiating",
+    "Communicating with Supervisors, Peers, or Subordinates":
+        "Communicating with Supervisors/Peers",
+    "Estimating the Quantifiable Characteristics of Products, Events, or Information":
+        "Estimating Quantifiable Characteristics",
+    "Identifying Objects, Actions, and Events":
+        "Identifying Objects/Actions/Events",
+    "Guiding, Directing, and Motivating Subordinates":
+        "Guiding and Directing Subordinates",
+    "Monitoring Processes, Materials, or Surroundings":
+        "Monitoring Processes/Materials",
+    "Inspecting Equipment, Structures, or Materials":
+        "Inspecting Equipment/Structures",
+    "Repairing and Maintaining Mechanical Equipment":
+        "Repairing Mechanical Equipment",
+    "Repairing and Maintaining Electronic Equipment":
+        "Repairing Electronic Equipment",
+    "Performing General Physical Activities":
+        "Performing Physical Activities",
+    "Operating Vehicles, Mechanized Devices, or Equipment":
+        "Operating Vehicles and Equipment",
+}
+
+
 def _wrap_gwa_label(label: str, max_chars: int = 32) -> str:
-    """GWA y-axis labels — balanced wrap. Wider `max_chars` than the
-    major version because GWA labels are often phrases (e.g. 'Updating
-    and Using Relevant Knowledge') that read fine on a single line at
-    32-char width."""
-    return _balanced_wrap(label, max_chars)
+    """GWA y-axis labels — force single line via a hand-shortened map so
+    the 41-row chart fits one page. Falls back to the original label
+    (no wrap) when no short form is registered. `max_chars` retained for
+    signature compatibility with `_wrap_major_label` callers but
+    unused — multi-line wrap is what we're avoiding."""
+    return _GWA_SHORT_LABELS.get(label, label)
 
 
 
@@ -2537,7 +2586,7 @@ def build_major_categories_wkrs_wages(results: Path, figures: Path) -> None:
 # at the major's 130 px/row would print past 18 inches; 110 keeps the
 # print height under ~15" while still giving each 2-line label and bar
 # enough vertical room (the 2-line label is ~80 px tall at 9 pt).
-_GWA_ROW_HEIGHT = 80
+_GWA_ROW_HEIGHT = 38
 
 
 def _gwa_base_data() -> pd.DataFrame:
@@ -2739,6 +2788,9 @@ def build_gwa_pct(results: Path, figures: Path) -> None:
             font=dict(size=_MAJ_LABEL_FS),
             standoff=4,
         ),
+        # Force every category label — plotly auto-thins categorical ticks
+        # when the plot is short; tickmode="array" pins one label per bar.
+        tickmode="array", tickvals=categories_r, ticktext=categories_r,
         row=1, col=1,
     )
 
