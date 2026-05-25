@@ -10,13 +10,16 @@ then SKA:
    `use_auto_aug=False`.
 3. temporal_trend_nonphys — single-panel non-physical variant of Part 1's
    `temporal_trend`.
-4. ska_full — element-level SKA chart for skills, abilities, knowledge,
-   with the full ladder of workforce references (mean, P95, top-10). The
-   Part 2 chart trims this down for readability in the main text; the
-   appendix preserves the full version with abilities included at the
-   element level.
-5. nonphys_gwa_diff_phys_excluded — within-non-phys GWA composition gap
-   between the top and bottom exposure quartile (robustness check).
+4. ska_full — three separate element-level SKA charts (one each for
+   skills, knowledge, abilities). Mirrors the main-body Part 2 framing
+   (bar = AI Top-10 % of workforce max, colored by phys-mix tier; dots
+   = AI Max ◆ and Workforce Mean ●), expanded to the full element list
+   with O*NET subcategory in parentheses on each K/A element label.
+   Outputs: ska_skills_full.png, ska_knowledge_full.png, ska_abilities_full.png.
+5. state_clusters_each_ranked — companion to Part 3 state_clusters_map.
+   Two-panel ranked bars where each panel sorts the 51 states by its own
+   metric (left by % workforce exposed, right by % in High AI Exp & <0
+   Emp Proj occupations). Cluster colors carry across panels.
 
 Run from project root:
     venv/Scripts/python -m analysis.paper.results.appendix.run
@@ -47,7 +50,14 @@ from analysis.paper.paper_config import (
     INSIDE_FS,
     METRIC_COLORS, METRIC_COLORS_LIGHT, PAPER_PALETTE,
     fmt_workers, fmt_wages,
-    style_paper_figure,
+    style_paper_figure, paper_fonts,
+)
+# GWA wkrs/wages reuses the part_2 helpers (axis picker, wrap, layout
+# style) so the appendix chart matches the main-text gwa_pct figure.
+from analysis.paper.results.part_2.run import (
+    _gwa_base_data, _wrap_gwa_label, _style_gwa_split,
+    _axis_max_and_ticks, _strip_zero_decimal,
+    _MAJ_BARTEXT_FS, _MAJ_LABEL_FS,
 )
 
 # Match paper part_1 ordering (top → bottom in chart = first → last here)
@@ -91,6 +101,9 @@ ZONE_COLORS = {
 IMPORTANCE_THRESHOLD = 3.0
 TOP_N_FOR_AVERAGE = 10
 
+# Linear projection horizon for the major-categories trend chart
+PROJECTION_DAYS = 730  # 2 years
+
 
 def _copy_fig(results: Path, figures: Path, name: str) -> None:
     shutil.copy(results / "figures" / name, figures / name)
@@ -120,14 +133,21 @@ def _load_occ_structural() -> pd.DataFrame:
 
 
 # ──────────────────────────────────────────────────────────────────────────
-# ska_full — original element-level SKA with full workforce ladder
+# ska_full — element-level SKA mirroring the main-body framing.
+# Bar = AI Top-10 Avg as % of workforce max, colored by phys-mix tier.
+# Dots = AI Max (red diamond) + Workforce Mean (black circle).
+# Knowledge / Abilities labels carry their O*NET subcategory in parentheses.
 # ──────────────────────────────────────────────────────────────────────────
 
 def _compute_ska_variants(
     onet_df: pd.DataFrame,
     pct_series: pd.Series,
     type_name: str,
+    phys_map: pd.Series | None = None,
 ) -> pd.DataFrame:
+    """Element-level AI / workforce variants. When `phys_map` is supplied,
+    each row carries a `phys_tier` bucket (Physical / Mixed / Non-physical)."""
+    from analysis.paper.results.part_2.run import _phys_tier
     df = onet_df.copy()
     df["pct"] = df["title"].map(pct_series)
     df = df.dropna(subset=["pct", "importance", "level"])
@@ -136,6 +156,8 @@ def _compute_ska_variants(
 
     df["occ_score"] = df["importance"] * df["level"]
     df["ai_product"] = (df["pct"] / 100.0) * df["occ_score"]
+    if phys_map is not None:
+        df["pct_physical_occ"] = df["title"].map(phys_map)
 
     records: list[dict] = []
     for element_name, grp in df.groupby("element_name"):
@@ -144,375 +166,242 @@ def _compute_ska_variants(
         n_ai = len(ai_vals)
         n_occ = len(occ_vals)
         top_n_ai = min(TOP_N_FOR_AVERAGE, n_ai)
-        top_n_occ = min(TOP_N_FOR_AVERAGE, n_occ)
-        records.append({
+        rec = {
             "element_name": element_name,
             "type": type_name,
             "n_occs": n_ai,
-            "ai_95th":  float(ai_vals.quantile(0.95)) if n_ai >= 2 else (
-                        float(ai_vals.iloc[0]) if n_ai == 1 else float("nan")),
             "ai_max":   float(ai_vals.max()) if n_ai >= 1 else float("nan"),
             "ai_top10": float(ai_vals.nlargest(top_n_ai).mean()) if n_ai >= 1 else float("nan"),
             "eco_max":  float(occ_vals.max()) if n_occ >= 1 else float("nan"),
-            "eco_p95":  float(occ_vals.quantile(0.95)) if n_occ >= 2 else (
-                        float(occ_vals.iloc[0]) if n_occ == 1 else float("nan")),
-            "eco_top10": float(occ_vals.nlargest(top_n_occ).mean()) if n_occ >= 1 else float("nan"),
             "eco_mean": float(occ_vals.mean()) if n_occ >= 1 else float("nan"),
-        })
+        }
+        if phys_map is not None:
+            phys_vals = grp["pct_physical_occ"].dropna()
+            phys_score = float(phys_vals.mean()) if len(phys_vals) else float("nan")
+            rec["phys_score"] = phys_score
+            rec["phys_tier"] = (
+                _phys_tier(phys_score) if pd.notna(phys_score) else "Non-physical"
+            )
+        records.append(rec)
     return pd.DataFrame(records)
 
 
-def build_ska_full(results: Path, figures: Path) -> None:
-    pct = get_pct_tasks_affected(PRIMARY_DATASET)
-    ska_data = load_ska_data()
+def _element_subcat_lookup(onet_path: Path, cat_fn) -> dict[str, str]:
+    """element_name → subcategory, built from an O*NET v30.1 CSV using the
+    Element-ID-keyed mappings shared with the part_2 subcategory rollups."""
+    df = pd.read_csv(onet_path, dtype=str).rename(columns={
+        "Element ID": "element_id", "Element Name": "element_name",
+    })
+    df = df.drop_duplicates(subset=["element_id", "element_name"])
+    return {row.element_name: cat_fn(row.element_id) for row in df.itertuples()}
 
-    elements_by_type: dict[str, pd.DataFrame] = {}
-    for type_name, onet_df in [
-        ("skills", ska_data.skills),
-        ("knowledge", ska_data.knowledge),
-        ("abilities", ska_data.abilities),
-    ]:
-        df = _compute_ska_variants(onet_df, pct, type_name)
-        elements_by_type[type_name] = df
-        print(f"    {type_name}: {len(df)} elements")
 
-    save_csv(
-        pd.concat(elements_by_type.values(), ignore_index=True),
-        results / "ska_full.csv", float_format="%.4f",
+def _build_one_ska_full_chart(
+    df: pd.DataFrame,
+    type_label: str,
+    subcat_map: dict[str, str] | None,
+    out_name: str,
+    results: Path,
+    figures: Path,
+) -> None:
+    """One element-level appendix chart: bar = AI Top-10 % colored by phys-mix
+    tier, dots = AI Max ◆ + Workforce Mean ●, 3-row legend, Knowledge/Abilities
+    labels carry their O*NET subcategory in parens."""
+    from analysis.paper.results.part_2.run import (
+        SKA_BAR_COLOR_BY_TIER, SKA_TIER_LEGEND_ORDER, AI_MARKER_COLOR,
+        WORKFORCE_MEAN_COLOR,
     )
 
-    TYPES = ["skills", "knowledge", "abilities"]
-    TYPE_LABELS = {"skills": "Skills", "knowledge": "Knowledge", "abilities": "Abilities"}
-    counts = {t: len(elements_by_type[t]) for t in TYPES}
-    total_elems = sum(counts.values())
-    row_heights = [counts[t] / total_elems for t in TYPES]
-    fig_height = max(1800, total_elems * 22 + 380)
+    px = paper_fonts(PAPER_W)
 
-    fig = make_subplots(
-        rows=3, cols=1,
-        row_heights=row_heights,
-        vertical_spacing=0.05,
-        subplot_titles=[f"{TYPE_LABELS[t]}  ({counts[t]} elements)" for t in TYPES],
+    df = df.copy()
+    df["ai_top10_pct"] = df["ai_top10"] / df["eco_max"].replace(0, float("nan")) * 100
+    df["ai_max_pct"]   = df["ai_max"]   / df["eco_max"].replace(0, float("nan")) * 100
+    df["eco_mean_pct"] = df["eco_mean"] / df["eco_max"].replace(0, float("nan")) * 100
+    df = df.sort_values("ai_top10_pct", ascending=False).reset_index(drop=True)
+
+    if subcat_map is not None:
+        labels = [f"{e}  ({subcat_map.get(e, '—')})" for e in df["element_name"]]
+    else:
+        labels = df["element_name"].tolist()
+
+    bar_vals   = df["ai_top10_pct"].fillna(0).tolist()
+    max_vals   = df["ai_max_pct"].fillna(0).tolist()
+    emean_vals = df["eco_mean_pct"].fillna(0).tolist()
+
+    if "phys_tier" in df.columns:
+        bar_colors = [SKA_BAR_COLOR_BY_TIER.get(t, METRIC_COLORS["tasks"])
+                      for t in df["phys_tier"].fillna("Non-physical")]
+    else:
+        bar_colors = [METRIC_COLORS["tasks"]] * len(labels)
+
+    margin_t, margin_b = 70, 310
+    margin_r = 60
+    fig_height = max(1100, len(labels) * 42 + margin_t + margin_b)
+    # Left margin = rotated y-axis title (~30 px) + longest tick label + buffer.
+    # Skills/Knowledge keep a generous 13 px/char allowance because their long
+    # labels read most naturally with breathing room from the rotated title.
+    # Abilities tightens to ~7 px/char so the tick labels sit close to the
+    # y-axis title rather than floating in empty space. Automargin disabled
+    # below so Plotly honors these values exactly.
+    max_label_chars = max(len(lab) for lab in labels)
+    if type_label == "Abilities":
+        margin_l = max(220, max_label_chars * 12 + 90)
+    else:
+        margin_l = max(480, max_label_chars * 13 + 110)
+
+    fig = go.Figure()
+
+    # Plotly legend hidden — we draw a manual 3-row legend with shapes +
+    # annotations below the plot. More reliable than multi-legend, which
+    # wraps unpredictably for wider entries.
+    fig.add_trace(go.Bar(
+        y=labels, x=[100] * len(labels), orientation="h",
+        name="Workforce Max",
+        marker=dict(color="#e8e8e2", line=dict(width=0)),
+        hovertemplate="Workforce max: 100%<extra></extra>",
+        showlegend=False,
+    ))
+    fig.add_trace(go.Bar(
+        y=labels, x=bar_vals, orientation="h",
+        name="AI Top-10 Avg  (color = phys tier ↓)",
+        marker=dict(color=bar_colors, opacity=0.88, line=dict(width=0)),
+        text=[f"{v:.0f}%" for v in bar_vals],
+        textposition="outside",
+        textfont=dict(size=px["in_chart_floor"],
+                      color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+        hovertemplate="AI Top-10 avg (% of workforce max): %{x:.1f}%<extra></extra>",
+        showlegend=False,
+    ))
+    fig.add_trace(go.Scatter(
+        y=labels, x=max_vals, mode="markers",
+        name="AI Max",
+        marker=dict(color=AI_MARKER_COLOR, symbol="diamond", size=14,
+                    opacity=0.75),
+        hovertemplate="AI Max (% of workforce max): %{x:.1f}%<extra></extra>",
+        showlegend=False,
+    ))
+    fig.add_trace(go.Scatter(
+        y=labels, x=emean_vals, mode="markers",
+        name="Workforce Mean",
+        marker=dict(color=WORKFORCE_MEAN_COLOR, symbol="circle", size=10,
+                    opacity=0.75,
+                    line=dict(width=1, color=WORKFORCE_MEAN_COLOR)),
+        hovertemplate="Workforce mean (% of workforce max): %{x:.1f}%<extra></extra>",
+        showlegend=False,
+    ))
+
+    # Same manual legend helper as the main body Part 2 charts, so swatch
+    # / symbol sizing stays identical across all five SKA figures.
+    from analysis.paper.results.part_2.run import (
+        draw_ska_manual_legend, ska_legend_rows,
     )
-
-    legend_shown: set[str] = set()
-
-    def _show(key: str) -> bool:
-        if key not in legend_shown:
-            legend_shown.add(key)
-            return True
-        return False
-
-    ai_marker_color = METRIC_COLORS["workers"]
-
-    for row, type_name in enumerate(TYPES, start=1):
-        df = elements_by_type[type_name].copy()
-        df["sort_pct"] = df["ai_max"] / df["eco_max"].replace(0, float("nan")) * 100
-        df = df.sort_values("sort_pct", ascending=False)
-
-        enames = df["element_name"].tolist()
-        ai_vals = df["ai_max"].fillna(0).tolist()
-        ai_p95_vals = df["ai_95th"].fillna(0).tolist()
-        ai_top10_vals = df["ai_top10"].fillna(0).tolist()
-        emax_vals = df["eco_max"].fillna(0).tolist()
-        ep95_vals = df["eco_p95"].fillna(0).tolist()
-        etop10_vals = df["eco_top10"].fillna(0).tolist()
-        emean_vals = df["eco_mean"].fillna(0).tolist()
-
-        max_eco = max(emax_vals) if emax_vals else 1.0
-        label_x = max_eco * 1.07
-        x_range_max = max_eco * 1.20
-
-        pct_labels = [
-            f"{a / m * 100:.0f}%" if m > 0 else "-"
-            for a, m in zip(ai_vals, emax_vals)
-        ]
-
-        fig.add_trace(go.Bar(
-            y=enames, x=emax_vals, orientation="h",
-            name="Workforce Max",
-            marker=dict(color="#e8e8e2", line=dict(width=0)),
-            showlegend=_show("emax"),
-            hovertemplate="Max (workforce): %{x:.1f}<extra></extra>",
-        ), row=row, col=1)
-
-        fig.add_trace(go.Bar(
-            y=enames, x=ai_vals, orientation="h",
-            name="AI Maximum",
-            marker=dict(color=METRIC_COLORS["tasks"], opacity=0.88, line=dict(width=0)),
-            showlegend=_show("ai_max"),
-            hovertemplate="AI Maximum: %{x:.1f}<extra></extra>",
-        ), row=row, col=1)
-
-        fig.add_trace(go.Scatter(
-            y=enames, x=ai_p95_vals, mode="markers",
-            name="AI P95",
-            marker=dict(color=ai_marker_color, symbol="circle", size=8,
-                        line=dict(width=1.5, color=ai_marker_color)),
-            showlegend=_show("ai_p95"),
-            hovertemplate="AI P95: %{x:.1f}<extra></extra>",
-        ), row=row, col=1)
-
-        fig.add_trace(go.Scatter(
-            y=enames, x=ai_top10_vals, mode="markers",
-            name="AI Top-10 Avg",
-            marker=dict(color=ai_marker_color, symbol="diamond", size=8,
-                        line=dict(width=1.5, color=ai_marker_color)),
-            showlegend=_show("ai_top10"),
-            hovertemplate="AI Top-10 avg: %{x:.1f}<extra></extra>",
-        ), row=row, col=1)
-
-        fig.add_trace(go.Scatter(
-            y=enames, x=ep95_vals, mode="markers",
-            name="Workforce P95",
-            marker=dict(color="#1a1a1a", symbol="line-ew", size=14,
-                        line=dict(width=3, color="#1a1a1a")),
-            showlegend=_show("ep95"),
-            hovertemplate="Workforce P95: %{x:.1f}<extra></extra>",
-        ), row=row, col=1)
-
-        fig.add_trace(go.Scatter(
-            y=enames, x=etop10_vals, mode="markers",
-            name="Workforce Top-10 Avg",
-            marker=dict(color="#1a1a1a", symbol="diamond", size=7,
-                        line=dict(width=1, color="#1a1a1a")),
-            showlegend=_show("etop10"),
-            hovertemplate="Workforce Top-10 avg: %{x:.1f}<extra></extra>",
-        ), row=row, col=1)
-
-        fig.add_trace(go.Scatter(
-            y=enames, x=emean_vals, mode="markers",
-            name="Workforce Mean",
-            marker=dict(color="#1a1a1a", symbol="circle", size=7,
-                        line=dict(width=1, color="#1a1a1a")),
-            showlegend=_show("emean"),
-            hovertemplate="Workforce mean: %{x:.1f}<extra></extra>",
-        ), row=row, col=1)
-
-        fig.add_trace(go.Scatter(
-            y=enames, x=[label_x] * len(enames), mode="text",
-            text=pct_labels, textposition="middle right",
-            textfont=dict(size=10, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
-            showlegend=False, hoverinfo="skip",
-        ), row=row, col=1)
-
-        fig.update_yaxes(
-            autorange="reversed", row=row, col=1,
-            tickfont=dict(size=11, color=PAPER_PALETTE["text"], family=FONT_FAMILY),
-            showgrid=False, showline=False,
-        )
-        fig.update_xaxes(
-            range=[0, x_range_max],
-            showgrid=True, gridcolor=PAPER_PALETTE["grid"],
-            showticklabels=True,
-            tickfont=dict(size=10, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
-            showline=False, zeroline=True, zerolinecolor=PAPER_PALETTE["grid"],
-            row=row, col=1,
-        )
+    draw_ska_manual_legend(
+        fig, ska_legend_rows(),
+        fig_width=PAPER_W, fig_height=fig_height,
+        margin_l=margin_l, margin_r=margin_r,
+        margin_t=margin_t, margin_b=margin_b,
+        legend_font_px=px["legend"],
+    )
 
     fig.update_layout(
         title=dict(
-            text=(
-                "AI Capability vs. Workforce Requirements — Full SKA element view"
-                f"<br><span style='font-size:{SUBTITLE_FS}px;"
-                f"color:{PAPER_PALETTE['muted']}'>"
-                "Bar = AI Maximum, faint background = workforce max | "
-                "Teal markers = AI P95 + Top-10 | Black markers = workforce P95 + Top-10 + Mean"
-                "</span>"
-            ),
-            font=dict(size=TITLE_FS, color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+            text=f"AI Capability as % of Workforce Max — Full {type_label} Elements",
+            font=dict(size=px["title"], color=PAPER_PALETTE["text"],
+                      family=FONT_FAMILY),
             x=0.01, xanchor="left",
         ),
         height=fig_height,
         width=PAPER_W,
-        font=dict(family=FONT_FAMILY, size=11, color=PAPER_PALETTE["text"]),
+        font=dict(family=FONT_FAMILY, size=px["tick"], color=PAPER_PALETTE["text"]),
         plot_bgcolor=PAPER_PALETTE["surface"],
         paper_bgcolor=PAPER_PALETTE["surface"],
         barmode="overlay",
-        legend=dict(
-            orientation="h",
-            yanchor="top", y=-0.03, xanchor="center", x=0.5,
-            font=dict(size=LEGEND_FS, color=PAPER_PALETTE["neutral"]),
-            bgcolor="rgba(0,0,0,0)", borderwidth=0,
-        ),
-        margin=dict(l=270, r=80, t=120, b=100),
-    )
-
-    type_label_set = {f"{TYPE_LABELS[t]}  ({counts[t]} elements)" for t in TYPES}
-    for ann in fig.layout.annotations:
-        if hasattr(ann, "text") and ann.text in type_label_set:
-            ann.font = dict(size=LABEL_FS, family=FONT_FAMILY, color=PAPER_PALETTE["text"])
-
-    save_figure(fig, results / "figures" / "ska_full.png", scale=2)
-    _copy_fig(results, figures, "ska_full.png")
-    print("  -> ska_full.png")
-
-
-# ──────────────────────────────────────────────────────────────────────────
-# nonphys_gwa_diff_phys_excluded
-# Within non-physical occupations, what kinds of work separate the more-
-# from the less-exposed — restricted to non-physical tasks on both sides
-# so the GWA composition signal can't be a phys-residual proxy.
-# ──────────────────────────────────────────────────────────────────────────
-
-PHYS_NONPHYS_THRESHOLD = 33.0
-TOP_DIFF_N = 12
-COLOR_HIGH_EXP = METRIC_COLORS["tasks"]
-COLOR_LOW_EXP = METRIC_COLORS["workers"]
-
-
-def _split_top_bottom_nonphys(pct_series: pd.Series) -> tuple[list[str], list[str]]:
-    q1 = pct_series.quantile(0.25)
-    q3 = pct_series.quantile(0.75)
-    top = sorted(pct_series[pct_series >= q3].index.tolist())
-    bot = sorted(pct_series[pct_series <= q1].index.tolist())
-    return top, bot
-
-
-def build_nonphys_gwa_diff_phys_excluded(
-    results: Path, figures: Path,
-) -> None:
-    eco = pd.read_csv(DATA_DIR / "final_eco_2025.csv")
-    occ = _load_occ_structural()
-
-    # Non-physical occupation set (pct_physical < 33%)
-    nonphys_titles = set(
-        occ.loc[occ["pct_physical"] < PHYS_NONPHYS_THRESHOLD, "title_current"]
-    )
-
-    # Quartile split on All Confirmed pct_tasks_affected, restricted to non-phys
-    pct = get_pct_tasks_affected(PRIMARY_DATASET)
-    pct_nonphys = pct.loc[pct.index.isin(nonphys_titles)].dropna()
-    top_occs, bot_occs = _split_top_bottom_nonphys(pct_nonphys)
-    n_top, n_bot = len(top_occs), len(bot_occs)
-
-    # Drop physical tasks, recompute per-occ GWA shares
-    eco_nonphys = eco[eco["physical"] != 1]
-    sub = eco_nonphys.drop_duplicates(
-        ["title_current", "task_normalized", "gwa_title"]
-    )
-    counts = (sub.groupby(["title_current", "gwa_title"]).size()
-              .rename("n").reset_index())
-    totals = counts.groupby("title_current")["n"].sum().rename("total")
-    counts = counts.join(totals, on="title_current")
-    counts["share"] = counts["n"] / counts["total"]
-    wide = counts.pivot(index="title_current", columns="gwa_title",
-                        values="share").fillna(0.0)
-
-    top_mean = wide.loc[wide.index.isin(top_occs)].mean(axis=0)
-    bot_mean = wide.loc[wide.index.isin(bot_occs)].mean(axis=0)
-    diff = pd.DataFrame({
-        "top_mean": top_mean,
-        "bot_mean": bot_mean,
-        "diff": top_mean - bot_mean,
-    }).sort_values("diff", ascending=False)
-    diff = diff[diff.index.astype(str).str.strip() != ""].dropna()
-
-    save_csv(
-        diff.reset_index().rename(columns={"index": "gwa_title"}),
-        results / "nonphys_gwa_diff_phys_excluded.csv",
-        float_format="%.4f",
-    )
-
-    pos = diff.head(TOP_DIFF_N).iloc[::-1]   # largest positive at top
-    neg = diff.tail(TOP_DIFF_N)               # largest negative at bottom
-
-    fig = make_subplots(
-        rows=1, cols=2,
-        horizontal_spacing=0.40,
-        subplot_titles=(
-            "<b>Over-represented in HIGH-exposure non-phys occs</b>",
-            "<b>Over-represented in LOW-exposure non-phys occs</b>",
-        ),
-    )
-
-    def _add_panel(side_df: pd.DataFrame, col_idx: int) -> None:
-        labels = side_df.index.tolist()
-        fig.add_trace(go.Bar(
-            y=labels, x=side_df["top_mean"] * 100,
-            orientation="h",
-            name=f"Top quartile share (n={n_top})",
-            marker=dict(color=COLOR_HIGH_EXP, line=dict(width=0)),
-            text=[f"{v*100:.1f}%" for v in side_df["top_mean"]],
-            textposition="outside",
-            textfont=dict(size=ANNOT_FS, family=FONT_FAMILY),
-            cliponaxis=False,
-            showlegend=(col_idx == 1),
-            hovertemplate="<b>%{y}</b><br>top share: %{x:.2f}%<extra></extra>",
-        ), row=1, col=col_idx)
-        fig.add_trace(go.Bar(
-            y=labels, x=side_df["bot_mean"] * 100,
-            orientation="h",
-            name=f"Bottom quartile share (n={n_bot})",
-            marker=dict(color=COLOR_LOW_EXP, line=dict(width=0)),
-            text=[f"{v*100:.1f}%" for v in side_df["bot_mean"]],
-            textposition="outside",
-            textfont=dict(size=ANNOT_FS, family=FONT_FAMILY),
-            cliponaxis=False,
-            showlegend=(col_idx == 1),
-            hovertemplate="<b>%{y}</b><br>bot share: %{x:.2f}%<extra></extra>",
-        ), row=1, col=col_idx)
-
-    _add_panel(pos, 1)
-    _add_panel(neg, 2)
-
-    # Panel-specific x-axis ranges so labels never clip
-    pos_max = max(pos["top_mean"].max(), pos["bot_mean"].max()) * 100
-    neg_max = max(neg["top_mean"].max(), neg["bot_mean"].max()) * 100
-    fig.update_xaxes(
-        title="Mean task-share within group (%) — non-physical tasks only",
-        range=[0, pos_max * 1.18], row=1, col=1,
-    )
-    fig.update_xaxes(
-        title="Mean task-share within group (%) — non-physical tasks only",
-        range=[0, neg_max * 1.18], row=1, col=2,
+        showlegend=False,
+        margin=dict(l=margin_l, r=margin_r, t=margin_t, b=margin_b),
     )
     fig.update_yaxes(
-        tickfont=dict(size=TICK_FS - 1, family=FONT_FAMILY),
-        automargin=True,
-    )
-
-    fig.update_layout(barmode="group", bargap=0.30, bargroupgap=0.10)
-
-    style_paper_figure(
-        fig,
-        "Within non-physical occupations: GWA composition (physical tasks excluded)",
-        subtitle=(
-            "Per occupation, share of unique tasks in each GWA, computed over only the non-physical tasks of each occ. "
-            f"Quartiles by All Confirmed % tasks affected, restricted to occs with pct_physical &lt; 33% (n top = {n_top}, bot = {n_bot})."
-            f"<br>Top {TOP_DIFF_N} GWAs by absolute share gap on each side. "
-            "Robustness test: if the same GWAs appear here as in the raw chart, the structural signal is not just a pct_physical residual."
+        title=dict(
+            text=f"O*NET {type_label} Element  (Subcategory)",
+            font=dict(size=px["axis_title"], family=FONT_FAMILY),
+            # standoff = distance from axis line to title's center. Setting
+            # near margin_l pushes the rotated title flush to the figure's
+            # left edge instead of leaving it floating in the margin.
+            standoff=max(0, margin_l - 40),
         ),
-        width=PAPER_W + 300,   # wider canvas so labels + leader text don't clip
-        height=900,            # taller so x-axis title clears bottom margin
-        margin=dict(l=20, r=40, t=160, b=170),
+        type="category",
+        autorange=False, range=[len(labels) - 0.5, -0.3],
+        automargin=False,  # honor margin_l exactly; don't auto-expand
+        tickmode="array", tickvals=labels, ticktext=labels,
+        tickfont=dict(size=px["tick"], color=PAPER_PALETTE["text"],
+                      family=FONT_FAMILY),
+        showgrid=False, showline=False,
+    )
+    fig.update_xaxes(
+        title=dict(
+            text="AI Capability as % of Workforce Max",
+            font=dict(size=px["axis_title"], family=FONT_FAMILY),
+            standoff=15,
+        ),
+        range=[0, 100], ticksuffix="%",
+        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+        showticklabels=True,
+        tickfont=dict(size=px["tick"], color=PAPER_PALETTE["neutral"],
+                      family=FONT_FAMILY),
+        showline=False, zeroline=True, zerolinecolor=PAPER_PALETTE["grid"],
     )
 
-    # Centered horizontal legend below the panels (default sits flush left)
-    fig.update_layout(legend=dict(
-        orientation="h",
-        yanchor="top", y=-0.12,
-        xanchor="center", x=0.5,
-        font=dict(size=LEGEND_FS, family=FONT_FAMILY),
-        bgcolor="rgba(0,0,0,0)",
-    ))
+    save_figure(fig, results / "figures" / out_name, scale=2)
+    _copy_fig(results, figures, out_name)
+    print(f"  -> {out_name}")
 
-    # Style panel subtitle annotations to match the paper aesthetic
-    panel_titles = {
-        "<b>Over-represented in HIGH-exposure non-phys occs</b>",
-        "<b>Over-represented in LOW-exposure non-phys occs</b>",
-    }
-    for ann in fig.layout.annotations:
-        if hasattr(ann, "text") and ann.text in panel_titles:
-            ann.font = dict(size=LABEL_FS, family=FONT_FAMILY,
-                            color=PAPER_PALETTE["text"])
 
-    save_figure(
-        fig, results / "figures" / "nonphys_gwa_diff_phys_excluded.png",
-        scale=2,
+def build_ska_full(results: Path, figures: Path) -> None:
+    """Three separate appendix charts — one per SKA type (skills, knowledge,
+    abilities) — at the element level. Mirrors the main-body framing."""
+    from analysis.paper.results.part_2.run import (
+        _load_occ_phys_map,
+        _ability_subcat, _knowledge_cat, _skills_subcat,
     )
-    _copy_fig(results, figures, "nonphys_gwa_diff_phys_excluded.png")
-    print("  -> nonphys_gwa_diff_phys_excluded.png")
+
+    pct = get_pct_tasks_affected(PRIMARY_DATASET)
+    ska_data = load_ska_data()
+    phys_map = _load_occ_phys_map()
+
+    skill_subcat = _element_subcat_lookup(
+        ROOT / "analysis" / "data" / "skills_v30.1.csv", _skills_subcat,
+    )
+    know_subcat = _element_subcat_lookup(
+        ROOT / "analysis" / "data" / "knowledge_v30.1.csv", _knowledge_cat,
+    )
+    abil_subcat = _element_subcat_lookup(
+        ROOT / "analysis" / "data" / "abilities_v30.1.csv", _ability_subcat,
+    )
+
+    specs = [
+        ("skills",    "Skills",    ska_data.skills,    skill_subcat, "ska_skills_full.png"),
+        ("knowledge", "Knowledge", ska_data.knowledge, know_subcat,  "ska_knowledge_full.png"),
+        ("abilities", "Abilities", ska_data.abilities, abil_subcat,  "ska_abilities_full.png"),
+    ]
+
+    elements_all: list[pd.DataFrame] = []
+    for type_name, type_label, onet_df, subcat_map, out_name in specs:
+        df = _compute_ska_variants(onet_df, pct, type_name, phys_map=phys_map)
+        elements_all.append(df)
+        print(f"    {type_name}: {len(df)} elements")
+        _build_one_ska_full_chart(df, type_label, subcat_map, out_name, results, figures)
+
+    save_csv(
+        pd.concat(elements_all, ignore_index=True),
+        results / "ska_full.csv", float_format="%.4f",
+    )
+
+    # Remove the prior single-chart artifact if still present.
+    for stale in ("ska_full.png",):
+        for d in (results / "figures", figures):
+            p = d / stale
+            if p.exists():
+                p.unlink()
 
 
 def build_convergence_full(
@@ -543,6 +432,7 @@ def build_convergence_full(
         _load_eloundou_occ, _compute_aioe_occ,
         _load_schaal_occ, _load_tomlinson_occ,
         _ext_at_level, _stars,
+        _wrap_tick_labels,
     )
     from analysis.paper.paper_config import (
         HEATMAP_TEXT_FS, HEATMAP_LOW, HEATMAP_HIGH,
@@ -602,6 +492,11 @@ def build_convergence_full(
 
     GAP_LABEL = " "
     layout_labels = list(internal_labels) + [GAP_LABEL] + list(ext_labels)
+    # Both axes use single-line full-length labels. With 18 columns
+    # squeezed into 6.5 inches, any wrap forces a "taller" bounding box
+    # whose rotated extent overflows the column slot — so single-line
+    # plus a near-vertical tick angle (-85°, set below) is the only
+    # configuration that fits without label-to-label collision.
     n_layout = len(layout_labels)    # 18
     EXT_OFFSET = n_int + 1
 
@@ -652,13 +547,54 @@ def build_convergence_full(
     z_max = 1.0
 
     n_panels = len(LEVELS)
+    # For a single-panel chart the SOC level already appears in the main
+    # title — the per-panel subplot title would just repeat it and crowds
+    # the title bar visually. Suppress it; only stack-panel charts (when
+    # called with multiple levels) keep the subplot label.
+    panel_subplot_titles = ([title for _, title in LEVELS]
+                            if n_panels > 1 else [""])
     fig = make_subplots(
         rows=n_panels, cols=1,
-        subplot_titles=[title for _, title in LEVELS],
+        subplot_titles=panel_subplot_titles,
         vertical_spacing=0.10,
     )
 
-    cell_fs = HEATMAP_TEXT_FS - 4   # 14pt — denser than the main charts
+    # Chrome (title / panel / axis / tick / legend) is resolved from the
+    # standardized pt ladder via paper_fonts(fig_width). Cell text is a
+    # documented exception to the 8 pt floor: with 18 columns sharing a
+    # 6.5" print column, the per-cell slot is ~0.36 inches and 4-char
+    # values ("0.95") at 8 pt would overflow into neighboring cells.
+    # We size cell text dynamically to fit ~85% of the cell width — this
+    # prints at ~7 pt, which is the same tradeoff the chart was using
+    # pre-refactor (reference data labels, not primary chart text).
+    import math as _math
+    fig_width = PAPER_W + 1500          # 2900 px wide
+    px = paper_fonts(fig_width)
+    # All vertical positioning below the plot is derived from the actual
+    # x-axis label extent. tick_fs and the longest layout label decide
+    # how far the -75°-rotated labels reach below the plot; we then
+    # anchor the legend at a fixed pixel gap below them and size
+    # margin_b to contain both. This replaces the trial-and-error
+    # sy_center constants that kept landing the legend either on top
+    # of the labels or far past them.
+    margin_l, margin_r, margin_t = 720, 180, 240
+    plot_h_target = 1320                            # 18 rows × ~73 px
+    cell_h_target = plot_h_target / len(layout_labels)
+    tick_fs_est = min(px["tick"], int(cell_h_target / 1.6))
+    longest_label_chars = max(len(s) for s in layout_labels)
+    x_label_px = longest_label_chars * 0.55 * tick_fs_est
+    x_label_vert_extent = x_label_px * _math.sin(_math.radians(75))
+    legend_gap_px = 80                              # gap below x-labels
+    legend_fs = px["in_chart_floor"]
+    legend_line_h = legend_fs * 1.3
+    legend_block_h = legend_line_h * 2 + 20         # 2 lines + buffer
+    legend_top_offset = x_label_vert_extent + legend_gap_px
+    legend_bottom_offset = legend_top_offset + legend_block_h
+    margin_b = int(legend_bottom_offset + 40)       # 40 px canvas buffer
+    fig_height = plot_h_target + margin_t + margin_b
+    plot_h = plot_h_target
+    cell_w_px = (fig_width - margin_l - margin_r) / len(layout_labels)
+    cell_fs = min(px["in_chart_floor"], int(cell_w_px / 3.0))
     contam_color = "rgba(200, 200, 200, 0.92)"
     contam_text  = "#777777"
 
@@ -678,9 +614,11 @@ def build_convergence_full(
                 hoverinfo="z",
                 colorbar=dict(
                     title=dict(text="Spearman ρ",
-                               font=dict(size=LABEL_FS, family=FONT_FAMILY)),
+                               font=dict(size=px["axis_title"], family=FONT_FAMILY),
+                               side="right"),
                     len=0.55, y=0.5,
-                    tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
+                    tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+                    dtick=0.1,
                 ),
             ),
             row=row_pos, col=1,
@@ -717,7 +655,7 @@ def build_convergence_full(
                     norm = (val - z_min) / max(z_max - z_min, 1e-9)
                     txt_color = "white" if norm >= 0.55 else PAPER_PALETTE["text_dark"]
                 fig.add_annotation(
-                    x=col_label, y=row_label,
+                    x=layout_labels[lj], y=layout_labels[li],
                     text=f"{val:.2f}",
                     showarrow=False,
                     font=dict(size=cell_fs, family=FONT_FAMILY, color=txt_color),
@@ -734,30 +672,18 @@ def build_convergence_full(
                 text=f"<b>{header_text}</b>",
                 showarrow=False,
                 xanchor="center", yanchor="bottom",
-                yshift=14,
-                font=dict(size=LABEL_FS + 1, family=FONT_FAMILY,
+                yshift=28,
+                font=dict(size=px["panel_title"], family=FONT_FAMILY,
                           color=PAPER_PALETTE["text"]),
                 xref=x_axis, yref=y_axis,
             )
 
-        # Y-axis group headers (left of each row block, rotated). Plotly
-        # heatmaps put the first y label at the bottom by default, so the
-        # internal section is at the bottom and the external section at top.
-        internal_y_mid = (n_int - 1) / 2.0
-        external_y_mid = EXT_OFFSET + (n_ext - 1) / 2.0
-        for header_text, header_y in [("Internal", internal_y_mid),
-                                       ("External", external_y_mid)]:
-            fig.add_annotation(
-                x=0, y=header_y,
-                text=f"<b>{header_text}</b>",
-                showarrow=False,
-                xanchor="right", yanchor="middle",
-                xshift=-160,
-                textangle=-90,
-                font=dict(size=LABEL_FS + 1, family=FONT_FAMILY,
-                          color=PAPER_PALETTE["text"]),
-                xref=x_axis, yref=y_axis,
-            )
+        # Y-axis group headers are intentionally omitted. The matrix is
+        # square, so the x-axis "Internal" / "External" headers plus the
+        # horizontal divider line below row n_int already make the row
+        # grouping unambiguous — and dropping them shaves enough left
+        # margin to fit single-line y-axis tick labels without truncating
+        # or abbreviating them.
 
         # Vertical + horizontal dividers between internal and external blocks
         fig.add_shape(
@@ -765,52 +691,107 @@ def build_convergence_full(
             x0=n_int, x1=n_int,
             y0=-0.5, y1=n_layout - 0.5,
             xref=x_axis, yref=y_axis,
-            line=dict(color=PAPER_PALETTE["text"], width=2),
+            line=dict(color=PAPER_PALETTE["text"], width=5),
         )
         fig.add_shape(
             type="line",
             x0=-0.5, x1=n_layout - 0.5,
             y0=n_int, y1=n_int,
             xref=x_axis, yref=y_axis,
-            line=dict(color=PAPER_PALETTE["text"], width=2),
+            line=dict(color=PAPER_PALETTE["text"], width=5),
         )
 
     # ── Figure-level styling ─────────────────────────────────────────
-    fig_width = PAPER_W + 600          # ~2000 px wide
-    fig_height = 360 + n_panels * 770  # scales with the number of panels
-
+    # fig_width / fig_height set above so paper_fonts(fig_width) drives
+    # all chrome. Y-axis labels are single-line so margin l is generous;
+    # x-axis labels run diagonally at -75° (matching the main-body
+    # convergence chart) so margin b accommodates their extent. Subtitle
+    # is dropped — its content moves to the figure caption. Margins are
+    # defined once above so cell_fs can reference plot_w in the same scope.
     level_names = " & ".join(t.replace(" level", "") for _, t in LEVELS)
     style_paper_figure(
         fig,
-        title=("Internal and External Benchmark Comparison — "
-               f"Full Matrix ({level_names})"),
-        subtitle=("Spearman ρ across all internal sources, data "
-                  f"configurations, and academic benchmarks. {SIG_NOTE}"),
+        title=f"Full-Matrix Benchmark Comparison ({level_names} Level)",
+        subtitle="",
         width=fig_width,
         height=fig_height,
-        margin=dict(l=260, r=160, t=210, b=320),
+        margin=dict(l=margin_l, r=margin_r, t=margin_t, b=margin_b),
     )
 
-    # Bump subplot titles
+    # Bump subplot titles (only present when n_panels > 1).
     panel_title_set = {title for _, title in LEVELS}
     for ann in fig.layout.annotations:
         if hasattr(ann, "text") and ann.text in panel_title_set:
-            ann.font = dict(size=LABEL_FS + 3, family=FONT_FAMILY,
+            ann.font = dict(size=px["panel_title"], family=FONT_FAMILY,
                             color=PAPER_PALETTE["text"])
-            ann.yshift = 32
+            ann.yshift = 64
 
-    # Tick fonts
+    # Tick labels for the dense 18×18 matrix run slightly below the 9 pt
+    # ladder. At the ladder size, y-axis labels visually crowd against
+    # neighboring rows. We scale them to ~1.6× the row height so adjacent
+    # labels read as separate lines, capped at the ladder size (so this
+    # never grows above the spec — only shrinks when matrices are dense).
+    # Tick angle -75° matches the main-body convergence chart.
+    cell_h_px = (fig_height - margin_t - margin_b) / len(layout_labels)
+    tick_fs = min(px["tick"], int(cell_h_px / 1.6))
     for i in range(1, n_panels + 1):
         xkey = f"xaxis{i}" if i > 1 else "xaxis"
         ykey = f"yaxis{i}" if i > 1 else "yaxis"
-        fig.layout[xkey].tickfont = dict(size=TICK_FS - 2, family=FONT_FAMILY)
-        fig.layout[ykey].tickfont = dict(size=TICK_FS - 2, family=FONT_FAMILY)
-        fig.layout[xkey].tickangle = -30
+        fig.layout[xkey].tickfont = dict(size=tick_fs, family=FONT_FAMILY)
+        fig.layout[ykey].tickfont = dict(size=tick_fs, family=FONT_FAMILY)
+        fig.layout[xkey].tickangle = -75
+        # Force every row/column label to render. Without this, Plotly
+        # auto-decimates whenever it thinks the labels are too dense
+        # (silently dropping every other tick). With the figure height
+        # above sized to actually fit them, this just prevents the
+        # heuristic from kicking in conservatively.
+        tickvals = list(range(len(layout_labels)))
+        fig.layout[xkey].tickmode = "array"
+        fig.layout[xkey].tickvals = tickvals
+        fig.layout[xkey].ticktext = layout_labels
+        fig.layout[ykey].tickmode = "array"
+        fig.layout[ykey].tickvals = tickvals
+        fig.layout[ykey].ticktext = layout_labels
 
-    # Contamination legend (bottom-left, paper coords, real swatch).
-    # Pushed well below the angled x-tick labels.
-    sx0, sx1 = 0.085, 0.130
-    sy0, sy1 = -0.195, -0.160
+    # Contamination legend — two lines, centered over the full canvas.
+    # The main-body convergence chart uses xref="paper" with
+    # near-symmetric margins, so its left-aligned legend lands roughly
+    # at canvas center visually. This chart's margins are very
+    # asymmetric (720 left for long row labels, 180 right), so anchoring
+    # at the plot's left edge would put the legend hard left of canvas
+    # center. We compute the canvas x where the swatch+text block needs
+    # to start so the whole unit is centered on the canvas, then
+    # convert that canvas x into paper coords (allowed to go negative —
+    # paper coords aren't clipped, the legend just extends into the
+    # generous left margin).
+    plot_w = fig_width - margin_l - margin_r
+    legend_text = (
+        "<b>Eloundou-contaminated cell</b> — Eloundou's task labels were "
+        "used to filter Copilot tasks,<br>so any correlation against a "
+        "Copilot-containing measure double-counts that signal."
+    )
+    # Empirical char width for Inter at the legend pt: ~0.43 × font_px
+    # (calibrated against the prior rendered appendix charts). Longest
+    # rendered line after the <br> is the first line at ~92 chars.
+    swatch_w_px = legend_fs
+    gap_px = max(8, int(legend_fs * 0.3))
+    longest_line_chars = 92
+    char_w_ratio = 0.43
+    text_w_px = longest_line_chars * char_w_ratio * legend_fs
+    block_w_px = swatch_w_px + gap_px + text_w_px
+
+    # Canvas x where the block starts so its center hits canvas center.
+    block_start_canvas_px = (fig_width - block_w_px) / 2
+    # Convert canvas px → paper coords (relative to plot domain).
+    sx0 = (block_start_canvas_px - margin_l) / plot_w
+    swatch_paper_w = swatch_w_px / plot_w
+    swatch_paper_h = swatch_w_px / plot_h
+    sx1 = sx0 + swatch_paper_w
+    # Vertical anchor unchanged from before — legend sits a fixed gap
+    # below the x-tick labels in paper coords.
+    sy_center = -(legend_top_offset + legend_block_h / 2) / plot_h
+    sy0 = sy_center - swatch_paper_h / 2
+    sy1 = sy_center + swatch_paper_h / 2
     fig.add_shape(
         type="rect",
         xref="paper", yref="paper",
@@ -821,14 +802,12 @@ def build_convergence_full(
     )
     fig.add_annotation(
         xref="paper", yref="paper",
-        x=sx1 + 0.010, y=(sy0 + sy1) / 2,
+        x=sx1 + gap_px / plot_w, y=sy_center,
         xanchor="left", yanchor="middle",
-        text=("<b>Eloundou-contaminated cell</b> — Eloundou's task labels "
-              "were used to filter Copilot tasks, so correlations between "
-              "a Copilot-containing measure and an Eloundou benchmark "
-              "double-count that signal. Values shown for transparency."),
+        text=legend_text,
         showarrow=False,
-        font=dict(size=ANNOT_FS + 1, family=FONT_FAMILY,
+        align="left",
+        font=dict(size=legend_fs, family=FONT_FAMILY,
                   color=PAPER_PALETTE["text"]),
     )
 
@@ -910,43 +889,76 @@ def _render_overview_with_deltas(
         ("pct_tasks",   "Tasks Exposed",
          METRIC_COLORS["tasks"], "pct_tasks",
          lambda r, d: f"{r['pct_tasks']:.1f}%  Δ{d:+.1f}pp"),
-        ("pct_workers", "Workers Exposed (% of National Employment)",
+        ("pct_workers", "Workers Exposed",
          METRIC_COLORS["workers"], "pct_workers",
          lambda r, d: f"{fmt_workers(r['workers'])} ({r['pct_workers']:.1f}%)  Δ{d:+.1f}pp"),
-        ("pct_wages",   "Wages Exposed (% of National Wages)",
+        ("pct_wages",   "Wages Exposed",
          METRIC_COLORS["wages"], "pct_wages",
          lambda r, d: f"{fmt_wages(r['wages'])} ({r['pct_wages']:.1f}%)  Δ{d:+.1f}pp"),
     ]
 
+    # All font sizes resolved from the standardized pt ladder via
+    # paper_fonts(PAPER_W), matching the paper part_1 overview chart so the
+    # two figures read at identical print pt sizes.
+    px = paper_fonts(PAPER_W)
+
+    # Build per-(row, metric) lookups of value strings so we can emit text
+    # as manual annotations centered between the bar start (x=0) and the
+    # paper-chart-value tick. Bars themselves carry no text — they only
+    # render the colored fill.
+    text_strings: dict[tuple[int, str], str] = {}
     for pct_key, name, color, paper_key, fmt_fn in reversed(metrics):
-        texts = []
-        for r in plot_rows:
+        for y_idx, r in enumerate(plot_rows):
             paper_val = paper_lookup[r["config"]][paper_key]
             delta = r[pct_key] - paper_val
-            texts.append(fmt_fn(r, delta))
+            text_strings[(y_idx, pct_key)] = fmt_fn(r, delta)
         fig.add_trace(go.Bar(
             y=labels,
             x=[r[pct_key] for r in plot_rows],
             name=name,
             orientation="h",
             marker=dict(color=color, line=dict(width=0)),
-            text=texts,
-            textposition="inside",
-            insidetextanchor="middle",
-            textfont=dict(size=INSIDE_FS - 4, color="white", family=FONT_FAMILY),
+            showlegend=False,
+        ))
+
+    # Legend entries are emitted as dummy scatter traces in display order
+    # (marker first, then tasks → workers → wages) so the legend reads
+    # left-to-right in that order. Scatter markers (rather than bar
+    # traces) let us set marker.size to make swatches visibly bigger.
+    fig.add_trace(go.Scatter(
+        x=[None], y=[None],
+        mode="markers",
+        marker=dict(
+            symbol="line-ns",
+            color="rgba(20,20,20,0.95)",
+            size=22,
+            line=dict(color="rgba(20,20,20,0.95)", width=2),
+        ),
+        name="Value with Auto-Aug weighting",
+        showlegend=True,
+        hoverinfo="skip",
+    ))
+    for pct_key, name, color, _, _ in metrics:
+        fig.add_trace(go.Scatter(
+            x=[None], y=[None],
+            mode="markers",
+            marker=dict(symbol="square", size=22, color=color),
+            name=name,
+            showlegend=True,
+            hoverinfo="skip",
         ))
 
     # Vertical "where the paper chart landed" markers, one per bar in each cluster.
-    # Grouped-bar y offsets: with 3 traces and bargap=0.30, each cluster spans
-    # 0.70 in y units, with bargroupgap=0.06 between sub-bars. We compute the
-    # exact center and height of each sub-bar so the tick fully covers it.
+    # bargap/bargroupgap match the paper part_1 overview chart so bar heights
+    # are identical between the two figures (the appendix figure differs only
+    # in its 2-row legend, not its bar geometry).
     n_per_cluster = 3
-    bargap = 0.30
-    bargroupgap = 0.06
-    cluster_span = 1.0 - bargap                       # 0.70
-    bar_pitch = cluster_span / n_per_cluster          # spacing between sub-bar centers (≈ 0.233)
-    bar_height = bar_pitch * (1.0 - bargroupgap)      # actual sub-bar height (≈ 0.219)
-    half_span = cluster_span / 2.0                    # 0.35
+    bargap = 0.18
+    bargroupgap = 0.04
+    cluster_span = 1.0 - bargap
+    bar_pitch = cluster_span / n_per_cluster
+    bar_height = bar_pitch * (1.0 - bargroupgap)
+    half_span = cluster_span / 2.0
     # Plotly grouped bars order: trace 0 at the BOTTOM of the cluster.
     # Our metrics were added in reverse so wages=trace0, workers=trace1, tasks=trace2.
     sub_centers = {
@@ -954,15 +966,30 @@ def _render_overview_with_deltas(
         "pct_workers": -half_span + 1.5 * bar_pitch,
         "pct_tasks":   -half_span + 2.5 * bar_pitch,
     }
+    # Tick markers span the full bar height. The per-bar value labels are
+    # placed as annotations: centered between x=0 and the tick when the
+    # text fits there (so the tick never crosses text); otherwise placed
+    # outside the bar (after the bar end) in dark text on the white
+    # background.
+    # Text-width estimate in axis units: at 9pt (27 px) Inter on a
+    # 1400 px canvas spanning 75 x-units, one character is ≈ 1.0 axis units.
+    # Buffer of 2 units on each side keeps text clear of the tick / bar
+    # edge under kerning variance and avoids borderline-fit labels
+    # squeezing against the tick.
+    char_w_units = 1.0
+    edge_buffer = 2.0
     shapes = []
+    text_annotations: list[dict] = []
     for y_idx, r in enumerate(plot_rows):
         paper_r = paper_lookup[r["config"]]
-        for paper_key in ("pct_tasks", "pct_workers", "pct_wages"):
+        for pct_key, paper_key in [("pct_tasks", "pct_tasks"),
+                                    ("pct_workers", "pct_workers"),
+                                    ("pct_wages", "pct_wages")]:
             xv = paper_r[paper_key]
+            bar_val = r[pct_key]
             yc = y_idx + sub_centers[paper_key]
             shapes.append(dict(
-                type="line",
-                xref="x", yref="y",
+                type="line", xref="x", yref="y",
                 x0=xv, x1=xv,
                 y0=yc - bar_height / 2.0,
                 y1=yc + bar_height / 2.0,
@@ -970,43 +997,82 @@ def _render_overview_with_deltas(
                 layer="above",
             ))
 
-    # Legend-only entry explaining the black tick. Scatter with a vertical-line
-    # marker so the legend swatch reads as a tick, not a horizontal line.
-    fig.add_trace(go.Scatter(
-        x=[None], y=[None],
-        mode="markers",
-        marker=dict(
-            symbol="line-ns",
-            color="rgba(20,20,20,0.95)",
-            size=14,
-            line=dict(color="rgba(20,20,20,0.95)", width=2),
-        ),
-        name="Paper-chart value (Δ baseline)",
-        showlegend=True,
-        hoverinfo="skip",
-    ))
+            label = text_strings[(y_idx, pct_key)]
+            text_w = len(label) * char_w_units
+            available = xv - edge_buffer  # room between bar start and tick
+            if text_w <= available:
+                # Fits in [0, tick]: center there, white text on bar.
+                text_annotations.append(dict(
+                    xref="x", yref="y",
+                    x=xv / 2.0, y=yc,
+                    text=label, showarrow=False,
+                    xanchor="center", yanchor="middle",
+                    font=dict(size=px["tick"], color="white", family=FONT_FAMILY),
+                ))
+            else:
+                # Doesn't fit; place outside the bar in dark text.
+                text_annotations.append(dict(
+                    xref="x", yref="y",
+                    x=bar_val + 0.5, y=yc,
+                    text=label, showarrow=False,
+                    xanchor="left", yanchor="middle",
+                    font=dict(size=px["tick"],
+                              color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+                ))
 
     fig.update_layout(
         barmode="group",
-        bargap=0.30,
-        bargroupgap=0.06,
-        legend=dict(traceorder="reversed"),
+        bargap=bargap,
+        bargroupgap=bargroupgap,
+        legend=dict(traceorder="normal"),
         xaxis=dict(
-            title=dict(text="% of National Total", font=dict(size=LABEL_FS)),
+            title=dict(text="% of National Total",
+                       font=dict(size=px["axis_title"], family=FONT_FAMILY)),
             range=[0, x_range_max],
             ticksuffix="%",
+            tickfont=dict(size=px["tick"], family=FONT_FAMILY),
         ),
         yaxis=dict(
-            title=dict(text="Data Configuration", font=dict(size=LABEL_FS)),
-            tickfont=dict(size=LABEL_FS, family=FONT_FAMILY),
+            title=dict(text="Data Configuration",
+                       font=dict(size=px["axis_title"], family=FONT_FAMILY)),
+            tickfont=dict(size=px["tick"], family=FONT_FAMILY),
         ),
         shapes=shapes,
+        annotations=text_annotations,
     )
 
+    # Plot area sized to match the main-body overview chart exactly. The
+    # bottom margin is sized to hold x-axis ticks + axis title + the
+    # 2-row legend with no trailing whitespace (the legend is pinned to
+    # the figure bottom via yref="container").
     style_paper_figure(
         fig, title, subtitle=subtitle,
-        height=PAPER_H + 140,
-        margin=dict(l=20, r=60, t=140, b=110),
+        height=PAPER_H + 320,
+        margin=dict(l=20, r=60, t=90, b=230),
+    )
+
+    # Legend in container coords (0-1 of full figure width/height) so the
+    # asymmetric l/r margins don't shift it off the figure center, pinned
+    # to the figure bottom edge (yanchor=bottom). itemsizing="trace" lets
+    # each dummy scatter's marker.size drive the legend swatch size.
+    fig.update_layout(
+        legend=dict(
+            orientation="h",
+            xref="container", yref="container",
+            x=0.5, xanchor="center",
+            y=0.01, yanchor="bottom",
+            font=dict(size=px["legend"], family=FONT_FAMILY),
+            itemsizing="trace",
+        ),
+    )
+    # style_paper_figure resets axis tick/title fonts — re-apply ours.
+    fig.update_xaxes(
+        tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+        title_font=dict(size=px["axis_title"], family=FONT_FAMILY),
+    )
+    fig.update_yaxes(
+        tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+        title_font=dict(size=px["axis_title"], family=FONT_FAMILY),
     )
 
     save_figure(fig, results / "figures" / out_name)
@@ -1061,22 +1127,18 @@ def build_overview_no_autoaug(results: Path, figures: Path) -> None:
     )
 
 
-def _run_config_nonphys(dataset_name: str, agg_level: str = "occupation") -> pd.DataFrame:
-    """Mirror of part_1's `_run_config` but with `physical_mode='exclude'`
-    (drop physical tasks). Local copy because part_1's helper hardcodes
-    physical_mode='all'.
-
-    Note: `apply_physical_filter` accepts only 'all' / 'exclude' / 'only'
-    and silently ignores anything else — using 'non_phys' or similar reads
-    as 'all', which is a real foot-gun. Sanity-check by comparing row
-    counts or sums against the unfiltered run if you touch this."""
+def _run_config_phys_mode(dataset_name: str, physical_mode: str,
+                          agg_level: str = "occupation") -> pd.DataFrame:
+    """`physical_mode` must be one of 'all' / 'exclude' / 'only' —
+    `apply_physical_filter` silently ignores anything else (real foot-gun)."""
     from backend.compute import get_group_data
+    assert physical_mode in {"all", "exclude", "only"}, physical_mode
     config = {
         "selected_datasets": [dataset_name],
         "combine_method": "Average",
         "method": "freq",
         "use_auto_aug": True,
-        "physical_mode": "exclude",
+        "physical_mode": physical_mode,
         "geo": "nat",
         "agg_level": agg_level,
         "sort_by": "% Tasks Affected",
@@ -1092,47 +1154,80 @@ def _run_config_nonphys(dataset_name: str, agg_level: str = "occupation") -> pd.
     return df
 
 
-def build_temporal_trend_nonphys(results: Path, figures: Path) -> None:
-    """Single-panel % tasks exposed trend, non-physical tasks only.
+def _run_config_nonphys(dataset_name: str, agg_level: str = "occupation") -> pd.DataFrame:
+    """Back-compat shim — non-physical task filter."""
+    return _run_config_phys_mode(dataset_name, "exclude", agg_level)
 
-    Mirrors the main paper `temporal_trend` (Part 1) but applies
-    `physical_mode='non_phys'` across the time series. Workers and
-    wages panels are omitted: a non-phys workers number would require
-    splitting each occupation's employment between its phys / non-phys
-    task load, which is out of scope for this view."""
-    trend_configs = ["all_confirmed", "all_ceiling"]
+
+def build_temporal_trend_nonphys(results: Path, figures: Path) -> None:
+    """Single-panel % tasks exposed trend, split by physical task filter.
+
+    Three lines:
+    - All Confirmed (non-physical tasks only)
+    - All Sources / Ceiling (non-physical tasks only)
+    - All Confirmed (physical tasks only)
+
+    Workers and wages panels are omitted: a phys/non-phys split of
+    workers would require splitting each occupation's employment between
+    its phys and non-phys task load, which is out of scope here."""
+
+    # (config_key, physical_mode, series_key, line_label, line color, dash)
+    series_spec: list[tuple[str, str, str, str, str, str]] = [
+        ("all_confirmed", "exclude", "confirmed_nonphys",
+         "All Confirmed — Non-physical Tasks",
+         METRIC_COLORS["tasks"], "solid"),
+        ("all_ceiling", "exclude", "ceiling_nonphys",
+         "All Sources (Ceiling) — Non-physical Tasks",
+         METRIC_COLORS_LIGHT["tasks"], "dash"),
+        ("all_confirmed", "only", "confirmed_phys",
+         "All Confirmed — Physical Tasks",
+         METRIC_COLORS["workers"], "solid"),
+    ]
 
     # ── 1. Build trend data ──────────────────────────────────────────
     trend_rows: list[dict] = []
-    for config_key in trend_configs:
+    for config_key, phys_mode, series_key, label, _color, _dash in series_spec:
         series = ANALYSIS_CONFIG_SERIES[config_key]
-        label = ANALYSIS_CONFIG_LABELS[config_key]
         for ds_name in series:
             date_str = ds_name.rsplit(" ", 1)[-1]
-            df = _run_config_nonphys(ds_name, "occupation")
+            df = _run_config_phys_mode(ds_name, phys_mode, "occupation")
             pct_tasks = float(df["pct_tasks_affected"].mean())
             trend_rows.append({
+                "series": series_key,
                 "config": config_key,
+                "physical_mode": phys_mode,
                 "label": label,
                 "date": date_str,
                 "dataset": ds_name,
                 "pct_tasks_affected": round(pct_tasks, 1),
             })
-            print(f"  {label} {date_str}: {pct_tasks:.1f}% (non-phys only)")
+            print(f"  {label} {date_str}: {pct_tasks:.1f}%")
     trend_df = pd.DataFrame(trend_rows)
     save_csv(trend_df, results / "temporal_trend_nonphys.csv")
 
-    # ── 2. Local copies of part_1's chart helpers ────────────────────
-    LABEL_YSHIFT_PX = 26
-    LABEL_FS_DATA = 14
-    LABEL_FS_HORIZON = 13
+    # Paper-chart font ladder (see ANALYSIS_CLAUDE.md → Paper Chart Formatting).
+    # All sizes come from paper_fonts(TRENDNP_W) so printed pt at 6.5"
+    # column matches the standard 11/10/10/9/9/8 ladder.
+    TRENDNP_W = PAPER_W
+    TRENDNP_H = PAPER_H + 320
+    px = paper_fonts(TRENDNP_W)
+    TRENDNP_TITLE_FS = px["title"]
+    TRENDNP_AXIS_FS = px["axis_title"]
+    TRENDNP_TICK_FS = px["tick"]
+    TRENDNP_LEGEND_FS = px["legend"]
+    LABEL_FS_DATA = px["in_chart_floor"]
+    LABEL_FS_HORIZON = px["in_chart_floor"]
+    LABEL_YSHIFT_PX = 32
+
+    # Linear OLS extrapolation: extend each line at its recent rate to a
+    # 2-year horizon. Labeled only at the 2yr endpoint per series.
     EXTRAP_HORIZONS_DAYS: list[tuple[str, int]] = [
         ("6mo", 183), ("1yr", 365), ("2yr", 730),
     ]
 
     def _linear_fit_project(dates: list[str], yvals: list[float],
                             horizon_days: list[int]) -> tuple[list[pd.Timestamp], list[float]]:
-        if len(dates) < 2:
+        if len(dates) < 2 or not horizon_days:
             return [], []
         ts = [pd.Timestamp(d) for d in dates]
         t0 = ts[0]
@@ -1155,38 +1250,22 @@ def build_temporal_trend_nonphys(results: Path, figures: Path) -> None:
                 keep.append(i)
         return set(keep)
 
-    # ── 3. Build chart (single panel) ────────────────────────────────
+    # ── 3. Build chart ───────────────────────────────────────────────
     fig = go.Figure()
-    metric_key = "tasks"
 
-    # Neutral-gray dummy traces for the legend (solid + dashed).
+    # Legend will be rendered manually after the chart is laid out
+    # (paper-space line shapes + annotations). Plotly's auto-legend
+    # with three long items wraps to two rows but left-aligns the
+    # second row, leaving the block off-center vs the figure midpoint.
     legend_color = PAPER_PALETTE["text"]
-    legend_anchor_x = trend_df["date"].iloc[0]
-    fig.add_trace(go.Scatter(
-        x=[legend_anchor_x], y=[None], mode="lines",
-        name=ANALYSIS_CONFIG_LABELS["all_confirmed"],
-        line=dict(color=legend_color, width=3, dash="solid"),
-        showlegend=True, hoverinfo="skip",
-    ))
-    fig.add_trace(go.Scatter(
-        x=[legend_anchor_x], y=[None], mode="lines",
-        name=ANALYSIS_CONFIG_LABELS["all_ceiling"],
-        line=dict(color=legend_color, width=3, dash="dash"),
-        showlegend=True, hoverinfo="skip",
-    ))
 
     panel_vals: list[float] = []
-    for config_key in trend_configs:
-        subset = trend_df[trend_df["config"] == config_key].sort_values("date").reset_index(drop=True)
-        label = ANALYSIS_CONFIG_LABELS[config_key]
-        if config_key == "all_confirmed":
-            color = METRIC_COLORS[metric_key]
-            dash = "solid"
-            yshift = -LABEL_YSHIFT_PX
-        else:
-            color = METRIC_COLORS_LIGHT[metric_key]
-            dash = "dash"
-            yshift = LABEL_YSHIFT_PX
+    for idx, (config_key, _phys, series_key, label, color, dash) in enumerate(series_spec):
+        subset = trend_df[trend_df["series"] == series_key].sort_values("date").reset_index(drop=True)
+
+        # Stagger label position: alternate below / above the marker so
+        # the three series' labels don't pile up.
+        yshift = -LABEL_YSHIFT_PX if idx % 2 == 0 else LABEL_YSHIFT_PX
 
         xvals = list(subset["date"])
         yvals = [float(v) for v in subset["pct_tasks_affected"]]
@@ -1203,7 +1282,7 @@ def build_temporal_trend_nonphys(results: Path, figures: Path) -> None:
             cliponaxis=False,
         ))
 
-        # Linear 2yr projection (label only the 2yr horizon).
+        # Linear OLS projection to the 2yr horizon (labels only at 2yr).
         horizon_days = [d for _, d in EXTRAP_HORIZONS_DAYS]
         twoyr_idx = next(
             (i for i, (lbl, _) in enumerate(EXTRAP_HORIZONS_DAYS) if lbl == "2yr"),
@@ -1219,7 +1298,9 @@ def build_temporal_trend_nonphys(results: Path, figures: Path) -> None:
                 line=dict(color=color, width=2, dash="dot"),
                 marker=dict(size=7, color=color, symbol="x"),
                 showlegend=False,
-                hovertemplate=f"<b>{label} (linear proj.)</b><br>%{{x}}<br>%{{y}}%<extra></extra>",
+                hovertemplate=(
+                    f"<b>{label} (linear proj.)</b><br>%{{x}}<br>%{{y}}%<extra></extra>"
+                ),
                 cliponaxis=False,
                 opacity=0.7,
             ))
@@ -1233,17 +1314,19 @@ def build_temporal_trend_nonphys(results: Path, figures: Path) -> None:
                 font=dict(size=LABEL_FS_HORIZON, color=color, family=FONT_FAMILY),
             )
 
-        # Per-point data labels: confirmed → all spaced points (with stagger
-        # for tight clusters); ceiling → first + last only.
-        CLOSE_GAP_DAYS = 120
-        STAGGER_PX = 16
+        # Per-point data labels. Confirmed series get spaced labels;
+        # ceiling shows only its last point — its first point sits on
+        # the confirmed-non-phys first point at the same value, so a
+        # label there would just stack a duplicate.
         if config_key == "all_confirmed":
             kept_set = _spaced_label_indices(xvals)
         elif len(xvals) >= 2:
-            kept_set = {0, len(xvals) - 1}
+            kept_set = {len(xvals) - 1}
         else:
             kept_set = set(range(len(xvals)))
 
+        CLOSE_GAP_DAYS = 120
+        STAGGER_PX = 18
         kept_sorted = sorted(kept_set)
         kept_ts = {i: pd.Timestamp(xvals[i]) for i in kept_sorted}
         per_label_yshift: dict[int, int] = {}
@@ -1266,55 +1349,1833 @@ def build_temporal_trend_nonphys(results: Path, figures: Path) -> None:
                 font=dict(size=LABEL_FS_DATA, color=color, family=FONT_FAMILY),
             )
 
-    # Tight y-range with extra headroom above for the 2yr projection label.
     if panel_vals:
         v_lo, v_hi = min(panel_vals), max(panel_vals)
-        spread = v_hi - v_lo
-        y_min = max(0.0, v_lo - spread * 0.22)
-        y_max = v_hi + spread * 0.30
+        spread = max(v_hi - v_lo, 1.0)
+        y_min = max(0.0, v_lo - spread * 0.18)
+        y_max = v_hi + spread * 0.18
     else:
         y_min, y_max = 0.0, 1.0
 
     fig.update_yaxes(
         ticksuffix="%",
         range=[y_min, y_max],
-        title=dict(text="% Tasks Exposed (non-physical only)",
-                   font=dict(size=LABEL_FS - 2)),
-        tickfont=dict(size=ANNOT_FS, family=FONT_FAMILY),
+        title=dict(text="Tasks Exposed",
+                   font=dict(size=TRENDNP_AXIS_FS)),
+        tickfont=dict(size=TRENDNP_TICK_FS, family=FONT_FAMILY),
     )
     fig.update_xaxes(
-        title=dict(text="Snapshot Date", font=dict(size=LABEL_FS - 2)),
+        title=dict(text="Snapshot Date", font=dict(size=TRENDNP_AXIS_FS)),
         tickangle=-30,
-        tickfont=dict(size=ANNOT_FS, family=FONT_FAMILY),
+        tickfont=dict(size=TRENDNP_TICK_FS, family=FONT_FAMILY),
     )
 
     style_paper_figure(
         fig,
-        "All Confirmed vs All Sources (Ceiling) Over Time — Non-physical Tasks Only",
-        subtitle=(
-            "Share of non-physical task completions exposed to AI, over the "
-            "dataset window (March 2025 – February 2026).<br>"
-            "Dotted segments extend each line with a linear OLS fit through "
-            "observed points, labeled at the 2yr horizon if the recent rate "
-            "continued. Workers / wages panels omitted — see note in README."
-        ),
-        height=PAPER_H + 90,
-        width=PAPER_W,
-        margin=dict(l=80, r=60, t=200, b=160),
+        "Trend Over Time — Physical vs Non-physical Tasks",
+        subtitle="",
+        height=TRENDNP_H,
+        width=TRENDNP_W,
+        margin=dict(l=90, r=60, t=130, b=290),
     )
     fig.update_layout(
-        legend=dict(
-            orientation="h",
-            yanchor="bottom", y=-0.32, xanchor="center", x=0.5,
-            font=dict(size=LEGEND_FS, family=FONT_FAMILY),
-            bgcolor="rgba(255,255,255,0.9)",
-        ),
+        title=dict(font=dict(size=TRENDNP_TITLE_FS)),
+        showlegend=False,
+    )
+
+    # ── Manual legend (paper space) ─────────────────────────────────────
+    # Two rows centered independently. Plotly's auto-legend wraps long
+    # 3-item legends to two rows but left-aligns the second row, leaving
+    # the block visibly off-center. Each row here uses the same
+    # text-width-aware centering as the main-body trend legend.
+    LEG_LINE_LEN = 0.044
+    LEG_TEXT_GAP = 0.010
+    LEG_ITEM_SPACING = 0.05
+    LEG_ROW1_Y = -0.24
+    LEG_ROW2_Y = -0.34
+    char_w = TRENDNP_LEGEND_FS * 0.55 / TRENDNP_W
+
+    def _item_width_nonphys(label: str) -> float:
+        return LEG_LINE_LEN + LEG_TEXT_GAP + len(label) * char_w
+
+    # Same series order as the lines themselves; first two ride row 1,
+    # the third (physical-tasks) sits alone on row 2 (matches the
+    # previous auto-layout's wrap behavior).
+    legend_rows: list[list[tuple[str, str, str]]] = [
+        [
+            (series_spec[0][3], series_spec[0][4], series_spec[0][5]),
+            (series_spec[1][3], series_spec[1][4], series_spec[1][5]),
+        ],
+        [
+            (series_spec[2][3], series_spec[2][4], series_spec[2][5]),
+        ],
+    ]
+
+    for row_idx, row_items in enumerate(legend_rows):
+        row_total_w = (
+            sum(_item_width_nonphys(lbl) for lbl, _, _ in row_items)
+            + LEG_ITEM_SPACING * (len(row_items) - 1)
+        )
+        cursor_x = 0.5 - row_total_w / 2
+        leg_y = LEG_ROW1_Y if row_idx == 0 else LEG_ROW2_Y
+        for label, color, dash_style in row_items:
+            line_start = cursor_x
+            line_end = cursor_x + LEG_LINE_LEN
+            text_x = line_end + LEG_TEXT_GAP
+            fig.add_shape(
+                type="line",
+                xref="paper", yref="paper",
+                x0=line_start, x1=line_end,
+                y0=leg_y, y1=leg_y,
+                line=dict(color=color, width=3, dash=dash_style),
+            )
+            fig.add_annotation(
+                xref="paper", yref="paper",
+                x=text_x, y=leg_y,
+                text=label, showarrow=False,
+                xanchor="left", yanchor="middle",
+                font=dict(size=TRENDNP_LEGEND_FS, family=FONT_FAMILY,
+                          color=PAPER_PALETTE["text"]),
+            )
+            cursor_x += _item_width_nonphys(label) + LEG_ITEM_SPACING
+    # style_paper_figure resets axis tick/title fonts — re-apply ours.
+    fig.update_xaxes(
+        tickfont=dict(size=TRENDNP_TICK_FS, family=FONT_FAMILY),
+        title_font=dict(size=TRENDNP_AXIS_FS, family=FONT_FAMILY),
+    )
+    fig.update_yaxes(
+        tickfont=dict(size=TRENDNP_TICK_FS, family=FONT_FAMILY),
+        title_font=dict(size=TRENDNP_AXIS_FS, family=FONT_FAMILY),
     )
 
     save_figure(fig, results / "figures" / "temporal_trend_nonphys.png")
     shutil.copy(results / "figures" / "temporal_trend_nonphys.png",
                 figures / "temporal_trend_nonphys.png")
     print("  -> temporal_trend_nonphys.png")
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# major_categories_trend — relocated from Part 2.
+# Three side-by-side panels (% tasks / workers / wages) for the top-10
+# major occupational categories ranked by absolute change in
+# pct_tasks_affected from first to final all_confirmed snapshot. Same 10
+# majors and same ordering across all panels so the workers/wages context
+# reads against the % tasks ranking. Each bar is a three-segment stack:
+# solid = first-snapshot value, mid-opacity = observed jump
+# (current − first), hatched = 2-year linear OLS projected jump.
+# ──────────────────────────────────────────────────────────────────────────
+
+def _major_trend_series() -> pd.DataFrame:
+    """Stack the all_confirmed time series at major level into long form.
+
+    Uses ANALYSIS_CONFIG_SERIES['all_confirmed'] (which excludes the 2024
+    dates per the trend-series invariant)."""
+    from backend.compute import get_group_data
+
+    series = ANALYSIS_CONFIG_SERIES["all_confirmed"]
+    rows: list[dict] = []
+    for ds in series:
+        date_str = ds.rsplit(" ", 1)[-1]
+        cfg = {
+            "selected_datasets": [ds],
+            "combine_method": "Average",
+            "method": "freq",
+            "use_auto_aug": True,
+            "physical_mode": "all",
+            "geo": "nat",
+            "agg_level": "major",
+            "sort_by": "% Tasks Affected",
+            "top_n": 9999,
+            "search_query": "",
+            "context_size": 3,
+        }
+        data = get_group_data(cfg)
+        assert data is not None, f"No data for {ds}"
+        df: pd.DataFrame = data["df"].rename(
+            columns={data["group_col"]: "category"}
+        )
+        for _, r in df.iterrows():
+            rows.append({
+                "date": pd.Timestamp(date_str),
+                "category": r["category"],
+                "pct_tasks_affected": float(r["pct_tasks_affected"]),
+                "workers_affected":   float(r["workers_affected"]),
+                "wages_affected":     float(r["wages_affected"]),
+            })
+        print(f"  loaded {ds}: {len(df)} majors")
+    return pd.DataFrame(rows)
+
+
+def _annot_fmt(metric: str, panel_max: float):
+    """Compact 3-value formatter — '{start}→{current}→{proj}<unit>'.
+
+    Picks one unit per panel from ``panel_max`` so all three numbers share
+    the same scale (K / M / B / T). Values ≥ 10 print as integers, smaller
+    values as one decimal — keeps the annotation short enough to clear
+    the per-panel right-side headroom set by the x-axis range factor."""
+    if metric == "pct_tasks_affected":
+        def fmt_tasks(a, b, c):
+            return f"{a:.0f}→{b:.0f}→{c:.0f}%"
+        return fmt_tasks
+
+    # Note: no leading "$" — plotly interprets paired "$...$" as MathJax
+    # delimiters and silently truncates the annotation at the second one.
+    # The wages-panel context comes from the axis title, not the values.
+    if metric == "wages_affected":
+        if panel_max >= 1e12:
+            scale, unit = 1e12, "T"
+        elif panel_max >= 1e9:
+            scale, unit = 1e9, "B"
+        elif panel_max >= 1e6:
+            scale, unit = 1e6, "M"
+        else:
+            scale, unit = 1e3, "K"
+    else:  # workers_affected
+        if panel_max >= 1e9:
+            scale, unit = 1e9, "B"
+        elif panel_max >= 1e6:
+            scale, unit = 1e6, "M"
+        else:
+            scale, unit = 1e3, "K"
+
+    def num(v: float) -> str:
+        s = v / scale
+        return f"{s:.0f}" if abs(s) >= 10 else f"{s:.1f}"
+
+    def fmt(a, b, c):
+        return f"{num(a)}→{num(b)}→{num(c)}{unit}"
+    return fmt
+
+
+def _hex_to_rgba(hex_color: str, alpha: float) -> str:
+    """Convert a `#rrggbb` string to a Plotly `rgba(r,g,b,a)` string.
+    Used to draw legend swatches with explicit per-swatch opacity."""
+    h = hex_color.lstrip("#")
+    r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+    return f"rgba({r},{g},{b},{alpha})"
+
+
+def _hatch_png_data_uri(hex_color: str, opacity: float = 0.30) -> str:
+    """Generate a data: URI PNG that reproduces plotly's bar
+    `pattern(shape="/", solidity=0.25, fgcolor="white")` look — used
+    as a layout image for the projected-change legend swatch so the
+    pattern matches the bars exactly. Stock plotly Shape doesn't
+    support fillpattern; this image overlay is the workaround.
+    """
+    import io, base64
+    from PIL import Image, ImageDraw
+
+    h = hex_color.lstrip("#")
+    r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+    a = int(round(255 * opacity))
+
+    # Generated at higher res than the rendered swatch (22 px) for
+    # crisp downscaling. Stripe geometry produces ~5–6 thin diagonals
+    # in the rendered swatch — close to plotly's default `/` density.
+    SIZE = 110
+    img = Image.new("RGBA", (SIZE, SIZE), (r, g, b, a))
+    draw = ImageDraw.Draw(img)
+    stripe_w = 5
+    spacing  = 20    # ≈ solidity 0.25 → 5/20 of perpendicular area is stripe
+    # "/" stripes — in PIL coords (y axis points down), draw from
+    # (offset, SIZE) to (offset + SIZE, 0) for a bottom-left to
+    # top-right tilt.
+    for off in range(-SIZE, 2 * SIZE, spacing):
+        draw.line(
+            [(off, SIZE), (off + SIZE, 0)],
+            fill=(255, 255, 255, 255),
+            width=stripe_w,
+        )
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
+
+
+def _strip_occupations_suffix(s: str) -> str:
+    """SOC major-group titles all end in ' Occupations'. Drop it — context
+    is obvious from the chart and it just consumes label width."""
+    suffix = " Occupations"
+    return s[: -len(suffix)] if s.endswith(suffix) else s
+
+
+def _wrap_label(s: str, max_chars: int = 24) -> str:
+    """Wrap a long label at word boundaries, joining with <br>. Long
+    SOC major titles (e.g. 'Arts, Design, Entertainment, Sports, and Media')
+    don't fit on one line at print pt when two panels both carry their
+    own y-axis labels — wrapping keeps them legible without dropping below
+    the 8 pt floor."""
+    if len(s) <= max_chars:
+        return s
+    words = s.split()
+    lines: list[str] = []
+    cur = ""
+    for w in words:
+        if not cur:
+            cur = w
+        elif len(cur) + 1 + len(w) <= max_chars:
+            cur += " " + w
+        else:
+            lines.append(cur)
+            cur = w
+    if cur:
+        lines.append(cur)
+    return "<br>".join(lines)
+
+
+def _major_trend_stats(
+    trend: pd.DataFrame, metric: str,
+) -> dict[str, dict]:
+    """Compute first / current / projected / jump per major for one metric.
+
+    `_linear_project` lives in Part 2 and is exercised by its tests —
+    importing it inline keeps a single canonical implementation."""
+    from analysis.paper.results.part_2.run import _linear_project
+
+    out: dict[str, dict] = {}
+    for cat, sub in trend.groupby("category"):
+        sub = sub.sort_values("date")
+        dates = list(sub["date"])
+        yvals = [float(v) for v in sub[metric]]
+        if len(dates) < 2 or (yvals[-1] == 0 and yvals[0] == 0):
+            continue
+        _slope, projected, r2 = _linear_project(dates, yvals, PROJECTION_DAYS)
+        out[cat] = {
+            "first":     yvals[0],
+            "current":   yvals[-1],
+            "projected": max(0.0, float(projected)),
+            "jump":      yvals[-1] - yvals[0],
+            "r2":        r2,
+        }
+    return out
+
+
+def _render_major_trend_single(
+    results: Path,
+    figures: Path,
+    metric: str,
+    metric_key: str,
+    axis_title: str,
+    chart_title: str,
+    out_name: str,
+    stats: dict[str, dict],
+) -> None:
+    """Render one single-panel horizontal-bar trend chart for one metric.
+
+    ``stats`` provides first / current / projected per category. Top-10
+    by absolute jump are plotted, top-mover at top of chart. Inline
+    observed-Δ values are placed on the middle bar segment, and the
+    full start→current→projected triplet is shown to the right of
+    each bar.
+    """
+    ranked = sorted(stats.items(),
+                    key=lambda kv: abs(kv[1]["jump"]),
+                    reverse=True)[:10]
+    # Plotly h-bars stack bottom→top, so reverse for top-mover-at-top.
+    plot_cats = [cat for cat, _ in ranked][::-1]
+
+    firsts = [stats[c]["first"]     for c in plot_cats]
+    currs  = [stats[c]["current"]   for c in plot_cats]
+    projs  = [stats[c]["projected"] for c in plot_cats]
+    seg_start = firsts
+    seg_jump  = [c - f for f, c in zip(firsts, currs)]
+    # Projection segment clipped at 0 — never extends backward past the
+    # current value.
+    seg_proj  = [max(0.0, p - c) for c, p in zip(currs, projs)]
+
+    # Y-axis labels: strip the redundant " Occupations" suffix from SOC
+    # major titles. With a single panel at PAPER_W, no wrapping needed —
+    # long titles like "Arts, Design, Entertainment, Sports, and Media"
+    # fit on a single line via plotly automargin.
+    y_labels = [_strip_occupations_suffix(c) for c in plot_cats]
+
+    base_color = METRIC_COLORS[metric_key]
+    bar_ends = [max(c, p) for c, p in zip(currs, projs)]
+    max_x = float(max(bar_ends) or 1.0)
+
+    # ── Fonts from the standardized pt ladder at PAPER_W.
+    px = paper_fonts(PAPER_W)
+
+    fig = go.Figure()
+
+    # Three-segment stacked bar: solid start | mid-opacity observed Δ |
+    # hatched 2-yr projection. Legend is built manually below as
+    # shapes+annotations — gives bigger swatches and reliable layout
+    # (plotly's auto-legend wraps to vertical with long y-axis labels).
+    fig.add_trace(go.Bar(
+        y=y_labels, x=seg_start, orientation="h",
+        marker=dict(color=base_color, opacity=1.0, line=dict(width=0)),
+        showlegend=False,
+        hovertemplate="Start: %{x:.2f}<extra></extra>",
+    ))
+    fig.add_trace(go.Bar(
+        y=y_labels, x=seg_jump, orientation="h",
+        marker=dict(color=base_color, opacity=0.55, line=dict(width=0)),
+        showlegend=False,
+        hovertemplate="Observed Δ: %{x:.2f}<extra></extra>",
+    ))
+    fig.add_trace(go.Bar(
+        y=y_labels, x=seg_proj, orientation="h",
+        marker=dict(
+            color=base_color,
+            opacity=0.30,
+            line=dict(width=0),
+            pattern=dict(shape="/", solidity=0.25, fgcolor="white"),
+        ),
+        showlegend=False,
+        hovertemplate="Projected Δ: %{x:.2f}<extra></extra>",
+    ))
+
+    # Right-side annotation per bar — start → current → projected.
+    # Full black so values read clearly against the white background.
+    annot_fmt = _annot_fmt(metric, max_x)
+    for y_lbl, f_v, c_v, p_v in zip(y_labels, firsts, currs, projs):
+        fig.add_annotation(
+            x=max(c_v, p_v), y=y_lbl,
+            xref="x", yref="y",
+            text="  " + annot_fmt(f_v, c_v, p_v),
+            showarrow=False,
+            xanchor="left", yanchor="middle",
+            font=dict(size=px["in_chart_floor"],
+                      color="#000000",
+                      family=FONT_FAMILY),
+        )
+
+    # Inline observed-change value, centered on the middle segment of
+    # each bar. Black text so it reads on the mid-opacity fill.
+    def _delta_fmt(d: float) -> str:
+        if metric == "pct_tasks_affected":
+            sign = "+" if d >= 0 else ""
+            return f"{sign}{d:.0f}pp"
+        # workers — scale to match the right-side annotation unit
+        abs_max = max_x
+        if abs_max >= 1e9:
+            scale, unit = 1e9, "B"
+        elif abs_max >= 1e6:
+            scale, unit = 1e6, "M"
+        elif abs_max >= 1e3:
+            scale, unit = 1e3, "K"
+        else:
+            scale, unit = 1.0, ""
+        sign = "+" if d >= 0 else ""
+        return f"{sign}{d/scale:.1f}{unit}"
+
+    # Inline label sits centered on the Δ segment. When the segment is
+    # very narrow (Δ < 4% of x-range) the label visually collides with
+    # the bar-end annotation that follows; nudge those a bit to the
+    # right of the bar end instead so they don't crowd the start/current
+    # arrow string.
+    NUDGE_THRESHOLD = 0.04
+    for y_lbl, f_v, c_v, p_v in zip(y_labels, firsts, currs, projs):
+        delta = c_v - f_v
+        bar_end = max(c_v, p_v)
+        if abs(delta) / max_x < NUDGE_THRESHOLD:
+            # Narrow Δ — center across the full bar (start → projected)
+            # so the label stays inside the bar instead of bleeding back
+            # past x=0 into the y-axis label area.
+            label_x = bar_end / 2.0
+        else:
+            label_x = f_v + delta / 2.0
+        fig.add_annotation(
+            x=label_x, y=y_lbl,
+            xref="x", yref="y",
+            text=_delta_fmt(delta),
+            showarrow=False,
+            xanchor="center", yanchor="middle",
+            font=dict(size=px["in_chart_floor"],
+                      color="#000000",
+                      family=FONT_FAMILY),
+        )
+
+    # Headroom factor — tight enough that the x-axis stops just past
+    # the right-side annotation rather than wasting half the panel.
+    headroom = 1.30
+
+    x_axis_kwargs = dict(
+        range=[0, max_x * headroom],
+        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+        showline=True, linecolor=PAPER_PALETTE["grid"],
+        zeroline=True, zerolinecolor=PAPER_PALETTE["grid"],
+        tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+        title=dict(text=axis_title,
+                   font=dict(size=px["axis_title"], family=FONT_FAMILY)),
+    )
+    if metric == "pct_tasks_affected":
+        x_axis_kwargs["ticksuffix"] = "%"
+    fig.update_xaxes(**x_axis_kwargs)
+
+    # Disable automargin and set margin_l explicitly so the plot
+    # position is deterministic. This lets the manual legend convert
+    # container-center to paper coords precisely (shapes only accept
+    # xref="paper"; centering on the full canvas requires knowing
+    # where paper x=0 sits in the container).
+    longest_chars = max(len(c) for c in y_labels)
+    # Width budget: Inter char width @ tick pt ≈ 0.50 × pt-px (kaleido
+    # renders Inter slightly narrower than 0.55), plus the rotated
+    # y-axis title (font height) and a small gap. Tight margin removes
+    # dead whitespace between the y-axis title and the canvas left edge.
+    margin_l = max(
+        60,
+        int(longest_chars * 0.50 * px["tick"])  # tick labels
+        + px["axis_title"]                       # rotated y title width
+        + 25,                                    # gap + small padding
+    )
+    margin_r = 40
+    margin_t = 100
+    margin_b = 220   # extra so legend sits well below x-axis title
+    chart_h  = 720
+
+    fig.update_yaxes(
+        title=dict(text="Major Occupational Category",
+                   font=dict(size=px["axis_title"], family=FONT_FAMILY)),
+        showgrid=False, showline=False,
+        tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+        automargin=False,
+    )
+
+    style_paper_figure(
+        fig,
+        chart_title,
+        subtitle="",
+        height=chart_h,
+        width=PAPER_W,
+        margin=dict(l=margin_l, r=margin_r, t=margin_t, b=margin_b),
+    )
+
+    # Plotly's bar legend reproduces each bar's fill (including the
+    # Projected Change hatch pattern) directly in the swatch, which
+    # is what the bars actually look like. Container coords center
+    # the legend horizontally under the whole canvas, not the plot
+    # area; that's only possible because automargin is off and the
+    # plot position is deterministic.
+    fig.update_layout(barmode="stack", showlegend=False)
+
+    # ── Manual legend ──────────────────────────────────────────────────
+    # Big custom swatches centered under the whole canvas. The projected
+    # swatch is striped via dense diagonal line shapes that visually
+    # match the bar's plotly fillpattern.
+    plot_w_px = PAPER_W - margin_l - margin_r
+    plot_h_px = chart_h - margin_t - margin_b
+    paper_x_at_canvas_center = (0.5 * PAPER_W - margin_l) / plot_w_px
+
+    legend_specs = [
+        (1.00, "Start",                     False),
+        (0.55, "Observed Change",           False),
+        (0.30, "Projected Change (2-year)", True),
+    ]
+
+    char_w_paper = (0.62 * px["legend"]) / plot_w_px
+    # 22-px swatches to match the econ aggregate chart's Scatter
+    # marker.size=22 swatches.
+    SWATCH_W_PAPER = 22 / plot_w_px
+    SWATCH_H_PAPER = 22 / plot_h_px
+    SW_LABEL_GAP   = 10 / plot_w_px
+    ITEM_GAP       = 60 / plot_w_px
+
+    item_widths = [
+        SWATCH_W_PAPER + SW_LABEL_GAP + len(lbl) * char_w_paper
+        for _, lbl, _ in legend_specs
+    ]
+    total_w = sum(item_widths) + ITEM_GAP * (len(legend_specs) - 1)
+    cursor = paper_x_at_canvas_center - total_w / 2.0
+
+    LEGEND_Y = -0.36   # paper y — extra whitespace below the x-axis title
+
+    # Pre-generate the hatched PNG once (same color for all charts'
+    # projected swatches in this function — base_color varies by metric).
+    hatch_uri = _hatch_png_data_uri(base_color, opacity=0.30)
+
+    for (opacity, label, hatched), item_w in zip(legend_specs, item_widths):
+        sw_x0 = cursor
+        sw_x1 = sw_x0 + SWATCH_W_PAPER
+        sw_y0 = LEGEND_Y - SWATCH_H_PAPER / 2
+        sw_y1 = LEGEND_Y + SWATCH_H_PAPER / 2
+
+        if hatched:
+            # Layout image carries the actual hatch pattern. Plotly Shape
+            # doesn't support fillpattern, so a PNG overlay is how we
+            # get a swatch fill that visually matches the bar segments.
+            fig.add_layout_image(dict(
+                source=hatch_uri,
+                xref="paper", yref="paper",
+                x=sw_x0, y=sw_y1,
+                sizex=SWATCH_W_PAPER, sizey=SWATCH_H_PAPER,
+                xanchor="left", yanchor="top",
+                sizing="stretch",
+                layer="above",
+            ))
+            # Border on top so it reads like the other swatches.
+            fig.add_shape(
+                type="rect",
+                xref="paper", yref="paper",
+                x0=sw_x0, x1=sw_x1, y0=sw_y0, y1=sw_y1,
+                fillcolor="rgba(0,0,0,0)",
+                line=dict(color=base_color, width=1),
+                layer="above",
+            )
+        else:
+            fig.add_shape(
+                type="rect",
+                xref="paper", yref="paper",
+                x0=sw_x0, x1=sw_x1, y0=sw_y0, y1=sw_y1,
+                fillcolor=_hex_to_rgba(base_color, opacity),
+                line=dict(color=base_color, width=1),
+                layer="above",
+            )
+
+        fig.add_annotation(
+            xref="paper", yref="paper",
+            x=sw_x1 + SW_LABEL_GAP, y=LEGEND_Y,
+            text=label, showarrow=False,
+            xanchor="left", yanchor="middle",
+            font=dict(size=px["legend"],
+                      color=PAPER_PALETTE["text"],
+                      family=FONT_FAMILY),
+        )
+
+        cursor = sw_x0 + item_w + ITEM_GAP
+
+    save_figure(fig, results / "figures" / out_name, scale=2)
+    _copy_fig(results, figures, out_name)
+    print(f"  -> {out_name}")
+
+
+def build_major_categories_trend(results: Path, figures: Path) -> None:
+    """Two separate single-panel charts (tasks, workers). Each ranks its
+    own top-10 majors by absolute change start → current on its own
+    metric. Bars are three-segment stacks: solid start | mid-opacity
+    observed Δ | hatched 2-yr projection.
+
+    The workers chart additionally shows each row's value as a percent
+    of national employment — start / current / projected — on a second
+    annotation line.
+
+    All font sizes resolved from the standardized pt ladder via
+    paper_fonts(PAPER_W) so the charts print at canonical paper pt sizes.
+    """
+    trend = _major_trend_series()
+    save_csv(trend, results / "major_trend_data.csv")
+
+    # Per-metric raw stats
+    tasks_stats   = _major_trend_stats(trend, "pct_tasks_affected")
+    workers_stats = _major_trend_stats(trend, "workers_affected")
+
+    summary_rows: list[dict] = []
+    for metric, src in [("pct_tasks_affected", tasks_stats),
+                        ("workers_affected",   workers_stats)]:
+        for cat, s in src.items():
+            summary_rows.append({
+                "metric": metric, "category": cat,
+                "first": s["first"], "current": s["current"],
+                "jump_observed": s["current"] - s["first"],
+                "projected_2yr": s["projected"],
+                "delta_projected_2yr": s["projected"] - s["current"],
+                "r2": s["r2"],
+            })
+    save_csv(pd.DataFrame(summary_rows),
+             results / "major_trend_projections.csv")
+
+    _render_major_trend_single(
+        results, figures,
+        metric="pct_tasks_affected",
+        metric_key="tasks",
+        axis_title="Tasks Exposed",
+        chart_title=(
+            "Major Occupational Category Tasks Exposed — "
+            "Trend and 2-Year Linear Projection"
+        ),
+        out_name="major_categories_trend_tasks.png",
+        stats=tasks_stats,
+    )
+
+    _render_major_trend_single(
+        results, figures,
+        metric="workers_affected",
+        metric_key="workers",
+        axis_title="Workers Exposed",
+        chart_title=(
+            "Major Occupational Category Workers Exposed — "
+            "Trend and 2-Year Linear Projection"
+        ),
+        out_name="major_categories_trend_workers.png",
+        stats=workers_stats,
+    )
+
+
+def _copy_fig(results: Path, figures: Path, name: str) -> None:
+    shutil.copy(results / "figures" / name, figures / name)
+
+
+def build_eloundou_divergence_major(results: Path, figures: Path) -> None:
+    """Single-panel z-score divergence by Major Occupational Category.
+
+    Per-occupation z-scores of our `all_confirmed` pct_tasks_affected and
+    Eloundou et al. (2024) GPT-4 β are differenced, then averaged within
+    each Major Occupational Category. Positive (blue) = we read more
+    exposure than Eloundou; negative (orange) = Eloundou reads more.
+
+    Mirrors the All Confirmed panel of `extcompare_eloundou_diff`'s
+    `major_diverging_zscore` chart, formatted for the paper appendix.
+    """
+    from scipy import stats as _stats  # noqa: F401  (kept for parity)
+    from backend.compute import load_eco_raw
+    from analysis.utils import COLORS as _COLORS
+
+    # ── 1. Load Eloundou GPT-4 β per occupation (x100 to match pct units)
+    gpts_csv = ROOT / "analysis" / "data" / "gpts_are_gpts_occ_data.csv"
+    elo_df = pd.read_csv(gpts_csv)
+    assert "Title" in elo_df.columns
+    assert "dv_rating_beta" in elo_df.columns
+    elo = (
+        pd.DataFrame({
+            "title_current": elo_df["Title"].astype(str),
+            "eloundou": pd.to_numeric(elo_df["dv_rating_beta"],
+                                      errors="coerce") * 100.0,
+        })
+        .dropna(subset=["eloundou"])
+        .groupby("title_current")["eloundou"]
+        .mean()
+    )
+
+    # ── 2. all_confirmed pct per occupation
+    pct = get_pct_tasks_affected(PRIMARY_DATASET)
+
+    # ── 3. Major occ category map
+    eco = load_eco_raw()
+    assert "major_occ_category" in eco.columns
+    major = (
+        eco[["title_current", "major_occ_category"]]
+        .drop_duplicates()
+        .set_index("title_current")["major_occ_category"]
+    )
+
+    df = pd.DataFrame({"eloundou": elo, "ours": pct}).dropna()
+    df["major"] = df.index.map(major)
+    df = df.dropna(subset=["major"])
+    assert len(df) > 500, f"only {len(df)} occs matched"
+
+    # ── 4. z-score each measure (population sd), then per-occ diff
+    for col in ("eloundou", "ours"):
+        sd = df[col].std(ddof=0)
+        assert sd > 0
+        df[f"{col}_z"] = (df[col] - df[col].mean()) / sd
+    df["diff"] = df["ours_z"] - df["eloundou_z"]
+
+    # ── 5. Roll up to Major Occupational Category by unweighted mean
+    s = df.groupby("major")["diff"].mean().sort_values()
+    save_csv(
+        s.reset_index().rename(columns={"diff": "mean_z_diff"}),
+        results / "eloundou_divergence_major.csv",
+        float_format="%.3f",
+    )
+    print(f"  matched {len(df)} occs across {s.size} major categories")
+
+    # ── 6. Bar labels — strip " Occupations" suffix; keep single-line so
+    # the y-axis title sits flush against tick labels rather than between
+    # wrapped rows.
+    def _clean(label: str) -> str:
+        return label.replace(" Occupations", "")
+
+    labels = [_clean(m) for m in s.index]
+
+    OURS_HIGHER = _COLORS["primary"]   # slate blue
+    ELO_HIGHER  = _COLORS["accent"]    # orange
+    bar_colors = [OURS_HIGHER if v >= 0 else ELO_HIGHER for v in s.values]
+
+    px = paper_fonts(PAPER_W)
+
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        x=s.values,
+        y=labels,
+        orientation="h",
+        marker=dict(color=bar_colors),
+        text=[f"{v:+.2f}" for v in s.values],
+        textposition="outside",
+        textfont=dict(size=px["in_chart_floor"],
+                      color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+        showlegend=False,
+        hovertemplate="%{y}<br>diff %{x:.2f}<extra></extra>",
+    ))
+    fig.add_vline(x=0, line=dict(color=PAPER_PALETTE["text"], width=1))
+
+    pad = (s.abs().max() or 1) * 0.22
+    fig_height = max(PAPER_H, len(labels) * 38 + 220)
+
+    # Margins: left holds the rotated y-axis title (~30 px wide bbox)
+    # PLUS a ~50 px breathing gap PLUS the longest tick label (~14 px/char
+    # at the 9 pt tick font on a 1400 px canvas). The 12 px/char estimate
+    # used previously undershot true caps-heavy label width and the tick
+    # labels overlapped the rotated title.
+    longest_label_chars = max(len(lab) for lab in labels)
+    # 13 px/char is calibrated to clear the longest tick label off the
+    # rotated y-axis title bbox without squeezing the plot too narrow.
+    margin_l = max(450, int(longest_label_chars * 13 + 130))
+    # Right margin trimmed from the original 180 px (visible excess
+    # whitespace) but kept generous enough that "…Eloundou GPT-4 β"
+    # and the "+0.74" data label both render fully.
+    margin_r = 140
+
+    style_paper_figure(
+        fig,
+        title="Where We and Eloundou Disagree by Major Occupational Category",
+        width=PAPER_W,
+        height=fig_height,
+        # Bottom margin holds x-tick row + axis title + ~50 px gap +
+        # the one-line legend (visible breathing room from the axis title).
+        margin=dict(l=margin_l, r=margin_r, t=90, b=210),
+    )
+
+    fig.update_xaxes(
+        title=dict(
+            text="z-score difference: All Confirmed − Eloundou GPT-4 β",
+            font=dict(size=px["axis_title"], family=FONT_FAMILY),
+        ),
+        range=[s.min() - pad, s.max() + pad],
+        tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+        gridcolor=PAPER_PALETTE["grid"],
+        zeroline=False,
+    )
+    fig.update_yaxes(
+        title=dict(
+            text="Major Occupational Category",
+            font=dict(size=px["axis_title"], family=FONT_FAMILY),
+            # standoff = distance (px) from axis line back to the rotated
+            # title's center. Set to (margin_l - 50) so the title sits
+            # ~50 px in from the canvas left edge — far enough that the
+            # rotated title's bbox doesn't bump into the longest tick
+            # label (which extends ~longest_label_chars × 14 px left
+            # from the axis line).
+            standoff=max(0, margin_l - 50),
+        ),
+        tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+        automargin=False,
+        showgrid=False,
+    )
+    # ── Manual one-row legend (two swatches + labels) ─────────────────
+    # Plotly's auto-legend doesn't reliably render two items on a single
+    # row in horizontal mode here — it stacks them, and `entrywidth`
+    # truncates labels. Drawing the legend as (shape, annotation) pairs
+    # in paper coords pins both entries on one line below the x-axis
+    # title with a controlled gap.
+    legend_items = [
+        (OURS_HIGHER, "We read more exposure"),
+        (ELO_HIGHER,  "Eloundou reads more exposure"),
+    ]
+    plot_w_px = PAPER_W - margin_l - margin_r
+    plot_h_px = fig_height - 90 - 210      # mirrors margin_t / margin_b above
+    swatch_px = px["legend"]               # square swatch matches legend font height
+    item_gap_px = 28                       # gap between the two legend items
+    swatch_text_gap_px = 8                 # gap between swatch and its label
+    char_w_px = swatch_px * 0.55           # Inter at legend pt, rough avg width
+    item_widths_px = [swatch_px + swatch_text_gap_px + len(text) * char_w_px
+                      for _, text in legend_items]
+    total_w_px = sum(item_widths_px) + item_gap_px * (len(legend_items) - 1)
+    # Center horizontally across the FULL canvas (not the plot area —
+    # margin_l is much larger than margin_r so plot-centered would sit
+    # noticeably right of the PNG's center). Vertical placement: ~140 px
+    # below plot bottom, which lands ~80 px below the x-axis title.
+    legend_y_paper = -140 / plot_h_px
+    canvas_center_px = PAPER_W / 2.0
+    legend_start_canvas_px = canvas_center_px - total_w_px / 2.0
+    # Convert that canvas-pixel start position into plot-area paper
+    # coords (since the shapes / annotations use xref="paper").
+    start_x_px_in_plot = legend_start_canvas_px - margin_l
+
+    cursor_px = start_x_px_in_plot
+    swatch_half = (swatch_px / 2) / plot_h_px
+    for (color, text), item_w_px in zip(legend_items, item_widths_px):
+        swatch_x0 = cursor_px / plot_w_px
+        swatch_x1 = (cursor_px + swatch_px) / plot_w_px
+        fig.add_shape(
+            type="rect",
+            xref="paper", yref="paper",
+            x0=swatch_x0, x1=swatch_x1,
+            y0=legend_y_paper - swatch_half,
+            y1=legend_y_paper + swatch_half,
+            fillcolor=color, line=dict(width=0),
+            layer="above",
+        )
+        text_x = (cursor_px + swatch_px + swatch_text_gap_px) / plot_w_px
+        fig.add_annotation(
+            xref="paper", yref="paper",
+            x=text_x, y=legend_y_paper,
+            xanchor="left", yanchor="middle",
+            text=text, showarrow=False,
+            font=dict(size=px["legend"], family=FONT_FAMILY,
+                      color=PAPER_PALETTE["text"]),
+        )
+        cursor_px += item_w_px + item_gap_px
+
+    out_name = "eloundou_divergence_major.png"
+    save_figure(fig, results / "figures" / out_name)
+    _copy_fig(results, figures, out_name)
+    print(f"  -> {out_name}")
+
+
+def build_gwa_wkrs_wages(results: Path, figures: Path) -> None:
+    """Appendix counterpart to part_2's `build_gwa_pct`. Three All Confirmed
+    panels for all 41 O*NET GWAs: % Tasks Exposed | Workers Exposed |
+    Wages Exposed. Same y-ordering and styling as the main-text gwa_pct
+    chart so the reader can bridge between them."""
+    base = _gwa_base_data()
+
+    categories_r = [_wrap_gwa_label(c) for c in reversed(base["category"].tolist())]
+    pct_r     = list(reversed(base["pct_tasks_affected"].tolist()))
+    workers_r = list(reversed(base["workers_affected"].tolist()))
+    wages_r   = list(reversed(base["wages_affected"].tolist()))
+    n_cats = len(categories_r)
+
+    fig = make_subplots(
+        rows=1, cols=3,
+        subplot_titles=["", "", ""],
+        horizontal_spacing=0.09,
+        shared_yaxes=True,
+    )
+
+    inside_font  = dict(size=_MAJ_BARTEXT_FS, color="white",               family=FONT_FAMILY)
+    outside_font = dict(size=_MAJ_BARTEXT_FS, color=PAPER_PALETTE["text"], family=FONT_FAMILY)
+
+    workers_max_v = float(base["workers_affected"].max()) if not base.empty else 0.0
+    wages_max_v   = float(base["wages_affected"].max())   if not base.empty else 0.0
+    # Higher threshold than the major chart (50% of max vs 30%) — the 41
+    # GWA rows compress vertically so even small visual collisions
+    # between inside-white text and adjacent bar regions stand out. Only
+    # the clearly-tall bars get the inside-white treatment; everything
+    # else reads as outside-dark text past the bar end.
+    PCT_INSIDE_THRESHOLD = 50.0
+    WKR_INSIDE_THRESHOLD = 0.50 * workers_max_v
+    WAG_INSIDE_THRESHOLD = 0.50 * wages_max_v
+    pos_pct  = ["inside" if v >= PCT_INSIDE_THRESHOLD else "outside" for v in pct_r]
+    pos_wkrs = ["inside" if v >= WKR_INSIDE_THRESHOLD else "outside" for v in workers_r]
+    pos_wags = ["inside" if v >= WAG_INSIDE_THRESHOLD else "outside" for v in wages_r]
+
+    fig.add_trace(go.Bar(
+        y=categories_r, x=pct_r, orientation="h",
+        marker=dict(color=METRIC_COLORS["tasks"], line=dict(width=0)),
+        text=[f"{v:.1f}%" for v in pct_r],
+        textposition=pos_pct,
+        insidetextanchor="end",
+        insidetextfont=inside_font,
+        outsidetextfont=outside_font,
+        textangle=0,
+        showlegend=False, cliponaxis=False, constraintext="none",
+        hovertemplate="All Confirmed: %{x:.1f}%<extra></extra>",
+    ), row=1, col=1)
+
+    fig.add_trace(go.Bar(
+        y=categories_r, x=workers_r, orientation="h",
+        marker=dict(color=METRIC_COLORS["workers"], line=dict(width=0)),
+        text=[fmt_workers(v) for v in workers_r],
+        textposition=pos_wkrs,
+        insidetextanchor="end",
+        insidetextfont=inside_font,
+        outsidetextfont=outside_font,
+        textangle=0,
+        showlegend=False, cliponaxis=False, constraintext="none",
+    ), row=1, col=2)
+
+    fig.add_trace(go.Bar(
+        y=categories_r, x=wages_r, orientation="h",
+        marker=dict(color=METRIC_COLORS["wages"], line=dict(width=0)),
+        text=[fmt_wages(v) for v in wages_r],
+        textposition=pos_wags,
+        insidetextanchor="end",
+        insidetextfont=inside_font,
+        outsidetextfont=outside_font,
+        textangle=0,
+        showlegend=False, cliponaxis=False, constraintext="none",
+    ), row=1, col=3)
+
+    _style_gwa_split(
+        fig,
+        "AI Exposure by General Work Activity",
+        n_cats=n_cats,
+        panel_titles=set(),
+        bottom_margin=170,  # 1-line axis titles only
+    )
+
+    # % axis uses the same uniform [0, 100] / [0, 50, 100] presentation
+    # as the part_2 gwa_pct chart so the scale anchor reads consistently
+    # figure-to-figure.
+    r_wkr, t_wkr = _axis_max_and_ticks(workers_max_v)
+    # Wages: 2 ticks only (0 and the largest "nice" round number below
+    # the max). The 3-tick variant from _axis_max_and_ticks ($0/$200B/$400B)
+    # crowds visually against the panel width here; a single inner tick
+    # at the nearest $100B floor of the max gives a clear scale anchor
+    # without packing labels together.
+    import math
+    wag_inner = math.floor(wages_max_v / 100e9) * 100e9
+    r_wag = wages_max_v * 1.05
+    t_wag = [0.0, float(wag_inner)]
+    fig.update_xaxes(
+        range=[0, 100], tickvals=[0, 50, 100],
+        ticktext=["0%", "50%", "100%"],
+        title=dict(text="Tasks Exposed", font=dict(size=_MAJ_LABEL_FS)),
+        row=1, col=1,
+    )
+    fig.update_xaxes(
+        range=[0, r_wkr], tickvals=t_wkr,
+        ticktext=[_strip_zero_decimal(fmt_workers(v)) for v in t_wkr],
+        title=dict(text="Workers Exposed", font=dict(size=_MAJ_LABEL_FS)),
+        row=1, col=2,
+    )
+    fig.update_xaxes(
+        range=[0, r_wag], tickvals=t_wag,
+        ticktext=[_strip_zero_decimal(fmt_wages(v)) for v in t_wag],
+        title=dict(text="Wages Exposed", font=dict(size=_MAJ_LABEL_FS)),
+        row=1, col=3,
+    )
+    fig.update_yaxes(
+        title=dict(
+            text="O*NET General Work Activity",
+            font=dict(size=_MAJ_LABEL_FS),
+            standoff=4,
+        ),
+        row=1, col=1,
+    )
+
+    save_figure(fig, results / "figures" / "gwa_wkrs_wages.png", scale=2)
+    _copy_fig(results, figures, "gwa_wkrs_wages.png")
+    print("  -> gwa_wkrs_wages.png")
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# state_clusters_each_ranked — companion to Part 3's state_clusters_map.
+# Same cluster colors, but each panel sorts the 51 states by its own metric
+# (left = % workforce exposed, right = % in High AI Exp & <0 Emp Proj occs).
+# Lets the reader see how the two axes disagree on which states top out.
+# ──────────────────────────────────────────────────────────────────────────
+
+def build_state_clusters_each_ranked(results: Path, figures: Path) -> None:
+    """Two-panel ranked bar chart with each panel sorted independently.
+
+    Cluster colors and naming come from
+    `deepdive_state_clusters.compute_clusters()` so this chart stays
+    consistent with the main-body map in Part 3.
+    """
+    try:
+        from analysis.exploratory.deepdive_state_clusters.run import (
+            compute_clusters, OUTLIER_CLUSTER_ID, ALL_FEATURES,
+        )
+    except ImportError as exc:
+        print(f"  -> SKIPPED: exploratory/deepdive_state_clusters not available ({exc})")
+        return
+
+    pkg = compute_clusters()
+    state_df       = pkg["state_df"]
+    cluster_names  = pkg["cluster_names"]
+    cluster_color  = pkg["cluster_color"]
+    order          = pkg["order"]
+
+    n_focused = 38  # SKA-gated focused set size, matches Part 3 risk_score_5f
+
+    save_csv(
+        state_df[["geo", "cluster", "cluster_name",
+                  "pct_emp_wtd", "focused_share_pct"]],
+        results / "state_clusters_each_ranked.csv",
+        float_format="%.3f",
+    )
+
+    base = state_df.dropna(subset=list(ALL_FEATURES)).copy()
+    n_states = len(base)
+
+    left_sorted  = base.sort_values("pct_emp_wtd",       ascending=False).reset_index(drop=True)
+    right_sorted = base.sort_values("focused_share_pct", ascending=False).reset_index(drop=True)
+
+    def _rev(df: pd.DataFrame, value_col: str) -> tuple[list, list, list]:
+        geos = list(reversed(df["geo"].str.upper().tolist()))
+        vals = list(reversed(df[value_col].tolist()))
+        cols = list(reversed([cluster_color[c] for c in df["cluster"].tolist()]))
+        return geos, vals, cols
+
+    geos_left,  exp_vals,     colors_left  = _rev(left_sorted,  "pct_emp_wtd")
+    geos_right, focused_vals, colors_right = _rev(right_sorted, "focused_share_pct")
+
+    # Both subtitles wrap onto two lines so the visual baselines align.
+    # Without the left also breaking, the right (2-line) renders centered
+    # on the same y as the left (1-line) and visually sits higher.
+    panel_left  = "Sorted by<br>% of State Workforce Exposed"
+    panel_right = (
+        f"Sorted by % of State Emp in<br>"
+        f"High AI Exp & <0 Emp Proj Occs (n={n_focused})"
+    )
+
+    fig = make_subplots(
+        rows=1, cols=2,
+        subplot_titles=[panel_left, panel_right],
+        horizontal_spacing=0.12,
+        shared_yaxes=False,
+    )
+
+    fig.add_trace(go.Bar(
+        y=geos_left, x=exp_vals, orientation="h",
+        marker=dict(color=colors_left, line=dict(width=0)),
+        text=[f"{v:.1f}%" for v in exp_vals],
+        textposition="outside",
+        textfont=dict(size=ANNOT_FS, color=PAPER_PALETTE["neutral"],
+                      family=FONT_FAMILY),
+        showlegend=False, cliponaxis=False,
+        hovertemplate="<b>%{y}</b><br>Exposed: %{x:.1f}%<extra></extra>",
+    ), row=1, col=1)
+
+    fig.add_trace(go.Bar(
+        y=geos_right, x=focused_vals, orientation="h",
+        marker=dict(color=colors_right, line=dict(width=0)),
+        text=[f"{v:.1f}%" for v in focused_vals],
+        textposition="outside",
+        textfont=dict(size=ANNOT_FS, color=PAPER_PALETTE["neutral"],
+                      family=FONT_FAMILY),
+        showlegend=False, cliponaxis=False,
+        hovertemplate="<b>%{y}</b><br>% of state emp in High AI Exp & <0 Emp Proj occs: %{x:.2f}%<extra></extra>",
+    ), row=1, col=2)
+
+    for cid in order:
+        fig.add_trace(go.Bar(
+            y=[None], x=[None],
+            marker=dict(color=cluster_color[cid]),
+            name=cluster_names[cid],
+            showlegend=True,
+        ), row=1, col=1)
+
+    height = max(PAPER_H + 250, n_states * 30 + 280)
+
+    style_paper_figure(
+        fig,
+        "Workforce Exposure by State, Colored by Cluster",
+        subtitle=(
+            "Companion to the state-cluster map (Part 3). Each panel sorts the "
+            "51 states by its own metric so the two rankings can be compared "
+            "directly. Cluster colors are identical to the map; a state's color "
+            "is the same in both panels. Note how the knowledge-economy states "
+            "(mid blue) top the left panel but sit near the bottom of the right; "
+            "the high-vulnerability cluster (dark blue) dominates the top of the "
+            "right panel and spreads across the middle of the left."
+        ),
+        height=height,
+        width=PAPER_W,
+        # t at 170 keeps a comfortable gap between the (top-pinned) figure
+        # title and the 2-line panel subtitles without yawning empty space
+        # in between. b at 290 gives the x-axis titles room above the legend.
+        margin=dict(l=40, r=80, t=170, b=290),
+    )
+
+    fig.update_xaxes(
+        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+        showticklabels=True, showline=True, linecolor=PAPER_PALETTE["grid"],
+        zeroline=True, zerolinecolor=PAPER_PALETTE["grid"],
+        tickfont=dict(size=TICK_FS - 2, family=FONT_FAMILY),
+        ticksuffix="%",
+    )
+    fig.update_xaxes(
+        title=dict(text="% State Workforce Exposed",
+                   font=dict(size=LABEL_FS - 4)),
+        row=1, col=1,
+    )
+    fig.update_xaxes(
+        title=dict(text="% State Emp in High AI Exp & <0 Emp Proj Occs",
+                   font=dict(size=LABEL_FS - 4)),
+        row=1, col=2,
+    )
+
+    # dtick=1 forces every state label to render on a categorical axis.
+    fig.update_yaxes(
+        showgrid=False, showline=False,
+        tickmode="linear", dtick=1,
+        tickfont=dict(size=TICK_FS - 2, family=FONT_FAMILY),
+    )
+    fig.update_yaxes(
+        title=dict(text="State", font=dict(size=LABEL_FS - 2)),
+        row=1, col=1,
+    )
+    fig.update_yaxes(
+        title=dict(text="State", font=dict(size=LABEL_FS - 2)),
+        row=1, col=2,
+    )
+
+    panel_set = {panel_left, panel_right}
+    for ann in fig.layout.annotations:
+        if hasattr(ann, "text") and ann.text in panel_set:
+            ann.font = dict(size=LABEL_FS - 2, family=FONT_FAMILY,
+                            color=PAPER_PALETTE["text"])
+
+    fig.update_layout(
+        bargap=0.28,
+        # Pin the figure title to the top of the canvas. style_paper_figure
+        # leaves title.y unset, so Plotly centers it inside the t margin —
+        # with t=210 that leaves a big gap above the title. Anchoring it
+        # near y=1.0 collapses that gap while preserving the subtitle space.
+        title=dict(y=0.985, yanchor="top"),
+        legend=dict(
+            orientation="h",
+            # Pushed from -0.06 → -0.11 to add room between the x-axis
+            # titles and the legend chips.
+            yanchor="top", y=-0.11,
+            xanchor="center", x=0.5,
+            font=dict(size=TICK_FS - 1, family=FONT_FAMILY),
+            bgcolor="rgba(255,255,255,0)",
+        ),
+    )
+
+    save_figure(fig, results / "figures" / "state_clusters_each_ranked.png", scale=2)
+    shutil.copy(
+        results / "figures" / "state_clusters_each_ranked.png",
+        figures / "state_clusters_each_ranked.png",
+    )
+    print("  -> state_clusters_each_ranked.png")
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# underadoption_gap — per-major ratio of % tasks exposed to share of AI
+# usage (ratio_full_pct from the eco-baseline-normalized intensity model).
+# High = exposure outpacing where AI is actually being used. Same visual
+# language as Part 3's intensity_anchor_fulleco for an easy paired read.
+# ──────────────────────────────────────────────────────────────────────────
+
+def build_underadoption_gap(results: Path, figures: Path) -> None:
+    """Underadoption relative to potential, anchored on Office and Admin.
+
+    Per major:
+      raw_gap   = pct_tasks_affected / ratio_full_pct
+      gap_ratio = raw_gap / raw_gap[Office and Admin]
+
+    Numerator (pct_tasks_affected): % of an occupation's task completions
+    AI can affect — the 'potential' informed by task exposure (Part 2
+    major_categories metric). Denominator (ratio_full_pct): share of
+    total AI usage that maps to that major, normalized over the full eco
+    employment×freq baseline (same backbone as Part 3
+    intensity_anchor_fulleco).
+
+    Anchoring on Office and Admin (a near-median major) makes lift read
+    as 'X times more underadopted than Office and Admin'. Median dashed
+    line sits at x=1, mirroring the intensity chart so the pair reads
+    consistently.
+    """
+    try:
+        from analysis.exploratory.audit_pct_norm_eco.run import (
+            BIAS_VARIANTS, compute_bias_ratios,
+        )
+        from analysis.exploratory.audit_pct_norm_eco.run_v3 import (
+            compute_v3_intensity, compute_major_full_eco_denominator,
+        )
+        from analysis.paper.results.part_3.run import _run_config
+    except ImportError as exc:
+        print(f"  -> SKIPPED: dependency not available ({exc})")
+        return
+
+    # ── Compute ratio_full_pct (share of all AI usage, full-eco baseline)
+    base = compute_v3_intensity(
+        "all_confirmed", compute_bias_ratios(BIAS_VARIANTS["equal"])
+    ).copy()
+    full_den = compute_major_full_eco_denominator()
+    base["den_full"] = base["category"].map(full_den).fillna(0.0)
+    base["ratio_full"] = np.where(
+        base["den_full"] > 0, base["num"] / base["den_full"], 0.0
+    )
+    total_full = base["ratio_full"].sum()
+    base["ratio_full_pct"] = (
+        base["ratio_full"] / total_full * 100.0 if total_full > 0 else 0.0
+    )
+
+    # ── pct_tasks_affected from the same dashboard pipeline that drives
+    # Part 2 major_categories (matches the rest of the paper).
+    major_df = _run_config(PRIMARY_DATASET, "major")
+    pct_aff = major_df.set_index("category")["pct_tasks_affected"]
+    base["pct_tasks_affected"] = base["category"].map(pct_aff).fillna(0.0)
+
+    # ── Raw gap, then anchored to Office and Admin so lift reads as a
+    # clean multiple ("× more underadopted than Office and Admin").
+    base["raw_gap"] = np.where(
+        base["ratio_full_pct"] > 0,
+        base["pct_tasks_affected"] / base["ratio_full_pct"],
+        np.nan,
+    )
+    anchor_major = "Office and Administrative Support Occupations"
+    anchor_gap = base.loc[base["category"] == anchor_major, "raw_gap"].iloc[0]
+    assert anchor_gap > 0, f"Anchor gap for {anchor_major} must be > 0"
+    base["gap_ratio"] = base["raw_gap"] / anchor_gap
+
+    out = base[
+        ["category", "pct_tasks_affected", "ratio_full_pct",
+         "raw_gap", "gap_ratio"]
+    ].sort_values("gap_ratio", ascending=False)
+    out["anchor_value"] = anchor_gap
+    save_csv(out, results / "underadoption_gap.csv", float_format="%.4f")
+
+    plot_df = base.sort_values("gap_ratio", ascending=True).reset_index(drop=True)
+    plot_df["display_category"] = (
+        plot_df["category"].str.replace(r"\s*Occupations\s*$", "", regex=True)
+    )
+    cvals = plot_df["pct_tasks_affected"].to_numpy(dtype=float)
+    cmin, cmax = float(cvals.min()), float(cvals.max())
+
+    W = PAPER_W
+    px = paper_fonts(W)
+
+    TASKS_LIGHT = "#cfe0ec"
+    TASKS_DARK = "#2c4f6b"
+
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        y=plot_df["display_category"], x=plot_df["gap_ratio"], orientation="h",
+        marker=dict(
+            color=cvals,
+            colorscale=[[0, TASKS_LIGHT], [1, TASKS_DARK]],
+            cmin=cmin, cmax=cmax,
+            showscale=False,
+            line=dict(width=0),
+        ),
+        text=[f"{v:.2f}x" for v in plot_df["gap_ratio"]],
+        textposition="outside",
+        textfont=dict(size=px["tick"], color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+        cliponaxis=False,
+        hovertemplate=(
+            "<b>%{y}</b><br>underadoption: %{x:.2f}x<br>"
+            "% tasks exposed: %{marker.color:.1f}%<extra></extra>"
+        ),
+        showlegend=False,
+    ))
+
+    # Median reference line — Office and Admin sits at x = 1 by construction.
+    fig.add_vline(
+        x=1.0, line_dash="dash",
+        line_color=PAPER_PALETTE["negative"], line_width=1.5,
+    )
+    fig.add_annotation(
+        x=1.0, y=1.005,
+        xref="x", yref="paper",
+        text="median",
+        showarrow=False, xanchor="left", yanchor="bottom",
+        font=dict(size=px["in_chart_floor"],
+                  color=PAPER_PALETTE["negative"], family=FONT_FAMILY),
+    )
+
+    # ── Bottom legend — same HTML-swatch gradient as Part 3 intensity chart.
+    def _hex_to_rgb(h: str) -> tuple[int, int, int]:
+        return (int(h[1:3], 16), int(h[3:5], 16), int(h[5:7], 16))
+    rgb_l = _hex_to_rgb(TASKS_LIGHT)
+    rgb_d = _hex_to_rgb(TASKS_DARK)
+    N_SWATCH = 7
+    swatch_html = ""
+    for i in range(N_SWATCH):
+        t = i / (N_SWATCH - 1)
+        c = tuple(int(rgb_l[k] + (rgb_d[k] - rgb_l[k]) * t) for k in range(3))
+        swatch_html += f"<span style='color:rgb({c[0]},{c[1]},{c[2]})'>■</span>"
+    legend_text = (
+        f"Tasks Exposed&nbsp;&nbsp;{cmin:.0f}%&nbsp;"
+        f"{swatch_html}&nbsp;{cmax:.0f}%"
+    )
+    fig.add_annotation(
+        x=0.14, y=-0.17,
+        xref="paper", yref="paper",
+        text=legend_text, showarrow=False,
+        xanchor="center", yanchor="middle",
+        font=dict(size=px["in_chart_floor"],
+                  color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+    )
+
+    style_paper_figure(
+        fig,
+        "Underadoption Relative to Potential as Informed by Task Exposure",
+        height=1280, width=W,
+        margin=dict(l=20, r=80, t=110, b=190),
+    )
+    x_top = float(plot_df["gap_ratio"].max()) * 1.06
+    fig.update_xaxes(
+        title=dict(
+            text="Underadoption Relative to Median (×)",
+            font=dict(size=px["axis_title"], family=FONT_FAMILY),
+        ),
+        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+        range=[0, x_top],
+        tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+    )
+    fig.update_yaxes(
+        title=dict(
+            text="Major Occupational Category",
+            font=dict(size=px["axis_title"], family=FONT_FAMILY),
+        ),
+        showgrid=False, showline=False,
+        tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+    )
+
+    save_figure(fig, results / "figures" / "underadoption_gap.png", scale=2)
+    _copy_fig(results, figures, "underadoption_gap.png")
+    print("  -> underadoption_gap.png")
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# Within-major intensity drivers — decomposes the three high-lift bars of
+# Part 3's intensity_anchor_fulleco chart (Life/Phys/Sci, Arts, Comp/Math)
+# into the top-10 occupations and top-10 tasks driving each major's lift.
+#
+# Per occ (or per task) ratio = Σ debiased adj_pct / Σ (freq × emp), then
+# normalized by the within-major median ratio so the dashed median line
+# sits at x=1 and lifts read directly as "× the major's median row."
+# ─────────────────────────────────────────────────────────────────────────
+
+TARGET_MAJORS_DRIVERS: list[tuple[str, str, str]] = [
+    ("Life, Physical, and Social Science Occupations",
+     "life_phys_soc_sci",
+     "Life, Physical & Social Science"),
+    ("Arts, Design, Entertainment, Sports, and Media Occupations",
+     "arts_design_ent",
+     "Arts, Design & Entertainment"),
+    ("Computer and Mathematical Occupations",
+     "comp_math",
+     "Computer and Mathematical"),
+]
+
+
+def _intensity_drivers_dedup() -> pd.DataFrame:
+    """Deduped (task, occ) table for all_confirmed with debiased adj_pct,
+    raw pct_normalized, eco_weight (freq×emp), auto_aug_mean, and the
+    original (punctuated, capitalized) `task` statement keyed on
+    `task_normalized` for human-readable y-tick labels.
+
+    Replicates the dedup + bias logic that
+    deepdive_intensity_drivers._build_task_occ_table uses, so this builder
+    stays self-contained even if that exploratory folder is absent.
+    Imports from audit_pct_norm_eco (already a paper dependency for
+    intensity_anchor_fulleco and underadoption_gap).
+    """
+    from analysis.exploratory.audit_pct_norm_eco.run import (
+        BIAS_VARIANTS, EMP_COL, compute_bias_ratios,
+    )
+    from analysis.exploratory.audit_pct_norm_eco.run_v3 import (
+        DATA_DIR, V3_CONFIGS, load_v3_config,
+    )
+
+    bias_ratios = compute_bias_ratios(BIAS_VARIANTS["equal"])
+    assert bias_ratios is not None, "equal bias must be present"
+    cfg = V3_CONFIGS["all_confirmed"]
+    occ_col = cfg["occ_col"]  # "title_current"
+
+    df = load_v3_config("all_confirmed")
+    # Separate read for the original `task` text (load_v3_config has a
+    # fixed usecols that excludes it). Dedup to one statement per
+    # task_normalized — duplicates across the file are punctuation /
+    # capitalization variants of the same task.
+    task_text = pd.read_csv(
+        DATA_DIR / cfg["file"], usecols=["task_normalized", "task"]
+    ).dropna(subset=["task_normalized", "task"])
+    task_text = (
+        task_text.drop_duplicates(subset=["task_normalized"])
+        .set_index("task_normalized")["task"]
+    )
+    ai = df[df["pct_normalized"].notna() & df["major_occ_category"].notna()].copy()
+    ai["eco_weight"] = ai["freq_mean"].fillna(0.0) * ai[EMP_COL].fillna(0.0)
+
+    gwa_pairs = (
+        ai.dropna(subset=["gwa_title"])
+        .drop_duplicates(["task_normalized", occ_col, "gwa_title"])[
+            ["task_normalized", occ_col, "gwa_title"]
+        ].copy()
+    )
+    gwa_pairs["bias"] = gwa_pairs["gwa_title"].map(bias_ratios).fillna(1.0)
+    avg_bias = (
+        gwa_pairs.groupby(["task_normalized", occ_col])["bias"].mean()
+        .reset_index(name="avg_bias")
+    )
+
+    keep_cols = [
+        "task_normalized", occ_col, "major_occ_category",
+        "pct_normalized", "auto_aug_mean", "eco_weight",
+    ]
+    dedup = ai.drop_duplicates(["task_normalized", occ_col])[keep_cols].copy()
+    dedup = dedup.merge(avg_bias, on=["task_normalized", occ_col], how="left")
+    dedup["avg_bias"] = dedup["avg_bias"].fillna(1.0).replace(0.0, 1.0)
+    dedup["adj_pct"] = dedup["pct_normalized"] / dedup["avg_bias"]
+    # Attach the original task statement. Falls back to the normalized
+    # form for any task_normalized that doesn't have a paired `task` row.
+    dedup["task_display"] = (
+        dedup["task_normalized"].map(task_text).fillna(dedup["task_normalized"])
+    )
+    return dedup
+
+
+_ORPHAN_STARTS = {"and", "or", "but", "nor", "yet", "&", "the", "a", "an", "of",
+                  "to", "in", "on", "for", "with", "by", "at", "from"}
+
+
+def _balance_two_lines(words: list[str], width: int) -> str | None:
+    """Find the word-boundary split that minimizes the longer of two
+    lines, with both lines ≤ width. Splits that would start line 2 with
+    an orphan word (conjunction / preposition / article) get a small
+    char-budget penalty so balanced splits without orphans are preferred
+    even when slightly less even. On a true tie, the later split wins
+    (more text on line 1). Returns "<br>"-joined string, or None if no
+    valid 2-line split exists."""
+    n = len(words)
+    if n == 0:
+        return ""
+    if n == 1:
+        return words[0] if len(words[0]) <= width else None
+    best_split = None
+    best_score: tuple[int, int] | None = None
+    for split in range(1, n):
+        line1 = " ".join(words[:split])
+        line2 = " ".join(words[split:])
+        if len(line1) > width or len(line2) > width:
+            continue
+        this_max = max(len(line1), len(line2))
+        starts_orphan = (
+            words[split].lower().rstrip(",.;:!?") in _ORPHAN_STARTS
+        )
+        # Penalty adds 5 chars to the comparison max — small enough that
+        # a strongly-balanced orphan split still wins over a heavily
+        # lopsided non-orphan split, large enough to tip ties.
+        adjusted_max = this_max + (5 if starts_orphan else 0)
+        score = (adjusted_max, -split)  # later split wins on tie
+        if best_score is None or score < best_score:
+            best_score = score
+            best_split = split
+    if best_split is None:
+        return None
+    return f"{' '.join(words[:best_split])}<br>{' '.join(words[best_split:])}"
+
+
+def _wrap_driver_label(s: str, width: int, max_lines: int = 2) -> str:
+    """Balanced word-wrap for y-tick labels. When text wraps to two
+    lines, the split is chosen to minimize the longer line so the two
+    lines are roughly the same length. Past max_lines, the trailing
+    word gets an ellipsis. max_lines=2 keeps every row at uniform
+    height in plotly bar charts.
+    """
+    import textwrap
+    words = str(s).split()
+    if not words:
+        return ""
+    full = " ".join(words)
+    if len(full) <= width:
+        return full
+
+    if max_lines == 2:
+        # Try the full text; if it doesn't fit two balanced lines, drop
+        # trailing words one at a time and try again. The first success
+        # is the longest text we can show with balanced 2-line wrap.
+        truncated = False
+        trial = list(words)
+        while trial:
+            result = _balance_two_lines(trial, width)
+            if result is not None:
+                if truncated:
+                    # Apply ellipsis to the last visible word on line 2.
+                    line1, _, line2 = result.partition("<br>")
+                    line2 = line2.rstrip(",.;:") + "…"
+                    return f"{line1}<br>{line2}"
+                return result
+            trial = trial[:-1]
+            truncated = True
+        return ""
+
+    # Fallback for max_lines != 2 (not used in current charts).
+    lines = textwrap.wrap(full, width=width, break_long_words=False,
+                          break_on_hyphens=False)
+    if len(lines) > max_lines:
+        lines = lines[:max_lines]
+        last = lines[-1]
+        if len(last) > width - 1:
+            last = last[: width - 1].rstrip()
+        lines[-1] = last.rstrip(",.;:") + "…"
+    return "<br>".join(lines)
+
+
+def _render_intensity_driver_chart(
+    plot_df: pd.DataFrame,
+    results: Path,
+    figures: Path,
+    *,
+    level: str,            # "occ" or "task"
+    slug: str,
+    major_short: str,
+    label_col: str,
+    color_col: str,
+    color_label: str,
+    color_fmt: str,
+    label_wrap: int,
+    margin_left: int | None = None,
+) -> None:
+    """Render one within-major intensity-driver chart, mirroring the
+    main-body intensity_anchor_fulleco style: horizontal bars, dashed
+    median reference at x=1, TASKS_LIGHT→TASKS_DARK color, HTML-swatch
+    bottom legend, raw-pct + lift label outside each bar.
+
+    `plot_df` must already be sorted ascending by lift so Plotly draws
+    the largest bar at the top.
+    """
+    out_name = f"intensity_drivers_{level}_{slug}.png"
+
+    display_labels = plot_df[label_col].astype(str).map(
+        lambda s: _wrap_driver_label(s, label_wrap)
+    )
+    # Auto-fit margin_left to the actual longest rendered line so the
+    # y-axis title sits flush against the PNG left edge regardless of
+    # what occupations/tasks happen to be in a given major. Uses a
+    # per-character width table calibrated against 9pt sans-serif
+    # rendered at PAPER_W=1400 — narrow chars ('i','l','t') are ~5–7px,
+    # wide chars ('M','W','m','w') are ~17–19px, defaults ~12.
+    if margin_left is None:
+        _CHAR_W = {
+            'i': 6, 'l': 6, 'j': 7, 't': 9, 'f': 9, 'r': 9,
+            '.': 6, ',': 6, ';': 6, ':': 6, "'": 5, ' ': 6,
+            '(': 8, ')': 8, '-': 9, '/': 8, '!': 6, '|': 6,
+            '0': 14, '1': 9, '2': 14, '3': 14, '4': 14, '5': 14,
+            '6': 14, '7': 13, '8': 14, '9': 14,
+            'I': 8, 'J': 10,
+            'M': 20, 'W': 21, 'm': 19, 'w': 18,
+        }
+        DEFAULT_W = 15  # most upper/lowercase letters at 9pt sans-serif
+        def _est(line: str) -> float:
+            return sum(_CHAR_W.get(c, DEFAULT_W) for c in line)
+        max_line_px = max(
+            (max(_est(line) for line in lbl.split("<br>"))
+             for lbl in display_labels),
+            default=120.0,
+        )
+        # +50 covers the vertical y-axis title (~25px wide), standoff
+        # between title and labels (~12px), and the axis-to-label gap
+        # (~12px). With a slight over-estimate on char widths above, this
+        # lands the title approximately flush against the PNG left edge.
+        margin_left = int(max_line_px + 50)
+    cvals = plot_df[color_col].to_numpy(dtype=float)
+    cmin, cmax = float(np.nanmin(cvals)), float(np.nanmax(cvals))
+    if not np.isfinite(cmin) or not np.isfinite(cmax) or cmax == cmin:
+        cmin, cmax = (cmin if np.isfinite(cmin) else 0.0,
+                      (cmin if np.isfinite(cmin) else 0.0) + 1.0)
+
+    W = PAPER_W
+    px = paper_fonts(W)
+
+    TASKS_LIGHT = "#cfe0ec"
+    TASKS_DARK = "#2c4f6b"
+
+    text_labels = [
+        f"{lift:.2f}×   ({raw:.3f} raw pct)"
+        for lift, raw in zip(plot_df["lift"], plot_df["raw_pct"])
+    ]
+
+    level_word = "Occupations" if level == "occ" else "Tasks"
+    # One line — shortened from the main-body "Actual Equalized AI Usage
+    # as a Multiple of Median Usage" so the major name fits on the same
+    # line at 11pt across PAPER_W=1400 (cap ≈ 85 chars). "Occupations"
+    # is 6 chars longer than "Tasks" so the prefix has to be terse.
+    title = (
+        f"AI Usage as Multiple of Median — Top {level_word} in {major_short}"
+    )
+
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        y=display_labels, x=plot_df["lift"], orientation="h",
+        marker=dict(
+            color=cvals,
+            colorscale=[[0, TASKS_LIGHT], [1, TASKS_DARK]],
+            cmin=cmin, cmax=cmax,
+            showscale=False,
+            line=dict(width=0),
+        ),
+        text=text_labels,
+        textposition="outside",
+        textfont=dict(size=px["tick"], color=PAPER_PALETTE["text"],
+                      family=FONT_FAMILY),
+        cliponaxis=False,
+        showlegend=False,
+    ))
+
+    fig.add_vline(
+        x=1.0, line_dash="dash",
+        line_color=PAPER_PALETTE["negative"], line_width=1.5,
+    )
+    # Median label sits just above the plot, right of the dashed line,
+    # on both occ and task charts (1-line title leaves enough top space).
+    fig.add_annotation(
+        x=1.0, y=1.0, xref="x", yref="paper",
+        text="median", showarrow=False,
+        xanchor="left", yanchor="bottom",
+        xshift=2, yshift=6,
+        font=dict(size=px["in_chart_floor"],
+                  color=PAPER_PALETTE["negative"], family=FONT_FAMILY),
+    )
+
+    def _hex_to_rgb(h: str) -> tuple[int, int, int]:
+        return (int(h[1:3], 16), int(h[3:5], 16), int(h[5:7], 16))
+    rgb_l = _hex_to_rgb(TASKS_LIGHT)
+    rgb_d = _hex_to_rgb(TASKS_DARK)
+    N_SWATCH = 7
+    swatch_html = ""
+    for i in range(N_SWATCH):
+        t = i / (N_SWATCH - 1)
+        c = tuple(int(rgb_l[k] + (rgb_d[k] - rgb_l[k]) * t) for k in range(3))
+        swatch_html += f"<span style='color:rgb({c[0]},{c[1]},{c[2]})'>■</span>"
+    legend_text = (
+        f"{color_label}&nbsp;&nbsp;{color_fmt.format(cmin)}&nbsp;"
+        f"{swatch_html}&nbsp;{color_fmt.format(cmax)}"
+    )
+    # Both occ and task charts use the same tall canvas so each row gets
+    # ~75px of vertical room — enough that 2-line wrapped labels don't
+    # crowd back-to-back rows (Arts occ "Fine Artists, …" / "Umpires, …").
+    # Right margin trimmed so the outside text values ("2742.79× (1.139
+    # raw pct)") extend close to the PNG right edge — cliponaxis=False
+    # lets text extend into the margin without clipping at the axis
+    # line, but the figure boundary still clips at x=W, so x_top below
+    # is sized per-level to keep the longest text inside.
+    height = 1100
+    margin_right = 90 if level == "task" else 110
+    margin_bottom = 240 if level == "task" else 220
+    margin_top = 110
+    style_paper_figure(
+        fig, title,
+        height=height, width=W,
+        margin=dict(l=margin_left, r=margin_right, t=margin_top, b=margin_bottom),
+    )
+
+    # Legend centered on the PNG itself, not on the plot area. xref="paper"
+    # is plot-area-relative — to land on PNG midpoint W/2 in pixel terms,
+    # solve: PNG_center = margin_left + x_paper × plot_width. With
+    # yaxis automargin=False below, margin_left is exactly what we pass
+    # here, so the formula is exact.
+    plot_w_px = float(W - margin_left - margin_right)
+    legend_x = (float(W) / 2.0 - float(margin_left)) / plot_w_px
+    plot_h_px = float(height - margin_top - margin_bottom)
+    legend_y = -(margin_bottom - 60) / plot_h_px  # ~60px reserved for x ticks+title
+    fig.add_annotation(
+        x=legend_x, y=legend_y, xref="paper", yref="paper",
+        text=legend_text, showarrow=False,
+        xanchor="center", yanchor="middle",
+        font=dict(size=px["in_chart_floor"],
+                  color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+    )
+
+    # x_top sized so the longest bar's outside text ("X.XX×   (Y.YYY raw
+    # pct)") extends into the trimmed margin_right and lands near, but
+    # inside, the PNG right edge — minimises right-side whitespace. Task
+    # charts have a wider margin_left (for long wrapped task labels), so
+    # the plot is narrower → needs a larger x_top multiplier to keep the
+    # max-lift bar from pushing its outside text past x=W.
+    x_mult = 1.78 if level == "task" else 1.38
+    x_top = float(plot_df["lift"].max()) * x_mult
+    # Task chart lift values reach 7,000×+ so plotly's auto-tick spacing
+    # crams 5–6 ticks into a narrow plot area. Constrain to ~4 ticks and
+    # use the SI suffix format (1k, 2k, …) for compact readability.
+    use_si = level == "task" and float(plot_df["lift"].max()) >= 1000.0
+    fig.update_xaxes(
+        title=dict(text="Usage Relative to Median (×)",
+                   font=dict(size=px["axis_title"], family=FONT_FAMILY),
+                   standoff=18),
+        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+        range=[0, x_top],
+        tickangle=0,
+        nticks=4 if level == "task" else 6,
+        tickformat="~s" if use_si else ",.0f",
+        tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+    )
+    # automargin=False pins margin_left to exactly what we pass to
+    # style_paper_figure() so the PNG-centered legend math above is
+    # exact. Margins below at the call sites are sized to fit the
+    # longest wrapped label without plotly needing to expand.
+    fig.update_yaxes(
+        title=dict(text=level_word,
+                   font=dict(size=px["axis_title"], family=FONT_FAMILY),
+                   standoff=12),
+        showgrid=False, showline=False,
+        tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+        automargin=False,
+    )
+
+    save_figure(fig, results / "figures" / out_name, scale=2)
+    _copy_fig(results, figures, out_name)
+    print(f"  -> {out_name}")
+
+
+def build_intensity_drivers(results: Path, figures: Path,
+                            only: tuple[str, ...] = ()) -> None:
+    """Top-10 occupations and top-10 tasks within each of the three high-lift
+    majors. Six PNGs total (or filter with `only=("occ_comp_math",...)`)."""
+    try:
+        dedup = _intensity_drivers_dedup()
+    except ImportError as exc:
+        print(f"  -> SKIPPED: dependency not available ({exc})")
+        return
+
+    occ_pct_aff = get_pct_tasks_affected(PRIMARY_DATASET)
+
+    for major_full, slug, major_short in TARGET_MAJORS_DRIVERS:
+        sub = dedup[dedup["major_occ_category"] == major_full].copy()
+        if sub.empty:
+            print(f"  -> skip {slug}: no rated rows for this major")
+            continue
+
+        # ── Occ-level ─────────────────────────────────────────────────────
+        occ_key = f"occ_{slug}"
+        if not only or occ_key in only:
+            occ_grp = (
+                sub.groupby("title_current")
+                .agg(num=("adj_pct", "sum"),
+                     raw_pct=("pct_normalized", "sum"),
+                     den=("eco_weight", "sum"))
+                .reset_index()
+            )
+            occ_grp = occ_grp[occ_grp["den"] > 0].copy()
+            occ_grp["ratio"] = occ_grp["num"] / occ_grp["den"]
+            median_ratio = float(occ_grp["ratio"].median())
+            assert median_ratio > 0, f"non-positive median occ ratio in {slug}"
+            occ_grp["lift"] = occ_grp["ratio"] / median_ratio
+            occ_grp["pct_tasks_affected"] = (
+                occ_grp["title_current"].map(occ_pct_aff).astype(float)
+            )
+            # Drop occs with no pct_tasks_affected match (rare; keeps color clean).
+            occ_grp = occ_grp.dropna(subset=["pct_tasks_affected"])
+            top_occ = occ_grp.nlargest(10, "lift").copy()
+            save_csv(
+                top_occ.sort_values("lift", ascending=False),
+                results / f"intensity_drivers_occ_{slug}.csv",
+                float_format="%.4f",
+            )
+            _render_intensity_driver_chart(
+                top_occ.sort_values("lift", ascending=True),
+                results, figures,
+                level="occ", slug=slug, major_short=major_short,
+                label_col="title_current", color_col="pct_tasks_affected",
+                color_label="Tasks Exposed", color_fmt="{:.0f}%",
+                label_wrap=36,
+            )
+
+        # ── Task-level ────────────────────────────────────────────────────
+        task_key = f"task_{slug}"
+        if not only or task_key in only:
+            task_grp = (
+                sub.groupby("task_normalized")
+                .agg(num=("adj_pct", "sum"),
+                     raw_pct=("pct_normalized", "sum"),
+                     den=("eco_weight", "sum"),
+                     auto_aug=("auto_aug_mean", "mean"),
+                     task_display=("task_display", "first"))
+                .reset_index()
+            )
+            task_grp = task_grp[task_grp["den"] > 0].copy()
+            task_grp["ratio"] = task_grp["num"] / task_grp["den"]
+            median_ratio_t = float(task_grp["ratio"].median())
+            assert median_ratio_t > 0, f"non-positive median task ratio in {slug}"
+            task_grp["lift"] = task_grp["ratio"] / median_ratio_t
+            top_task = task_grp.nlargest(10, "lift").copy()
+            save_csv(
+                top_task.sort_values("lift", ascending=False),
+                results / f"intensity_drivers_task_{slug}.csv",
+                float_format="%.4f",
+            )
+            # Manual margin override for comp_math task — its top-10
+            # labels lean heavier on default-width chars (no wide
+            # 'M'/'W's, fewer narrow 'i'/'l's) than Arts or Life, so the
+            # auto-fit per-char estimate under-counts the actual rendered
+            # width and one label clips. +30 px gives clean clearance.
+            margin_override = 730 if slug == "comp_math" else None
+            _render_intensity_driver_chart(
+                top_task.sort_values("lift", ascending=True),
+                results, figures,
+                level="task", slug=slug, major_short=major_short,
+                label_col="task_display", color_col="auto_aug",
+                color_label="Auto-Aug (1–5)", color_fmt="{:.2f}",
+                label_wrap=52, margin_left=margin_override,
+            )
 
 
 def main() -> None:
@@ -1326,11 +3187,11 @@ def main() -> None:
     print("Appendix figures")
     print("=" * 60)
 
-    print("\n[1/5] convergence_full (one full-matrix per SOC level)")
+    print("\n[1/10] convergence_full (one full-matrix per SOC level)")
     for lvl_key, lvl_title in [("major", "Major level"),
                                 ("minor", "Minor level"),
                                 ("broad", "Broad level"),
-                                ("occupation", "Occ level")]:
+                                ("occupation", "Occupation level")]:
         short = "occ" if lvl_key == "occupation" else lvl_key
         build_convergence_full(
             results, figures,
@@ -1339,17 +3200,32 @@ def main() -> None:
             csv_name=f"spearman_combined_full_{short}.csv",
         )
 
-    print("\n[2/5] overview_no_autoaug (paper part_1 overview, no auto_aug)")
+    print("\n[2/10] overview_no_autoaug (paper part_1 overview, no auto_aug)")
     build_overview_no_autoaug(results, figures)
 
-    print("\n[3/5] temporal_trend_nonphys (Part 1 trend, non-physical tasks only)")
+    print("\n[3/10] temporal_trend_nonphys (Part 1 trend, non-physical tasks only)")
     build_temporal_trend_nonphys(results, figures)
 
-    print("\n[4/5] ska_full (full element-level SKA)")
+    print("\n[4/10] major_categories_trend (Part 2 trend chart, relocated)")
+    build_major_categories_trend(results, figures)
+
+    print("\n[5/10] eloundou_divergence_major (z-score divergence by major occ cat)")
+    build_eloundou_divergence_major(results, figures)
+
+    print("\n[6/10] ska_full (full element-level SKA)")
     build_ska_full(results, figures)
 
-    print("\n[5/5] nonphys_gwa_diff_phys_excluded (within-non-phys structural)")
-    build_nonphys_gwa_diff_phys_excluded(results, figures)
+    print("\n[7/10] gwa_wkrs_wages (workers/wages counterpart to part_2 gwa_pct)")
+    build_gwa_wkrs_wages(results, figures)
+
+    print("\n[8/10] state_clusters_each_ranked (companion to Part 3 cluster map)")
+    build_state_clusters_each_ranked(results, figures)
+
+    print("\n[9/10] underadoption_gap (% tasks exposed ÷ share of AI usage)")
+    build_underadoption_gap(results, figures)
+
+    print("\n[10/10] intensity_drivers (top occs + tasks within 3 high-lift majors)")
+    build_intensity_drivers(results, figures)
 
     print("\nDone — figures in results/figures/ and figures/")
 

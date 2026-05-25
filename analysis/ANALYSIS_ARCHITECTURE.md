@@ -375,6 +375,10 @@ The paper imports from three exploratory folders (function-level, with try/excep
 
 If you rename or move any of these exploratory folders, update the imports in `paper/results/part_3/run.py` and the corresponding lines in `paper/results/part_3/README.md`.
 
+The appendix also imports from part_2 (no try/except — these are required):
+
+- `paper/results/appendix/run.py` → `analysis.paper.results.part_2.run` (`_gwa_base_data`, `_wrap_gwa_label`, `_style_gwa_split`, `_axis_max_and_ticks`, `_strip_zero_decimal`, `_MAJ_BARTEXT_FS`, `_MAJ_LABEL_FS`) — used by `build_gwa_wkrs_wages`, which is the workers/wages counterpart to part_2's `build_gwa_pct`.
+
 The paper also reuses the tech_skills pipeline conceptually from the archived `_archive/questions/economic_footprint/skills_landscape/` (reimplemented in paper styling), but no Python import dependency.
 
 ---

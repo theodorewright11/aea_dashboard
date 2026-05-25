@@ -6,12 +6,6 @@
 
 ![External Benchmark Comparison — Source-level, Occupation](part_1/figures/convergence_occ.png)
 
-### External Benchmark Comparison — by Data Configuration
-
-![External Benchmark Comparison — Config-level, Major](part_1/figures/convergence_configs_major.png)
-
-![External Benchmark Comparison — Config-level, Occupation](part_1/figures/convergence_configs_occ.png)
-
 ### AI Economic Exposure Across Data Configurations
 
 ![AI Economic Exposure Across Data Configurations](part_1/figures/overview.png)
@@ -20,21 +14,19 @@
 
 ![All Confirmed vs All Sources (Ceiling) Over Time](part_1/figures/temporal_trend.png)
 
-![Tasks rated and AI capability over time](part_1/figures/temporal_tables.png)
+![Tasks rated and AI capability over time — All Confirmed](part_1/figures/temporal_table_confirmed.png)
+
+![Tasks rated and AI capability over time — All Sources (Ceiling)](part_1/figures/temporal_table_ceiling.png)
 
 ### Major Occupational Categories (with Physical / Non-Physical Structural Lens)
 
-![Major Categories — Variants A, B, All Confirmed](part_2/figures/major_categories.png)
+![Major Categories — % Tasks Exposed (All Confirmed | Variant A | Variant B)](part_2/figures/major_categories_pct.png)
 
-### Major Occupational Categories — 2-Year Trend Projection
-
-![Major Categories Trend](part_2/figures/major_categories_trend.png)
+![Major Categories — Workers and Wages (All Confirmed)](part_2/figures/major_categories_wkrs_wages.png)
 
 ### Job Zone and Preparation Level
 
-![Job Zone Violin](part_2/figures/job_zone_violin.png)
-
-![Job Zone Violin — Non-Physical Occupations Only](part_2/figures/job_zone_violin_nonphys.png)
+![Job Zone Violin — Full Economy vs Non-Physical Occupations Only](part_2/figures/job_zone_violin.png)
 
 ### SKA Levels: AI Capability vs. Workforce Requirements
 
@@ -44,23 +36,25 @@
 
 ### Work Activity Exposure
 
-![GWA Exposure](part_2/figures/gwa_exposure.png)
+![GWA Exposure — % Tasks Exposed (All Confirmed | Hypothetical Variant A | Variant B)](part_2/figures/gwa_pct.png)
 
-### Conv → Confirmed → Ceiling Reach by Major Sector
+### Agentic Confirmed vs. Agentic Ceiling Gap
 
-![Conv → Confirmed → Ceiling](part_3/figures/conv_confirmed_ceiling_gap.png)
+![Agentic Confirmed vs. Agentic Ceiling Gap — Major Occupational Categories](part_3/figures/agentic_ceiling_major.png)
+
+![Agentic Confirmed vs. Agentic Ceiling Gap — General Work Activities](part_3/figures/agentic_ceiling_gwa.png)
 
 ### Tech Commodities Where AI Has Reach
 
 ![Tech Commodities](part_3/figures/tech_commodities.png)
 
-### Occupations Most At Risk Of Displacement
+### Occupations with High AI Exposure and Negative Employment Projection
 
-![Risk Score 5f — SKA-gated focused 43](part_3/figures/risk_score_5f.png)
+![Occupations with High AI Exposure and Negative Employment Projection](part_3/figures/risk_score_5f.png)
 
-### State Exposure vs. Most-At-Risk Concentration
+### U.S. States Clustered on AI Exposure
 
-![State exposure vs. most-at-risk concentration](part_3/figures/state_exposure_at_risk.png)
+![U.S. states clustered on AI exposure](part_3/figures/state_clusters_map.png)
 
 ### AI Usage Intensity by Sector
 
@@ -84,10 +78,54 @@
 
 ![Temporal trend — non-physical](appendix/figures/temporal_trend_nonphys.png)
 
-### Appendix — Full Element-Level SKA
+### Appendix — Major Occupational Categories: Trend and 2-Year Projection
 
-![SKA full](appendix/figures/ska_full.png)
+![Major Categories Tasks Trend](appendix/figures/major_categories_trend_tasks.png)
 
-### Appendix — Non-Physical GWA Composition Gap
+![Major Categories Workers Trend](appendix/figures/major_categories_trend_workers.png)
 
-![Non-physical GWA diff (physical excluded)](appendix/figures/nonphys_gwa_diff_phys_excluded.png)
+### Appendix — Where We and Eloundou Disagree by Major Occupational Category
+
+![Eloundou divergence by Major Occupational Category — z-score basis](appendix/figures/eloundou_divergence_major.png)
+
+### Appendix — Full Element-Level SKA (Skills)
+
+![SKA Skills full](appendix/figures/ska_skills_full.png)
+
+### Appendix — Full Element-Level SKA (Knowledge)
+
+![SKA Knowledge full](appendix/figures/ska_knowledge_full.png)
+
+### Appendix — Full Element-Level SKA (Abilities)
+
+![SKA Abilities full](appendix/figures/ska_abilities_full.png)
+
+### Appendix — Generalized Work Activities: Workers and Wages
+
+![GWA Workers and Wages (All Confirmed)](appendix/figures/gwa_wkrs_wages.png)
+
+### Appendix — State Clusters, Each Panel Ranked Independently
+
+![State clusters, each panel ranked independently](appendix/figures/state_clusters_each_ranked.png)
+
+### Appendix — Underadoption Gap by Major Occupational Category
+
+![Underadoption gap — % Tasks Exposed ÷ Share of AI Usage](appendix/figures/underadoption_gap.png)
+
+### Appendix — Within-Major Intensity Drivers: Life, Physical & Social Science
+
+![Top Occupations — Life, Physical & Social Science](appendix/figures/intensity_drivers_occ_life_phys_soc_sci.png)
+
+![Top Tasks — Life, Physical & Social Science](appendix/figures/intensity_drivers_task_life_phys_soc_sci.png)
+
+### Appendix — Within-Major Intensity Drivers: Arts, Design & Entertainment
+
+![Top Occupations — Arts, Design & Entertainment](appendix/figures/intensity_drivers_occ_arts_design_ent.png)
+
+![Top Tasks — Arts, Design & Entertainment](appendix/figures/intensity_drivers_task_arts_design_ent.png)
+
+### Appendix — Within-Major Intensity Drivers: Computer & Mathematical
+
+![Top Occupations — Computer & Mathematical](appendix/figures/intensity_drivers_occ_comp_math.png)
+
+![Top Tasks — Computer & Mathematical](appendix/figures/intensity_drivers_task_comp_math.png)

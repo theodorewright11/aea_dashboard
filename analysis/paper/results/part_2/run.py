@@ -25,7 +25,6 @@ from plotly.subplots import make_subplots
 from analysis.config import (
     ANALYSIS_CONFIGS,
     ANALYSIS_CONFIG_LABELS,
-    ANALYSIS_CONFIG_SERIES,
     ROOT,
     ensure_results_dir,
     get_pct_tasks_affected,
@@ -37,6 +36,7 @@ from analysis.paper.paper_config import (
     TITLE_FS, SUBTITLE_FS, INSIDE_FS, OUTSIDE_FS, TICK_FS, LABEL_FS,
     LEGEND_FS, ANNOT_FS,
     METRIC_COLORS, PAPER_PALETTE,
+    paper_fonts,
     style_paper_figure, fmt_wages, fmt_workers,
 )
 
@@ -58,13 +58,14 @@ GROUP_COLORS = {
     "Physical":     METRIC_COLORS["workers"],   # Gold / yellow
 }
 
-# Job zone labels
+# Job zone labels — prep level in parentheses so y-axis ticks don't carry
+# em-dashes (cleaner read at paper print size).
 ZONE_LABELS = {
-    1: "Zone 1 — Little/No Prep",
-    2: "Zone 2 — Some Prep",
-    3: "Zone 3 — Medium Prep",
-    4: "Zone 4 — Considerable Prep",
-    5: "Zone 5 — Extensive Prep",
+    1: "Zone 1 (Little/No Prep)",
+    2: "Zone 2 (Some Prep)",
+    3: "Zone 3 (Medium Prep)",
+    4: "Zone 4 (Considerable Prep)",
+    5: "Zone 5 (Extensive Prep)",
 }
 
 # SKA constants
@@ -376,28 +377,49 @@ def build_phys_info_divide(results: Path, figures: Path) -> None:
 # ─────────────────────────────────────────────────────────────────────────
 
 def build_job_zone_violin(results: Path, figures: Path) -> None:
-    occ = _load_occ_structural()
+    """Three-panel job-zone chart:
+      1. All Occupations — violins for Zones 1–5
+      2. Phys Mix       — narrow stacked bar of phys/mixed/non-phys share
+      3. Non-Physical Only — violins for occs with pct_physical < 33%
+                             (Zone 1 row kept blank to preserve alignment)
+
+    Section headers ("All Occupations" / "Phys Mix" / "Non-Physical Only")
+    sit above each panel — same labeled-section pattern as the convergence
+    matrix's Internal / External headers.
+    """
+    occ_all = _load_occ_structural()
     pct = get_pct_tasks_affected(PRIMARY_DATASET)
+    occ_all["pct_tasks_affected"] = occ_all["title_current"].map(pct)
+    occ_all = occ_all.dropna(subset=["pct_tasks_affected", "job_zone"])
+    occ_all["job_zone"] = occ_all["job_zone"].astype(int)
+    occ_nonphys = occ_all[occ_all["occ_group"] == "Non-physical"].copy()
 
-    occ["pct_tasks_affected"] = occ["title_current"].map(pct)
-    occ = occ.dropna(subset=["pct_tasks_affected", "job_zone"])
-    occ["job_zone"] = occ["job_zone"].astype(int)
+    n_all = len(occ_all)
+    n_nonphys = len(occ_nonphys)
 
-    # Summary stats — including phys-mix breakdown per zone
+    # Anchor the full 1–5 zone ladder so the non-phys side keeps a blank
+    # Zone 1 row aligned with the All side.
+    zones = [1, 2, 3, 4, 5]
+    zone_labels_short = {z: ZONE_LABELS.get(z, f"Zone {z}") for z in zones}
+
+    # Summary stats — including phys-mix breakdown per zone (used for the
+    # middle stacked-bar panel and the CSV export).
     zone_stats = []
-    for z in sorted(occ["job_zone"].unique()):
-        sub = occ[occ["job_zone"] == z]
+    for z in zones:
+        sub = occ_all[occ_all["job_zone"] == z]
         n_total = len(sub)
         n_phys = int((sub["occ_group"] == "Physical").sum())
         n_mix  = int((sub["occ_group"] == "Mixed").sum())
         n_non  = int((sub["occ_group"] == "Non-physical").sum())
+        sub_np = occ_nonphys[occ_nonphys["job_zone"] == z]
         zone_stats.append({
             "job_zone": z,
-            "n_occs": n_total,
-            "median_pct": round(float(sub["pct_tasks_affected"].median()), 1),
-            "mean_pct": round(float(sub["pct_tasks_affected"].mean()), 1),
-            "q25": round(float(sub["pct_tasks_affected"].quantile(0.25)), 1),
-            "q75": round(float(sub["pct_tasks_affected"].quantile(0.75)), 1),
+            "n_occs_all": n_total,
+            "median_pct_all": round(float(sub["pct_tasks_affected"].median()), 1) if n_total else None,
+            "mean_pct_all":   round(float(sub["pct_tasks_affected"].mean()),   1) if n_total else None,
+            "n_occs_nonphys": len(sub_np),
+            "median_pct_nonphys": round(float(sub_np["pct_tasks_affected"].median()), 1) if len(sub_np) else None,
+            "mean_pct_nonphys":   round(float(sub_np["pct_tasks_affected"].mean()),   1) if len(sub_np) else None,
             "n_physical":     n_phys,
             "n_mixed":        n_mix,
             "n_non_physical": n_non,
@@ -405,169 +427,371 @@ def build_job_zone_violin(results: Path, figures: Path) -> None:
             "pct_mixed":        round(n_mix / n_total * 100, 1) if n_total else 0.0,
             "pct_non_physical": round(n_non / n_total * 100, 1) if n_total else 0.0,
         })
-    stats_df = pd.DataFrame(zone_stats)
-    save_csv(stats_df, results / "job_zone_summary.csv")
+    save_csv(pd.DataFrame(zone_stats), results / "job_zone_summary.csv")
 
     # Color gradient: Zone 1 lightest, Zone 5 darkest
     zone_colors = {
-        1: "#b8cfe0",  # Light slate
+        1: "#b8cfe0",
         2: "#8cafc5",
         3: "#6090aa",
         4: "#3a6f8f",
-        5: "#1a4f73",  # Deep slate
+        5: "#1a4f73",
     }
 
-    zones = sorted(occ["job_zone"].unique())
-    zone_labels_full = [
-        f"{ZONE_LABELS.get(z, f'Zone {z}')}  (n={int(occ[occ['job_zone'] == z].shape[0])})"
-        for z in zones
-    ]
+    # Use plain zone labels on the shared y-axis (no n) — n's belong in the
+    # section headers since the all and non-phys sides have different counts.
+    y_labels = [zone_labels_short[z] for z in zones]
+    y_order_top_down = list(reversed(y_labels))
 
-    # Two-panel layout: violins on the left, phys-mix stacked bar on the right.
-    # Shared y-axis ordering so each zone row aligns. The phys-mix panel is
-    # narrow (~15% width) so it reads as an overlay, not a competing chart.
+    # Canvas sized for three panels at 6.5" column width. Font sizes resolved
+    # from paper_fonts(W) so the ladder (11/10/10/9/9/8 pt) lands at print pt.
+    W = PAPER_W
+    H = 720
+    px = paper_fonts(W)
+
     fig = make_subplots(
-        rows=1, cols=2,
+        rows=1, cols=3,
         shared_yaxes=True,
-        column_widths=[0.85, 0.15],
-        horizontal_spacing=0.02,
-        subplot_titles=["", "Phys Mix"],
+        column_widths=[0.46, 0.16, 0.38],
+        horizontal_spacing=0.04,
+        subplot_titles=["", "", ""],  # headers added manually below
     )
 
+    # ── Panel 1: All Occupations violins ────────────────────────────────
+    # Box + meanline turned off — replaced by a custom black median line per
+    # zone (added below as shapes) so the central tendency reads cleanly at
+    # paper print size.
     for z in zones:
-        sub = occ[occ["job_zone"] == z]
-        label = ZONE_LABELS.get(z, f"Zone {z}")
+        sub = occ_all[occ_all["job_zone"] == z]
+        if len(sub) == 0:
+            continue
         fig.add_trace(go.Violin(
             x=sub["pct_tasks_affected"],
-            y=[f"{label}  (n={len(sub)})"] * len(sub),
-            name=f"{label}  (n={len(sub)})",
+            y=[zone_labels_short[z]] * len(sub),
+            name=zone_labels_short[z],
             marker_color=zone_colors[z],
             line_color=zone_colors[z],
             fillcolor=zone_colors[z],
-            opacity=0.7,
-            box_visible=True,
-            meanline_visible=True,
+            opacity=0.75,
+            box_visible=False,
+            meanline_visible=False,
             orientation="h",
             side="positive",
-            width=0.8,
+            width=0.7,
+            points=False,
             showlegend=False,
-            hovertemplate=f"{label}<br>%{{x:.1f}}%<extra></extra>",
+            hovertemplate=(
+                f"{zone_labels_short[z]} (All)<br>"
+                "%{x:.1f}% tasks exposed<extra></extra>"
+            ),
         ), row=1, col=1)
 
-    # Phys-mix stacked bar: one row per zone, three segments (Phys / Mixed /
-    # Non-physical) using the same palette as the major trio. Legend shown
-    # below the chart.
-    y_labels = []
+    # Per-zone inline n + median label, right-justified inside the panel.
     for r in zone_stats:
-        z = r["job_zone"]
-        zone_label = ZONE_LABELS.get(z, f"Zone {z}")
-        y_labels.append(f"{zone_label}  (n={int(r['n_occs'])})")
+        n_occs = r["n_occs_all"]
+        if n_occs == 0:
+            continue
+        med = r["median_pct_all"]
+        med_str = f" · med {med:.0f}%" if med is not None else ""
+        fig.add_annotation(
+            x=99, y=zone_labels_short[r["job_zone"]],
+            xref="x", yref="y",
+            text=f"n={n_occs}{med_str}",
+            showarrow=False,
+            xanchor="right", yanchor="top",
+            yshift=-2,
+            font=dict(size=px["in_chart_floor"],
+                      color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
+        )
+
+    # ── Phys Mix stacked bars ───────────────────────────────────────────
+    # Bars themselves carry no legend — we use dummy scatter traces below
+    # so we can control marker size (default bar legend swatches are tiny).
     pct_phys_arr = [r["pct_physical"]     for r in zone_stats]
     pct_mix_arr  = [r["pct_mixed"]        for r in zone_stats]
     pct_non_arr  = [r["pct_non_physical"] for r in zone_stats]
+    bar_y = [zone_labels_short[r["job_zone"]] for r in zone_stats]
 
     fig.add_trace(go.Bar(
-        x=pct_phys_arr, y=y_labels, orientation="h",
+        x=pct_phys_arr, y=bar_y, orientation="h",
         marker=dict(color=GROUP_COLORS["Physical"], line=dict(width=0)),
         name="% Physical occs",
-        showlegend=True,
+        showlegend=False,
         hovertemplate="Physical: %{x:.0f}%<extra></extra>",
     ), row=1, col=2)
     fig.add_trace(go.Bar(
-        x=pct_mix_arr, y=y_labels, orientation="h",
+        x=pct_mix_arr, y=bar_y, orientation="h",
         marker=dict(color=GROUP_COLORS["Mixed"], line=dict(width=0)),
         name="% Mixed occs",
-        showlegend=True,
+        showlegend=False,
         hovertemplate="Mixed: %{x:.0f}%<extra></extra>",
     ), row=1, col=2)
     fig.add_trace(go.Bar(
-        x=pct_non_arr, y=y_labels, orientation="h",
+        x=pct_non_arr, y=bar_y, orientation="h",
         marker=dict(color=GROUP_COLORS["Non-physical"], line=dict(width=0)),
         name="% Non-physical occs",
-        showlegend=True,
+        showlegend=False,
         hovertemplate="Non-physical: %{x:.0f}%<extra></extra>",
     ), row=1, col=2)
 
-    annot_text = "<br>".join(
-        f"Zone {r['job_zone']}: median {r['median_pct']:.1f}%, mean {r['mean_pct']:.1f}%"
-        for r in zone_stats
+    # ── Legend dummy traces ─────────────────────────────────────────────
+    # All legend entries are dummy Scatter traces so we can size the
+    # swatches uniformly (bar-trace legend markers are tiny and not
+    # controllable). Anchored to col=1 (violin panel) with None coords so
+    # they don't render anywhere on the chart. Order: Non-physical →
+    # Mixed → Physical → Median (left to right in legend).
+    legend_marker_size = 16
+    median_line_size = 22  # matches text cap height — fully vertical span
+    for tier_name, tier_color in (
+        ("% Non-physical occs", GROUP_COLORS["Non-physical"]),
+        ("% Mixed occs",        GROUP_COLORS["Mixed"]),
+        ("% Physical occs",     GROUP_COLORS["Physical"]),
+    ):
+        fig.add_trace(go.Scatter(
+            x=[None], y=[None],
+            mode="markers",
+            marker=dict(
+                symbol="square",
+                color=tier_color,
+                size=legend_marker_size,
+                line=dict(width=0),
+            ),
+            name=tier_name,
+            showlegend=True,
+            hoverinfo="skip",
+        ), row=1, col=1)
+
+    fig.add_trace(go.Scatter(
+        x=[None], y=[None],
+        mode="markers",
+        marker=dict(
+            symbol="line-ns",
+            color="#1a1a1a",
+            size=median_line_size,
+            line=dict(color="#1a1a1a", width=3),
+        ),
+        name="Median",
+        showlegend=True,
+        hoverinfo="skip",
+    ), row=1, col=1)
+
+    # ── Panel 3: Non-Physical Only violins ──────────────────────────────
+    # Force the full 1–5 ladder on this axis with a dummy invisible scatter
+    # so Zone 1 stays as a blank row.
+    fig.add_trace(go.Scatter(
+        x=[None] * len(zones),
+        y=y_labels,
+        mode="markers",
+        marker=dict(opacity=0),
+        showlegend=False, hoverinfo="skip",
+    ), row=1, col=3)
+
+    for z in zones:
+        sub = occ_nonphys[occ_nonphys["job_zone"] == z]
+        if len(sub) == 0:
+            continue
+        fig.add_trace(go.Violin(
+            x=sub["pct_tasks_affected"],
+            y=[zone_labels_short[z]] * len(sub),
+            name=zone_labels_short[z],
+            marker_color=zone_colors[z],
+            line_color=zone_colors[z],
+            fillcolor=zone_colors[z],
+            opacity=0.75,
+            box_visible=False,
+            meanline_visible=False,
+            orientation="h",
+            side="positive",
+            width=0.7,
+            points=False,
+            showlegend=False,
+            hovertemplate=(
+                f"{zone_labels_short[z]} (Non-physical)<br>"
+                "%{x:.1f}% tasks exposed<extra></extra>"
+            ),
+        ), row=1, col=3)
+
+    for r in zone_stats:
+        z = r["job_zone"]
+        n_np = r["n_occs_nonphys"]
+        if n_np == 0:
+            continue
+        med = r["median_pct_nonphys"]
+        med_str = f" · med {med:.0f}%" if med is not None else ""
+        fig.add_annotation(
+            x=99, y=zone_labels_short[z],
+            xref="x3", yref="y3",
+            text=f"n={n_np}{med_str}",
+            showarrow=False,
+            xanchor="right", yanchor="top",
+            yshift=-2,
+            font=dict(size=px["in_chart_floor"],
+                      color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
+        )
+
+    # ── Black median lines per zone ─────────────────────────────────────
+    # Each violin gets a thick vertical black line at the median. Median
+    # over mean — robust to skew in the long-tail zones. Y extent spans
+    # the violin's positive-side band: from baseline (category index) up
+    # to baseline + ~0.45 (matches the 0.7 violin width with a small lift
+    # off the baseline so the line reads as a separate mark).
+    def _add_median_lines(stat_key: str, xref: str, yref: str) -> None:
+        for r in zone_stats:
+            med = r[stat_key]
+            if med is None:
+                continue
+            pos = y_order_top_down.index(zone_labels_short[r["job_zone"]])
+            fig.add_shape(
+                type="line",
+                xref=xref, yref=yref,
+                x0=med, x1=med,
+                y0=pos - 0.02, y1=pos + 0.40,
+                line=dict(color="#1a1a1a", width=2),
+                layer="above",
+            )
+
+    _add_median_lines("median_pct_all",     "x",  "y")
+    _add_median_lines("median_pct_nonphys", "x3", "y3")
+
+    # Narrow the phys-mix bar height to match the slimmer violins.
+    fig.update_traces(width=0.55, selector=dict(type="bar"))
+
+    # ── Y / X axes ──────────────────────────────────────────────────────
+    fig.update_yaxes(
+        categoryorder="array",
+        categoryarray=y_order_top_down,
+        showgrid=False, showline=False,
+        tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+        title=dict(text="Job Zone (O*NET Preparation Level)",
+                   font=dict(size=px["axis_title"], family=FONT_FAMILY)),
+        row=1, col=1,
     )
-    fig.add_annotation(
-        text=annot_text,
-        xref="x", yref="paper",
-        x=99, y=0.98,
-        showarrow=False,
-        font=dict(size=ANNOT_FS, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
-        align="right",
-        xanchor="right", yanchor="top",
-        bgcolor="rgba(255,255,255,0.85)",
-        bordercolor=PAPER_PALETTE["grid"],
-        borderwidth=1, borderpad=6,
+    fig.update_yaxes(
+        categoryorder="array", categoryarray=y_order_top_down,
+        showgrid=False, showline=False, showticklabels=False,
+        row=1, col=2,
+    )
+    fig.update_yaxes(
+        categoryorder="array", categoryarray=y_order_top_down,
+        showgrid=False, showline=False, showticklabels=False,
+        row=1, col=3,
+    )
+
+    # All Occs x-axis: drop the "100" tick — it sits right next to the
+    # Phys Mix panel and reads as visual noise. Same dtick=20 spacing.
+    fig.update_xaxes(
+        title=dict(text="% Tasks Exposed",
+                   font=dict(size=px["axis_title"], family=FONT_FAMILY)),
+        range=[0, 100],
+        tickmode="array",
+        tickvals=[0, 20, 40, 60, 80],
+        ticktext=["0%", "20%", "40%", "60%", "80%"],
+        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+        showline=True, linecolor=PAPER_PALETTE["grid"],
+        tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+        row=1, col=1,
+    )
+    fig.update_xaxes(
+        range=[0, 100], dtick=50,
+        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+        showline=True, linecolor=PAPER_PALETTE["grid"],
+        ticksuffix="%",
+        tickfont=dict(size=px["in_chart_floor"], family=FONT_FAMILY),
+        title=dict(text="% of zone",
+                   font=dict(size=px["axis_title"], family=FONT_FAMILY)),
+        row=1, col=2,
+    )
+    # Non-Phys x-axis: drop the "0" tick — sits hard against the black
+    # divider from the Phys Mix panel and reads as visual noise.
+    fig.update_xaxes(
+        title=dict(text="% Tasks Exposed",
+                   font=dict(size=px["axis_title"], family=FONT_FAMILY)),
+        range=[0, 100],
+        tickmode="array",
+        tickvals=[20, 40, 60, 80, 100],
+        ticktext=["20%", "40%", "60%", "80%", "100%"],
+        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+        showline=True, linecolor=PAPER_PALETTE["grid"],
+        tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+        row=1, col=3,
     )
 
     style_paper_figure(
         fig,
-        "Task Exposure by Job Zone (with Physical Mix Overlay)",
-        subtitle=(
-            f"Distribution of % tasks exposed by O*NET job zone across {len(occ)} occupations. "
-            "Right panel: share of each zone's occupations that are Physical / Mixed / Non-Physical."
-        ),
-        height=700,
-        width=PAPER_W + 80,
-        margin=dict(l=80, r=60, t=110, b=170),
+        "Task Exposure by Job Zone — Full Economy vs Non-Physical Occupations Only",
+        subtitle="",
+        height=H, width=W,
+        margin=dict(l=240, r=50, t=180, b=210),
     )
 
-    # Order zones from top to bottom (highest zone at top).
-    cat_array = list(reversed(zone_labels_full))
-    fig.update_yaxes(
-        categoryorder="array",
-        categoryarray=cat_array,
-        showgrid=False, showline=False,
-        tickfont=dict(size=TICK_FS - 1, family=FONT_FAMILY),
-        title=dict(text="Job Zone (O*NET Preparation Level)", font=dict(size=LABEL_FS - 2)),
-        row=1, col=1,
+    # Pin the figure title near the top of the figure so the section
+    # headers below it have a clean vertical lane to live in. With
+    # t=180 margin and title y=0.965, the title sits in the top ~25 px
+    # and headers at y=1.02 (just above plot area) land below it.
+    fig.update_layout(title=dict(y=0.965, yanchor="top"))
+
+    # Section headers above each panel — bold, panel_title size, paper-coord
+    # x positioned at the midpoint of each column. Mirrors the Internal /
+    # External pattern from the convergence chart. Column centers derived
+    # from column_widths=[0.46, 0.16, 0.38] with horizontal_spacing=0.04:
+    # col 1 center ≈ 0.212, col 2 center ≈ 0.537, col 3 center ≈ 0.825.
+    header_specs = [
+        ("All Occupations",    f"n={n_all}",       0.212),
+        ("Phys Mix",           "",                  0.537),
+        ("Non-Physical",       f"n={n_nonphys}",   0.825),
+    ]
+    for title_text, sub_n, x_paper in header_specs:
+        text = f"<b>{title_text}</b>"
+        if sub_n:
+            text += (f"  <span style='font-size:{px['in_chart_floor']}px;"
+                     f"color:{PAPER_PALETTE['neutral']}'>({sub_n})</span>")
+        fig.add_annotation(
+            xref="paper", yref="paper",
+            x=x_paper, y=1.02,
+            text=text,
+            showarrow=False,
+            xanchor="center", yanchor="bottom",
+            font=dict(size=px["panel_title"], family=FONT_FAMILY,
+                      color=PAPER_PALETTE["text"]),
+            align="center",
+        )
+
+    # Vertical separators in the gaps between panels. The Phys Mix |
+    # Non-Physical boundary gets a clear black bar to signal that the
+    # right panel is a different population (non-physical only), not just
+    # a continuation. The All | Phys Mix boundary stays faint since the
+    # Phys Mix panel is a structural readout of the same population.
+    fig.add_shape(
+        type="line", xref="paper", yref="paper",
+        x0=0.4432, x1=0.4432, y0=0.0, y1=1.02,
+        line=dict(color=PAPER_PALETTE["grid"], width=1),
     )
-    fig.update_yaxes(
-        categoryorder="array",
-        categoryarray=cat_array,
-        showgrid=False, showline=False,
-        showticklabels=False,
-        row=1, col=2,
+    fig.add_shape(
+        type="line", xref="paper", yref="paper",
+        x0=0.6304, x1=0.6304, y0=0.0, y1=1.11,
+        line=dict(color="#1a1a1a", width=2),
     )
 
-    fig.update_xaxes(
-        title=dict(text="% Tasks Exposed", font=dict(size=LABEL_FS)),
-        range=[0, 100], dtick=10,
-        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
-        showline=True, linecolor=PAPER_PALETTE["grid"],
-        row=1, col=1,
-    )
-    fig.update_xaxes(
-        range=[0, 100], dtick=25,
-        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
-        showline=True, linecolor=PAPER_PALETTE["grid"],
-        ticksuffix="%",
-        tickfont=dict(size=TICK_FS - 3, family=FONT_FAMILY),
-        title=dict(text="% of zone", font=dict(size=LABEL_FS - 4)),
-        row=1, col=2,
-    )
-
+    # Legend with xref="container" / yref="container": x/y are in figure
+    # container coords (0–1 of full figure width/height), not plot-area
+    # paper coords. x=0.5 with xanchor="center" centers under the whole
+    # figure regardless of asymmetric margins. traceorder="normal" disables
+    # plotly's auto-reverse (triggered by barmode="stack") so the legend
+    # reads in the order we add the dummy traces. itemsizing="trace" uses
+    # the marker.size from each trace (default "constant" caps swatch size).
     fig.update_layout(
         barmode="stack",
         legend=dict(
             orientation="h",
-            yanchor="top", y=-0.18, xanchor="center", x=0.5,
-            font=dict(size=LEGEND_FS - 1, family=FONT_FAMILY),
+            xref="container", yref="container",
+            x=0.5, xanchor="center",
+            y=0.04, yanchor="bottom",
+            font=dict(size=px["legend"], family=FONT_FAMILY),
             bgcolor="rgba(255,255,255,0.9)",
+            itemsizing="trace",
+            traceorder="normal",
         ),
     )
-
-    # Force the right-panel subplot title down so it doesn't collide with
-    # the main figure title.
-    for ann in fig.layout.annotations:
-        if hasattr(ann, "text") and ann.text == "Phys Mix":
-            ann.font = dict(size=LABEL_FS - 2, family=FONT_FAMILY,
-                            color=PAPER_PALETTE["text"])
 
     save_figure(fig, results / "figures" / "job_zone_violin.png")
     _copy_fig(results, figures, "job_zone_violin.png")
@@ -905,6 +1129,16 @@ ABILITY_SUBCATEGORY: dict[str, str] = {
     "1.A.4.a": "Visual", "1.A.4.b": "Auditory and Speech",
 }
 
+SKILLS_SUBCATEGORY: dict[str, str] = {
+    "2.A.1": "Content",
+    "2.A.2": "Process",
+    "2.B.1": "Social",
+    "2.B.2": "Complex Problem Solving",
+    "2.B.3": "Technical",
+    "2.B.4": "Systems",
+    "2.B.5": "Resource Management",
+}
+
 KNOWLEDGE_CATEGORY: dict[str, str] = {
     "2.C.1": "Business and Management",
     "2.C.2": "Manufacturing and Production",
@@ -920,6 +1154,17 @@ KNOWLEDGE_CATEGORY: dict[str, str] = {
 
 # Muted red for AI markers — visible on blue without being aggressive
 AI_MARKER_COLOR = "#a04444"
+# Workforce Mean marker — dark gray, intentionally NOT pure black so it
+# stays distinguishable from the black in-chart bar value text when the
+# marker overlaps a digit. Opacity is applied per-trace so the digit
+# shines through when they collide.
+WORKFORCE_MEAN_COLOR = "#3a3a3a"
+# Chart markers render at this opacity so overlapping bar value digits
+# remain readable. The legend swatches mirror this with the matching rgba
+# below so the legend visually matches what gets drawn on the bars.
+SKA_MARKER_OPACITY = 0.75
+AI_MARKER_COLOR_RGBA = f"rgba(160, 68, 68, {SKA_MARKER_OPACITY})"
+WORKFORCE_MEAN_COLOR_RGBA = f"rgba(58, 58, 58, {SKA_MARKER_OPACITY})"
 
 # SKA AI Top-10 bar color per phys-mix tier. Uses the same Physical / Mixed
 # / Non-physical palette as the major trio so the structural cut tracks
@@ -929,6 +1174,163 @@ SKA_BAR_COLOR_BY_TIER: dict[str, str] = {
     "Mixed":        METRIC_COLORS["wages"],     # Sage green
     "Physical":     METRIC_COLORS["workers"],   # Gold / yellow
 }
+
+# Legend ordering for the phys-mix swatches row (Physical → Mixed → Non-physical).
+SKA_TIER_LEGEND_ORDER: tuple[str, ...] = ("Physical", "Mixed", "Non-physical")
+
+
+# ── Text measurement for the manual legend ──────────────────────────────
+# Estimating row width via `len(label) × constant` over-counts narrow
+# glyphs (lowercase, digits, parens, the ↓ arrow), which makes wide rows
+# render visibly left of center even when the math claims they're
+# centered. Measuring against the real Inter TTF fixes that.
+_INTER_TTF_CANDIDATES = (
+    r"C:\Users\teddy\AppData\Local\Microsoft\Windows\Fonts\Inter-Regular.ttf",
+    r"C:\Windows\Fonts\Inter-Regular.ttf",
+    r"C:\Windows\Fonts\Inter.ttf",
+)
+_INTER_FONT_CACHE: dict[int, object] = {}
+
+
+def _measure_text_px(label: str, font_size_px: int) -> float:
+    """Return the rendered pixel width of `label` in Inter at `font_size_px`.
+
+    Falls back to the rough char-factor estimate if Pillow or the Inter TTF
+    isn't available — the estimate is fine for short, capital-heavy labels;
+    the measurement only matters for the long mixed-case rows like
+    'AI Top-10 Avg  (color = phys tier ↓)'."""
+    try:
+        from PIL import ImageFont
+    except Exception:
+        return len(label) * (font_size_px * 0.65)
+
+    font = _INTER_FONT_CACHE.get(font_size_px)
+    if font is None:
+        from pathlib import Path as _P
+        ttf = next(
+            (p for p in _INTER_TTF_CANDIDATES if _P(p).exists()),
+            None,
+        )
+        if ttf is None:
+            return len(label) * (font_size_px * 0.65)
+        font = ImageFont.truetype(ttf, font_size_px)
+        _INTER_FONT_CACHE[font_size_px] = font
+
+    # `getlength` returns the advance width in pixels for the given string
+    # at the loaded font size — exactly the metric Plotly's renderer uses
+    # when laying out text at the same logical size.
+    return float(font.getlength(label))
+
+
+def draw_ska_manual_legend(
+    fig: go.Figure,
+    rows: list[list[tuple[str, str, str, str]]],
+    *,
+    fig_width: int,
+    fig_height: int,
+    margin_l: int,
+    margin_r: int,
+    margin_t: int,
+    margin_b: int,
+    legend_font_px: int,
+) -> None:
+    """Render N rows of legend entries below the plot as shapes + annotations.
+
+    Each entry is a (kind, color, symbol_char, label) tuple where kind is
+    "bar" (renders a colored rectangle swatch) or "marker" (renders a
+    unicode glyph at `color`). Used by every SKA chart so swatch/symbol
+    sizing stays identical across main body and appendix."""
+    # Sizes — chosen as middle ground; same across all SKA charts.
+    swatch_w, swatch_h = 30, 20
+    text_gap = 14
+    inter_gap = 60
+    row_pitch = 50
+    symbol_font_px = legend_font_px + 4
+
+    plot_left_px = margin_l
+    plot_right_px = fig_width - margin_r
+    plot_top_px = margin_t
+    plot_bottom_px = fig_height - margin_b
+    plot_w_px = plot_right_px - plot_left_px
+    plot_h_px = plot_bottom_px - plot_top_px
+    half_h_paper = swatch_h / (2 * plot_h_px)
+
+    def fig_x_to_paper(x):
+        return (x - plot_left_px) / plot_w_px
+
+    def fig_y_to_paper(y_from_top):
+        return (plot_bottom_px - y_from_top) / plot_h_px
+
+    # Row 1 sits ~150 px below the plot bottom — clears the x-axis ticks and
+    # the axis title (which itself sits 50–60 px below the plot via standoff),
+    # with a comfortable whitespace buffer before the legend.
+    row1_from_top = plot_bottom_px + 150
+
+    # Each row is independently centered on the figure midpoint so the
+    # legend is centered with respect to the whole PNG (not the plot area,
+    # which can sit off-center when the left margin is much wider than the
+    # right margin to accommodate y-axis labels).
+    fig_center_px = fig_width / 2
+
+    for r, entries in enumerate(rows):
+        y_from_top = row1_from_top + r * row_pitch
+        y_paper = fig_y_to_paper(y_from_top)
+
+        item_widths = []
+        for _, _, _, label in entries:
+            text_w = _measure_text_px(label, legend_font_px)
+            item_widths.append(swatch_w + text_gap + text_w)
+        total_w = sum(item_widths) + inter_gap * (len(entries) - 1)
+        cursor_x = fig_center_px - total_w / 2
+
+        for (kind, color, symbol, label), iw in zip(entries, item_widths):
+            sx0 = cursor_x
+            x_left_p = fig_x_to_paper(sx0)
+            x_right_p = fig_x_to_paper(sx0 + swatch_w)
+            x_mid_p = fig_x_to_paper(sx0 + swatch_w / 2)
+            x_text_p = fig_x_to_paper(sx0 + swatch_w + text_gap)
+            if kind == "bar":
+                fig.add_shape(
+                    type="rect", xref="paper", yref="paper",
+                    x0=x_left_p, x1=x_right_p,
+                    y0=y_paper - half_h_paper, y1=y_paper + half_h_paper,
+                    fillcolor=color, line=dict(width=0), layer="above",
+                )
+            else:
+                fig.add_annotation(
+                    xref="paper", yref="paper",
+                    x=x_mid_p, y=y_paper,
+                    text=symbol, showarrow=False,
+                    xanchor="center", yanchor="middle",
+                    font=dict(size=symbol_font_px, color=color,
+                              family=FONT_FAMILY),
+                )
+            fig.add_annotation(
+                xref="paper", yref="paper",
+                x=x_text_p, y=y_paper,
+                text=label, showarrow=False,
+                xanchor="left", yanchor="middle",
+                font=dict(size=legend_font_px, color=PAPER_PALETTE["neutral"],
+                          family=FONT_FAMILY),
+            )
+            cursor_x += iw + inter_gap
+
+
+def ska_legend_rows() -> list[list[tuple[str, str, str, str]]]:
+    """The three rows used by every SKA chart."""
+    return [
+        [
+            ("bar", "#e8e8e2", "■", "Workforce Max"),
+            ("bar", SKA_BAR_COLOR_BY_TIER["Mixed"], "■",
+             "AI Top-10 Avg  (color = phys tier ↓)"),
+        ],
+        [("bar", SKA_BAR_COLOR_BY_TIER[t], "■", t)
+         for t in SKA_TIER_LEGEND_ORDER],
+        [
+            ("marker", AI_MARKER_COLOR_RGBA, "◆", "AI Max"),
+            ("marker", WORKFORCE_MEAN_COLOR_RGBA, "●", "Workforce Mean"),
+        ],
+    ]
 
 
 def _major_phys_mix_shares(occ_struct: pd.DataFrame) -> dict[str, dict[str, float]]:
@@ -1017,6 +1419,12 @@ def _ability_subcat(eid: str) -> str:
     parts = eid.split(".")
     sub_key = ".".join(parts[:4]) if len(parts) >= 4 else ".".join(parts[:3])
     return ABILITY_SUBCATEGORY.get(sub_key, "Other")
+
+
+def _skills_subcat(eid: str) -> str:
+    parts = eid.split(".")
+    cat_key = ".".join(parts[:3]) if len(parts) >= 3 else ""
+    return SKILLS_SUBCATEGORY.get(cat_key, "Other")
 
 
 def _knowledge_cat(eid: str) -> str:
@@ -1126,16 +1534,16 @@ def _build_ska_skills_chart(
     Top-10 bar is the AI capability as % of that ceiling. Markers and the
     workforce mean dot are also % of eco_max — same scaling as the K&A
     chart."""
+    px = paper_fonts(PAPER_W)
+
     df = elements_df.copy()
     df["ai_top10_pct"] = df["ai_top10"] / df["eco_max"].replace(0, float("nan")) * 100
-    df["ai_p95_pct"]   = df["ai_95th"]  / df["eco_max"].replace(0, float("nan")) * 100
     df["ai_max_pct"]   = df["ai_max"]   / df["eco_max"].replace(0, float("nan")) * 100
     df["eco_mean_pct"] = df["eco_mean"] / df["eco_max"].replace(0, float("nan")) * 100
     df = df.sort_values("ai_top10_pct", ascending=False).reset_index(drop=True)
 
     enames = df["element_name"].tolist()
     bar_vals = df["ai_top10_pct"].fillna(0).tolist()
-    p95_vals = df["ai_p95_pct"].fillna(0).tolist()
     max_vals = df["ai_max_pct"].fillna(0).tolist()
     emean_vals = df["eco_mean_pct"].fillna(0).tolist()
 
@@ -1154,6 +1562,7 @@ def _build_ska_skills_chart(
         name="Workforce Max",
         marker=dict(color="#e8e8e2", line=dict(width=0)),
         hovertemplate="Workforce max: 100%<extra></extra>",
+        showlegend=False,
     ))
     fig.add_trace(go.Bar(
         y=enames, x=bar_vals, orientation="h",
@@ -1161,86 +1570,87 @@ def _build_ska_skills_chart(
         marker=dict(color=bar_colors, opacity=0.88, line=dict(width=0)),
         text=[f"{v:.0f}%" for v in bar_vals],
         textposition="outside",
-        textfont=dict(size=12, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
+        textfont=dict(size=px["in_chart_floor"],
+                      color=PAPER_PALETTE["text"], family=FONT_FAMILY),
         hovertemplate="AI Top-10 avg (% of workforce max): %{x:.1f}%<extra></extra>",
-    ))
-
-    # Phys-tier legend entries — invisible bars carrying just the colored
-    # marker so the legend can document the three-bucket coloring.
-    for tier, tier_color in SKA_BAR_COLOR_BY_TIER.items():
-        fig.add_trace(go.Bar(
-            y=[None], x=[None], orientation="h",
-            name=f"Bar color: {tier} occ mix",
-            marker=dict(color=tier_color, opacity=0.88, line=dict(width=0)),
-            showlegend=True, hoverinfo="skip",
-        ))
-    fig.add_trace(go.Scatter(
-        y=enames, x=p95_vals, mode="markers",
-        name="AI P95",
-        marker=dict(color=AI_MARKER_COLOR, symbol="circle", size=11),
-        hovertemplate="AI P95 (% of workforce max): %{x:.1f}%<extra></extra>",
+        showlegend=False,
     ))
     fig.add_trace(go.Scatter(
         y=enames, x=max_vals, mode="markers",
         name="AI Max",
-        marker=dict(color=AI_MARKER_COLOR, symbol="diamond", size=12),
+        marker=dict(color=AI_MARKER_COLOR, symbol="diamond", size=14,
+                    opacity=0.75),
         hovertemplate="AI Max (% of workforce max): %{x:.1f}%<extra></extra>",
+        showlegend=False,
     ))
     fig.add_trace(go.Scatter(
         y=enames, x=emean_vals, mode="markers",
         name="Workforce Mean",
-        marker=dict(color="#1a1a1a", symbol="circle", size=8,
-                    line=dict(width=1, color="#1a1a1a")),
+        marker=dict(color=WORKFORCE_MEAN_COLOR, symbol="circle", size=10,
+                    opacity=0.75,
+                    line=dict(width=1, color=WORKFORCE_MEAN_COLOR)),
         hovertemplate="Workforce mean (% of workforce max): %{x:.1f}%<extra></extra>",
+        showlegend=False,
     ))
 
-    fig_height = max(1100, len(enames) * 28 + 320)
+    # Layout — rows need ≥42px to clear 9pt (27px) tick font. Bottom margin
+    # holds axis title (~50 px) + 3 legend rows (3×50 px) + whitespace buffer.
+    # Left margin fits the longest skill label (~7 px/char at 9 pt Inter) plus
+    # the rotated y-axis title (~30 px) plus a small buffer — tight enough that
+    # the tick labels sit close to the y-axis title rather than floating in
+    # empty space. Right margin is narrow so the bars run close to the figure's
+    # right edge.
+    max_label = max(len(e) for e in enames)
+    margin_t, margin_b = 70, 310
+    margin_l, margin_r = max(180, max_label * 12 + 90), 60
+    fig_height = max(1100, len(enames) * 42 + margin_t + margin_b)
+
+    draw_ska_manual_legend(
+        fig, ska_legend_rows(),
+        fig_width=PAPER_W, fig_height=fig_height,
+        margin_l=margin_l, margin_r=margin_r,
+        margin_t=margin_t, margin_b=margin_b,
+        legend_font_px=px["legend"],
+    )
+
     fig.update_layout(
         title=dict(
-            text=(
-                "AI Capability as % of Workforce Max — O*NET Skills"
-                f"<br><span style='font-size:{SUBTITLE_FS}px;"
-                f"color:{PAPER_PALETTE['muted']}'>"
-                "Gray bar = workforce maximum (the highest occupational need "
-                "for the element, set to 100%). Blue bar = AI Top-10 average "
-                "as a share of that workforce maximum."
-                "</span>"
-            ),
-            font=dict(size=TITLE_FS, color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+            text="AI Capability as % of Workforce Max — O*NET Skills",
+            font=dict(size=px["title"], color=PAPER_PALETTE["text"], family=FONT_FAMILY),
             x=0.01, xanchor="left",
         ),
         height=fig_height,
         width=PAPER_W,
-        font=dict(family=FONT_FAMILY, size=13, color=PAPER_PALETTE["text"]),
+        font=dict(family=FONT_FAMILY, size=px["tick"], color=PAPER_PALETTE["text"]),
         plot_bgcolor=PAPER_PALETTE["surface"],
         paper_bgcolor=PAPER_PALETTE["surface"],
         barmode="overlay",
-        legend=dict(
-            orientation="h",
-            yanchor="top", y=-0.10, xanchor="center", x=0.5,
-            font=dict(size=LEGEND_FS, color=PAPER_PALETTE["neutral"]),
-            bgcolor="rgba(0,0,0,0)", borderwidth=0,
-        ),
-        margin=dict(l=290, r=140, t=120, b=160),
+        showlegend=False,
+        margin=dict(l=margin_l, r=margin_r, t=margin_t, b=margin_b),
     )
     fig.update_yaxes(
-        title=dict(text="O*NET Skill", font=dict(size=LABEL_FS - 2)),
-        autorange="reversed",
-        tickfont=dict(size=13, color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+        title=dict(text="O*NET Skill",
+                   font=dict(size=px["axis_title"], family=FONT_FAMILY),
+                   standoff=max(0, margin_l - 40)),
+        type="category",
+        # Tight range — drop the default 0.5-unit category padding on each
+        # end so the first/last bars sit flush with the plot frame.
+        autorange=False, range=[len(enames) - 0.5, -0.3],
+        automargin=False,
+        tickmode="array", tickvals=enames, ticktext=enames,
+        tickfont=dict(size=px["tick"], color=PAPER_PALETTE["text"], family=FONT_FAMILY),
         showgrid=False, showline=False,
     )
     fig.update_xaxes(
         title=dict(
-            text=(
-                "AI Capability as % of Workforce Max "
-                "(AI Top-10 Average ÷ Occupation Max for the Element)"
-            ),
-            font=dict(size=LABEL_FS - 2),
+            text="AI Capability as % of Workforce Max",
+            font=dict(size=px["axis_title"], family=FONT_FAMILY),
+            standoff=15,
         ),
         range=[0, 100], ticksuffix="%",
         showgrid=True, gridcolor=PAPER_PALETTE["grid"],
         showticklabels=True,
-        tickfont=dict(size=12, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
+        tickfont=dict(size=px["tick"], color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
         showline=False, zeroline=True, zerolinecolor=PAPER_PALETTE["grid"],
     )
 
@@ -1258,12 +1668,24 @@ def _build_ska_subcategory_chart(
 ) -> None:
     """Knowledge + Abilities at subcategory level. Each cell is a mean
     across the elements in that subcategory. Bar = AI Top-10 mean (% of
-    workforce max). Red diamond = AI Max %, red circle = AI P95 %. Black
-    dot = workforce mean %."""
+    workforce max), colored by phys-mix tier. Red diamond = AI Max %.
+    Black dot = workforce mean %."""
+    px = paper_fonts(PAPER_W)
+
     n_know = len(knowledge_df)
     n_abil = len(abilities_df)
     total = n_know + n_abil
     row_heights = [n_know / total, n_abil / total]
+
+    # Pick a left margin that fits the longest "Subcategory  (n=X)" label
+    # (~7 px/char at 9 pt Inter) plus the rotated y-axis title (~30 px) and
+    # a small left-edge buffer. Tight enough that tick labels sit close to
+    # the y-axis title rather than floating in empty space.
+    max_label = max(
+        len(f"{r.subcategory}  (n={int(r.n_elements)})")
+        for df in (knowledge_df, abilities_df) for r in df.itertuples()
+    )
+    margin_l = max(200, max_label * 12 + 90)
 
     fig = make_subplots(
         rows=2, cols=1,
@@ -1275,14 +1697,6 @@ def _build_ska_subcategory_chart(
         ],
     )
 
-    legend_shown: set[str] = set()
-
-    def _show(key: str) -> bool:
-        if key not in legend_shown:
-            legend_shown.add(key)
-            return True
-        return False
-
     for row, df in enumerate([knowledge_df, abilities_df], start=1):
         sub_labels = [
             f"{r.subcategory}  (n={int(r.n_elements)})"
@@ -1292,7 +1706,7 @@ def _build_ska_subcategory_chart(
             y=sub_labels, x=[100] * len(sub_labels), orientation="h",
             name="Workforce Max",
             marker=dict(color="#e8e8e2", line=dict(width=0)),
-            showlegend=_show("emax"),
+            showlegend=False,
             hovertemplate="Workforce max: 100%<extra></extra>",
         ), row=row, col=1)
 
@@ -1306,116 +1720,106 @@ def _build_ska_subcategory_chart(
             y=sub_labels, x=df["ai_top10_pct"], orientation="h",
             name="AI Top-10 Avg",
             marker=dict(color=bar_colors, opacity=0.88, line=dict(width=0)),
-            showlegend=_show("ai_top10"),
+            showlegend=False,
             text=[f"{v:.0f}%" for v in df["ai_top10_pct"]],
             textposition="outside",
-            textfont=dict(size=12, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
+            textfont=dict(size=px["in_chart_floor"],
+                          color=PAPER_PALETTE["text"], family=FONT_FAMILY),
             hovertemplate="AI Top-10 avg (% of max): %{x:.1f}%<extra></extra>",
-        ), row=row, col=1)
-
-        fig.add_trace(go.Scatter(
-            y=sub_labels, x=df["ai_p95_pct"], mode="markers",
-            name="AI P95",
-            marker=dict(color=AI_MARKER_COLOR, symbol="circle", size=11),
-            showlegend=_show("ai_p95"),
-            hovertemplate="AI P95 (% of max): %{x:.1f}%<extra></extra>",
         ), row=row, col=1)
 
         fig.add_trace(go.Scatter(
             y=sub_labels, x=df["ai_max_pct"], mode="markers",
             name="AI Max",
-            marker=dict(color=AI_MARKER_COLOR, symbol="diamond", size=12),
-            showlegend=_show("ai_max"),
+            marker=dict(color=AI_MARKER_COLOR, symbol="diamond", size=14,
+                        opacity=0.75),
+            showlegend=False,
             hovertemplate="AI Max (% of max): %{x:.1f}%<extra></extra>",
         ), row=row, col=1)
 
         fig.add_trace(go.Scatter(
             y=sub_labels, x=df["eco_mean_pct"], mode="markers",
             name="Workforce Mean",
-            marker=dict(color="#1a1a1a", symbol="circle", size=8,
-                        line=dict(width=1, color="#1a1a1a")),
-            showlegend=_show("emean"),
+            marker=dict(color=WORKFORCE_MEAN_COLOR, symbol="circle", size=10,
+                        opacity=0.75,
+                        line=dict(width=1, color=WORKFORCE_MEAN_COLOR)),
+            showlegend=False,
             hovertemplate="Workforce mean (% of max): %{x:.1f}%<extra></extra>",
         ), row=row, col=1)
 
         fig.update_yaxes(
             autorange="reversed", row=row, col=1,
-            tickfont=dict(size=13, color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+            type="category",
+            tickmode="array", tickvals=sub_labels, ticktext=sub_labels,
+            tickfont=dict(size=px["tick"], color=PAPER_PALETTE["text"], family=FONT_FAMILY),
             showgrid=False, showline=False,
         )
         fig.update_xaxes(
             range=[0, 100], ticksuffix="%",
             showgrid=True, gridcolor=PAPER_PALETTE["grid"],
-            tickfont=dict(size=12, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
+            tickfont=dict(size=px["tick"], color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
             showline=False, zeroline=True, zerolinecolor=PAPER_PALETTE["grid"],
             row=row, col=1,
         )
 
-    # Phys-tier legend entries — invisible bars carrying just the colored
-    # marker so the legend documents the three-bucket coloring.
-    for tier, tier_color in SKA_BAR_COLOR_BY_TIER.items():
-        fig.add_trace(go.Bar(
-            y=[None], x=[None], orientation="h",
-            name=f"Bar color: {tier} occ mix",
-            marker=dict(color=tier_color, opacity=0.88, line=dict(width=0)),
-            showlegend=True, hoverinfo="skip",
-        ), row=1, col=1)
-
-    # Y axis titles per subplot
+    # Y axis titles per subplot — large standoff pushes the rotated title
+    # flush with the figure's left edge.
+    yt_standoff = max(0, margin_l - 40)
     fig.update_yaxes(
-        title=dict(text="O*NET Knowledge Subcategory", font=dict(size=LABEL_FS - 2)),
+        title=dict(text="O*NET Knowledge Subcategory",
+                   font=dict(size=px["axis_title"], family=FONT_FAMILY),
+                   standoff=yt_standoff),
+        automargin=False,
         row=1, col=1,
     )
     fig.update_yaxes(
-        title=dict(text="O*NET Ability Subcategory", font=dict(size=LABEL_FS - 2)),
+        title=dict(text="O*NET Ability Subcategory",
+                   font=dict(size=px["axis_title"], family=FONT_FAMILY),
+                   standoff=yt_standoff),
+        automargin=False,
         row=2, col=1,
     )
     fig.update_xaxes(
         title=dict(
-            text=(
-                "AI Capability as % of Workforce Max — "
-                "Average across the subcategory of (AI Top-10 ÷ Occupation Max per Element)"
-            ),
-            font=dict(size=LABEL_FS - 2),
+            text="AI Capability as % of Workforce Max (Subcategory Average)",
+            font=dict(size=px["axis_title"], family=FONT_FAMILY),
+            standoff=15,
         ),
         row=2, col=1,
     )
 
-    fig_height = max(900, total * 35 + 380)
+    margin_t, margin_b = 140, 310
+    margin_r = 80
+    fig_height = max(900, total * 42 + margin_t + margin_b)
+
+    draw_ska_manual_legend(
+        fig, ska_legend_rows(),
+        fig_width=PAPER_W, fig_height=fig_height,
+        margin_l=margin_l, margin_r=margin_r,
+        margin_t=margin_t, margin_b=margin_b,
+        legend_font_px=px["legend"],
+    )
 
     fig.update_layout(
         title=dict(
-            text=(
-                "AI Capability as % of Workforce Max — O*NET Knowledge and Abilities"
-                f"<br><span style='font-size:{SUBTITLE_FS}px;"
-                f"color:{PAPER_PALETTE['muted']}'>"
-                "Gray bar = workforce maximum (highest occupational need per element, "
-                "set to 100%). Blue bar = AI Top-10 average as a share of that maximum, "
-                "averaged across the subcategory."
-                "</span>"
-            ),
-            font=dict(size=TITLE_FS, color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+            text="AI Capability as % of Workforce Max — O*NET Knowledge and Abilities",
+            font=dict(size=px["title"], color=PAPER_PALETTE["text"], family=FONT_FAMILY),
             x=0.01, xanchor="left",
         ),
         height=fig_height,
         width=PAPER_W,
-        font=dict(family=FONT_FAMILY, size=13, color=PAPER_PALETTE["text"]),
+        font=dict(family=FONT_FAMILY, size=px["tick"], color=PAPER_PALETTE["text"]),
         plot_bgcolor=PAPER_PALETTE["surface"],
         paper_bgcolor=PAPER_PALETTE["surface"],
         barmode="overlay",
-        legend=dict(
-            orientation="h",
-            yanchor="top", y=-0.10, xanchor="center", x=0.5,
-            font=dict(size=LEGEND_FS, color=PAPER_PALETTE["neutral"]),
-            bgcolor="rgba(0,0,0,0)", borderwidth=0,
-        ),
-        margin=dict(l=300, r=80, t=120, b=180),
+        showlegend=False,
+        margin=dict(l=margin_l, r=margin_r, t=margin_t, b=margin_b),
     )
 
     panel_starts = ("Knowledge  ", "Abilities  ")
     for ann in fig.layout.annotations:
         if hasattr(ann, "text") and any(ann.text.startswith(s) for s in panel_starts):
-            ann.font = dict(size=LABEL_FS, family=FONT_FAMILY,
+            ann.font = dict(size=px["panel_title"], family=FONT_FAMILY,
                             color=PAPER_PALETTE["text"])
 
     save_figure(fig, results / "figures" / "ska_knowledge_abilities.png", scale=2)
@@ -1766,16 +2170,119 @@ def _get_wa_data_with_phys(dataset_name: str, level: str, physical_mode: str) ->
 # Chart 5: All 22 Major Categories — 3 Side-by-Side Panels
 # ─────────────────────────────────────────────────────────────────────────
 
-def build_major_categories(results: Path, figures: Path) -> None:
-    """Five-panel major trio: variant A % | variant B % | all_confirmed %
-    | all_confirmed workers | all_confirmed wages.
+# ─────────────────────────────────────────────────────────────────────────
+# Major Categories — split into two paper figures:
+#   1. major_categories_pct.png         — % Tasks Exposed | Variant A | Variant B
+#   2. major_categories_wkrs_wages.png  — % Tasks Exposed | Workers | Wages
+#
+# Both use width = PAPER_W (1400) so the 8 pt paper floor = 24 px on canvas;
+# fonts are bumped on these two charts only. % Tasks Exposed is the anchor
+# panel on both charts, sorted identically.
+# ─────────────────────────────────────────────────────────────────────────
 
-    Variant A — naive non-phys task share (eco only, no AI). Variant B —
-    pipeline pct restricted to non-physical tasks on both sides. The
-    all_confirmed reading occupies the right three panels just like the
-    old major_categories.png. A trailing annotation reports n_occs by
-    physical bucket (Phys / Mixed / Non-physical), since the box plot
-    that used to carry that distribution has been removed from Part 2."""
+# Wider canvas (2000 px) so each panel is ~2x wider than at the default
+# 1400, which makes the bars themselves visually ~2x longer when pasted at
+# 6.5". Fonts come from paper_fonts(W) so the printed pt sizes follow the
+# standardized ladder (title 11 pt, panel/axis 10 pt, tick/legend 9 pt,
+# in-chart floor 8 pt) — see analysis/paper/paper_config.py.
+from analysis.paper.paper_config import paper_fonts as _paper_fonts
+_MAJ_CANVAS_W    = 2000
+_MAJ_PX          = _paper_fonts(_MAJ_CANVAS_W)
+_MAJ_TITLE_FS    = _MAJ_PX["title"]            # 11 pt
+_MAJ_PANEL_FS    = _MAJ_PX["panel_title"]      # 10 pt
+_MAJ_LABEL_FS    = _MAJ_PX["axis_title"]       # 10 pt
+_MAJ_TICK_FS     = _MAJ_PX["tick"]             # 9 pt
+_MAJ_BARTEXT_FS  = _MAJ_PX["in_chart_floor"]   # 8 pt floor for bar value text
+
+VARIANT_A_COLOR = "#7a9ab8"
+VARIANT_B_COLOR = "#3a6f8f"
+
+
+def _axis_max_and_ticks(max_val: float) -> tuple[float, list[float]]:
+    """Tight axis range + clean tick values for a panel whose longest
+    bar should fill ~95% of the panel width. Returns (range_max, ticks).
+
+    Range extends 5% past max_val. Step is picked from {1, 2, 5} × 10^k
+    so ticks land at clean intervals; we aim for 3 intervals across the
+    range which yields 3–4 visible ticks."""
+    import math
+    if max_val <= 0:
+        return 1.0, [0.0]
+    range_max = max_val * 1.05
+    raw_step = range_max / 3.0
+    magnitude = 10 ** math.floor(math.log10(raw_step))
+    norm = raw_step / magnitude
+    # Step bases include 2.5 (so ranges ~75 pick step 25 → 4 ticks; ranges
+    # ~650 pick step 250 → 3 ticks). The norm<3.0 threshold for step 2.5
+    # (was 3.5) pushes ranges ~100 into step 50 instead — 3 ticks
+    # [0, 50, 100] instead of 5 [0, 25, 50, 75, 100] — which prevents
+    # crowding on narrower panels (e.g. GWA, where long y-labels claim
+    # more left margin via automargin).
+    if norm < 1.5:
+        step = 1.0 * magnitude
+    elif norm < 2.25:
+        step = 2.0 * magnitude
+    elif norm < 3.0:
+        step = 2.5 * magnitude
+    elif norm < 7.0:
+        step = 5.0 * magnitude
+    else:
+        step = 10.0 * magnitude
+    n_max = int(range_max / step)
+    ticks = [float(step * i) for i in range(n_max + 1)]
+    return float(range_max), ticks
+
+
+def _balanced_wrap(label: str, max_chars: int = 22) -> str:
+    """Pick the 2-line break (after any comma or space) that minimizes
+    the longer line's length. Balanced lines visually read as
+    center-aligned even though Plotly anchors y-axis tick labels to the
+    axis line, so no single line pokes far left of the others. Returns
+    the original label if it fits within `max_chars` or has no break
+    point."""
+    if len(label) <= max_chars:
+        return label
+    candidates: list[tuple[int, int, str, str]] = []
+    for i in range(1, len(label)):
+        if label[i - 1] in (",", " "):
+            line1 = label[:i].rstrip(", ").rstrip()
+            line2 = label[i:].lstrip()
+            if not line1 or not line2:
+                continue
+            # Preserve a trailing comma on line 1 if the break came right
+            # after one — reads more naturally as "Arts, Design,..." than
+            # "Arts, Design".
+            if label[i - 1] == ",":
+                line1 = line1 + ","
+            candidates.append((max(len(line1), len(line2)), i, line1, line2))
+    if not candidates:
+        return label
+    candidates.sort(key=lambda t: (t[0], t[1]))
+    _, _, line1, line2 = candidates[0]
+    return f"{line1}<br>{line2}"
+
+
+def _wrap_major_label(label: str, max_chars: int = 22) -> str:
+    """Major-cat y-axis labels — strip the redundant ' Occupations'
+    suffix (every major ends in it) and then balanced-wrap."""
+    return _balanced_wrap(label.replace(" Occupations", ""), max_chars)
+
+
+def _wrap_gwa_label(label: str, max_chars: int = 32) -> str:
+    """GWA y-axis labels — balanced wrap. Wider `max_chars` than the
+    major version because GWA labels are often phrases (e.g. 'Updating
+    and Using Relevant Knowledge') that read fine on a single line at
+    32-char width."""
+    return _balanced_wrap(label, max_chars)
+
+
+
+
+def _major_base_data() -> pd.DataFrame:
+    """Shared loader for both split major-cat charts. Returns one row per
+    major with pct_tasks_affected (All Confirmed), pct_a, pct_b,
+    workers_affected, wages_affected — sorted by All Confirmed % tasks
+    desc so both figures share the same y-ordering."""
     base = _run_config(PRIMARY_DATASET, "major")
     variant_a = compute_variant_a("major")
     variant_b = _run_config(PRIMARY_DATASET, "major", physical_mode="exclude")
@@ -1788,530 +2295,554 @@ def build_major_categories(results: Path, figures: Path) -> None:
     b_map = variant_b.set_index("category")["pct_tasks_affected"]
     base["pct_a"] = base["category"].map(a_map)
     base["pct_b"] = base["category"].map(b_map)
+    return base
+
+
+def _nice_ticks(max_val: float, n_ticks: int = 5) -> list[float]:
+    import math
+    if max_val <= 0:
+        return [0.0]
+    raw_step = max_val / (n_ticks - 1)
+    magnitude = 10 ** math.floor(math.log10(raw_step))
+    step = math.ceil(raw_step / magnitude) * magnitude
+    ticks = [step * i for i in range(n_ticks + 1)]
+    return [t for t in ticks if t <= max_val * 1.05]
+
+
+def _strip_zero_decimal(s: str) -> str:
+    for unit in ("M", "B", "K", "T"):
+        s = s.replace(f".0{unit}", unit)
+    return s
+
+
+def _style_major_split(
+    fig: go.Figure,
+    title: str,
+    n_cats: int,
+    panel_titles: set[str],
+    bottom_margin: int = 260,
+) -> None:
+    """Shared layout for the two split major-cat charts. Width = PAPER_W,
+    fonts pulled from paper_fonts(W) so print pt sizes follow the
+    standardized ladder. Margins sized to leave room for the title,
+    x-tick + x-axis title at bottom, and the (now ' Occupations'-stripped)
+    major-cat labels on the left — tight enough to give the bars
+    themselves the bulk of the canvas width.
+
+    `bottom_margin` defaults to 260 px (room for 2-line axis titles like
+    the pct chart's "Hypothetical Exposure if / All Non-Phys Automatable").
+    Charts with 1-line axis titles (e.g. workers/wages) pass a smaller
+    value to avoid empty space at the bottom — the figure's total height
+    is recomputed to match."""
+    # Wide canvas (2000 px) so each panel has ~2x the horizontal room,
+    # which (combined with the abbreviated y-labels) lets the bars
+    # themselves stretch out further. Per-row height bumped to 130
+    # because some wrapped labels still spill onto a second line.
+    height = max(PAPER_H + 460, n_cats * 130 + 480)
+    # Add/subtract the bottom-margin delta from total height so the
+    # plot area stays constant whether the caller asks for less
+    # (1-line title) or more (3-line title) bottom space.
+    height += bottom_margin - 260
+    fig.update_layout(
+        title=dict(
+            text=title,
+            font=dict(size=_MAJ_TITLE_FS, color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+            x=0.01, xanchor="left",
+            y=0.99, yanchor="top",
+        ),
+        font=dict(family=FONT_FAMILY, color=PAPER_PALETTE["text"]),
+        plot_bgcolor=PAPER_PALETTE["surface"],
+        paper_bgcolor=PAPER_PALETTE["surface"],
+        width=_MAJ_CANVAS_W,
+        height=height,
+        margin=dict(l=110, r=110, t=160, b=bottom_margin),
+        bargap=0.2,
+        showlegend=False,
+    )
+    fig.update_xaxes(
+        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+        showline=True, linecolor=PAPER_PALETTE["grid"],
+        zeroline=True, zerolinecolor=PAPER_PALETTE["grid"],
+        tickfont=dict(size=_MAJ_TICK_FS, family=FONT_FAMILY),
+        tickangle=0,
+        ticklabelstandoff=8,
+    )
+    fig.update_yaxes(showgrid=False, showline=False)
+    fig.update_yaxes(
+        tickfont=dict(size=_MAJ_TICK_FS, family=FONT_FAMILY),
+        # Compact left-side text apparatus — pull tick labels close to
+        # the axis line, and pull the y-axis title close to the labels.
+        # automargin still claims enough room for the longest label,
+        # but the standoffs cut the slack out of the zone.
+        automargin=True,
+        ticklabelstandoff=2,
+        ticks="",
+        ticklen=0,
+        row=1, col=1,
+    )
+    for ann in fig.layout.annotations:
+        if hasattr(ann, "text") and ann.text in panel_titles:
+            ann.font = dict(size=_MAJ_PANEL_FS, family=FONT_FAMILY,
+                            color=PAPER_PALETTE["text"])
+
+
+def build_major_categories_pct(results: Path, figures: Path) -> None:
+    """Chart A — three % panels: All Confirmed | Variant A | Variant B.
+
+    Variant A = naive non-phys task share (eco only, no AI signal).
+    Variant B = pipeline pct restricted to non-physical tasks on both
+    sides. All Confirmed is the anchor first panel — both split charts
+    share this column so the eye can bridge between figures."""
+    base = _major_base_data()
     save_csv(base, results / "major_categories.csv")
 
-    categories = base["category"].tolist()
-    n_cats = len(categories)
-
-    # Reverse for plotly: top of chart = highest-pct major.
-    categories_r = list(reversed(categories))
-    pct_a_r     = list(reversed(base["pct_a"].fillna(0.0).tolist()))
-    pct_b_r     = list(reversed(base["pct_b"].fillna(0.0).tolist()))
-    pct_r       = list(reversed(base["pct_tasks_affected"].tolist()))
-    workers_r   = list(reversed(base["workers_affected"].tolist()))
-    wages_r     = list(reversed(base["wages_affected"].tolist()))
-
-    # n_occs by phys bucket — global totals, used in the chart subtitle and
-    # for the per-major stacked bar in panel 6. Same cuts (<33 / 33-67 / >67
-    # % physical) the variant pipeline uses.
-    occ_struct = _load_occ_structural()
-    bucket_counts = occ_struct.groupby("occ_group").size().to_dict()
-    n_phys = int(bucket_counts.get("Physical", 0))
-    n_mix  = int(bucket_counts.get("Mixed", 0))
-    n_non  = int(bucket_counts.get("Non-physical", 0))
-
-    # Per-major occupation phys-mix shares for the 6th panel.
-    major_phys_mix = _major_phys_mix_shares(occ_struct)
-    pct_phys_r = [major_phys_mix.get(c, {}).get("pct_physical",     0.0) for c in categories_r]
-    pct_mix_r  = [major_phys_mix.get(c, {}).get("pct_mixed",        0.0) for c in categories_r]
-    pct_non_r  = [major_phys_mix.get(c, {}).get("pct_non_physical", 0.0) for c in categories_r]
+    categories_r = [_wrap_major_label(c) for c in reversed(base["category"].tolist())]
+    pct_r   = list(reversed(base["pct_tasks_affected"].tolist()))
+    pct_a_r = list(reversed(base["pct_a"].fillna(0.0).tolist()))
+    pct_b_r = list(reversed(base["pct_b"].fillna(0.0).tolist()))
+    n_cats = len(categories_r)
 
     fig = make_subplots(
-        rows=1, cols=6,
-        subplot_titles=[
-            "Variant A:<br>Non-Phys Task Share",
-            "Variant B: % Tasks<br>Exposed in Non-Phys Work",
-            "% Tasks Exposed<br>(All Confirmed)",
-            "Workers Exposed<br>(All Confirmed)",
-            "Wages Exposed<br>(All Confirmed)",
-            "Phys Mix<br>(Occs)",
-        ],
-        horizontal_spacing=0.04,
+        rows=1, cols=3,
+        subplot_titles=["", "", ""],
+        horizontal_spacing=0.09,
         shared_yaxes=True,
-        column_widths=[1.0, 1.0, 1.0, 1.0, 1.0, 0.55],
     )
 
-    # Use the workers/wages metric palette for the all_confirmed reading,
-    # and a desaturated neutral tone for variants A and B (structural
-    # framing — they're scaffolding for the all_confirmed columns).
-    VARIANT_A_COLOR = "#7a9ab8"
-    VARIANT_B_COLOR = "#3a6f8f"
+    inside_font  = dict(size=_MAJ_BARTEXT_FS, color="white",               family=FONT_FAMILY)
+    outside_font = dict(size=_MAJ_BARTEXT_FS, color=PAPER_PALETTE["text"], family=FONT_FAMILY)
 
-    inside_font  = dict(size=OUTSIDE_FS, color="white",                    family=FONT_FAMILY)
-    outside_font = dict(size=OUTSIDE_FS, color=PAPER_PALETTE["text"],      family=FONT_FAMILY)
-
-    fig.add_trace(go.Bar(
-        y=categories_r, x=pct_a_r, orientation="h",
-        marker=dict(color=VARIANT_A_COLOR, line=dict(width=0)),
-        text=[f"{v:.1f}%" for v in pct_a_r],
-        textposition="auto",
-        insidetextfont=inside_font,
-        outsidetextfont=outside_font,
-        showlegend=False, cliponaxis=False, constraintext="none",
-        hovertemplate="Variant A: %{x:.1f}%<extra></extra>",
-    ), row=1, col=1)
-
-    fig.add_trace(go.Bar(
-        y=categories_r, x=pct_b_r, orientation="h",
-        marker=dict(color=VARIANT_B_COLOR, line=dict(width=0)),
-        text=[f"{v:.1f}%" for v in pct_b_r],
-        textposition="auto",
-        insidetextfont=inside_font,
-        outsidetextfont=outside_font,
-        showlegend=False, cliponaxis=False, constraintext="none",
-        hovertemplate="Variant B: %{x:.1f}%<extra></extra>",
-    ), row=1, col=2)
+    # Per-bar inside/outside decision: only put white text inside the
+    # bar if the bar is comfortably wider than the text. Below the
+    # threshold the data label sits outside in dark text so it reads
+    # cleanly. Threshold of 30% of the [0, 100] x-range gives ~145 px
+    # of bar room on a 487 px panel — enough for "XX.X%" at the 8 pt
+    # floor with comfortable padding.
+    PCT_INSIDE_THRESHOLD = 30.0
+    pos_pct  = ["inside" if v >= PCT_INSIDE_THRESHOLD else "outside" for v in pct_r]
+    pos_a    = ["inside" if v >= PCT_INSIDE_THRESHOLD else "outside" for v in pct_a_r]
+    pos_b    = ["inside" if v >= PCT_INSIDE_THRESHOLD else "outside" for v in pct_b_r]
 
     fig.add_trace(go.Bar(
         y=categories_r, x=pct_r, orientation="h",
         marker=dict(color=METRIC_COLORS["tasks"], line=dict(width=0)),
         text=[f"{v:.1f}%" for v in pct_r],
-        textposition="auto",
+        textposition=pos_pct,
+        insidetextanchor="end",
         insidetextfont=inside_font,
         outsidetextfont=outside_font,
+        textangle=0,
         showlegend=False, cliponaxis=False, constraintext="none",
         hovertemplate="All Confirmed: %{x:.1f}%<extra></extra>",
+    ), row=1, col=1)
+
+    fig.add_trace(go.Bar(
+        y=categories_r, x=pct_a_r, orientation="h",
+        marker=dict(color=VARIANT_A_COLOR, line=dict(width=0)),
+        text=[f"{v:.1f}%" for v in pct_a_r],
+        textposition=pos_a,
+        insidetextanchor="end",
+        insidetextfont=inside_font,
+        outsidetextfont=outside_font,
+        textangle=0,
+        showlegend=False, cliponaxis=False, constraintext="none",
+        hovertemplate="Variant A: %{x:.1f}%<extra></extra>",
+    ), row=1, col=2)
+
+    fig.add_trace(go.Bar(
+        y=categories_r, x=pct_b_r, orientation="h",
+        marker=dict(color=VARIANT_B_COLOR, line=dict(width=0)),
+        text=[f"{v:.1f}%" for v in pct_b_r],
+        textposition=pos_b,
+        insidetextanchor="end",
+        insidetextfont=inside_font,
+        outsidetextfont=outside_font,
+        textangle=0,
+        showlegend=False, cliponaxis=False, constraintext="none",
+        hovertemplate="Variant B: %{x:.1f}%<extra></extra>",
     ), row=1, col=3)
+
+    _style_major_split(
+        fig,
+        "AI Exposure by Major Occupational Category",
+        n_cats=n_cats,
+        panel_titles=set(),
+    )
+    # Percentage axes use a uniform [0, 100] range with ticks at
+    # [0, 50, 100] across all three panels — keeps the reader's sense of
+    # scale consistent panel-to-panel even when the longest bar in some
+    # panels falls well short of 100%.
+    PCT_RANGE = [0, 100]
+    PCT_TICKS = [0, 50, 100]
+    PCT_TICKTEXT = [f"{v}%" for v in PCT_TICKS]
+    fig.update_xaxes(
+        range=PCT_RANGE, tickvals=PCT_TICKS, ticktext=PCT_TICKTEXT,
+        title=dict(text="Tasks Exposed", font=dict(size=_MAJ_LABEL_FS)),
+        row=1, col=1,
+    )
+    fig.update_xaxes(
+        range=PCT_RANGE, tickvals=PCT_TICKS, ticktext=PCT_TICKTEXT,
+        title=dict(
+            text="Hypothetical Exposure if<br>All Non-Phys Automatable",
+            font=dict(size=_MAJ_LABEL_FS),
+        ),
+        row=1, col=2,
+    )
+    fig.update_xaxes(
+        range=PCT_RANGE, tickvals=PCT_TICKS, ticktext=PCT_TICKTEXT,
+        title=dict(text="Exposure of<br>Non-Phys Tasks", font=dict(size=_MAJ_LABEL_FS)),
+        row=1, col=3,
+    )
+    fig.update_yaxes(
+        title=dict(
+            text="Major Occupational Category",
+            font=dict(size=_MAJ_LABEL_FS),
+            standoff=4,
+        ),
+        row=1, col=1,
+    )
+
+    save_figure(fig, results / "figures" / "major_categories_pct.png", scale=2)
+    _copy_fig(results, figures, "major_categories_pct.png")
+    print("  -> major_categories_pct.png")
+
+
+def build_major_categories_wkrs_wages(results: Path, figures: Path) -> None:
+    """Chart B — three All Confirmed panels: % Tasks | Workers | Wages.
+
+    First panel repeats All Confirmed % Tasks Exposed as the anchor
+    column so the reader can bridge ordering between Chart A and Chart B."""
+    base = _major_base_data()
+
+    categories_r = [_wrap_major_label(c) for c in reversed(base["category"].tolist())]
+    pct_r     = list(reversed(base["pct_tasks_affected"].tolist()))
+    workers_r = list(reversed(base["workers_affected"].tolist()))
+    wages_r   = list(reversed(base["wages_affected"].tolist()))
+    n_cats = len(categories_r)
+
+    fig = make_subplots(
+        rows=1, cols=3,
+        subplot_titles=["", "", ""],
+        horizontal_spacing=0.09,
+        shared_yaxes=True,
+    )
+
+    inside_font  = dict(size=_MAJ_BARTEXT_FS, color="white",               family=FONT_FAMILY)
+    outside_font = dict(size=_MAJ_BARTEXT_FS, color=PAPER_PALETTE["text"], family=FONT_FAMILY)
+
+    # Per-bar inside/outside decision: bars wide enough get the white
+    # in-bar label; the rest fall outside in dark text. % chart uses a
+    # fixed 0-100 range; workers/wages use a fraction of the panel's max
+    # so the threshold scales with the data.
+    workers_max_v = float(base["workers_affected"].max()) if not base.empty else 0.0
+    wages_max_v   = float(base["wages_affected"].max())   if not base.empty else 0.0
+    PCT_INSIDE_THRESHOLD = 30.0
+    WKR_INSIDE_THRESHOLD = 0.30 * workers_max_v
+    WAG_INSIDE_THRESHOLD = 0.30 * wages_max_v
+    pos_pct  = ["inside" if v >= PCT_INSIDE_THRESHOLD else "outside" for v in pct_r]
+    pos_wkrs = ["inside" if v >= WKR_INSIDE_THRESHOLD else "outside" for v in workers_r]
+    pos_wags = ["inside" if v >= WAG_INSIDE_THRESHOLD else "outside" for v in wages_r]
+
+    fig.add_trace(go.Bar(
+        y=categories_r, x=pct_r, orientation="h",
+        marker=dict(color=METRIC_COLORS["tasks"], line=dict(width=0)),
+        text=[f"{v:.1f}%" for v in pct_r],
+        textposition=pos_pct,
+        insidetextanchor="end",
+        insidetextfont=inside_font,
+        outsidetextfont=outside_font,
+        textangle=0,
+        showlegend=False, cliponaxis=False, constraintext="none",
+        hovertemplate="All Confirmed: %{x:.1f}%<extra></extra>",
+    ), row=1, col=1)
 
     fig.add_trace(go.Bar(
         y=categories_r, x=workers_r, orientation="h",
         marker=dict(color=METRIC_COLORS["workers"], line=dict(width=0)),
         text=[fmt_workers(v) for v in workers_r],
-        textposition="auto",
+        textposition=pos_wkrs,
+        insidetextanchor="end",
         insidetextfont=inside_font,
         outsidetextfont=outside_font,
+        textangle=0,
         showlegend=False, cliponaxis=False, constraintext="none",
-    ), row=1, col=4)
+    ), row=1, col=2)
 
     fig.add_trace(go.Bar(
         y=categories_r, x=wages_r, orientation="h",
         marker=dict(color=METRIC_COLORS["wages"], line=dict(width=0)),
         text=[fmt_wages(v) for v in wages_r],
-        textposition="auto",
+        textposition=pos_wags,
+        insidetextanchor="end",
         insidetextfont=inside_font,
         outsidetextfont=outside_font,
+        textangle=0,
         showlegend=False, cliponaxis=False, constraintext="none",
-    ), row=1, col=5)
+    ), row=1, col=3)
 
-    # Panel 6 — per-major occupation phys-mix stacked bar. Uses `base` for
-    # manual stacking instead of barmode="stack" so the other panels'
-    # single-trace bars don't get squeezed.
-    base_mix = pct_phys_r
-    base_non = [p + m for p, m in zip(pct_phys_r, pct_mix_r)]
-    fig.add_trace(go.Bar(
-        y=categories_r, x=pct_phys_r, base=0, orientation="h",
-        marker=dict(color=GROUP_COLORS["Physical"], line=dict(width=0)),
-        name="% Physical occs", showlegend=True,
-        hovertemplate="Physical: %{x:.0f}%<extra></extra>",
-    ), row=1, col=6)
-    fig.add_trace(go.Bar(
-        y=categories_r, x=pct_mix_r, base=base_mix, orientation="h",
-        marker=dict(color=GROUP_COLORS["Mixed"], line=dict(width=0)),
-        name="% Mixed occs", showlegend=True,
-        hovertemplate="Mixed: %{x:.0f}%<extra></extra>",
-    ), row=1, col=6)
-    fig.add_trace(go.Bar(
-        y=categories_r, x=pct_non_r, base=base_non, orientation="h",
-        marker=dict(color=GROUP_COLORS["Non-physical"], line=dict(width=0)),
-        name="% Non-physical occs", showlegend=True,
-        hovertemplate="Non-physical: %{x:.0f}%<extra></extra>",
-    ), row=1, col=6)
-
-    height = max(PAPER_H + 200, n_cats * 36 + 220)
-
-    style_paper_figure(
+    _style_major_split(
         fig,
-        "AI Exposure by Major Occupational Category — Variants A, B, and All Confirmed",
-        subtitle=(
-            f"All {n_cats} major SOC categories ranked by All Confirmed % tasks exposed. "
-            "Variant A = naive non-physical task share (no AI signal). "
-            "Variant B = % tasks exposed restricted to non-physical work."
-            "<br>"
-            "Right panel: share of each major's occupations classified Physical / Mixed / Non-Physical. "
-            f"Economy-wide totals: {n_phys} Physical · {n_mix} Mixed · {n_non} Non-physical occupations."
-        ),
-        height=height + 140,
-        width=PAPER_W + 900,
-        margin=dict(l=340, r=110, t=240, b=160),
+        "AI Exposure by Major Occupational Category",
+        n_cats=n_cats,
+        panel_titles=set(),
+        bottom_margin=170,  # 1-line axis titles ("Workers Exposed" etc.)
     )
-
+    # Per-panel tight axis ranges so the longest bar in each panel
+    # reaches ~95% of panel width. % chart uses its own axis logic;
+    # workers/wages share the same helper with their natural units; the
+    # % axis uses the same uniform [0, 100] / [0, 50, 100] presentation
+    # as the major-pct chart so the reader's scale anchor doesn't shift
+    # between figures.
+    r_wkr, t_wkr = _axis_max_and_ticks(float(base["workers_affected"].max()))
+    r_wag, t_wag = _axis_max_and_ticks(float(base["wages_affected"].max()))
     fig.update_xaxes(
-        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
-        showticklabels=True, showline=True, linecolor=PAPER_PALETTE["grid"],
-        zeroline=True, zerolinecolor=PAPER_PALETTE["grid"],
-        tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
-    )
-
-    def _nice_ticks(max_val: float, n_ticks: int = 5) -> list[float]:
-        import math
-        if max_val <= 0:
-            return [0.0]
-        raw_step = max_val / (n_ticks - 1)
-        magnitude = 10 ** math.floor(math.log10(raw_step))
-        step = math.ceil(raw_step / magnitude) * magnitude
-        ticks = [step * i for i in range(n_ticks + 1)]
-        return [t for t in ticks if t <= max_val * 1.05]
-
-    workers_max = float(base["workers_affected"].max())
-    wages_max   = float(base["wages_affected"].max())
-    worker_ticks = _nice_ticks(workers_max)
-    wage_ticks   = _nice_ticks(wages_max)
-
-    def _strip_zero_decimal(s: str) -> str:
-        for unit in ("M", "B", "K", "T"):
-            s = s.replace(f".0{unit}", unit)
-        return s
-
-    fig.update_xaxes(ticksuffix="%", title=dict(text="% (Variant A)", font=dict(size=LABEL_FS)), row=1, col=1)
-    fig.update_xaxes(ticksuffix="%", title=dict(text="% (Variant B)", font=dict(size=LABEL_FS)), row=1, col=2)
-    fig.update_xaxes(ticksuffix="%", title=dict(text="% Tasks Exposed", font=dict(size=LABEL_FS)), row=1, col=3)
-    fig.update_xaxes(
-        tickvals=worker_ticks,
-        ticktext=[_strip_zero_decimal(fmt_workers(v)) for v in worker_ticks],
-        title=dict(text="Workers Exposed", font=dict(size=LABEL_FS)),
-        row=1, col=4,
+        range=[0, 100], tickvals=[0, 50, 100],
+        ticktext=["0%", "50%", "100%"],
+        title=dict(text="Tasks Exposed", font=dict(size=_MAJ_LABEL_FS)),
+        row=1, col=1,
     )
     fig.update_xaxes(
-        tickvals=wage_ticks,
-        ticktext=[_strip_zero_decimal(fmt_wages(v)) for v in wage_ticks],
-        title=dict(text="Wages Exposed", font=dict(size=LABEL_FS)),
-        row=1, col=5,
+        range=[0, r_wkr], tickvals=t_wkr,
+        ticktext=[_strip_zero_decimal(fmt_workers(v)) for v in t_wkr],
+        title=dict(text="Workers Exposed", font=dict(size=_MAJ_LABEL_FS)),
+        row=1, col=2,
     )
     fig.update_xaxes(
-        range=[0, 100], dtick=25,
-        ticksuffix="%", tickfont=dict(size=TICK_FS, family=FONT_FAMILY),
-        title=dict(text="% of major's occs", font=dict(size=LABEL_FS)),
-        row=1, col=6,
+        range=[0, r_wag], tickvals=t_wag,
+        ticktext=[_strip_zero_decimal(fmt_wages(v)) for v in t_wag],
+        title=dict(text="Wages Exposed", font=dict(size=_MAJ_LABEL_FS)),
+        row=1, col=3,
     )
-
-    fig.update_yaxes(showgrid=False, showline=False)
     fig.update_yaxes(
-        title=dict(text="Major Occupational Category", font=dict(size=LABEL_FS + 2)),
-        tickfont=dict(size=TICK_FS + 1, family=FONT_FAMILY),
+        title=dict(
+            text="Major Occupational Category",
+            font=dict(size=_MAJ_LABEL_FS),
+            standoff=4,
+        ),
         row=1, col=1,
     )
 
-    panel_titles = {
-        "Variant A:<br>Non-Phys Task Share",
-        "Variant B: % Tasks<br>Exposed in Non-Phys Work",
-        "% Tasks Exposed<br>(All Confirmed)",
-        "Workers Exposed<br>(All Confirmed)",
-        "Wages Exposed<br>(All Confirmed)",
-        "Phys Mix<br>(Occs)",
-    }
-    for ann in fig.layout.annotations:
-        if hasattr(ann, "text") and ann.text in panel_titles:
-            ann.font = dict(size=LABEL_FS + 2, family=FONT_FAMILY,
-                            color=PAPER_PALETTE["text"])
-
-    fig.update_layout(
-        bargap=0.3,
-        legend=dict(
-            orientation="h",
-            yanchor="top", y=-0.06, xanchor="center", x=0.5,
-            font=dict(size=LEGEND_FS + 1, family=FONT_FAMILY),
-            bgcolor="rgba(255,255,255,0.9)",
-        ),
-    )
-
-    save_figure(fig, results / "figures" / "major_categories.png", scale=2)
-    _copy_fig(results, figures, "major_categories.png")
-    print("  -> major_categories.png")
-
-
-# ─────────────────────────────────────────────────────────────────────────
-# Chart: Major-cat 2-year linear trend projection (per-panel top 10 movers)
-# ─────────────────────────────────────────────────────────────────────────
-
-PROJECTION_DAYS = 730  # 2 years
-
-
-def _major_trend_series() -> pd.DataFrame:
-    """Stack the all_confirmed series at major level into long form.
-
-    Columns: date, category, pct_tasks_affected, workers_affected, wages_affected.
-    Uses ANALYSIS_CONFIG_SERIES['all_confirmed'] (which excludes the 2024
-    dates per the trend-series invariant)."""
-    series = ANALYSIS_CONFIG_SERIES["all_confirmed"]
-    rows = []
-    for ds in series:
-        date_str = ds.rsplit(" ", 1)[-1]
-        df = _run_config(ds, "major")
-        for _, r in df.iterrows():
-            rows.append({
-                "date": pd.Timestamp(date_str),
-                "category": r["category"],
-                "pct_tasks_affected": float(r["pct_tasks_affected"]),
-                "workers_affected":   float(r["workers_affected"]),
-                "wages_affected":     float(r["wages_affected"]),
-            })
-        print(f"  loaded {ds}: {len(df)} majors")
-    return pd.DataFrame(rows)
-
-
-def build_major_categories_trend(results: Path, figures: Path) -> None:
-    """Per-panel top-10 movers chart: bars show current (final-snapshot)
-    value with a lighter projected-delta segment extending the bar to its
-    2-year linear projection. Ranked within each panel by the absolute
-    delta from the first to the final observed snapshot."""
-    trend = _major_trend_series()
-    save_csv(trend, results / "major_trend_data.csv")
-
-    metrics = [
-        ("pct_tasks_affected", "% Tasks Exposed", "tasks",  lambda v: f"{v:.1f}%"),
-        ("workers_affected",   "Workers Exposed", "workers", fmt_workers),
-        ("wages_affected",     "Wages Exposed",   "wages",   fmt_wages),
-    ]
-
-    fig = make_subplots(
-        rows=1, cols=3,
-        subplot_titles=[m[1] for m in metrics],
-        horizontal_spacing=0.28,
-    )
-
-    summary_rows = []
-
-    for col_idx, (metric, panel_title, metric_key, fmt_fn) in enumerate(metrics, start=1):
-        per_major: list[dict] = []
-        for cat, sub in trend.groupby("category"):
-            sub = sub.sort_values("date")
-            dates = list(sub["date"])
-            yvals = list(sub[metric])
-            if len(dates) < 2 or yvals[-1] == 0 and yvals[0] == 0:
-                continue
-            slope_per_day, projected, r2 = _linear_project(dates, yvals, PROJECTION_DAYS)
-            per_major.append({
-                "category":  cat,
-                "current":   yvals[-1],
-                "first":     yvals[0],
-                "jump":      yvals[-1] - yvals[0],
-                "projected": projected,
-                "delta_proj": projected - yvals[-1],
-                "r2":        r2,
-            })
-            summary_rows.append({
-                "metric": metric, "category": cat,
-                "first": yvals[0], "current": yvals[-1],
-                "jump_observed": yvals[-1] - yvals[0],
-                "projected_2yr": projected,
-                "delta_projected_2yr": projected - yvals[-1],
-                "r2": r2,
-            })
-
-        per_df = pd.DataFrame(per_major)
-        per_df = per_df.iloc[per_df["jump"].abs().argsort()[::-1]].head(10)
-        # Sort ascending for plotly (largest at top)
-        per_df = per_df.sort_values("jump", ascending=True)
-
-        cats   = per_df["category"].tolist()
-        curr   = per_df["current"].tolist()
-        proj_d = per_df["delta_proj"].tolist()
-        jumps  = per_df["jump"].tolist()
-        proj_v = per_df["projected"].tolist()
-        r2s    = per_df["r2"].tolist()
-
-        # Two stacked traces: current value (solid) + projected delta (faint).
-        # Negative projected deltas plot as negative offsets so the bar shrinks
-        # toward 0; honest visual encoding either way.
-        fig.add_trace(go.Bar(
-            y=cats, x=curr, orientation="h",
-            marker=dict(color=METRIC_COLORS[metric_key], line=dict(width=0)),
-            name="Current (Feb 2026)",
-            showlegend=(col_idx == 1),
-            hovertemplate="Current: %{x}<extra></extra>",
-        ), row=1, col=col_idx)
-
-        fig.add_trace(go.Bar(
-            y=cats, x=proj_d, orientation="h",
-            marker=dict(
-                color=METRIC_COLORS[metric_key],
-                opacity=0.35,
-                line=dict(width=0),
-                pattern=dict(shape="/", solidity=0.25, fgcolor="white"),
-            ),
-            name="2-yr linear projection",
-            showlegend=(col_idx == 1),
-            hovertemplate="Projected delta: %{x}<extra></extra>",
-        ), row=1, col=col_idx)
-
-        # Right-side annotations: "→ 2yr {value} ({+delta})". Short form;
-        # observed delta is implicit in the bar length itself.
-        x_ref = "x" if col_idx == 1 else f"x{col_idx}"
-        y_ref = "y" if col_idx == 1 else f"y{col_idx}"
-        max_x = float(max(c + max(0.0, d) for c, d in zip(curr, proj_d)) or 1.0)
-        for cat, c_v, j_v, p_v in zip(cats, curr, jumps, proj_v):
-            proj_sign = "+" if p_v - c_v >= 0 else ""
-            text = f"  2yr {fmt_fn(p_v)} ({proj_sign}{fmt_fn(p_v - c_v)})"
-            fig.add_annotation(
-                x=c_v + max(0.0, p_v - c_v), y=cat,
-                xref=x_ref, yref=y_ref,
-                text=text,
-                showarrow=False,
-                xanchor="left", yanchor="middle",
-                font=dict(size=ANNOT_FS - 2, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
-            )
-
-        fig.update_xaxes(
-            range=[0, max_x * 1.40],
-            showgrid=True, gridcolor=PAPER_PALETTE["grid"],
-            showline=True, linecolor=PAPER_PALETTE["grid"],
-            zeroline=True, zerolinecolor=PAPER_PALETTE["grid"],
-            tickfont=dict(size=TICK_FS - 2, family=FONT_FAMILY),
-            title=dict(text=panel_title, font=dict(size=LABEL_FS - 2)),
-            row=1, col=col_idx,
-        )
-        if metric == "pct_tasks_affected":
-            fig.update_xaxes(ticksuffix="%", row=1, col=col_idx)
-
-        fig.update_yaxes(
-            showgrid=False, showline=False,
-            tickfont=dict(size=TICK_FS - 2, family=FONT_FAMILY),
-            row=1, col=col_idx,
-        )
-
-    save_csv(pd.DataFrame(summary_rows), results / "major_trend_projections.csv")
-
-    style_paper_figure(
-        fig,
-        "Major Occupational Category — 2-Year Linear Trend Projection",
-        subtitle=(
-            "Per-metric top 10 movers ranked by absolute observed change from "
-            "first to final snapshot. Solid bar = current Feb 2026 value. Faint "
-            "hatched segment = projected 2-year linear OLS extension. Right-side "
-            "text shows the projected 2-year value with the projected delta. "
-            "Linear extrapolation assumes the recent rate continues."
-        ),
-        height=940,
-        width=PAPER_W + 1400,
-        margin=dict(l=20, r=80, t=180, b=130),
-    )
-
-    fig.update_layout(
-        barmode="stack",
-        legend=dict(
-            orientation="h",
-            yanchor="bottom", y=-0.20, xanchor="center", x=0.5,
-            font=dict(size=LEGEND_FS, family=FONT_FAMILY),
-            bgcolor="rgba(255,255,255,0.9)",
-        ),
-    )
-
-    panel_titles = {m[1] for m in metrics}
-    for ann in fig.layout.annotations:
-        if hasattr(ann, "text") and ann.text in panel_titles:
-            ann.font = dict(size=LABEL_FS - 2, family=FONT_FAMILY,
-                            color=PAPER_PALETTE["text"])
-
-    save_figure(fig, results / "figures" / "major_categories_trend.png", scale=2)
-    _copy_fig(results, figures, "major_categories_trend.png")
-    print("  -> major_categories_trend.png")
+    save_figure(fig, results / "figures" / "major_categories_wkrs_wages.png", scale=2)
+    _copy_fig(results, figures, "major_categories_wkrs_wages.png")
+    print("  -> major_categories_wkrs_wages.png")
 
 
 # ─────────────────────────────────────────────────────────────────────────
 # Chart: Job zone violin restricted to non-physical occupations
 # ─────────────────────────────────────────────────────────────────────────
 
-def build_job_zone_violin_nonphys(results: Path, figures: Path) -> None:
-    """Same chart as build_job_zone_violin but restricted to occupations
-    with pct_physical < PHYS_LOWER. Useful for testing whether the zone
-    pattern survives stripping the phys/non-phys structural cut."""
-    occ = _load_occ_structural()
-    pct = get_pct_tasks_affected(PRIMARY_DATASET)
-    occ["pct_tasks_affected"] = occ["title_current"].map(pct)
-    occ = occ.dropna(subset=["pct_tasks_affected", "job_zone"])
-    occ = occ[occ["occ_group"] == "Non-physical"].copy()
-    occ["job_zone"] = occ["job_zone"].astype(int)
+# ─────────────────────────────────────────────────────────────────────────
+# GWA split charts — mirrors of the major-cat split: pct (Tasks Exposed |
+# Hypothetical Variant A | Variant B). The workers/wages version lives in
+# appendix/run.py since the per-row footprint becomes very tall at 41 rows.
+# ─────────────────────────────────────────────────────────────────────────
 
-    if occ.empty:
-        print("  -> job_zone_violin_nonphys.png SKIPPED (no non-physical occs)")
-        return
+# Tighter row height than the major chart (110 px vs 130 px). 41 GWA rows
+# at the major's 130 px/row would print past 18 inches; 110 keeps the
+# print height under ~15" while still giving each 2-line label and bar
+# enough vertical room (the 2-line label is ~80 px tall at 9 pt).
+_GWA_ROW_HEIGHT = 110
 
-    zone_stats = []
-    for z in sorted(occ["job_zone"].unique()):
-        sub = occ[occ["job_zone"] == z]
-        zone_stats.append({
-            "job_zone": z,
-            "n_occs": len(sub),
-            "median_pct": round(float(sub["pct_tasks_affected"].median()), 1),
-            "mean_pct":   round(float(sub["pct_tasks_affected"].mean()), 1),
-            "q25": round(float(sub["pct_tasks_affected"].quantile(0.25)), 1),
-            "q75": round(float(sub["pct_tasks_affected"].quantile(0.75)), 1),
-        })
-    save_csv(pd.DataFrame(zone_stats), results / "job_zone_nonphys_summary.csv")
 
-    fig = go.Figure()
-    zones = sorted(occ["job_zone"].unique())
-    for z in zones:
-        sub = occ[occ["job_zone"] == z]
-        label = ZONE_LABELS.get(z, f"Zone {z}")
-        fig.add_trace(go.Violin(
-            x=sub["pct_tasks_affected"],
-            name=f"{label}  (n={len(sub)})",
-            marker_color=ZONE_COLORS[z],
-            line_color=ZONE_COLORS[z],
-            fillcolor=ZONE_COLORS[z],
-            opacity=0.7,
-            box_visible=True,
-            meanline_visible=True,
-            orientation="h",
-            side="positive",
-            width=0.8,
-        ))
+def _gwa_base_data() -> pd.DataFrame:
+    """Shared loader for the GWA split charts. Returns one row per GWA
+    with pct_tasks_affected (All Confirmed), pct_a, pct_b,
+    workers_affected, wages_affected — sorted by All Confirmed % tasks
+    descending so both gwa_pct and gwa_wkrs_wages share the same
+    y-ordering."""
+    base = _get_wa_data(PRIMARY_DATASET, "gwa")
+    variant_a = compute_variant_a_gwa()
+    variant_b_df = _get_wa_data_with_phys(PRIMARY_DATASET, "gwa", physical_mode="exclude")
+    assert not base.empty,         "all_confirmed GWA data is empty"
+    assert not variant_a.empty,    "variant_a GWA data is empty"
+    assert not variant_b_df.empty, "variant_b GWA data is empty"
 
+    base = base.sort_values("pct_tasks_affected", ascending=False).reset_index(drop=True)
+    a_map = variant_a.set_index("category")["pct_tasks_affected"]
+    b_map = variant_b_df.set_index("category")["pct_tasks_affected"]
+    base["pct_a"] = base["category"].map(a_map)
+    base["pct_b"] = base["category"].map(b_map)
+    return base
+
+
+def _style_gwa_split(
+    fig: go.Figure,
+    title: str,
+    n_cats: int,
+    panel_titles: set[str],
+    bottom_margin: int = 260,
+) -> None:
+    """Layout shared by the GWA split charts. Same canvas/font apparatus
+    as `_style_major_split` but with a smaller per-row height (41 rows
+    vs 22 for majors)."""
+    height = max(PAPER_H + 460, n_cats * _GWA_ROW_HEIGHT + 480)
+    # Add/subtract the bottom-margin delta from total height so the
+    # plot area stays constant whether the caller asks for more (3-line
+    # axis title) or less (1-line title) bottom space.
+    height += bottom_margin - 260
     fig.update_layout(
-        yaxis=dict(
-            categoryorder="array",
-            categoryarray=[
-                f"{ZONE_LABELS.get(z, f'Zone {z}')}  (n={int(occ[occ['job_zone'] == z].shape[0])})"
-                for z in reversed(zones)
-            ],
+        title=dict(
+            text=title,
+            font=dict(size=_MAJ_TITLE_FS, color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+            x=0.01, xanchor="left",
+            y=0.99, yanchor="top",
         ),
+        font=dict(family=FONT_FAMILY, color=PAPER_PALETTE["text"]),
+        plot_bgcolor=PAPER_PALETTE["surface"],
+        paper_bgcolor=PAPER_PALETTE["surface"],
+        width=_MAJ_CANVAS_W,
+        height=height,
+        margin=dict(l=110, r=110, t=160, b=bottom_margin),
+        bargap=0.2,
+        showlegend=False,
     )
-
-    annot_text = "<br>".join(
-        f"Zone {r['job_zone']}: median {r['median_pct']:.1f}%, mean {r['mean_pct']:.1f}%"
-        for r in zone_stats
-    )
-    fig.add_annotation(
-        text=annot_text,
-        xref="paper", yref="paper",
-        x=0.98, y=0.98,
-        showarrow=False,
-        font=dict(size=ANNOT_FS, color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
-        align="right",
-        xanchor="right", yanchor="top",
-        bgcolor="rgba(255,255,255,0.85)",
-        bordercolor=PAPER_PALETTE["grid"],
-        borderwidth=1, borderpad=6,
-    )
-
-    style_paper_figure(
-        fig,
-        "Task Exposure by Job Zone — Non-Physical Occupations Only",
-        subtitle=(
-            f"Distribution of % tasks exposed by O*NET job zone across {len(occ)} "
-            "non-physical occupations (pct_physical < 33%)."
-        ),
-        height=600,
-        width=PAPER_W,
-        margin=dict(l=80, r=60, t=100, b=80),
-    )
-    fig.update_layout(showlegend=False)
     fig.update_xaxes(
-        title=dict(text="% Tasks Exposed", font=dict(size=LABEL_FS)),
-        range=[0, 100], dtick=10,
         showgrid=True, gridcolor=PAPER_PALETTE["grid"],
         showline=True, linecolor=PAPER_PALETTE["grid"],
+        zeroline=True, zerolinecolor=PAPER_PALETTE["grid"],
+        tickfont=dict(size=_MAJ_TICK_FS, family=FONT_FAMILY),
+        tickangle=0,
+        ticklabelstandoff=8,
     )
+    fig.update_yaxes(showgrid=False, showline=False)
     fig.update_yaxes(
-        title=dict(text="Job Zone (O*NET Preparation Level)", font=dict(size=LABEL_FS - 2)),
-        showgrid=False, showline=False,
-        tickfont=dict(size=TICK_FS - 1, family=FONT_FAMILY),
+        tickfont=dict(size=_MAJ_TICK_FS, family=FONT_FAMILY),
+        automargin=True,
+        ticklabelstandoff=2,
+        ticks="",
+        ticklen=0,
+        row=1, col=1,
+    )
+    for ann in fig.layout.annotations:
+        if hasattr(ann, "text") and ann.text in panel_titles:
+            ann.font = dict(size=_MAJ_PANEL_FS, family=FONT_FAMILY,
+                            color=PAPER_PALETTE["text"])
+
+
+def build_gwa_pct(results: Path, figures: Path) -> None:
+    """GWA Chart A — three % panels: All Confirmed | Hypothetical Variant A | Variant B.
+
+    Same panel framing as `build_major_categories_pct`, applied to the
+    41 O*NET Generalized Work Activities."""
+    base = _gwa_base_data()
+    save_csv(base, results / "gwa_exposure.csv")
+
+    categories_r = [_wrap_gwa_label(c) for c in reversed(base["category"].tolist())]
+    pct_r   = list(reversed(base["pct_tasks_affected"].tolist()))
+    pct_a_r = list(reversed(base["pct_a"].fillna(0.0).tolist()))
+    pct_b_r = list(reversed(base["pct_b"].fillna(0.0).tolist()))
+    n_cats = len(categories_r)
+
+    fig = make_subplots(
+        rows=1, cols=3,
+        subplot_titles=["", "", ""],
+        horizontal_spacing=0.09,
+        shared_yaxes=True,
     )
 
-    save_figure(fig, results / "figures" / "job_zone_violin_nonphys.png")
-    _copy_fig(results, figures, "job_zone_violin_nonphys.png")
-    print("  -> job_zone_violin_nonphys.png")
+    inside_font  = dict(size=_MAJ_BARTEXT_FS, color="white",               family=FONT_FAMILY)
+    outside_font = dict(size=_MAJ_BARTEXT_FS, color=PAPER_PALETTE["text"], family=FONT_FAMILY)
+
+    # Higher threshold than the major chart (50% of max vs 30%) — the 41
+    # compressed GWA rows make any near-bar text collisions more visible,
+    # so we keep inside-white text for clearly-tall bars only and let
+    # everything below the midpoint fall outside in dark text.
+    PCT_INSIDE_THRESHOLD = 50.0
+    pos_pct = ["inside" if v >= PCT_INSIDE_THRESHOLD else "outside" for v in pct_r]
+    pos_a   = ["inside" if v >= PCT_INSIDE_THRESHOLD else "outside" for v in pct_a_r]
+    pos_b   = ["inside" if v >= PCT_INSIDE_THRESHOLD else "outside" for v in pct_b_r]
+
+    fig.add_trace(go.Bar(
+        y=categories_r, x=pct_r, orientation="h",
+        marker=dict(color=METRIC_COLORS["tasks"], line=dict(width=0)),
+        text=[f"{v:.1f}%" for v in pct_r],
+        textposition=pos_pct,
+        insidetextanchor="end",
+        insidetextfont=inside_font,
+        outsidetextfont=outside_font,
+        textangle=0,
+        showlegend=False, cliponaxis=False, constraintext="none",
+        hovertemplate="All Confirmed: %{x:.1f}%<extra></extra>",
+    ), row=1, col=1)
+
+    fig.add_trace(go.Bar(
+        y=categories_r, x=pct_a_r, orientation="h",
+        marker=dict(color=VARIANT_A_COLOR, line=dict(width=0)),
+        text=[f"{v:.1f}%" for v in pct_a_r],
+        textposition=pos_a,
+        insidetextanchor="end",
+        insidetextfont=inside_font,
+        outsidetextfont=outside_font,
+        textangle=0,
+        showlegend=False, cliponaxis=False, constraintext="none",
+        hovertemplate="Variant A: %{x:.1f}%<extra></extra>",
+    ), row=1, col=2)
+
+    fig.add_trace(go.Bar(
+        y=categories_r, x=pct_b_r, orientation="h",
+        marker=dict(color=VARIANT_B_COLOR, line=dict(width=0)),
+        text=[f"{v:.1f}%" for v in pct_b_r],
+        textposition=pos_b,
+        insidetextanchor="end",
+        insidetextfont=inside_font,
+        outsidetextfont=outside_font,
+        textangle=0,
+        showlegend=False, cliponaxis=False, constraintext="none",
+        hovertemplate="Variant B: %{x:.1f}%<extra></extra>",
+    ), row=1, col=3)
+
+    _style_gwa_split(
+        fig,
+        "AI Exposure by General Work Activity",
+        n_cats=n_cats,
+        panel_titles=set(),
+        bottom_margin=360,  # middle-panel axis title runs to 4 lines
+    )
+    # Uniform [0, 100] range with ticks [0, 50, 100] across all three
+    # percentage panels — matches the major-cat chart so the scale
+    # anchor reads consistently figure-to-figure.
+    PCT_RANGE = [0, 100]
+    PCT_TICKS = [0, 50, 100]
+    PCT_TICKTEXT = [f"{v}%" for v in PCT_TICKS]
+    fig.update_xaxes(
+        range=PCT_RANGE, tickvals=PCT_TICKS, ticktext=PCT_TICKTEXT,
+        title=dict(text="Tasks Exposed", font=dict(size=_MAJ_LABEL_FS)),
+        row=1, col=1,
+    )
+    fig.update_xaxes(
+        range=PCT_RANGE, tickvals=PCT_TICKS, ticktext=PCT_TICKTEXT,
+        title=dict(
+            # 4-line wrap (vs. major chart's 2-line) — at the GWA panel
+            # width even a 3-line break is crowded against the neighbor
+            # panels' tick labels; 4 lines keeps each line ~12 chars wide
+            # so the title stays clearly within the middle panel.
+            text=(
+                "Hypothetical<br>"
+                "Exposure if<br>"
+                "All Non-Phys<br>"
+                "Automatable"
+            ),
+            font=dict(size=_MAJ_LABEL_FS),
+        ),
+        row=1, col=2,
+    )
+    fig.update_xaxes(
+        range=PCT_RANGE, tickvals=PCT_TICKS, ticktext=PCT_TICKTEXT,
+        title=dict(text="Exposure of<br>Non-Phys Tasks", font=dict(size=_MAJ_LABEL_FS)),
+        row=1, col=3,
+    )
+    fig.update_yaxes(
+        title=dict(
+            text="O*NET General Work Activity",
+            font=dict(size=_MAJ_LABEL_FS),
+            standoff=4,
+        ),
+        row=1, col=1,
+    )
+
+    save_figure(fig, results / "figures" / "gwa_pct.png", scale=2)
+    _copy_fig(results, figures, "gwa_pct.png")
+    print("  -> gwa_pct.png")
 
 
 # ─────────────────────────────────────────────────────────────────────────
@@ -2327,28 +2858,32 @@ def main() -> None:
     print("Part 2: Characterization — Where AI Exposure Falls")
     print("=" * 60)
 
-    print("\n[1/6] Major Occupational Categories (Variant A | B | All Confirmed)")
-    build_major_categories(results, figures)
+    print("\n[1a/6] Major Occupational Categories — % Tasks Exposed (All Confirmed | Variant A | Variant B)")
+    build_major_categories_pct(results, figures)
 
-    print("\n[2/6] Major Categories — 2-Year Trend Projection")
-    build_major_categories_trend(results, figures)
+    print("\n[1b/5] Major Occupational Categories — Workers and Wages (All Confirmed)")
+    build_major_categories_wkrs_wages(results, figures)
 
-    print("\n[3/6] Job Zone Violin (with phys-mix overlay)")
+    print("\n[2/4] Job Zone Violin — Full Economy vs Non-Physical Only")
     build_job_zone_violin(results, figures)
 
-    print("\n[4/6] Job Zone Violin — Non-Physical Occupations Only")
-    build_job_zone_violin_nonphys(results, figures)
+    print("\n[3/4] Generalized Work Activities — % Tasks Exposed (All Confirmed | Hypothetical Variant A | Variant B)")
+    build_gwa_pct(results, figures)
 
-    print("\n[5/6] Work Activities (GWA Quintet)")
-    build_gwa_chart(results, figures)
-
-    print("\n[6/6] SKA Levels (with phys-mix coloring)")
+    print("\n[4/4] SKA Levels (with phys-mix coloring)")
     build_ska_levels(results, figures)
 
-    # Clear stale figures from the previous Part 2 order (box plot +
-    # phys/zone combined charts). The committed appendix folder still
-    # carries phys_zone_faceted, so we are not losing the cross-tab view.
-    for stale in ("phys_info_divide.png", "phys_zone_stacked.png", "phys_zone_faceted.png"):
+    # Clear stale figures from previous Part 2 layouts (box plot, phys/zone
+    # combined charts, the old 6-panel major_categories.png, the
+    # major_categories_trend chart which moved to the appendix, the
+    # standalone non-phys job-zone chart that has been folded into the main
+    # job_zone_violin three-panel layout, and the old 6-panel gwa_exposure
+    # chart replaced by the split gwa_pct / gwa_wkrs_wages pair).
+    for stale in ("phys_info_divide.png", "phys_zone_stacked.png",
+                  "phys_zone_faceted.png", "major_categories.png",
+                  "major_categories_trend.png",
+                  "job_zone_violin_nonphys.png",
+                  "gwa_exposure.png"):
         for d in (results / "figures", figures):
             p = d / stale
             if p.exists():

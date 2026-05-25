@@ -62,6 +62,10 @@ DATASETS = {
     "AEI API 2025-08-11": {"file": str(DATA_DIR / "final_aei_agentic_usage_2025-08-11.csv"), "is_aei": True, "is_mcp": False},
     "AEI API 2025-11-13": {"file": str(DATA_DIR / "final_aei_agentic_usage_2025-11-13.csv"), "is_aei": True, "is_mcp": False},
     "AEI API 2026-02-12": {"file": str(DATA_DIR / "final_aei_agentic_usage_2026-02-12.csv"), "is_aei": True, "is_mcp": False},
+    # AEI API rebased to eco_2025 (2019 SOC, no crosswalk) — used by static charts
+    # so agentic_confirmed pct/workers/wages live on the same baseline as the
+    # other ANALYSIS_CONFIGS. Trend series stays on the eco_2015 family above.
+    "AEI API 2025 2026-02-12": {"file": str(DATA_DIR / "final_aei_agentic_usage_2025_2026-02-12.csv"), "is_aei": False, "is_mcp": False},
 
     # ── Agentic (cumulative) ─────────────────────────────────────────────────
     # MCP + API — All possible agentic usage (2019 SOC)

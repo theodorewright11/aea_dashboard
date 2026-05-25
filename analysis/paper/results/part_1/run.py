@@ -36,6 +36,7 @@ from analysis.paper.paper_config import (
     METRIC_COLORS, METRIC_COLORS_LIGHT, HEATMAP_LOW, HEATMAP_HIGH,
     TREND_COLORS, PAPER_PALETTE,
     style_paper_figure, fmt_wages, fmt_workers, fmt_date,
+    paper_fonts,
 )
 
 HERE = Path(__file__).resolve().parent
@@ -53,12 +54,21 @@ CONFIG_ORDER: list[str] = [
 # ── Correlation sources ──────────────────────────────────────────────────
 CORR_SOURCES: dict[str, dict[str, str]] = {
     "claude":     {"dataset": "AEI Conv 2026-02-12",  "label": "Claude Browser"},
-    "claude_api": {"dataset": "AEI API 2026-02-12",   "label": "Claude API"},
+    "claude_api": {"dataset": "AEI API 2025 2026-02-12", "label": "Claude API"},
     "copilot":    {"dataset": "Microsoft",             "label": "Copilot"},
     "mcp":        {"dataset": "MCP Cumul. v4",         "label": "MCP"},
 }
 CORR_ORDER: list[str] = ["claude", "claude_api", "copilot", "mcp"]
 CORR_LABELS: list[str] = [CORR_SOURCES[k]["label"] for k in CORR_ORDER]
+
+# The main-paper source convergence chart also includes the All Confirmed
+# aggregate as an extra row (appended last so it lands at the top of the
+# y-axis and its lower-triangle internal block correlates against each of
+# the four individual sources). The appendix full-matrix chart keeps
+# CORR_ORDER untouched so all_confirmed appears only once via CONFIG_ORDER.
+SOURCE_CHART_EXTRA_KEY: str = "all_confirmed"
+SOURCE_CHART_EXTRA_LABEL: str = "All Confirmed"
+SOURCE_CHART_EXTRA_DATASET: str = ANALYSIS_CONFIGS["all_confirmed"]
 
 AGG_LEVELS: list[str] = ["major", "minor", "broad", "occupation"]
 AGG_TITLES: dict[str, str] = {
@@ -100,7 +110,10 @@ EXT_SOURCES: list[tuple[str, str]] = [
 # benchmark double-counts that signal). Keys are (row_label, col_label)
 # pairs matching the labels rendered on each chart.
 ELOUNDOU_LABELS: set[str] = {"Eloundou GPT-4 β", "Eloundou Human β"}
-CONTAMINATED_SOURCE_ROWS: set[str] = {"Copilot"}
+# Copilot and All Confirmed both inherit Microsoft's Eloundou-label task
+# filter, so any correlation against an Eloundou benchmark double-counts that
+# signal. Gray those cells out (transparency note in the chart).
+CONTAMINATED_SOURCE_ROWS: set[str] = {"Copilot", "All Confirmed"}
 CONTAMINATED_CONFIG_ROWS: set[str] = {
     "All Confirmed", "All Sources (Ceiling)", "Conversational Confirmed",
 }
@@ -114,6 +127,17 @@ TICK_LABEL_WRAPS: dict[str, str] = {
     "All Sources (Ceiling)":    "All Sources<br>(Ceiling)",
     "Agentic Confirmed":        "Agentic<br>Confirmed",
     "Agentic Ceiling":          "Agentic<br>Ceiling",
+    "All Confirmed":            "All<br>Confirmed",
+    "Claude Browser":           "Claude<br>Browser",
+    "Claude API":               "Claude<br>API",
+    "Eloundou GPT-4 β":         "Eloundou<br>GPT-4 β",
+    "Eloundou Human β":         "Eloundou<br>Human β",
+    "AIOE Overall":             "AIOE<br>Overall",
+    "AIOE Reading Compr.":      "AIOE Reading<br>Compr.",
+    "Schaal Overall":           "Schaal<br>Overall",
+    "Schaal DA":                "Schaal<br>DA",
+    "Schaal AG":                "Schaal<br>AG",
+    "Tomlinson (Copilot)":      "Tomlinson<br>(Copilot)",
 }
 
 
@@ -258,13 +282,18 @@ def build_overview(results: Path, figures: Path) -> None:
         ("pct_tasks",   "Tasks Exposed",
          METRIC_COLORS["tasks"],
          lambda r: f"{r['pct_tasks']:.1f}% tasks"),
-        ("pct_workers", "Workers Exposed (% of National Employment)",
+        ("pct_workers", "Workers Exposed",
          METRIC_COLORS["workers"],
          lambda r: f"{fmt_workers(r['workers'])} ({r['pct_workers']:.1f}%) workers"),
-        ("pct_wages",   "Wages Exposed (% of National Wages)",
+        ("pct_wages",   "Wages Exposed",
          METRIC_COLORS["wages"],
          lambda r: f"{fmt_wages(r['wages'])} ({r['pct_wages']:.1f}%) wages"),
     ]
+
+    # All font sizes resolved from the standardized pt ladder (see
+    # ANALYSIS_CLAUDE.md → Paper Chart Formatting). Inside-bar text sits at
+    # the tick size — above the 8 pt in-chart floor.
+    px = paper_fonts(PAPER_W)
 
     for pct_key, name, color, fmt_fn in reversed(metrics):
         fig.add_trace(go.Bar(
@@ -276,36 +305,71 @@ def build_overview(results: Path, figures: Path) -> None:
             text=[fmt_fn(r) for r in plot_rows],
             textposition="inside",
             insidetextanchor="middle",
-            textfont=dict(size=INSIDE_FS - 2, color="white", family=FONT_FAMILY),
+            textfont=dict(size=px["tick"], color="white", family=FONT_FAMILY),
+            showlegend=False,
         ))
 
-    # Reorder legend to read tasks → workers → wages even though traces
-    # were added in reverse for the cluster ordering.
+    # Bar traces' default legend swatches are tiny and not sizable; emit
+    # dummy scatter markers for the legend instead so we can scale them up.
+    for pct_key, name, color, _ in metrics:
+        fig.add_trace(go.Scatter(
+            x=[None], y=[None],
+            mode="markers",
+            marker=dict(symbol="square", size=22, color=color),
+            name=name,
+            showlegend=True,
+            hoverinfo="skip",
+        ))
+
     fig.update_layout(
         barmode="group",
-        bargap=0.30,
-        bargroupgap=0.06,
-        legend=dict(traceorder="reversed"),
+        bargap=0.18,
+        bargroupgap=0.04,
+        legend=dict(traceorder="normal"),
         xaxis=dict(
-            title=dict(text="% of National Total", font=dict(size=LABEL_FS)),
+            title=dict(text="% of National Total",
+                       font=dict(size=px["axis_title"], family=FONT_FAMILY)),
             range=[0, 65],
             ticksuffix="%",
+            tickfont=dict(size=px["tick"], family=FONT_FAMILY),
         ),
         yaxis=dict(
-            title=dict(text="Data Configuration", font=dict(size=LABEL_FS)),
-            tickfont=dict(size=LABEL_FS, family=FONT_FAMILY),
+            title=dict(text="Data Configuration",
+                       font=dict(size=px["axis_title"], family=FONT_FAMILY)),
+            tickfont=dict(size=px["tick"], family=FONT_FAMILY),
         ),
     )
 
     style_paper_figure(
         fig,
         "AI Economic Exposure Across Data Configurations",
-        subtitle=(
-            "Share of national tasks, employment, and wages exposed per "
-            "AI data configuration."
+        subtitle="",
+        height=PAPER_H + 270,
+        margin=dict(l=20, r=60, t=90, b=180),
+    )
+
+    # Legend in container coords (0-1 of full figure width/height) so the
+    # asymmetric l/r margins don't shift it off the figure center.
+    # itemsizing="trace" lets each dummy scatter's marker.size drive the
+    # legend swatch size (the bar traces themselves are not in the legend).
+    fig.update_layout(
+        legend=dict(
+            orientation="h",
+            xref="container", yref="container",
+            x=0.5, xanchor="center",
+            y=0.02, yanchor="bottom",
+            font=dict(size=px["legend"], family=FONT_FAMILY),
+            itemsizing="trace",
         ),
-        height=PAPER_H + 140,
-        margin=dict(l=20, r=60, t=140, b=110),
+    )
+    # style_paper_figure resets axis tick/title fonts — re-apply ours.
+    fig.update_xaxes(
+        tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+        title_font=dict(size=px["axis_title"], family=FONT_FAMILY),
+    )
+    fig.update_yaxes(
+        tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+        title_font=dict(size=px["axis_title"], family=FONT_FAMILY),
     )
 
     save_figure(fig, results / "figures" / "overview.png")
@@ -509,14 +573,13 @@ def _build_convergence_chart(
     n_cols = len(x_labels)
     EXT_OFFSET = n + 1   # column index where external block starts
 
-    # Display copies — wrap long category names onto two lines (<br>) on
-    # the y-axis only. (Wrapping x-axis labels makes adjacent labels'
-    # second lines collide once they're rotated -30°, so the x-axis keeps
-    # the original single-line labels.) Cell annotations and contamination
-    # checks key off the originals; plotly uses the display labels for
-    # axis ticks.
+    # Single-line tick labels on both axes (paper rule: x-tick labels in
+    # the main-body charts never wrap to two lines). Rotation is steep
+    # enough below that long single-line names still fit their column
+    # slot. Cell annotations and contamination checks key off the
+    # original strings; plotly uses these display labels for ticks.
     x_labels_disp = list(x_labels)
-    rows_labels_disp = _wrap_tick_labels(rows_labels)
+    rows_labels_disp = list(rows_labels)
 
     corr_records: list[dict] = []
     matrices: dict[str, np.ndarray] = {}
@@ -588,8 +651,19 @@ def _build_convergence_chart(
         vertical_spacing=0.13,
     )
 
-    # Cell number font — bumped past HEATMAP_TEXT_FS for readability
-    cell_fs = HEATMAP_TEXT_FS + 2     # 20pt regardless of column count
+    # All font sizes are resolved from the standardized pt ladder via
+    # paper_fonts(fig_width) once fig_width is fixed below. We compute
+    # fig_width first so chrome and in-chart text scale together. When
+    # the contamination legend is present, we widen the canvas so the
+    # two-line legend banner can span ~the full canvas at the legend pt
+    # size without clipping on the right edge.
+    base_w = PAPER_W + max(0, (n_cols - 8) * 100)
+    fig_width = base_w + (300 if contaminated_rows else 0)
+    fig_height = 740 + n_levels * 780
+    px = paper_fonts(fig_width)
+    # Cell text sits at the in-chart floor (8 pt @ 6.5"). The full ladder:
+    # title 11 / panel 10 / axis 10 / tick 9 / legend 9 / floor 8.
+    cell_fs = px["in_chart_floor"]
 
     contam_color = "rgba(200, 200, 200, 0.92)"
     contam_text  = "#777777"
@@ -611,9 +685,11 @@ def _build_convergence_chart(
                 hoverinfo="z",
                 colorbar=dict(
                     title=dict(text="Spearman ρ",
-                               font=dict(size=LABEL_FS + 4, family=FONT_FAMILY)),
+                               font=dict(size=px["axis_title"], family=FONT_FAMILY),
+                               side="right"),
                     len=0.55, y=0.5,
-                    tickfont=dict(size=TICK_FS + 4, family=FONT_FAMILY),
+                    tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+                    dtick=0.1,
                 ),
             ),
             row=row_pos, col=col_pos,
@@ -673,8 +749,8 @@ def _build_convergence_chart(
                 text=f"<b>{header_text}</b>",
                 showarrow=False,
                 xanchor="center", yanchor="bottom",
-                yshift=12,
-                font=dict(size=LABEL_FS + 4, family=FONT_FAMILY,
+                yshift=24,
+                font=dict(size=px["panel_title"], family=FONT_FAMILY,
                           color=PAPER_PALETTE["text"]),
                 xref=x_axis, yref=y_axis,
             )
@@ -685,56 +761,60 @@ def _build_convergence_chart(
             x0=n - 0.5 + 0.5, x1=n - 0.5 + 0.5,  # midpoint of the gap col
             y0=-0.5, y1=n - 0.5,
             xref=x_axis, yref=y_axis,
-            line=dict(color=PAPER_PALETTE["text"], width=2),
+            line=dict(color=PAPER_PALETTE["text"], width=5),
         )
 
     # Each panel spans the full width; figure height scales with the
-    # number of stacked panels.
-    fig_width = PAPER_W + max(0, (n_cols - 8) * 80)
-    fig_height = 520 + n_levels * 640
-
-    full_subtitle = f"{subtitle}. {SIG_NOTE}"
+    # number of stacked panels. fig_width / fig_height were set above
+    # so paper_fonts(fig_width) drives all chrome. Subtitle is dropped
+    # entirely — its content moves to the figure caption in the paper.
+    # Bottom margin is sized to fit single-line x-tick labels at -75°
+    # plus the spread-out contamination legend underneath.
     style_paper_figure(
         fig,
         title,
         subtitle="",
         width=fig_width,
         height=fig_height,
-        margin=dict(l=60, r=120, t=210, b=300),
+        margin=dict(l=180, r=180, t=220, b=620),
     )
 
-    # Re-attach subtitle at a bumped font size (the global SUBTITLE_FS=15
-    # reads small on this dense chart) and with a clear gap below it before
-    # the subplot titles start. The extra <br> adds vertical breathing room
-    # between subtitle and the "Major level" / "Minor level" subplot titles.
-    bumped_subtitle_fs = SUBTITLE_FS + 4   # 19pt
-    muted = PAPER_PALETTE["muted"]
-    fig.layout.title.text = (
-        f"{title}"
-        f"<br><span style='font-size:{bumped_subtitle_fs}px;color:{muted}'>"
-        f"{full_subtitle}</span>"
-    )
-
-    # Bump subplot titles up + embiggen so they sit clear of the
-    # "Internal" / "External" group headers placed below them.
+    # Bump subplot titles a bit so they sit clear of the "Internal" /
+    # "External" group headers placed below them. Size = ladder
+    # panel_title; only present when n_levels > 1 (single-level charts
+    # suppress the subplot label).
     agg_title_set = set(AGG_TITLES.values())
     for ann in fig.layout.annotations:
         if hasattr(ann, "text") and ann.text in agg_title_set:
             ann.font = dict(
-                size=LABEL_FS + 6, family=FONT_FAMILY,
+                size=px["panel_title"], family=FONT_FAMILY,
                 color=PAPER_PALETTE["text"],
             )
-            ann.yshift = 32
+            ann.yshift = 56
 
-    # Contamination legend — shown only when something is grayed out.
-    # Placed in the bottom margin, below the angled x-tick labels. The
-    # swatch is rendered as a real paper-coordinate rectangle because
-    # Plotly's PNG export ignores HTML background-color in spans.
+    # Contamination legend — two lines spanning the chart width. Placed
+    # in the bottom margin, below the angled x-tick labels. Single-line
+    # would be ~190 chars wide and clip; two lines at the in-chart floor
+    # (8 pt — legitimate per the paper ladder) read as one horizontal
+    # banner that uses ~the full canvas. Swatch is a real paper-coordinate
+    # rectangle (Plotly's PNG export ignores HTML background-color on
+    # spans).
     if contaminated_rows:
-        # Swatch position (paper coords). Pushed well below the heatmap
-        # so it sits clear of the angled tick labels.
-        sx0, sx1 = 0.085, 0.130
-        sy0, sy1 = -0.230, -0.190
+        # Swatch is sized to match the legend font height so it visually
+        # pairs with one line of legend text. Paper coords are fractions
+        # of the plot domain, so we convert font px → paper coords via
+        # plot_width / plot_height. The plot domain is fig_width minus
+        # left+right margins; plot height is fig_height minus top+bottom.
+        plot_w = fig_width - 180 - 180
+        plot_h = fig_height - 220 - 620
+        legend_fs = px["in_chart_floor"]
+        swatch_paper_w = legend_fs / plot_w
+        swatch_paper_h = legend_fs / plot_h
+        sx0 = 0.005
+        sx1 = sx0 + swatch_paper_w
+        sy_center = -0.760
+        sy0 = sy_center - swatch_paper_h / 2
+        sy1 = sy_center + swatch_paper_h / 2
         fig.add_shape(
             type="rect",
             xref="paper", yref="paper",
@@ -745,28 +825,30 @@ def _build_convergence_chart(
         )
         fig.add_annotation(
             xref="paper", yref="paper",
-            x=sx1 + 0.010, y=(sy0 + sy1) / 2,
+            x=sx1 + 0.008, y=sy_center,
             xanchor="left", yanchor="middle",
-            text=("<b>Eloundou-contaminated cell</b> — Eloundou's task labels "
-                  "were used to filter Copilot tasks, so correlations between a "
-                  "Copilot-containing measure and an Eloundou<br>"
-                  "benchmark double-count that signal. Values shown for transparency."),
+            text=("<b>Eloundou-contaminated cell</b> — Eloundou's task labels were used to filter Copilot tasks,<br>"
+                  "so any correlation against a Copilot-containing measure double-counts that signal."),
             showarrow=False,
-            font=dict(size=ANNOT_FS + 5, family=FONT_FAMILY,
+            align="left",
+            font=dict(size=legend_fs, family=FONT_FAMILY,
                       color=PAPER_PALETTE["text"]),
         )
 
-    # Every panel is full-width (stacked), so the y-axis title goes on all.
+    # Tick fonts pulled from the ladder; tick angle -75° lets single-line
+    # x-axis labels fit inside their column slot without bleeding into
+    # neighbors (only ~26% of the label's pixel width sits horizontally
+    # at -75°).
     for i in range(1, n_levels + 1):
         xkey = f"xaxis{i}" if i > 1 else "xaxis"
         ykey = f"yaxis{i}" if i > 1 else "yaxis"
-        fig.layout[xkey].tickfont = dict(size=TICK_FS + 1, family=FONT_FAMILY)
-        fig.layout[ykey].tickfont = dict(size=TICK_FS + 1, family=FONT_FAMILY)
-        fig.layout[xkey].tickangle = -30
+        fig.layout[xkey].tickfont = dict(size=px["tick"], family=FONT_FAMILY)
+        fig.layout[ykey].tickfont = dict(size=px["tick"], family=FONT_FAMILY)
+        fig.layout[xkey].tickangle = -75
         if y_axis_title:
             fig.layout[ykey].title = dict(
                 text=y_axis_title,
-                font=dict(size=LABEL_FS + 1, family=FONT_FAMILY),
+                font=dict(size=px["axis_title"], family=FONT_FAMILY),
             )
 
     save_figure(fig, results / "figures" / out_name)
@@ -782,9 +864,14 @@ MAIN_CONVERGENCE_LEVELS: list[str] = ["major", "occupation"]
 
 
 def build_convergence(results: Path, figures: Path) -> None:
-    """Source-level external benchmark comparison: 4 internal sources
-    on the y-axis, 4 sources (lower-tri) + external benchmarks on x.
-    One single-panel chart per SOC level (Major, Occupation)."""
+    """Source-level external benchmark comparison: 4 individual AI sources
+    plus the All Confirmed aggregate on the y-axis; same set on x (lower-
+    triangle) followed by the external academic benchmarks. One single-
+    panel chart per SOC level (Major, Occupation).
+    """
+    chart_keys = list(CORR_ORDER) + [SOURCE_CHART_EXTRA_KEY]
+    chart_labels = list(CORR_LABELS) + [SOURCE_CHART_EXTRA_LABEL]
+
     source_data: dict[str, dict[str, pd.Series]] = {}
     for skey in CORR_ORDER:
         ds = CORR_SOURCES[skey]["dataset"]
@@ -794,55 +881,31 @@ def build_convergence(results: Path, figures: Path) -> None:
             source_data[skey][level] = df.set_index("category")["pct_tasks_affected"]
         print(f"  {CORR_SOURCES[skey]['label']}: loaded {MAIN_CONVERGENCE_LEVELS}")
 
+    # All Confirmed (aggregate config) — loaded the same way and added as
+    # an extra row only on this main-paper chart.
+    source_data[SOURCE_CHART_EXTRA_KEY] = {}
+    for level in MAIN_CONVERGENCE_LEVELS:
+        df = _run_config(SOURCE_CHART_EXTRA_DATASET, level)
+        source_data[SOURCE_CHART_EXTRA_KEY][level] = (
+            df.set_index("category")["pct_tasks_affected"]
+        )
+    print(f"  {SOURCE_CHART_EXTRA_LABEL}: loaded {MAIN_CONVERGENCE_LEVELS}")
+
     for level in MAIN_CONVERGENCE_LEVELS:
         short = LEVEL_FILE_SHORT[level]
         _build_convergence_chart(
-            rows_keys=CORR_ORDER,
-            rows_labels=CORR_LABELS,
+            rows_keys=chart_keys,
+            rows_labels=chart_labels,
             rows_data=source_data,
-            title=("Internal and External Benchmark Comparison — by AI "
-                   f"Source ({LEVEL_TITLE_WORD[level]} Level)"),
+            title=("Benchmark Comparison by AI Source "
+                   f"({LEVEL_TITLE_WORD[level]} Level)"),
             subtitle="Spearman ρ across our internal sources and academic benchmarks",
             out_name=f"convergence_{short}.png",
             csv_name=f"spearman_combined_{short}.csv",
             results=results, figures=figures,
-            y_axis_title="Internal Source",
+            y_axis_title="",
             levels=[level],
             contaminated_rows=CONTAMINATED_SOURCE_ROWS,
-        )
-
-
-def build_convergence_configs(results: Path, figures: Path) -> None:
-    """Configuration-level external benchmark comparison: 6 ANALYSIS_CONFIGS
-    on the y-axis, 6 configs (lower-tri) + 4 external benchmarks on x."""
-    config_data: dict[str, dict[str, pd.Series]] = {}
-    for ckey in CONFIG_ORDER:
-        ds = ANALYSIS_CONFIGS[ckey]
-        config_data[ckey] = {}
-        for level in MAIN_CONVERGENCE_LEVELS:
-            df = _run_config(ds, level)
-            config_data[ckey][level] = df.set_index("category")["pct_tasks_affected"]
-        print(f"  {ANALYSIS_CONFIG_LABELS[ckey]}: loaded {MAIN_CONVERGENCE_LEVELS}")
-
-    # Reverse for heatmap so top→bottom y-axis matches the overview chart's
-    # config order. Plotly heatmaps plot row 0 at the BOTTOM, so passing
-    # reversed(CONFIG_ORDER) makes CONFIG_ORDER[0] = "all_confirmed" land at TOP.
-    cfg_keys_y = list(reversed(CONFIG_ORDER))
-    for level in MAIN_CONVERGENCE_LEVELS:
-        short = LEVEL_FILE_SHORT[level]
-        _build_convergence_chart(
-            rows_keys=cfg_keys_y,
-            rows_labels=[ANALYSIS_CONFIG_LABELS[k] for k in cfg_keys_y],
-            rows_data=config_data,
-            title=("Internal and External Benchmark Comparison — by Data "
-                   f"Configuration ({LEVEL_TITLE_WORD[level]} Level)"),
-            subtitle="Spearman ρ across our data configurations and academic benchmarks",
-            out_name=f"convergence_configs_{short}.png",
-            csv_name=f"spearman_combined_configs_{short}.csv",
-            results=results, figures=figures,
-            y_axis_title="Data Configuration",
-            levels=[level],
-            contaminated_rows=CONTAMINATED_CONFIG_ROWS,
         )
 
 
@@ -978,10 +1041,12 @@ def _build_historical_rows(config_key: str) -> list[dict]:
 
 
 def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) -> None:
-    """Two side-by-side per-config tables in one figure.
+    """One PNG per config — split into separate files so the paper can
+    place each table independently without the wasted inter-table
+    whitespace of a stacked subplot figure.
 
     Each table includes Sep 2024 and Dec 2024 historical rows pulled from
-    that table's own dataset family (AEI Both + Micro for confirmed, All
+    that config's own dataset family (AEI Both + Micro for confirmed, All
     for ceiling). AI Capability cell is barred for those rows because the
     confirmed/ceiling AI-capability metric isn't well-defined that early
     in the series (only one or two sources contributing)."""
@@ -990,14 +1055,44 @@ def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) 
     historical_fill = "#f5f0e8"  # subtle cream to mark historical rows
     total_eco_tasks = _get_eco_task_count()
 
-    fig = make_subplots(
-        rows=1, cols=2,
-        specs=[[{"type": "table"}, {"type": "table"}]],
-        subplot_titles=[ANALYSIS_CONFIG_LABELS[k] for k in TREND_CONFIGS],
-        horizontal_spacing=0.04,
-    )
+    def _fmt_short(iso: str) -> str:
+        """Three-letter month variant of fmt_date (e.g. 'Sep 30, 2024').
+        Used here so the date column fits each plain date on one line."""
+        from datetime import datetime
+        dt = datetime.strptime(iso, "%Y-%m-%d")
+        return dt.strftime("%b %d, %Y").replace(" 0", " ")
 
-    for col_idx, config_key in enumerate(TREND_CONFIGS, start=1):
+    # Canvas width drives the font ladder via paper_fonts(). We apply a
+    # local "one-step-smaller" ladder here so the inlined-parenthetical
+    # headers ("Tasks Rated (of 17,507)" / "Auto-Aug Score (0–5)") fit
+    # on one line — header drops 9 → 8 pt (the floor, still
+    # spec-compliant) which gives ~10% horizontal slack. Cells stay at
+    # the 8 pt floor; chrome (title) drops one step too for a coherent
+    # ladder.
+    TABLE_W = PAPER_W + 500
+    def _local_table_px(pt: float) -> int:
+        return max(1, round(pt * TABLE_W / (6.5 * 72)))
+    px = {
+        "title":          _local_table_px(10),
+        "panel_title":    _local_table_px(9),
+        "axis_title":     _local_table_px(9),
+        "tick":           _local_table_px(8),
+        "legend":         _local_table_px(8),
+        "in_chart_floor": _local_table_px(8),
+    }
+    # Heights generous enough to leave whitespace around the text but
+    # not so much that the row feels half-empty. Combined with a
+    # leading "<br>" on every header and cell value (see below), the
+    # extra space lands above the text instead of below — plotly Tables
+    # top-align, so without the leading break the slack would end up at
+    # the bottom. (line-height ≈ 1.4 × font_px.)
+    cell_row_h = round(px["in_chart_floor"] * 2.6)
+    header_h   = round(px["tick"] * 2.6)
+
+    # Map config key → filename suffix.
+    config_suffix = {"all_confirmed": "confirmed", "all_ceiling": "ceiling"}
+
+    for config_key in TREND_CONFIGS:
         sub = trend_df[trend_df["config"] == config_key].sort_values("date").reset_index(drop=True)
         if sub.empty:
             continue
@@ -1018,7 +1113,7 @@ def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) 
         # Historical (cream) rows first — combined-dataset task counts.
         prev_n_tasks: int | None = None
         for hr in historical_rows:
-            col_date.append(fmt_date(hr["date"]))
+            col_date.append(_fmt_short(hr["date"]))
             col_source.append(SOURCE_RELEASE_LABELS.get(hr["date"], "—"))
             col_tasks.append(f"{int(hr['n_tasks']):,}")
             if prev_n_tasks is None:
@@ -1034,17 +1129,15 @@ def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) 
             date_fills.append(historical_fill)
             prev_n_tasks = int(hr["n_tasks"])
 
-        # Series rows (the line-chart range)
+        # Series rows (the line-chart range).
         for i, (_, r) in enumerate(sub.iterrows()):
             is_start_combined = (i == 0)
             is_end = (i == len(sub) - 1)
 
-            if is_start_combined:
-                col_date.append(f"Series start: {fmt_date(r['date'])}")
-            elif is_end:
-                col_date.append(f"End: {fmt_date(r['date'])}")
-            else:
-                col_date.append(fmt_date(r["date"]))
+            # No "Series start:" / "End:" prefix — the light-blue
+            # row-highlight fill already marks those rows, and dropping
+            # the prefix keeps every Date cell on a single line.
+            col_date.append(_fmt_short(r["date"]))
 
             col_source.append(SOURCE_RELEASE_LABELS.get(r["date"], "—"))
             col_tasks.append(f"{int(r['n_tasks']):,}")
@@ -1084,62 +1177,80 @@ def _build_combined_table(trend_df: pd.DataFrame, results: Path, figures: Path) 
                         if "confirmed" in config_key
                         else PAPER_PALETTE["all_ceiling"])
 
+        # Leading "<br>" on every header and cell value pushes the
+        # text down to the second line, leaving a blank line of
+        # whitespace above it. Plotly Tables top-align cells with no
+        # valign flag — this is the only way to get the visual
+        # whitespace on top rather than the bottom.
+        pad = "<br>"
+        header_values = [
+            f"{pad}Date",
+            f"{pad}Source Release",
+            f"{pad}Tasks Rated (of {total_eco_tasks:,})",
+            f"{pad}Δ Tasks",
+            f"{pad}Auto-Aug Score (0–5)",
+            f"{pad}Δ Auto-Aug",
+        ]
+        cell_columns = [col_date, col_source, col_tasks,
+                        col_dtasks, col_autoaug, col_dautoaug]
+        cell_values = [[f"{pad}{v}" for v in col] for col in cell_columns]
+
+        # One figure per config — no subplot wrapper, no inter-table gap.
+        fig = go.Figure()
         fig.add_trace(go.Table(
-            columnwidth=[160, 240, 220, 90, 200, 100],
+            columnwidth=[260, 460, 380, 160, 400, 220],
             header=dict(
-                values=[
-                    "Date",
-                    "Source Release",
-                    f"Unique Tasks Rated<br>(of {total_eco_tasks:,} in O*NET)",
-                    "Δ Tasks",
-                    "Auto-Aug Score<br>(0–5, avg across<br>rated tasks)",
-                    "Δ Auto-Aug",
-                ],
-                font=dict(size=TABLE_HEADER_FS, family=FONT_FAMILY, color="white"),
+                values=header_values,
+                font=dict(size=px["tick"], family=FONT_FAMILY, color="white"),
                 fill_color=header_color,
                 align="center",
-                height=82,
+                height=header_h,
             ),
             cells=dict(
-                values=[col_date, col_source, col_tasks, col_dtasks, col_autoaug, col_dautoaug],
-                font=dict(size=TABLE_CELL_FS, family=FONT_FAMILY),
+                values=cell_values,
+                font=dict(size=px["in_chart_floor"], family=FONT_FAMILY),
                 fill_color=[
                     date_fills, cell_fills, cell_fills,
                     dtasks_fills, cell_fills, dautoaug_fills,
                 ],
                 align="center",
-                height=42,
+                height=cell_row_h,
             ),
-        ), row=1, col=col_idx)
+        ))
 
-    max_rows = max(
-        len(trend_df[trend_df["config"] == k]) for k in TREND_CONFIGS
-    ) + len(HISTORICAL_DATES)
-    # Header (82 px, 3-line at 18 pt) + per-row (42 px at 16 pt) + title/
-    # subtitle/margin (~280 px). Plotly tables apparently consume ~1.5×
-    # the requested cell height in vertical layout, so we budget generously
-    # and let the bottom margin absorb any excess — better that than
-    # clipping the last row of the ceiling table.
-    height = max(820, 82 + int(max_rows * 60) + 280)
+        # Tight height: title area + header + rows + bottom pad.
+        # Plotly tables render at their natural pixel size (header_h +
+        # n_rows × cell_row_h) and do not stretch to fill the
+        # surrounding plot area — extra figure height shows as visible
+        # whitespace below the last row. Snug margins (t=80, b=20)
+        # eliminate that.
+        TITLE_AREA = 80
+        BOTTOM_PAD = 20
+        height = TITLE_AREA + header_h + n_rows * cell_row_h + BOTTOM_PAD
 
-    style_paper_figure(
-        fig,
-        "Tasks Rated And Auto-Aug Score Over Time",
-        subtitle="Cream rows don't have reliable Auto-Aug scores.",
-        width=PAPER_W + 500,
-        height=height,
-        margin=dict(l=10, r=10, t=170, b=20),
-    )
+        style_paper_figure(
+            fig,
+            ANALYSIS_CONFIG_LABELS[config_key],
+            subtitle="",
+            width=TABLE_W,
+            height=height,
+            margin=dict(l=10, r=10, t=TITLE_AREA, b=BOTTOM_PAD),
+        )
+        fig.update_layout(
+            title=dict(font=dict(size=px["title"])),
+        )
 
-    label_set = {ANALYSIS_CONFIG_LABELS[k] for k in TREND_CONFIGS}
-    for ann in fig.layout.annotations:
-        if hasattr(ann, "text") and ann.text in label_set:
-            ann.font = dict(size=LABEL_FS, family=FONT_FAMILY,
-                            color=PAPER_PALETTE["text"])
+        fname = f"temporal_table_{config_suffix[config_key]}.png"
+        save_figure(fig, results / "figures" / fname)
+        _copy_fig(results, figures, fname)
+        print(f"  -> {fname}")
 
-    save_figure(fig, results / "figures" / "temporal_tables.png")
-    _copy_fig(results, figures, "temporal_tables.png")
-    print("  -> temporal_tables.png")
+    # Clean up the legacy combined PNG so it doesn't sit stale in the
+    # committed figures dir.
+    for legacy in (results / "figures" / "temporal_tables.png",
+                   figures / "temporal_tables.png"):
+        if legacy.exists():
+            legacy.unlink()
 
 
 def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Path) -> None:
@@ -1158,7 +1269,7 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
     one dashed) so it conveys *line style* rather than implying any one
     panel's color is "the" color of confirmed vs. ceiling."""
     panels = [
-        ("pct",     "% Tasks Exposed", "% Tasks Exposed",     "tasks",
+        ("pct",     "Tasks Exposed", "Tasks Exposed",     "tasks",
          lambda v: f"{v:.1f}%",
          lambda subset: subset["pct_tasks_affected"]),
         ("workers", "Workers Exposed", "Workers Exposed",     "workers",
@@ -1169,45 +1280,51 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
          lambda subset: subset["wages"]),
     ]
 
+    # Canvas width drives the font ladder via paper_fonts(). The +290
+    # height bump leaves room below the per-panel "Snapshot Date" titles
+    # for the manual side-by-side legend (placed in paper-y < 0 space).
+    TREND_W = PAPER_W + 100
+    TREND_H = PAPER_H + 290
+    TREND_BOTTOM_MARGIN = 280
+    px = paper_fonts(TREND_W)
+
     fig = make_subplots(
         rows=1, cols=3,
         subplot_titles=[p[1] for p in panels],
         horizontal_spacing=0.10,
     )
 
-    # Neutral-gray dummy traces JUST for the legend (one solid, one dashed).
-    # Use a real date string from the data with y=None so plotly's x-axis
-    # type detection still picks date (passing x=[None] forces numeric).
+    # Legend is rendered manually below the subplots (shapes + annotations
+    # in paper space) — plotly's auto-legend was wrapping the two entries
+    # onto separate rows under orientation="h" regardless of entrywidth /
+    # itemsizing settings. Doing it by hand guarantees side-by-side.
     legend_color = PAPER_PALETTE["text"]
-    legend_anchor_x = trend_df["date"].iloc[0]
-    fig.add_trace(go.Scatter(
-        x=[legend_anchor_x], y=[None], mode="lines",
-        name=ANALYSIS_CONFIG_LABELS["all_confirmed"],
-        line=dict(color=legend_color, width=3, dash="solid"),
-        showlegend=True, hoverinfo="skip",
-    ), row=1, col=1)
-    fig.add_trace(go.Scatter(
-        x=[legend_anchor_x], y=[None], mode="lines",
-        name=ANALYSIS_CONFIG_LABELS["all_ceiling"],
-        line=dict(color=legend_color, width=3, dash="dash"),
-        showlegend=True, hoverinfo="skip",
-    ), row=1, col=1)
+
+    # Local "one-step-smaller" ladder for this chart only — the three
+    # panels were visually cramped under the standard 11/10/10/9/9/8
+    # paper ladder. Data labels were already pinned to the 8 pt floor,
+    # so the chrome drops one step (title 10, panel 9, axis 9, tick 8,
+    # legend 8) and the in-chart labels stay at 8. Hierarchy held:
+    # title ≥ panel ≥ axis ≥ tick ≥ floor, legend == tick. The shared
+    # paper FONT_PT_LADDER is unchanged.
+    def _local_px(pt: float) -> int:
+        return max(1, round(pt * TREND_W / (6.5 * 72)))
+
+    TREND_TITLE_FS = _local_px(10)
+    TREND_PANEL_FS = _local_px(9)
+    TREND_AXIS_FS = _local_px(9)
+    TREND_TICK_FS = _local_px(8)
+    TREND_LEGEND_FS = _local_px(8)
+    LABEL_FS_DATA = _local_px(8)
+    LABEL_FS_HORIZON = _local_px(8)
 
     # Pixel offset for value labels above/below each marker. This is a
     # fixed pixel shift so labels stay clear of the line as it curves
     # between markers, regardless of zoom or aspect ratio.
-    LABEL_YSHIFT_PX = 26
-    LABEL_FS_DATA = 14      # Per-point data labels
-    LABEL_FS_HORIZON = 13   # Projection horizon labels
+    LABEL_YSHIFT_PX = 32
 
-    # Horizons (days from final observed date) for the linear extrapolation
-    # band on each panel. 2-year ceiling chosen because longer horizons are
-    # statistically indefensible given 4–6 observed snapshots.
-    EXTRAP_HORIZONS_DAYS: list[tuple[str, int]] = [
-        ("6mo", 183),
-        ("1yr", 365),
-        ("2yr", 730),
-    ]
+    # OLS extrapolation removed — chart now shows observed window only.
+    EXTRAP_HORIZONS_DAYS: list[tuple[str, int]] = []
 
     def _linear_fit_project(dates: list[str], yvals: list[float],
                             horizon_days: list[int]) -> tuple[list[pd.Timestamp], list[float]]:
@@ -1329,7 +1446,9 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
             if config_key == "all_confirmed":
                 kept_set = _spaced_label_indices(xvals)
             elif len(xvals) >= 2:
-                kept_set = {0, len(xvals) - 1}
+                # Ceiling's first point coincides with confirmed's first point
+                # on the same date — skip its label to avoid the doubled number.
+                kept_set = {len(xvals) - 1}
             else:
                 kept_set = set(range(len(xvals)))
 
@@ -1380,45 +1499,95 @@ def _build_three_panel_trend(trend_df: pd.DataFrame, results: Path, figures: Pat
             fig.update_yaxes(range=[y_min, y_max], row=1, col=col_idx)
 
         fig.update_yaxes(
-            title=dict(text=y_axis_title, font=dict(size=LABEL_FS - 2)),
-            tickfont=dict(size=ANNOT_FS, family=FONT_FAMILY),
+            title=dict(text=y_axis_title, font=dict(size=TREND_AXIS_FS)),
+            tickfont=dict(size=TREND_TICK_FS, family=FONT_FAMILY),
             row=1, col=col_idx,
         )
         fig.update_xaxes(
-            title=dict(text="Snapshot Date", font=dict(size=LABEL_FS - 2)),
+            title=dict(text="Snapshot Date", font=dict(size=TREND_AXIS_FS)),
             tickangle=-30,
-            tickfont=dict(size=ANNOT_FS, family=FONT_FAMILY),
+            tickfont=dict(size=TREND_TICK_FS, family=FONT_FAMILY),
             row=1, col=col_idx,
         )
 
     style_paper_figure(
         fig,
         "All Confirmed vs All Sources (Ceiling) Over Time",
-        subtitle=(
-            "Tasks, workers, and wages exposed over the dataset window "
-            "(March 2025 – February 2026).<br>"
-            "Dotted segments extend each line with a linear OLS fit through "
-            "observed points, labeled at the 2yr horizon if the recent rate continued."
-        ),
-        height=PAPER_H + 90,
-        width=PAPER_W + 100,
-        margin=dict(l=80, r=60, t=200, b=160),
+        subtitle="",
+        height=TREND_H,
+        width=TREND_W,
+        margin=dict(l=90, r=60, t=130, b=TREND_BOTTOM_MARGIN),
     )
 
-    # Bottom-aligned legend driven by the neutral dummy traces.
     fig.update_layout(
-        legend=dict(
-            orientation="h",
-            yanchor="bottom", y=-0.32, xanchor="center", x=0.5,
-            font=dict(size=LEGEND_FS, family=FONT_FAMILY),
-            bgcolor="rgba(255,255,255,0.9)",
-        ),
+        title=dict(font=dict(size=TREND_TITLE_FS)),
+        showlegend=False,
+    )
+
+    # ── Manual legend (paper space) ─────────────────────────────────────
+    # Items are laid out left-to-right with approximate text widths so
+    # the whole legend block — not just the item-center symmetry — is
+    # centered against the figure midpoint. Symmetric placement around
+    # x=0.5 visibly skewed right because "All Sources (Ceiling)" is
+    # wider than "All Confirmed".
+    LEG_Y = -0.30                 # paper-y (negative = below plot area)
+    LEG_LINE_LEN = 2 * 0.022      # length of each line indicator
+    LEG_TEXT_GAP = 0.008          # gap between line end and text
+    LEG_ITEM_SPACING = 0.05       # gap between end of item N's text and start of N+1's line
+    legend_items = [
+        ("All Confirmed",          "solid"),
+        ("All Sources (Ceiling)",  "dash"),
+    ]
+    # Approximate per-character width (paper units) at the legend
+    # font. Tuned empirically for Inter at TREND_LEGEND_FS px on a
+    # TREND_W canvas — fine-grained enough to keep the block visibly
+    # centered without a true text-metrics lookup.
+    char_w = TREND_LEGEND_FS * 0.55 / TREND_W
+
+    def _item_width(label: str) -> float:
+        return LEG_LINE_LEN + LEG_TEXT_GAP + len(label) * char_w
+
+    total_w = (
+        sum(_item_width(lbl) for lbl, _ in legend_items)
+        + LEG_ITEM_SPACING * (len(legend_items) - 1)
+    )
+    cursor_x = 0.5 - total_w / 2
+
+    for label, dash_style in legend_items:
+        line_start = cursor_x
+        line_end = cursor_x + LEG_LINE_LEN
+        text_x = line_end + LEG_TEXT_GAP
+        fig.add_shape(
+            type="line",
+            xref="paper", yref="paper",
+            x0=line_start, x1=line_end,
+            y0=LEG_Y, y1=LEG_Y,
+            line=dict(color=legend_color, width=3, dash=dash_style),
+        )
+        fig.add_annotation(
+            xref="paper", yref="paper",
+            x=text_x, y=LEG_Y,
+            text=label, showarrow=False,
+            xanchor="left", yanchor="middle",
+            font=dict(size=TREND_LEGEND_FS, family=FONT_FAMILY,
+                      color=PAPER_PALETTE["text"]),
+        )
+        cursor_x += _item_width(label) + LEG_ITEM_SPACING
+    # style_paper_figure resets axis tick/title fonts to TICK_FS / LABEL_FS;
+    # re-apply ours so the axes don't render at 15 / 16 px.
+    fig.update_xaxes(
+        tickfont=dict(size=TREND_TICK_FS, family=FONT_FAMILY),
+        title_font=dict(size=TREND_AXIS_FS, family=FONT_FAMILY),
+    )
+    fig.update_yaxes(
+        tickfont=dict(size=TREND_TICK_FS, family=FONT_FAMILY),
+        title_font=dict(size=TREND_AXIS_FS, family=FONT_FAMILY),
     )
 
     panel_titles = {p[1] for p in panels}
     for ann in fig.layout.annotations:
         if hasattr(ann, "text") and ann.text in panel_titles:
-            ann.font = dict(size=LABEL_FS, family=FONT_FAMILY,
+            ann.font = dict(size=TREND_PANEL_FS, family=FONT_FAMILY,
                             color=PAPER_PALETTE["text"])
 
     save_figure(fig, results / "figures" / "temporal_trend.png")
@@ -1457,16 +1626,13 @@ def main() -> None:
     print("Part 1: Scale, Convergence, Growth")
     print("=" * 60)
 
-    print("\n[1/4] External benchmark comparison: by AI Source")
+    print("\n[1/3] External benchmark comparison: by AI Source")
     build_convergence(results, figures)
 
-    print("\n[2/4] External benchmark comparison: by Data Configuration")
-    build_convergence_configs(results, figures)
-
-    print("\n[3/4] Overview: Six-config aggregate footprint")
+    print("\n[2/3] Overview: Six-config aggregate footprint")
     build_overview(results, figures)
 
-    print("\n[4/4] Temporal: Growth trends + data tables")
+    print("\n[3/3] Temporal: Growth trends + data tables")
     build_temporal(results, figures)
 
     print("\n" + "=" * 60)

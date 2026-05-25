@@ -283,32 +283,17 @@ Linear projection is "if recent rate continues," not a forecast.
 
 ![job_zone_violin.png](part_2/figures/job_zone_violin.png)
 
-Five violins on the left (one per O*NET job zone, 1–5), each showing the distribution of % tasks affected across the occupations in that zone. A thin stacked bar on the right shows the phys/mixed/non-physical composition of each zone.
+Three-panel chart side-by-side. Left panel: violins of % tasks exposed by O*NET job zone (1–5) across all 923 occupations. Middle panel: thin stacked bar showing the phys/mixed/non-physical composition of each zone. Right panel: violins of % tasks exposed by job zone restricted to the 409 non-physical occupations (Zone 1 has zero qualifying occupations, row blank for alignment). Each violin carries a black median line; per-zone `n` and median are labeled at the right edge of each panel.
 
-| Zone | n_occs | Median pct | Mean pct | Q25 | Q75 | % Physical | % Mixed | % Non-Phys |
-|------|--------|-----------|---------|-----|-----|-----------|---------|-----------|
-| 1 | 33 | 3.7% | 7.6% | 0.0% | 9.7% | 90.9% | 9.1% | 0.0% |
-| 2 | 298 | 11.2% | 17.1% | 4.3% | 22.2% | 61.7% | 27.9% | 10.4% |
-| 3 | 213 | 24.0% | 27.2% | 10.5% | 36.9% | 36.6% | 29.1% | 34.3% |
-| 4 | 225 | 46.3% | 45.7% | 30.9% | 57.3% | 0.9% | 10.7% | 88.4% |
-| 5 | 154 | 44.4% | 47.0% | 27.9% | 70.2% | 3.9% | 27.3% | 68.8% |
+| Zone | n_all | Median (all) | n_nonphys | Median (non-phys) | % Physical | % Mixed | % Non-Phys |
+|------|-------|--------------|-----------|-------------------|-----------|---------|-----------|
+| 1 | 33 | 3.7% | 0 | — | 90.9% | 9.1% | 0.0% |
+| 2 | 298 | 12.1% | 31 | 53.1% | 61.7% | 27.9% | 10.4% |
+| 3 | 213 | 27.4% | 73 | 51.1% | 36.6% | 29.1% | 34.3% |
+| 4 | 225 | 50.1% | 199 | 52.3% | 0.9% | 10.7% | 88.4% |
+| 5 | 154 | 47.5% | 106 | 63.4% | 3.9% | 27.3% | 68.8% |
 
-Median climbs Zone 1 → Zone 4 (3.7% → 46.3%) then dips slightly to 44.4% at Zone 5. Mean climbs across all five (7.6% → 17.1% → 27.2% → 45.7% → 47.0%). Q75 keeps climbing past Zone 4 (57.3% → 70.2% at Z5), so Z5 has a heavier upper tail than Z4 even with a slightly lower median. Phys mix flips from 90.9% physical in Zone 1 to 88.4% non-physical in Zone 4.
-
----
-
-![job_zone_violin_nonphys.png](part_2/figures/job_zone_violin_nonphys.png)
-
-Same violin chart, restricted to occupations with `pct_physical < 33%`. Zone 1 has zero qualifying occupations and is omitted.
-
-| Zone | n_occs | Median | Mean | Q25 | Q75 |
-|------|--------|--------|------|-----|-----|
-| 2 | 31 | 39.6% | 44.3% | 22.6% | 63.5% |
-| 3 | 73 | 38.8% | 42.5% | 25.3% | 62.7% |
-| 4 | 199 | 47.4% | 47.2% | 32.6% | 59.4% |
-| 5 | 106 | 59.6% | 54.7% | 38.0% | 73.5% |
-
-After stripping the physical/non-physical structural confound, Zone 5 separates cleanly from Zone 4 (median 59.6% vs 47.4%, mean 54.7% vs 47.2%). Zones 2 and 3 collapse to nearly identical distributions (medians within 0.8pp).
+In the full-economy view, median climbs Zone 1 → Zone 4 (3.7% → 50.1%) then dips slightly to 47.5% at Zone 5; phys mix flips from 90.9% physical in Zone 1 to 88.4% non-physical in Zone 4. Once physical occupations are stripped (right panel), Zones 2–4 collapse to a tight 51–53% band and Zone 5 separates cleanly upward to 63.4% — the zone signal in the full-economy view was being held down by the physical share of lower-prep zones.
 
 ---
 
