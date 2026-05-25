@@ -985,135 +985,257 @@ def build_risk_score_5f(results: Path, figures: Path) -> None:
 # skips gracefully if that folder isn't present.
 # ─────────────────────────────────────────────────────────────────────────
 
-def build_state_clusters_map(results: Path, figures: Path) -> None:
-    """U.S. choropleth coloring each state by its Ward AI-exposure cluster.
+def _name_to_postal() -> dict[str, str]:
+    return {
+        "Alabama": "AL", "Alaska": "AK", "Arizona": "AZ", "Arkansas": "AR",
+        "California": "CA", "Colorado": "CO", "Connecticut": "CT",
+        "Delaware": "DE", "District of Columbia": "DC", "Florida": "FL",
+        "Georgia": "GA", "Hawaii": "HI", "Idaho": "ID", "Illinois": "IL",
+        "Indiana": "IN", "Iowa": "IA", "Kansas": "KS", "Kentucky": "KY",
+        "Louisiana": "LA", "Maine": "ME", "Maryland": "MD",
+        "Massachusetts": "MA", "Michigan": "MI", "Minnesota": "MN",
+        "Mississippi": "MS", "Missouri": "MO", "Montana": "MT",
+        "Nebraska": "NE", "Nevada": "NV", "New Hampshire": "NH",
+        "New Jersey": "NJ", "New Mexico": "NM", "New York": "NY",
+        "North Carolina": "NC", "North Dakota": "ND", "Ohio": "OH",
+        "Oklahoma": "OK", "Oregon": "OR", "Pennsylvania": "PA",
+        "Rhode Island": "RI", "South Carolina": "SC", "South Dakota": "SD",
+        "Tennessee": "TN", "Texas": "TX", "Utah": "UT", "Vermont": "VT",
+        "Virginia": "VA", "Washington": "WA", "West Virginia": "WV",
+        "Wisconsin": "WI", "Wyoming": "WY",
+    }
 
-    Replaces the prior `state_exposure_at_risk.png` two-panel bar chart in
-    the paper main body. Clustering computed once via the exploratory
-    `deepdive_state_clusters.compute_clusters()` helper so the paper and
-    exploratory views stay in sync.
+
+def build_state_clusters_map(results: Path, figures: Path) -> None:
+    """Matplotlib version of the state clusters map.
+
+    Uses a US states geojson + matplotlib so we can render true diagonal-
+    stripe hatching on the states where Ward and K-means disagree. Each
+    polygon's fill is its Ward cluster color; disagreement states get a
+    diagonal hatch overlay in the K-means cluster's color. AK and HI render
+    in inset axes below the contiguous map; DC renders as a labeled marker
+    next to MD because its polygon is too small to see at this scale.
     """
     try:
         from analysis.exploratory.deepdive_state_clusters.run import (
             compute_clusters, OUTLIER_CLUSTER_ID,
+            _load_state_features, CLUSTER_FEATURES, OUTLIER_GEOS,
+            _pick_k_from_linkage, K_MIN, K_MAX,
         )
     except ImportError as exc:
         print(f"  -> SKIPPED: exploratory/deepdive_state_clusters not available ({exc})")
         return
 
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import Patch
+    import geopandas as gpd
+    from sklearn.cluster import KMeans
+    from sklearn.preprocessing import StandardScaler
+    from scipy.cluster.hierarchy import linkage, fcluster
+
     pkg = compute_clusters()
-    state_df       = pkg["state_df"]
-    cluster_names  = pkg["cluster_names"]
-    cluster_color  = pkg["cluster_color"]
-    order          = pkg["order"]
+    state_df = pkg["state_df"]
+    cluster_names = pkg["cluster_names"]
+    cluster_color = pkg["cluster_color"]
+    order = pkg["order"]
 
-    save_csv(
-        state_df[["geo", "cluster", "cluster_name",
-                  "pct_emp_wtd", "focused_share_pct"]]
-        .sort_values(["cluster", "pct_emp_wtd"]),
-        results / "state_clusters_map.csv",
-        float_format="%.3f",
+    # Recompute K-means disagreement on the same input clustering went into.
+    raw = _load_state_features()
+    sub_in = raw[~raw["geo"].isin(OUTLIER_GEOS)].copy().reset_index(drop=True)
+    Xz = StandardScaler().fit_transform(sub_in[CLUSTER_FEATURES].to_numpy(dtype=float))
+    Z = linkage(Xz, method="ward")
+    k_, _ = _pick_k_from_linkage(Z, K_MIN, K_MAX)
+    ward_lab = fcluster(Z, t=k_, criterion="maxclust")
+    km_lab = KMeans(n_clusters=k_, n_init=20, random_state=42).fit_predict(Xz) + 1
+    aligned = np.zeros_like(km_lab)
+    for w in np.unique(ward_lab):
+        idx = ward_lab == w
+        majority = pd.Series(km_lab[idx]).mode().iloc[0]
+        aligned[km_lab == majority] = w
+    for i, v in enumerate(aligned):
+        if v == 0:
+            aligned[i] = km_lab[i] + 100
+    sub_in["ward_lab"] = ward_lab
+    sub_in["km_lab"] = aligned
+    disagree_lookup = {
+        r["geo"].upper(): int(r["km_lab"])
+        for _, r in sub_in.iterrows()
+        if r["ward_lab"] != r["km_lab"]
+    }
+
+    # Per-state assignments (postal → ward cluster) for fill.
+    state_cluster = {
+        r["geo"].upper(): int(r["cluster"])
+        for _, r in state_df.iterrows()
+    }
+
+    geojson_path = ROOT / "analysis" / "data" / "us_states_v2.geojson"
+    assert geojson_path.exists(), f"Missing geojson: {geojson_path}"
+    gdf_raw = gpd.read_file(geojson_path)
+    n2p = _name_to_postal()
+    gdf_raw["postal"] = gdf_raw["NAME"].map(n2p)
+    gdf_raw = gdf_raw.dropna(subset=["postal"])
+
+    # Contiguous: Albers Equal-Area Conic for the standard US look.
+    contiguous = (
+        gdf_raw[~gdf_raw["postal"].isin({"AK", "HI"})]
+        .to_crs("EPSG:5070")
+        .copy()
+    )
+    # AK and HI: project each to its own local CRS so insets render at a
+    # reasonable scale and aspect ratio (EPSG:5070's bounds are designed
+    # for the contiguous US — AK lands far off-projection and HI gets
+    # mangled).
+    ak = gdf_raw[gdf_raw["postal"] == "AK"].to_crs("EPSG:3338").copy()
+    hi = gdf_raw[gdf_raw["postal"] == "HI"].to_crs("EPSG:26961").copy()
+
+    # ── Figure layout: matches Plotly version's 1400×940 canvas at 6.5"
+    # column width → 6.5 × 4.37 in. Top ~78% = map (with AK/HI insets in
+    # the contiguous map's lower-left corner), bottom ~17% = legend
+    # (centered horizontally below the map), with a thin title strip on
+    # top. Font sizes are the paper ladder's print pt values, since
+    # matplotlib's `fontsize=N` is already pt.
+    FIG_W_IN = 6.5
+    FIG_H_IN = 5.20  # taller than 1400×940 aspect to give legend more room
+    DPI = 300
+    TITLE_PT = 11
+    LEGEND_PT = 9
+    INSET_LABEL_PT = 7
+
+    fig = plt.figure(figsize=(FIG_W_IN, FIG_H_IN), dpi=DPI)
+    # Main map fills the top portion; legend below.
+    ax_main = fig.add_axes([0.01, 0.28, 0.98, 0.68])
+    # AK / HI insets overlay the lower-left of the contiguous map (where
+    # the Pacific would be) — same convention as Plotly's albers usa.
+    ax_ak = fig.add_axes([0.02, 0.27, 0.16, 0.18])
+    ax_hi = fig.add_axes([0.18, 0.28, 0.10, 0.11])
+    ax_main.set_axis_off()
+    ax_ak.set_axis_off()
+    ax_hi.set_axis_off()
+    ax_main.set_aspect("equal")
+    ax_ak.set_aspect("equal")
+    ax_hi.set_aspect("equal")
+
+    BORDER_COLOR = "white"
+    BORDER_W = 0.5
+
+    def _draw(gdf_part, ax):
+        for _, row in gdf_part.iterrows():
+            postal = row["postal"]
+            cid = state_cluster.get(postal)
+            if cid is None:
+                continue
+            ward_fill = cluster_color.get(int(cid), "#cccccc")
+            # Base polygon — ward color fill.
+            gpd.GeoSeries([row.geometry]).plot(
+                ax=ax, color=ward_fill, edgecolor=BORDER_COLOR,
+                linewidth=BORDER_W,
+            )
+            # Overlay: if this state is a Ward/K-means disagreement, draw
+            # diagonal stripes in the K-means cluster's color on top.
+            if postal in disagree_lookup:
+                km_cid = disagree_lookup[postal]
+                km_fill = cluster_color.get(km_cid, "#777777")
+                gpd.GeoSeries([row.geometry]).plot(
+                    ax=ax, facecolor="none",
+                    edgecolor=km_fill,
+                    hatch="////",
+                    linewidth=BORDER_W,
+                )
+
+    _draw(contiguous, ax_main)
+    _draw(ak, ax_ak)
+    _draw(hi, ax_hi)
+
+    # DC is too tiny to see — draw as a labeled marker east of MD.
+    if "DC" in state_cluster:
+        dc_fill = cluster_color.get(int(state_cluster["DC"]), "#cccccc")
+        # Find MD polygon centroid as the anchor, then offset east.
+        md_geom = contiguous[contiguous["postal"] == "MD"].geometry.iloc[0]
+        cx, cy = md_geom.centroid.x, md_geom.centroid.y
+        offset_x = 200_000   # 200 km east, in Albers meters
+        ax_main.plot(cx + offset_x, cy, marker="o", markersize=8,
+                     markerfacecolor=dc_fill, markeredgecolor="black",
+                     markeredgewidth=0.8, linestyle="none")
+        ax_main.annotate(
+            "DC", xy=(cx + offset_x, cy),
+            xytext=(8, 0), textcoords="offset points",
+            fontsize=7, va="center", color=PAPER_PALETTE["text"],
+        )
+
+    # ── Title (top-left, same convention as the Plotly version) ─────────
+    fig.text(
+        0.012, 0.965,
+        "U.S. States Clustered on Workforce Exposure",
+        fontsize=TITLE_PT, fontweight="bold",
+        color=PAPER_PALETTE["text"], family="sans-serif",
+        ha="left", va="top",
     )
 
-    # Reverse the canonical order so the darkest blue (worst exposure)
-    # sits at the TOP of the colorbar rather than the bottom — Plotly
-    # renders colorbars low-z at the bottom.
-    display_order = list(reversed(order))
-    display_idx = {int(cid): i for i, cid in enumerate(display_order)}
-    n_clusters = len(display_order)
+    # ── Legend (right-side block) ──────────────────────────────────────
+    # Cluster names are long mouthful strings like "Mid Workforce Exposed /
+    # Highest Emp Share in High AI Exp & <0 Emp Proj Occs". Shorten /
+    # wrap them for the legend so they don't truncate or push the map
+    # margin.
+    import textwrap
 
-    colorscale: list[list] = []
-    for i, cid in enumerate(display_order):
-        lo = i / n_clusters
-        hi = (i + 1) / n_clusters
-        colorscale.append([lo, cluster_color[cid]])
-        colorscale.append([hi, cluster_color[cid]])
+    def _short_cluster_label(label: str) -> str:
+        # Outlier label inlines per-state values — drop those, the map
+        # has them via DC's labeled marker.
+        if "(outlier" in label:
+            short = label.split(" (outlier")[0] + " (outlier)"
+        else:
+            # Replace the verbose "Emp Share in High AI Exp & <0 Emp Proj
+            # Occs" with a shorter phrase that still keeps the meaning.
+            short = label.replace(
+                "Emp Share in High AI Exp & <0 Emp Proj Occs",
+                "Focused-Set Share",
+            )
+        return "\n".join(textwrap.wrap(short, width=34))
 
-    z_vals = state_df["cluster"].map(display_idx).astype(float)
-
-    fig = go.Figure(data=go.Choropleth(
-        locations=state_df["geo"].str.upper(),
-        z=z_vals,
-        locationmode="USA-states",
-        colorscale=colorscale,
-        zmin=-0.5, zmax=n_clusters - 0.5,
-        marker_line_color="white",
-        marker_line_width=0.8,
-        showscale=False,  # custom legend below via scatter traces
-        text=[
-            f"{r['geo'].upper()}<br>"
-            f"% workforce exposed: {r['pct_emp_wtd']:.1f}%<br>"
-            f"% in High AI Exp & <0 Emp Proj: {r['focused_share_pct']:.1f}%"
-            for _, r in state_df.iterrows()
-        ],
-        hovertemplate="%{text}<extra></extra>",
-    ))
-
-    # NOTE: style_paper_figure isn't used on this chart. It calls
-    # update_xaxes / update_yaxes which interfere with geo-subplot sizing
-    # (the map ends up tiny in a mostly-empty canvas regardless of domain
-    # or projection scale settings). We build paper-equivalent chrome
-    # manually using the same font ladder. Per paper convention the
-    # subtitle drops off the image (it becomes the figure caption).
-    W, H = PAPER_W, 940
-    px = paper_fonts(W)
-
-    fig.update_geos(
-        scope="usa",
-        projection=dict(type="albers usa", scale=1.05),
-        showland=True, landcolor=PAPER_PALETTE["surface"],
-        showlakes=False, showsubunits=True,
-        subunitcolor="white",
-        bgcolor="rgba(0,0,0,0)",
-        # Geo subplot fills the full canvas width; legend sits below.
-        domain=dict(x=[0.0, 1.0], y=[0.20, 1.0]),
-    )
-
-    # Custom legend: invisible scatter traces (one per cluster) rendered
-    # in legend order. Plotly's horizontal colorbar can't fit the long
-    # cluster names without overlap, so we use legend entries instead.
-    # Iterate `order` (severe → mild) so the most-severe cluster (DC) sits
-    # at the top of the legend, matching the prior colorbar layout.
+    legend_handles = []
     for cid in order:
-        fig.add_trace(go.Scatter(
-            x=[None], y=[None],
-            mode="markers",
-            marker=dict(size=14, color=cluster_color[cid],
-                        line=dict(width=0)),
-            name=cluster_names[cid],
-            showlegend=True,
-            hoverinfo="skip",
-        ))
-
-    fig.update_layout(
-        width=W, height=H,
-        paper_bgcolor="white", plot_bgcolor="white",
-        margin=dict(l=20, r=20, t=70, b=20),
-        title=dict(
-            text="U.S. States Clustered on Workforce Exposure",
-            font=dict(size=px["title"], family=FONT_FAMILY,
-                      color=PAPER_PALETTE["text"]),
-            x=0.012, xanchor="left",
-            y=0.97,  yanchor="top",
-        ),
-        legend=dict(
-            orientation="v",
-            x=0.5, xanchor="center",
-            y=0.18, yanchor="top",
-            font=dict(size=px["legend"], family=FONT_FAMILY,
-                      color=PAPER_PALETTE["text"]),
-            bgcolor="rgba(255,255,255,0)",
-            itemclick=False, itemdoubleclick=False,
-            tracegroupgap=2,
-        ),
-        # Hide the cartesian axes that the scatter traces create.
-        xaxis=dict(visible=False),
-        yaxis=dict(visible=False),
+        legend_handles.append(
+            Patch(facecolor=cluster_color[cid], edgecolor="white",
+                  label=_short_cluster_label(cluster_names[cid]))
+        )
+    # Add disagreement entry — use a neutral gray hatch swatch so the
+    # reader doesn't read it as one of the actual clusters.
+    legend_handles.append(
+        Patch(facecolor="#cccccc", edgecolor="#555555", hatch="////",
+              label="Ward / K-means disagreement\n(stripe color = K-means)")
     )
+    # Legend goes BELOW the map, centered horizontally — matches the
+    # Plotly version's vertical legend at x=0.5, xanchor=center, y=0.18.
+    # 6 entries (5 clusters + 1 disagreement); vertical orientation
+    # would stack too tall, so use 2 columns to fit the bottom strip.
+    leg = fig.legend(
+        handles=legend_handles,
+        loc="upper center",
+        bbox_to_anchor=(0.5, 0.25),
+        frameon=False, fontsize=LEGEND_PT,
+        title=None,
+        ncol=2,
+        handlelength=1.6, handleheight=1.1,
+        labelspacing=0.6, columnspacing=1.8,
+    )
+    for txt in leg.get_texts():
+        txt.set_color(PAPER_PALETTE["text"])
 
-    save_figure(fig, results / "figures" / "state_clusters_map.png", scale=2)
-    _copy_fig(results, figures, "state_clusters_map.png")
+    # AK / HI labels above their insets so the reader knows what they are.
+    ax_ak.set_title("AK", fontsize=INSET_LABEL_PT,
+                    color=PAPER_PALETTE["text"], loc="center", pad=2)
+    ax_hi.set_title("HI", fontsize=INSET_LABEL_PT,
+                    color=PAPER_PALETTE["text"], loc="center", pad=2)
+
+    out_path = results / "figures" / "state_clusters_map.png"
+    fig.savefig(out_path, dpi=DPI, bbox_inches=None,
+                facecolor="white", edgecolor="none")
+    plt.close(fig)
+    shutil.copy(out_path, figures / "state_clusters_map.png")
     print("  -> state_clusters_map.png")
+
+
 
 
 # ─────────────────────────────────────────────────────────────────────────

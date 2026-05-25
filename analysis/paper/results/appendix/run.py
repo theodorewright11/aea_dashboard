@@ -2432,16 +2432,47 @@ def build_state_clusters_each_ranked(results: Path, figures: Path) -> None:
     try:
         from analysis.exploratory.deepdive_state_clusters.run import (
             compute_clusters, OUTLIER_CLUSTER_ID, ALL_FEATURES,
+            _load_state_features, CLUSTER_FEATURES, OUTLIER_GEOS,
+            _pick_k_from_linkage, K_MIN, K_MAX,
         )
     except ImportError as exc:
         print(f"  -> SKIPPED: exploratory/deepdive_state_clusters not available ({exc})")
         return
+
+    from sklearn.cluster import KMeans
+    from sklearn.preprocessing import StandardScaler
+    from scipy.cluster.hierarchy import linkage, fcluster
 
     pkg = compute_clusters()
     state_df       = pkg["state_df"]
     cluster_names  = pkg["cluster_names"]
     cluster_color  = pkg["cluster_color"]
     order          = pkg["order"]
+
+    # Recompute K-means alignment so we can mark disagreement states with
+    # a diagonal stripe overlay in the K-means cluster's color.
+    raw = _load_state_features()
+    sub_in = raw[~raw["geo"].isin(OUTLIER_GEOS)].copy().reset_index(drop=True)
+    Xz = StandardScaler().fit_transform(sub_in[CLUSTER_FEATURES].to_numpy(dtype=float))
+    Z = linkage(Xz, method="ward")
+    k_, _ = _pick_k_from_linkage(Z, K_MIN, K_MAX)
+    ward_lab = fcluster(Z, t=k_, criterion="maxclust")
+    km_lab = KMeans(n_clusters=k_, n_init=20, random_state=42).fit_predict(Xz) + 1
+    aligned = np.zeros_like(km_lab)
+    for w in np.unique(ward_lab):
+        idx = ward_lab == w
+        majority = pd.Series(km_lab[idx]).mode().iloc[0]
+        aligned[km_lab == majority] = w
+    for i, v in enumerate(aligned):
+        if v == 0:
+            aligned[i] = km_lab[i] + 100
+    sub_in["ward_lab"] = ward_lab
+    sub_in["km_lab"] = aligned
+    km_alt_color: dict[str, str] = {
+        r["geo"].upper(): cluster_color.get(int(r["km_lab"]), "#777777")
+        for _, r in sub_in.iterrows()
+        if r["ward_lab"] != r["km_lab"]
+    }
 
     n_focused = 38  # SKA-gated focused set size, matches Part 3 risk_score_5f
 
@@ -2467,6 +2498,25 @@ def build_state_clusters_each_ranked(results: Path, figures: Path) -> None:
     geos_left,  exp_vals,     colors_left  = _rev(left_sorted,  "pct_emp_wtd")
     geos_right, focused_vals, colors_right = _rev(right_sorted, "focused_share_pct")
 
+    # Plotly 6.6 doesn't honor per-bar `marker.pattern.fgcolor` arrays —
+    # all stripes render in one color regardless of the list. To get
+    # K-means alternative cluster colors as the stripe color, we split
+    # the overlay into one trace per unique K-means color and use
+    # barmode="overlay" so the stripes sit on top of the base bars.
+    def _overlay_groups(geos: list[str], vals: list[float]) -> dict[str, dict]:
+        groups: dict[str, dict] = {}
+        for g, v in zip(geos, vals):
+            if g not in km_alt_color:
+                continue
+            color = km_alt_color[g]
+            groups.setdefault(color, {"y": [], "x": []})
+            groups[color]["y"].append(g)
+            groups[color]["x"].append(v)
+        return groups
+
+    overlay_left  = _overlay_groups(geos_left,  exp_vals)
+    overlay_right = _overlay_groups(geos_right, focused_vals)
+
     # Both subtitles wrap onto two lines so the visual baselines align.
     # Without the left also breaking, the right (2-line) renders centered
     # on the same y as the left (1-line) and visually sits higher.
@@ -2483,6 +2533,7 @@ def build_state_clusters_each_ranked(results: Path, figures: Path) -> None:
         shared_yaxes=False,
     )
 
+    # Base bars: every state, Ward color, no pattern.
     fig.add_trace(go.Bar(
         y=geos_left, x=exp_vals, orientation="h",
         marker=dict(color=colors_left, line=dict(width=0)),
@@ -2505,6 +2556,34 @@ def build_state_clusters_each_ranked(results: Path, figures: Path) -> None:
         hovertemplate="<b>%{y}</b><br>% of state emp in High AI Exp & <0 Emp Proj occs: %{x:.2f}%<extra></extra>",
     ), row=1, col=2)
 
+    # Overlay traces — one per unique K-means alternative color so the
+    # stripe color actually varies. Plotly 6.6's per-bar
+    # `marker.pattern.fgcolor` array is silently ignored, so we have to
+    # split. Each overlay has transparent fill + a single-color stripe
+    # pattern, and barmode="overlay" puts it on top of the base bar.
+    for km_color, payload in overlay_left.items():
+        fig.add_trace(go.Bar(
+            y=payload["y"], x=payload["x"], orientation="h",
+            marker=dict(
+                color="rgba(0,0,0,0)",
+                pattern=dict(shape="/", fgcolor=km_color,
+                             solidity=0.30, size=8, fillmode="overlay"),
+                line=dict(width=0),
+            ),
+            showlegend=False, cliponaxis=False, hoverinfo="skip",
+        ), row=1, col=1)
+    for km_color, payload in overlay_right.items():
+        fig.add_trace(go.Bar(
+            y=payload["y"], x=payload["x"], orientation="h",
+            marker=dict(
+                color="rgba(0,0,0,0)",
+                pattern=dict(shape="/", fgcolor=km_color,
+                             solidity=0.30, size=8, fillmode="overlay"),
+                line=dict(width=0),
+            ),
+            showlegend=False, cliponaxis=False, hoverinfo="skip",
+        ), row=1, col=2)
+
     for cid in order:
         fig.add_trace(go.Bar(
             y=[None], x=[None],
@@ -2512,6 +2591,19 @@ def build_state_clusters_each_ranked(results: Path, figures: Path) -> None:
             name=cluster_names[cid],
             showlegend=True,
         ), row=1, col=1)
+    # Legend entry for the Ward / K-means disagreement stripe overlay —
+    # a neutral-gray bar with the same diagonal pattern as the
+    # disagreement bars, so the reader knows what the stripes mean.
+    fig.add_trace(go.Bar(
+        y=[None], x=[None],
+        marker=dict(
+            color="#cccccc",
+            pattern=dict(shape="/", fgcolor="#333333",
+                         solidity=0.30, size=8, fillmode="overlay"),
+        ),
+        name="Ward / K-means disagreement (stripe = K-means)",
+        showlegend=True,
+    ), row=1, col=1)
 
     height = max(PAPER_H + 250, n_states * 30 + 280)
 
@@ -2576,6 +2668,11 @@ def build_state_clusters_each_ranked(results: Path, figures: Path) -> None:
 
     fig.update_layout(
         bargap=0.28,
+        # `barmode="overlay"` puts the K-means stripe overlay traces on
+        # top of the base bars at the same y position; without it they'd
+        # render side-by-side and the stripes would land at different bar
+        # positions than the colored fill.
+        barmode="overlay",
         # Pin the figure title to the top of the canvas. style_paper_figure
         # leaves title.y unset, so Plotly centers it inside the t margin —
         # with t=210 that leaves a big gap above the title. Anchoring it
