@@ -2191,8 +2191,12 @@ _MAJ_PX          = _paper_fonts(_MAJ_CANVAS_W)
 _MAJ_TITLE_FS    = _MAJ_PX["title"]            # 11 pt
 _MAJ_PANEL_FS    = _MAJ_PX["panel_title"]      # 10 pt
 _MAJ_LABEL_FS    = _MAJ_PX["axis_title"]       # 10 pt
-_MAJ_TICK_FS     = _MAJ_PX["tick"]             # 9 pt
+_MAJ_TICK_FS     = _MAJ_PX["tick"]             # 9 pt — x-axis ticks
 _MAJ_BARTEXT_FS  = _MAJ_PX["in_chart_floor"]   # 8 pt floor for bar value text
+# Y-axis tick labels drop to the 8 pt floor so the per-row pitch can be
+# compressed — 22 rows otherwise dominate the page. 8 pt is the floor;
+# anything smaller would violate the paper-chart sizing rules.
+_MAJ_YTICK_FS    = _MAJ_PX["in_chart_floor"]   # 8 pt
 
 VARIANT_A_COLOR = "#7a9ab8"
 VARIANT_B_COLOR = "#3a6f8f"
@@ -2320,7 +2324,7 @@ def _style_major_split(
     title: str,
     n_cats: int,
     panel_titles: set[str],
-    bottom_margin: int = 260,
+    bottom_margin: int = 180,
 ) -> None:
     """Shared layout for the two split major-cat charts. Width = PAPER_W,
     fonts pulled from paper_fonts(W) so print pt sizes follow the
@@ -2329,20 +2333,25 @@ def _style_major_split(
     major-cat labels on the left — tight enough to give the bars
     themselves the bulk of the canvas width.
 
-    `bottom_margin` defaults to 260 px (room for 2-line axis titles like
+    `bottom_margin` defaults to 180 px (room for 2-line axis titles like
     the pct chart's "Hypothetical Exposure if / All Non-Phys Automatable").
     Charts with 1-line axis titles (e.g. workers/wages) pass a smaller
     value to avoid empty space at the bottom — the figure's total height
     is recomputed to match."""
     # Wide canvas (2000 px) so each panel has ~2x the horizontal room,
     # which (combined with the abbreviated y-labels) lets the bars
-    # themselves stretch out further. Per-row height bumped to 130
-    # because some wrapped labels still spill onto a second line.
-    height = max(PAPER_H + 460, n_cats * 130 + 480)
+    # themselves stretch out further. Per-row pitch tightened to 90
+    # (down from 130) — with 8 pt y-tick font, two wrapped lines fit
+    # in ~82 px so 90 leaves a small breathing gap. Top margin cut to
+    # 110 (title is 11 pt — generous, but kept above the plot panels).
+    TOP_MARGIN = 110
+    PER_ROW = 90
+    BOTTOM_DEFAULT = 180
+    height = max(PAPER_H + 200, n_cats * PER_ROW + TOP_MARGIN + BOTTOM_DEFAULT)
     # Add/subtract the bottom-margin delta from total height so the
     # plot area stays constant whether the caller asks for less
     # (1-line title) or more (3-line title) bottom space.
-    height += bottom_margin - 260
+    height += bottom_margin - BOTTOM_DEFAULT
     fig.update_layout(
         title=dict(
             text=title,
@@ -2355,8 +2364,8 @@ def _style_major_split(
         paper_bgcolor=PAPER_PALETTE["surface"],
         width=_MAJ_CANVAS_W,
         height=height,
-        margin=dict(l=110, r=110, t=160, b=bottom_margin),
-        bargap=0.2,
+        margin=dict(l=110, r=110, t=TOP_MARGIN, b=bottom_margin),
+        bargap=0.15,
         showlegend=False,
     )
     fig.update_xaxes(
@@ -2369,7 +2378,7 @@ def _style_major_split(
     )
     fig.update_yaxes(showgrid=False, showline=False)
     fig.update_yaxes(
-        tickfont=dict(size=_MAJ_TICK_FS, family=FONT_FAMILY),
+        tickfont=dict(size=_MAJ_YTICK_FS, family=FONT_FAMILY),
         # Compact left-side text apparatus — pull tick labels close to
         # the axis line, and pull the y-axis title close to the labels.
         # automargin still claims enough room for the longest label,
@@ -2585,7 +2594,7 @@ def build_major_categories_wkrs_wages(results: Path, figures: Path) -> None:
         "AI Exposure by Major Occupational Category",
         n_cats=n_cats,
         panel_titles=set(),
-        bottom_margin=170,  # 1-line axis titles ("Workers Exposed" etc.)
+        bottom_margin=130,  # 1-line axis titles ("Workers Exposed" etc.)
     )
     # Per-panel tight axis ranges so the longest bar in each panel
     # reaches ~95% of panel width. % chart uses its own axis logic;
