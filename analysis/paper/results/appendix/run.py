@@ -25,6 +25,13 @@ then SKA:
    bucket: <33% physical tasks) and scatter each occ's mean rating of
    the friction property (r, df) against its % tasks exposed. Two
    panels, Spearman ρ + OLS fit inset per panel.
+7. capability_vs_adoption_all_occs — companion 3×2 chart across all
+   923 occupations. Top two rows: capability properties (Schaal ag,
+   Schaal da, our s, our d). Bottom row: our adoption frictions (r,
+   df). Shows why the friction signal needs the non-phys restriction
+   — across all occs, capability props ride the phys/non-phys split
+   (ρ +0.55 to +0.68) while adoption props barely discriminate
+   (ρ −0.17 to −0.19).
 
 Run from project root:
     venv/Scripts/python -m analysis.paper.results.appendix.run
@@ -3612,7 +3619,9 @@ def build_adoption_friction_scatter(results: Path, figures: Path) -> None:
                 text=f"Mean {code} rating across all tasks in occupation",
                 font=dict(size=px["axis_title"], family=FONT_FAMILY),
             ),
-            range=[1.5, 4.5], dtick=0.5,
+            # Start at 2.0 — no data below ~2.3 and 1.5 would overlap
+            # the y-axis 0% label at the bottom-left corner.
+            range=[2.0, 4.5], dtick=0.5,
             tickfont=dict(size=px["tick"], family=FONT_FAMILY),
             showgrid=True, gridcolor=PAPER_PALETTE["grid"],
             row=1, col=col_idx,
@@ -3658,6 +3667,200 @@ def build_adoption_friction_scatter(results: Path, figures: Path) -> None:
     print("  -> adoption_friction_scatter.png")
 
 
+# ─────────────────────────────────────────────────────────────────────────
+# capability_vs_adoption_all_occs — companion to adoption_friction_scatter.
+# Shows the framework's two-layer structure across all 923 occupations:
+# capability properties (Schaal ag/da, our s/d) discriminate strongly
+# (ρ ≈ +0.55 to +0.68 against exposure), while adoption properties
+# (our r, df) barely discriminate at the all-occ level (ρ ≈ −0.17 to
+# −0.19). The capability props are riding the phys/non-phys split; the
+# adoption signal only emerges once you restrict to non-phys (see
+# adoption_friction_scatter).
+# ─────────────────────────────────────────────────────────────────────────
+
+CAP_ADO_PANELS: list[tuple[str, str, str, str]] = [
+    # (col_key, panel_title, x-axis label, kind)
+    ("schaal_ag", "Schaal: Algorithmic Similarity", "Schaal ag",                "capability"),
+    ("schaal_da", "Schaal: Data Abundance",         "Schaal da",                "capability"),
+    ("s",         "Our: Algorithmic Similarity",    "Mean s across all tasks",  "capability"),
+    ("d",         "Our: Data Abundance",            "Mean d across all tasks",  "capability"),
+    ("r",         "Our: Objective Risk",            "Mean r across all tasks",  "adoption"),
+    ("df",        "Our: Deployment Friction",       "Mean df across all tasks", "adoption"),
+]
+
+
+def build_capability_vs_adoption_all_occs(results: Path, figures: Path) -> None:
+    """3×2 panel chart contrasting capability vs adoption discrimination
+    across all 923 occupations. Top two rows = capability properties
+    (Schaal external + our internal), bottom row = our adoption
+    frictions. Per-occupation property means are unweighted across all
+    of the occupation's tasks; y-axis is all_confirmed pct_tasks_affected.
+    """
+    from scipy import stats
+    from analysis.paper.results.part_1.run import _load_schaal_occ
+
+    props = _load_props_deduped()
+    occ = (
+        props.groupby("title_current")
+        .agg(s=("s", "mean"), d=("d", "mean"),
+             r=("r", "mean"), df=("df", "mean"))
+        .reset_index()
+    )
+
+    pct = get_pct_tasks_affected(PRIMARY_DATASET)
+    occ["pct_tasks_affected"] = occ["title_current"].map(pct)
+    occ = occ.merge(_load_schaal_occ(), on="title_current", how="left")
+    occ = occ.dropna(subset=["pct_tasks_affected"]).copy()
+    n_total = len(occ)
+    assert n_total > 0, "No occupations matched all_confirmed pct"
+
+    # Per-panel Spearman ρ + OLS fit lines.
+    stat_rows: list[dict] = []
+    fit_lines: dict[str, tuple[np.ndarray, np.ndarray]] = {}
+    for code, _title, _xlabel, _kind in CAP_ADO_PANELS:
+        sub = occ.dropna(subset=[code])
+        x = sub[code].astype(float).to_numpy()
+        y = sub["pct_tasks_affected"].astype(float).to_numpy()
+        rho, p_val = stats.spearmanr(x, y)
+        slope, intercept = np.polyfit(x, y, deg=1)
+        xs = np.linspace(x.min(), x.max(), 50)
+        ys = intercept + slope * xs
+        fit_lines[code] = (xs, ys)
+        stat_rows.append({"property": code, "spearman_rho": rho,
+                          "p_value": p_val, "slope": slope,
+                          "intercept": intercept, "n": int(len(x))})
+    save_csv(pd.DataFrame(stat_rows),
+             results / "capability_vs_adoption_all_occs_stats.csv",
+             float_format="%.4f")
+    save_csv(occ.sort_values("pct_tasks_affected", ascending=False),
+             results / "capability_vs_adoption_all_occs.csv",
+             float_format="%.4f")
+
+    W = PAPER_W
+    px = paper_fonts(W)
+
+    # Two color ramps so capability and adoption rows read as distinct
+    # layers without needing chrome dividers.
+    CAP_LIGHT, CAP_DARK = "#cfe0ec", "#2c4f6b"   # blue ramp (capability)
+    ADO_LIGHT, ADO_DARK = "#f4e0c0", "#8a5a1a"   # gold ramp (adoption)
+
+    fig = make_subplots(
+        rows=3, cols=2,
+        horizontal_spacing=0.13,
+        vertical_spacing=0.13,
+        subplot_titles=[p[1] for p in CAP_ADO_PANELS],
+    )
+
+    for i, (code, _title, _xlabel, kind) in enumerate(CAP_ADO_PANELS):
+        row, col = i // 2 + 1, i % 2 + 1
+        sub = occ.dropna(subset=[code])
+        x = sub[code].astype(float)
+        y = sub["pct_tasks_affected"].astype(float)
+        light, dark = (CAP_LIGHT, CAP_DARK) if kind == "capability" else (ADO_LIGHT, ADO_DARK)
+
+        fig.add_trace(go.Scatter(
+            x=x, y=y, mode="markers",
+            marker=dict(size=5, color=y,
+                        colorscale=[[0, light], [1, dark]],
+                        line=dict(width=0.3, color="rgba(0,0,0,0.25)"),
+                        opacity=0.8),
+            customdata=sub["title_current"],
+            hovertemplate=(
+                "<b>%{customdata}</b><br>"
+                f"{code}: %{{x:.2f}}<br>tasks exposed: %{{y:.1f}}%<extra></extra>"
+            ),
+            showlegend=False,
+        ), row=row, col=col)
+
+        xs, ys = fit_lines[code]
+        # Show the OLS-fit legend entry once, on the very first panel.
+        fig.add_trace(go.Scatter(
+            x=xs, y=ys, mode="lines", name="OLS fit",
+            line=dict(color=PAPER_PALETTE["negative"], width=2, dash="dash"),
+            hoverinfo="skip", showlegend=(i == 0),
+        ), row=row, col=col)
+
+        rho = next(r["spearman_rho"] for r in stat_rows if r["property"] == code)
+        p_val = next(r["p_value"] for r in stat_rows if r["property"] == code)
+        sig = "***" if p_val < 0.001 else "**" if p_val < 0.01 else "*" if p_val < 0.05 else ""
+        # Subplot 1 uses bare x/y, subsequent panels use x2/y2, ...
+        xref = "x domain" if i == 0 else f"x{i+1} domain"
+        yref = "y domain" if i == 0 else f"y{i+1} domain"
+        fig.add_annotation(
+            x=0.03, y=0.96, xref=xref, yref=yref,
+            text=f"Spearman ρ = {rho:+.2f}{sig}<br>n = {len(x)} occs",
+            showarrow=False, xanchor="left", yanchor="top",
+            font=dict(size=px["in_chart_floor"],
+                      color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+            align="left", bgcolor="rgba(255,255,255,0.82)", borderpad=3,
+        )
+
+    # Axis ranges. Our 1–5 properties use [2.0, 4.5] (same as the friction
+    # chart, avoids corner overlap). Schaal ag/da sit on their own
+    # 0–~2 range, picked per-column from the data.
+    for i, (code, _title, xlabel, _kind) in enumerate(CAP_ADO_PANELS):
+        row, col = i // 2 + 1, i % 2 + 1
+        if code in ("s", "d", "r", "df"):
+            x_range, x_dtick = [2.0, 4.5], 0.5
+        else:
+            sub = occ.dropna(subset=[code])
+            xmin, xmax = float(sub[code].min()), float(sub[code].max())
+            margin = (xmax - xmin) * 0.05
+            x_range, x_dtick = [xmin - margin, xmax + margin], None
+        xkw = dict(
+            title=dict(text=xlabel,
+                       font=dict(size=px["axis_title"], family=FONT_FAMILY)),
+            range=x_range,
+            tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+            showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+        )
+        if x_dtick:
+            xkw["dtick"] = x_dtick
+        fig.update_xaxes(row=row, col=col, **xkw)
+
+        # y-title only on the left column; ticks visible everywhere.
+        y_title = "Tasks Exposed" if col == 1 else None
+        fig.update_yaxes(
+            title=(dict(text=y_title,
+                        font=dict(size=px["axis_title"], family=FONT_FAMILY))
+                   if y_title else None),
+            ticksuffix="%", range=[0, 100], dtick=20,
+            tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+            showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+            row=row, col=col,
+        )
+
+    style_paper_figure(
+        fig,
+        "Capability vs Adoption Properties — All Occupations",
+        width=W,
+        height=1180,
+        margin=dict(l=100, r=50, t=120, b=110),
+    )
+    fig.update_layout(
+        title=dict(y=0.975, yanchor="top"),
+        showlegend=True,
+        legend=dict(
+            orientation="h",
+            x=0.5, xanchor="center", y=-0.10, yanchor="top",
+            font=dict(size=px["legend"], family=FONT_FAMILY),
+            bgcolor="rgba(0,0,0,0)",
+        ),
+    )
+    # Subplot titles get sized + colored from the paper ladder.
+    panel_titles = {p[1] for p in CAP_ADO_PANELS}
+    for ann in fig.layout.annotations:
+        if ann.text in panel_titles:
+            ann.font = dict(size=px["panel_title"], family=FONT_FAMILY,
+                            color=PAPER_PALETTE["text"])
+
+    save_figure(
+        fig, results / "figures" / "capability_vs_adoption_all_occs.png",
+        scale=2,
+    )
+    _copy_fig(results, figures, "capability_vs_adoption_all_occs.png")
+    print("  -> capability_vs_adoption_all_occs.png")
+
 
 def main() -> None:
     results = ensure_results_dir(HERE)
@@ -3668,7 +3871,7 @@ def main() -> None:
     print("Appendix figures")
     print("=" * 60)
 
-    print("\n[1/11] convergence_full (one full-matrix per SOC level)")
+    print("\n[1/12] convergence_full (one full-matrix per SOC level)")
     for lvl_key, lvl_title in [("major", "Major level"),
                                 ("minor", "Minor level"),
                                 ("broad", "Broad level"),
@@ -3681,35 +3884,38 @@ def main() -> None:
             csv_name=f"spearman_combined_full_{short}.csv",
         )
 
-    print("\n[2/11] overview_no_autoaug (paper part_1 overview, no auto_aug)")
+    print("\n[2/12] overview_no_autoaug (paper part_1 overview, no auto_aug)")
     build_overview_no_autoaug(results, figures)
 
-    print("\n[3/11] temporal_trend_nonphys (Part 1 trend, non-physical tasks only)")
+    print("\n[3/12] temporal_trend_nonphys (Part 1 trend, non-physical tasks only)")
     build_temporal_trend_nonphys(results, figures)
 
-    print("\n[4/11] major_categories_trend (Part 2 trend chart, relocated)")
+    print("\n[4/12] major_categories_trend (Part 2 trend chart, relocated)")
     build_major_categories_trend(results, figures)
 
-    print("\n[5/11] eloundou_divergence_major (z-score divergence by major occ cat)")
+    print("\n[5/12] eloundou_divergence_major (z-score divergence by major occ cat)")
     build_eloundou_divergence_major(results, figures)
 
-    print("\n[6/11] ska_full (full element-level SKA)")
+    print("\n[6/12] ska_full (full element-level SKA)")
     build_ska_full(results, figures)
 
-    print("\n[7/11] gwa_wkrs_wages (workers/wages counterpart to part_2 gwa_pct)")
+    print("\n[7/12] gwa_wkrs_wages (workers/wages counterpart to part_2 gwa_pct)")
     build_gwa_wkrs_wages(results, figures)
 
-    print("\n[8/11] state_clusters_each_ranked (companion to Part 3 cluster map)")
+    print("\n[8/12] state_clusters_each_ranked (companion to Part 3 cluster map)")
     build_state_clusters_each_ranked(results, figures)
 
-    print("\n[9/11] underadoption_gap (% tasks exposed ÷ share of AI usage)")
+    print("\n[9/12] underadoption_gap (% tasks exposed ÷ share of AI usage)")
     build_underadoption_gap(results, figures)
 
-    print("\n[10/11] intensity_drivers (top occs + tasks within 3 high-lift majors)")
+    print("\n[10/12] intensity_drivers (top occs + tasks within 3 high-lift majors)")
     build_intensity_drivers(results, figures)
 
-    print("\n[11/11] adoption_friction_scatter (Section 3 adoption props × non-phys occs)")
+    print("\n[11/12] adoption_friction_scatter (Section 3 adoption props × non-phys occs)")
     build_adoption_friction_scatter(results, figures)
+
+    print("\n[12/12] capability_vs_adoption_all_occs (capability vs adoption across all occs)")
+    build_capability_vs_adoption_all_occs(results, figures)
 
     print("\nDone — figures in results/figures/ and figures/")
 

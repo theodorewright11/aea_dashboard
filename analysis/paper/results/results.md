@@ -126,6 +126,10 @@
 
 ![Top Tasks — Computer & Mathematical](appendix/figures/intensity_drivers_task_comp_math.png)
 
+### Appendix — Capability vs Adoption Properties Across All Occupations
+
+![Capability vs Adoption Properties — All Occupations](appendix/figures/capability_vs_adoption_all_occs.png)
+
 ### Appendix — Adoption Frictions vs Exposure Within Non-Physical Occupations
 
-![Adoption Frictions vs Exposure — Mostly Non-Physical Occupations](appendix/figures/adoption_friction_scatter.png)
+![Adoption Frictions vs Exposure — Non-Physical Occupations](appendix/figures/adoption_friction_scatter.png)
