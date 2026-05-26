@@ -22,7 +22,7 @@ Conventions used below:
 
 ![convergence_major.png](part_1/figures/convergence_major.png)
 
-This figure is a **single panel** Spearman correlation heatmap at the **Major occupational category** level (n = 22 categories per cell). The y-axis lists 5 internal AI scoring rows; the x-axis lists those same 5 internal sources (lower-triangle only) followed by a 1-column gap and then 8 external academic benchmarks. The internal block reads as pairwise correlations between our sources; the external block reads as one row per internal source vs each external benchmark. Five Eloundou-contaminated cells (Copilot, All Confirmed, and any other Copilot-derived row crossed with either Eloundou benchmark) are grayed out per the figure's contamination legend.
+This figure is a **single panel** Spearman correlation heatmap at the **Major occupational category** level (n = 22 categories per cell). The y-axis lists 5 internal AI scoring rows; the x-axis lists those same 5 internal sources (lower-triangle only) followed by a 1-column gap and then 8 external academic benchmarks. The internal block reads as pairwise correlations between our sources; the external block reads as one row per internal source vs each external benchmark. Four Eloundou-contaminated cells (the two Copilot-derived rows — Copilot itself and All Confirmed — crossed with each of the two Eloundou benchmark columns) are grayed out per the figure's contamination legend.
 
 Internal sources (rows / lower-tri columns), in y-axis order: Claude Browser (AEI Conv 2026-02-12), Claude API (AEI API 2025 2026-02-12), Copilot (Microsoft), MCP (MCP Cumul. v4), All Confirmed.
 
@@ -165,23 +165,20 @@ A 6-column table for the All Confirmed series. Two cream-shaded historical rows 
 
 Columns: Date | Source Release | Tasks Rated (of 17,507) | Δ Tasks | Auto-Aug Score (0–5) | Δ Auto-Aug.
 
+The chart's Δ Tasks column is the sequential difference between consecutive snapshots' `n_tasks` (unique `task_normalized` per dataset file). Historical row task counts (for Sep 2024 and Dec 2024) are pulled from the same AEI Both + Micro family files at those snapshot dates — the script (`_build_historical_rows`) loads them at render time and they're not in `trend_data.csv`, so the historical-row figures aren't reproducible without re-running the chart script.
+
 | Date | Source Release | Tasks Rated | Δ Tasks | Auto-Aug | Δ Auto-Aug |
 |---|---|---|---|---|---|
-| Sep 30, 2024 (historical) | Microsoft | (per-period anchor row) | — | — | — |
-| Dec 23, 2024 (historical) | AEI Browser v1 | (cumulative through Dec) | (cum.) | — | — |
-| Mar 6, 2025 (series start) | AEI Browser v2 | 7,427 | — | 2.94 | — |
-| Aug 11, 2025 | AEI Browser v3 + AEI API v3 | 7,631 | +137 (note: ΔTasks pulled from per-period file `trend_deltas.csv`; total tasks_rated rose +204 vs +137 net-new because the AEI Both + Micro union deduplicates new arrivals against existing tasks) | 3.40 | +0.46 |
-| Nov 13, 2025 | AEI Browser v4 + AEI API v4 | 7,795 | +101 | 3.53 | +0.13 |
-| Feb 12, 2026 (series end) | AEI Browser v5 + AEI API v5 | 7,878 | +50 | 3.59 | +0.06 |
+| Sep 30, 2024 (historical, cream) | Microsoft | (Sep 2024 AEI Both + Micro task count) | — | — | — |
+| Dec 23, 2024 (historical, cream) | AEI Browser v1 | (Dec 2024 AEI Both + Micro task count) | (Dec − Sep) | — | — |
+| Mar 6, 2025 (series start, highlighted) | AEI Browser v2 | 7,427 | (7,427 − Dec 2024 count) | 2.94 | — |
+| Aug 11, 2025 | AEI Browser v3 + AEI API v3 | 7,631 | +204 | 3.40 | +0.46 |
+| Nov 13, 2025 | AEI Browser v4 + AEI API v4 | 7,795 | +164 | 3.53 | +0.13 |
+| Feb 12, 2026 (series end, highlighted) | AEI Browser v5 + AEI API v5 | 7,878 | +83 | 3.59 | +0.06 |
 
-Per-period Δ values (from `trend_deltas.csv`):
-- 2025-08-11: +137 new tasks · +10.1M workers · +$682.9B wages · +6.6 pp emp coverage.
-- 2025-11-13: +101 new tasks · +3.4M workers · +$241.2B wages · +2.2 pp emp coverage.
-- 2026-02-12: +50 new tasks · +1.2M workers · +$89.0B wages · +0.8 pp emp coverage.
+The series-row task count grew by 7,878 − 7,427 = **+451 unique tasks** across the Mar 2025 → Feb 2026 range (sum of sequential Δ: 204 + 164 + 83 = 451). Each sequential Δ reflects net change in the cumulative-union task set of that snapshot's AEI Both + Micro file vs the prior snapshot — a task can appear in a later snapshot without appearing in earlier ones, and the cumulative count grows monotonically across this series.
 
-Cumulative from Mar 2025 → Feb 2026: +288 net new tasks, +14.7M workers added, +$1.01T wages added, +9.6 pp emp coverage.
-
-Auto-aug delta first→last: 2.94 → 3.59 = +0.65 (avg auto_aug across rated tasks rose ~22% over 11 months — the rated set is concentrating on more-automatable tasks as the data accumulates).
+Auto-aug delta first→last: 2.94 → 3.59 = +0.65 over 11 months (avg auto_aug across rated tasks rose ~22%, i.e., the rated set is concentrating on more-automatable tasks as the data accumulates).
 
 ---
 
@@ -191,37 +188,26 @@ Auto-aug delta first→last: 2.94 → 3.59 = +0.65 (avg auto_aug across rated ta
 
 Same 6-column table for the All Sources (Ceiling) series. Two cream historical rows at top, then 8 series rows (Mar 6 2025 → Feb 18 2026); first and last series rows highlighted.
 
+Δ Tasks again is the sequential difference between consecutive snapshots' `n_tasks` (from `trend_data.csv`).
+
 | Date | Source Release | Tasks Rated | Δ Tasks | Auto-Aug | Δ Auto-Aug |
 |---|---|---|---|---|---|
-| Sep 30, 2024 (historical) | Microsoft | — | — | — | — |
-| Dec 23, 2024 (historical) | AEI Browser v1 | — | (cum.) | — | — |
-| Mar 6, 2025 (series start) | AEI Browser v2 | 7,427 | — | 2.94 | — |
-| Apr 24, 2025 | MCP v1 | 9,676 | +1,938 (net-new vs cumulative recomputation differs slightly: total tasks_rated jumped +2,249 because MCP v1 contributed 2,249 not-previously-rated tasks; per `trend_deltas` the MCP integration milestone shows as +1,938) | 2.80 | −0.14 |
-| May 24, 2025 | MCP v2 | 10,311 | +524 | 2.82 | +0.02 |
-| Jul 23, 2025 | MCP v3 | 10,879 | +438 | 2.81 | −0.01 |
-| Aug 11, 2025 | AEI Browser v3 + AEI API v3 | 10,950 | +42 | 3.10 | +0.29 |
-| Nov 13, 2025 | AEI Browser v4 + AEI API v4 | 11,019 | +35 | 3.19 | +0.09 |
-| Feb 12, 2026 | AEI Browser v5 + AEI API v5 | 11,050 | +15 | 3.23 | +0.04 |
-| Feb 18, 2026 (series end) | MCP v4 | 11,122 | +58 | 3.23 | +0.00 |
+| Sep 30, 2024 (historical, cream) | Microsoft | (Sep 2024 All-family count) | — | — | — |
+| Dec 23, 2024 (historical, cream) | AEI Browser v1 | (Dec 2024 All-family count) | (Dec − Sep) | — | — |
+| Mar 6, 2025 (series start, highlighted) | AEI Browser v2 | 7,427 | (7,427 − Dec 2024 count) | 2.94 | — |
+| Apr 24, 2025 | MCP v1 | 9,676 | +2,249 | 2.80 | −0.14 |
+| May 24, 2025 | MCP v2 | 10,311 | +635 | 2.82 | +0.02 |
+| Jul 23, 2025 | MCP v3 | 10,879 | +568 | 2.81 | −0.01 |
+| Aug 11, 2025 | AEI Browser v3 + AEI API v3 | 10,950 | +71 | 3.10 | +0.29 |
+| Nov 13, 2025 | AEI Browser v4 + AEI API v4 | 11,019 | +69 | 3.19 | +0.09 |
+| Feb 12, 2026 | AEI Browser v5 + AEI API v5 | 11,050 | +31 | 3.23 | +0.04 |
+| Feb 18, 2026 (series end, highlighted) | MCP v4 | 11,122 | +72 | 3.23 | +0.00 |
 
-Per-period Δ values (from `trend_deltas.csv`):
-- 2025-04-24: +1,938 tasks · +12.6M workers · +$809.6B wages · +8.2 pp emp.
-- 2025-05-24: +524 tasks · +4.6M workers · +$268.6B wages · +3.0 pp emp.
-- 2025-07-23: +438 tasks · +2.5M workers · +$159.1B wages · +1.7 pp emp.
-- 2025-08-11: +42 tasks · +6.9M workers · +$483.6B wages · +4.5 pp emp.
-- 2025-11-13: +35 tasks · +2.5M workers · +$175.9B wages · +1.6 pp emp.
-- 2026-02-12: +15 tasks · +943K workers · +$70.5B wages · +0.6 pp emp.
-- 2026-02-18: +58 tasks · +477K workers · +$26.5B wages · +0.3 pp emp.
+The series-row task count grew by 11,122 − 7,427 = **+3,695 unique tasks** across the Mar 2025 → Feb 2026 range (sum of sequential Δ: 2,249 + 635 + 568 + 71 + 69 + 31 + 72 = 3,695).
 
-Cumulative Mar 2025 → Feb 2026 (Ceiling series): +3,050 net new tasks rated, +30.5M workers added, +$1.99T wages added, +19.9 pp emp coverage added.
+Largest single-period jump in tasks rated: **+2,249** at MCP v1 (2025-04-24) — the MCP integration milestone added 2,249 unique tasks to the All-family file relative to the previous snapshot.
 
-Largest single-period jumps:
-- Tasks added in one period (Ceiling): +1,938 at MCP v1 (2025-04-24) — the MCP integration milestone.
-- Workers added in one period (Ceiling): +12.6M at MCP v1 (2025-04-24).
-- Tasks added in one period (Confirmed): +137 at AEI Browser v3 + AEI API v3 (2025-08-11).
-- Workers added in one period (Confirmed): +10.1M at AEI Browser v3 + AEI API v3 (2025-08-11).
-
-Auto-aug delta first→last for Ceiling: 2.94 → 3.23 = +0.29 (smaller than Confirmed's +0.65 because the Ceiling pool ingested ~3,050 new lower-rated MCP tasks early in the series, dragging the average down before AEI updates pulled it back up).
+Auto-aug delta first→last for Ceiling: 2.94 → 3.23 = +0.29 (smaller than Confirmed's +0.65 because the Ceiling pool ingested ~3,695 new tasks — many of them lower-rated MCP tasks — early in the series, dragging the average down before AEI updates pulled it back up). The two negative Δ Auto-Aug ticks in the Ceiling table are at MCP v1 (2025-04-24, −0.14) and MCP v3 (2025-07-23, −0.01); the next tick at AEI Browser v3 + API v3 (2025-08-11) jumps +0.29 as the AEI-source updates pull the average back up.
 
 ---
 
@@ -361,39 +347,39 @@ In the full-economy view, medians climb Z1 → Z4 (3.7% → 50.1%) then dip slig
 Full enumeration, sorted by `ai_top10_pct` (descending). Format: element — `ai_top10_pct%` (bar value) · phys tier (phys_score, n_occs · ai_max_pct, eco_mean_pct):
 
 1. Speaking — 72.06% · Mixed (phys 39.6, n = 801; ai_max 78.72%, eco_mean 55.84%)
-2. Instructing — 67.57% · Non-physical (25.5, 397; 75.48%, 51.03%)
-3. Reading Comprehension — 67.59% · Mixed (35.8, 729; 70.90%, 58.50%)
+2. Reading Comprehension — 67.59% · Mixed (35.8, 729; 70.90%, 58.50%)
+3. Instructing — 67.57% · Non-physical (25.5, 397; 75.48%, 51.03%)
 4. Learning Strategies — 67.21% · Non-physical (22.7, 356; 82.07%, 52.27%)
 5. Active Learning — 65.13% · Non-physical (29.2, 581; 69.31%, 57.35%)
 6. Writing — 64.18% · Non-physical (26.8, 588; 87.77%, 50.21%)
 7. Persuasion — 62.18% · Non-physical (20.2, 329; 67.21%, 56.14%)
-8. Complex Problem Solving — 60.27% · Mixed (33.5, 644; 65.56%, 54.49%)
+8. Complex Problem Solving — 60.27% · Mixed (33.5, 644; 65.57%, 54.49%)
 9. Monitoring — 60.12% · Mixed (40.0, 767; 62.79%, 57.24%)
 10. Time Management — 58.33% · Mixed (36.2, 662; 67.46%, 55.11%)
 11. Mathematics — 56.21% · Non-physical (21.0, 237; 74.45%, 40.87%)
-12. Critical Thinking — 53.83% · Mixed (40.3, 800; 59.61%, 48.22%)
+12. Coordination — 55.33% · Mixed (36.1, 663; 63.71%, 53.06%)
 13. Systems Evaluation — 55.25% · Non-physical (18.5, 326; 61.26%, 53.88%)
-14. Coordination — 55.32% · Mixed (36.1, 663; 63.71%, 53.05%)
-15. Service Orientation — 51.32% · Non-physical (32.5, 473; 56.35%, 49.59%)
-16. Negotiation — 51.50% · Non-physical (16.0, 257; 57.85%, 47.18%)
-17. Science — 51.09% · Non-physical (29.6, 150; 65.51%, 52.53%)
-18. Systems Analysis — 52.30% · Non-physical (21.3, 369; 55.15%, 50.81%)
-19. Active Listening — 50.59% · Mixed (41.2, 830; 53.83%, 45.99%)
-20. Operations Analysis — 51.09% · Non-physical (16.6, 90; 63.41%, 60.54%)
-21. Programming — 50.42% · Non-physical (8.0, 26; 78.00%, 57.01%)
-22. Technology Design — 50.94% · Non-physical (13.5, 19; 65.41%, 79.04%)
-23. Quality Control Analysis — 49.92% · Mixed (61.0, 233; 57.96%, 63.74%)
-24. Management of Personnel Resources — 48.29% · Non-physical (19.9, 192; 55.54%, 51.89%)
-25. Social Perceptiveness — 44.62% · Non-physical (30.3, 576; 54.67%, 41.71%)
-26. Judgment and Decision Making — 52.64% · Mixed (35.1, 682; 57.89%, 46.93%)
+14. Critical Thinking — 53.83% · Mixed (40.3, 800; 59.61%, 48.22%)
+15. Judgment and Decision Making — 52.64% · Mixed (35.1, 682; 57.89%, 46.93%)
+16. Systems Analysis — 52.33% · Non-physical (21.3, 369; 55.15%, 50.81%)
+17. Negotiation — 51.50% · Non-physical (16.0, 257; 57.86%, 47.18%)
+18. Service Orientation — 51.32% · Non-physical (32.5, 473; 56.35%, 49.58%)
+19. Operations Analysis — 51.09% · Non-physical (16.6, 90; 63.41%, 60.54%)
+20. Science — 51.09% · Non-physical (29.6, 150; 65.51%, 52.53%)
+21. Technology Design — 50.94% · Non-physical (13.5, 19; 65.41%, 79.04%)
+22. Active Listening — 50.59% · Mixed (41.2, 830; 53.83%, 45.99%)
+23. Programming — 50.42% · Non-physical (8.0, 26; 77.98%, 57.01%)
+24. Quality Control Analysis — 49.92% · Mixed (61.0, 233; 57.97%, 63.74%)
+25. Management of Personnel Resources — 48.29% · Non-physical (19.9, 192; 55.54%, 51.89%)
+26. Social Perceptiveness — 44.62% · Non-physical (30.3, 576; 54.67%, 41.70%)
 27. Management of Financial Resources — 40.29% · Non-physical (7.8, 41; 55.54%, 52.10%)
 28. Troubleshooting — 37.54% · Physical (71.8, 138; 53.13%, 55.22%)
-29. Management of Material Resources — 36.74% · Non-physical (15.5, 29; 55.54%, 57.25%)
+29. Management of Material Resources — 36.73% · Non-physical (15.5, 29; 55.54%, 57.25%)
 30. Operations Monitoring — 33.43% · Mixed (65.3, 303; 39.25%, 50.05%)
 31. Equipment Selection — 29.56% · Physical (77.7, 42; 55.69%, 71.19%)
-32. Repairing — 25.01% · Physical (78.2, 92; 32.42%, 54.98%)
-33. Equipment Maintenance — 20.02% · Physical (77.8, 101; 27.92%, 41.65%)
-34. Operation and Control — 20.13% · Physical (74.9, 208; 27.65%, 40.42%)
+32. Repairing — 25.01% · Physical (78.2, 92; 32.41%, 54.98%)
+33. Operation and Control — 20.13% · Physical (74.9, 208; 27.64%, 40.42%)
+34. Equipment Maintenance — 20.02% · Physical (77.8, 101; 27.92%, 41.64%)
 35. Installation — 17.79% · Physical (76.4, 23; 25.29%, 53.23%)
 
 (Values are computed as `ai_top10 / eco_max × 100`, `ai_max / eco_max × 100`, `eco_mean / eco_max × 100` from the raw `ska_skills.csv`. Bar text on the rendered chart rounds the bar value to integer %.)
@@ -849,7 +835,7 @@ Note that lift and pct_tasks_affected are not the same ranking: Sales has the 2n
 
 ## Appendix
 
-The appendix figures share the same scoring sources and configs as the main body. The four `convergence_full_*` charts extend the source-level convergence figures (Part 1) into a full 17×17 lower-triangle matrix per SOC level (5 internal sources + 4 configs + 8 external benchmarks). Eloundou-contaminated cells (Eloundou GPT-4 β / Eloundou Human β columns crossed with any row containing Copilot, i.e. Copilot, All Confirmed, Conversational Confirmed, Agentic Ceiling, All Sources (Ceiling)) are grayed out in the rendered figures.
+The appendix figures share the same scoring sources and configs as the main body. The four `convergence_full_*` charts extend the source-level convergence figures (Part 1) into a full 17×17 lower-triangle matrix per SOC level (5 internal sources + 4 configs + 8 external benchmarks). Eight Eloundou-contaminated cells per panel (rendered where y=an Eloundou benchmark row {Eloundou GPT-4 β, Eloundou Human β} crosses x=a Copilot-derived column {Copilot, All Confirmed, Conversational Confirmed, All Sources (Ceiling)}; 2 × 4 = 8 cells) are grayed out in the rendered figures. Agentic Confirmed and Agentic Ceiling do not contain Copilot/Microsoft data and are therefore NOT marked contaminated.
 
 Rows (y-axis) and columns (lower-triangle x-axis), in chart order: Claude Browser, Claude API, Copilot, MCP, All Confirmed, Conversational Confirmed, Agentic Confirmed, Agentic Ceiling, All Sources (Ceiling), Eloundou GPT-4 β, Eloundou Human β, AIOE Overall, AIOE Reading Compr., Schaal Overall, Schaal DA, Schaal AG, Tomlinson (Copilot). Lower-triangle = 17 × 16 / 2 = 136 unique pairs per panel. All cells significant at p < .001 unless otherwise noted (the few `**` and `*` are flagged in line).
 
@@ -867,13 +853,13 @@ n = 22 for every internal/internal and internal/external pair. All values from `
 - **Agentic Confirmed** ↔ Claude Browser 0.97 *** | Claude API 1.00 *** | Copilot 0.84 *** | MCP 0.83 *** | All Confirmed 0.97 *** | Conversational Confirmed 0.96 ***
 - **Agentic Ceiling** ↔ Claude Browser 0.93 *** | Claude API 0.94 *** | Copilot 0.94 *** | MCP 0.96 *** | All Confirmed 0.98 *** | Conversational Confirmed 0.97 *** | Agentic Confirmed 0.94 ***
 - **All Sources (Ceiling)** ↔ Claude Browser 0.93 *** | Claude API 0.94 *** | Copilot 0.94 *** | MCP 0.95 *** | All Confirmed 0.98 *** | Conversational Confirmed 0.98 *** | Agentic Confirmed 0.94 *** | Agentic Ceiling 0.99 ***
-- **Eloundou GPT-4 β** ↔ Claude Browser 0.83 *** | Claude API 0.83 *** | Copilot 0.94 *** [contam] | MCP 0.92 *** | All Confirmed 0.90 *** [contam] | Conversational Confirmed 0.90 *** [contam] | Agentic Confirmed 0.83 *** | Agentic Ceiling 0.92 *** [contam] | All Sources (Ceiling) 0.92 *** [contam]
-- **Eloundou Human β** ↔ Claude Browser 0.87 *** | Claude API 0.89 *** | Copilot 0.94 *** [contam] | MCP 0.93 *** | All Confirmed 0.95 *** [contam] | Conversational Confirmed 0.94 *** [contam] | Agentic Confirmed 0.89 *** | Agentic Ceiling 0.94 *** [contam] | All Sources (Ceiling) 0.94 *** [contam] | Eloundou GPT-4 β 0.93 ***
+- **Eloundou GPT-4 β** ↔ Claude Browser 0.83 *** | Claude API 0.83 *** | Copilot 0.94 *** [contam] | MCP 0.92 *** | All Confirmed 0.90 *** [contam] | Conversational Confirmed 0.90 *** [contam] | Agentic Confirmed 0.83 *** | Agentic Ceiling 0.92 *** | All Sources (Ceiling) 0.92 *** [contam]
+- **Eloundou Human β** ↔ Claude Browser 0.87 *** | Claude API 0.89 *** | Copilot 0.94 *** [contam] | MCP 0.93 *** | All Confirmed 0.95 *** [contam] | Conversational Confirmed 0.94 *** [contam] | Agentic Confirmed 0.89 *** | Agentic Ceiling 0.94 *** | All Sources (Ceiling) 0.94 *** [contam] | Eloundou GPT-4 β 0.93 ***
 - **AIOE Overall** ↔ Claude Browser 0.84 *** | Claude API 0.86 *** | Copilot 0.85 *** | MCP 0.82 *** | All Confirmed 0.88 *** | Conversational Confirmed 0.87 *** | Agentic Confirmed 0.86 *** | Agentic Ceiling 0.86 *** | All Sources (Ceiling) 0.87 *** | Eloundou GPT-4 β 0.87 *** | Eloundou Human β 0.90 ***
 - **AIOE Reading Compr.** ↔ Claude Browser 0.86 *** | Claude API 0.86 *** | Copilot 0.81 *** | MCP 0.77 *** | All Confirmed 0.87 *** | Conversational Confirmed 0.86 *** | Agentic Confirmed 0.86 *** | Agentic Ceiling 0.84 *** | All Sources (Ceiling) 0.85 *** | Eloundou GPT-4 β 0.84 *** | Eloundou Human β 0.87 *** | AIOE Overall 0.99 ***
 - **Schaal Overall** ↔ Claude Browser 0.72 *** | Claude API 0.69 *** | Copilot 0.76 *** | MCP 0.72 *** | All Confirmed 0.74 *** | Conversational Confirmed 0.76 *** | Agentic Confirmed 0.69 *** | Agentic Ceiling 0.73 *** | All Sources (Ceiling) 0.72 *** | Eloundou GPT-4 β 0.84 *** | Eloundou Human β 0.78 *** | AIOE Overall 0.77 *** | AIOE Reading Compr. 0.78 ***
 - **Schaal DA** ↔ Claude Browser 0.81 *** | Claude API 0.79 *** | Copilot 0.90 *** | MCP 0.89 *** | All Confirmed 0.87 *** | Conversational Confirmed 0.87 *** | Agentic Confirmed 0.79 *** | Agentic Ceiling 0.88 *** | All Sources (Ceiling) 0.89 *** | Eloundou GPT-4 β 0.94 *** | Eloundou Human β 0.89 *** | AIOE Overall 0.81 *** | AIOE Reading Compr. 0.77 *** | Schaal Overall 0.78 ***
-- **Schaal AG** ↔ Claude Browser 0.58 ** | Claude API 0.58 ** | Copilot 0.82 *** | MCP 0.86 *** | All Confirmed 0.71 *** | Conversational Confirmed 0.70 *** | Agentic Confirmed 0.58 ** | Agentic Ceiling 0.78 *** | All Sources (Ceiling) 0.77 *** | Eloundou GPT-4 β 0.82 *** | Eloundou Human β 0.78 *** | AIOE Overall 0.65 ** | AIOE Reading Compr. 0.57 * | Schaal Overall 0.61 ** | Schaal DA 0.89 ***
+- **Schaal AG** ↔ Claude Browser 0.58 ** | Claude API 0.58 ** | Copilot 0.82 *** | MCP 0.86 *** | All Confirmed 0.71 *** | Conversational Confirmed 0.70 *** | Agentic Confirmed 0.58 ** | Agentic Ceiling 0.78 *** | All Sources (Ceiling) 0.77 *** | Eloundou GPT-4 β 0.82 *** | Eloundou Human β 0.78 *** | AIOE Overall 0.65 ** | AIOE Reading Compr. 0.57 ** | Schaal Overall 0.61 ** | Schaal DA 0.89 ***
 - **Tomlinson (Copilot)** ↔ Claude Browser 0.84 *** | Claude API 0.81 *** | Copilot 0.81 *** | MCP 0.81 *** | All Confirmed 0.86 *** | Conversational Confirmed 0.87 *** | Agentic Confirmed 0.81 *** | Agentic Ceiling 0.85 *** | All Sources (Ceiling) 0.86 *** | Eloundou GPT-4 β 0.71 *** | Eloundou Human β 0.81 *** | AIOE Overall 0.72 *** | AIOE Reading Compr. 0.72 *** | Schaal Overall 0.52 * | Schaal DA 0.66 *** | Schaal AG 0.53 *
 
 Cell range across all 136 pairs at major level: 0.52 (Tomlinson vs Schaal Overall, p < .05) to 1.00 (Agentic Confirmed ↔ Claude API; Agentic Confirmed *is* a near-identity transform of Claude API because the eco_2025-rebased AEI API file is the only source contributing to Agentic Confirmed).
@@ -892,8 +878,8 @@ n = 95 minor categories for every internal/internal and internal/external pair; 
 - **Agentic Confirmed** ↔ Claude Browser 0.92 *** | Claude API 1.00 *** | Copilot 0.82 *** | MCP 0.80 *** | All Confirmed 0.95 *** | Conversational Confirmed 0.93 ***
 - **Agentic Ceiling** ↔ Claude Browser 0.87 *** | Claude API 0.92 *** | Copilot 0.91 *** | MCP 0.95 *** | All Confirmed 0.95 *** | Conversational Confirmed 0.94 *** | Agentic Confirmed 0.92 ***
 - **All Sources (Ceiling)** ↔ Claude Browser 0.91 *** | Claude API 0.94 *** | Copilot 0.92 *** | MCP 0.91 *** | All Confirmed 0.98 *** | Conversational Confirmed 0.98 *** | Agentic Confirmed 0.94 *** | Agentic Ceiling 0.98 ***
-- **Eloundou GPT-4 β** ↔ Claude Browser 0.82 *** | Claude API 0.85 *** | Copilot 0.90 *** [contam] | MCP 0.86 *** | All Confirmed 0.90 *** [contam] | Conversational Confirmed 0.90 *** [contam] | Agentic Confirmed 0.85 *** | Agentic Ceiling 0.91 *** [contam] | All Sources (Ceiling) 0.92 *** [contam]
-- **Eloundou Human β** ↔ Claude Browser 0.82 *** | Claude API 0.84 *** | Copilot 0.89 *** [contam] | MCP 0.85 *** | All Confirmed 0.89 *** [contam] | Conversational Confirmed 0.89 *** [contam] | Agentic Confirmed 0.84 *** | Agentic Ceiling 0.89 *** [contam] | All Sources (Ceiling) 0.90 *** [contam] | Eloundou GPT-4 β 0.93 ***
+- **Eloundou GPT-4 β** ↔ Claude Browser 0.82 *** | Claude API 0.85 *** | Copilot 0.90 *** [contam] | MCP 0.86 *** | All Confirmed 0.90 *** [contam] | Conversational Confirmed 0.90 *** [contam] | Agentic Confirmed 0.85 *** | Agentic Ceiling 0.91 *** | All Sources (Ceiling) 0.92 *** [contam]
+- **Eloundou Human β** ↔ Claude Browser 0.82 *** | Claude API 0.84 *** | Copilot 0.89 *** [contam] | MCP 0.85 *** | All Confirmed 0.89 *** [contam] | Conversational Confirmed 0.89 *** [contam] | Agentic Confirmed 0.84 *** | Agentic Ceiling 0.89 *** | All Sources (Ceiling) 0.90 *** [contam] | Eloundou GPT-4 β 0.93 ***
 - **AIOE Overall** ↔ Claude Browser 0.75 *** | Claude API 0.78 *** | Copilot 0.80 *** | MCP 0.74 *** | All Confirmed 0.82 *** | Conversational Confirmed 0.82 *** | Agentic Confirmed 0.78 *** | Agentic Ceiling 0.81 *** | All Sources (Ceiling) 0.84 *** | Eloundou GPT-4 β 0.87 *** | Eloundou Human β 0.88 ***
 - **AIOE Reading Compr.** ↔ Claude Browser 0.80 *** | Claude API 0.81 *** | Copilot 0.79 *** | MCP 0.72 *** | All Confirmed 0.85 *** | Conversational Confirmed 0.85 *** | Agentic Confirmed 0.81 *** | Agentic Ceiling 0.81 *** | All Sources (Ceiling) 0.85 *** | Eloundou GPT-4 β 0.87 *** | Eloundou Human β 0.89 *** | AIOE Overall 0.96 ***
 - **Schaal Overall** ↔ Claude Browser 0.68 *** | Claude API 0.60 *** | Copilot 0.65 *** | MCP 0.63 *** | All Confirmed 0.67 *** | Conversational Confirmed 0.69 *** | Agentic Confirmed 0.60 *** | Agentic Ceiling 0.65 *** | All Sources (Ceiling) 0.68 *** | Eloundou GPT-4 β 0.72 *** | Eloundou Human β 0.72 *** | AIOE Overall 0.69 *** | AIOE Reading Compr. 0.71 ***
@@ -917,8 +903,8 @@ n = 439 broad occupations for every internal/internal and internal/external pair
 - **Agentic Confirmed** ↔ Claude Browser 0.87 *** | Claude API 1.00 *** | Copilot 0.71 *** | MCP 0.68 *** | All Confirmed 0.90 *** | Conversational Confirmed 0.86 ***
 - **Agentic Ceiling** ↔ Claude Browser 0.80 *** | Claude API 0.86 *** | Copilot 0.83 *** | MCP 0.94 *** | All Confirmed 0.90 *** | Conversational Confirmed 0.88 *** | Agentic Confirmed 0.86 ***
 - **All Sources (Ceiling)** ↔ Claude Browser 0.86 *** | Claude API 0.86 *** | Copilot 0.88 *** | MCP 0.90 *** | All Confirmed 0.96 *** | Conversational Confirmed 0.95 *** | Agentic Confirmed 0.86 *** | Agentic Ceiling 0.97 ***
-- **Eloundou GPT-4 β** ↔ Claude Browser 0.73 *** | Claude API 0.72 *** | Copilot 0.88 *** [contam] | MCP 0.83 *** | All Confirmed 0.86 *** [contam] | Conversational Confirmed 0.86 *** [contam] | Agentic Confirmed 0.72 *** | Agentic Ceiling 0.86 *** [contam] | All Sources (Ceiling) 0.88 *** [contam]
-- **Eloundou Human β** ↔ Claude Browser 0.74 *** | Claude API 0.71 *** | Copilot 0.86 *** [contam] | MCP 0.80 *** | All Confirmed 0.85 *** [contam] | Conversational Confirmed 0.86 *** [contam] | Agentic Confirmed 0.71 *** | Agentic Ceiling 0.83 *** [contam] | All Sources (Ceiling) 0.87 *** [contam] | Eloundou GPT-4 β 0.92 ***
+- **Eloundou GPT-4 β** ↔ Claude Browser 0.73 *** | Claude API 0.72 *** | Copilot 0.88 *** [contam] | MCP 0.83 *** | All Confirmed 0.86 *** [contam] | Conversational Confirmed 0.86 *** [contam] | Agentic Confirmed 0.72 *** | Agentic Ceiling 0.86 *** | All Sources (Ceiling) 0.88 *** [contam]
+- **Eloundou Human β** ↔ Claude Browser 0.74 *** | Claude API 0.71 *** | Copilot 0.86 *** [contam] | MCP 0.80 *** | All Confirmed 0.85 *** [contam] | Conversational Confirmed 0.86 *** [contam] | Agentic Confirmed 0.71 *** | Agentic Ceiling 0.83 *** | All Sources (Ceiling) 0.87 *** [contam] | Eloundou GPT-4 β 0.92 ***
 - **AIOE Overall** (n = 433) ↔ Claude Browser 0.67 *** | Claude API 0.63 *** | Copilot 0.77 *** | MCP 0.74 *** | All Confirmed 0.76 *** | Conversational Confirmed 0.77 *** | Agentic Confirmed 0.63 *** | Agentic Ceiling 0.76 *** | All Sources (Ceiling) 0.79 *** | Eloundou GPT-4 β 0.83 *** | Eloundou Human β 0.84 ***
 - **AIOE Reading Compr.** (n = 433) ↔ Claude Browser 0.76 *** | Claude API 0.71 *** | Copilot 0.78 *** | MCP 0.72 *** | All Confirmed 0.82 *** | Conversational Confirmed 0.83 *** | Agentic Confirmed 0.71 *** | Agentic Ceiling 0.79 *** | All Sources (Ceiling) 0.83 *** | Eloundou GPT-4 β 0.85 *** | Eloundou Human β 0.87 *** | AIOE Overall 0.93 ***
 - **Schaal Overall** ↔ Claude Browser 0.66 *** | Claude API 0.59 *** | Copilot 0.66 *** | MCP 0.62 *** | All Confirmed 0.71 *** | Conversational Confirmed 0.71 *** | Agentic Confirmed 0.59 *** | Agentic Ceiling 0.66 *** | All Sources (Ceiling) 0.70 *** | Eloundou GPT-4 β 0.74 *** | Eloundou Human β 0.75 *** | AIOE Overall 0.69 *** (n = 433) | AIOE Reading Compr. 0.74 *** (n = 433)
@@ -942,8 +928,8 @@ n = 923 occupations for every internal/internal and internal/external pair; n = 
 - **Agentic Confirmed** ↔ Claude Browser 0.84 *** | Claude API 1.00 *** | Copilot 0.62 *** | MCP 0.60 *** | All Confirmed 0.86 *** | Conversational Confirmed 0.80 ***
 - **Agentic Ceiling** ↔ Claude Browser 0.76 *** | Claude API 0.83 *** | Copilot 0.78 *** | MCP 0.92 *** | All Confirmed 0.88 *** | Conversational Confirmed 0.86 *** | Agentic Confirmed 0.83 ***
 - **All Sources (Ceiling)** ↔ Claude Browser 0.83 *** | Claude API 0.82 *** | Copilot 0.84 *** | MCP 0.87 *** | All Confirmed 0.95 *** | Conversational Confirmed 0.94 *** | Agentic Confirmed 0.82 *** | Agentic Ceiling 0.96 ***
-- **Eloundou GPT-4 β** ↔ Claude Browser 0.67 *** | Claude API 0.64 *** | Copilot 0.84 *** [contam] | MCP 0.77 *** | All Confirmed 0.82 *** [contam] | Conversational Confirmed 0.83 *** [contam] | Agentic Confirmed 0.64 *** | Agentic Ceiling 0.81 *** [contam] | All Sources (Ceiling) 0.84 *** [contam]
-- **Eloundou Human β** ↔ Claude Browser 0.68 *** | Claude API 0.64 *** | Copilot 0.83 *** [contam] | MCP 0.73 *** | All Confirmed 0.82 *** [contam] | Conversational Confirmed 0.83 *** [contam] | Agentic Confirmed 0.64 *** | Agentic Ceiling 0.78 *** [contam] | All Sources (Ceiling) 0.83 *** [contam] | Eloundou GPT-4 β 0.90 ***
+- **Eloundou GPT-4 β** ↔ Claude Browser 0.67 *** | Claude API 0.64 *** | Copilot 0.84 *** [contam] | MCP 0.77 *** | All Confirmed 0.82 *** [contam] | Conversational Confirmed 0.83 *** [contam] | Agentic Confirmed 0.64 *** | Agentic Ceiling 0.81 *** | All Sources (Ceiling) 0.84 *** [contam]
+- **Eloundou Human β** ↔ Claude Browser 0.68 *** | Claude API 0.64 *** | Copilot 0.83 *** [contam] | MCP 0.73 *** | All Confirmed 0.82 *** [contam] | Conversational Confirmed 0.83 *** [contam] | Agentic Confirmed 0.64 *** | Agentic Ceiling 0.78 *** | All Sources (Ceiling) 0.83 *** [contam] | Eloundou GPT-4 β 0.90 ***
 - **AIOE Overall** (n = 893) ↔ Claude Browser 0.61 *** | Claude API 0.56 *** | Copilot 0.69 *** | MCP 0.64 *** | All Confirmed 0.70 *** | Conversational Confirmed 0.71 *** | Agentic Confirmed 0.56 *** | Agentic Ceiling 0.68 *** | All Sources (Ceiling) 0.72 *** | Eloundou GPT-4 β 0.78 *** | Eloundou Human β 0.78 ***
 - **AIOE Reading Compr.** (n = 893) ↔ Claude Browser 0.70 *** | Claude API 0.64 *** | Copilot 0.72 *** | MCP 0.63 *** | All Confirmed 0.77 *** | Conversational Confirmed 0.78 *** | Agentic Confirmed 0.64 *** | Agentic Ceiling 0.72 *** | All Sources (Ceiling) 0.77 *** | Eloundou GPT-4 β 0.82 *** | Eloundou Human β 0.84 *** | AIOE Overall 0.92 ***
 - **Schaal Overall** ↔ Claude Browser 0.62 *** | Claude API 0.54 *** | Copilot 0.62 *** | MCP 0.58 *** | All Confirmed 0.68 *** | Conversational Confirmed 0.68 *** | Agentic Confirmed 0.54 *** | Agentic Ceiling 0.63 *** | All Sources (Ceiling) 0.68 *** | Eloundou GPT-4 β 0.73 *** | Eloundou Human β 0.70 *** | AIOE Overall 0.66 *** (n = 893) | AIOE Reading Compr. 0.71 *** (n = 893)
@@ -1022,36 +1008,26 @@ Final-snapshot gap between Non-physical lines and Physical line: 48.20% − 12.7
 
 ![major_categories_trend_tasks.png](appendix/figures/major_categories_trend_tasks.png)
 
-22 majors plotted as horizontal hatched bars showing observed % Tasks Exposed at 2025-03-06 (first AEI Both + Micro snapshot), 2026-02-12 (current/final), and the linear-OLS projected value at the 2-year horizon. Each bar shows the current value with a faint hatched extension to the 2yr projection. R² values come from per-major OLS fits over the 4-snapshot series.
+The chart shows **top 10 SOC majors by absolute observed jump (start → current)** ranked descending — the top-mover sits at the top of the y-axis. Each bar is a three-segment horizontal stack: (1) solid start value at 2025-03-06 (first AEI Both + Micro snapshot), (2) mid-opacity observed Δ segment (start → current at 2026-02-12), (3) hatched 2-yr linear-OLS projection segment extending past current. Inline label on the Δ segment shows the per-bar observed Δ in pp. Right-side annotation per bar shows the full triplet "start → current → projected." R² from each major's 4-snapshot OLS fit.
 
-Per major (sorted alphabetically in the CSV; presented here sorted by current value desc to match the chart's likely ordering):
+Top 10 by |observed jump|, sorted descending (chart row order — top-mover-at-top):
 
-| Major | First (2025-03-06) | Current (2026-02-12) | Observed Jump (pp) | 2yr Projected | Projected Δ (pp) | R² |
-|---|---|---|---|---|---|---|
-| Computer and Mathematical | 52.94 | 70.87 | +17.92 | 112.52 | +41.66 | 0.88 |
-| Sales and Related | 41.97 | 60.60 | +18.63 | 103.51 | +42.91 | 0.90 |
-| Business and Financial Operations | 43.30 | 57.42 | +14.12 | 89.13 | +31.71 | 0.96 |
-| Office and Administrative Support | 39.97 | 54.21 | +14.24 | 85.90 | +31.70 | 0.97 |
-| Educational Instruction and Library | 40.12 | 53.11 | +12.98 | 83.10 | +29.99 | 0.95 |
-| Arts, Design, Entertainment, Sports, and Media | 42.06 | 52.69 | +10.63 | 76.71 | +24.02 | 0.98 |
-| Legal | 35.12 | 48.37 | +13.25 | 76.97 | +28.60 | 0.99 |
-| Life, Physical, and Social Science | 31.14 | 42.21 | +11.07 | 67.70 | +25.49 | 0.93 |
-| Community and Social Service | 29.36 | 42.11 | +12.76 | 71.25 | +29.14 | 0.97 |
-| Architecture and Engineering | 35.40 | 41.48 | +6.08 | 55.18 | +13.71 | 0.94 |
-| Management | 26.63 | 37.30 | +10.68 | 61.71 | +24.40 | 0.96 |
-| Protective Service | 22.35 | 29.67 | +7.32 | 45.15 | +15.48 | 0.99 |
-| Healthcare Practitioners and Technical | 19.87 | 28.66 | +8.79 | 48.88 | +20.22 | 0.94 |
-| Personal Care and Service | 15.11 | 24.44 | +9.33 | 44.82 | +20.39 | 1.00 |
-| Healthcare Support | 12.80 | 21.52 | +8.72 | 41.60 | +20.08 | 0.94 |
-| Food Preparation and Serving Related | 13.80 | 21.03 | +7.23 | 37.73 | +16.70 | 0.92 |
-| Transportation and Material Moving | 11.71 | 14.87 | +3.15 | 21.77 | +6.90 | 0.97 |
-| Building and Grounds Cleaning and Maintenance | 9.83 | 13.28 | +3.45 | 21.40 | +8.11 | 0.91 |
-| Installation, Maintenance, and Repair | 8.93 | 13.11 | +4.19 | 22.87 | +9.76 | 0.92 |
-| Production | 9.39 | 11.17 | +1.78 | 15.19 | +4.02 | 0.91 |
-| Farming, Fishing, and Forestry | 7.32 | 8.19 | +0.87 | 9.94 | +1.75 | 0.94 |
-| Construction and Extraction | 4.85 | 8.11 | +3.25 | 15.58 | +7.47 | 0.97 |
+| # | Major | First (2025-03-06) | Current (2026-02-12) | Observed Jump (pp) | 2yr Projected | Projected Δ (pp) | R² |
+|---|---|---|---|---|---|---|---|
+| 1 | Sales and Related | 41.97 | 60.60 | +18.63 | 103.51 | +42.91 | 0.90 |
+| 2 | Computer and Mathematical | 52.94 | 70.87 | +17.92 | 112.52 | +41.66 | 0.88 |
+| 3 | Office and Administrative Support | 39.97 | 54.21 | +14.24 | 85.90 | +31.70 | 0.97 |
+| 4 | Business and Financial Operations | 43.30 | 57.42 | +14.12 | 89.13 | +31.71 | 0.96 |
+| 5 | Legal | 35.12 | 48.37 | +13.25 | 76.97 | +28.60 | 0.99 |
+| 6 | Educational Instruction and Library | 40.12 | 53.11 | +12.98 | 83.10 | +29.99 | 0.95 |
+| 7 | Community and Social Service | 29.36 | 42.11 | +12.76 | 71.25 | +29.14 | 0.97 |
+| 8 | Life, Physical, and Social Science | 31.14 | 42.21 | +11.07 | 67.70 | +25.49 | 0.93 |
+| 9 | Management | 26.63 | 37.30 | +10.68 | 61.71 | +24.40 | 0.96 |
+| 10 | Arts, Design, Entertainment, Sports, and Media | 42.06 | 52.69 | +10.63 | 76.71 | +24.02 | 0.98 |
 
-Observed jump range: +0.87 pp (Farming) to +18.63 pp (Sales). 2yr projected Δ range: +1.75 pp (Farming) to +42.91 pp (Sales). Three majors are projected to exceed 100% by 2yr horizon under the linear-fit assumption (Computer and Math 112.52%, Sales and Related 103.51%) — this is "if recent rate continues," not a forecast.
+Top-10 observed jump range: +10.63 pp (Arts) to +18.63 pp (Sales). Top-10 2yr projected Δ range: +24.02 pp (Arts) to +42.91 pp (Sales). Two of the top 10 are projected to exceed 100% by 2yr horizon under the linear-fit assumption (Sales 103.51%, Computer and Math 112.52%) — this is "if recent rate continues," not a forecast.
+
+For reference, the full 22-major dataset in `major_trend_projections.csv` includes the 12 majors not on the chart (sorted by |jump| desc, all below the 10.63 pp cutoff): Personal Care +9.33 pp → 44.82 (R²=1.00), Healthcare Practitioners +8.79 → 48.88 (0.94), Healthcare Support +8.72 → 41.60 (0.94), Protective Service +7.32 → 45.15 (0.99), Food Prep +7.23 → 37.73 (0.92), Architecture/Engineering +6.08 → 55.18 (0.94), Installation/Maintenance +4.19 → 22.87 (0.92), Building/Grounds +3.45 → 21.40 (0.91), Construction/Extraction +3.25 → 15.58 (0.97), Transportation +3.15 → 21.77 (0.97), Production +1.78 → 15.19 (0.91), Farming +0.87 → 9.94 (0.94).
 
 ---
 
@@ -1059,36 +1035,26 @@ Observed jump range: +0.87 pp (Farming) to +18.63 pp (Sales). 2yr projected Δ r
 
 ![major_categories_trend_workers.png](appendix/figures/major_categories_trend_workers.png)
 
-Same chart layout as the tasks trend, but metric = Workers Exposed.
+Same chart layout as the tasks trend, but metric = Workers Exposed. Chart shows **top 10 SOC majors by absolute observed Δ workers (start → current)**, ranked descending. The workers chart additionally renders each row's value as a percent of national employment (start / current / projected) on a second annotation line beneath the start → current → projected triplet.
 
-Per major (sorted descending by current Workers Exposed):
+Top 10 by |observed Δ workers|, sorted descending (chart row order — top-mover-at-top):
 
-| Major | First Workers (2025-03-06) | Current Workers (2026-02-12) | Observed Δ Workers | 2yr Projected | Projected Δ | R² |
-|---|---|---|---|---|---|---|
-| Office and Administrative Support | 8,178,719.79 (8.18M) | 11,535,704.39 (11.54M) | +3,356,984.59 (+3.36M) | 19,209,073.85 (19.21M) | +7,673,369.47 (+7.67M) | 0.89 |
-| Sales and Related | 5,175,970.84 (5.18M) | 7,246,699.19 (7.25M) | +2,070,728.35 (+2.07M) | 12,100,688.64 (12.10M) | +4,853,989.46 (+4.85M) | 0.88 |
-| Business and Financial Operations | 4,691,973.58 (4.69M) | 6,232,699.87 (6.23M) | +1,540,726.30 (+1.54M) | 9,721,443.13 (9.72M) | +3,488,743.26 (+3.49M) | 0.91 |
-| Management | 3,459,670.08 (3.46M) | 4,808,465.24 (4.81M) | +1,348,795.16 (+1.35M) | 7,931,234.00 (7.93M) | +3,122,768.75 (+3.12M) | 0.94 |
-| Educational Instruction and Library | 3,154,423.98 (3.15M) | 4,152,317.70 (4.15M) | +997,893.72 (+997.89K) | 6,499,888.21 (6.50M) | +2,347,570.51 (+2.35M) | 0.94 |
-| Computer and Mathematical | 2,643,699.31 (2.64M) | 3,592,180.56 (3.59M) | +948,481.25 (+948.48K) | 5,816,201.62 (5.82M) | +2,224,021.06 (+2.22M) | 0.88 |
-| Healthcare Practitioners and Technical | 2,250,594.51 (2.25M) | 3,351,573.32 (3.35M) | +1,100,978.81 (+1.10M) | 5,859,468.52 (5.86M) | +2,507,895.20 (+2.51M) | 0.94 |
-| Food Preparation and Serving Related | 2,045,703.72 (2.05M) | 3,016,646.64 (3.02M) | +970,942.92 (+970.94K) | 5,239,748.46 (5.24M) | +2,223,101.82 (+2.22M) | 0.89 |
-| Healthcare Support | 1,386,530.13 (1.39M) | 2,064,195.32 (2.06M) | +677,665.18 (+677.67K) | 3,600,711.63 (3.60M) | +1,536,516.31 (+1.54M) | 0.98 |
-| Transportation and Material Moving | 1,481,472.77 (1.48M) | 2,074,251.85 (2.07M) | +592,779.08 (+592.78K) | 3,341,476.75 (3.34M) | +1,267,224.90 (+1.27M) | 0.98 |
-| Construction and Extraction | 563,581.27 (563.58K) | 1,174,368.75 (1.17M) | +610,787.48 (+610.79K) | 2,541,876.79 (2.54M) | +1,367,508.04 (+1.37M) | 0.99 |
-| Protective Service | 744,144.39 (744.14K) | 1,152,593.15 (1.15M) | +408,448.77 (+408.45K) | 2,058,878.09 (2.06M) | +906,284.94 (+906.28K) | 0.93 |
-| Arts, Design, Entertainment, Sports, and Media | 917,177.36 (917.18K) | 1,206,084.97 (1.21M) | +288,907.61 (+288.91K) | 1,855,534.95 (1.86M) | +649,449.98 (+649.45K) | 0.99 |
-| Architecture and Engineering | 988,991.46 (988.99K) | 1,170,263.90 (1.17M) | +181,272.44 (+181.27K) | 1,574,011.23 (1.57M) | +403,747.33 (+403.75K) | 0.97 |
-| Personal Care and Service | 492,069.78 (492.07K) | 839,847.28 (839.85K) | +347,777.50 (+347.78K) | 1,609,323.93 (1.61M) | +769,476.65 (+769.48K) | 0.98 |
-| Installation, Maintenance, and Repair | 714,235.87 (714.24K) | 1,005,977.34 (1.01M) | +291,741.46 (+291.74K) | 1,683,637.41 (1.68M) | +677,660.08 (+677.66K) | 0.94 |
-| Community and Social Service | 661,665.08 (661.67K) | 881,260.31 (881.26K) | +219,595.23 (+219.60K) | 1,385,779.04 (1.39M) | +504,518.73 (+504.52K) | 0.98 |
-| Life, Physical, and Social Science | 500,688.99 (500.69K) | 645,041.86 (645.04K) | +144,352.87 (+144.35K) | 971,323.26 (971.32K) | +326,281.40 (+326.28K) | 0.95 |
-| Production | 839,898.06 (839.90K) | 1,007,309.39 (1.01M) | +167,411.33 (+167.41K) | 1,368,677.62 (1.37M) | +361,368.23 (+361.37K) | 0.93 |
-| Legal | 418,600.83 (418.60K) | 563,709.40 (563.71K) | +145,108.57 (+145.11K) | 898,315.26 (898.32K) | +334,605.86 (+334.61K) | 0.97 |
-| Building and Grounds Cleaning and Maintenance | 144,651.82 (144.65K) | 181,291.51 (181.29K) | +36,639.69 (+36.64K) | 267,322.82 (267.32K) | +86,031.31 (+86.03K) | 0.91 |
-| Farming, Fishing, and Forestry | 43,560.69 (43.56K) | 50,800.65 (50.80K) | +7,239.96 (+7.24K) | 67,134.55 (67.13K) | +16,333.90 (+16.33K) | 0.90 |
+| # | Major | First Workers (2025-03-06) | Current Workers (2026-02-12) | Observed Δ Workers | 2yr Projected | Projected Δ | R² |
+|---|---|---|---|---|---|---|---|
+| 1 | Office and Administrative Support | 8,178,719.79 (8.18M) | 11,535,704.39 (11.54M) | +3,356,984.59 (+3.36M) | 19,209,073.85 (19.21M) | +7,673,369.47 (+7.67M) | 0.89 |
+| 2 | Sales and Related | 5,175,970.84 (5.18M) | 7,246,699.19 (7.25M) | +2,070,728.35 (+2.07M) | 12,100,688.64 (12.10M) | +4,853,989.46 (+4.85M) | 0.88 |
+| 3 | Business and Financial Operations | 4,691,973.58 (4.69M) | 6,232,699.87 (6.23M) | +1,540,726.30 (+1.54M) | 9,721,443.13 (9.72M) | +3,488,743.26 (+3.49M) | 0.91 |
+| 4 | Management | 3,459,670.08 (3.46M) | 4,808,465.24 (4.81M) | +1,348,795.16 (+1.35M) | 7,931,234.00 (7.93M) | +3,122,768.75 (+3.12M) | 0.94 |
+| 5 | Healthcare Practitioners and Technical | 2,250,594.51 (2.25M) | 3,351,573.32 (3.35M) | +1,100,978.81 (+1.10M) | 5,859,468.52 (5.86M) | +2,507,895.20 (+2.51M) | 0.94 |
+| 6 | Educational Instruction and Library | 3,154,423.98 (3.15M) | 4,152,317.70 (4.15M) | +997,893.72 (+997.89K) | 6,499,888.21 (6.50M) | +2,347,570.51 (+2.35M) | 0.94 |
+| 7 | Food Preparation and Serving Related | 2,045,703.72 (2.05M) | 3,016,646.64 (3.02M) | +970,942.92 (+970.94K) | 5,239,748.46 (5.24M) | +2,223,101.82 (+2.22M) | 0.89 |
+| 8 | Computer and Mathematical | 2,643,699.31 (2.64M) | 3,592,180.56 (3.59M) | +948,481.25 (+948.48K) | 5,816,201.62 (5.82M) | +2,224,021.06 (+2.22M) | 0.88 |
+| 9 | Healthcare Support | 1,386,530.13 (1.39M) | 2,064,195.32 (2.06M) | +677,665.18 (+677.67K) | 3,600,711.63 (3.60M) | +1,536,516.31 (+1.54M) | 0.98 |
+| 10 | Construction and Extraction | 563,581.27 (563.58K) | 1,174,368.75 (1.17M) | +610,787.48 (+610.79K) | 2,541,876.79 (2.54M) | +1,367,508.04 (+1.37M) | 0.99 |
 
-Observed Δ Workers range: +7.24K (Farming) to +3.36M (Office and Admin Support). Projected 2yr Δ range: +16.33K (Farming) to +7.67M (Office and Admin Support). Office and Admin Support has both the largest current Workers Exposed (11.54M) and the largest projected 2yr add (+7.67M).
+Top-10 observed Δ workers range: +610.79K (Construction) to +3.36M (Office and Admin). Top-10 projected 2yr Δ range: +1.37M (Construction) to +7.67M (Office and Admin). Office and Admin has both the largest current Workers Exposed (11.54M) and the largest projected 2yr add (+7.67M).
+
+For reference, the 12 majors NOT on the chart (full 22 in `major_trend_projections.csv`, sorted by |Δ workers| desc below the 610.79K cutoff): Transportation +592.78K → 3.34M (R²=0.98), Protective Service +408.45K → 2.06M (0.93), Personal Care +347.78K → 1.61M (0.98), Installation/Maintenance +291.74K → 1.68M (0.94), Arts/Design +288.91K → 1.86M (0.99), Community/Social Service +219.60K → 1.39M (0.98), Architecture/Engineering +181.27K → 1.57M (0.97), Production +167.41K → 1.37M (0.93), Legal +145.11K → 898.32K (0.97), Life/Physical/Social Science +144.35K → 971.32K (0.95), Building/Grounds +36.64K → 267.32K (0.91), Farming +7.24K → 67.13K (0.90).
 
 (There is no equivalent wages projection chart in the appendix — only tasks and workers trends were rendered as committed figures.)
 
@@ -1144,43 +1110,43 @@ Computed from raw `ska_full.csv`. Sorted by `ai_top10_pct` descending:
 
 | # | Element | n_occs | ai_top10_pct | ai_max_pct | eco_mean_pct | phys_score | phys_tier |
 |---|---|---|---|---|---|---|---|
-| 1 | Education and Training | 433 | 69.69 | 84.97 | 49.04 | 36.20 | Mixed |
-| 2 | Customer and Personal Service | 629 | 67.26 | 74.93 | 56.37 | 40.36 | Mixed |
-| 3 | Communications and Media | 131 | 60.07 | 85.14 | 43.77 | 19.17 | Non-physical |
-| 4 | English Language | 774 | 68.44 | 79.11 | 46.67 | 38.68 | Mixed |
-| 5 | Administrative | 298 | 61.82 | 69.17 | 51.76 | 27.54 | Non-physical |
-| 6 | Mathematics | 496 | 71.13 | 77.36 | 46.33 | 38.36 | Mixed |
-| 7 | Sales and Marketing | 117 | 70.05 | 81.83 | 50.59 | 33.83 | Mixed |
-| 8 | Computers and Electronics | 487 | 70.81 | 79.09 | 47.43 | 29.33 | Non-physical |
-| 9 | Personnel and Human Resources | 136 | 48.47 | 69.79 | 43.98 | 20.61 | Non-physical |
-| 10 | Administration and Management | 439 | 50.80 | 60.36 | 43.80 | 36.21 | Mixed |
-| 11 | Sociology and Anthropology | 93 | 52.51 | 70.34 | 44.56 | 17.36 | Non-physical |
-| 12 | Geography | 71 | 50.61 | 76.88 | 49.89 | 23.14 | Non-physical |
-| 13 | Psychology | 190 | 49.20 | 67.65 | 49.30 | 29.22 | Non-physical |
-| 14 | History and Archeology | 24 | 52.91 | 79.76 | 54.25 | 16.48 | Non-physical |
-| 15 | Design | 183 | 54.71 | 69.55 | 48.03 | 43.50 | Mixed |
-| 16 | Fine Arts | 33 | 48.36 | 68.37 | 57.04 | 33.82 | Mixed |
-| 17 | Foreign Language | 7 | 35.79 | 70.66 | 55.06 | 20.67 | Non-physical |
-| 18 | Economics and Accounting | 107 | 62.34 | 83.19 | 48.29 | 18.08 | Non-physical |
-| 19 | Law and Government | 195 | 52.96 | 75.50 | 44.73 | 24.07 | Non-physical |
-| 20 | Engineering and Technology | 216 | 56.84 | 82.60 | 53.04 | 40.41 | Mixed |
-| 21 | Telecommunications | 62 | 46.43 | 62.89 | 46.83 | 35.38 | Mixed |
-| 22 | Physics | 113 | 48.23 | 66.18 | 46.32 | 37.20 | Mixed |
-| 23 | Biology | 134 | 53.44 | 73.93 | 52.72 | 39.06 | Mixed |
-| 24 | Chemistry | 119 | 47.85 | 63.82 | 51.88 | 41.59 | Mixed |
-| 25 | Philosophy and Theology | 28 | 46.80 | 75.56 | 49.02 | 11.92 | Non-physical |
+| 1 | Mathematics | 496 | 71.13 | 77.36 | 46.32 | 38.36 | Mixed |
+| 2 | Computers and Electronics | 487 | 70.81 | 79.09 | 47.43 | 29.33 | Non-physical |
+| 3 | Sales and Marketing | 117 | 70.05 | 81.82 | 50.58 | 33.83 | Mixed |
+| 4 | Education and Training | 433 | 69.69 | 84.97 | 49.04 | 36.20 | Mixed |
+| 5 | English Language | 774 | 68.44 | 79.11 | 46.67 | 38.68 | Mixed |
+| 6 | Customer and Personal Service | 629 | 67.26 | 74.93 | 56.37 | 40.36 | Mixed |
+| 7 | Economics and Accounting | 107 | 62.34 | 83.19 | 48.29 | 18.08 | Non-physical |
+| 8 | Administrative | 298 | 61.82 | 69.17 | 51.75 | 27.54 | Non-physical |
+| 9 | Communications and Media | 131 | 60.07 | 85.14 | 43.77 | 19.17 | Non-physical |
+| 10 | Engineering and Technology | 216 | 56.84 | 82.59 | 53.04 | 40.41 | Mixed |
+| 11 | Design | 183 | 54.71 | 69.52 | 48.03 | 43.50 | Mixed |
+| 12 | Biology | 134 | 53.44 | 73.92 | 52.72 | 39.06 | Mixed |
+| 13 | Law and Government | 195 | 52.96 | 75.50 | 44.74 | 24.07 | Non-physical |
+| 14 | History and Archeology | 24 | 52.90 | 79.76 | 54.25 | 16.48 | Non-physical |
+| 15 | Sociology and Anthropology | 93 | 52.51 | 70.34 | 44.56 | 17.36 | Non-physical |
+| 16 | Administration and Management | 439 | 50.80 | 60.36 | 43.80 | 36.21 | Mixed |
+| 17 | Geography | 71 | 50.61 | 76.88 | 49.89 | 23.14 | Non-physical |
+| 18 | Psychology | 190 | 49.20 | 67.65 | 49.30 | 29.22 | Non-physical |
+| 19 | Personnel and Human Resources | 136 | 48.47 | 69.79 | 43.98 | 20.61 | Non-physical |
+| 20 | Fine Arts | 33 | 48.36 | 68.36 | 57.03 | 33.82 | Mixed |
+| 21 | Physics | 113 | 48.23 | 66.18 | 46.32 | 37.20 | Mixed |
+| 22 | Chemistry | 119 | 47.85 | 63.82 | 51.88 | 41.59 | Mixed |
+| 23 | Philosophy and Theology | 28 | 46.80 | 75.56 | 49.02 | 11.92 | Non-physical |
+| 24 | Telecommunications | 62 | 46.43 | 62.89 | 46.83 | 35.38 | Mixed |
+| 25 | Production and Processing | 247 | 44.89 | 51.33 | 50.60 | 59.85 | Mixed |
 | 26 | Therapy and Counseling | 88 | 44.41 | 54.67 | 55.74 | 29.90 | Non-physical |
-| 27 | Public Safety and Security | 304 | 42.10 | 53.74 | 44.14 | 46.45 | Mixed |
-| 28 | Medicine and Dentistry | 113 | 38.89 | 44.82 | 54.21 | 42.92 | Mixed |
-| 29 | Building and Construction | 113 | 42.89 | 63.33 | 58.58 | 56.60 | Mixed |
-| 30 | Mechanical | 276 | 38.43 | 43.50 | 51.15 | 64.98 | Mixed |
-| 31 | Transportation | 104 | 39.57 | 51.08 | 47.37 | 51.89 | Mixed |
-| 32 | Food Production | 35 | 37.51 | 58.06 | 66.34 | 56.18 | Mixed |
-| 33 | Production and Processing | 247 | 44.89 | 51.33 | 50.60 | 59.85 | Mixed |
+| 27 | Building and Construction | 113 | 42.88 | 63.33 | 58.58 | 56.60 | Mixed |
+| 28 | Public Safety and Security | 304 | 42.10 | 53.74 | 44.14 | 46.45 | Mixed |
+| 29 | Transportation | 104 | 39.57 | 51.08 | 47.37 | 51.89 | Mixed |
+| 30 | Medicine and Dentistry | 113 | 38.89 | 44.82 | 54.21 | 42.92 | Mixed |
+| 31 | Mechanical | 276 | 38.43 | 43.50 | 51.15 | 64.98 | Mixed |
+| 32 | Food Production | 35 | 37.51 | 58.06 | 66.33 | 56.18 | Mixed |
+| 33 | Foreign Language | 7 | 35.79 | 70.66 | 55.07 | 20.67 | Non-physical |
 
 (The `ai_top10`, `ai_max`, and `eco_mean` values in `ska_full.csv` are raw; the chart-displayed bars divide by `eco_max` and multiply by 100 — values above are derived using that formula. Bar text on the rendered chart rounds to integer %.)
 
-Range of bars: ~35.79% (Foreign Language) to ~71.13% (Mathematics). Non-physical and Mixed dominate the top half; physical-heavy elements (Mechanical, Food Production, Building and Construction, Transportation, Production and Processing) cluster in the bottom third.
+Range of bars: 35.79% (Foreign Language) to 71.13% (Mathematics). Non-physical and Mixed dominate the top half; physical-heavy elements (Mechanical, Food Production, Building and Construction, Transportation, Production and Processing) cluster in the bottom third.
 
 ---
 
@@ -1194,62 +1160,62 @@ From raw `ska_full.csv`, abilities rows. Sorted by ai_top10_pct desc:
 
 | # | Element | n_occs | ai_top10_pct | ai_max_pct | eco_mean_pct | phys_score | phys_tier |
 |---|---|---|---|---|---|---|---|
-| 1 | Oral Expression | 852 | 72.32 | 79.86 | 57.35 | 42.24 | Mixed |
-| 2 | Oral Comprehension | 869 | 67.62 | 73.19 | 60.85 | 43.23 | Mixed |
-| 3 | Written Expression | 633 | 73.10 | 81.42 | 60.82 | 29.72 | Non-physical |
+| 1 | Written Expression | 633 | 73.10 | 81.42 | 60.82 | 29.72 | Non-physical |
+| 2 | Oral Expression | 852 | 72.36 | 74.68 | 57.39 | 42.24 | Mixed |
+| 3 | Oral Comprehension | 869 | 67.62 | 73.19 | 60.85 | 43.23 | Mixed |
 | 4 | Written Comprehension | 745 | 67.54 | 70.66 | 58.16 | 36.43 | Mixed |
-| 5 | Speech Clarity | 786 | 62.20 | 67.84 | 45.49 | 38.65 | Mixed |
-| 6 | Mathematical Reasoning | 261 | 56.40 | 74.45 | 39.92 | 20.81 | Non-physical |
-| 7 | Number Facility | 225 | 61.92 | 73.58 | 48.79 | 21.20 | Non-physical |
-| 8 | Fluency of Ideas | 463 | 64.43 | 75.51 | 56.64 | 22.65 | Non-physical |
-| 9 | Originality | 395 | 60.51 | 75.23 | 54.33 | 21.83 | Non-physical |
-| 10 | Deductive Reasoning | 802 | 66.04 | 70.09 | 58.40 | 40.66 | Mixed |
-| 11 | Inductive Reasoning | 746 | 53.38 | 58.03 | 47.44 | 37.72 | Mixed |
+| 5 | Information Ordering | 831 | 66.76 | 70.98 | 59.58 | 42.38 | Mixed |
+| 6 | Deductive Reasoning | 802 | 66.04 | 70.09 | 58.40 | 40.66 | Mixed |
+| 7 | Fluency of Ideas | 463 | 64.15 | 75.15 | 56.36 | 22.65 | Non-physical |
+| 8 | Speech Clarity | 786 | 62.21 | 67.84 | 45.49 | 38.65 | Mixed |
+| 9 | Number Facility | 225 | 61.92 | 73.58 | 48.79 | 21.20 | Non-physical |
+| 10 | Category Flexibility | 704 | 61.16 | 70.74 | 54.36 | 37.72 | Mixed |
+| 11 | Originality | 395 | 60.51 | 75.23 | 54.33 | 21.83 | Non-physical |
 | 12 | Speech Recognition | 804 | 57.96 | 70.77 | 51.49 | 40.01 | Mixed |
-| 13 | Problem Sensitivity | 852 | 45.59 | 64.96 | 45.69 | 43.02 | Mixed |
-| 14 | Information Ordering | 831 | 66.76 | 71.00 | 59.58 | 42.38 | Mixed |
-| 15 | Category Flexibility | 704 | 61.16 | 70.74 | 54.37 | 37.72 | Mixed |
-| 16 | Selective Attention | 669 | 40.36 | 45.74 | 44.23 | 46.02 | Mixed |
-| 17 | Memorization | 61 | 48.26 | 79.12 | 60.72 | 26.34 | Non-physical |
-| 18 | Visualization | 378 | 53.89 | 63.33 | 57.55 | 56.11 | Mixed |
-| 19 | Flexibility of Closure | 481 | 52.29 | 61.61 | 55.34 | 40.37 | Mixed |
-| 20 | Near Vision | 886 | 53.71 | 57.49 | 53.76 | 44.36 | Mixed |
-| 21 | Hearing Sensitivity | 80 | 22.72 | 55.23 | 47.82 | 71.27 | Physical |
-| 22 | Speed of Closure | 114 | 34.87 | 41.42 | 47.33 | 32.24 | Non-physical |
-| 23 | Perceptual Speed | 396 | 42.48 | 47.71 | 54.80 | 50.70 | Mixed |
-| 24 | Far Vision | 397 | 38.16 | 44.64 | 45.81 | 48.00 | Mixed |
-| 25 | Auditory Attention | 125 | 32.17 | 53.08 | 65.00 | 69.49 | Physical |
-| 26 | Wrist-Finger Speed | 10 | 19.90 | 71.28 | 78.28 | 67.35 | Mixed |
-| 27 | Time Sharing | 133 | 26.21 | 34.13 | 40.05 | 47.46 | Mixed |
-| 28 | Arm-Hand Steadiness | 399 | 31.24 | 43.62 | 51.24 | 73.08 | Physical |
-| 29 | Visual Color Discrimination | 200 | 46.25 | 65.92 | 52.36 | 60.61 | Mixed |
-| 30 | Finger Dexterity | 357 | 33.93 | 41.32 | 50.63 | 73.27 | Physical |
-| 31 | Manual Dexterity | 368 | 28.75 | 39.59 | 52.02 | 74.75 | Physical |
-| 32 | Spatial Orientation | 27 | 12.25 | 16.84 | 53.04 | 70.00 | Physical |
-| 33 | Stamina | 71 | 14.81 | 27.09 | 49.57 | 81.11 | Physical |
-| 34 | Trunk Strength | 235 | 21.11 | 27.18 | 51.96 | 77.83 | Physical |
-| 35 | Static Strength | 168 | 17.47 | 23.94 | 55.18 | 80.36 | Physical |
-| 36 | Dynamic Strength | 40 | 11.54 | 18.07 | 52.13 | 82.38 | Physical |
-| 37 | Extent Flexibility | 153 | 17.95 | 25.04 | 50.37 | 81.99 | Physical |
-| 38 | Gross Body Coordination | 31 | 10.47 | 31.32 | 39.90 | 76.98 | Physical |
-| 39 | Gross Body Equilibrium | 53 | 13.55 | 33.95 | 50.00 | 80.20 | Physical |
-| 40 | Multilimb Coordination | 250 | 21.42 | 28.10 | 60.24 | 78.46 | Physical |
-| 41 | Reaction Time | 144 | 16.37 | 21.07 | 53.77 | 78.40 | Physical |
-| 42 | Response Orientation | 57 | 9.48 | 14.97 | 39.73 | 74.45 | Physical |
-| 43 | Speed of Limb Movement | 7 | 4.20 | 9.85 | 76.16 | 82.27 | Physical |
-| 44 | Rate Control | 95 | 12.32 | 17.23 | 48.72 | 79.49 | Physical |
-| 45 | Control Precision | 319 | 25.64 | 33.43 | 51.28 | 76.08 | Physical |
-| 46 | Depth Perception | 95 | 16.19 | 20.49 | 57.72 | 78.14 | Physical |
-| 47 | Glare Sensitivity | 11 | 8.55 | 16.23 | 65.99 | 64.89 | Mixed |
-| 48 | Night Vision | 4 | 11.21 | 14.60 | 70.81 | 59.84 | Mixed |
+| 13 | Mathematical Reasoning | 261 | 56.40 | 74.45 | 39.92 | 20.81 | Non-physical |
+| 14 | Visualization | 378 | 53.88 | 63.33 | 57.53 | 56.11 | Mixed |
+| 15 | Near Vision | 886 | 53.71 | 57.49 | 53.77 | 44.36 | Mixed |
+| 16 | Inductive Reasoning | 746 | 53.38 | 58.03 | 47.44 | 37.72 | Mixed |
+| 17 | Flexibility of Closure | 481 | 52.29 | 61.61 | 55.35 | 40.37 | Mixed |
+| 18 | Memorization | 61 | 48.26 | 79.12 | 60.72 | 26.34 | Non-physical |
+| 19 | Visual Color Discrimination | 200 | 46.25 | 65.91 | 52.36 | 60.61 | Mixed |
+| 20 | Problem Sensitivity | 852 | 45.58 | 48.63 | 45.68 | 43.02 | Mixed |
+| 21 | Perceptual Speed | 396 | 42.48 | 47.71 | 54.80 | 50.70 | Mixed |
+| 22 | Selective Attention | 669 | 40.36 | 45.74 | 44.23 | 46.02 | Mixed |
+| 23 | Far Vision | 397 | 38.16 | 44.64 | 45.80 | 48.00 | Mixed |
+| 24 | Speed of Closure | 114 | 34.88 | 41.43 | 47.33 | 32.24 | Non-physical |
+| 25 | Finger Dexterity | 357 | 33.93 | 41.32 | 50.63 | 73.27 | Physical |
+| 26 | Auditory Attention | 125 | 32.17 | 53.08 | 65.00 | 69.49 | Physical |
+| 27 | Arm-Hand Steadiness | 399 | 31.24 | 43.62 | 51.24 | 73.08 | Physical |
+| 28 | Manual Dexterity | 368 | 28.75 | 39.59 | 52.02 | 74.75 | Physical |
+| 29 | Time Sharing | 133 | 26.21 | 34.13 | 40.04 | 47.46 | Mixed |
+| 30 | Control Precision | 319 | 25.64 | 33.43 | 51.28 | 76.08 | Physical |
+| 31 | Hearing Sensitivity | 80 | 22.72 | 55.23 | 47.82 | 71.27 | Physical |
+| 32 | Multilimb Coordination | 250 | 21.42 | 28.21 | 60.24 | 78.46 | Physical |
+| 33 | Trunk Strength | 235 | 21.11 | 27.18 | 51.96 | 77.83 | Physical |
+| 34 | Wrist-Finger Speed | 10 | 19.90 | 71.28 | 78.28 | 67.35 | Physical |
+| 35 | Extent Flexibility | 153 | 17.95 | 25.06 | 50.38 | 82.00 | Physical |
+| 36 | Dynamic Flexibility | 3 | 17.69 | 27.00 | 78.26 | 45.26 | Mixed |
+| 37 | Static Strength | 168 | 17.47 | 23.93 | 55.18 | 80.36 | Physical |
+| 38 | Reaction Time | 144 | 16.37 | 21.07 | 53.76 | 78.40 | Physical |
+| 39 | Depth Perception | 95 | 16.19 | 20.48 | 57.72 | 78.14 | Physical |
+| 40 | Stamina | 71 | 14.81 | 27.09 | 49.57 | 81.11 | Physical |
+| 41 | Gross Body Equilibrium | 53 | 13.55 | 33.95 | 49.98 | 80.20 | Physical |
+| 42 | Rate Control | 95 | 12.32 | 17.23 | 48.72 | 79.49 | Physical |
+| 43 | Spatial Orientation | 27 | 12.25 | 16.84 | 53.04 | 70.00 | Physical |
+| 44 | Explosive Strength | 11 | 11.67 | 19.56 | 67.07 | 56.62 | Mixed |
+| 45 | Dynamic Strength | 40 | 11.54 | 27.09 | 52.13 | 82.38 | Physical |
+| 46 | Night Vision | 4 | 11.21 | 14.60 | 70.81 | 59.84 | Mixed |
+| 47 | Gross Body Coordination | 31 | 10.47 | 31.31 | 39.90 | 76.98 | Physical |
+| 48 | Response Orientation | 57 | 9.48 | 14.97 | 39.73 | 74.45 | Physical |
 | 49 | Peripheral Vision | 9 | 9.14 | 13.54 | 65.13 | 64.88 | Mixed |
-| 50 | Sound Localization | 1 | 0.00 | 0.00 | 100.00 | 75.00 | Physical |
-| 51 | Dynamic Flexibility | 3 | 17.69 | 27.00 | 78.26 | 45.26 | Mixed |
-| 52 | Explosive Strength | 11 | 11.67 | 19.56 | 67.07 | 56.62 | Mixed |
+| 50 | Glare Sensitivity | 11 | 8.55 | 16.23 | 66.01 | 64.89 | Mixed |
+| 51 | Speed of Limb Movement | 7 | 4.20 | 9.85 | 76.16 | 82.27 | Physical |
+| 52 | Sound Localization | 1 | 0.00 | 0.00 | 100.00 | 75.00 | Physical |
 
 (Values derived from raw `ska_full.csv` using the same `ai_top10 / eco_max × 100` formula.)
 
-Range of bars: 0.00% (Sound Localization, single occupation, ai_top10 = 0) to ~73.10% (Written Expression). Verbal/cognitive abilities (Oral Expression, Written Expression, Written Comprehension, Oral Comprehension, Information Ordering) cluster at the top. Physical-tier abilities (Stamina, Strength variants, Coordination, Reaction Time, Control Precision, etc.) populate the bottom half.
+Range of bars: 0.00% (Sound Localization, single occupation, ai_top10 = 0) to 73.10% (Written Expression). Verbal/cognitive abilities (Written Expression, Oral Expression, Oral Comprehension, Written Comprehension, Information Ordering, Deductive Reasoning) cluster at the top six positions. Physical-tier abilities (Stamina, Strength variants, Coordination, Reaction Time, Control Precision, etc.) populate the bottom half.
 
 ---
 
