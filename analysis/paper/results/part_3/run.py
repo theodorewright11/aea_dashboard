@@ -1176,6 +1176,10 @@ def build_state_clusters_map(results: Path, figures: Path) -> None:
 
     BORDER_COLOR = "white"
     BORDER_W = 0.5
+    # Thick colored border used for disagreement states. K-means cluster
+    # color, solid (not a pattern), so the frame reads as the exact hex
+    # of the legend swatch rather than a visually-averaged blend.
+    DISAGREE_BORDER_W = 2.0
 
     def _draw(gdf_part, ax):
         for _, row in gdf_part.iterrows():
@@ -1184,20 +1188,18 @@ def build_state_clusters_map(results: Path, figures: Path) -> None:
             if cid is None:
                 continue
             ward_fill = cluster_color.get(int(cid), "#cccccc")
-            # Base polygon — ward color fill.
-            gpd.GeoSeries([row.geometry]).plot(
-                ax=ax, color=ward_fill, edgecolor=BORDER_COLOR,
-                linewidth=BORDER_W,
-            )
-            # Overlay: if this state is a Ward/K-means disagreement, draw
-            # diagonal stripes in the K-means cluster's color on top.
             if postal in disagree_lookup:
+                # Disagreement state — ward color fill, K-means color border.
                 km_cid = disagree_lookup[postal]
                 km_fill = cluster_color.get(km_cid, "#777777")
                 gpd.GeoSeries([row.geometry]).plot(
-                    ax=ax, facecolor="none",
-                    edgecolor=km_fill,
-                    hatch="////",
+                    ax=ax, color=ward_fill, edgecolor=km_fill,
+                    linewidth=DISAGREE_BORDER_W,
+                )
+            else:
+                # Agreement state — ward color fill, thin white border.
+                gpd.GeoSeries([row.geometry]).plot(
+                    ax=ax, color=ward_fill, edgecolor=BORDER_COLOR,
                     linewidth=BORDER_W,
                 )
 
@@ -1257,11 +1259,13 @@ def build_state_clusters_map(results: Path, figures: Path) -> None:
             Patch(facecolor=cluster_color[cid], edgecolor="white",
                   label=_short_cluster_label(cluster_names[cid]))
         )
-    # Add disagreement entry — use a neutral gray hatch swatch so the
-    # reader doesn't read it as one of the actual clusters.
+    # Add disagreement entry — neutral gray swatch with a thick dark
+    # border, mirroring the per-state border treatment so the reader
+    # knows what the colored frames mean.
     legend_handles.append(
-        Patch(facecolor="#cccccc", edgecolor="#555555", hatch="////",
-              label="Ward / K-means disagreement\n(stripe color = K-means)")
+        Patch(facecolor="#cccccc", edgecolor="#333333",
+              linewidth=DISAGREE_BORDER_W,
+              label="Ward / K-means disagreement\n(border color = K-means)")
     )
     # Legend goes BELOW the map, centered horizontally — matches the
     # Plotly version's vertical legend at x=0.5, xanchor=center, y=0.18.
