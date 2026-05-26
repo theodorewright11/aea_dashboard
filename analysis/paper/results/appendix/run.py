@@ -20,12 +20,16 @@ then SKA:
    Two-panel ranked bars where each panel sorts the 51 states by its own
    metric (left by % workforce exposed, right by % in High AI Exp & <0
    Emp Proj occupations). Cluster colors carry across panels.
-6. adoption_friction_scatter — Section 3 adoption-layer probe. Restrict
+6. state_clusters_combined_ranked — companion to state_clusters_each_ranked.
+   Sums each state's rank on the two panels and sorts ascending; stacked
+   bar makes the rank-mix visible (darker = workforce rank, lighter =
+   focused-set rank). Cluster colors match the panel chart.
+7. adoption_friction_scatter — Section 3 adoption-layer probe. Restrict
    to occupations that are mostly non-physical (Part 2's Non-Physical
    bucket: <33% physical tasks) and scatter each occ's mean rating of
    the friction property (r, df) against its % tasks exposed. Two
    panels, Spearman ρ + OLS fit inset per panel.
-7. capability_vs_adoption_all_occs — companion 4-row chart across all
+8. capability_vs_adoption_all_occs — companion 4-row chart across all
    923 occupations. Row 1 (one wide panel): pct_physical, the raw
    structural variable (ρ −0.78). Rows 2–3: capability properties
    (Schaal ag, Schaal da, our s, our d; ρ +0.55 to +0.68). Row 4:
@@ -2604,7 +2608,7 @@ def build_state_clusters_each_ranked(results: Path, figures: Path) -> None:
             marker=dict(
                 color="rgba(0,0,0,0)",
                 pattern=dict(shape="/", fgcolor=km_color,
-                             solidity=0.30, size=8, fillmode="overlay"),
+                             solidity=0.6, size=8, fillmode="overlay"),
                 line=dict(width=0),
             ),
             showlegend=False, cliponaxis=False, hoverinfo="skip",
@@ -2615,7 +2619,7 @@ def build_state_clusters_each_ranked(results: Path, figures: Path) -> None:
             marker=dict(
                 color="rgba(0,0,0,0)",
                 pattern=dict(shape="/", fgcolor=km_color,
-                             solidity=0.30, size=8, fillmode="overlay"),
+                             solidity=0.6, size=8, fillmode="overlay"),
                 line=dict(width=0),
             ),
             showlegend=False, cliponaxis=False, hoverinfo="skip",
@@ -2636,7 +2640,7 @@ def build_state_clusters_each_ranked(results: Path, figures: Path) -> None:
         marker=dict(
             color="#cccccc",
             pattern=dict(shape="/", fgcolor="#333333",
-                         solidity=0.30, size=8, fillmode="overlay"),
+                         solidity=0.6, size=8, fillmode="overlay"),
         ),
         name="Ward / K-means disagreement (stripe = K-means)",
         showlegend=True,
@@ -2732,6 +2736,237 @@ def build_state_clusters_each_ranked(results: Path, figures: Path) -> None:
         figures / "state_clusters_each_ranked.png",
     )
     print("  -> state_clusters_each_ranked.png")
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# state_clusters_combined_ranked — companion to state_clusters_each_ranked.
+# Sums each state's rank from the two panels of the prior chart and sorts
+# ascending. Stacked bar shows how much of the combined rank comes from
+# each metric. Cluster colors match the prior chart so the two figures
+# read as a pair.
+# ──────────────────────────────────────────────────────────────────────────
+
+def _hex_to_rgba(hex_color: str, alpha: float) -> str:
+    """Convert '#aabbcc' (or '#abc') to 'rgba(r,g,b,a)'."""
+    h = hex_color.lstrip("#")
+    if len(h) == 3:
+        h = "".join(c * 2 for c in h)
+    r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+    return f"rgba({r},{g},{b},{alpha})"
+
+
+def build_state_clusters_combined_ranked(results: Path, figures: Path) -> None:
+    """Single-panel stacked-bar chart of the summed rank from each panel
+    of state_clusters_each_ranked.
+
+    For every state, the rank on % workforce exposed (rank 1 = highest)
+    is summed with the rank on % emp in High AI Exp & <0 Emp Proj occs
+    (rank 1 = highest). Lower combined rank means a state ranks high
+    on both. Bars are stacked so the rank-mix is visible at a glance:
+    full-opacity segment = workforce rank, 45%-opacity segment = focused
+    rank, both colored by the state's Ward cluster.
+    """
+    try:
+        from analysis.exploratory.deepdive_state_clusters.run import (
+            compute_clusters, ALL_FEATURES,
+        )
+        from analysis.exploratory.deepdive_state_signal.run import (
+            _load_focused_set,
+        )
+    except ImportError as exc:
+        print(f"  -> SKIPPED: exploratory/deepdive_state_clusters not available ({exc})")
+        return
+
+    # Pin k=3 to match Part 3's state_clusters_map and the companion
+    # each_ranked chart above. See that function for the rationale.
+    K_PIN = 3
+    import analysis.exploratory.deepdive_state_clusters.run as _dsc_mod
+    _orig_k_min, _orig_k_max = _dsc_mod.K_MIN, _dsc_mod.K_MAX
+    _dsc_mod.K_MIN = _dsc_mod.K_MAX = K_PIN
+    try:
+        pkg = compute_clusters()
+    finally:
+        _dsc_mod.K_MIN, _dsc_mod.K_MAX = _orig_k_min, _orig_k_max
+    state_df       = pkg["state_df"]
+    cluster_names  = pkg["cluster_names"]
+    cluster_color  = pkg["cluster_color"]
+    order          = pkg["order"]
+
+    n_focused = len(_load_focused_set())
+
+    base = state_df.dropna(subset=list(ALL_FEATURES)).copy()
+    n_states = len(base)
+
+    # Descending rank: 1 = highest exposure. method="min" matches the
+    # ranks reported alongside the each_ranked CSV.
+    base["rank_workforce"] = base["pct_emp_wtd"].rank(
+        ascending=False, method="min"
+    ).astype(int)
+    base["rank_focused"] = base["focused_share_pct"].rank(
+        ascending=False, method="min"
+    ).astype(int)
+    base["rank_sum"] = base["rank_workforce"] + base["rank_focused"]
+
+    sorted_df = base.sort_values(
+        ["rank_sum", "geo"], ascending=[True, True]
+    ).reset_index(drop=True)
+
+    # Plotly horizontal bars render bottom-to-top, so reverse for
+    # top-to-bottom display (lowest rank_sum = most exposed = top).
+    geos    = list(reversed(sorted_df["geo"].str.upper().tolist()))
+    rank_wf = list(reversed(sorted_df["rank_workforce"].tolist()))
+    rank_fc = list(reversed(sorted_df["rank_focused"].tolist()))
+    rank_sm = list(reversed(sorted_df["rank_sum"].tolist()))
+    pct_wf  = list(reversed(sorted_df["pct_emp_wtd"].tolist()))
+    pct_fc  = list(reversed(sorted_df["focused_share_pct"].tolist()))
+    colors_full  = list(reversed(
+        [cluster_color[c] for c in sorted_df["cluster"].tolist()]
+    ))
+    colors_light = [_hex_to_rgba(c, 0.45) for c in colors_full]
+
+    save_csv(
+        sorted_df.assign(geo=sorted_df["geo"].str.upper())[
+            ["geo", "cluster", "cluster_name",
+             "pct_emp_wtd", "rank_workforce",
+             "focused_share_pct", "rank_focused",
+             "rank_sum"]
+        ],
+        results / "state_clusters_combined_ranked.csv",
+        float_format="%.3f",
+    )
+
+    fig = go.Figure()
+
+    # Stack segment 1 — rank on % workforce exposed (full opacity).
+    fig.add_trace(go.Bar(
+        y=geos, x=rank_wf, orientation="h",
+        marker=dict(color=colors_full, line=dict(width=0)),
+        text=[str(v) for v in rank_wf],
+        textposition="inside",
+        insidetextanchor="middle",
+        textfont=dict(size=ANNOT_FS, color="white", family=FONT_FAMILY),
+        showlegend=False, cliponaxis=False,
+        customdata=list(zip(pct_wf, rank_sm)),
+        hovertemplate=(
+            "<b>%{y}</b><br>"
+            "Rank on %% Workforce Exposed: %{x}<br>"
+            "%% Workforce Exposed: %{customdata[0]:.1f}%%<br>"
+            "Combined rank sum: %{customdata[1]}<extra></extra>"
+        ),
+    ))
+
+    # Stack segment 2 — rank on % emp in High AI Exp & <0 Emp Proj occs
+    # (45% opacity so the cluster color reads as a lighter tint).
+    fig.add_trace(go.Bar(
+        y=geos, x=rank_fc, orientation="h",
+        marker=dict(color=colors_light, line=dict(width=0)),
+        text=[str(v) for v in rank_fc],
+        textposition="inside",
+        insidetextanchor="middle",
+        textfont=dict(size=ANNOT_FS, color=PAPER_PALETTE["text"],
+                      family=FONT_FAMILY),
+        showlegend=False, cliponaxis=False,
+        customdata=list(zip(pct_fc, rank_sm)),
+        hovertemplate=(
+            "<b>%{y}</b><br>"
+            "Rank on %% in High AI Exp & <0 Emp Proj Occs: %{x}<br>"
+            "%% in focused set: %{customdata[0]:.2f}%%<br>"
+            "Combined rank sum: %{customdata[1]}<extra></extra>"
+        ),
+    ))
+
+    # Legend — two shade swatches (what segments mean) + cluster colors.
+    neutral_hex = PAPER_PALETTE["neutral"]
+    fig.add_trace(go.Bar(
+        y=[None], x=[None],
+        marker=dict(color=neutral_hex),
+        name="Rank on % Workforce Exposed (left segment)",
+        showlegend=True,
+    ))
+    fig.add_trace(go.Bar(
+        y=[None], x=[None],
+        marker=dict(color=_hex_to_rgba(neutral_hex, 0.45)),
+        name=(f"Rank on % in High AI Exp & <0 Emp Proj Occs "
+              f"(right segment, n={n_focused})"),
+        showlegend=True,
+    ))
+    for cid in order:
+        fig.add_trace(go.Bar(
+            y=[None], x=[None],
+            marker=dict(color=cluster_color[cid]),
+            name=cluster_names[cid],
+            showlegend=True,
+        ))
+
+    height = max(PAPER_H + 250, n_states * 30 + 280)
+
+    style_paper_figure(
+        fig,
+        "Combined Exposure Rank — Sum of Both State-Ranking Panels",
+        subtitle=(
+            "Each state's rank on the two panels of the previous figure summed. "
+            "Lower combined rank means a state ranks high on BOTH "
+            "% workforce exposed and % employment in High AI Exposure & <0 "
+            "Emp Proj occupations. States sorted ascending — most exposed on "
+            "both metrics at top. Darker segment = workforce-exposure rank, "
+            "lighter segment = focused-set rank. Cluster colors match the "
+            "previous figure."
+        ),
+        height=height,
+        width=PAPER_W,
+        margin=dict(l=40, r=110, t=170, b=240),
+    )
+
+    x_upper = max(rank_sm) + max(8, int(0.05 * max(rank_sm)))
+    fig.update_xaxes(
+        title=dict(
+            text=("Combined Rank Sum (lower = more exposed on both metrics; "
+                  f"min possible = 2, max possible = {2 * n_states})"),
+            font=dict(size=LABEL_FS - 4),
+        ),
+        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+        showticklabels=True, showline=True, linecolor=PAPER_PALETTE["grid"],
+        zeroline=True, zerolinecolor=PAPER_PALETTE["grid"],
+        tickfont=dict(size=TICK_FS - 2, family=FONT_FAMILY),
+        range=[0, x_upper],
+    )
+    fig.update_yaxes(
+        title=dict(text="State", font=dict(size=LABEL_FS - 2)),
+        showgrid=False, showline=False,
+        tickmode="linear", dtick=1,
+        tickfont=dict(size=TICK_FS - 2, family=FONT_FAMILY),
+    )
+
+    # Bold combined rank sum at the end of each bar.
+    for g, s in zip(geos, rank_sm):
+        fig.add_annotation(
+            x=s + 0.9, y=g,
+            text=f"<b>{s}</b>",
+            showarrow=False,
+            xanchor="left", yanchor="middle",
+            font=dict(size=ANNOT_FS, color=PAPER_PALETTE["neutral"],
+                      family=FONT_FAMILY),
+        )
+
+    fig.update_layout(
+        bargap=0.28,
+        barmode="stack",
+        title=dict(y=0.985, yanchor="top"),
+        legend=dict(
+            orientation="h",
+            yanchor="top", y=-0.07,
+            xanchor="center", x=0.5,
+            font=dict(size=TICK_FS - 1, family=FONT_FAMILY),
+            bgcolor="rgba(255,255,255,0)",
+        ),
+    )
+
+    save_figure(fig, results / "figures" / "state_clusters_combined_ranked.png", scale=3)
+    shutil.copy(
+        results / "figures" / "state_clusters_combined_ranked.png",
+        figures / "state_clusters_combined_ranked.png",
+    )
+    print("  -> state_clusters_combined_ranked.png")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -4005,19 +4240,22 @@ def main() -> None:
     print("\n[7/12] gwa_wkrs_wages (workers/wages counterpart to part_2 gwa_pct)")
     build_gwa_wkrs_wages(results, figures)
 
-    print("\n[8/12] state_clusters_each_ranked (companion to Part 3 cluster map)")
+    print("\n[8/13] state_clusters_each_ranked (companion to Part 3 cluster map)")
     build_state_clusters_each_ranked(results, figures)
 
-    print("\n[9/12] underadoption_gap (% tasks exposed ÷ share of AI usage)")
+    print("\n[9/13] state_clusters_combined_ranked (sum of each_ranked panel ranks)")
+    build_state_clusters_combined_ranked(results, figures)
+
+    print("\n[10/13] underadoption_gap (% tasks exposed ÷ share of AI usage)")
     build_underadoption_gap(results, figures)
 
-    print("\n[10/12] intensity_drivers (top occs + tasks within 3 high-lift majors)")
+    print("\n[11/13] intensity_drivers (top occs + tasks within 3 high-lift majors)")
     build_intensity_drivers(results, figures)
 
-    print("\n[11/12] adoption_friction_scatter (Section 3 adoption props × non-phys occs)")
+    print("\n[12/13] adoption_friction_scatter (Section 3 adoption props × non-phys occs)")
     build_adoption_friction_scatter(results, figures)
 
-    print("\n[12/12] capability_vs_adoption_all_occs (capability vs adoption across all occs)")
+    print("\n[13/13] capability_vs_adoption_all_occs (capability vs adoption across all occs)")
     build_capability_vs_adoption_all_occs(results, figures)
 
     print("\nDone — figures in results/figures/ and figures/")

@@ -104,6 +104,10 @@
 
 ![State clusters, each panel ranked independently](appendix/figures/state_clusters_each_ranked.png)
 
+### Appendix — State Clusters, Combined Rank Sum Across Both Panels
+
+![State clusters, combined rank sum across both panels](appendix/figures/state_clusters_combined_ranked.png)
+
 ### Appendix — Underadoption Gap by Major Occupational Category
 
 ![Underadoption gap — % Tasks Exposed ÷ Share of AI Usage](appendix/figures/underadoption_gap.png)
