@@ -25,13 +25,13 @@ then SKA:
    bucket: <33% physical tasks) and scatter each occ's mean rating of
    the friction property (r, df) against its % tasks exposed. Two
    panels, Spearman ρ + OLS fit inset per panel.
-7. capability_vs_adoption_all_occs — companion 3×2 chart across all
-   923 occupations. Top two rows: capability properties (Schaal ag,
-   Schaal da, our s, our d). Bottom row: our adoption frictions (r,
-   df). Shows why the friction signal needs the non-phys restriction
-   — across all occs, capability props ride the phys/non-phys split
-   (ρ +0.55 to +0.68) while adoption props barely discriminate
-   (ρ −0.17 to −0.19).
+7. capability_vs_adoption_all_occs — companion 4-row chart across all
+   923 occupations. Row 1 (one wide panel): pct_physical, the raw
+   structural variable (ρ −0.78). Rows 2–3: capability properties
+   (Schaal ag, Schaal da, our s, our d; ρ +0.55 to +0.68). Row 4:
+   our adoption frictions (r, df; ρ −0.17 to −0.19). Shows why the
+   friction signal needs the non-phys restriction — capability props
+   ride the phys/non-phys split visible in row 1.
 
 Run from project root:
     venv/Scripts/python -m analysis.paper.results.appendix.run
@@ -3690,11 +3690,18 @@ CAP_ADO_PANELS: list[tuple[str, str, str, str]] = [
 
 
 def build_capability_vs_adoption_all_occs(results: Path, figures: Path) -> None:
-    """3×2 panel chart contrasting capability vs adoption discrimination
-    across all 923 occupations. Top two rows = capability properties
-    (Schaal external + our internal), bottom row = our adoption
-    frictions. Per-occupation property means are unweighted across all
-    of the occupation's tasks; y-axis is all_confirmed pct_tasks_affected.
+    """4-row panel chart contrasting structural / capability / adoption
+    discrimination across all 923 occupations.
+
+    Row 1 (one wide panel, gray ramp): pct_physical — the raw structural
+       variable. Shows the phys/non-phys split that the capability
+       properties subsequently ride.
+    Rows 2–3 (blue ramp, 4 panels): capability properties — Schaal ag,
+       Schaal da, our s, our d.
+    Row 4 (gold ramp, 2 panels): adoption properties — our r, our df.
+
+    Per-occupation property means are unweighted across all of the
+    occupation's tasks; y-axis is all_confirmed pct_tasks_affected.
     """
     from scipy import stats
     from analysis.paper.results.part_1.run import _load_schaal_occ
@@ -3703,9 +3710,15 @@ def build_capability_vs_adoption_all_occs(results: Path, figures: Path) -> None:
     occ = (
         props.groupby("title_current")
         .agg(s=("s", "mean"), d=("d", "mean"),
-             r=("r", "mean"), df=("df", "mean"))
+             r=("r", "mean"), df=("df", "mean"),
+             n_tasks=("physical", "count"),
+             n_physical=("physical", "sum"))
         .reset_index()
     )
+    # pct_physical = share of an occupation's UNIQUE tasks that are
+    # physical. Same dedup pitfall as elsewhere (eco_2025 expands tasks
+    # over GWA/IWA/DWA non-proportionally between phys and non-phys).
+    occ["pct_physical"] = occ["n_physical"] / occ["n_tasks"] * 100
 
     pct = get_pct_tasks_affected(PRIMARY_DATASET)
     occ["pct_tasks_affected"] = occ["title_current"].map(pct)
@@ -3714,10 +3727,12 @@ def build_capability_vs_adoption_all_occs(results: Path, figures: Path) -> None:
     n_total = len(occ)
     assert n_total > 0, "No occupations matched all_confirmed pct"
 
-    # Per-panel Spearman ρ + OLS fit lines.
+    # Per-panel Spearman ρ + OLS fit lines. Include pct_physical as the
+    # top-row structural panel.
+    all_cols = ["pct_physical"] + [p[0] for p in CAP_ADO_PANELS]
     stat_rows: list[dict] = []
     fit_lines: dict[str, tuple[np.ndarray, np.ndarray]] = {}
-    for code, _title, _xlabel, _kind in CAP_ADO_PANELS:
+    for code in all_cols:
         sub = occ.dropna(subset=[code])
         x = sub[code].astype(float).to_numpy()
         y = sub["pct_tasks_affected"].astype(float).to_numpy()
@@ -3739,20 +3754,71 @@ def build_capability_vs_adoption_all_occs(results: Path, figures: Path) -> None:
     W = PAPER_W
     px = paper_fonts(W)
 
-    # Two color ramps so capability and adoption rows read as distinct
-    # layers without needing chrome dividers.
+    # Three color ramps so the three layers read as distinct.
+    STR_LIGHT, STR_DARK = "#e0e0d8", "#5a5a55"   # gray ramp (structural)
     CAP_LIGHT, CAP_DARK = "#cfe0ec", "#2c4f6b"   # blue ramp (capability)
     ADO_LIGHT, ADO_DARK = "#f4e0c0", "#8a5a1a"   # gold ramp (adoption)
 
+    # 4 rows × 2 cols, with row 1 a single wide panel that spans both
+    # columns. Subsequent rows are normal 2-column splits.
     fig = make_subplots(
-        rows=3, cols=2,
+        rows=4, cols=2,
         horizontal_spacing=0.13,
-        vertical_spacing=0.13,
-        subplot_titles=[p[1] for p in CAP_ADO_PANELS],
+        vertical_spacing=0.11,
+        specs=[
+            [{"colspan": 2}, None],       # row 1: pct_physical wide
+            [{}, {}],                     # row 2: schaal ag / schaal da
+            [{}, {}],                     # row 3: our s / our d
+            [{}, {}],                     # row 4: our r / our df
+        ],
+        subplot_titles=(
+            ["Share of Occupation's Tasks That Are Physical"]
+            + [p[1] for p in CAP_ADO_PANELS]
+        ),
     )
 
+    # ── Row 1: pct_physical (wide) ──────────────────────────────────
+    sub = occ.dropna(subset=["pct_physical"])
+    x = sub["pct_physical"].astype(float)
+    y = sub["pct_tasks_affected"].astype(float)
+    fig.add_trace(go.Scatter(
+        x=x, y=y, mode="markers",
+        marker=dict(size=5, color=y,
+                    colorscale=[[0, STR_LIGHT], [1, STR_DARK]],
+                    line=dict(width=0.3, color="rgba(0,0,0,0.25)"),
+                    opacity=0.8),
+        customdata=sub["title_current"],
+        hovertemplate=(
+            "<b>%{customdata}</b><br>"
+            "% physical tasks: %{x:.1f}%<br>"
+            "tasks exposed: %{y:.1f}%<extra></extra>"
+        ),
+        showlegend=False,
+    ), row=1, col=1)
+    xs, ys = fit_lines["pct_physical"]
+    # Show the OLS-fit legend entry once, on this very first trace.
+    fig.add_trace(go.Scatter(
+        x=xs, y=ys, mode="lines", name="OLS fit",
+        line=dict(color=PAPER_PALETTE["negative"], width=2, dash="dash"),
+        hoverinfo="skip", showlegend=True,
+    ), row=1, col=1)
+    rho_phys = next(r["spearman_rho"] for r in stat_rows if r["property"] == "pct_physical")
+    fig.add_annotation(
+        x=0.015, y=0.96, xref="x domain", yref="y domain",
+        text=f"Spearman ρ = {rho_phys:+.2f}<br>n = {len(x)} occs",
+        showarrow=False, xanchor="left", yanchor="top",
+        font=dict(size=px["in_chart_floor"],
+                  color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+        align="left", bgcolor="rgba(255,255,255,0.82)", borderpad=3,
+    )
+
+    # ── Rows 2–4: capability + adoption panels ───────────────────────
+    # Subplot indices start at 2 for the second trace (pct_physical
+    # consumed index 1). CAP_ADO_PANELS go into x2/y2 through x7/y7.
     for i, (code, _title, _xlabel, kind) in enumerate(CAP_ADO_PANELS):
-        row, col = i // 2 + 1, i % 2 + 1
+        # Map flat index → (row, col): panels 0–1 → row 2, 2–3 → row 3, 4–5 → row 4
+        row = i // 2 + 2
+        col = i % 2 + 1
         sub = occ.dropna(subset=[code])
         x = sub[code].astype(float)
         y = sub["pct_tasks_affected"].astype(float)
@@ -3773,33 +3839,50 @@ def build_capability_vs_adoption_all_occs(results: Path, figures: Path) -> None:
         ), row=row, col=col)
 
         xs, ys = fit_lines[code]
-        # Show the OLS-fit legend entry once, on the very first panel.
         fig.add_trace(go.Scatter(
-            x=xs, y=ys, mode="lines", name="OLS fit",
+            x=xs, y=ys, mode="lines",
             line=dict(color=PAPER_PALETTE["negative"], width=2, dash="dash"),
-            hoverinfo="skip", showlegend=(i == 0),
+            hoverinfo="skip", showlegend=False,
         ), row=row, col=col)
 
         rho = next(r["spearman_rho"] for r in stat_rows if r["property"] == code)
-        p_val = next(r["p_value"] for r in stat_rows if r["property"] == code)
-        sig = "***" if p_val < 0.001 else "**" if p_val < 0.01 else "*" if p_val < 0.05 else ""
-        # Subplot 1 uses bare x/y, subsequent panels use x2/y2, ...
-        xref = "x domain" if i == 0 else f"x{i+1} domain"
-        yref = "y domain" if i == 0 else f"y{i+1} domain"
+        # Plotly axis index: pct_physical took x1/y1, panel i takes x(i+2)/y(i+2).
+        axis_idx = i + 2
+        xref = f"x{axis_idx} domain"
+        yref = f"y{axis_idx} domain"
         fig.add_annotation(
             x=0.03, y=0.96, xref=xref, yref=yref,
-            text=f"Spearman ρ = {rho:+.2f}{sig}<br>n = {len(x)} occs",
+            text=f"Spearman ρ = {rho:+.2f}<br>n = {len(x)} occs",
             showarrow=False, xanchor="left", yanchor="top",
             font=dict(size=px["in_chart_floor"],
                       color=PAPER_PALETTE["text"], family=FONT_FAMILY),
             align="left", bgcolor="rgba(255,255,255,0.82)", borderpad=3,
         )
 
-    # Axis ranges. Our 1–5 properties use [2.0, 4.5] (same as the friction
-    # chart, avoids corner overlap). Schaal ag/da sit on their own
-    # 0–~2 range, picked per-column from the data.
+    # ── Axes: pct_physical (row 1) on 0–100% with a % suffix ─────────
+    fig.update_xaxes(
+        title=dict(
+            text="% Physical Tasks in Occupation",
+            font=dict(size=px["axis_title"], family=FONT_FAMILY),
+        ),
+        range=[0, 100], dtick=20, ticksuffix="%",
+        tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+        row=1, col=1,
+    )
+    fig.update_yaxes(
+        title=dict(text="Tasks Exposed",
+                   font=dict(size=px["axis_title"], family=FONT_FAMILY)),
+        ticksuffix="%", range=[0, 100], dtick=20,
+        tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+        row=1, col=1,
+    )
+
+    # Rows 2–4: capability + adoption panels.
     for i, (code, _title, xlabel, _kind) in enumerate(CAP_ADO_PANELS):
-        row, col = i // 2 + 1, i % 2 + 1
+        row = i // 2 + 2
+        col = i % 2 + 1
         if code in ("s", "d", "r", "df"):
             x_range, x_dtick = [2.0, 4.5], 0.5
         else:
@@ -3818,7 +3901,6 @@ def build_capability_vs_adoption_all_occs(results: Path, figures: Path) -> None:
             xkw["dtick"] = x_dtick
         fig.update_xaxes(row=row, col=col, **xkw)
 
-        # y-title only on the left column; ticks visible everywhere.
         y_title = "Tasks Exposed" if col == 1 else None
         fig.update_yaxes(
             title=(dict(text=y_title,
@@ -3832,9 +3914,9 @@ def build_capability_vs_adoption_all_occs(results: Path, figures: Path) -> None:
 
     style_paper_figure(
         fig,
-        "Capability vs Adoption Properties — All Occupations",
+        "Structural, Capability, and Adoption Properties — All Occupations",
         width=W,
-        height=1180,
+        height=1500,
         margin=dict(l=100, r=50, t=120, b=110),
     )
     fig.update_layout(
@@ -3847,8 +3929,11 @@ def build_capability_vs_adoption_all_occs(results: Path, figures: Path) -> None:
             bgcolor="rgba(0,0,0,0)",
         ),
     )
-    # Subplot titles get sized + colored from the paper ladder.
-    panel_titles = {p[1] for p in CAP_ADO_PANELS}
+    # Subplot titles get sized + colored from the paper ladder. Include
+    # the top wide-row title alongside the CAP_ADO_PANELS titles.
+    panel_titles = {p[1] for p in CAP_ADO_PANELS} | {
+        "Share of Occupation's Tasks That Are Physical",
+    }
     for ann in fig.layout.annotations:
         if ann.text in panel_titles:
             ann.font = dict(size=px["panel_title"], family=FONT_FAMILY,
