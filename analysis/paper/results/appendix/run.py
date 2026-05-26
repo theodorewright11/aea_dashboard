@@ -21,9 +21,10 @@ then SKA:
    metric (left by % workforce exposed, right by % in High AI Exp & <0
    Emp Proj occupations). Cluster colors carry across panels.
 6. state_clusters_combined_ranked — companion to state_clusters_each_ranked.
-   Sums each state's rank on the two panels and sorts ascending; stacked
-   bar makes the rank-mix visible (darker = workforce rank, lighter =
-   focused-set rank). Cluster colors match the panel chart.
+   Sums each state's rank on the two panels and sorts ascending. Single
+   bar per state colored by Ward cluster (matches the panel chart);
+   end-of-bar label is the combined rank sum (bold) with the two
+   component ranks in parentheses.
 7. adoption_friction_scatter — Section 3 adoption-layer probe. Restrict
    to occupations that are mostly non-physical (Part 2's Non-Physical
    bucket: <33% physical tasks) and scatter each occ's mean rating of
@@ -2555,8 +2556,15 @@ def build_state_clusters_each_ranked(results: Path, figures: Path) -> None:
             groups[color]["x"].append(v)
         return groups
 
-    overlay_left  = _overlay_groups(geos_left,  exp_vals)
-    overlay_right = _overlay_groups(geos_right, focused_vals)
+    # Per-bar border arrays: disagreement states get a thick border in
+    # the K-means cluster color; all others get a zero-width (invisible)
+    # border. The border is solid color (not a pattern), so it reads as
+    # the exact K-means cluster hex rather than a visual blend.
+    BORDER_W = 3
+    border_color_left  = [km_alt_color.get(g, "rgba(0,0,0,0)") for g in geos_left]
+    border_width_left  = [BORDER_W if g in km_alt_color else 0 for g in geos_left]
+    border_color_right = [km_alt_color.get(g, "rgba(0,0,0,0)") for g in geos_right]
+    border_width_right = [BORDER_W if g in km_alt_color else 0 for g in geos_right]
 
     # Both subtitles wrap onto two lines so the visual baselines align.
     # Without the left also breaking, the right (2-line) renders centered
@@ -2574,10 +2582,12 @@ def build_state_clusters_each_ranked(results: Path, figures: Path) -> None:
         shared_yaxes=False,
     )
 
-    # Base bars: every state, Ward color, no pattern.
+    # Base bars: every state, Ward color fill, K-means color border on
+    # disagreement states (zero-width border elsewhere).
     fig.add_trace(go.Bar(
         y=geos_left, x=exp_vals, orientation="h",
-        marker=dict(color=colors_left, line=dict(width=0)),
+        marker=dict(color=colors_left,
+                    line=dict(color=border_color_left, width=border_width_left)),
         text=[f"{v:.1f}%" for v in exp_vals],
         textposition="outside",
         textfont=dict(size=ANNOT_FS, color=PAPER_PALETTE["neutral"],
@@ -2588,7 +2598,8 @@ def build_state_clusters_each_ranked(results: Path, figures: Path) -> None:
 
     fig.add_trace(go.Bar(
         y=geos_right, x=focused_vals, orientation="h",
-        marker=dict(color=colors_right, line=dict(width=0)),
+        marker=dict(color=colors_right,
+                    line=dict(color=border_color_right, width=border_width_right)),
         text=[f"{v:.1f}%" for v in focused_vals],
         textposition="outside",
         textfont=dict(size=ANNOT_FS, color=PAPER_PALETTE["neutral"],
@@ -2597,34 +2608,6 @@ def build_state_clusters_each_ranked(results: Path, figures: Path) -> None:
         hovertemplate="<b>%{y}</b><br>% of state emp in High AI Exp & <0 Emp Proj occs: %{x:.2f}%<extra></extra>",
     ), row=1, col=2)
 
-    # Overlay traces — one per unique K-means alternative color so the
-    # stripe color actually varies. Plotly 6.6's per-bar
-    # `marker.pattern.fgcolor` array is silently ignored, so we have to
-    # split. Each overlay has transparent fill + a single-color stripe
-    # pattern, and barmode="overlay" puts it on top of the base bar.
-    for km_color, payload in overlay_left.items():
-        fig.add_trace(go.Bar(
-            y=payload["y"], x=payload["x"], orientation="h",
-            marker=dict(
-                color="rgba(0,0,0,0)",
-                pattern=dict(shape="/", fgcolor=km_color,
-                             solidity=0.6, size=8, fillmode="overlay"),
-                line=dict(width=0),
-            ),
-            showlegend=False, cliponaxis=False, hoverinfo="skip",
-        ), row=1, col=1)
-    for km_color, payload in overlay_right.items():
-        fig.add_trace(go.Bar(
-            y=payload["y"], x=payload["x"], orientation="h",
-            marker=dict(
-                color="rgba(0,0,0,0)",
-                pattern=dict(shape="/", fgcolor=km_color,
-                             solidity=0.6, size=8, fillmode="overlay"),
-                line=dict(width=0),
-            ),
-            showlegend=False, cliponaxis=False, hoverinfo="skip",
-        ), row=1, col=2)
-
     for cid in order:
         fig.add_trace(go.Bar(
             y=[None], x=[None],
@@ -2632,17 +2615,16 @@ def build_state_clusters_each_ranked(results: Path, figures: Path) -> None:
             name=cluster_names[cid],
             showlegend=True,
         ), row=1, col=1)
-    # Legend entry for the Ward / K-means disagreement stripe overlay —
-    # a neutral-gray bar with the same diagonal pattern as the
-    # disagreement bars, so the reader knows what the stripes mean.
+    # Legend entry for the Ward / K-means disagreement marker — a
+    # neutral-gray bar with a dark border, mirroring the per-bar border
+    # treatment so the reader knows what the colored frames mean.
     fig.add_trace(go.Bar(
         y=[None], x=[None],
         marker=dict(
             color="#cccccc",
-            pattern=dict(shape="/", fgcolor="#333333",
-                         solidity=0.6, size=8, fillmode="overlay"),
+            line=dict(color="#333333", width=BORDER_W),
         ),
-        name="Ward / K-means disagreement (stripe = K-means)",
+        name="Ward / K-means disagreement (border = K-means)",
         showlegend=True,
     ), row=1, col=1)
 
@@ -2741,30 +2723,20 @@ def build_state_clusters_each_ranked(results: Path, figures: Path) -> None:
 # ──────────────────────────────────────────────────────────────────────────
 # state_clusters_combined_ranked — companion to state_clusters_each_ranked.
 # Sums each state's rank from the two panels of the prior chart and sorts
-# ascending. Stacked bar shows how much of the combined rank comes from
-# each metric. Cluster colors match the prior chart so the two figures
-# read as a pair.
+# ascending. Single bar per state colored by cluster; end-of-bar label
+# carries the sum plus the two component ranks in parentheses.
 # ──────────────────────────────────────────────────────────────────────────
 
-def _hex_to_rgba(hex_color: str, alpha: float) -> str:
-    """Convert '#aabbcc' (or '#abc') to 'rgba(r,g,b,a)'."""
-    h = hex_color.lstrip("#")
-    if len(h) == 3:
-        h = "".join(c * 2 for c in h)
-    r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
-    return f"rgba({r},{g},{b},{alpha})"
-
-
 def build_state_clusters_combined_ranked(results: Path, figures: Path) -> None:
-    """Single-panel stacked-bar chart of the summed rank from each panel
-    of state_clusters_each_ranked.
+    """Single-panel bar chart of the summed rank from each panel of
+    state_clusters_each_ranked.
 
     For every state, the rank on % workforce exposed (rank 1 = highest)
     is summed with the rank on % emp in High AI Exp & <0 Emp Proj occs
     (rank 1 = highest). Lower combined rank means a state ranks high
-    on both. Bars are stacked so the rank-mix is visible at a glance:
-    full-opacity segment = workforce rank, 45%-opacity segment = focused
-    rank, both colored by the state's Ward cluster.
+    on both. Bar color = state's Ward cluster. End-of-bar label =
+    combined rank sum, with the two component ranks in parentheses
+    (workforce rank, focused-set rank).
     """
     try:
         from analysis.exploratory.deepdive_state_clusters.run import (
@@ -2819,10 +2791,9 @@ def build_state_clusters_combined_ranked(results: Path, figures: Path) -> None:
     rank_sm = list(reversed(sorted_df["rank_sum"].tolist()))
     pct_wf  = list(reversed(sorted_df["pct_emp_wtd"].tolist()))
     pct_fc  = list(reversed(sorted_df["focused_share_pct"].tolist()))
-    colors_full  = list(reversed(
+    colors = list(reversed(
         [cluster_color[c] for c in sorted_df["cluster"].tolist()]
     ))
-    colors_light = [_hex_to_rgba(c, 0.45) for c in colors_full]
 
     save_csv(
         sorted_df.assign(geo=sorted_df["geo"].str.upper())[
@@ -2837,59 +2808,24 @@ def build_state_clusters_combined_ranked(results: Path, figures: Path) -> None:
 
     fig = go.Figure()
 
-    # Stack segment 1 — rank on % workforce exposed (full opacity).
     fig.add_trace(go.Bar(
-        y=geos, x=rank_wf, orientation="h",
-        marker=dict(color=colors_full, line=dict(width=0)),
-        text=[str(v) for v in rank_wf],
-        textposition="inside",
-        insidetextanchor="middle",
-        textfont=dict(size=ANNOT_FS, color="white", family=FONT_FAMILY),
+        y=geos, x=rank_sm, orientation="h",
+        marker=dict(color=colors, line=dict(width=0)),
         showlegend=False, cliponaxis=False,
-        customdata=list(zip(pct_wf, rank_sm)),
+        customdata=list(zip(rank_wf, rank_fc, pct_wf, pct_fc)),
         hovertemplate=(
             "<b>%{y}</b><br>"
-            "Rank on %% Workforce Exposed: %{x}<br>"
-            "%% Workforce Exposed: %{customdata[0]:.1f}%%<br>"
-            "Combined rank sum: %{customdata[1]}<extra></extra>"
+            "Combined rank sum: %{x}<br>"
+            "Rank on %% Workforce Exposed: %{customdata[0]} "
+            "(%{customdata[2]:.1f}%%)<br>"
+            "Rank on %% in High AI Exp & <0 Emp Proj Occs: "
+            "%{customdata[1]} (%{customdata[3]:.2f}%%)<extra></extra>"
         ),
     ))
 
-    # Stack segment 2 — rank on % emp in High AI Exp & <0 Emp Proj occs
-    # (45% opacity so the cluster color reads as a lighter tint).
-    fig.add_trace(go.Bar(
-        y=geos, x=rank_fc, orientation="h",
-        marker=dict(color=colors_light, line=dict(width=0)),
-        text=[str(v) for v in rank_fc],
-        textposition="inside",
-        insidetextanchor="middle",
-        textfont=dict(size=ANNOT_FS, color=PAPER_PALETTE["text"],
-                      family=FONT_FAMILY),
-        showlegend=False, cliponaxis=False,
-        customdata=list(zip(pct_fc, rank_sm)),
-        hovertemplate=(
-            "<b>%{y}</b><br>"
-            "Rank on %% in High AI Exp & <0 Emp Proj Occs: %{x}<br>"
-            "%% in focused set: %{customdata[0]:.2f}%%<br>"
-            "Combined rank sum: %{customdata[1]}<extra></extra>"
-        ),
-    ))
-
-    # Legend — two shade swatches (what segments mean) + cluster colors.
-    neutral_hex = PAPER_PALETTE["neutral"]
-    fig.add_trace(go.Bar(
-        y=[None], x=[None],
-        marker=dict(color=neutral_hex),
-        name="Rank on % Workforce Exposed (left segment)",
-        showlegend=True,
-    ))
-    fig.add_trace(go.Bar(
-        y=[None], x=[None],
-        marker=dict(color=_hex_to_rgba(neutral_hex, 0.45)),
-        name=(f"Rank on % in High AI Exp & <0 Emp Proj Occs "
-              f"(right segment, n={n_focused})"),
-        showlegend=True,
-    ))
+    # Cluster legend swatches (focused-set n included on the cluster
+    # whose name references the focused set so the dynamic n stays
+    # visible somewhere on the chart).
     for cid in order:
         fig.add_trace(go.Bar(
             y=[None], x=[None],
@@ -2902,22 +2838,24 @@ def build_state_clusters_combined_ranked(results: Path, figures: Path) -> None:
 
     style_paper_figure(
         fig,
-        "Combined Exposure Rank — Sum of Both State-Ranking Panels",
+        ("Combined Exposure Rank — Sum of Both State-Ranking Panels "
+         f"(focused set n={n_focused})"),
         subtitle=(
             "Each state's rank on the two panels of the previous figure summed. "
             "Lower combined rank means a state ranks high on BOTH "
             "% workforce exposed and % employment in High AI Exposure & <0 "
             "Emp Proj occupations. States sorted ascending — most exposed on "
-            "both metrics at top. Darker segment = workforce-exposure rank, "
-            "lighter segment = focused-set rank. Cluster colors match the "
-            "previous figure."
+            "both metrics at top. Bar color = Ward cluster (matches previous "
+            "figure). End-of-bar label: combined rank sum (bold), followed by "
+            "(workforce rank, focused-set rank) in parentheses."
         ),
         height=height,
         width=PAPER_W,
-        margin=dict(l=40, r=110, t=170, b=240),
+        margin=dict(l=40, r=160, t=170, b=200),
     )
 
-    x_upper = max(rank_sm) + max(8, int(0.05 * max(rank_sm)))
+    # End-of-bar label needs room for the longest case e.g. "97 (49, 48)".
+    x_upper = max(rank_sm) + 24
     fig.update_xaxes(
         title=dict(
             text=("Combined Rank Sum (lower = more exposed on both metrics; "
@@ -2937,11 +2875,11 @@ def build_state_clusters_combined_ranked(results: Path, figures: Path) -> None:
         tickfont=dict(size=TICK_FS - 2, family=FONT_FAMILY),
     )
 
-    # Bold combined rank sum at the end of each bar.
-    for g, s in zip(geos, rank_sm):
+    # Sum (bold) + component ranks in parentheses at the end of each bar.
+    for g, s, wf, fc in zip(geos, rank_sm, rank_wf, rank_fc):
         fig.add_annotation(
             x=s + 0.9, y=g,
-            text=f"<b>{s}</b>",
+            text=f"<b>{s}</b> ({wf}, {fc})",
             showarrow=False,
             xanchor="left", yanchor="middle",
             font=dict(size=ANNOT_FS, color=PAPER_PALETTE["neutral"],
@@ -2950,7 +2888,6 @@ def build_state_clusters_combined_ranked(results: Path, figures: Path) -> None:
 
     fig.update_layout(
         bargap=0.28,
-        barmode="stack",
         title=dict(y=0.985, yanchor="top"),
         legend=dict(
             orientation="h",
