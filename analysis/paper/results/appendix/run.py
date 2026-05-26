@@ -2839,12 +2839,27 @@ def build_state_clusters_combined_ranked(results: Path, figures: Path) -> None:
         float_format="%.3f",
     )
 
+    # Per-bar border: K-means disagreement states get a thick colored
+    # outline in the K-means alt cluster's color. Agreement states get
+    # no border. Unlike marker.pattern.fgcolor (which Plotly 6.6
+    # silently ignores when given an array), marker.line.color IS
+    # honored per-bar.
+    BORDER_W_DISAGREE = 3
+    line_colors = [
+        km_alt_color.get(g, "rgba(0,0,0,0)") for g in geos
+    ]
+    line_widths = [
+        BORDER_W_DISAGREE if g in km_alt_color else 0 for g in geos
+    ]
+
     fig = go.Figure()
 
-    # Base bars — one trace, single solid cluster color per state.
     fig.add_trace(go.Bar(
         y=geos, x=rank_sm, orientation="h",
-        marker=dict(color=colors, line=dict(width=0)),
+        marker=dict(
+            color=colors,
+            line=dict(color=line_colors, width=line_widths),
+        ),
         showlegend=False, cliponaxis=False,
         customdata=list(zip(rank_wf, rank_fc, pct_wf, pct_fc)),
         hovertemplate=(
@@ -2857,34 +2872,7 @@ def build_state_clusters_combined_ranked(results: Path, figures: Path) -> None:
         ),
     ))
 
-    # K-means stripe overlay — one trace per unique K-means color so
-    # the stripe color actually varies. Plotly 6.6 silently ignores
-    # per-bar marker.pattern.fgcolor arrays; splitting by color +
-    # barmode="overlay" is the documented workaround (see each_ranked).
-    def _overlay_groups(geos_l: list[str], vals: list[float]) -> dict[str, dict]:
-        groups: dict[str, dict] = {}
-        for g, v in zip(geos_l, vals):
-            if g not in km_alt_color:
-                continue
-            col = km_alt_color[g]
-            groups.setdefault(col, {"y": [], "x": []})
-            groups[col]["y"].append(g)
-            groups[col]["x"].append(v)
-        return groups
-
-    for km_color, payload in _overlay_groups(geos, rank_sm).items():
-        fig.add_trace(go.Bar(
-            y=payload["y"], x=payload["x"], orientation="h",
-            marker=dict(
-                color="rgba(0,0,0,0)",
-                pattern=dict(shape="/", fgcolor=km_color,
-                             solidity=0.30, size=8, fillmode="overlay"),
-                line=dict(width=0),
-            ),
-            showlegend=False, cliponaxis=False, hoverinfo="skip",
-        ))
-
-    # Cluster legend swatches + stripe-overlay legend swatch.
+    # Cluster legend swatches + disagreement-border legend swatch.
     for cid in order:
         fig.add_trace(go.Bar(
             y=[None], x=[None],
@@ -2895,11 +2883,10 @@ def build_state_clusters_combined_ranked(results: Path, figures: Path) -> None:
     fig.add_trace(go.Bar(
         y=[None], x=[None],
         marker=dict(
-            color="#cccccc",
-            pattern=dict(shape="/", fgcolor="#333333",
-                         solidity=0.30, size=8, fillmode="overlay"),
+            color="#e6e6e6",
+            line=dict(color="#333333", width=BORDER_W_DISAGREE),
         ),
-        name="Ward / K-means disagreement (stripe = K-means)",
+        name="Ward / K-means disagreement (border = K-means)",
         showlegend=True,
     ))
 
@@ -2915,9 +2902,10 @@ def build_state_clusters_combined_ranked(results: Path, figures: Path) -> None:
             "% workforce exposed and % employment in High AI Exposure & <0 "
             "Emp Proj occupations. States sorted ascending — most exposed on "
             "both metrics at top. Bar color = Ward cluster (matches previous "
-            "figure); diagonal stripe = K-means disagreement. End-of-bar label: "
-            "combined rank sum (bold), followed by (workforce rank, focused-set "
-            "rank) in parentheses."
+            "figure); colored border = K-means disagreement (border color is "
+            "the K-means alternative cluster). End-of-bar label: combined "
+            "rank sum (bold), followed by (workforce rank, focused-set rank) "
+            "in parentheses."
         ),
         height=height,
         width=PAPER_W,
@@ -2976,10 +2964,6 @@ def build_state_clusters_combined_ranked(results: Path, figures: Path) -> None:
 
     fig.update_layout(
         bargap=0.28,
-        # "overlay" puts the K-means stripe traces on top of the base
-        # bars at the same y position (without it they'd render
-        # side-by-side and the stripes would land off-bar).
-        barmode="overlay",
         # Title anchored at the top of the canvas so the label-format
         # key annotation has room beneath it before the plot area.
         title=dict(y=0.985, yanchor="top"),
