@@ -3538,11 +3538,14 @@ def build_adoption_friction_scatter(results: Path, figures: Path) -> None:
             row=1, col=col_idx,
         )
         xs, ys = fit_lines[code]
+        # Show legend entry only on the first panel's fit trace so the
+        # legend has a single "OLS fit" row.
         fig.add_trace(
             go.Scatter(
                 x=xs, y=ys, mode="lines",
+                name="OLS fit",
                 line=dict(color=PAPER_PALETTE["negative"], width=2, dash="dash"),
-                hoverinfo="skip", showlegend=False,
+                hoverinfo="skip", showlegend=(col_idx == 1),
             ),
             row=1, col=col_idx,
         )
@@ -3575,7 +3578,7 @@ def build_adoption_friction_scatter(results: Path, figures: Path) -> None:
             showgrid=True, gridcolor=PAPER_PALETTE["grid"],
             row=1, col=col_idx,
         )
-        y_title = "% Tasks Exposed  (All Confirmed)" if col_idx == 1 else None
+        y_title = "Tasks Exposed" if col_idx == 1 else None
         fig.update_yaxes(
             title=dict(text=y_title,
                        font=dict(size=px["axis_title"], family=FONT_FAMILY))
@@ -3589,34 +3592,27 @@ def build_adoption_friction_scatter(results: Path, figures: Path) -> None:
 
     style_paper_figure(
         fig,
-        "Adoption Frictions vs Exposure — Mostly Non-Physical Occupations",
+        "Adoption Frictions vs Exposure — Non-Physical Occupations",
         width=W,
         height=600,
-        margin=dict(l=90, r=50, t=130, b=160),
+        margin=dict(l=90, r=50, t=130, b=110),
     )
     # Pin title below the top edge — Plotly's default title.y for short
     # canvases sometimes places the text flush with the top.
-    fig.update_layout(title=dict(y=0.96, yanchor="top"))
+    fig.update_layout(
+        title=dict(y=0.96, yanchor="top"),
+        showlegend=True,
+        legend=dict(
+            orientation="h",
+            x=0.5, xanchor="center", y=-0.22, yanchor="top",
+            font=dict(size=px["legend"], family=FONT_FAMILY),
+            bgcolor="rgba(0,0,0,0)",
+        ),
+    )
     for ann in fig.layout.annotations:
         if ann.text in {lbl for _, lbl in ADOPTION_FRICTION_PROPS}:
             ann.font = dict(size=px["panel_title"], family=FONT_FAMILY,
                             color=PAPER_PALETTE["text"])
-
-    fig.add_annotation(
-        x=0.5, y=-0.32,
-        xref="paper", yref="paper",
-        xanchor="center", yanchor="top",
-        showarrow=False,
-        text=(
-            f"One dot per occupation; restricted to {n_occs} occupations "
-            f"with &lt; {NONPHYS_PCT_CUTOFF:.0f}% physical tasks "
-            "(Part 2's Non-Physical bucket).<br>"
-            "Property means are unweighted across each occupation's "
-            "non-physical tasks. Dashed line is OLS fit."
-        ),
-        font=dict(size=px["in_chart_floor"],
-                  color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
-    )
 
     save_figure(fig, results / "figures" / "adoption_friction_scatter.png", scale=2)
     _copy_fig(results, figures, "adoption_friction_scatter.png")
