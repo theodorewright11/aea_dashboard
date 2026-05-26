@@ -2803,6 +2803,18 @@ def build_underadoption_gap(results: Path, figures: Path) -> None:
     TASKS_LIGHT = "#cfe0ec"
     TASKS_DARK = "#2c4f6b"
 
+    # Per-bar inside/outside text — wider bars get the value label inside
+    # in white (matches intensity_anchor_fulleco / part_2 major_categories);
+    # narrower bars stay outside in dark.
+    x_top = float(plot_df["gap_ratio"].max()) * 1.06
+    INSIDE_THRESHOLD = x_top * 0.12
+    pos = [
+        "inside" if v >= INSIDE_THRESHOLD else "outside"
+        for v in plot_df["gap_ratio"]
+    ]
+    inside_font  = dict(size=px["tick"], color="white",                family=FONT_FAMILY)
+    outside_font = dict(size=px["tick"], color=PAPER_PALETTE["text"], family=FONT_FAMILY)
+
     fig = go.Figure()
     fig.add_trace(go.Bar(
         y=plot_df["display_category"], x=plot_df["gap_ratio"], orientation="h",
@@ -2814,8 +2826,11 @@ def build_underadoption_gap(results: Path, figures: Path) -> None:
             line=dict(width=0),
         ),
         text=[f"{v:.2f}x" for v in plot_df["gap_ratio"]],
-        textposition="outside",
-        textfont=dict(size=px["tick"], color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+        textposition=pos,
+        insidetextanchor="end",
+        insidetextfont=inside_font,
+        outsidetextfont=outside_font,
+        constraintext="none",
         cliponaxis=False,
         hovertemplate=(
             "<b>%{y}</b><br>underadoption: %{x:.2f}x<br>"
@@ -2853,8 +2868,15 @@ def build_underadoption_gap(results: Path, figures: Path) -> None:
         f"Tasks Exposed&nbsp;&nbsp;{cmin:.0f}%&nbsp;"
         f"{swatch_html}&nbsp;{cmax:.0f}%"
     )
+    # Compact layout matching the main intensity_anchor_fulleco chart:
+    # 22 majors × 38 px/row + 90/170 margins ≈ 1096 px (~5.1").
+    n = len(plot_df)
+    MARGIN_T, MARGIN_B = 90, 170
+    chart_h = n * 38 + MARGIN_T + MARGIN_B
+    plot_h_px = chart_h - MARGIN_T - MARGIN_B
+    legend_y = -(MARGIN_B - 50) / plot_h_px
     fig.add_annotation(
-        x=0.14, y=-0.17,
+        x=0.14, y=legend_y,
         xref="paper", yref="paper",
         text=legend_text, showarrow=False,
         xanchor="center", yanchor="middle",
@@ -2865,10 +2887,10 @@ def build_underadoption_gap(results: Path, figures: Path) -> None:
     style_paper_figure(
         fig,
         "Underadoption Relative to Potential as Informed by Task Exposure",
-        height=1280, width=W,
-        margin=dict(l=20, r=80, t=110, b=190),
+        height=chart_h, width=W,
+        margin=dict(l=20, r=80, t=MARGIN_T, b=MARGIN_B),
     )
-    x_top = float(plot_df["gap_ratio"].max()) * 1.06
+    fig.update_layout(bargap=0.15)
     fig.update_xaxes(
         title=dict(
             text="Underadoption Relative to Median (×)",
@@ -2878,6 +2900,8 @@ def build_underadoption_gap(results: Path, figures: Path) -> None:
         range=[0, x_top],
         tickfont=dict(size=px["tick"], family=FONT_FAMILY),
     )
+    # tickmode="array" pins every category label at this tight row pitch.
+    y_labels = list(plot_df["display_category"])
     fig.update_yaxes(
         title=dict(
             text="Major Occupational Category",
@@ -2885,6 +2909,7 @@ def build_underadoption_gap(results: Path, figures: Path) -> None:
         ),
         showgrid=False, showline=False,
         tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+        tickmode="array", tickvals=y_labels, ticktext=y_labels,
     )
 
     save_figure(fig, results / "figures" / "underadoption_gap.png", scale=2)
@@ -3201,23 +3226,23 @@ def _render_intensity_driver_chart(
         f"{color_label}&nbsp;&nbsp;{color_fmt.format(cmin)}&nbsp;"
         f"{swatch_html}&nbsp;{color_fmt.format(cmax)}"
     )
-    # Both occ and task charts use the same tall canvas so each row gets
-    # ~75px of vertical room — enough that 2-line wrapped labels don't
-    # crowd back-to-back rows (Arts occ "Fine Artists, …" / "Umpires, …").
-    # Right margin trimmed so the outside text values ("2742.79× (1.139
-    # raw pct)") extend close to the PNG right edge — cliponaxis=False
-    # lets text extend into the margin without clipping at the axis
-    # line, but the figure boundary still clips at x=W, so x_top below
-    # is sized per-level to keep the longest text inside.
-    height = 1100
+    # Compact layout: per-row pitch tightened so 10-row charts land
+    # ~3.4–4.0" tall. Task charts get more room because labels are
+    # 2-line wrapped (`_wrap_driver_label(width=52, max_lines=2)`); occ
+    # charts mostly single-line so they can go tighter. Margins follow
+    # the intensity_anchor_fulleco shortening pattern (t=90, b=150–160).
+    n_rows = len(plot_df)
+    row_pitch = 60 if level == "task" else 50
+    margin_top = 90
+    margin_bottom = 160 if level == "task" else 150
     margin_right = 90 if level == "task" else 110
-    margin_bottom = 240 if level == "task" else 220
-    margin_top = 110
+    height = n_rows * row_pitch + margin_top + margin_bottom
     style_paper_figure(
         fig, title,
         height=height, width=W,
         margin=dict(l=margin_left, r=margin_right, t=margin_top, b=margin_bottom),
     )
+    fig.update_layout(bargap=0.15)
 
     # Legend centered on the PNG itself, not on the plot area. xref="paper"
     # is plot-area-relative — to land on PNG midpoint W/2 in pixel terms,
@@ -3263,6 +3288,8 @@ def _render_intensity_driver_chart(
     # style_paper_figure() so the PNG-centered legend math above is
     # exact. Margins below at the call sites are sized to fit the
     # longest wrapped label without plotly needing to expand.
+    # tickmode="array" pins every category label — at the tight 50–60 px
+    # row pitch, plotly auto-thins categorical ticks otherwise.
     fig.update_yaxes(
         title=dict(text=level_word,
                    font=dict(size=px["axis_title"], family=FONT_FAMILY),
@@ -3270,6 +3297,7 @@ def _render_intensity_driver_chart(
         showgrid=False, showline=False,
         tickfont=dict(size=px["tick"], family=FONT_FAMILY),
         automargin=False,
+        tickmode="array", tickvals=list(display_labels), ticktext=list(display_labels),
     )
 
     save_figure(fig, results / "figures" / out_name, scale=2)

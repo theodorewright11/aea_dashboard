@@ -680,6 +680,20 @@ def build_intensity_anchor_fulleco(results: Path, figures: Path) -> None:
     W = PAPER_W
     px = paper_fonts(W)
 
+    # Per-bar inside/outside text decision — wider bars get the value
+    # label inside in white (matches part_2 major_categories style);
+    # narrower bars keep the dark label outside so the number stays
+    # legible. Threshold chosen at ~12% of x_top so any bar at least
+    # ~150 px wide on the 1300 px plot area can fit "XX.XXx" comfortably.
+    x_top = max(plot_df["lift"]) * 1.04
+    INSIDE_THRESHOLD = x_top * 0.12
+    pos = [
+        "inside" if v >= INSIDE_THRESHOLD else "outside"
+        for v in plot_df["lift"]
+    ]
+    inside_font  = dict(size=px["tick"], color="white",                family=FONT_FAMILY)
+    outside_font = dict(size=px["tick"], color=PAPER_PALETTE["text"], family=FONT_FAMILY)
+
     fig = go.Figure()
     fig.add_trace(go.Bar(
         y=plot_df["display_category"], x=plot_df["lift"], orientation="h",
@@ -691,8 +705,11 @@ def build_intensity_anchor_fulleco(results: Path, figures: Path) -> None:
             line=dict(width=0),
         ),
         text=[f"{v:.2f}x" for v in plot_df["lift"]],
-        textposition="outside",
-        textfont=dict(size=px["tick"], color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+        textposition=pos,
+        insidetextanchor="end",
+        insidetextfont=inside_font,
+        outsidetextfont=outside_font,
+        constraintext="none",
         cliponaxis=False,
         hovertemplate="<b>%{y}</b><br>lift: %{x:.2f}x<extra></extra>",
         showlegend=False,
@@ -726,10 +743,23 @@ def build_intensity_anchor_fulleco(results: Path, figures: Path) -> None:
         f"Tasks Exposed&nbsp;&nbsp;{cmin:.0f}%&nbsp;"
         f"{swatch_html}&nbsp;{cmax:.0f}%"
     )
-    # Bottom legend — same position pattern as tech_commodities (centered
-    # on the PNG, with the same gap from x-axis title to legend).
+    # Compact layout: 22 majors × 38 px/row + 90/170 margins ≈ 1096 px
+    # (~5.1" at PAPER_W=1400). Matches the risk_score_5f shortening pattern
+    # (commit 4600633) at a slightly looser pitch since major labels are
+    # single-line after stripping the " Occupations" suffix. Bottom margin
+    # bumped to 170 to clear the gradient legend below the x-axis title.
+    n = len(plot_df)
+    MARGIN_T, MARGIN_B = 90, 170
+    chart_h = n * 38 + MARGIN_T + MARGIN_B
+    plot_h_px = chart_h - MARGIN_T - MARGIN_B
+
+    # Bottom legend — pixel-anchored ~50 px above the canvas bottom so it
+    # never clips when chart_h changes. Centered on the PNG (paper x=0.14
+    # matches the part_3 tech_commodities layout's PNG-centered legend
+    # given the same l=20 margin).
+    legend_y = -(MARGIN_B - 50) / plot_h_px
     fig.add_annotation(
-        x=0.14, y=-0.17,
+        x=0.14, y=legend_y,
         xref="paper", yref="paper",
         text=legend_text, showarrow=False,
         xanchor="center", yanchor="middle",
@@ -744,20 +774,24 @@ def build_intensity_anchor_fulleco(results: Path, figures: Path) -> None:
             "Σ pct usage ÷ Σ (freq × employment) for equalization — debiased to a "
             "Claude / Copilot / ChatGPT GWA-distribution blend (work-related ChatGPT chats)."
         ),
-        height=1280, width=W,
-        margin=dict(l=20, r=80, t=110, b=190),
+        height=chart_h, width=W,
+        margin=dict(l=20, r=80, t=MARGIN_T, b=MARGIN_B),
     )
-    x_top = max(plot_df["lift"]) * 1.04
+    fig.update_layout(bargap=0.15)
     fig.update_xaxes(
         title=dict(text="Usage Relative to Median (×)", font=dict(size=px["axis_title"], family=FONT_FAMILY)),
         showgrid=True, gridcolor=PAPER_PALETTE["grid"],
         range=[0, x_top],
         tickfont=dict(size=px["tick"], family=FONT_FAMILY),
     )
+    # tickmode="array" pins every category label — plotly auto-thins
+    # categorical ticks at this tight pitch otherwise.
+    y_labels = list(plot_df["display_category"])
     fig.update_yaxes(
         title=dict(text="Major Occupational Category", font=dict(size=px["axis_title"], family=FONT_FAMILY)),
         showgrid=False, showline=False,
         tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+        tickmode="array", tickvals=y_labels, ticktext=y_labels,
     )
 
     save_figure(fig, results / "figures" / "intensity_anchor_fulleco.png", scale=2)
