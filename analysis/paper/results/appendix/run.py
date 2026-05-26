@@ -20,6 +20,11 @@ then SKA:
    Two-panel ranked bars where each panel sorts the 51 states by its own
    metric (left by % workforce exposed, right by % in High AI Exp & <0
    Emp Proj occupations). Cluster colors carry across panels.
+6. adoption_friction_scatter — Section 3 adoption-layer probe. Restrict
+   to occupations that are mostly non-physical (Part 2's Non-Physical
+   bucket: <33% physical tasks) and scatter each occ's mean rating of
+   the friction property (r, df) against its % tasks exposed. Two
+   panels, Spearman ρ + OLS fit inset per panel.
 
 Run from project root:
     venv/Scripts/python -m analysis.paper.results.appendix.run
@@ -50,7 +55,7 @@ from analysis.paper.paper_config import (
     INSIDE_FS,
     METRIC_COLORS, METRIC_COLORS_LIGHT, PAPER_PALETTE,
     fmt_workers, fmt_wages,
-    style_paper_figure, paper_fonts,
+    style_paper_figure, paper_fonts, paper_dataset_for,
 )
 # GWA wkrs/wages reuses the part_2 helpers (axis picker, wrap, layout
 # style) so the appendix chart matches the main-text gwa_pct figure.
@@ -466,7 +471,7 @@ def build_convergence_full(
             internal_data[skey][lvl] = df.set_index("category")["pct_tasks_affected"]
         print(f"  {CORR_SOURCES[skey]['label']}: loaded {[l for l, _ in LEVELS]}")
     for ckey in CONFIG_ORDER:
-        ds = ANALYSIS_CONFIGS[ckey]
+        ds = paper_dataset_for(ckey)
         internal_data[ckey] = {}
         for lvl, _ in LEVELS:
             df = _run_config(ds, lvl)
@@ -882,7 +887,7 @@ def _compute_paper_overview_rows(total_emp: float, total_wages: float) -> list[d
     eco_tc_by_occ = _eco_tc_by_occ_app()
     rows: list[dict] = []
     for key in OVERVIEW_CONFIG_ORDER:
-        ds = ANALYSIS_CONFIGS[key]
+        ds = paper_dataset_for(key)
         df = _run_overview_config(ds, use_auto_aug=True)
         workers = float(df["workers_affected"].sum())
         wages = float(df["wages_affected"].sum())
@@ -1122,7 +1127,7 @@ def build_overview_no_autoaug(results: Path, figures: Path) -> None:
 
     rows: list[dict] = []
     for key in OVERVIEW_CONFIG_ORDER:
-        ds = ANALYSIS_CONFIGS[key]
+        ds = paper_dataset_for(key)
         label = ANALYSIS_CONFIG_LABELS[key]
         df = _run_overview_config(ds, use_auto_aug=False)
 
@@ -3367,6 +3372,258 @@ def build_intensity_drivers(results: Path, figures: Path,
             )
 
 
+# ─────────────────────────────────────────────────────────────────────────
+# adoption_friction_scatter — appendix figure testing the Section 3
+# adoption-layer prediction that risk and deployment friction
+# discriminate exposure once capability is roughly held constant.
+#
+# Source: data/final_eco_2025_with_task_properties.csv (12 LLM-rated
+# structural properties, 1–5, on 23,850 (task, occ) rows). The same
+# property file used by analysis/exploratory/audit_task_properties.
+#
+# Capability is held roughly constant by restricting to occupations
+# whose task load is mostly non-physical (`pct_physical < 33%` — the
+# same cut Part 2 uses for its Non-Physical phys-mix tier). Inside that
+# slice, each occupation contributes one dot: x = unweighted mean
+# rating of the friction property over its non-physical tasks, y = %
+# tasks exposed under all_confirmed. Two panels — left for `r`, right
+# for `df`.
+#
+# Why no weighting: weighting by freq×emp concentrates each occ's
+# property mean onto a few high-frequency tasks (often routine office
+# work with mid-range friction), washing the cross-occ variance out.
+# Unweighted preserves the cross-occ signal (ρ ≈ −0.48 for r and −0.41
+# for df at occ level; the major-level rollup within non-phys shows
+# almost nothing — discrimination lives at occupation level here).
+# ─────────────────────────────────────────────────────────────────────────
+
+ADOPTION_FRICTION_PROPS: list[tuple[str, str]] = [
+    ("r", "Objective Risk (r)"),
+    ("df", "Deployment Friction (df)"),
+]
+
+# Cut occupations into Non-Physical bucket: <33% physical tasks. Same
+# threshold Part 2 uses for its phys-mix tier scheme.
+NONPHYS_PCT_CUTOFF = 33.0
+
+
+def _load_props_deduped() -> pd.DataFrame:
+    """Property file deduped to one row per (task_normalized, title_current).
+
+    eco_2025 expands tasks across the GWA/IWA/DWA hierarchy non-
+    proportionally between physical and non-physical, so dedup is
+    required before any per-occ summary — same pitfall noted in the
+    appendix README under data conventions.
+    """
+    df = pd.read_csv(DATA_DIR / "final_eco_2025_with_task_properties.csv")
+    keep_cols = [
+        "task_normalized", "title_current", "physical", "freq_mean",
+        "emp_tot_nat_2024",
+        "m", "d", "s", "r", "h", "e", "t", "tf", "df", "de", "nt", "ac",
+    ]
+    return df[keep_cols].drop_duplicates(["task_normalized", "title_current"]).copy()
+
+
+def build_adoption_friction_scatter(results: Path, figures: Path) -> None:
+    """Per-occupation scatter of two friction properties (`r`, `df`) vs
+    % tasks exposed, restricted to occupations whose task load is mostly
+    non-physical (Part 2's Non-Physical bucket: <33% physical tasks).
+    Each dot is one occupation. Spearman ρ + OLS fit per panel.
+    """
+    from scipy import stats
+
+    props = _load_props_deduped()
+
+    # Per-occ pct_physical over UNIQUE (occ, task) pairs.
+    occ_struct = (
+        props.groupby("title_current")
+        .agg(n_tasks=("physical", "count"),
+             n_physical=("physical", "sum"))
+        .reset_index()
+    )
+    occ_struct["pct_physical"] = (
+        occ_struct["n_physical"] / occ_struct["n_tasks"] * 100
+    )
+    nonphys_occs = set(
+        occ_struct.loc[occ_struct["pct_physical"] < NONPHYS_PCT_CUTOFF,
+                       "title_current"]
+    )
+
+    # Per-occ unweighted mean of each friction property over the occ's
+    # non-physical tasks. Weighting concentrates the mean on a few
+    # high-frequency tasks and erases the cross-occ variance; keep
+    # unweighted.
+    nonphys_rows = props[~props["physical"].astype(bool)].copy()
+    occ_means = (
+        nonphys_rows.groupby("title_current")
+        .agg(r=("r", "mean"),
+             df=("df", "mean"),
+             n_nonphys_tasks=("r", "count"))
+        .reset_index()
+    )
+
+    pct = get_pct_tasks_affected(PRIMARY_DATASET)
+    occ_means["pct_tasks_affected"] = occ_means["title_current"].map(pct)
+
+    plot_df = occ_means[
+        occ_means["title_current"].isin(nonphys_occs)
+        & occ_means["pct_tasks_affected"].notna()
+    ].copy()
+    assert len(plot_df) > 0, "No mostly-non-physical occupations matched"
+    n_occs = len(plot_df)
+
+    save_csv(
+        plot_df.sort_values("pct_tasks_affected", ascending=False),
+        results / "adoption_friction_scatter.csv",
+        float_format="%.4f",
+    )
+
+    # Spearman ρ + linear fit per property
+    stat_rows: list[dict] = []
+    fit_lines: dict[str, tuple[np.ndarray, np.ndarray]] = {}
+    for code, _ in ADOPTION_FRICTION_PROPS:
+        x = plot_df[code].astype(float).to_numpy()
+        y = plot_df["pct_tasks_affected"].astype(float).to_numpy()
+        rho, p_val = stats.spearmanr(x, y)
+        slope, intercept = np.polyfit(x, y, deg=1)
+        xs = np.linspace(x.min(), x.max(), 50)
+        ys = intercept + slope * xs
+        fit_lines[code] = (xs, ys)
+        stat_rows.append({"property": code, "spearman_rho": rho,
+                          "p_value": p_val, "slope": slope,
+                          "intercept": intercept, "n": int(len(x))})
+    save_csv(pd.DataFrame(stat_rows),
+             results / "adoption_friction_scatter_stats.csv",
+             float_format="%.4f")
+
+    W = PAPER_W
+    px = paper_fonts(W)
+
+    # Color encodes exposure value so darker = more exposed (mirrors
+    # the part_3 underadoption ramp).
+    SCATTER_LIGHT = "#cfe0ec"
+    SCATTER_DARK = "#2c4f6b"
+    cvals = plot_df["pct_tasks_affected"].to_numpy(dtype=float)
+    cmin, cmax = float(cvals.min()), float(cvals.max())
+
+    fig = make_subplots(
+        rows=1, cols=2,
+        horizontal_spacing=0.11,
+        subplot_titles=[lbl for _, lbl in ADOPTION_FRICTION_PROPS],
+    )
+
+    for col_idx, (code, _label) in enumerate(ADOPTION_FRICTION_PROPS, start=1):
+        x = plot_df[code].astype(float)
+        y = plot_df["pct_tasks_affected"].astype(float)
+
+        fig.add_trace(
+            go.Scatter(
+                x=x, y=y, mode="markers",
+                marker=dict(
+                    size=6,
+                    color=y,
+                    colorscale=[[0, SCATTER_LIGHT], [1, SCATTER_DARK]],
+                    cmin=cmin, cmax=cmax,
+                    line=dict(width=0.4, color="rgba(0,0,0,0.25)"),
+                    opacity=0.85,
+                ),
+                customdata=plot_df["title_current"],
+                hovertemplate=(
+                    "<b>%{customdata}</b><br>"
+                    f"mean {code} (non-phys tasks): %{{x:.2f}}<br>"
+                    "% tasks exposed: %{y:.1f}%<extra></extra>"
+                ),
+                showlegend=False,
+            ),
+            row=1, col=col_idx,
+        )
+        xs, ys = fit_lines[code]
+        fig.add_trace(
+            go.Scatter(
+                x=xs, y=ys, mode="lines",
+                line=dict(color=PAPER_PALETTE["negative"], width=2, dash="dash"),
+                hoverinfo="skip", showlegend=False,
+            ),
+            row=1, col=col_idx,
+        )
+
+        rho = next(r["spearman_rho"] for r in stat_rows if r["property"] == code)
+        p_val = next(r["p_value"] for r in stat_rows if r["property"] == code)
+        sig = "***" if p_val < 0.001 else "**" if p_val < 0.01 else "*" if p_val < 0.05 else ""
+        # Subplot 1 uses bare "x"/"y"; subsequent panels use "x2"/"y2", etc.
+        xref_str = "x domain" if col_idx == 1 else f"x{col_idx} domain"
+        yref_str = "y domain" if col_idx == 1 else f"y{col_idx} domain"
+        fig.add_annotation(
+            x=0.02, y=0.97,
+            xref=xref_str, yref=yref_str,
+            text=f"Spearman ρ = {rho:+.2f}{sig}<br>n = {len(x)} occs",
+            showarrow=False, xanchor="left", yanchor="top",
+            font=dict(size=px["in_chart_floor"],
+                      color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+            align="left",
+            bgcolor="rgba(255,255,255,0.78)", borderpad=4,
+        )
+
+    for col_idx, (code, _) in enumerate(ADOPTION_FRICTION_PROPS, start=1):
+        fig.update_xaxes(
+            title=dict(
+                text=f"Mean {code} rating across non-phys tasks",
+                font=dict(size=px["axis_title"], family=FONT_FAMILY),
+            ),
+            range=[1.5, 4.5], dtick=0.5,
+            tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+            showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+            row=1, col=col_idx,
+        )
+        y_title = "% Tasks Exposed  (All Confirmed)" if col_idx == 1 else None
+        fig.update_yaxes(
+            title=dict(text=y_title,
+                       font=dict(size=px["axis_title"], family=FONT_FAMILY))
+                       if y_title else None,
+            ticksuffix="%",
+            range=[0, 100], dtick=20,
+            tickfont=dict(size=px["tick"], family=FONT_FAMILY),
+            showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+            row=1, col=col_idx,
+        )
+
+    style_paper_figure(
+        fig,
+        "Adoption Frictions vs Exposure — Mostly Non-Physical Occupations",
+        width=W,
+        height=600,
+        margin=dict(l=90, r=50, t=130, b=160),
+    )
+    # Pin title below the top edge — Plotly's default title.y for short
+    # canvases sometimes places the text flush with the top.
+    fig.update_layout(title=dict(y=0.96, yanchor="top"))
+    for ann in fig.layout.annotations:
+        if ann.text in {lbl for _, lbl in ADOPTION_FRICTION_PROPS}:
+            ann.font = dict(size=px["panel_title"], family=FONT_FAMILY,
+                            color=PAPER_PALETTE["text"])
+
+    fig.add_annotation(
+        x=0.5, y=-0.32,
+        xref="paper", yref="paper",
+        xanchor="center", yanchor="top",
+        showarrow=False,
+        text=(
+            f"One dot per occupation; restricted to {n_occs} occupations "
+            f"with &lt; {NONPHYS_PCT_CUTOFF:.0f}% physical tasks "
+            "(Part 2's Non-Physical bucket).<br>"
+            "Property means are unweighted across each occupation's "
+            "non-physical tasks. Dashed line is OLS fit."
+        ),
+        font=dict(size=px["in_chart_floor"],
+                  color=PAPER_PALETTE["neutral"], family=FONT_FAMILY),
+    )
+
+    save_figure(fig, results / "figures" / "adoption_friction_scatter.png", scale=2)
+    _copy_fig(results, figures, "adoption_friction_scatter.png")
+    print("  -> adoption_friction_scatter.png")
+
+
+
 def main() -> None:
     results = ensure_results_dir(HERE)
     figures = HERE / "figures"
@@ -3376,7 +3633,7 @@ def main() -> None:
     print("Appendix figures")
     print("=" * 60)
 
-    print("\n[1/10] convergence_full (one full-matrix per SOC level)")
+    print("\n[1/11] convergence_full (one full-matrix per SOC level)")
     for lvl_key, lvl_title in [("major", "Major level"),
                                 ("minor", "Minor level"),
                                 ("broad", "Broad level"),
@@ -3389,32 +3646,35 @@ def main() -> None:
             csv_name=f"spearman_combined_full_{short}.csv",
         )
 
-    print("\n[2/10] overview_no_autoaug (paper part_1 overview, no auto_aug)")
+    print("\n[2/11] overview_no_autoaug (paper part_1 overview, no auto_aug)")
     build_overview_no_autoaug(results, figures)
 
-    print("\n[3/10] temporal_trend_nonphys (Part 1 trend, non-physical tasks only)")
+    print("\n[3/11] temporal_trend_nonphys (Part 1 trend, non-physical tasks only)")
     build_temporal_trend_nonphys(results, figures)
 
-    print("\n[4/10] major_categories_trend (Part 2 trend chart, relocated)")
+    print("\n[4/11] major_categories_trend (Part 2 trend chart, relocated)")
     build_major_categories_trend(results, figures)
 
-    print("\n[5/10] eloundou_divergence_major (z-score divergence by major occ cat)")
+    print("\n[5/11] eloundou_divergence_major (z-score divergence by major occ cat)")
     build_eloundou_divergence_major(results, figures)
 
-    print("\n[6/10] ska_full (full element-level SKA)")
+    print("\n[6/11] ska_full (full element-level SKA)")
     build_ska_full(results, figures)
 
-    print("\n[7/10] gwa_wkrs_wages (workers/wages counterpart to part_2 gwa_pct)")
+    print("\n[7/11] gwa_wkrs_wages (workers/wages counterpart to part_2 gwa_pct)")
     build_gwa_wkrs_wages(results, figures)
 
-    print("\n[8/10] state_clusters_each_ranked (companion to Part 3 cluster map)")
+    print("\n[8/11] state_clusters_each_ranked (companion to Part 3 cluster map)")
     build_state_clusters_each_ranked(results, figures)
 
-    print("\n[9/10] underadoption_gap (% tasks exposed ÷ share of AI usage)")
+    print("\n[9/11] underadoption_gap (% tasks exposed ÷ share of AI usage)")
     build_underadoption_gap(results, figures)
 
-    print("\n[10/10] intensity_drivers (top occs + tasks within 3 high-lift majors)")
+    print("\n[10/11] intensity_drivers (top occs + tasks within 3 high-lift majors)")
     build_intensity_drivers(results, figures)
+
+    print("\n[11/11] adoption_friction_scatter (Section 3 adoption props × non-phys occs)")
+    build_adoption_friction_scatter(results, figures)
 
     print("\nDone — figures in results/figures/ and figures/")
 

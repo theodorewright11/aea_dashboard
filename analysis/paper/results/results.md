@@ -125,3 +125,7 @@
 ![Top Occupations — Computer & Mathematical](appendix/figures/intensity_drivers_occ_comp_math.png)
 
 ![Top Tasks — Computer & Mathematical](appendix/figures/intensity_drivers_task_comp_math.png)
+
+### Appendix — Adoption Frictions vs Exposure Within Non-Physical Occupations
+
+![Adoption Frictions vs Exposure — Mostly Non-Physical Occupations](appendix/figures/adoption_friction_scatter.png)
