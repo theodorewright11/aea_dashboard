@@ -1,6 +1,6 @@
 # Results — Dense Prose (Number-Only)
 
-This file mirrors `results.md` chart for chart, but replaces every figure with a verbal transcription of the chart's contents. Each section enumerates every bar / cell / segment / data point the chart shows, with the actual underlying values. It exists so an LLM can "read" the charts via prose, without seeing the PNGs. Interpretation is held to a minimum; the numbers are the point.
+This file mirrors `results.md` chart for chart, but replaces every figure with a verbal transcription of the chart's contents. Each section enumerates every bar / cell / segment / data point the chart shows, with the actual underlying values. It exists so an LLM can "read" the charts via prose, without seeing the PNGs. No interpretation; description and numbers only.
 
 All numbers are pulled directly from the CSVs in each part's `results/` directory — the same CSVs the figure scripts use to draw the charts. Where a chart text-labels a bar at lower precision than the CSV stores, the prose carries the CSV's precision (typically 1–4 decimals) so an LLM can recover the chart's exact data.
 
@@ -52,7 +52,7 @@ MCP ↔ external: Eloundou GPT-4 β 0.92 ***, Eloundou Human β 0.93 ***, AIOE O
 
 All Confirmed ↔ external: Eloundou GPT-4 β 0.90 *** (contaminated), Eloundou Human β 0.95 *** (contaminated), AIOE Overall 0.88 ***, AIOE Reading Compr. 0.87 ***, Schaal Overall 0.74 ***, Schaal DA 0.87 ***, Schaal AG 0.71 ***, Tomlinson (Copilot) 0.86 ***.
 
-Range across the panel: 0.58 (Claude Browser / API vs Schaal AG) to 0.97 (Claude API ↔ Claude Browser; All Confirmed ↔ Claude API). Every cell is statistically significant at p < .01 or better.
+Range across the panel: 0.58 (Claude Browser / API vs Schaal AG) to 0.97 (Claude API ↔ Claude Browser; All Confirmed ↔ Claude API).
 
 ---
 
@@ -86,7 +86,7 @@ MCP ↔ external: Eloundou GPT-4 β 0.77, Eloundou Human β 0.73, AIOE Overall 0
 
 All Confirmed ↔ external: Eloundou GPT-4 β 0.82 (contaminated), Eloundou Human β 0.82 (contaminated), AIOE Overall 0.70 (893), AIOE Reading Compr. 0.77 (893), Schaal Overall 0.68, Schaal DA 0.67, Schaal AG 0.55, Tomlinson (Copilot) 0.80 (749).
 
-Range across the panel: 0.38 (Claude Browser vs Schaal AG) to 0.89 (All Confirmed ↔ Claude Browser). Major-level correlations are systematically higher than occupation-level — at 22 categories the noise averages out; at 923 occupations more residual disagreement survives.
+Range across the panel: 0.38 (Claude Browser vs Schaal AG) to 0.89 (All Confirmed ↔ Claude Browser).
 
 ---
 
@@ -113,7 +113,7 @@ Spread across configs:
 - Raw workers: 32.87M → 75.00M (≈ 2.28× ratio).
 - Raw wages: $2.37T → $5.14T (≈ 2.17×).
 
-Within-config "wage-vs-worker premium" (wages% − workers%): All Confirmed +4.0 pp; Conversational Confirmed +3.1; Agentic Confirmed +2.7; Agentic Ceiling +2.9; All Sources (Ceiling) +3.6 — exposed work is consistently slightly higher-paid than the workforce-share average.
+Within-config wages% − workers%: All Confirmed +4.0 pp; Conversational Confirmed +3.1; Agentic Confirmed +2.7; Agentic Ceiling +2.9; All Sources (Ceiling) +3.6.
 
 ---
 
@@ -149,11 +149,11 @@ Observed delta first→last (2025-03-06 → 2026-02-12): +7.8 pp tasks, +16.46M 
 
 Observed delta first→last: +17.2 pp tasks, +33.50M workers, +$2.21T wages, +21.6 pp emp coverage.
 
-**Final-snapshot gap (Ceiling minus Confirmed, 2026-02-18 vs 2026-02-12):** +9.4 pp tasks, +17.04M workers, +$1.05T wages — the "untapped ceiling" premium of MCP + remaining-coverage sources over confirmed usage.
+**Final-snapshot gap (Ceiling minus Confirmed, 2026-02-18 vs 2026-02-12):** +9.4 pp tasks, +17.04M workers, +$1.05T wages.
 
-**Eco baseline (denominator)** constant across all snapshots and configs: 17,507 unique tasks, 154,525,269 total employment, $9,867,397,368,780 total wages (~$9.87T). This is the U.S. economy footprint the percentages divide into.
+**Eco baseline (denominator)** constant across all snapshots and configs: 17,507 unique tasks, 154,525,269 total employment, $9,867,397,368,780 total wages (~$9.87T).
 
-The projected 6mo / 1yr / 2yr extrapolations are the chart's dotted line endpoints — driven by per-line OLS fits across the 4-snapshot Confirmed series and the 8-snapshot Ceiling series; only the 2yr endpoint is labeled.
+The projected 6mo / 1yr / 2yr extrapolations are the chart's dotted line endpoints, driven by per-line OLS fits across the 4-snapshot Confirmed series and the 8-snapshot Ceiling series; only the 2yr endpoint is labeled.
 
 ---
 
@@ -176,9 +176,9 @@ The chart's Δ Tasks column is the sequential difference between consecutive sna
 | Nov 13, 2025 | AEI Browser v4 + AEI API v4 | 7,795 | +164 | 3.53 | +0.13 |
 | Feb 12, 2026 (series end, highlighted) | AEI Browser v5 + AEI API v5 | 7,878 | +83 | 3.59 | +0.06 |
 
-The series-row task count grew by 7,878 − 7,427 = **+451 unique tasks** across the Mar 2025 → Feb 2026 range (sum of sequential Δ: 204 + 164 + 83 = 451). Each sequential Δ reflects net change in the cumulative-union task set of that snapshot's AEI Both + Micro file vs the prior snapshot — a task can appear in a later snapshot without appearing in earlier ones, and the cumulative count grows monotonically across this series.
+The series-row task count grew by 7,878 − 7,427 = **+451 unique tasks** across the Mar 2025 → Feb 2026 range (sum of sequential Δ: 204 + 164 + 83 = 451).
 
-Auto-aug delta first→last: 2.94 → 3.59 = +0.65 over 11 months (avg auto_aug across rated tasks rose ~22%, i.e., the rated set is concentrating on more-automatable tasks as the data accumulates).
+Auto-aug delta first→last: 2.94 → 3.59 = +0.65 over 11 months.
 
 ---
 
@@ -205,9 +205,9 @@ Same 6-column table for the All Sources (Ceiling) series. Two cream historical r
 
 The series-row task count grew by 11,122 − 7,427 = **+3,695 unique tasks** across the Mar 2025 → Feb 2026 range (sum of sequential Δ: 2,249 + 635 + 568 + 71 + 69 + 31 + 72 = 3,695).
 
-Largest single-period jump in tasks rated: **+2,249** at MCP v1 (2025-04-24) — the MCP integration milestone added 2,249 unique tasks to the All-family file relative to the previous snapshot.
+Largest single-period jump in tasks rated: **+2,249** at MCP v1 (2025-04-24).
 
-Auto-aug delta first→last for Ceiling: 2.94 → 3.23 = +0.29 (smaller than Confirmed's +0.65 because the Ceiling pool ingested ~3,695 new tasks — many of them lower-rated MCP tasks — early in the series, dragging the average down before AEI updates pulled it back up). The two negative Δ Auto-Aug ticks in the Ceiling table are at MCP v1 (2025-04-24, −0.14) and MCP v3 (2025-07-23, −0.01); the next tick at AEI Browser v3 + API v3 (2025-08-11) jumps +0.29 as the AEI-source updates pull the average back up.
+Auto-aug delta first→last for Ceiling: 2.94 → 3.23 = +0.29. The two negative Δ Auto-Aug ticks in the Ceiling table are at MCP v1 (2025-04-24, −0.14) and MCP v3 (2025-07-23, −0.01).
 
 ---
 
@@ -253,9 +253,7 @@ Range on each panel:
 - Variant A: 17.27% (Construction) to 95.73% (Computer and Math) — 78.5 pp spread.
 - Variant B: 18.19% (Farming) to 73.66% (Sales) — 55.5 pp spread.
 
-Gap Variant A − All Confirmed (where structural cognitive share massively overstates realized exposure): Community/Social Service +51.6 pp (93.71% A vs 42.11% AC), Management +52.2 pp (89.50% vs 37.30%), Legal +44.7 pp (93.11% vs 48.37%), Business/Financial +36.1 pp (93.48% vs 57.42%), Architecture/Engineering +31.1 pp, Life/Physical/Social Science +23.9 pp, Educational Instruction +22.0 pp, Computer and Math +24.9 pp.
-
-Majors where Variant B exceeds Variant A (the non-physical sub-set is more exposed than the share of non-physical tasks would predict): Food Preparation (49.17% B vs 23.13% A, +26.0 pp), Healthcare Support (46.09% vs 32.46%, +13.6), Personal Care and Service (41.60% vs 39.38%, +2.2), Healthcare Practitioners (41.08% vs 51.74%, actually A > B by 10.7 pp — recheck: A=51.74 > B=41.08 so this is A higher), Production (33.49% vs 18.77%, +14.7 pp), Installation/Maintenance/Repair (38.38% vs 18.87%, +19.5 pp), Construction/Extraction (27.57% vs 17.27%, +10.3 pp), Sales and Related (73.66% vs 67.95%, +5.7 pp), Office and Admin Support (66.19% vs 60.55%, +5.6 pp), Building/Grounds Cleaning (40.80% vs 32.26%, +8.5 pp), Protective Service (40.37% vs 58.22%, A higher by 17.9 pp).
+Majors where Variant B > Variant A (B − A in pp): Food Preparation +26.04, Installation/Maintenance/Repair +19.51, Production +14.72, Healthcare Support +13.63, Construction/Extraction +10.30, Building/Grounds Cleaning +8.54, Sales and Related +5.71, Office and Admin Support +5.64, Personal Care and Service +2.22. The remaining 13 majors have Variant A ≥ Variant B.
 
 ---
 
@@ -290,10 +288,10 @@ Three side-by-side panels with the same shared y-axis as the previous chart (22 
 | 21 | Farming, Fishing, and Forestry | 8.19% | 50.80K | $1.95B | 22 | 22 | 21 |
 | 22 | Construction and Extraction | 8.11% | 1.17M (1,174,368.75) | $78.18B | 12 | 13 | 22 |
 
-Workers Exposed range: 50.80K (Farming) to 11.54M (Office and Admin Support) — a 227× ratio.
-Wages Exposed range: $1.95B (Farming) to $650.10B (Management) — a 333× ratio. Note Management ranks #1 on wages but only #11 on % tasks (37.3%) — the high-wage base puts it on top of the wages panel despite middling exposure share.
+Workers Exposed range: 50.80K (Farming) to 11.54M (Office and Admin Support); ratio 227.08×.
+Wages Exposed range: $1.95B (Farming) to $650.10B (Management); ratio 334.20×.
 
-Summed across all 22 majors at the All Confirmed snapshot: ~57.95M workers exposed, ~$4.10T wages exposed (matches the overview chart's total).
+Summed across all 22 majors at the All Confirmed snapshot: ~57.95M workers exposed, ~$4.10T wages exposed.
 
 ---
 
@@ -334,7 +332,7 @@ Phys-zone crosstab (used to color/aggregate the middle panel) — median / mean 
 - Non-physical Z4: n = 192, median 34.70%, mean 34.90%
 - Non-physical Z5: n = 106, median 50.70%, mean 47.60%
 
-In the full-economy view, medians climb Z1 → Z4 (3.7% → 50.1%) then dip slightly to 47.5% at Z5; phys mix flips from 90.9% physical in Z1 to 88.4% non-physical in Z4. Once physical occupations are stripped (right panel), Z2–Z4 collapse to a tight 51.1%–53.1% band and Z5 separates cleanly upward to 63.4%.
+Full-economy median per zone (left panel): Z1 3.7%, Z2 12.1%, Z3 27.4%, Z4 50.1%, Z5 47.5%. % Physical per zone (middle panel): Z1 90.9%, Z2 61.7%, Z3 36.6%, Z4 0.9%, Z5 3.9%. Non-phys-only median per zone (right panel): Z2 53.1%, Z3 51.1%, Z4 52.3%, Z5 63.4%.
 
 ---
 
@@ -384,7 +382,7 @@ Full enumeration, sorted by `ai_top10_pct` (descending). Format: element — `ai
 
 (Values are computed as `ai_top10 / eco_max × 100`, `ai_max / eco_max × 100`, `eco_mean / eco_max × 100` from the raw `ska_skills.csv`. Bar text on the rendered chart rounds the bar value to integer %.)
 
-Range of bar values: 17.79% (Installation) to 72.06% (Speaking). All five bottom bars are Physical tier and all five top bars are either Non-Physical or Mixed. The five lowest physical skills (Equipment Selection, Repairing, Equipment Maintenance, Operation and Control, Installation) cluster 17.8%–29.6%.
+Range of bar values: 17.79% (Installation) to 72.06% (Speaking).
 
 ---
 
@@ -431,7 +429,7 @@ Range of Knowledge bars: 39.57% (Transportation) to 69.69% (Education and Traini
 | 14 | Endurance | 1 | 14.81% | 13.77% | 27.09% | 49.57% | 81.11 | Physical |
 | 15 | Reaction | 3 | 13.49% | 29.59% | 34.07% | 69.40% | 76.01 | Physical |
 
-Range of Abilities bars: 13.49% (Reaction) to 70.16% (Verbal). The five lowest are all Physical tier and cluster 13.49%–15.45%. The top four (Verbal, Idea Generation, Quantitative, Memory) are all cognitive and run from 48.26% to 70.16%.
+Range of Abilities bars: 13.49% (Reaction) to 70.16% (Verbal).
 
 ---
 
@@ -488,10 +486,6 @@ Range on All Confirmed: 3.11% (Operating Vehicles) to 75.97% (Working with Compu
 Range on Variant A: 1.55% (Repairing/Maintaining) to 99.11% (Resolving Conflicts).
 Range on Variant B: 21.34% (Performing General Physical) to 81.47% (Communicating with People Outside the Organization).
 
-GWAs where Variant A massively overstates AC (purely-cognitive activities where realized AI exposure lags structural cognitive share): Resolving Conflicts (99.11% A vs 39.21% AC, +59.9 pp gap), Guiding/Directing (90.61% vs 22.16%, +68.4 pp), Establishing/Maintaining Interpersonal (95.75% vs 67.00%, +28.8 pp), Staffing (89.50% vs 33.87%, +55.6 pp), Coaching (80.10% vs 34.70%, +45.4 pp), Documenting/Recording (86.77% vs 43.59%, +43.2 pp).
-
-GWAs where Variant A under-states AC (rare; activities where the non-phys share is small but realized exposure is somehow higher): Inspecting Equipment (12.67% A vs 15.31% AC), Controlling Machines (5.62% vs 11.17%), Handling and Moving Objects (1.68% vs 6.82%), Repairing/Maintaining Mechanical Equipment (1.55% vs 5.91%), Performing General Physical (3.04% vs 3.87%), Estimating Quantifiable Characteristics (20.03% vs 27.26%), Performing Administrative Activities (39.71% vs 54.94%), Processing Information (47.25% vs 48.45%).
-
 Workers and wages columns for these same 37 GWAs are reported in the appendix `gwa_wkrs_wages` chart (see below).
 
 ---
@@ -536,7 +530,7 @@ Panel 2 (Ceiling Gap), sorted by gap descending (this is the order Panel 2 rende
 9. Community and Social Service — gap 13.06 pp
 10. Educational Instruction and Library — gap 11.64 pp
 
-Ceiling Gap range across the 10: 11.64 pp (Educational Instruction) to 34.08 pp (Office and Admin Support). Office and Admin Support has the single largest untapped agentic tooling slice despite ranking only #5 in current agentic usage — a structural overhang.
+Ceiling Gap range across the 10: 11.64 pp (Educational Instruction) to 34.08 pp (Office and Admin Support).
 
 ---
 
@@ -573,7 +567,7 @@ Panel 2 (Ceiling Gap) sorted by gap descending:
 9. Providing Consultation and Advice to Others — gap 12.73 pp
 10. Updating and Using Relevant Knowledge — gap 12.42 pp
 
-Ceiling Gap range: 12.42 pp (Updating and Using Relevant Knowledge) to 47.13 pp (Scheduling Work and Activities). Scheduling Work and Activities has the largest untapped agentic tooling slice — the underlying task universe is dominated by structured, MCP-amenable scheduling actions that the AEI API surface barely touches yet.
+Ceiling Gap range: 12.42 pp (Updating and Using Relevant Knowledge) to 47.13 pp (Scheduling Work and Activities).
 
 ---
 
@@ -615,13 +609,13 @@ Per commodity (sorted as in the CSV — by mean_pct_affected descending):
 
 Color-encoded "workers using" range (the bar color scale on the chart): min ≈ 127.89M (Business intelligence and data analysis), max ≈ 614.40M (Data base user interface and query). Chart text legend at the bottom reads "Workers Using {min} ■■■■■■■ {max}" with the light → dark gold gradient.
 
-Mean % tasks affected range: 36.63% (Spreadsheet software) to 68.37% (Data base management system software) — 31.7 pp spread.
+Mean % tasks affected range: 36.63% (Spreadsheet software) to 68.37% (Data base management system software); 31.74 pp spread.
 
-Breadth (n_occs) — top 5 by occupation count: Spreadsheet (861), Office suite (818), Word processing (804), Electronic mail (735), Presentation (635). These are general-purpose tools used economy-wide.
+Top 5 by n_occs: Spreadsheet (861), Office suite (818), Word processing (804), Electronic mail (735), Presentation (635).
 
-Depth (% tasks affected) — top 5: DBMS (68.37%), Web platform dev (67.53%), Financial analysis (67.33%), Business intelligence (66.24%), CRM (62.28%). These are specialist/dev tools concentrated in fewer but higher-exposure occupations.
+Top 5 by mean % tasks affected: DBMS (68.37%), Web platform dev (67.53%), Financial analysis (67.33%), Business intelligence (66.24%), CRM (62.28%).
 
-n_entries (Σ rows across all (occupation, software) pairs in the commodity) range: 208 (Point of sale POS) to 2,898 (Analytical or scientific). Note the workers_using column is the sum of emp across all those entries — same occupation counts multiple times if it uses multiple softwares within the same commodity.
+n_entries range: 208 (Point of sale POS) to 2,898 (Analytical or scientific). The workers_using column is the sum of emp across all (occupation, software) entries within the commodity.
 
 ---
 
@@ -699,10 +693,10 @@ pct_tasks_exposed range across the 44: 51.08% (Payroll and Timekeeping Clerks) t
 
 |emp_proj_pct| range: 0.30% (First-Line Supervisors of Office and Admin Support Workers) to 36.10% (Word Processors and Typists).
 
-Summed workers across the 44 occupations: 11.99M workers (sum of `workers_affected` column).
-Summed wages across the 44: $620.41B.
+Summed workers across the 44 occupations: 13.64M (13,639,021.79 from `workers_affected` column).
+Summed wages across the 44: $680.59B ($680,592,988,769.33).
 
-Largest single-occupation footprints by workers: Customer Service Reps (2.25M), Retail Salespersons (2.06M), Office Clerks General (1.61M), Secretaries and Admin Assistants (1.26M), Office and Admin Supervisors (988.5K), Bookkeeping/Accounting/Auditing Clerks (949.1K), Sales Supervisors (720.6K), Computer User Support Specialists (586.5K).
+Top 8 single-occupation workers_affected values: Customer Service Reps 2.25M, Retail Salespersons 2.06M, Office Clerks General 1.61M, Secretaries and Admin Assistants 1.26M, Office and Admin Supervisors 988.5K, Bookkeeping/Accounting/Auditing Clerks 949.1K, Sales Supervisors 720.6K, Computer User Support Specialists 586.5K.
 
 The chart's color legend at the bottom reads "Tasks Exposed 51% ■■■■■■■ 87%".
 
@@ -823,13 +817,11 @@ Per major (sorted by lift descending):
 | 21 | Transportation and Material Moving | 0.0799 | 0.0824 | 7.5392 |
 | 22 | Food Preparation and Serving Related | 0.0326 | 0.0336 | 15.0711 |
 
-Anchor value (Office and Admin Support): ratio_full_pct = 1.0316% (the share of total AI usage that maps to Office and Admin, in the renormalized 22-major distribution). Median lift across the 22: 0.8799×.
+Anchor value (Office and Admin Support): ratio_full_pct = 1.0316%. Median lift across the 22: 0.8799×.
 
-Lift range: 0.0326× (Food Preparation) to 28.8184× (Life, Physical, and Social Science). Above-median majors (lift > 0.8799): top 10 in the table above plus Office and Admin Support (== 1.0000×).
+Lift range: 0.0326× (Food Preparation) to 28.8184× (Life, Physical, and Social Science). Above-median majors (lift > 0.8799): the top 10 in the table above plus Office and Admin Support (= 1.0000×).
 
 pct_tasks_affected color range across the bars: 3.8543% (Farming) to 51.1236% (Computer and Math). The color legend at the bottom reads "Tasks Exposed 4% ■■■■■■■ 51%" (rounded to integer percent in the legend).
-
-Note that lift and pct_tasks_affected are not the same ranking: Sales has the 2nd-highest pct_tasks_affected (48.59%) but ranks 12th on lift (0.76×); Educational Instruction has the 4th-highest pct_tasks (48.89%) but ranks 8th on lift (2.14×). Conversely Life/Physical/Social Science has only the 9th-highest pct_tasks (30.36%) but its lift (28.82×) is 1.18× the second-place value — the major's *small* eco footprint puts a heavy weight on its observed AI usage share.
 
 ---
 
@@ -862,7 +854,7 @@ n = 22 for every internal/internal and internal/external pair. All values from `
 - **Schaal AG** ↔ Claude Browser 0.58 ** | Claude API 0.58 ** | Copilot 0.82 *** | MCP 0.86 *** | All Confirmed 0.71 *** | Conversational Confirmed 0.70 *** | Agentic Confirmed 0.58 ** | Agentic Ceiling 0.78 *** | All Sources (Ceiling) 0.77 *** | Eloundou GPT-4 β 0.82 *** | Eloundou Human β 0.78 *** | AIOE Overall 0.65 ** | AIOE Reading Compr. 0.57 ** | Schaal Overall 0.61 ** | Schaal DA 0.89 ***
 - **Tomlinson (Copilot)** ↔ Claude Browser 0.84 *** | Claude API 0.81 *** | Copilot 0.81 *** | MCP 0.81 *** | All Confirmed 0.86 *** | Conversational Confirmed 0.87 *** | Agentic Confirmed 0.81 *** | Agentic Ceiling 0.85 *** | All Sources (Ceiling) 0.86 *** | Eloundou GPT-4 β 0.71 *** | Eloundou Human β 0.81 *** | AIOE Overall 0.72 *** | AIOE Reading Compr. 0.72 *** | Schaal Overall 0.52 * | Schaal DA 0.66 *** | Schaal AG 0.53 *
 
-Cell range across all 136 pairs at major level: 0.52 (Tomlinson vs Schaal Overall, p < .05) to 1.00 (Agentic Confirmed ↔ Claude API; Agentic Confirmed *is* a near-identity transform of Claude API because the eco_2025-rebased AEI API file is the only source contributing to Agentic Confirmed).
+Cell range across all 136 pairs at major level: 0.52 (Tomlinson vs Schaal Overall, p < .05) to 1.00 (Agentic Confirmed ↔ Claude API).
 
 ### Appendix — Full Convergence Matrix (Minor)
 
@@ -937,7 +929,7 @@ n = 923 occupations for every internal/internal and internal/external pair; n = 
 - **Schaal AG** ↔ Claude Browser 0.38 *** | Claude API 0.42 *** | Copilot 0.63 *** | MCP 0.78 *** | All Confirmed 0.55 *** | Conversational Confirmed 0.55 *** | Agentic Confirmed 0.42 *** | Agentic Ceiling 0.69 *** | All Sources (Ceiling) 0.65 *** | Eloundou GPT-4 β 0.71 *** | Eloundou Human β 0.62 *** | AIOE Overall 0.55 *** (n = 893) | AIOE Reading Compr. 0.49 *** (n = 893) | Schaal Overall 0.56 *** | Schaal DA 0.82 ***
 - **Tomlinson (Copilot)** (n = 749; AIOE pairs n = 724) ↔ Claude Browser 0.66 *** | Claude API 0.63 *** | Copilot 0.83 *** | MCP 0.67 *** | All Confirmed 0.80 *** | Conversational Confirmed 0.81 *** | Agentic Confirmed 0.63 *** | Agentic Ceiling 0.73 *** | All Sources (Ceiling) 0.79 *** | Eloundou GPT-4 β 0.72 *** | Eloundou Human β 0.76 *** | AIOE Overall 0.65 *** | AIOE Reading Compr. 0.70 *** | Schaal Overall 0.54 *** | Schaal DA 0.58 *** | Schaal AG 0.50 ***
 
-Cell range at occupation level: 0.38 (Schaal AG vs Claude Browser) to 1.00 (Agentic Confirmed ↔ Claude API). The occupation-level matrix has the most spread of any of the four levels because there are 923 individual occupations on which noise can accumulate (vs 22 majors where it averages out).
+Cell range at occupation level: 0.38 (Schaal AG vs Claude Browser) to 1.00 (Agentic Confirmed ↔ Claude API).
 
 ---
 
@@ -957,7 +949,7 @@ Same 5-config grouped bar chart as the main Part 1 overview, but with the auto-a
 
 Exact CSV values: All Confirmed workers 74,374,696.00; wages $5,266,306,034,246.22. Conversational Confirmed workers 71,934,805.82; wages $5,094,477,859,664.51. Agentic Confirmed workers 33,862,768.47; wages $2,448,266,183,949.03. Agentic Ceiling workers 92,973,127.52; wages $6,408,416,420,337.29. All Sources (Ceiling) workers 105,027,832.02; wages $7,234,656,237,851.77.
 
-Compared to the auto-aug-on overview (`overview.png`), turning auto-aug off lifts every metric: All Confirmed % tasks goes 29.30 → 39.80 (+10.5 pp), Conversational Confirmed 25.10 → 38.40 (+13.3 pp), Agentic Confirmed 14.40 → 15.00 (+0.6 pp), Agentic Ceiling 30.80 → 50.40 (+19.6 pp), All Sources (Ceiling) 38.70 → 59.00 (+20.3 pp). The Ceiling configs lift most because their lower-rated MCP tasks no longer get attenuated by the (auto_aug/5) multiplier.
+Auto-aug-on → auto-aug-off % Tasks delta per config: All Confirmed 29.30 → 39.80 (+10.5 pp); Conversational Confirmed 25.10 → 38.40 (+13.3 pp); Agentic Confirmed 14.40 → 15.00 (+0.6 pp); Agentic Ceiling 30.80 → 50.40 (+19.6 pp); All Sources (Ceiling) 38.70 → 59.00 (+20.3 pp).
 
 ---
 
@@ -1000,7 +992,7 @@ Each line gets a dotted linear-OLS extrapolation to 6mo / 1yr / 2yr horizons; on
 
 Δ first→last: +4.20 pp.
 
-Final-snapshot gap between Non-physical lines and Physical line: 48.20% − 12.70% = 35.5 pp (All Confirmed). The Ceiling Non-physical line ends 10.8 pp above the Confirmed Non-physical line — within the non-physical sub-economy, the untapped ceiling premium is similar in scale to the main overview's full-economy gap.
+Final-snapshot gap between Non-physical and Physical (All Confirmed): 48.20% − 12.70% = 35.5 pp. Ceiling Non-physical − Confirmed Non-physical at final snapshot: 59.00% − 48.20% = 10.8 pp.
 
 ---
 
@@ -1025,7 +1017,7 @@ Top 10 by |observed jump|, sorted descending (chart row order — top-mover-at-t
 | 9 | Management | 26.63 | 37.30 | +10.68 | 61.71 | +24.40 | 0.96 |
 | 10 | Arts, Design, Entertainment, Sports, and Media | 42.06 | 52.69 | +10.63 | 76.71 | +24.02 | 0.98 |
 
-Top-10 observed jump range: +10.63 pp (Arts) to +18.63 pp (Sales). Top-10 2yr projected Δ range: +24.02 pp (Arts) to +42.91 pp (Sales). Two of the top 10 are projected to exceed 100% by 2yr horizon under the linear-fit assumption (Sales 103.51%, Computer and Math 112.52%) — this is "if recent rate continues," not a forecast.
+Top-10 observed jump range: +10.63 pp (Arts) to +18.63 pp (Sales). Top-10 2yr projected Δ range: +24.02 pp (Arts) to +42.91 pp (Sales). Top-10 2yr projected end-values: 61.71% (Management) to 112.52% (Computer and Math).
 
 For reference, the full 22-major dataset in `major_trend_projections.csv` includes the 12 majors not on the chart (sorted by |jump| desc, all below the 10.63 pp cutoff): Personal Care +9.33 pp → 44.82 (R²=1.00), Healthcare Practitioners +8.79 → 48.88 (0.94), Healthcare Support +8.72 → 41.60 (0.94), Protective Service +7.32 → 45.15 (0.99), Food Prep +7.23 → 37.73 (0.92), Architecture/Engineering +6.08 → 55.18 (0.94), Installation/Maintenance +4.19 → 22.87 (0.92), Building/Grounds +3.45 → 21.40 (0.91), Construction/Extraction +3.25 → 15.58 (0.97), Transportation +3.15 → 21.77 (0.97), Production +1.78 → 15.19 (0.91), Farming +0.87 → 9.94 (0.94).
 
@@ -1052,7 +1044,7 @@ Top 10 by |observed Δ workers|, sorted descending (chart row order — top-move
 | 9 | Healthcare Support | 1,386,530.13 (1.39M) | 2,064,195.32 (2.06M) | +677,665.18 (+677.67K) | 3,600,711.63 (3.60M) | +1,536,516.31 (+1.54M) | 0.98 |
 | 10 | Construction and Extraction | 563,581.27 (563.58K) | 1,174,368.75 (1.17M) | +610,787.48 (+610.79K) | 2,541,876.79 (2.54M) | +1,367,508.04 (+1.37M) | 0.99 |
 
-Top-10 observed Δ workers range: +610.79K (Construction) to +3.36M (Office and Admin). Top-10 projected 2yr Δ range: +1.37M (Construction) to +7.67M (Office and Admin). Office and Admin has both the largest current Workers Exposed (11.54M) and the largest projected 2yr add (+7.67M).
+Top-10 observed Δ workers range: +610.79K (Construction) to +3.36M (Office and Admin). Top-10 projected 2yr Δ range: +1.37M (Construction) to +7.67M (Office and Admin).
 
 For reference, the 12 majors NOT on the chart (full 22 in `major_trend_projections.csv`, sorted by |Δ workers| desc below the 610.79K cutoff): Transportation +592.78K → 3.34M (R²=0.98), Protective Service +408.45K → 2.06M (0.93), Personal Care +347.78K → 1.61M (0.98), Installation/Maintenance +291.74K → 1.68M (0.94), Arts/Design +288.91K → 1.86M (0.99), Community/Social Service +219.60K → 1.39M (0.98), Architecture/Engineering +181.27K → 1.57M (0.97), Production +167.41K → 1.37M (0.93), Legal +145.11K → 898.32K (0.97), Life/Physical/Social Science +144.35K → 971.32K (0.95), Building/Grounds +36.64K → 267.32K (0.91), Farming +7.24K → 67.13K (0.90).
 
@@ -1066,7 +1058,7 @@ For reference, the 12 majors NOT on the chart (full 22 in `major_trend_projectio
 
 Single-panel horizontal diverging bar chart, 22 majors sorted by `mean_z_diff` (Eloundou-disagreement) ascending. Each bar is the per-major mean of (our `all_confirmed` z-score) − (Eloundou GPT-4 β z-score), averaged across the occupations in that major. Positive (blue) = we read more exposure than Eloundou; negative (orange) = Eloundou reads more.
 
-Per major (sorted by mean_z_diff ascending — most-Eloundou-favoring at top):
+Per major (sorted by mean_z_diff ascending):
 
 | Major | mean_z_diff |
 |---|---|
@@ -1093,7 +1085,7 @@ Per major (sorted by mean_z_diff ascending — most-Eloundou-favoring at top):
 | Sales and Related | +0.595 |
 | Educational Instruction and Library | +0.741 |
 
-Range: −0.392 (Architecture and Engineering — Eloundou reads relatively more exposure) to +0.741 (Educational Instruction and Library — we read relatively more exposure). 10 majors negative, 12 majors positive. Zero crossing falls between Healthcare Support (−0.037) and Production (+0.055). Legend at the bottom of the chart reads: blue swatch "We read more exposure", orange swatch "Eloundou reads more exposure".
+Range: −0.392 (Architecture and Engineering) to +0.741 (Educational Instruction and Library). 10 majors negative, 12 majors positive. Zero crossing falls between Healthcare Support (−0.037) and Production (+0.055). Legend at the bottom of the chart reads: blue swatch "We read more exposure", orange swatch "Eloundou reads more exposure".
 
 ---
 
@@ -1146,7 +1138,7 @@ Computed from raw `ska_full.csv`. Sorted by `ai_top10_pct` descending:
 
 (The `ai_top10`, `ai_max`, and `eco_mean` values in `ska_full.csv` are raw; the chart-displayed bars divide by `eco_max` and multiply by 100 — values above are derived using that formula. Bar text on the rendered chart rounds to integer %.)
 
-Range of bars: 35.79% (Foreign Language) to 71.13% (Mathematics). Non-physical and Mixed dominate the top half; physical-heavy elements (Mechanical, Food Production, Building and Construction, Transportation, Production and Processing) cluster in the bottom third.
+Range of bars: 35.79% (Foreign Language) to 71.13% (Mathematics).
 
 ---
 
@@ -1215,7 +1207,7 @@ From raw `ska_full.csv`, abilities rows. Sorted by ai_top10_pct desc:
 
 (Values derived from raw `ska_full.csv` using the same `ai_top10 / eco_max × 100` formula.)
 
-Range of bars: 0.00% (Sound Localization, single occupation, ai_top10 = 0) to 73.10% (Written Expression). Verbal/cognitive abilities (Written Expression, Oral Expression, Oral Comprehension, Written Comprehension, Information Ordering, Deductive Reasoning) cluster at the top six positions. Physical-tier abilities (Stamina, Strength variants, Coordination, Reaction Time, Control Precision, etc.) populate the bottom half.
+Range of bars: 0.00% (Sound Localization, n_occs = 1, ai_top10 = 0) to 73.10% (Written Expression).
 
 ---
 
@@ -1267,9 +1259,9 @@ Per GWA (sorted by AC pct_tasks_affected desc):
 | 36 | Performing General Physical Activities | 3.87% | 829,109.83 (829.11K) | $32.88B |
 | 37 | Operating Vehicles, Mechanized Devices, or Equipment | 3.11% | 60,040.84 (60.04K) | $2.48B |
 
-Workers Exposed range: 60.04K (Operating Vehicles) to 6.95M (Documenting/Recording Information). The biggest worker-mass GWA (Documenting/Recording Information) ranks only #17 on % tasks exposed (43.59%) — it's high-emp but moderate-exposure.
+Workers Exposed range: 60.04K (Operating Vehicles) to 6.95M (Documenting/Recording Information).
 
-Wages Exposed range: $2.48B (Operating Vehicles) to $466.96B (Documenting/Recording Information). Documenting/Recording also leads on wages; the next four are Thinking Creatively ($372.50B), Analyzing Data or Information ($327.54B), Guiding/Directing ($300.97B), and Getting Information ($298.99B).
+Wages Exposed range: $2.48B (Operating Vehicles) to $466.96B (Documenting/Recording Information). Top 5 on Wages: Documenting/Recording $466.96B, Thinking Creatively $372.50B, Analyzing Data or Information $327.54B, Guiding/Directing $300.97B, Getting Information $298.99B.
 
 ---
 
@@ -1328,8 +1320,8 @@ Per state, both metrics (all values from `state_clusters_each_ranked.csv`):
 | AL | 3 | 33.153% | 10.183% |
 | WI | 3 | 33.144% | 9.709% |
 | SD | 3 | 33.138% | 10.310% |
-| LA | 3 | 32.975% | 10.215% |
 | AR | 3 | 32.980% | 10.344% |
+| LA | 3 | 32.975% | 10.215% |
 | ID | 1 | 32.817% | 11.618% |
 | OK | 1 | 32.716% | 11.050% |
 | MS | 1 | 32.588% | 11.562% |
@@ -1341,7 +1333,7 @@ Per state, both metrics (all values from `state_clusters_each_ranked.csv`):
 
 Left panel range: 30.334% (NV) → 45.901% (DC). Top 5 by `pct_emp_wtd`: DC (45.901%), CO (38.866%), MD (38.040%), VA (37.426%), MA (37.356%). Bottom 5: NV (30.334%), IN (31.170%), KY (31.337%), ND (31.593%), WY (31.966%).
 
-Right panel range: 4.471% (DC) → 12.083% (NM). Top 5 by `focused_share_pct`: NM (12.083%), ID (11.618%), MS (11.562%), NH (11.386%), NY (11.140%). Bottom 5: DC (4.471%), CA (8.459%), MA (9.168%), WA (9.241%), OR (9.303%).
+Right panel range: 4.471% (DC) → 12.083% (NM). Top 5 by `focused_share_pct`: NM (12.083%), ID (11.618%), MS (11.562%), NH (11.386%), NY (11.140%). Bottom 5: DC (4.471%), CA (8.459%), NV (9.114%), MA (9.168%), WA (9.241%).
 
 Cluster legend at the bottom of the chart (per `state_clusters_map.csv` `cluster_name` mapping):
 - Cluster 1: Mid Workforce Exposed / Highest Emp Share in High AI Exp & <0 Emp Proj Occs (16 states).
@@ -1350,7 +1342,6 @@ Cluster legend at the bottom of the chart (per `state_clusters_map.csv` `cluster
 - Cluster −1: DC outlier.
 - Plus a 6th legend entry: "Ward / K-means disagreement (stripe = K-means)".
 
-The four highest broad-exposure states (DC, CO, MD, VA) all sit in cluster −1 or 2; on the right panel they fall to the bottom of the rankings — DC is dead last on focused share at 4.471% but tops the left at 45.901%. NM, MS, ID, NH lead the right panel but sit mid-rank on the left.
 
 ---
 
@@ -1394,9 +1385,7 @@ Per major (sorted by gap_ratio desc):
 | 21 | Arts, Design, Entertainment, Sports, and Media | 40.1116 | 21.1279 | 1.8985 | 0.0514 |
 | 22 | Life, Physical, and Social Science | 30.3567 | 29.7281 | 1.0211 | 0.0276 |
 
-gap_ratio range: 0.0276× (Life, Physical, and Social Science — already heavily-used relative to its task-exposure potential) to 12.1354× (Food Preparation and Serving Related — the structural gap between its potential task exposure and its current share of AI usage is 12× the anchor major's gap). Bar color range: pct_tasks_affected from 3.85% (Farming) to 51.12% (Computer/Math). The color legend at the bottom reads "Tasks Exposed 4% ■■■■■■■ 51%".
-
-Note that this chart inverts the intensity_anchor_fulleco ordering — the majors that lead intensity (Life/Physical/Social Science, Computer/Math, Arts/Design/Ent) are at the *bottom* of the underadoption chart, while the majors with low intensity (Food Prep, Transportation, Healthcare Support) lead the underadoption chart. Sales is the standout overlap — moderate intensity (lift 0.76×) AND high underadoption (1.68×) because its potential `pct_tasks_affected` (48.59%) is among the highest while its `ratio_full_pct` is only 0.78%.
+gap_ratio range: 0.0276× (Life, Physical, and Social Science) to 12.1354× (Food Preparation and Serving Related). Bar color range: pct_tasks_affected from 3.85% (Farming) to 51.12% (Computer/Math). The color legend at the bottom reads "Tasks Exposed 4% ■■■■■■■ 51%".
 
 ---
 
@@ -1444,7 +1433,7 @@ Top 10 tasks within "Life, Physical, and Social Science" by within-major lift. F
 | 9 | Organize public exhibits and displays to promote public awareness of diverse and distinctive cultural traditions. | 0.0217 | 0.0129 | 265.8101 | 5.0000 | 159.3102 |
 | 10 | Advise management concerning personnel, managerial, and marketing policies and practices and their potential effects on organizational effectiveness and efficiency. | 0.0442 | 0.0443 | 581.8374 | 5.0000 | 148.3304 |
 
-Task-lift range: 148.33× (Advise management…) to 2,440.28× (Develop astronomy-related programs). Auto-aug column ranges 4.65 to 5.00 across all 10 tasks — these are the most-automatable tasks the major contains.
+Task-lift range: 148.33× (Advise management…) to 2,440.28× (Develop astronomy-related programs). Auto-aug column ranges 4.65 to 5.00 across all 10 tasks.
 
 ---
 
@@ -1469,7 +1458,7 @@ Top 10 occupations within "Arts, Design, Entertainment, Sports, and Media" by wi
 | 9 | Fine Artists, Including Painters, Sculptors, and Illustrators | 0.2989 | 0.3194 | 197,334.7621 | 7.6298 | 62.0367 |
 | 10 | Editors | 2.7119 | 1.3909 | 2,082,092.8171 | 6.5616 | 48.7927 |
 
-Lift range: 6.56× (Editors) to 34.32× (Writers and Authors). pct_tasks_affected color range across the 10: 0.34% (Umpires/Referees/Other Sports Officials — extreme outlier; small denominator gives a high lift despite trivial exposure) to 85.12% (Poets, Lyricists and Creative Writers).
+Lift range: 6.56× (Editors) to 34.32× (Writers and Authors). pct_tasks_affected color range across the 10: 0.34% (Umpires, Referees, and Other Sports Officials) to 85.12% (Poets, Lyricists and Creative Writers).
 
 #### Top Tasks — Arts, Design & Entertainment
 
@@ -1560,18 +1549,16 @@ Per-panel Spearman ρ + OLS fit (from `capability_vs_adoption_all_occs_stats.csv
 | **r** (row 4 col 1, adoption) | −0.1876 | 0.0000 | −13.0247 | 76.6311 | 923 |
 | **df** (row 4 col 2, adoption) | −0.1669 | 0.0000 | −13.6335 | 75.9852 | 923 |
 
-The two adoption rows have far weaker discrimination (|ρ| ≈ 0.17–0.19) than any of the four capability rows (|ρ| ≈ 0.55–0.68) or the structural pct_physical row (|ρ| = 0.78). The pattern: capability variables ride the phys/non-phys split (when pct_physical drops from 100% to 0%, the four capability scores all rise together with pct_tasks_affected). Adoption scores barely discriminate at the all-occ level — their signal only emerges once you restrict to non-phys (see the next chart).
-
 Each panel carries an in-chart annotation in the top-left: "Spearman ρ = {value}, n = {n} occs".
 
-Y-axis (pct_tasks_affected) on every panel: 0–100% with dtick 20%. Underlying data (from `capability_vs_adoption_all_occs.csv`, 923 occupations) ranges from `pct_tasks_affected` near 0% (least-exposed occupation in the eco_2025 universe) to 92.5073% (Business Intelligence Analysts, the most-exposed occupation in the dataset).
+Y-axis (pct_tasks_affected) on every panel: 0–100% with dtick 20%. Underlying data (from `capability_vs_adoption_all_occs.csv`, 923 occupations): pct_tasks_affected max = 92.5073% (Business Intelligence Analysts).
 
 X-axis ranges:
 - Panel 1 (pct_physical): 0–100%
-- Panels 2 (schaal_ag, schaal_da): data-driven (~0 to ~2 typical Schaal range)
+- Panel 2 (schaal_ag, schaal_da): data-driven (~0 to ~2)
 - Panels 3–4 (s, d, r, df): 2.0 to 4.5
 
-Sample top-and-bottom occupations on the y-axis (% tasks affected), drawn from `capability_vs_adoption_all_occs.csv` sorted descending — the top 5: Business Intelligence Analysts (92.5073%), Data Warehousing Specialists (91.4739%), Market Research Analysts and Marketing Specialists (90.6164%), Search Marketing Strategists (90.2021%), Real Estate Brokers (90.0824%). Lower-tail samples reach into the single-digit percentages (e.g., physical-heavy outdoor or manual occupations). For the 923-point cloud, the chart's signature pattern is: pct_physical panel slopes steeply down (−0.78 ρ), all four capability panels slope steeply up, and the two adoption panels are nearly flat with a slight negative slope.
+Top 5 occupations by pct_tasks_affected (from `capability_vs_adoption_all_occs.csv` sorted descending): Business Intelligence Analysts (92.5073%), Data Warehousing Specialists (91.4739%), Market Research Analysts and Marketing Specialists (90.6164%), Search Marketing Strategists (90.2021%), Real Estate Brokers (90.0824%).
 
 ---
 
@@ -1593,7 +1580,7 @@ Per-panel Spearman ρ + OLS fit (from `adoption_friction_scatter_stats.csv`):
 | **r** (Panel 1, Objective Risk) | −0.5009 | 0.0000 | −26.3309 | 138.0525 | 409 |
 | **df** (Panel 2, Deployment Friction) | −0.4182 | 0.0000 | −36.3924 | 164.3676 | 409 |
 
-Both ρ are statistically significant at p < .001 and at least 2–3× stronger than the same properties' all-occupation ρ (−0.1876 and −0.1669 from the prior chart). Within the cognitive sub-economy, lower-friction occupations are systematically more exposed.
+Both ρ are significant at p < .001. For comparison, the same r/df properties in the prior all-occupation chart had ρ = −0.1876 and −0.1669.
 
 Each panel has an in-chart annotation: "Spearman ρ = {value}*** , n = 409 occs". Legend: dashed orange "OLS fit" line shown on each panel.
 
@@ -1627,7 +1614,7 @@ Bottom-of-distribution samples (low pct_tasks_affected end):
 | Fundraising Managers | 3.2500 | 3.1875 | 16 | 13.5501 |
 | Range Managers | 3.4375 | 3.5625 | 16 | 13.9704 |
 
-Across the 409 non-physical occupations: pct_tasks_affected ranges from a minimum near 3.83% (Biofuels Production Managers) to a maximum at 92.51% (Business Intelligence Analysts). Mean r across the cohort lands roughly in the 2.7–4.0 band; mean df in the 2.5–3.7 band. The negative ρ reflects: occupations with higher mean friction (r or df) sit lower on `pct_tasks_affected`, on average, after the physical occupations have been excluded.
+Across the 409 non-physical occupations: pct_tasks_affected min = 3.83% (Biofuels Production Managers), max = 92.51% (Business Intelligence Analysts).
 
 ---
 
