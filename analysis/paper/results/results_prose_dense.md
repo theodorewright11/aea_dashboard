@@ -24,7 +24,7 @@ Conventions used below:
 
 This figure is a **single panel** Spearman correlation heatmap at the **Major occupational category** level (n = 22 categories per cell). The y-axis lists 5 internal AI scoring rows; the x-axis lists those same 5 internal sources (lower-triangle only) followed by a 1-column gap and then 8 external academic benchmarks. The internal block reads as pairwise correlations between our sources; the external block reads as one row per internal source vs each external benchmark. Four Eloundou-contaminated cells (the two Copilot-derived rows — Copilot itself and All Confirmed — crossed with each of the two Eloundou benchmark columns) are grayed out per the figure's contamination legend.
 
-Internal sources (rows / lower-tri columns), in y-axis order: Claude Browser (AEI Conv 2026-02-12), Claude API (AEI API 2025 2026-02-12), Copilot (Microsoft), MCP (MCP Cumul. v4), All Confirmed.
+Internal sources (rows), top-to-bottom on the y-axis: All Confirmed, MCP (MCP Cumul. v4), Copilot (Microsoft), Claude API (AEI API 2025 2026-02-12), Claude Browser (AEI Conv 2026-02-12). Lower-triangle x-axis columns, left-to-right: Claude Browser, Claude API, Copilot, MCP, All Confirmed.
 
 External benchmarks (right-side columns): Eloundou GPT-4 β, Eloundou Human β, AIOE Overall, AIOE Reading Compr., Schaal Overall, Schaal DA, Schaal AG, Tomlinson (Copilot).
 
@@ -94,7 +94,7 @@ Range across the panel: 0.38 (Claude Browser vs Schaal AG) to 0.89 (All Confirme
 
 ![overview.png](part_1/figures/overview.png)
 
-Five rows (one per config), each with three grouped horizontal bars (tasks / workers / wages, top-to-bottom within each cluster). X-axis is "% of National Total" from 0% to 65%. Per-bar inline text shows the % plus the raw worker count or wage dollar count for the worker / wage bars.
+Five rows (one per config), each with three grouped horizontal bars (tasks / workers / wages, top-to-bottom within each cluster). X-axis is "% of National Total" from 0% to 60%, ticks at 0/10/20/30/40/50/60. Per-bar inline text shows the % plus the raw worker count or wage dollar count for the worker / wage bars.
 
 | Config | % Tasks Exposed | % Workers Exposed | % Wages Exposed | Workers (raw) | Wages (raw) |
 |---|---|---|---|---|---|
@@ -121,7 +121,7 @@ Within-config wages% − workers%: All Confirmed +4.0 pp; Conversational Confirm
 
 ![temporal_trend.png](part_1/figures/temporal_trend.png)
 
-Three side-by-side panels: % Tasks Exposed, Workers Exposed, Wages Exposed. Each panel plots two lines — All Confirmed (solid, 4 snapshots) and All Sources (Ceiling) (dashed, 8 snapshots). Each line is extended past its last observation with a dotted linear-OLS projection that marks 6mo / 1yr / 2yr horizons (the 2yr horizon endpoint is the only horizon point labeled per series).
+Three side-by-side panels: % Tasks Exposed, Workers Exposed, Wages Exposed. Each panel plots two lines — All Confirmed (solid, 4 snapshots) and All Sources (Ceiling) (dashed, 8 snapshots). X-axis snapshot date range: Apr 2025 to Apr 2026. Legend at the bottom: "All Confirmed" (solid) and "All Sources (Ceiling)" (dashed). Per-line inline labels at each snapshot point show the value (e.g., "21.5%", "29.3%", "38.7%" on the Tasks Exposed panel).
 
 **All Confirmed (`AEI Both + Micro` family) — 4 dates:**
 
@@ -153,8 +153,6 @@ Observed delta first→last: +17.2 pp tasks, +33.50M workers, +$2.21T wages, +21
 
 **Eco baseline (denominator)** constant across all snapshots and configs: 17,507 unique tasks, 154,525,269 total employment, $9,867,397,368,780 total wages (~$9.87T).
 
-The projected 6mo / 1yr / 2yr extrapolations are the chart's dotted line endpoints, driven by per-line OLS fits across the 4-snapshot Confirmed series and the 8-snapshot Ceiling series; only the 2yr endpoint is labeled.
-
 ---
 
 ### Tasks Rated and AI Capability Over Time — All Confirmed Table
@@ -165,13 +163,13 @@ A 6-column table for the All Confirmed series. Two cream-shaded historical rows 
 
 Columns: Date | Source Release | Tasks Rated (of 17,507) | Δ Tasks | Auto-Aug Score (0–5) | Δ Auto-Aug.
 
-The chart's Δ Tasks column is the sequential difference between consecutive snapshots' `n_tasks` (unique `task_normalized` per dataset file). Historical row task counts (for Sep 2024 and Dec 2024) are pulled from the same AEI Both + Micro family files at those snapshot dates — the script (`_build_historical_rows`) loads them at render time and they're not in `trend_data.csv`, so the historical-row figures aren't reproducible without re-running the chart script.
+The chart's Δ Tasks column is the sequential difference between consecutive snapshots' `n_tasks` (unique `task_normalized` per dataset file). Historical row task counts (for Sep 2024 and Dec 2024) come from earlier AEI Both + Micro snapshot files loaded by `_build_historical_rows` at render time.
 
 | Date | Source Release | Tasks Rated | Δ Tasks | Auto-Aug | Δ Auto-Aug |
 |---|---|---|---|---|---|
-| Sep 30, 2024 (historical, cream) | Microsoft | (Sep 2024 AEI Both + Micro task count) | — | — | — |
-| Dec 23, 2024 (historical, cream) | AEI Browser v1 | (Dec 2024 AEI Both + Micro task count) | (Dec − Sep) | — | — |
-| Mar 6, 2025 (series start, highlighted) | AEI Browser v2 | 7,427 | (7,427 − Dec 2024 count) | 2.94 | — |
+| Sep 30, 2024 (historical, cream) | Microsoft | 6,084 | — | — | — |
+| Dec 23, 2024 (historical, cream) | AEI Browser v1 | 7,221 | +1,137 | — | — |
+| Mar 6, 2025 (series start, highlighted) | AEI Browser v2 | 7,427 | +206 | 2.94 | — |
 | Aug 11, 2025 | AEI Browser v3 + AEI API v3 | 7,631 | +204 | 3.40 | +0.46 |
 | Nov 13, 2025 | AEI Browser v4 + AEI API v4 | 7,795 | +164 | 3.53 | +0.13 |
 | Feb 12, 2026 (series end, highlighted) | AEI Browser v5 + AEI API v5 | 7,878 | +83 | 3.59 | +0.06 |
@@ -192,9 +190,9 @@ Same 6-column table for the All Sources (Ceiling) series. Two cream historical r
 
 | Date | Source Release | Tasks Rated | Δ Tasks | Auto-Aug | Δ Auto-Aug |
 |---|---|---|---|---|---|
-| Sep 30, 2024 (historical, cream) | Microsoft | (Sep 2024 All-family count) | — | — | — |
-| Dec 23, 2024 (historical, cream) | AEI Browser v1 | (Dec 2024 All-family count) | (Dec − Sep) | — | — |
-| Mar 6, 2025 (series start, highlighted) | AEI Browser v2 | 7,427 | (7,427 − Dec 2024 count) | 2.94 | — |
+| Sep 30, 2024 (historical, cream) | Microsoft | 6,084 | — | — | — |
+| Dec 23, 2024 (historical, cream) | AEI Browser v1 | 7,221 | +1,137 | — | — |
+| Mar 6, 2025 (series start, highlighted) | AEI Browser v2 | 7,427 | +206 | 2.94 | — |
 | Apr 24, 2025 | MCP v1 | 9,676 | +2,249 | 2.80 | −0.14 |
 | May 24, 2025 | MCP v2 | 10,311 | +635 | 2.82 | +0.02 |
 | Jul 23, 2025 | MCP v3 | 10,879 | +568 | 2.81 | −0.01 |
@@ -958,11 +956,11 @@ Auto-aug-on → auto-aug-off % Tasks delta per config: All Confirmed 29.30 → 3
 ![temporal_trend_nonphys.png](appendix/figures/temporal_trend_nonphys.png)
 
 Single-panel % Tasks Exposed time-series with three lines split by physical-task filter:
-- **All Confirmed — Non-physical Tasks**: solid line in tasks-color (gold), 4 dates.
-- **All Sources (Ceiling) — Non-physical Tasks**: dashed line in light-tasks-color, 8 dates.
-- **All Confirmed — Physical Tasks**: solid line in workers-color, 4 dates.
+- **All Confirmed — Non-physical Tasks**: solid line in blue (workers-color), 4 dates.
+- **All Sources (Ceiling) — Non-physical Tasks**: dashed line in light blue, 8 dates.
+- **All Confirmed — Physical Tasks**: solid line in gold (tasks-color), 4 dates.
 
-Each line gets a dotted linear-OLS extrapolation to 6mo / 1yr / 2yr horizons; only the 2yr endpoint is labeled.
+Each line has a dotted 2-yr Linear OLS Projection extending to roughly Jan 2028, labeled at the 2yr endpoint. Projected 2yr endpoints visible on the chart: All Sources (Ceiling) Non-physical 102.4%; All Confirmed Non-physical 75.0%; All Confirmed Physical 22.2%. Legend: "All Confirmed — Non-physical Tasks" (solid blue), "All Sources (Ceiling) — Non-physical Tasks" (dashed light blue), "All Confirmed — Physical Tasks" (solid gold), "2-yr Linear OLS Projection" (dotted).
 
 **All Confirmed — Non-physical Tasks (4 dates):**
 - 2025-03-06 (AEI Both + Micro 2025-03-06): 36.40%
@@ -1027,7 +1025,7 @@ For reference, the full 22-major dataset in `major_trend_projections.csv` includ
 
 ![major_categories_trend_workers.png](appendix/figures/major_categories_trend_workers.png)
 
-Same chart layout as the tasks trend, but metric = Workers Exposed. Chart shows **top 10 SOC majors by absolute observed Δ workers (start → current)**, ranked descending. The workers chart additionally renders each row's value as a percent of national employment (start / current / projected) on a second annotation line beneath the start → current → projected triplet.
+Same chart layout as the tasks trend, but metric = Workers Exposed. Chart shows **top 10 SOC majors by absolute observed Δ workers (start → current)**, ranked descending. Each bar carries an in-bar "+ΔM" label on the observed-change segment and a right-side "start → current → projected" annotation in raw worker counts (e.g., "8.2→12→19M" for Office and Admin).
 
 Top 10 by |observed Δ workers|, sorted descending (chart row order — top-mover-at-top):
 
@@ -1269,78 +1267,78 @@ Wages Exposed range: $2.48B (Operating Vehicles) to $466.96B (Documenting/Record
 
 ![state_clusters_each_ranked.png](appendix/figures/state_clusters_each_ranked.png)
 
-Two-panel horizontal bar chart, both panels showing all 51 jurisdictions colored by Ward cluster (same colors as the main Part 3 map). Each panel sorts independently by its own metric (state descending):
+Chart title: "Workforce Exposure by State, Colored by Cluster". Two-panel horizontal bar chart, both panels showing all 51 jurisdictions colored by Ward cluster. Each panel sorts independently by its own metric (state descending):
 - **Left panel — "Sorted by % of State Workforce Exposed"**: bar = `pct_emp_wtd` per state.
 - **Right panel — "Sorted by % of State Emp in High AI Exp & <0 Emp Proj Occs (n = 44)"**: bar = `focused_share_pct` per state.
 
 Both panels show bar-end value labels (rounded to 1 decimal). Disagreement states (Ward vs K-means) get a diagonal-stripe overlay in the K-means cluster's color.
 
-Per state, both metrics (all values from `state_clusters_each_ranked.csv`):
+Per state, both metrics (all values from `state_clusters_each_ranked.csv`, sorted by `pct_emp_wtd` descending):
 
 | State | Cluster | pct_emp_wtd | focused_share_pct |
 |---|---|---|---|
-| DC | −1 (outlier) | 45.901% | 4.471% |
-| CO | 2 | 38.866% | 9.565% |
-| MD | 2 | 38.040% | 9.543% |
-| VA | 2 | 37.426% | 9.360% |
-| MA | 2 | 37.356% | 9.168% |
-| WA | 2 | 37.059% | 9.241% |
-| NY | 1 | 37.043% | 11.140% |
-| TX | 1 | 36.586% | 10.743% |
-| NC | 3 | 36.126% | 9.528% |
-| NH | 1 | 36.061% | 11.386% |
-| UT | 1 | 35.846% | 10.852% |
-| DE | 3 | 35.827% | 10.181% |
-| VT | 3 | 35.789% | 9.393% |
-| FL | 1 | 35.701% | 11.106% |
-| CT | 1 | 35.690% | 10.533% |
-| CA | 2 | 35.629% | 8.459% |
-| GA | 3 | 35.518% | 9.955% |
-| NJ | 3 | 35.127% | 10.008% |
-| NM | 1 | 34.992% | 12.083% |
-| RI | 3 | 34.988% | 9.573% |
-| MN | 3 | 34.979% | 10.221% |
-| MO | 1 | 34.769% | 10.517% |
-| OR | 3 | 34.647% | 9.303% |
-| TN | 1 | 34.635% | 10.824% |
-| AZ | 1 | 34.633% | 10.648% |
-| AK | 1 | 34.515% | 10.474% |
-| MI | 3 | 34.442% | 9.541% |
-| PA | 3 | 34.434% | 9.877% |
-| IA | 3 | 34.377% | 9.755% |
-| ME | 1 | 34.175% | 10.605% |
-| WV | 3 | 34.103% | 9.804% |
-| MT | 3 | 33.969% | 10.303% |
-| SC | 1 | 33.827% | 10.934% |
-| NE | 3 | 33.703% | 9.691% |
-| OH | 3 | 33.683% | 9.413% |
-| HI | 3 | 33.652% | 10.363% |
-| KS | 3 | 33.420% | 9.934% |
-| IL | 3 | 33.310% | 9.399% |
-| AL | 3 | 33.153% | 10.183% |
-| WI | 3 | 33.144% | 9.709% |
-| SD | 3 | 33.138% | 10.310% |
-| AR | 3 | 32.980% | 10.344% |
-| LA | 3 | 32.975% | 10.215% |
-| ID | 1 | 32.817% | 11.618% |
-| OK | 1 | 32.716% | 11.050% |
-| MS | 1 | 32.588% | 11.562% |
-| WY | 3 | 31.966% | 10.459% |
-| ND | 3 | 31.593% | 9.310% |
-| KY | 3 | 31.337% | 10.225% |
-| IN | 3 | 31.170% | 9.433% |
-| NV | 3 | 30.334% | 9.114% |
+| DC | −1 (outlier) | 49.197% | 4.536% |
+| VA | 2 | 41.252% | 9.255% |
+| CO | 2 | 41.094% | 9.323% |
+| MA | 2 | 40.994% | 8.868% |
+| MD | 2 | 40.905% | 9.287% |
+| NY | 3 | 40.575% | 10.712% |
+| WA | 2 | 40.157% | 9.096% |
+| CA | 1 | 39.100% | 8.498% |
+| CT | 1 | 39.037% | 10.078% |
+| DE | 3 | 38.879% | 10.553% |
+| NH | 3 | 38.814% | 11.903% |
+| TX | 3 | 38.757% | 10.646% |
+| UT | 3 | 38.691% | 11.050% |
+| FL | 3 | 38.629% | 11.185% |
+| NJ | 1 | 38.502% | 9.653% |
+| VT | 1 | 38.293% | 9.061% |
+| MO | 1 | 38.242% | 9.764% |
+| RI | 1 | 38.224% | 9.845% |
+| SC | 3 | 38.053% | 11.385% |
+| MN | 1 | 38.031% | 10.152% |
+| NC | 1 | 38.011% | 9.057% |
+| NM | 3 | 37.989% | 11.380% |
+| GA | 1 | 37.975% | 9.700% |
+| AZ | 3 | 37.492% | 11.037% |
+| OR | 1 | 37.476% | 9.356% |
+| ME | 1 | 37.418% | 10.446% |
+| MT | 1 | 37.327% | 10.154% |
+| MI | 1 | 37.282% | 9.553% |
+| PA | 1 | 37.154% | 9.475% |
+| NE | 1 | 36.943% | 10.151% |
+| HI | 1 | 36.829% | 10.222% |
+| AK | 1 | 36.787% | 9.623% |
+| OH | 1 | 36.669% | 9.657% |
+| IA | 1 | 36.493% | 9.573% |
+| IL | 1 | 36.405% | 8.963% |
+| KS | 1 | 36.389% | 9.824% |
+| WV | 1 | 36.389% | 9.875% |
+| SD | 1 | 36.386% | 10.608% |
+| WI | 1 | 36.258% | 9.801% |
+| AL | 1 | 36.237% | 10.206% |
+| ID | 1 | 36.044% | 10.807% |
+| TN | 1 | 36.029% | 10.181% |
+| KY | 1 | 35.969% | 10.868% |
+| AR | 1 | 35.958% | 10.307% |
+| OK | 1 | 35.907% | 10.799% |
+| LA | 1 | 35.569% | 9.704% |
+| WY | 1 | 34.884% | 10.020% |
+| NV | 1 | 34.455% | 10.161% |
+| ND | 1 | 34.307% | 8.960% |
+| MS | 1 | 34.280% | 11.678% |
+| IN | 1 | 33.617% | 9.378% |
 
-Left panel range: 30.334% (NV) → 45.901% (DC). Top 5 by `pct_emp_wtd`: DC (45.901%), CO (38.866%), MD (38.040%), VA (37.426%), MA (37.356%). Bottom 5: NV (30.334%), IN (31.170%), KY (31.337%), ND (31.593%), WY (31.966%).
+Left panel range: 33.617% (IN) → 49.197% (DC). Top 5 by `pct_emp_wtd`: DC (49.197%), VA (41.252%), CO (41.094%), MA (40.994%), MD (40.905%). Bottom 5: IN (33.617%), MS (34.280%), ND (34.307%), NV (34.455%), WY (34.884%).
 
-Right panel range: 4.471% (DC) → 12.083% (NM). Top 5 by `focused_share_pct`: NM (12.083%), ID (11.618%), MS (11.562%), NH (11.386%), NY (11.140%). Bottom 5: DC (4.471%), CA (8.459%), NV (9.114%), MA (9.168%), WA (9.241%).
+Right panel range: 4.536% (DC) → 11.903% (NH). Top 5 by `focused_share_pct`: NH (11.903%), MS (11.678%), SC (11.385%), NM (11.380%), FL (11.185%). Bottom 5: DC (4.536%), CA (8.498%), MA (8.868%), ND (8.960%), IL (8.963%).
 
-Cluster legend at the bottom of the chart (per `state_clusters_map.csv` `cluster_name` mapping):
-- Cluster 1: Mid Workforce Exposed / Highest Emp Share in High AI Exp & <0 Emp Proj Occs (16 states).
-- Cluster 2: Highest Workforce Exposed / Lowest Emp Share in High AI Exp & <0 Emp Proj Occs (6 states).
-- Cluster 3: Lowest Workforce Exposed / Mid Emp Share in High AI Exp & <0 Emp Proj Occs (28 states).
-- Cluster −1: DC outlier.
-- Plus a 6th legend entry: "Ward / K-means disagreement (stripe = K-means)".
+Cluster legend at the bottom of the chart (per `state_clusters_each_ranked.csv` `cluster_name` mapping; this appendix CSV has different cluster labels than the main Part 3 `state_clusters_map.csv`):
+- Cluster 1: Lowest Workforce Exposed / Mid Emp Share in High AI Exp & <0 Emp Proj Occs (36 states).
+- Cluster 2: Highest Workforce Exposed / Lowest Emp Share in High AI Exp & <0 Emp Proj Occs (5 states).
+- Cluster 3: Mid Workforce Exposed / Highest Emp Share in High AI Exp & <0 Emp Proj Occs (9 states).
+- Cluster −1: DC outlier ("49.2% workforce exposed, 4.5% emp share in High AI Exp & <0 Emp Proj occs").
+- Plus a 5th legend entry: "Ward / K-means disagreement (stripe = K-means)".
 
 
 ---
@@ -1549,7 +1547,7 @@ Per-panel Spearman ρ + OLS fit (from `capability_vs_adoption_all_occs_stats.csv
 | **r** (row 4 col 1, adoption) | −0.1876 | 0.0000 | −13.0247 | 76.6311 | 923 |
 | **df** (row 4 col 2, adoption) | −0.1669 | 0.0000 | −13.6335 | 75.9852 | 923 |
 
-Each panel carries an in-chart annotation in the top-left: "Spearman ρ = {value}, n = {n} occs".
+Each panel carries an in-chart annotation in the top-left on two lines: "Spearman ρ = {value}" on the first line and "n = {n} occs" on the second.
 
 Y-axis (pct_tasks_affected) on every panel: 0–100% with dtick 20%. Underlying data (from `capability_vs_adoption_all_occs.csv`, 923 occupations): pct_tasks_affected max = 92.5073% (Business Intelligence Analysts).
 
@@ -1568,8 +1566,8 @@ Top 5 occupations by pct_tasks_affected (from `capability_vs_adoption_all_occs.c
 
 2-panel scatter chart restricted to mostly-non-physical occupations (pct_physical < 33%, n = 409). Both panels plot per-occupation property mean (averaged across all tasks the occupation contains) vs `pct_tasks_affected`. Dot color = pct_tasks_affected on a light → dark blue ramp.
 
-- **Panel 1 — "Our: Objective Risk"** (x = `r`)
-- **Panel 2 — "Our: Deployment Friction"** (x = `df`)
+- **Panel 1 — "Objective Risk (r)"** (x = `r`)
+- **Panel 2 — "Deployment Friction (df)"** (x = `df`)
 
 X-axis range on both panels: 2.0 to 4.5 (dtick 0.5). Y-axis range on both panels: 0–100% (dtick 20%).
 
@@ -1582,7 +1580,7 @@ Per-panel Spearman ρ + OLS fit (from `adoption_friction_scatter_stats.csv`):
 
 Both ρ are significant at p < .001. For comparison, the same r/df properties in the prior all-occupation chart had ρ = −0.1876 and −0.1669.
 
-Each panel has an in-chart annotation: "Spearman ρ = {value}*** , n = 409 occs". Legend: dashed orange "OLS fit" line shown on each panel.
+Each panel has an in-chart annotation on two lines: "Spearman ρ = {value}***" on the first line and "n = 409 occs" on the second. Legend: dashed orange "OLS fit" line shown on each panel.
 
 Sample top-of-distribution occupations from `adoption_friction_scatter.csv` (sorted by pct_tasks_affected desc, mean r / mean df across all tasks in the occupation, n_tasks = count of distinct tasks):
 
