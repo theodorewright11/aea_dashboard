@@ -3148,11 +3148,13 @@ def _render_intensity_driver_chart(
              for lbl in display_labels),
             default=120.0,
         )
-        # +50 covers the vertical y-axis title (~25px wide), standoff
-        # between title and labels (~12px), and the axis-to-label gap
-        # (~12px). With a slight over-estimate on char widths above, this
-        # lands the title approximately flush against the PNG left edge.
-        margin_left = int(max_line_px + 50)
+        # +70 covers the vertical y-axis title (~30px wide at 10pt), the
+        # standoff between title and labels (~18px), and the axis-to-
+        # label gap (~12px), plus a ~10px safety buffer so the title
+        # doesn't overlap the longest label (e.g. the life_phys_soc_sci
+        # chart's "Anthropologists and Archeologists" pushed right up
+        # against "Occupations" at the prior +50 setting).
+        margin_left = int(max_line_px + 70)
     cvals = plot_df[color_col].to_numpy(dtype=float)
     cmin, cmax = float(np.nanmin(cvals)), float(np.nanmax(cvals))
     if not np.isfinite(cmin) or not np.isfinite(cmax) or cmax == cmin:
@@ -3227,14 +3229,19 @@ def _render_intensity_driver_chart(
         f"{swatch_html}&nbsp;{color_fmt.format(cmax)}"
     )
     # Compact layout: per-row pitch tightened so 10-row charts land
-    # ~3.4–4.0" tall. Task charts get more room because labels are
+    # ~3.7–4.3" tall. Task charts get more room because labels are
     # 2-line wrapped (`_wrap_driver_label(width=52, max_lines=2)`); occ
-    # charts mostly single-line so they can go tighter. Margins follow
-    # the intensity_anchor_fulleco shortening pattern (t=90, b=150–160).
+    # charts also have 2-line wraps at width=36 (e.g. "Fine Artists,
+    # Including Painters, Sculptors, and Illustrators"), so occ pitch
+    # bumped from 50→58 to give 2-line occ labels room without crowding
+    # adjacent rows. margin_b unified to 170 across all intensity charts
+    # (intensity_anchor_fulleco + underadoption_gap + drivers) so the
+    # bottom gradient legend lands the same 120 px below the plot bottom
+    # and 50 px above the canvas bottom on every one.
     n_rows = len(plot_df)
-    row_pitch = 60 if level == "task" else 50
+    row_pitch = 60 if level == "task" else 58
     margin_top = 90
-    margin_bottom = 160 if level == "task" else 150
+    margin_bottom = 170
     margin_right = 90 if level == "task" else 110
     height = n_rows * row_pitch + margin_top + margin_bottom
     style_paper_figure(
@@ -3252,7 +3259,7 @@ def _render_intensity_driver_chart(
     plot_w_px = float(W - margin_left - margin_right)
     legend_x = (float(W) / 2.0 - float(margin_left)) / plot_w_px
     plot_h_px = float(height - margin_top - margin_bottom)
-    legend_y = -(margin_bottom - 60) / plot_h_px  # ~60px reserved for x ticks+title
+    legend_y = -(margin_bottom - 50) / plot_h_px  # matches underadoption_gap spacing
     fig.add_annotation(
         x=legend_x, y=legend_y, xref="paper", yref="paper",
         text=legend_text, showarrow=False,
