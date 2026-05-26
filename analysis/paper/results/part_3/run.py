@@ -1026,6 +1026,259 @@ def build_risk_score_5f(results: Path, figures: Path) -> None:
 
 
 # ─────────────────────────────────────────────────────────────────────────
+# Figure 4 (variant): risk_score_5f_workers — two-panel rank-by-tasks view.
+# Same SKA-gated focused set as risk_score_5f, but flipped framing:
+#   Panel A: x = % tasks exposed (in-bar: tasks %)
+#   Panel B: x = workers exposed (in-bar: formatted count)
+#   Right column: emp_proj_pct, one straight vertical line
+#   Y-order:  shared, descending by % tasks exposed
+#   Color:    |emp_proj_pct| — darker = larger employment decline
+# Replaces risk_score_5f in main() — see results.md / README.md.
+# ─────────────────────────────────────────────────────────────────────────
+
+EMP_LIGHT = "#efd9c2"   # at-risk gradient: light tan → deep burgundy
+EMP_DARK = "#7a2e1f"
+
+
+def build_risk_score_5f_workers(results: Path, figures: Path) -> None:
+    try:
+        from analysis.exploratory.audit_risk_score.run import (
+            _load_flag_df, _build_focused_set,
+        )
+    except ImportError as exc:
+        print(f"  -> SKIPPED: exploratory/audit_risk_score not available ({exc})")
+        return
+
+    flags_df = _load_flag_df()
+    sub = _build_focused_set(flags_df)
+    s5f = sub[sub["ska_gated"] == 1].copy()
+
+    # Sort by % tasks exposed DESCENDING — largest at top of each panel.
+    # Plotly horizontal bars render bottom-up, so pass ascending=True.
+    s = s5f.sort_values("pct", ascending=True).reset_index(drop=True)
+
+    save_csv(
+        s5f.sort_values("pct", ascending=False)[
+            ["title_current", "major_short", "job_zone", "emp_proj_pct",
+             "pct", "workers_affected", "wages_affected"]
+        ],
+        results / "risk_score_5f_workers.csv",
+        float_format="%.3f",
+    )
+
+    def _truncate_title(t: str, max_len: int = 50) -> str:
+        if len(t) <= max_len:
+            return t
+        breakers = [i for i in range(max_len) if t[i] in ", "]
+        cut = max(breakers) if breakers else max_len - 1
+        return t[:cut].rstrip(" ,") + "…"
+
+    def _hex_to_rgb(h: str) -> tuple[int, int, int]:
+        return (int(h[1:3], 16), int(h[3:5], 16), int(h[5:7], 16))
+
+    def _format_workers(w: float) -> str:
+        if w >= 1_000_000:
+            return f"{w/1_000_000:.1f}M"
+        if w >= 1_000:
+            return f"{w/1_000:.0f}K"
+        return f"{w:.0f}"
+
+    y_labels = [_truncate_title(t) for t in s["title_current"]]
+
+    abs_emp = s["emp_proj_pct"].abs()
+    cmin = float(abs_emp.min())
+    cmax = float(abs_emp.max())
+    abs_mid = (cmin + cmax) / 2
+
+    W = PAPER_W + 380
+    px = paper_fonts(W)
+    floor_px = px["in_chart_floor"]
+    tick_px = px["tick"]
+    axis_px = px["axis_title"]
+    panel_px = px["panel_title"]
+
+    fig = make_subplots(
+        rows=1, cols=2,
+        subplot_titles=["% Tasks Exposed", "Workers Exposed"],
+        shared_yaxes=True,
+        horizontal_spacing=0.04,
+        column_widths=[0.4, 0.6],
+    )
+
+    common_marker = dict(
+        color=abs_emp.values,
+        colorscale=[[0, EMP_LIGHT], [1, EMP_DARK]],
+        cmin=cmin, cmax=cmax,
+        showscale=False,
+        line=dict(width=0),
+    )
+
+    fig.add_trace(go.Bar(
+        y=y_labels, x=s["pct"], orientation="h",
+        marker=common_marker, showlegend=False,
+        hovertemplate=(
+            "<b>%{y}</b><br>tasks exposed: %{x:.1f}%"
+            "<br>emp proj: %{customdata:+.1f}%<extra></extra>"
+        ),
+        customdata=s["emp_proj_pct"].values,
+    ), row=1, col=1)
+
+    fig.add_trace(go.Bar(
+        y=y_labels, x=s["workers_affected"], orientation="h",
+        marker=common_marker, showlegend=False,
+        hovertemplate=(
+            "<b>%{y}</b><br>workers exposed: %{x:,.0f}"
+            "<br>emp proj: %{customdata:+.1f}%<extra></extra>"
+        ),
+        customdata=s["emp_proj_pct"].values,
+    ), row=1, col=2)
+
+    # Right-column emp_proj line + Panel B x-range padding.
+    MARGIN_L, MARGIN_R = 380, 110
+    MARGIN_T, MARGIN_B = 150, 160
+    plot_area_px = W - MARGIN_L - MARGIN_R
+    pct_max = float(s["pct"].max())
+    wrk_max = float(s["workers_affected"].max())
+    inside_threshold_pct = 0.20 * pct_max
+    # 0.20 so Shipping/Receiving (~19% of wrk_max) lands outside its bar.
+    inside_threshold_wrk = 0.20 * wrk_max
+    proj_col_x = wrk_max * 1.18
+    x_top_b = wrk_max * 1.34
+
+    for i, row in s.iterrows():
+        is_dark = abs(row["emp_proj_pct"]) >= abs_mid
+        text_color_inside = "white" if is_dark else PAPER_PALETTE["text_dark"]
+
+        # Panel A in-bar: tasks-exposed %.
+        pct_text = f"{row['pct']:.0f}%"
+        if row["pct"] >= inside_threshold_pct:
+            fig.add_annotation(
+                x=row["pct"], y=y_labels[i], xref="x1", yref="y1",
+                text=pct_text, showarrow=False,
+                xanchor="right", yanchor="middle", xshift=-6,
+                font=dict(size=floor_px, color=text_color_inside, family=FONT_FAMILY),
+            )
+        else:
+            fig.add_annotation(
+                x=row["pct"], y=y_labels[i], xref="x1", yref="y1",
+                text=pct_text, showarrow=False,
+                xanchor="left", yanchor="middle", xshift=4,
+                font=dict(size=floor_px, color=PAPER_PALETTE["neutral"],
+                          family=FONT_FAMILY),
+            )
+
+        # Panel B in-bar: formatted workers count.
+        w = row["workers_affected"]
+        w_text = _format_workers(w)
+        if w >= inside_threshold_wrk:
+            fig.add_annotation(
+                x=w, y=y_labels[i], xref="x2", yref="y2",
+                text=w_text, showarrow=False,
+                xanchor="right", yanchor="middle", xshift=-6,
+                font=dict(size=floor_px, color=text_color_inside, family=FONT_FAMILY),
+            )
+        else:
+            fig.add_annotation(
+                x=w, y=y_labels[i], xref="x2", yref="y2",
+                text=w_text, showarrow=False,
+                xanchor="left", yanchor="middle", xshift=4,
+                font=dict(size=floor_px, color=PAPER_PALETTE["neutral"],
+                          family=FONT_FAMILY),
+            )
+
+        # Right column: emp_proj_pct at fixed x past Panel B's bars.
+        fig.add_annotation(
+            x=proj_col_x, y=y_labels[i], xref="x2", yref="y2",
+            text=f"{row['emp_proj_pct']:+.1f}%", showarrow=False,
+            xanchor="left", yanchor="middle",
+            font=dict(size=floor_px, color=PAPER_PALETTE["neutral"],
+                      family=FONT_FAMILY),
+        )
+
+    # Right-column header.
+    fig.add_annotation(
+        x=proj_col_x, y=1.0, xref="x2", yref="y2 domain",
+        text="Emp Proj", showarrow=False,
+        xanchor="left", yanchor="bottom", yshift=4,
+        font=dict(size=floor_px, color=PAPER_PALETTE["neutral"],
+                  family=FONT_FAMILY),
+    )
+
+    n = len(s)
+    height = max(620, n * 32 + MARGIN_T + MARGIN_B)
+
+    style_paper_figure(
+        fig,
+        "High AI Exposure × Negative Employment Projection — Tasks vs. Workers",
+        height=height, width=W,
+        margin=dict(l=MARGIN_L, r=MARGIN_R, t=MARGIN_T, b=MARGIN_B),
+    )
+
+    # Subplot titles: scale + push up for whitespace.
+    for ann in fig.layout.annotations[:2]:
+        ann.font = dict(size=panel_px, color=PAPER_PALETTE["text"], family=FONT_FAMILY)
+        ann.yshift = 12
+
+    fig.update_xaxes(
+        title=dict(text="% Tasks Exposed",
+                   font=dict(size=axis_px, family=FONT_FAMILY)),
+        showgrid=True, gridcolor=PAPER_PALETTE["grid"], ticksuffix="%",
+        tickfont=dict(size=tick_px, family=FONT_FAMILY),
+        row=1, col=1,
+    )
+    fig.update_xaxes(
+        title=dict(text="Workers Exposed",
+                   font=dict(size=axis_px, family=FONT_FAMILY)),
+        showgrid=True, gridcolor=PAPER_PALETTE["grid"],
+        tickfont=dict(size=tick_px, family=FONT_FAMILY),
+        range=[0, x_top_b],
+        row=1, col=2,
+    )
+    fig.update_yaxes(
+        title=dict(text="Occupation",
+                   font=dict(size=axis_px, family=FONT_FAMILY)),
+        showgrid=False, showline=False,
+        tickfont=dict(size=floor_px, family=FONT_FAMILY),
+        tickmode="array", tickvals=y_labels, ticktext=y_labels,
+        row=1, col=1,
+    )
+    fig.update_yaxes(
+        showgrid=False, showline=False, showticklabels=False,
+        row=1, col=2,
+    )
+
+    # Bottom legend — single HTML block, xanchor="center", empirically
+    # tuned x. Same pattern as build_risk_score_5f(). x=0.104 calibrated
+    # to land legend center at PNG center (measured via PIL on rendered
+    # PNG — offset within 1 px of canvas center).
+    rgb_l = _hex_to_rgb(EMP_LIGHT)
+    rgb_d = _hex_to_rgb(EMP_DARK)
+    N_SWATCH = 7
+    swatch_html = ""
+    for i in range(N_SWATCH):
+        t = i / (N_SWATCH - 1)
+        c = tuple(int(rgb_l[k] + (rgb_d[k] - rgb_l[k]) * t) for k in range(3))
+        swatch_html += f"<span style='color:rgb({c[0]},{c[1]},{c[2]})'>■</span>"
+    legend_text = (
+        f"BLS Emp Proj 2024–2034 (more negative → darker)&nbsp;&nbsp;"
+        f"-{cmin:.0f}%&nbsp;{swatch_html}&nbsp;-{cmax:.0f}%"
+    )
+    fig.add_annotation(
+        x=0.104, y=-0.08,
+        xref="paper", yref="paper",
+        text=legend_text, showarrow=False,
+        xanchor="center", yanchor="middle",
+        font=dict(size=floor_px, color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+    )
+
+    fig.update_layout(bargap=0.15)
+
+    save_figure(fig, results / "figures" / "risk_score_5f_workers.png", scale=2)
+    _copy_fig(results, figures, "risk_score_5f_workers.png")
+    print("  -> risk_score_5f_workers.png")
+
+
+# ─────────────────────────────────────────────────────────────────────────
 # Figure 5: State Exposure vs. Most-At-Risk Concentration
 # Two-panel horizontal bar (% emp exposed | % emp in "Most At Risk" set).
 # Computation runs through deepdive_state_signal (gitignored exploratory);
@@ -1322,8 +1575,8 @@ def main() -> None:
     print("\n[3/6] Tech commodities composite")
     build_tech_commodities(results, figures)
 
-    print("\n[4/6] Risk score 5f — SKA-gated focused 43")
-    build_risk_score_5f(results, figures)
+    print("\n[4/6] Risk score 5f workers — rank-by-tasks two-panel view")
+    build_risk_score_5f_workers(results, figures)
 
     print("\n[5/6] U.S. states clustered on AI exposure (map)")
     build_state_clusters_map(results, figures)

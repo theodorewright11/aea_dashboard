@@ -50,7 +50,7 @@
 
 ### Occupations with High AI Exposure and Negative Employment Projection
 
-![Occupations with High AI Exposure and Negative Employment Projection](part_3/figures/risk_score_5f.png)
+![Occupations with High AI Exposure and Negative Employment Projection](part_3/figures/risk_score_5f_workers.png)
 
 ### U.S. States Clustered on AI Exposure
 
