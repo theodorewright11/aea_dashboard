@@ -365,11 +365,26 @@ for downstream quality flagging.
 
 ---
 
+## Intensity-Figure Dataset (paper-internal exception)
+
+The paper's intensity figures — Part 3 `intensity_anchor_fulleco` + appendix `intensity_drivers_{occ,task}_{life_phys_soc_sci,arts_design_ent,comp_math}` (6) + appendix `underadoption_gap` — do **not** use `all_confirmed`. They use a separate constant, defined at the top of both `part_3/run.py` and `appendix/run.py`:
+
+```python
+_INTENSITY_DATASET = "AEI Both 2025 2026-02-12"   # backend key
+_INTENSITY_V3_KEY  = "aei_all_eco2025"            # V3_CONFIGS key (appendix only)
+```
+
+This points at `data/final_aei_all_usage_2025_2026-02-12.csv` — AEI Conv + AEI API pooled with `task_prop` normalization onto the eco_2025 universe (2019 SOC, no crosswalk). It deliberately drops Microsoft from the numerator. The equal 3-source bias correction (Claude / Copilot / ChatGPT GWA priors) is unchanged — the bias prior is GWA-level and applies regardless of which dataset is being measured.
+
+Why a paper-internal exception instead of swapping `ANALYSIS_CONFIGS["all_confirmed"]` globally: every other paper chart (Part 1 overview/temporal, Part 2 phys/SKA/GWA/major_categories, Part 3 risk_score_5f / tech_commodities / conv_confirmed_ceiling_gap / state_clusters, plus most appendix charts) is intentionally kept on `AEI Both + Micro 2026-02-12`. Only the intensity series is end-to-end AEI-only so the numerator and the colorbar/denominator stay coherent within those eight figures.
+
+The corresponding `V3_CONFIGS["aei_all_eco2025"]` entry in `analysis/exploratory/audit_pct_norm_eco/run_v3.py` exists for the same reason — `V3_CONFIGS["all_confirmed"]` still means what it has always meant (AEI + Microsoft) so the `run_v3.py main()` audit charts and the audit_microsoft_intensity folder are unaffected.
+
 ## Cross-References (live ↔ live)
 
 The paper imports from three exploratory folders (function-level, with try/except so the paper still runs if exploratory is absent):
 
-- `paper/results/part_3/run.py` → `analysis.exploratory.audit_pct_norm_eco.run` and `.run_v3` (chart: `intensity_anchor_fulleco`)
+- `paper/results/part_3/run.py` → `analysis.exploratory.audit_pct_norm_eco.run` and `.run_v3` (chart: `intensity_anchor_fulleco`, via the `aei_all_eco2025` V3 config)
 - `paper/results/part_3/run.py` → `analysis.exploratory.audit_risk_score.run` (5f flags + focused-set helpers for `risk_score_5f`)
 - `paper/results/part_3/run.py` → `analysis.exploratory.deepdive_state_signal.run` (per-state feature table + focused-set state-share for `state_exposure_at_risk`)
 

@@ -66,6 +66,12 @@ DATASETS = {
     # so agentic_confirmed pct/workers/wages live on the same baseline as the
     # other ANALYSIS_CONFIGS. Trend series stays on the eco_2015 family above.
     "AEI API 2025 2026-02-12": {"file": str(DATA_DIR / "final_aei_agentic_usage_2025_2026-02-12.csv"), "is_aei": False, "is_mcp": False},
+    # AEI Both rebased to eco_2025 (2019 SOC, no crosswalk). AEI Conv + AEI API
+    # pooled with task_prop normalization onto the eco_2025 task universe. Used
+    # by the paper's intensity figures (main intensity_anchor_fulleco + 6
+    # intensity_drivers + underadoption_gap) so they reflect AEI-only usage
+    # with no Microsoft inclusion. Not in DATASET_CATEGORIES (backstage only).
+    "AEI Both 2025 2026-02-12": {"file": str(DATA_DIR / "final_aei_all_usage_2025_2026-02-12.csv"), "is_aei": False, "is_mcp": False},
 
     # ── Agentic (cumulative) ─────────────────────────────────────────────────
     # MCP + API — All possible agentic usage (2019 SOC)

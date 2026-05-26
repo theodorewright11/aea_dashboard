@@ -46,6 +46,12 @@ PRIMARY_KEY = "all_confirmed"
 PRIMARY_DATASET = ANALYSIS_CONFIGS[PRIMARY_KEY]
 PRIMARY_LABEL = ANALYSIS_CONFIG_LABELS[PRIMARY_KEY]
 
+# Intensity figures (intensity_anchor_fulleco in Part 3 + intensity_drivers
+# and underadoption_gap in the appendix) use an AEI-only, eco_2025-rebased
+# pool instead of PRIMARY_DATASET. Equal 3-source debias (Claude/Copilot/
+# ChatGPT GWA priors) still applies — the bias prior is dataset-agnostic.
+_INTENSITY_DATASET = "AEI Both 2025 2026-02-12"
+
 # Tasks blue + workers green blend, light → dark (used by tech_commodities)
 BLEND_LIGHT = "#cdd9d4"
 BLEND_DARK = "#2a4f56"
@@ -619,8 +625,12 @@ def build_intensity_anchor_fulleco(results: Path, figures: Path) -> None:
         print(f"  -> SKIPPED: exploratory/audit_pct_norm_eco not available ({exc})")
         return
 
+    # Intensity-figure dataset: AEI Conv + AEI API pooled onto eco_2025
+    # (final_aei_all_usage_2025_2026-02-12.csv). Drops Microsoft from the
+    # numerator while keeping the equal 3-source bias correction below
+    # (the bias prior is GWA-level and applies regardless of dataset).
     base = compute_v3_intensity(
-        "all_confirmed", compute_bias_ratios(BIAS_VARIANTS["equal"])
+        "aei_all_eco2025", compute_bias_ratios(BIAS_VARIANTS["equal"])
     ).copy()
     full_den = compute_major_full_eco_denominator()
     base["den_full"] = base["category"].map(full_den).fillna(0.0)
@@ -631,11 +641,13 @@ def build_intensity_anchor_fulleco(results: Path, figures: Path) -> None:
     base["ratio_full_pct"] = (
         base["ratio_full"] / total_full * 100.0 if total_full > 0 else 0.0
     )
-    # Pull pct_tasks_affected from the same dashboard pipeline that drives
-    # the Part 2 major_categories chart so the colorbar values match
-    # exactly. The exploratory `compute_major_pct_tasks_affected` only sums
-    # over rated task-occ pairs and produces a different (higher) number.
-    major_df = _run_config(PRIMARY_DATASET, "major")
+    # Pull pct_tasks_affected from the same dashboard pipeline so the
+    # colorbar values are consistent with the intensity dataset (also
+    # AEI-only, eco_2025-rebased). NOTE: this intentionally diverges from
+    # the Part 2 major_categories chart's colorbar (which uses PRIMARY_DATASET
+    # = AEI Both + Micro) — the intensity figure series stays on the
+    # no-Microsoft dataset end-to-end.
+    major_df = _run_config(_INTENSITY_DATASET, "major")
     pct_aff = major_df.set_index("category")["pct_tasks_affected"]
     base["pct_tasks_affected"] = base["category"].map(pct_aff).fillna(0.0)
 

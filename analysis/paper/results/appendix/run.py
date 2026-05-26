@@ -75,6 +75,13 @@ DATA_DIR = ROOT / "data"
 PRIMARY_KEY = "all_confirmed"
 PRIMARY_DATASET = ANALYSIS_CONFIGS[PRIMARY_KEY]
 
+# Intensity-figure dataset (used by build_intensity_drivers + build_underadoption_gap).
+# AEI Conv + AEI API pooled onto eco_2025, no Microsoft. Equal 3-source debias
+# (Claude/Copilot/ChatGPT GWA priors) still applies. Mirrors the constant in
+# part_3/run.py — kept here to avoid a paper-internal import.
+_INTENSITY_DATASET = "AEI Both 2025 2026-02-12"
+_INTENSITY_V3_KEY = "aei_all_eco2025"
+
 PHYS_LOWER = 33.0
 PHYS_UPPER = 67.0
 
@@ -2736,8 +2743,10 @@ def build_underadoption_gap(results: Path, figures: Path) -> None:
         return
 
     # ── Compute ratio_full_pct (share of all AI usage, full-eco baseline)
+    # Numerator uses the AEI-only eco_2025-rebased pool — same as the rest
+    # of the paper's intensity figures. Equal 3-source debias still applies.
     base = compute_v3_intensity(
-        "all_confirmed", compute_bias_ratios(BIAS_VARIANTS["equal"])
+        _INTENSITY_V3_KEY, compute_bias_ratios(BIAS_VARIANTS["equal"])
     ).copy()
     full_den = compute_major_full_eco_denominator()
     base["den_full"] = base["category"].map(full_den).fillna(0.0)
@@ -2749,9 +2758,11 @@ def build_underadoption_gap(results: Path, figures: Path) -> None:
         base["ratio_full"] / total_full * 100.0 if total_full > 0 else 0.0
     )
 
-    # ── pct_tasks_affected from the same dashboard pipeline that drives
-    # Part 2 major_categories (matches the rest of the paper).
-    major_df = _run_config(PRIMARY_DATASET, "major")
+    # ── pct_tasks_affected from the same AEI-only file so both sides of
+    # the gap ratio are coherent (numerator and denominator share a data
+    # source). Diverges from the Part 2 major_categories chart's colorbar
+    # by design — the intensity-series pair stays end-to-end on no-MS data.
+    major_df = _run_config(_INTENSITY_DATASET, "major")
     pct_aff = major_df.set_index("category")["pct_tasks_affected"]
     base["pct_tasks_affected"] = base["category"].map(pct_aff).fillna(0.0)
 
@@ -2920,10 +2931,12 @@ def _intensity_drivers_dedup() -> pd.DataFrame:
 
     bias_ratios = compute_bias_ratios(BIAS_VARIANTS["equal"])
     assert bias_ratios is not None, "equal bias must be present"
-    cfg = V3_CONFIGS["all_confirmed"]
+    # Intensity figures use the AEI-only, eco_2025-rebased pool — not
+    # V3_CONFIGS["all_confirmed"] (which still points at AEI + Microsoft).
+    cfg = V3_CONFIGS[_INTENSITY_V3_KEY]
     occ_col = cfg["occ_col"]  # "title_current"
 
-    df = load_v3_config("all_confirmed")
+    df = load_v3_config(_INTENSITY_V3_KEY)
     # Separate read for the original `task` text (load_v3_config has a
     # fixed usecols that excludes it). Dedup to one statement per
     # task_normalized — duplicates across the file are punctuation /
@@ -3269,7 +3282,10 @@ def build_intensity_drivers(results: Path, figures: Path,
         print(f"  -> SKIPPED: dependency not available ({exc})")
         return
 
-    occ_pct_aff = get_pct_tasks_affected(PRIMARY_DATASET)
+    # pct_tasks_affected for occ chart color comes from the same AEI-only
+    # eco_2025 file the dedup table uses — keeps the chart internally
+    # consistent (intentionally diverges from PRIMARY_DATASET).
+    occ_pct_aff = get_pct_tasks_affected(_INTENSITY_DATASET)
 
     for major_full, slug, major_short in TARGET_MAJORS_DRIVERS:
         sub = dedup[dedup["major_occ_category"] == major_full].copy()

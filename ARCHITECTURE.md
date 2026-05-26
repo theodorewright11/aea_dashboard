@@ -75,6 +75,15 @@ Total selectable datasets: 26.
 
 These sets are exposed via `GET /api/config` as `aei_conv_snapshot_datasets`, `aei_api_snapshot_datasets`, `aei_conv_cumulative_datasets`, `aei_api_cumulative_datasets`, `aei_both_cumulative_datasets`, `mcp_datasets` and consumed by `frontend/src/lib/datasetRules.ts` for selection enforcement (see §6).
 
+### Backstage Pre-Pooled Datasets (registered, not user-selectable)
+
+A few pre-combined files live in `DATASETS` but are deliberately omitted from `DATASET_CATEGORIES` so the UI doesn't surface them. They exist so static analysis scripts (paper figures, audit folders) can load them via `get_pct_tasks_affected()` and the rest of the backend compute pipeline without each script needing custom CSV-loading code. Both are already pooled onto eco_2025 (2019 SOC, `task_prop`-normalized) so `is_aei: False` skips the crosswalk:
+
+| Dataset key | File | Used by |
+|-------------|------|---------|
+| `AEI API 2025 2026-02-12` | `final_aei_agentic_usage_2025_2026-02-12.csv` | `ANALYSIS_CONFIGS["agentic_confirmed"]` — keeps the confirmed-agentic config on the eco_2025 baseline. |
+| `AEI Both 2025 2026-02-12` | `final_aei_all_usage_2025_2026-02-12.csv` | Paper intensity figures: Part 3 `intensity_anchor_fulleco` + appendix `intensity_drivers_{occ,task}_*` (6) + appendix `underadoption_gap`. AEI Conv + AEI API pooled, no Microsoft. |
+
 ### Baseline Files (not user-selectable)
 
 | File | Purpose |
