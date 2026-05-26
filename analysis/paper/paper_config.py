@@ -97,6 +97,33 @@ CONFIG_COLORS: dict[str, str] = {
     "agentic_ceiling":    "#2e8b8b",
 }
 
+
+# ── Paper-internal dataset overrides ─────────────────────────────────────
+# Some paper static charts need a different dataset than the analysis-wide
+# ANALYSIS_CONFIGS value. Keeping the override here — instead of repointing
+# ANALYSIS_CONFIGS — means exploratory/claude_lab/extcompare scripts that
+# consume the same config keys stay on the "natural" file (e.g. the eco_2015
+# AEI family) and don't silently shift baselines.
+#
+# Current overrides:
+#   - agentic_confirmed: use the eco_2025-rebased AEI API file so paper
+#     static charts compare cleanly against agentic_ceiling (= MCP + API,
+#     also eco_2025). Trend series (ANALYSIS_CONFIG_SERIES) stays on the
+#     natural eco_2015 family.
+#
+# Used by paper builders that iterate CONFIG_ORDER / OVERVIEW_CONFIG_ORDER
+# and by direct lookups (e.g. part_3 _agentic_ceiling_top10).
+PAPER_CONFIG_DATASET_OVERRIDES: dict[str, str] = {
+    "agentic_confirmed": "AEI API 2025 2026-02-12",
+}
+
+
+def paper_dataset_for(config_key: str) -> str:
+    """Resolve a config key to its dataset name, applying paper-internal
+    overrides. Falls back to ANALYSIS_CONFIGS[key] when no override exists."""
+    from analysis.config import ANALYSIS_CONFIGS
+    return PAPER_CONFIG_DATASET_OVERRIDES.get(config_key, ANALYSIS_CONFIGS[config_key])
+
 # ── Three-metric colors (muted, cohesive) ────────────────────────────────
 # Tasks = blue · Workers = gold · Wages = green-teal (money association).
 METRIC_COLORS: dict[str, str] = {

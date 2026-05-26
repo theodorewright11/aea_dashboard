@@ -81,8 +81,8 @@ A few pre-combined files live in `DATASETS` but are deliberately omitted from `D
 
 | Dataset key | File | Used by |
 |-------------|------|---------|
-| `AEI API 2025 2026-02-12` | `final_aei_agentic_usage_2025_2026-02-12.csv` | `ANALYSIS_CONFIGS["agentic_confirmed"]` — keeps the confirmed-agentic config on the eco_2025 baseline. |
-| `AEI Both 2025 2026-02-12` | `final_aei_all_usage_2025_2026-02-12.csv` | Paper intensity figures: Part 3 `intensity_anchor_fulleco` + appendix `intensity_drivers_{occ,task}_*` (6) + appendix `underadoption_gap`. AEI Conv + AEI API pooled, no Microsoft. |
+| `AEI API 2025 2026-02-12` | `final_aei_agentic_usage_2025_2026-02-12.csv` | Paper static charts that need eco_2025-baselined agentic comparisons (`overview`, `convergence_full_*`, `overview_no_autoaug`, `agentic_ceiling_{major,gwa}`). Accessed via `paper_dataset_for("agentic_confirmed")` from `analysis/paper/paper_config.py`. `ANALYSIS_CONFIGS["agentic_confirmed"]` itself stays on the natural eco_2015 file `AEI API 2026-02-12` (matches the trend series). |
+| `AEI Both 2025 2026-02-12` | `final_aei_all_usage_2025_2026-02-12.csv` | Paper intensity figures: Part 3 `intensity_anchor_fulleco` + appendix `intensity_drivers_{occ,task}_*` (6) + appendix `underadoption_gap`. AEI Conv + AEI API pooled, no Microsoft. Accessed via paper-file-local `_INTENSITY_DATASET` constants (narrower scope than `PAPER_CONFIG_DATASET_OVERRIDES`). |
 
 ### Baseline Files (not user-selectable)
 

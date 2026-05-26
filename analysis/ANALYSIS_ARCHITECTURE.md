@@ -365,20 +365,38 @@ for downstream quality flagging.
 
 ---
 
-## Intensity-Figure Dataset (paper-internal exception)
+## Paper-Internal Dataset Overrides
 
-The paper's intensity figures — Part 3 `intensity_anchor_fulleco` + appendix `intensity_drivers_{occ,task}_{life_phys_soc_sci,arts_design_ent,comp_math}` (6) + appendix `underadoption_gap` — do **not** use `all_confirmed`. They use a separate constant, defined at the top of both `part_3/run.py` and `appendix/run.py`:
+Some paper static charts need a different dataset than the analysis-wide `ANALYSIS_CONFIGS` value points at. Rather than repoint the global config (which would cascade across every exploratory/claude_lab/extcompare folder that consumes the same key), the paper carries its own override layer in `analysis/paper/paper_config.py`:
 
 ```python
+PAPER_CONFIG_DATASET_OVERRIDES: dict[str, str] = {
+    "agentic_confirmed": "AEI API 2025 2026-02-12",   # eco_2025-rebased
+}
+
+def paper_dataset_for(config_key: str) -> str:
+    """Like ANALYSIS_CONFIGS[key], but applies paper-internal overrides."""
+```
+
+Paper builders that iterate `CONFIG_ORDER` / `OVERVIEW_CONFIG_ORDER` (e.g. `build_overview`, `build_convergence_full`, `build_overview_no_autoaug`) call `paper_dataset_for(key)` instead of `ANALYSIS_CONFIGS[key]`. Direct lookups (e.g. `_agentic_ceiling_top10` in `part_3/run.py`) do the same.
+
+### Active overrides
+
+**`agentic_confirmed` → `AEI API 2025 2026-02-12`** (eco_2025-rebased AEI API). `ANALYSIS_CONFIGS["agentic_confirmed"]` is the natural eco_2015 file `AEI API 2026-02-12` (matches the trend series `ANALYSIS_CONFIG_SERIES["agentic_confirmed"]`). The paper override exists because `part_3` `agentic_ceiling_major` / `agentic_ceiling_gwa` subtract `agentic_confirmed` from `agentic_ceiling` (= `MCP + API 2026-02-18`, eco_2025) — clean subtraction requires both sides on the same task universe / WA mapping. Affects: Part 1 `overview`, Part 3 `agentic_ceiling_{major,gwa}`, appendix `convergence_full_{major,minor,broad,occ}` + `overview_no_autoaug`.
+
+### Intensity figures (separate, narrower override)
+
+The intensity figures (Part 3 `intensity_anchor_fulleco` + appendix `intensity_drivers_{occ,task}_{life_phys_soc_sci,arts_design_ent,comp_math}` (6) + appendix `underadoption_gap`) use a different mechanism — paper-file-local constants instead of the central `PAPER_CONFIG_DATASET_OVERRIDES`:
+
+```python
+# in part_3/run.py and appendix/run.py
 _INTENSITY_DATASET = "AEI Both 2025 2026-02-12"   # backend key
 _INTENSITY_V3_KEY  = "aei_all_eco2025"            # V3_CONFIGS key (appendix only)
 ```
 
-This points at `data/final_aei_all_usage_2025_2026-02-12.csv` — AEI Conv + AEI API pooled with `task_prop` normalization onto the eco_2025 universe (2019 SOC, no crosswalk). It deliberately drops Microsoft from the numerator. The equal 3-source bias correction (Claude / Copilot / ChatGPT GWA priors) is unchanged — the bias prior is GWA-level and applies regardless of which dataset is being measured.
+These point at `data/final_aei_all_usage_2025_2026-02-12.csv` — AEI Conv + AEI API pooled with `task_prop` normalization onto eco_2025, no Microsoft. Equal 3-source bias correction (Claude / Copilot / ChatGPT GWA priors) is unchanged — the bias prior is GWA-level and applies regardless of dataset.
 
-Why a paper-internal exception instead of swapping `ANALYSIS_CONFIGS["all_confirmed"]` globally: every other paper chart (Part 1 overview/temporal, Part 2 phys/SKA/GWA/major_categories, Part 3 risk_score_5f / tech_commodities / conv_confirmed_ceiling_gap / state_clusters, plus most appendix charts) is intentionally kept on `AEI Both + Micro 2026-02-12`. Only the intensity series is end-to-end AEI-only so the numerator and the colorbar/denominator stay coherent within those eight figures.
-
-The corresponding `V3_CONFIGS["aei_all_eco2025"]` entry in `analysis/exploratory/audit_pct_norm_eco/run_v3.py` exists for the same reason — `V3_CONFIGS["all_confirmed"]` still means what it has always meant (AEI + Microsoft) so the `run_v3.py main()` audit charts and the audit_microsoft_intensity folder are unaffected.
+The local-constant approach is used here (rather than a `PAPER_CONFIG_DATASET_OVERRIDES["all_confirmed"]` entry) because we only want **these 8 figures** to drop Microsoft. Adding `all_confirmed` to the central override would silently swap every paper chart that iterates `CONFIG_ORDER` (Part 1 overview, Part 2 SKA / GWA / major_categories, all the appendix overview-style charts, etc.) — way more than we want. The corresponding `V3_CONFIGS["aei_all_eco2025"]` entry in `analysis/exploratory/audit_pct_norm_eco/run_v3.py` exists for the same reason: `V3_CONFIGS["all_confirmed"]` still means AEI + Microsoft so the v3 audit charts and `audit_microsoft_intensity` are unaffected.
 
 ## Cross-References (live ↔ live)
 

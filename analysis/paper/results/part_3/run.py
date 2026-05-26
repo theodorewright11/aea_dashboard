@@ -33,7 +33,7 @@ from analysis.paper.paper_config import (
     PAPER_W, PAPER_H,
     ANNOT_FS, LABEL_FS, TICK_FS, INSIDE_FS,
     METRIC_COLORS, METRIC_COLORS_LIGHT, PAPER_PALETTE,
-    paper_fonts,
+    paper_fonts, paper_dataset_for,
     style_paper_figure, fmt_wages, fmt_workers,
 )
 from plotly.subplots import make_subplots
@@ -283,8 +283,9 @@ def build_tech_commodities(results: Path, figures: Path) -> None:
 # ─────────────────────────────────────────────────────────────────────────
 
 # Local copy of the part_2 GWA loader — keeps part_3 independent of cross-part
-# import paths. agentic_confirmed (eco_2025 rebase) and agentic_ceiling are
-# both is_aei=False, so both come back as "mcp_group" with matching baselines.
+# import paths. The agentic_confirmed dataset resolved via paper_dataset_for()
+# (eco_2025-rebased AEI API) and agentic_ceiling are both is_aei=False, so both
+# come back as "mcp_group" with matching baselines.
 def _get_wa_data(dataset_name: str, level: str = "gwa") -> pd.DataFrame:
     from backend.compute import compute_work_activities
     settings = {
@@ -373,11 +374,11 @@ def _agentic_ceiling_top10(level: str) -> pd.DataFrame:
     Both configs are is_aei=False on the eco_2025 baseline, so subtraction
     is clean (no mixed task universe / WA mapping)."""
     if level == "major":
-        conf = _run_config(ANALYSIS_CONFIGS["agentic_confirmed"], "major")
-        ceil = _run_config(ANALYSIS_CONFIGS["agentic_ceiling"], "major")
+        conf = _run_config(paper_dataset_for("agentic_confirmed"), "major")
+        ceil = _run_config(paper_dataset_for("agentic_ceiling"), "major")
     else:
-        conf = _get_wa_data(ANALYSIS_CONFIGS["agentic_confirmed"], level)
-        ceil = _get_wa_data(ANALYSIS_CONFIGS["agentic_ceiling"], level)
+        conf = _get_wa_data(paper_dataset_for("agentic_confirmed"), level)
+        ceil = _get_wa_data(paper_dataset_for("agentic_ceiling"), level)
 
     keep = ["category", "pct_tasks_affected"]
     df = (

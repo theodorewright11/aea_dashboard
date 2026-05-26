@@ -138,7 +138,7 @@ def ensure_results_dir(question_dir: Path) -> Path:
 ANALYSIS_CONFIGS: dict[str, str] = {
     "all_ceiling":        "All 2026-02-18",               # AEI Both + MCP + Microsoft — ceiling
     "human_conversation": "AEI Conv + Micro 2026-02-12",  # confirmed human conversation usage
-    "agentic_confirmed":  "AEI API 2025 2026-02-12",      # confirmed agentic tool-use (AEI API only), eco_2025-rebased so it lives on the same baseline as the other configs. Trend series below stays on eco_2015 for internal consistency.
+    "agentic_confirmed":  "AEI API 2026-02-12",           # confirmed agentic tool-use (AEI API only, natural eco_2015 / 2010 SOC file matching the trend series below). Paper static charts that need an eco_2025-baselined comparison use the override in analysis/paper/paper_config.py (PAPER_CONFIG_DATASET_OVERRIDES).
     "all_confirmed":      "AEI Both + Micro 2026-02-12",  # all confirmed usage (conv + API + Microsoft)
     "agentic_ceiling":    "MCP + API 2026-02-18",         # agentic ceiling (most recent)
 }

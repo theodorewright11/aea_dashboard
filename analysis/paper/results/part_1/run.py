@@ -36,7 +36,7 @@ from analysis.paper.paper_config import (
     METRIC_COLORS, METRIC_COLORS_LIGHT, HEATMAP_LOW, HEATMAP_HIGH,
     TREND_COLORS, PAPER_PALETTE,
     style_paper_figure, fmt_wages, fmt_workers, fmt_date,
-    paper_fonts,
+    paper_fonts, paper_dataset_for,
 )
 
 HERE = Path(__file__).resolve().parent
@@ -259,7 +259,11 @@ def build_overview(results: Path, figures: Path) -> None:
 
     rows: list[dict] = []
     for key in CONFIG_ORDER:
-        ds = ANALYSIS_CONFIGS[key]
+        # paper_dataset_for() applies paper-internal overrides — e.g.
+        # agentic_confirmed → eco_2025-rebased file — without forcing
+        # exploratory/claude_lab scripts that share ANALYSIS_CONFIGS
+        # onto the same paper-specific dataset.
+        ds = paper_dataset_for(key)
         label = ANALYSIS_CONFIG_LABELS[key]
         df = _run_config(ds, "occupation")
 
