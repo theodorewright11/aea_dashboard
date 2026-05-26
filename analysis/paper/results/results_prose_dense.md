@@ -1279,7 +1279,7 @@ Wages Exposed range: $2.48B (Operating Vehicles) to $466.96B (Documenting/Record
 
 Two-panel horizontal bar chart, both panels showing all 51 jurisdictions colored by Ward cluster (same colors as the main Part 3 map). Each panel sorts independently by its own metric (state descending):
 - **Left panel — "Sorted by % of State Workforce Exposed"**: bar = `pct_emp_wtd` per state.
-- **Right panel — "Sorted by % of State Emp in High AI Exp & <0 Emp Proj Occs (n = 38)"**: bar = `focused_share_pct` per state.
+- **Right panel — "Sorted by % of State Emp in High AI Exp & <0 Emp Proj Occs (n = 44)"**: bar = `focused_share_pct` per state.
 
 Both panels show bar-end value labels (rounded to 1 decimal). Disagreement states (Ward vs K-means) get a diagonal-stripe overlay in the K-means cluster's color.
 

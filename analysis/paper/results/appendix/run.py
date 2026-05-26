@@ -2454,6 +2454,9 @@ def build_state_clusters_each_ranked(results: Path, figures: Path) -> None:
             _load_state_features, CLUSTER_FEATURES, OUTLIER_GEOS,
             _pick_k_from_linkage, K_MIN, K_MAX,
         )
+        from analysis.exploratory.deepdive_state_signal.run import (
+            _load_focused_set,
+        )
     except ImportError as exc:
         print(f"  -> SKIPPED: exploratory/deepdive_state_clusters not available ({exc})")
         return
@@ -2493,7 +2496,10 @@ def build_state_clusters_each_ranked(results: Path, figures: Path) -> None:
         if r["ward_lab"] != r["km_lab"]
     }
 
-    n_focused = 38  # SKA-gated focused set size, matches Part 3 risk_score_5f
+    # SKA-gated focused set size — derived from the same builder Part 3's
+    # risk_score_5f uses, so this label can't drift out of sync if the
+    # underlying flags shift.
+    n_focused = len(_load_focused_set())
 
     save_csv(
         state_df[["geo", "cluster", "cluster_name",
