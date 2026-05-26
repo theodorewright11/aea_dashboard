@@ -619,58 +619,63 @@ n_entries range: 208 (Point of sale POS) to 2,898 (Analytical or scientific). Th
 
 ### Occupations with High AI Exposure and Negative Employment Projection
 
-![risk_score_5f.png](part_3/figures/risk_score_5f.png)
+![risk_score_5f_workers.png](part_3/figures/risk_score_5f_workers.png)
 
-Horizontal bar chart of the 44 occupations in the SKA-gated focused set: BLS projected employment 2024–2034 < 0%, current pct_tasks_exposed > a threshold, exposure trending up, and AI capability ≥ SKA need (`ska_gated == 1`). Bars are ordered by **absolute** BLS projected decline (most negative first). Bar length = `|emp_proj_pct|`. Bar color = pct_tasks_exposed on a light → dark blue ramp. Right-side annotation per bar: "{pct}% tasks". In-bar text: signed `emp_proj_pct` (e.g. "−36.1%"). X-axis from 0% up to ~40%+ with ticks at 0/10/20/30/40.
+Chart title: "High AI Exposure × Negative Employment Projection — Tasks vs. Workers". Two-panel horizontal bar chart of the 44 occupations in the SKA-gated focused set: BLS projected employment 2024–2034 < 0%, current pct_tasks_exposed > a threshold, exposure trending up, and AI capability ≥ SKA need (`ska_gated == 1`). Y-axis shared between panels and sorted by % Tasks Exposed descending. Bars in both panels colored by `|emp_proj_pct|` on a light tan → dark burgundy gradient (cmin = 0.30%, cmax = 36.10%).
 
-Per occupation (Major · Job Zone · BLS proj % · pct_tasks_exposed % · SKA AI-as-% of need · pct_delta vs first snapshot · workers_affected · wages_affected). Sorted by descending |emp_proj_pct|:
+- **Panel 1 — "% Tasks Exposed"**: x = `pct`. In-bar text = % rounded to integer (e.g., "87%"); inside text is white on dark bars / dark on light bars when the value sits past ~20% of the panel max, otherwise rendered outside the bar in neutral. X-axis labeled "% Tasks Exposed", tick suffix "%". Panel takes 40% of the chart's horizontal column width.
+- **Panel 2 — "Workers Exposed"**: x = `workers_affected`. In-bar text = formatted count ("2.3M", "586K", "8K"). X-axis labeled "Workers Exposed". Panel takes 60% of the column width.
 
-1. **Word Processors and Typists** — Office/Admin, Z2 · −36.10% · 71.282% tasks · ska 128.086% · Δpct +26.877 pp · 24,955.97 wk · $1.230B
-2. **Switchboard Operators, Including Answering Service** — Office/Admin, Z2 · −26.30% · 66.370% · 137.298% · +21.109 pp · 22,751.68 wk · $878.90M
-3. **Data Entry Keyers** — Office/Admin, Z2 · −25.90% · 62.741% · 122.349% · +14.129 pp · 79,731.71 wk · $3.296B
-4. **Telemarketers** — Sales, Z2 · −22.10% · 83.145% · 132.142% · +38.998 pp · 48,581.79 wk · $1.722B
-5. **Order Clerks** — Office/Admin, Z2 · −17.20% · 62.696% · 123.843% · +19.475 pp · 47,147.49 wk · $2.177B
-6. **Payroll and Timekeeping Clerks** — Office/Admin, Z3 · −16.70% · 51.076% · 124.412% · +15.314 pp · 78,218.10 wk · $4.557B
-7. **File Clerks** — Office/Admin, Z2 · −15.90% · 57.454% · 135.012% · +15.800 pp · 42,194.03 wk · $1.840B
-8. **Adult Basic Education, Adult Secondary Education, and English as a Second Language Instructors** — Educational, Z4 · −13.70% · 65.497% · 114.336% · +14.878 pp · 24,437.06 wk · $1.504B
-9. **Desktop Publishers** — Office/Admin, Z3 · −12.40% · 67.771% · 113.628% · +10.081 pp · 2,270.34 wk · $125.53M
-10. **Interviewers, Except Eligibility and Loan** — Office/Admin, Z3 · −11.60% · 71.011% · 123.295% · +24.653 pp · 105,138.36 wk · $4.828B
-11. **Bill and Account Collectors** — Office/Admin, Z2 · −10.50% · 72.364% · 135.377% · +23.767 pp · 114,936.45 wk · $5.405B
-12. **Brokerage Clerks** — Office/Admin, Z3 · −9.50% · 77.313% · 131.958% · +28.567 pp · 27,786.24 wk · $1.827B
-13. **Procurement Clerks** — Office/Admin, Z2 · −8.70% · 69.305% · 127.826% · +10.470 pp · 38,679.03 wk · $1.956B
-14. **Shipping, Receiving, and Inventory Clerks** — Office/Admin, Z2 · −7.70% · 51.916% · 159.145% · +18.160 pp · 424,087.10 wk · $19.194B
-15. **Human Resources Assistants, Except Payroll and Timekeeping** — Office/Admin, Z3 · −7.10% · 82.084% · 119.943% · +35.819 pp · 74,055.94 wk · $3.748B
-16. **Library Technicians** — Educational, Z3 · −6.80% · 55.429% · 147.641% · +10.586 pp · 38,074.22 wk · $1.697B
-17. **Office Clerks, General** — Office/Admin, Z2 · −6.70% · 65.505% · 142.138% · +21.964 pp · 1,614,661.39 wk · $72.676B
-18. **Advertising Sales Agents** — Sales, Z4 · −6.40% · 84.016% · 113.281% · +24.573 pp · 77,043.07 wk · $4.994B
-19. **Credit Authorizers, Checkers, and Clerks** — Office/Admin, Z2 · −6.20% · 65.442% · 140.728% · +18.329 pp · 7,872.69 wk · $394.26M
-20. **Computer Programmers** — Computer/Math, Z4 · −6.00% · 77.981% · 119.050% · +20.445 pp · 71,922.14 wk · $7.220B
-21. **Legal Secretaries and Administrative Assistants** — Office/Admin, Z3 · −5.80% · 62.021% · 116.848% · +34.797 pp · 96,926.06 wk · $5.386B
-22. **Bookkeeping, Accounting, and Auditing Clerks** — Office/Admin, Z3 · −5.80% · 69.095% · 135.588% · +16.826 pp · 949,144.56 wk · $48.093B
-23. **Correspondence Clerks** — Office/Admin, Z2 · −5.60% · 52.342% · 127.531% · +6.777 pp · 2,245.49 wk · $105.09M
-24. **Customer Service Representatives** — Office/Admin, Z2 · −5.50% · 86.833% · 132.352% · +21.268 pp · 2,253,977.91 wk · $100.911B
-25. **Claims Adjusters, Examiners, and Investigators** — Business/Financial, Z4 · −5.10% · 68.287% · 109.213% · +29.550 pp · 221,406.45 wk · $17.270B
-26. **First-Line Supervisors of Retail Sales Workers** — Sales, Z2 · −5.00% · 64.238% · 125.425% · +26.999 pp · 720,621.36 wk · $34.965B
-27. **Medical Transcriptionists** — Healthcare Support, Z3 · −4.90% · 75.492% · 118.422% · +25.503 pp · 31,366.82 wk · $1.268B
-28. **Credit Analysts** — Business/Financial, Z4 · −4.40% · 68.030% · 112.710% · +22.241 pp · 43,804.26 wk · $3.658B
-29. **News Analysts, Reporters, and Journalists** — Arts/Design/Ent, Z4 · −3.90% · 78.531% · 114.392% · +17.008 pp · 30,823.31 wk · $1.917B
-30. **Insurance Claims and Policy Processing Clerks** — Office/Admin, Z2 · −3.70% · 69.057% · 138.580% · +11.799 pp · 147,961.47 wk · $7.284B
-31. **Computer User Support Specialists** — Computer/Math, Z3 · −3.70% · 81.775% · 113.294% · +34.612 pp · 586,481.12 wk · $36.280B
-32. **Insurance Underwriters** — Business/Financial, Z4 · −2.60% · 55.394% · 125.447% · +11.983 pp · 58,396.64 wk · $4.752B
-33. **Statistical Assistants** — Office/Admin, Z4 · −2.50% · 83.797% · 114.166% · +28.573 pp · 3,946.84 wk · $198.64M
-34. **Loan Interviewers and Clerks** — Office/Admin, Z3 · −2.30% · 62.664% · 120.081% · +19.929 pp · 103,263.98 wk · $5.165B
-35. **Career/Technical Education Teachers, Middle School** — Educational, Z4 · −2.00% · 53.058% · 112.726% · +15.279 pp · 8,950.85 wk · $582.07M
-36. **Middle School Teachers, Except Special and Career/Technical Education** — Educational, Z4 · −2.00% · 58.850% · 111.791% · +11.935 pp · 364,921.12 wk · $23.490B
-37. **Executive Secretaries and Executive Administrative Assistants** — Office/Admin, Z3 · −1.60% · 56.890% · 117.448% · +20.071 pp · 261,644.16 wk · $20.039B
-38. **Secretaries and Administrative Assistants, Except Legal, Medical, and Executive** — Office/Admin, Z2 · −1.60% · 73.651% · 119.145% · +18.531 pp · 1,257,070.93 wk · $59.761B
-39. **Fine Artists, Including Painters, Sculptors, and Illustrators** — Arts/Design/Ent, Z3 · −1.20% · 65.911% · 120.367% · +15.708 pp · 7,395.24 wk · $410.36M
-40. **Dispatchers, Except Police, Fire, and Ambulance** — Office/Admin, Z2 · −0.90% · 71.463% · 118.826% · +40.678 pp · 144,933.48 wk · $7.296B
-41. **Database Administrators** — Computer/Math, Z4 · −0.70% · 76.423% · 112.804% · +13.299 pp · 37,306.43 wk · $4.660B
-42. **Retail Salespersons** — Sales, Z2 · −0.50% · 52.932% · 137.234% · +17.206 pp · 2,063,203.05 wk · $73.058B
-43. **Billing and Posting Clerks** — Office/Admin, Z3 · −0.40% · 71.821% · 141.059% · +27.347 pp · 290,198.43 wk · $14.075B
-44. **First-Line Supervisors of Office and Administrative Support Workers** — Office/Admin, Z3 · −0.30% · 68.804% · 109.582% · +26.443 pp · 988,487.05 wk · $68.700B
+Right column past Panel 2 has header "Emp Proj" and lists each occupation's signed `emp_proj_pct` (e.g., "−5.5%", "−36.1%").
 
-**Composition of the focused 44 (from `risk_score_5f_counts.csv`):**
+Per occupation (Major · Job Zone · % Tasks Exposed · Workers Exposed · Emp Proj). Sorted by descending `pct`:
+
+1. **Customer Service Representatives** — Office/Admin, Z2 · 86.833% tasks · 2,253,977.91 wk · −5.50%
+2. **Advertising Sales Agents** — Sales, Z4 · 84.016% · 77,043.07 wk · −6.40%
+3. **Statistical Assistants** — Office/Admin, Z4 · 83.797% · 3,946.84 wk · −2.50%
+4. **Telemarketers** — Sales, Z2 · 83.145% · 48,581.79 wk · −22.10%
+5. **Human Resources Assistants, Except Payroll and Timekeeping** — Office/Admin, Z3 · 82.084% · 74,055.94 wk · −7.10%
+6. **Computer User Support Specialists** — Computer/Math, Z3 · 81.775% · 586,481.12 wk · −3.70%
+7. **News Analysts, Reporters, and Journalists** — Arts/Design/Ent, Z4 · 78.531% · 30,823.31 wk · −3.90%
+8. **Computer Programmers** — Computer/Math, Z4 · 77.981% · 71,922.14 wk · −6.00%
+9. **Brokerage Clerks** — Office/Admin, Z3 · 77.313% · 27,786.24 wk · −9.50%
+10. **Database Administrators** — Computer/Math, Z4 · 76.423% · 37,306.43 wk · −0.70%
+11. **Medical Transcriptionists** — Healthcare Support, Z3 · 75.492% · 31,366.82 wk · −4.90%
+12. **Secretaries and Administrative Assistants, Except Legal, Medical, and Executive** — Office/Admin, Z2 · 73.651% · 1,257,070.93 wk · −1.60%
+13. **Bill and Account Collectors** — Office/Admin, Z2 · 72.364% · 114,936.45 wk · −10.50%
+14. **Billing and Posting Clerks** — Office/Admin, Z3 · 71.821% · 290,198.43 wk · −0.40%
+15. **Dispatchers, Except Police, Fire, and Ambulance** — Office/Admin, Z2 · 71.463% · 144,933.48 wk · −0.90%
+16. **Word Processors and Typists** — Office/Admin, Z2 · 71.282% · 24,955.97 wk · −36.10%
+17. **Interviewers, Except Eligibility and Loan** — Office/Admin, Z3 · 71.011% · 105,138.36 wk · −11.60%
+18. **Procurement Clerks** — Office/Admin, Z2 · 69.305% · 38,679.03 wk · −8.70%
+19. **Bookkeeping, Accounting, and Auditing Clerks** — Office/Admin, Z3 · 69.095% · 949,144.56 wk · −5.80%
+20. **Insurance Claims and Policy Processing Clerks** — Office/Admin, Z2 · 69.057% · 147,961.46 wk · −3.70%
+21. **First-Line Supervisors of Office and Administrative Support Workers** — Office/Admin, Z3 · 68.804% · 988,487.05 wk · −0.30%
+22. **Claims Adjusters, Examiners, and Investigators** — Business/Financial, Z4 · 68.287% · 221,406.45 wk · −5.10%
+23. **Credit Analysts** — Business/Financial, Z4 · 68.030% · 43,804.26 wk · −4.40%
+24. **Desktop Publishers** — Office/Admin, Z3 · 67.771% · 2,270.34 wk · −12.40%
+25. **Switchboard Operators, Including Answering Service** — Office/Admin, Z2 · 66.370% · 22,751.68 wk · −26.30%
+26. **Fine Artists, Including Painters, Sculptors, and Illustrators** — Arts/Design/Ent, Z3 · 65.911% · 7,395.24 wk · −1.20%
+27. **Office Clerks, General** — Office/Admin, Z2 · 65.505% · 1,614,661.39 wk · −6.70%
+28. **Adult Basic Education, Adult Secondary Education, and English as a Second Language Instructors** — Educational, Z4 · 65.497% · 24,437.06 wk · −13.70%
+29. **Credit Authorizers, Checkers, and Clerks** — Office/Admin, Z2 · 65.442% · 7,872.69 wk · −6.20%
+30. **First-Line Supervisors of Retail Sales Workers** — Sales, Z2 · 64.238% · 720,621.36 wk · −5.00%
+31. **Data Entry Keyers** — Office/Admin, Z2 · 62.741% · 79,731.71 wk · −25.90%
+32. **Order Clerks** — Office/Admin, Z2 · 62.696% · 47,147.49 wk · −17.20%
+33. **Loan Interviewers and Clerks** — Office/Admin, Z3 · 62.664% · 103,263.98 wk · −2.30%
+34. **Legal Secretaries and Administrative Assistants** — Office/Admin, Z3 · 62.021% · 96,926.06 wk · −5.80%
+35. **Middle School Teachers, Except Special and Career/Technical Education** — Educational, Z4 · 58.850% · 364,921.12 wk · −2.00%
+36. **File Clerks** — Office/Admin, Z2 · 57.454% · 42,194.03 wk · −15.90%
+37. **Executive Secretaries and Executive Administrative Assistants** — Office/Admin, Z3 · 56.890% · 261,644.16 wk · −1.60%
+38. **Library Technicians** — Educational, Z3 · 55.429% · 38,074.22 wk · −6.80%
+39. **Insurance Underwriters** — Business/Financial, Z4 · 55.394% · 58,396.64 wk · −2.60%
+40. **Career/Technical Education Teachers, Middle School** — Educational, Z4 · 53.058% · 8,950.85 wk · −2.00%
+41. **Retail Salespersons** — Sales, Z2 · 52.932% · 2,063,203.05 wk · −0.50%
+42. **Correspondence Clerks** — Office/Admin, Z2 · 52.342% · 2,245.49 wk · −5.60%
+43. **Shipping, Receiving, and Inventory Clerks** — Office/Admin, Z2 · 51.916% · 424,087.10 wk · −7.70%
+44. **Payroll and Timekeeping Clerks** — Office/Admin, Z3 · 51.076% · 78,218.10 wk · −16.70%
+
+**Composition of the focused 44:**
 
 By job zone:
 - Zone 2: 18 occupations
@@ -687,16 +692,18 @@ By major occupational category:
 - Arts, Design, Entertainment, Sports, and Media: 2
 - Healthcare Support: 1
 
-pct_tasks_exposed range across the 44: 51.08% (Payroll and Timekeeping Clerks) to 86.83% (Customer Service Representatives).
+% Tasks Exposed range across the 44: 51.076% (Payroll and Timekeeping Clerks) to 86.833% (Customer Service Representatives).
 
-|emp_proj_pct| range: 0.30% (First-Line Supervisors of Office and Admin Support Workers) to 36.10% (Word Processors and Typists).
+Workers Exposed range across the 44: 2,245.49 (Correspondence Clerks) to 2,253,977.91 (Customer Service Representatives).
 
-Summed workers across the 44 occupations: 13.64M (13,639,021.79 from `workers_affected` column).
+|emp_proj_pct| range across the 44: 0.30% (First-Line Supervisors of Office and Admin Support Workers) to 36.10% (Word Processors and Typists).
+
+Summed workers across the 44 occupations: 13.64M (13,639,021.79).
 Summed wages across the 44: $680.59B ($680,592,988,769.33).
 
-Top 8 single-occupation workers_affected values: Customer Service Reps 2.25M, Retail Salespersons 2.06M, Office Clerks General 1.61M, Secretaries and Admin Assistants 1.26M, Office and Admin Supervisors 988.5K, Bookkeeping/Accounting/Auditing Clerks 949.1K, Sales Supervisors 720.6K, Computer User Support Specialists 586.5K.
+Top 8 single-occupation `workers_affected` values: Customer Service Representatives 2,253,977.91 (2.25M), Retail Salespersons 2,063,203.05 (2.06M), Office Clerks, General 1,614,661.39 (1.61M), Secretaries and Administrative Assistants (Except Legal/Medical/Executive) 1,257,070.93 (1.26M), First-Line Supervisors of Office and Admin Support Workers 988,487.05 (988.5K), Bookkeeping, Accounting, and Auditing Clerks 949,144.56 (949.1K), First-Line Supervisors of Retail Sales Workers 720,621.36 (720.6K), Computer User Support Specialists 586,481.12 (586.5K).
 
-The chart's color legend at the bottom reads "Tasks Exposed 51% ■■■■■■■ 87%".
+The chart's bottom legend reads "BLS Emp Proj 2024–2034 (more negative → darker)  -0%  ■■■■■■■  -36%".
 
 ---
 
