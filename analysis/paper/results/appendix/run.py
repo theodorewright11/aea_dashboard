@@ -2741,6 +2741,8 @@ def build_state_clusters_combined_ranked(results: Path, figures: Path) -> None:
     try:
         from analysis.exploratory.deepdive_state_clusters.run import (
             compute_clusters, ALL_FEATURES,
+            _load_state_features, CLUSTER_FEATURES, OUTLIER_GEOS,
+            _pick_k_from_linkage,
         )
         from analysis.exploratory.deepdive_state_signal.run import (
             _load_focused_set,
@@ -2748,6 +2750,10 @@ def build_state_clusters_combined_ranked(results: Path, figures: Path) -> None:
     except ImportError as exc:
         print(f"  -> SKIPPED: exploratory/deepdive_state_clusters not available ({exc})")
         return
+
+    from sklearn.cluster import KMeans
+    from sklearn.preprocessing import StandardScaler
+    from scipy.cluster.hierarchy import linkage, fcluster
 
     # Pin k=3 to match Part 3's state_clusters_map and the companion
     # each_ranked chart above. See that function for the rationale.
@@ -2763,6 +2769,33 @@ def build_state_clusters_combined_ranked(results: Path, figures: Path) -> None:
     cluster_names  = pkg["cluster_names"]
     cluster_color  = pkg["cluster_color"]
     order          = pkg["order"]
+
+    # K-means / Ward disagreement alignment, lifted from each_ranked so
+    # the two charts mark the same set of striped states.
+    raw = _load_state_features()
+    sub_in = raw[~raw["geo"].isin(OUTLIER_GEOS)].copy().reset_index(drop=True)
+    Xz = StandardScaler().fit_transform(
+        sub_in[CLUSTER_FEATURES].to_numpy(dtype=float)
+    )
+    Z = linkage(Xz, method="ward")
+    k_, _ = _pick_k_from_linkage(Z, K_PIN, K_PIN)
+    ward_lab = fcluster(Z, t=k_, criterion="maxclust")
+    km_lab = KMeans(n_clusters=k_, n_init=20, random_state=42).fit_predict(Xz) + 1
+    aligned = np.zeros_like(km_lab)
+    for w in np.unique(ward_lab):
+        idx = ward_lab == w
+        majority = pd.Series(km_lab[idx]).mode().iloc[0]
+        aligned[km_lab == majority] = w
+    for i, v in enumerate(aligned):
+        if v == 0:
+            aligned[i] = km_lab[i] + 100
+    sub_in["ward_lab"] = ward_lab
+    sub_in["km_lab"] = aligned
+    km_alt_color: dict[str, str] = {
+        r["geo"].upper(): cluster_color.get(int(r["km_lab"]), "#777777")
+        for _, r in sub_in.iterrows()
+        if r["ward_lab"] != r["km_lab"]
+    }
 
     n_focused = len(_load_focused_set())
 
@@ -2808,6 +2841,7 @@ def build_state_clusters_combined_ranked(results: Path, figures: Path) -> None:
 
     fig = go.Figure()
 
+    # Base bars — one trace, single solid cluster color per state.
     fig.add_trace(go.Bar(
         y=geos, x=rank_sm, orientation="h",
         marker=dict(color=colors, line=dict(width=0)),
@@ -2823,9 +2857,34 @@ def build_state_clusters_combined_ranked(results: Path, figures: Path) -> None:
         ),
     ))
 
-    # Cluster legend swatches (focused-set n included on the cluster
-    # whose name references the focused set so the dynamic n stays
-    # visible somewhere on the chart).
+    # K-means stripe overlay — one trace per unique K-means color so
+    # the stripe color actually varies. Plotly 6.6 silently ignores
+    # per-bar marker.pattern.fgcolor arrays; splitting by color +
+    # barmode="overlay" is the documented workaround (see each_ranked).
+    def _overlay_groups(geos_l: list[str], vals: list[float]) -> dict[str, dict]:
+        groups: dict[str, dict] = {}
+        for g, v in zip(geos_l, vals):
+            if g not in km_alt_color:
+                continue
+            col = km_alt_color[g]
+            groups.setdefault(col, {"y": [], "x": []})
+            groups[col]["y"].append(g)
+            groups[col]["x"].append(v)
+        return groups
+
+    for km_color, payload in _overlay_groups(geos, rank_sm).items():
+        fig.add_trace(go.Bar(
+            y=payload["y"], x=payload["x"], orientation="h",
+            marker=dict(
+                color="rgba(0,0,0,0)",
+                pattern=dict(shape="/", fgcolor=km_color,
+                             solidity=0.30, size=8, fillmode="overlay"),
+                line=dict(width=0),
+            ),
+            showlegend=False, cliponaxis=False, hoverinfo="skip",
+        ))
+
+    # Cluster legend swatches + stripe-overlay legend swatch.
     for cid in order:
         fig.add_trace(go.Bar(
             y=[None], x=[None],
@@ -2833,6 +2892,16 @@ def build_state_clusters_combined_ranked(results: Path, figures: Path) -> None:
             name=cluster_names[cid],
             showlegend=True,
         ))
+    fig.add_trace(go.Bar(
+        y=[None], x=[None],
+        marker=dict(
+            color="#cccccc",
+            pattern=dict(shape="/", fgcolor="#333333",
+                         solidity=0.30, size=8, fillmode="overlay"),
+        ),
+        name="Ward / K-means disagreement (stripe = K-means)",
+        showlegend=True,
+    ))
 
     height = max(PAPER_H + 250, n_states * 30 + 280)
 
@@ -2846,12 +2915,15 @@ def build_state_clusters_combined_ranked(results: Path, figures: Path) -> None:
             "% workforce exposed and % employment in High AI Exposure & <0 "
             "Emp Proj occupations. States sorted ascending — most exposed on "
             "both metrics at top. Bar color = Ward cluster (matches previous "
-            "figure). End-of-bar label: combined rank sum (bold), followed by "
-            "(workforce rank, focused-set rank) in parentheses."
+            "figure); diagonal stripe = K-means disagreement. End-of-bar label: "
+            "combined rank sum (bold), followed by (workforce rank, focused-set "
+            "rank) in parentheses."
         ),
         height=height,
         width=PAPER_W,
-        margin=dict(l=40, r=160, t=170, b=200),
+        # Tighter top margin (was 170) but still wide enough to stack
+        # title above the label-format key without them overlapping.
+        margin=dict(l=40, r=160, t=130, b=200),
     )
 
     # End-of-bar label needs room for the longest case e.g. "97 (49, 48)".
@@ -2886,8 +2958,30 @@ def build_state_clusters_combined_ranked(results: Path, figures: Path) -> None:
                       family=FONT_FAMILY),
         )
 
+    # Label-format key sitting between the title and the plot area in
+    # the top margin, so the reader knows which number in the parens is
+    # which without consulting the caption.
+    fig.add_annotation(
+        xref="paper", yref="paper",
+        x=0.0, y=1.022,
+        xanchor="left", yanchor="bottom",
+        text=("<b>Label format:</b> "
+              "<b>combined rank sum</b> "
+              "(<i>workforce-exposure rank</i>, "
+              "<i>focused-set rank</i>) — e.g. <b>12</b> (11, 1)"),
+        showarrow=False,
+        font=dict(size=ANNOT_FS, color=PAPER_PALETTE["text"],
+                  family=FONT_FAMILY),
+    )
+
     fig.update_layout(
         bargap=0.28,
+        # "overlay" puts the K-means stripe traces on top of the base
+        # bars at the same y position (without it they'd render
+        # side-by-side and the stripes would land off-bar).
+        barmode="overlay",
+        # Title anchored at the top of the canvas so the label-format
+        # key annotation has room beneath it before the plot area.
         title=dict(y=0.985, yanchor="top"),
         legend=dict(
             orientation="h",
