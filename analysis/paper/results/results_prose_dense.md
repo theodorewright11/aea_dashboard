@@ -313,7 +313,7 @@ Three side-by-side panels with the same vertical job-zone axis (1–5).
 
 Non-phys-only quartiles (right panel, per `job_zone_nonphys_summary.csv`): Zone 2 q25 = 22.60% / q75 = 63.50%; Zone 3 q25 = 25.30% / q75 = 62.70%; Zone 4 q25 = 32.60% / q75 = 59.40%; Zone 5 q25 = 38.00% / q75 = 73.50%.
 
-Phys-zone crosstab (used to color/aggregate the middle panel) — median / mean pct_tasks_affected per (occ_group × zone):
+Phys-zone crosstab (saved alongside the chart as `phys_zone_crosstab.csv`; reference data — pct_tasks_affected median / mean per (occ_group × zone)):
 - Physical Z1: n = 30, median 0.00%, mean 3.40%
 - Physical Z2: n = 188, median 2.00%, mean 5.00%
 - Physical Z3: n = 82, median 7.00%, mean 9.80%
@@ -704,7 +704,7 @@ The chart's color legend at the bottom reads "Tasks Exposed 51% ■■■■■�
 
 ![state_clusters_map.png](part_3/figures/state_clusters_map.png)
 
-Matplotlib choropleth of the U.S. states colored by Ward hierarchical-cluster assignment (k = 3 + 1 outlier). DC renders as a small labeled marker east of MD. AK and HI render in lower-left inset axes. States where Ward and K-means disagree carry a diagonal-stripe overlay in the K-means cluster's color.
+Chart title: "U.S. States Clustered on Workforce Exposure". Matplotlib choropleth of the U.S. states colored by Ward hierarchical-cluster assignment (k pinned to 3 plus 1 outlier). DC renders as a small filled circle marker east of MD with a black outline and a "DC" text label. AK and HI render in lower-left inset axes with the labels "AK" and "HI" above each inset. States where Ward and K-means disagree carry a diagonal-stripe (`////`) overlay drawn in the K-means cluster's color on top of the Ward fill (matplotlib `hatch.linewidth` = 0.7).
 
 **Cluster definitions (per `state_clusters_map.csv` `cluster_name`):**
 - **Cluster −1 (outlier)**: DC — "45.9% workforce exposed, 4.5% emp share in High AI Exp & <0 Emp Proj occs."
@@ -712,7 +712,7 @@ Matplotlib choropleth of the U.S. states colored by Ward hierarchical-cluster as
 - **Cluster 2**: "Highest Workforce Exposed / Lowest Emp Share in High AI Exp & <0 Emp Proj Occs." 6 states.
 - **Cluster 3**: "Lowest Workforce Exposed / Mid Emp Share in High AI Exp & <0 Emp Proj Occs." 28 states.
 
-The map itself encodes only the cluster color; the underlying per-state `pct_emp_wtd` and `focused_share_pct` values are listed below for completeness (these are the two features the cluster algorithm uses).
+The map itself encodes only the cluster color; the underlying per-state `pct_emp_wtd` and `focused_share_pct` values are listed below (these are the two features the cluster algorithm uses).
 
 **Cluster −1 (outlier, 1 state):**
 - DC — pct_emp_wtd 45.901%, focused_share_pct 4.471%.
@@ -778,7 +778,7 @@ The map itself encodes only the cluster color; the underlying per-state `pct_emp
 `pct_emp_wtd` range: 30.334% (NV) to 45.901% (DC); spread excluding DC is 30.3% (NV) → 38.9% (CO).
 `focused_share_pct` range: 4.471% (DC) to 12.083% (NM); spread excluding DC is 8.459% (CA) → 12.083% (NM).
 
-The legend at the bottom of the map renders the cluster names (each with patch swatch) and one additional entry for "Ward / K-means disagreement (stripe color = K-means)" — the disagreement set is drawn in striped overlay on each disagreement state.
+The legend below the map (2 columns, centered) renders the cluster names — each with a colored patch swatch — followed by one additional entry: a gray patch with diagonal hatching labeled "Ward / K-means disagreement (stripe color = K-means)". The "Lowest" cluster name in the legend is shortened to "Lowest Workforce Exposed / Mid Focused-Set Share" (and similar substitutions for the other clusters) so the labels fit the legend width; the outlier entry shortens to "DC (outlier)".
 
 ---
 
@@ -1271,7 +1271,7 @@ Chart title: "Workforce Exposure by State, Colored by Cluster". Two-panel horizo
 - **Left panel — "Sorted by % of State Workforce Exposed"**: bar = `pct_emp_wtd` per state.
 - **Right panel — "Sorted by % of State Emp in High AI Exp & <0 Emp Proj Occs (n = 44)"**: bar = `focused_share_pct` per state.
 
-Both panels show bar-end value labels (rounded to 1 decimal). Disagreement states (Ward vs K-means) get a diagonal-stripe overlay in the K-means cluster's color.
+Both panels show bar-end value labels (rounded to 1 decimal). Disagreement states (Ward vs K-means) carry a per-bar colored border (`marker.line.width` = 3) drawn in the K-means alternative cluster's color; agreement states render with no visible border.
 
 Per state, both metrics (all values from `state_clusters_each_ranked.csv`, sorted by `pct_emp_wtd` descending):
 
@@ -1338,8 +1338,92 @@ Cluster legend at the bottom of the chart (per `state_clusters_each_ranked.csv` 
 - Cluster 2: Highest Workforce Exposed / Lowest Emp Share in High AI Exp & <0 Emp Proj Occs (5 states).
 - Cluster 3: Mid Workforce Exposed / Highest Emp Share in High AI Exp & <0 Emp Proj Occs (9 states).
 - Cluster −1: DC outlier ("49.2% workforce exposed, 4.5% emp share in High AI Exp & <0 Emp Proj occs").
-- Plus a 5th legend entry: "Ward / K-means disagreement (stripe = K-means)".
+- Plus a 5th legend entry: "Ward / K-means disagreement (border = K-means)" — a neutral gray swatch with a dark border.
 
+---
+
+### Appendix — State Clusters, Combined Rank Sum Across Both Panels
+
+![state_clusters_combined_ranked.png](appendix/figures/state_clusters_combined_ranked.png)
+
+Chart title: "Combined Exposure Rank — Sum of Both State-Ranking Panels (focused set n=44)". Single-panel horizontal bar chart of all 51 jurisdictions colored by Ward cluster. For every state the rank on `pct_emp_wtd` (rank 1 = highest, descending, method `min`) is summed with the rank on `focused_share_pct` (rank 1 = highest, descending, method `min`); bar length = `rank_sum`. States sorted ascending by `rank_sum` (lowest = most exposed on both metrics = top of the chart). Bar color = the same Ward cluster palette used in `state_clusters_each_ranked.png`; disagreement states (Ward vs K-means) carry a per-bar colored border (`marker.line.width` = 3) drawn in the K-means alternative cluster's color (agreement states render with no visible border).
+
+End-of-bar label per state: bold combined rank sum, followed by `(workforce-exposure rank, focused-set rank)` in parentheses — e.g. `12 (11, 1)` for the top bar. A label-format key annotation sits between the title and the plot area: "Label format: **combined rank sum** (*workforce-exposure rank*, *focused-set rank*) — e.g. **12** (11, 1)".
+
+X-axis title: "Combined Rank Sum (lower = more exposed on both metrics; min possible = 2, max possible = 102)". Y-axis title: "State". X-axis upper bound = max(rank_sum) + 24 to leave room for the end-of-bar labels.
+
+Per state (all values from `state_clusters_combined_ranked.csv`, sorted by `rank_sum` ascending — chart display order top-to-bottom):
+
+| # | State | Cluster | pct_emp_wtd | rank_workforce | focused_share_pct | rank_focused | rank_sum |
+|---|---|---|---|---|---|---|---|
+| 1 | NH | 3 | 38.814% | 11 | 11.903% | 1 | 12 |
+| 2 | NY | 3 | 40.575% | 6 | 10.712% | 11 | 17 |
+| 3 | FL | 3 | 38.629% | 14 | 11.185% | 5 | 19 |
+| 4 | UT | 3 | 38.691% | 13 | 11.050% | 6 | 19 |
+| 5 | SC | 3 | 38.053% | 19 | 11.385% | 3 | 22 |
+| 6 | DE | 3 | 38.879% | 10 | 10.553% | 14 | 24 |
+| 7 | TX | 3 | 38.757% | 12 | 10.646% | 12 | 24 |
+| 8 | NM | 3 | 37.989% | 22 | 11.380% | 4 | 26 |
+| 9 | AZ | 3 | 37.492% | 24 | 11.037% | 7 | 31 |
+| 10 | CT | 1 | 39.037% | 9 | 10.078% | 24 | 33 |
+| 11 | ME | 1 | 37.418% | 26 | 10.446% | 15 | 41 |
+| 12 | MN | 1 | 38.031% | 20 | 10.152% | 22 | 42 |
+| 13 | CO | 2 | 41.094% | 3 | 9.323% | 41 | 44 |
+| 14 | RI | 1 | 38.224% | 18 | 9.845% | 27 | 45 |
+| 15 | VA | 2 | 41.252% | 2 | 9.255% | 43 | 45 |
+| 16 | MD | 2 | 40.905% | 5 | 9.287% | 42 | 47 |
+| 17 | MO | 1 | 38.242% | 17 | 9.764% | 30 | 47 |
+| 18 | HI | 1 | 36.829% | 31 | 10.222% | 17 | 48 |
+| 19 | MT | 1 | 37.327% | 27 | 10.154% | 21 | 48 |
+| 20 | NJ | 1 | 38.502% | 15 | 9.653% | 34 | 49 |
+| 21 | ID | 1 | 36.044% | 41 | 10.807% | 9 | 50 |
+| 22 | KY | 1 | 35.969% | 43 | 10.868% | 8 | 51 |
+| 23 | SD | 1 | 36.386% | 38 | 10.608% | 13 | 51 |
+| 24 | WA | 2 | 40.157% | 7 | 9.096% | 44 | 51 |
+| 25 | DC | −1 (outlier) | 49.197% | 1 | 4.536% | 51 | 52 |
+| 26 | MS | 1 | 34.280% | 50 | 11.678% | 2 | 52 |
+| 27 | MA | 2 | 40.994% | 4 | 8.868% | 49 | 53 |
+| 28 | NE | 1 | 36.943% | 30 | 10.151% | 23 | 53 |
+| 29 | GA | 1 | 37.975% | 23 | 9.700% | 32 | 55 |
+| 30 | OK | 1 | 35.907% | 45 | 10.799% | 10 | 55 |
+| 31 | AL | 1 | 36.237% | 40 | 10.206% | 18 | 58 |
+| 32 | CA | 1 | 39.100% | 8 | 8.498% | 50 | 58 |
+| 33 | AR | 1 | 35.958% | 44 | 10.307% | 16 | 60 |
+| 34 | TN | 1 | 36.029% | 42 | 10.181% | 19 | 61 |
+| 35 | VT | 1 | 38.293% | 16 | 9.061% | 45 | 61 |
+| 36 | WV | 1 | 36.389% | 36 | 9.875% | 26 | 62 |
+| 37 | KS | 1 | 36.389% | 37 | 9.824% | 28 | 65 |
+| 38 | MI | 1 | 37.282% | 28 | 9.553% | 37 | 65 |
+| 39 | OR | 1 | 37.476% | 25 | 9.356% | 40 | 65 |
+| 40 | OH | 1 | 36.669% | 33 | 9.657% | 33 | 66 |
+| 41 | AK | 1 | 36.787% | 32 | 9.623% | 35 | 67 |
+| 42 | NC | 1 | 38.011% | 21 | 9.057% | 46 | 67 |
+| 43 | PA | 1 | 37.154% | 29 | 9.475% | 38 | 67 |
+| 44 | NV | 1 | 34.455% | 48 | 10.161% | 20 | 68 |
+| 45 | WI | 1 | 36.258% | 39 | 9.801% | 29 | 68 |
+| 46 | IA | 1 | 36.493% | 34 | 9.573% | 36 | 70 |
+| 47 | WY | 1 | 34.884% | 47 | 10.020% | 25 | 72 |
+| 48 | LA | 1 | 35.569% | 46 | 9.704% | 31 | 77 |
+| 49 | IL | 1 | 36.405% | 35 | 8.963% | 47 | 82 |
+| 50 | IN | 1 | 33.617% | 51 | 9.378% | 39 | 90 |
+| 51 | ND | 1 | 34.307% | 49 | 8.960% | 48 | 97 |
+
+`rank_sum` range: 12 (NH) → 97 (ND). The chart x-axis runs 0 to 97 + 24 = 121.
+
+`rank_workforce` range: 1 (DC) → 51 (IN). `rank_focused` range: 1 (NH) → 51 (DC).
+
+Top 10 by lowest `rank_sum` (most exposed on both metrics): NH (12), NY (17), FL and UT (tied at 19), SC (22), DE and TX (tied at 24), NM (26), AZ (31), CT (33).
+
+Bottom 5 by highest `rank_sum` (least exposed on combined ranking): ND (97), IN (90), IL (82), LA (77), WY (72).
+
+Cluster composition mirrors `state_clusters_each_ranked.csv`: Cluster 1 = 36 states, Cluster 2 = 5, Cluster 3 = 9, Cluster −1 (outlier) = DC. Total 51.
+
+Cluster legend at the bottom of the chart:
+- Cluster 1: Lowest Workforce Exposed / Mid Emp Share in High AI Exp & <0 Emp Proj Occs.
+- Cluster 2: Highest Workforce Exposed / Lowest Emp Share in High AI Exp & <0 Emp Proj Occs.
+- Cluster 3: Mid Workforce Exposed / Highest Emp Share in High AI Exp & <0 Emp Proj Occs.
+- Cluster −1: DC outlier ("49.2% workforce exposed, 4.5% emp share in High AI Exp & <0 Emp Proj occs").
+- Plus a 5th legend entry: "Ward / K-means disagreement (border = K-means)" — a light gray swatch with a dark border.
 
 ---
 
@@ -1578,7 +1662,7 @@ Per-panel Spearman ρ + OLS fit (from `adoption_friction_scatter_stats.csv`):
 | **r** (Panel 1, Objective Risk) | −0.5009 | 0.0000 | −26.3309 | 138.0525 | 409 |
 | **df** (Panel 2, Deployment Friction) | −0.4182 | 0.0000 | −36.3924 | 164.3676 | 409 |
 
-Both ρ are significant at p < .001. For comparison, the same r/df properties in the prior all-occupation chart had ρ = −0.1876 and −0.1669.
+Both ρ values are significant at p < .001.
 
 Each panel has an in-chart annotation on two lines: "Spearman ρ = {value}***" on the first line and "n = 409 occs" on the second. Legend: dashed orange "OLS fit" line shown on each panel.
 
