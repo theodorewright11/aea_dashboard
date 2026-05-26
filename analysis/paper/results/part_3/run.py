@@ -1080,7 +1080,18 @@ def build_state_clusters_map(results: Path, figures: Path) -> None:
     from sklearn.preprocessing import StandardScaler
     from scipy.cluster.hierarchy import linkage, fcluster
 
-    pkg = compute_clusters()
+    # Pin k=3 so the cluster count stays locked even when upstream feature
+    # values shift (e.g. when the SKA-gated focused set drives a new
+    # focused_share_pct distribution). Same pin used by the appendix
+    # state_clusters_each_ranked chart, so the two stay in sync.
+    K_PIN = 3
+    import analysis.exploratory.deepdive_state_clusters.run as _dsc_mod
+    _orig_k_min, _orig_k_max = _dsc_mod.K_MIN, _dsc_mod.K_MAX
+    _dsc_mod.K_MIN = _dsc_mod.K_MAX = K_PIN
+    try:
+        pkg = compute_clusters()
+    finally:
+        _dsc_mod.K_MIN, _dsc_mod.K_MAX = _orig_k_min, _orig_k_max
     state_df = pkg["state_df"]
     cluster_names = pkg["cluster_names"]
     cluster_color = pkg["cluster_color"]
@@ -1091,7 +1102,7 @@ def build_state_clusters_map(results: Path, figures: Path) -> None:
     sub_in = raw[~raw["geo"].isin(OUTLIER_GEOS)].copy().reset_index(drop=True)
     Xz = StandardScaler().fit_transform(sub_in[CLUSTER_FEATURES].to_numpy(dtype=float))
     Z = linkage(Xz, method="ward")
-    k_, _ = _pick_k_from_linkage(Z, K_MIN, K_MAX)
+    k_, _ = _pick_k_from_linkage(Z, K_PIN, K_PIN)
     ward_lab = fcluster(Z, t=k_, criterion="maxclust")
     km_lab = KMeans(n_clusters=k_, n_init=20, random_state=42).fit_predict(Xz) + 1
     aligned = np.zeros_like(km_lab)
