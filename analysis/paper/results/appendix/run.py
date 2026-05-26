@@ -3413,14 +3413,16 @@ def build_intensity_drivers(results: Path, figures: Path,
 # whose task load is mostly non-physical (`pct_physical < 33%` — the
 # same cut Part 2 uses for its Non-Physical phys-mix tier). Inside that
 # slice, each occupation contributes one dot: x = unweighted mean
-# rating of the friction property over its non-physical tasks, y = %
-# tasks exposed under all_confirmed. Two panels — left for `r`, right
-# for `df`.
+# rating of the friction property across ALL of that occupation's
+# tasks, y = % tasks exposed under all_confirmed. Two panels — left
+# for `r`, right for `df`. The non-physical restriction lives at the
+# occupation level; no second filter at the task level since these
+# occupations are already >67% non-physical by construction.
 #
 # Why no weighting: weighting by freq×emp concentrates each occ's
 # property mean onto a few high-frequency tasks (often routine office
 # work with mid-range friction), washing the cross-occ variance out.
-# Unweighted preserves the cross-occ signal (ρ ≈ −0.48 for r and −0.41
+# Unweighted preserves the cross-occ signal (ρ ≈ −0.50 for r and −0.42
 # for df at occ level; the major-level rollup within non-phys shows
 # almost nothing — discrimination lives at occupation level here).
 # ─────────────────────────────────────────────────────────────────────────
@@ -3477,16 +3479,18 @@ def build_adoption_friction_scatter(results: Path, figures: Path) -> None:
                        "title_current"]
     )
 
-    # Per-occ unweighted mean of each friction property over the occ's
-    # non-physical tasks. Weighting concentrates the mean on a few
-    # high-frequency tasks and erases the cross-occ variance; keep
-    # unweighted.
-    nonphys_rows = props[~props["physical"].astype(bool)].copy()
+    # Per-occ unweighted mean of each friction property over ALL of the
+    # occupation's tasks. The non-physical restriction lives at the
+    # occupation level above (pct_physical < 33%); double-filtering at
+    # the task level adds nothing since these occupations are already
+    # >67% non-physical by construction. Weighting by freq×emp was
+    # tried and concentrates the mean on a few high-frequency tasks,
+    # erasing the cross-occ variance; keep unweighted.
     occ_means = (
-        nonphys_rows.groupby("title_current")
+        props.groupby("title_current")
         .agg(r=("r", "mean"),
              df=("df", "mean"),
-             n_nonphys_tasks=("r", "count"))
+             n_tasks=("r", "count"))
         .reset_index()
     )
 
@@ -3558,7 +3562,7 @@ def build_adoption_friction_scatter(results: Path, figures: Path) -> None:
                 customdata=plot_df["title_current"],
                 hovertemplate=(
                     "<b>%{customdata}</b><br>"
-                    f"mean {code} (non-phys tasks): %{{x:.2f}}<br>"
+                    f"mean {code} (all tasks): %{{x:.2f}}<br>"
                     "% tasks exposed: %{y:.1f}%<extra></extra>"
                 ),
                 showlegend=False,
@@ -3598,7 +3602,7 @@ def build_adoption_friction_scatter(results: Path, figures: Path) -> None:
     for col_idx, (code, _) in enumerate(ADOPTION_FRICTION_PROPS, start=1):
         fig.update_xaxes(
             title=dict(
-                text=f"Mean {code} rating across non-phys tasks",
+                text=f"Mean {code} rating across all tasks in occupation",
                 font=dict(size=px["axis_title"], family=FONT_FAMILY),
             ),
             range=[1.5, 4.5], dtick=0.5,
