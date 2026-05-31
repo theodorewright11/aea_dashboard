@@ -311,7 +311,7 @@ Three side-by-side panels with the same vertical job-zone axis (1–5).
 | 4 | 225 | 50.10% | 50.30% | 199 | 52.30% | 51.90% | 0.90% | 10.70% | 88.40% |
 | 5 | 154 | 47.50% | 50.10% | 106 | 63.40% | 57.60% | 3.90% | 27.30% | 68.80% |
 
-Non-phys-only quartiles (right panel, per `job_zone_nonphys_summary.csv`): Zone 2 q25 = 22.60% / q75 = 63.50%; Zone 3 q25 = 25.30% / q75 = 62.70%; Zone 4 q25 = 32.60% / q75 = 59.40%; Zone 5 q25 = 38.00% / q75 = 73.50%.
+Non-phys-only quartiles (right panel, computed over the 409 non-physical occupations' `pct_tasks_affected` per zone — same population as the median labels above): Zone 2 q25 = 32.56% / q75 = 66.15%; Zone 3 q25 = 30.25% / q75 = 67.41%; Zone 4 q25 = 35.69% / q75 = 66.08%; Zone 5 q25 = 41.59% / q75 = 74.32%.
 
 Phys-zone crosstab (saved alongside the chart as `phys_zone_crosstab.csv`; reference data — pct_tasks_affected median / mean per (occ_group × zone)):
 - Physical Z1: n = 30, median 0.00%, mean 3.40%
@@ -1234,7 +1234,7 @@ Per GWA (sorted by AC pct_tasks_affected desc):
 | 6 | Analyzing Data or Information | 62.22% | 3,134,861.19 (3.13M) | $327.54B |
 | 7 | Developing Objectives and Strategies | 60.13% | 1,477,463.87 (1.48M) | $157.44B |
 | 8 | Providing Consultation and Advice to Others | 58.56% | 3,419,646.21 (3.42M) | $296.55B |
-| 9 | Getting Information | 57.31% | 4,136,418.05 (4.14M) | $298.99B |
+| 9 | Getting Information | 57.31% | 4,136,418.05 (4.14M) | $299.00B |
 | 10 | Organizing, Planning, and Prioritizing Work | 56.43% | 417,725.11 (417.73K) | $29.69B |
 | 11 | Performing Administrative Activities | 54.94% | 3,375,371.89 (3.38M) | $161.90B |
 | 12 | Thinking Creatively | 54.28% | 4,014,288.85 (4.01M) | $372.50B |
@@ -1266,7 +1266,7 @@ Per GWA (sorted by AC pct_tasks_affected desc):
 
 Workers Exposed range: 60.04K (Operating Vehicles) to 6.95M (Documenting/Recording Information).
 
-Wages Exposed range: $2.48B (Operating Vehicles) to $466.96B (Documenting/Recording Information). Top 5 on Wages: Documenting/Recording $466.96B, Thinking Creatively $372.50B, Analyzing Data or Information $327.54B, Guiding/Directing $300.97B, Getting Information $298.99B.
+Wages Exposed range: $2.48B (Operating Vehicles) to $466.96B (Documenting/Recording Information). Top 5 on Wages: Documenting/Recording $466.96B, Thinking Creatively $372.50B, Analyzing Data or Information $327.54B, Guiding/Directing $300.97B, Getting Information $299.00B.
 
 ---
 
