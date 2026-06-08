@@ -3443,7 +3443,7 @@ def _render_intensity_driver_chart(
     TASKS_DARK = "#2c4f6b"
 
     text_labels = [
-        f"{lift:.2f}×   ({raw:.3f} raw pct)"
+        f"{lift:.2f}×   ({raw:.3f}% raw pct)"
         for lift, raw in zip(plot_df["lift"], plot_df["raw_pct"])
     ]
 
@@ -3549,7 +3549,10 @@ def _render_intensity_driver_chart(
     # charts have a wider margin_left (for long wrapped task labels), so
     # the plot is narrower → needs a larger x_top multiplier to keep the
     # max-lift bar from pushing its outside text past x=W.
-    x_mult = 1.78 if level == "task" else 1.38
+    # Multipliers bumped (task 1.78→1.92, occ 1.38→1.48) so the wider
+    # "X.XX×   (Y.YYY% raw pct)" outside labels — one char wider since the
+    # raw pct gained a "%" — clear the PNG right edge without clipping.
+    x_mult = 1.92 if level == "task" else 1.48
     x_top = float(plot_df["lift"].max()) * x_mult
     # Task chart lift values reach 7,000×+ so plotly's auto-tick spacing
     # crams 5–6 ticks into a narrow plot area. Constrain to ~4 ticks and

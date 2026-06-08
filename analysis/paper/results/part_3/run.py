@@ -660,7 +660,8 @@ def build_intensity_anchor_fulleco(results: Path, figures: Path) -> None:
     base["lift"] = base["ratio_full_pct"] / anchor_val
     median_lift = float(base["lift"].median())
 
-    out = base[["category", "ratio_full_pct", "lift", "pct_tasks_affected"]].copy()
+    out = base[["category", "ratio_full_pct", "lift", "pct_tasks_affected",
+                "raw_pct"]].copy()
     out["anchor_value"] = anchor_val
     out["median_lift"] = median_lift
     save_csv(
@@ -680,17 +681,23 @@ def build_intensity_anchor_fulleco(results: Path, figures: Path) -> None:
     W = PAPER_W
     px = paper_fonts(W)
 
-    # Per-bar inside/outside text decision — wider bars get the value
-    # label inside in white (matches part_2 major_categories style);
-    # narrower bars keep the dark label outside so the number stays
-    # legible. Threshold chosen at ~12% of x_top so any bar at least
-    # ~150 px wide on the 1300 px plot area can fit "XX.XXx" comfortably.
+    # Per-bar inside/outside text decision — only the few very wide bars
+    # get the value label inside in white (matches part_2 major_categories
+    # style); everything else keeps the dark label outside so the number
+    # stays legible. Threshold at 20% of x_top keeps just the top three
+    # (Life/Phys/Sci, Computer/Math, Arts) inside; Architecture (4.11×) and
+    # below read as dark outside labels.
     x_top = max(plot_df["lift"]) * 1.04
-    INSIDE_THRESHOLD = x_top * 0.12
+    INSIDE_THRESHOLD = x_top * 0.20
     pos = [
         "inside" if v >= INSIDE_THRESHOLD else "outside"
         for v in plot_df["lift"]
     ]
+    # Axis headroom beyond the longest bar so the top bars' inside labels
+    # aren't crammed against the right edge and the bar ends clear the
+    # Σ raw pct column (which is pinned near the PNG edge and can't shift
+    # further right). 12% leaves a comfortable gap without looking empty.
+    x_axis_max = max(plot_df["lift"]) * 1.12
     inside_font  = dict(size=px["tick"], color="white",                family=FONT_FAMILY)
     outside_font = dict(size=px["tick"], color=PAPER_PALETTE["text"], family=FONT_FAMILY)
 
@@ -727,6 +734,31 @@ def build_intensity_anchor_fulleco(results: Path, figures: Path) -> None:
         showarrow=False, xanchor="left", yanchor="bottom",
         font=dict(size=px["in_chart_floor"], color=PAPER_PALETTE["negative"], family=FONT_FAMILY),
     )
+
+    # Raw Σ pct-norm column in the right whitespace — un-debiased
+    # Σ pct_normalized per major (the same quantity the appendix
+    # intensity_drivers charts print beside each bar). The bars keep their
+    # bias-corrected lift labels; this adds the raw usage mass as a tidy
+    # right-aligned numeric column so a high-lift / low-mass major (e.g.
+    # Computer & Math carries the largest raw pct but not the largest lift)
+    # is legible. Fixed %.1f means every value has the same decimal width,
+    # so right-anchoring lines the decimal points up into a clean column.
+    # Anchored in paper coords (into the right margin) so it sits clear of
+    # the longest bar regardless of the lift axis range.
+    COL_X = 1.06  # paper x — right edge of the column, ~12 px in from the PNG edge
+    fig.add_annotation(
+        x=COL_X, y=1.005, xref="paper", yref="paper",
+        text="Σ raw pct", showarrow=False,
+        xanchor="right", yanchor="bottom",
+        font=dict(size=px["in_chart_floor"], color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+    )
+    for cat, raw in zip(plot_df["display_category"], plot_df["raw_pct"]):
+        fig.add_annotation(
+            x=COL_X, y=cat, xref="paper", yref="y",
+            text=f"{raw:.1f}%", showarrow=False,
+            xanchor="right", yanchor="middle",
+            font=dict(size=px["tick"], color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+        )
 
     # Bottom legend: HTML-swatch gradient matching tech_commodities style.
     def _hex_to_rgb(h: str) -> tuple[int, int, int]:
@@ -775,13 +807,15 @@ def build_intensity_anchor_fulleco(results: Path, figures: Path) -> None:
             "Claude / Copilot / ChatGPT GWA-distribution blend (work-related ChatGPT chats)."
         ),
         height=chart_h, width=W,
-        margin=dict(l=20, r=80, t=MARGIN_T, b=MARGIN_B),
+        # r sized to host the "Σ raw pct" column with a small edge clearance
+        # so the trailing "%" never clips.
+        margin=dict(l=20, r=92, t=MARGIN_T, b=MARGIN_B),
     )
     fig.update_layout(bargap=0.15)
     fig.update_xaxes(
         title=dict(text="Usage Relative to Median (×)", font=dict(size=px["axis_title"], family=FONT_FAMILY)),
         showgrid=True, gridcolor=PAPER_PALETTE["grid"],
-        range=[0, x_top],
+        range=[0, x_axis_max],
         tickfont=dict(size=px["tick"], family=FONT_FAMILY),
     )
     # tickmode="array" pins every category label — plotly auto-thins
