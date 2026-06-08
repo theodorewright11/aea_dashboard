@@ -32,13 +32,13 @@ External benchmarks (right-side columns): Eloundou GPT-4 β, Eloundou Human β, 
 - Claude API ↔ Claude Browser: ρ = 0.97 (n = 22) ***
 - Copilot ↔ Claude Browser: 0.82 ***
 - Copilot ↔ Claude API: 0.84 ***
-- MCP ↔ Claude Browser: 0.83 ***
+- MCP ↔ Claude Browser: 0.82 ***
 - MCP ↔ Claude API: 0.83 ***
 - MCP ↔ Copilot: 0.95 ***
 - All Confirmed ↔ Claude Browser: 0.95 ***
 - All Confirmed ↔ Claude API: 0.97 ***
 - All Confirmed ↔ Copilot: 0.93 ***
-- All Confirmed ↔ MCP: 0.92 ***
+- All Confirmed ↔ MCP: 0.91 ***
 
 **External block (5 internal rows × 8 external columns = 40 cells; Eloundou columns crossed with Copilot/All Confirmed rows are grayed as contaminated):**
 
@@ -48,7 +48,7 @@ Claude API ↔ external: Eloundou GPT-4 β 0.83 ***, Eloundou Human β 0.89 ***,
 
 Copilot ↔ external: Eloundou GPT-4 β 0.94 *** (contaminated cell), Eloundou Human β 0.94 *** (contaminated cell), AIOE Overall 0.85 ***, AIOE Reading Compr. 0.81 ***, Schaal Overall 0.76 ***, Schaal DA 0.90 ***, Schaal AG 0.82 ***, Tomlinson (Copilot) 0.81 ***.
 
-MCP ↔ external: Eloundou GPT-4 β 0.92 ***, Eloundou Human β 0.93 ***, AIOE Overall 0.82 ***, AIOE Reading Compr. 0.77 ***, Schaal Overall 0.72 ***, Schaal DA 0.89 ***, Schaal AG 0.86 ***, Tomlinson (Copilot) 0.81 ***.
+MCP ↔ external: Eloundou GPT-4 β 0.91 ***, Eloundou Human β 0.92 ***, AIOE Overall 0.80 ***, AIOE Reading Compr. 0.75 ***, Schaal Overall 0.71 ***, Schaal DA 0.87 ***, Schaal AG 0.85 ***, Tomlinson (Copilot) 0.82 ***.
 
 All Confirmed ↔ external: Eloundou GPT-4 β 0.90 *** (contaminated), Eloundou Human β 0.95 *** (contaminated), AIOE Overall 0.88 ***, AIOE Reading Compr. 0.87 ***, Schaal Overall 0.74 ***, Schaal DA 0.87 ***, Schaal AG 0.71 ***, Tomlinson (Copilot) 0.86 ***.
 
@@ -82,7 +82,7 @@ Claude API ↔ external: Eloundou GPT-4 β 0.64, Eloundou Human β 0.64, AIOE Ov
 
 Copilot ↔ external: Eloundou GPT-4 β 0.84 (contaminated), Eloundou Human β 0.83 (contaminated), AIOE Overall 0.69 (893), AIOE Reading Compr. 0.72 (893), Schaal Overall 0.62, Schaal DA 0.70, Schaal AG 0.63, Tomlinson (Copilot) 0.83 (749).
 
-MCP ↔ external: Eloundou GPT-4 β 0.77, Eloundou Human β 0.73, AIOE Overall 0.64 (893), AIOE Reading Compr. 0.63 (893), Schaal Overall 0.58, Schaal DA 0.74, Schaal AG 0.78, Tomlinson (Copilot) 0.67 (749).
+MCP ↔ external: Eloundou GPT-4 β 0.78, Eloundou Human β 0.73, AIOE Overall 0.64 (893), AIOE Reading Compr. 0.64 (893), Schaal Overall 0.58, Schaal DA 0.74, Schaal AG 0.78, Tomlinson (Copilot) 0.67 (749).
 
 All Confirmed ↔ external: Eloundou GPT-4 β 0.82 (contaminated), Eloundou Human β 0.82 (contaminated), AIOE Overall 0.70 (893), AIOE Reading Compr. 0.77 (893), Schaal Overall 0.68, Schaal DA 0.67, Schaal AG 0.55, Tomlinson (Copilot) 0.80 (749).
 
@@ -101,19 +101,19 @@ Five rows (one per config), each with three grouped horizontal bars (tasks / wor
 | All Confirmed | 29.3% | 37.5% | 41.5% | 57.95M | $4.10T |
 | Conversational Confirmed | 25.1% | 32.0% | 35.1% | 49.41M | $3.46T |
 | Agentic Confirmed | 14.4% | 21.3% | 24.0% | 32.87M | $2.37T |
-| Agentic Ceiling | 30.8% | 40.8% | 43.7% | 62.99M | $4.31T |
-| All Sources (Ceiling) | 38.7% | 48.5% | 52.1% | 75.00M | $5.14T |
+| Agentic Ceiling | 31.1% | 41.1% | 44.1% | 63.58M | $4.35T |
+| All Sources (Ceiling) | 38.9% | 48.7% | 52.4% | 75.33M | $5.17T |
 
-Exact CSV values: All Confirmed 29.30 / 37.50 / 41.50; workers 57,953,282.60; wages $4,095,148,895,332.15. Conversational Confirmed 25.10 / 32.00 / 35.10; workers 49,414,851.83; wages $3,461,915,798,898.42. Agentic Confirmed 14.40 / 21.30 / 24.00; workers 32,873,993.26; wages $2,370,422,778,874.25. Agentic Ceiling 30.80 / 40.80 / 43.70; workers 62,994,975.94; wages $4,308,849,264,827.24. All Sources (Ceiling) 38.70 / 48.50 / 52.10; workers 74,995,060.24; wages $5,143,217,186,619.56.
+Exact CSV values: All Confirmed 29.30 / 37.50 / 41.50; workers 57,953,282.60; wages $4,095,148,895,332.15. Conversational Confirmed 25.10 / 32.00 / 35.10; workers 49,414,851.83; wages $3,461,915,798,898.42. Agentic Confirmed 14.40 / 21.30 / 24.00; workers 32,873,993.26; wages $2,370,422,778,874.25. Agentic Ceiling 31.10 / 41.10 / 44.10; workers 63,578,705.79; wages $4,354,752,701,482.38. All Sources (Ceiling) 38.90 / 48.70 / 52.40; workers 75,326,044.77; wages $5,167,307,806,412.93.
 
 Spread across configs:
-- % tasks: 14.4 → 38.7 (24.3 pp spread; Agentic Confirmed lowest, All Sources (Ceiling) highest).
-- % workers: 21.3 → 48.5 (27.2 pp).
-- % wages: 24.0 → 52.1 (28.1 pp).
-- Raw workers: 32.87M → 75.00M (≈ 2.28× ratio).
-- Raw wages: $2.37T → $5.14T (≈ 2.17×).
+- % tasks: 14.4 → 38.9 (24.5 pp spread; Agentic Confirmed lowest, All Sources (Ceiling) highest).
+- % workers: 21.3 → 48.7 (27.4 pp).
+- % wages: 24.0 → 52.4 (28.4 pp).
+- Raw workers: 32.87M → 75.33M (≈ 2.29× ratio).
+- Raw wages: $2.37T → $5.17T (≈ 2.18×).
 
-Within-config wages% − workers%: All Confirmed +4.0 pp; Conversational Confirmed +3.1; Agentic Confirmed +2.7; Agentic Ceiling +2.9; All Sources (Ceiling) +3.6.
+Within-config wages% − workers%: All Confirmed +4.0 pp; Conversational Confirmed +3.1; Agentic Confirmed +2.7; Agentic Ceiling +3.0; All Sources (Ceiling) +3.7.
 
 ---
 
@@ -121,7 +121,7 @@ Within-config wages% − workers%: All Confirmed +4.0 pp; Conversational Confirm
 
 ![temporal_trend.png](part_1/figures/temporal_trend.png)
 
-Three side-by-side panels: % Tasks Exposed, Workers Exposed, Wages Exposed. Each panel plots two lines — All Confirmed (solid, 4 snapshots) and All Sources (Ceiling) (dashed, 8 snapshots). X-axis snapshot date range: Apr 2025 to Apr 2026. Legend at the bottom: "All Confirmed" (solid) and "All Sources (Ceiling)" (dashed). Per-line inline labels at each snapshot point show the value (e.g., "21.5%", "29.3%", "38.7%" on the Tasks Exposed panel).
+Three side-by-side panels: % Tasks Exposed, Workers Exposed, Wages Exposed. Each panel plots two lines — All Confirmed (solid, 4 snapshots) and All Sources (Ceiling) (dashed, 8 snapshots). X-axis snapshot date range: Apr 2025 to Apr 2026. Legend at the bottom: "All Confirmed" (solid) and "All Sources (Ceiling)" (dashed). Per-line inline labels at each snapshot point show the value (e.g., "21.5%", "29.3%", "38.9%" on the Tasks Exposed panel).
 
 **All Confirmed (`AEI Both + Micro` family) — 4 dates:**
 
@@ -145,11 +145,11 @@ Observed delta first→last (2025-03-06 → 2026-02-12): +7.8 pp tasks, +16.46M 
 | 2025-08-11 | All 2025-08-11 | 36.4% | 70.61M | $4.83T | 45.7% | 10,950 | 3.10 |
 | 2025-11-13 | All 2025-11-13 | 37.8% | 73.26M | $5.03T | 47.4% | 11,019 | 3.19 |
 | 2026-02-12 | All 2026-02-12 | 38.5% | 74.45M | $5.11T | 48.2% | 11,050 | 3.23 |
-| 2026-02-18 | All 2026-02-18 | 38.7% | 75.00M | $5.14T | 48.5% | 11,122 | 3.23 |
+| 2026-02-18 | All 2026-02-18 | 38.9% | 75.33M | $5.17T | 48.7% | 11,178 | 3.23 |
 
-Observed delta first→last: +17.2 pp tasks, +33.50M workers, +$2.21T wages, +21.6 pp emp coverage.
+Observed delta first→last: +17.4 pp tasks, +33.83M workers, +$2.23T wages, +21.8 pp emp coverage.
 
-**Final-snapshot gap (Ceiling minus Confirmed, 2026-02-18 vs 2026-02-12):** +9.4 pp tasks, +17.04M workers, +$1.05T wages.
+**Final-snapshot gap (Ceiling minus Confirmed, 2026-02-18 vs 2026-02-12):** +9.6 pp tasks, +17.37M workers, +$1.07T wages.
 
 **Eco baseline (denominator)** constant across all snapshots and configs: 17,507 unique tasks, 154,525,269 total employment, $9,867,397,368,780 total wages (~$9.87T).
 
@@ -199,9 +199,9 @@ Same 6-column table for the All Sources (Ceiling) series. Two cream historical r
 | Aug 11, 2025 | AEI Browser v3 + AEI API v3 | 10,950 | +71 | 3.10 | +0.29 |
 | Nov 13, 2025 | AEI Browser v4 + AEI API v4 | 11,019 | +69 | 3.19 | +0.09 |
 | Feb 12, 2026 | AEI Browser v5 + AEI API v5 | 11,050 | +31 | 3.23 | +0.04 |
-| Feb 18, 2026 (series end, highlighted) | MCP v4 | 11,122 | +72 | 3.23 | +0.00 |
+| Feb 18, 2026 (series end, highlighted) | MCP v4 | 11,178 | +128 | 3.23 | +0.00 |
 
-The series-row task count grew by 11,122 − 7,427 = **+3,695 unique tasks** across the Mar 2025 → Feb 2026 range (sum of sequential Δ: 2,249 + 635 + 568 + 71 + 69 + 31 + 72 = 3,695).
+The series-row task count grew by 11,178 − 7,427 = **+3,751 unique tasks** across the Mar 2025 → Feb 2026 range (sum of sequential Δ: 2,249 + 635 + 568 + 71 + 69 + 31 + 128 = 3,751).
 
 Largest single-period jump in tasks rated: **+2,249** at MCP v1 (2025-04-24).
 
@@ -503,32 +503,32 @@ Per-major numbers (sorted by pct_conf desc, with pct_ceil and gap shown):
 
 | # | Major | Agentic Confirmed % | Agentic Ceiling % | Ceiling Gap (pp) |
 |---|---|---|---|---|
-| 1 | Computer and Mathematical | 44.281 | 76.754 | 32.473 |
-| 2 | Sales and Related | 42.759 | 70.545 | 27.786 |
-| 3 | Educational Instruction and Library | 33.389 | 45.027 | 11.638 |
-| 4 | Business and Financial Operations | 32.201 | 57.354 | 25.153 |
-| 5 | Office and Administrative Support | 30.456 | 64.532 | 34.076 |
-| 6 | Arts, Design, Entertainment, Sports, and Media | 27.737 | 51.283 | 23.546 |
+| 1 | Computer and Mathematical | 44.281 | 77.354 | 33.073 |
+| 2 | Sales and Related | 42.759 | 70.961 | 28.202 |
+| 3 | Educational Instruction and Library | 33.389 | 45.269 | 11.880 |
+| 4 | Business and Financial Operations | 32.201 | 58.264 | 26.063 |
+| 5 | Office and Administrative Support | 30.456 | 64.958 | 34.502 |
+| 6 | Arts, Design, Entertainment, Sports, and Media | 27.737 | 51.748 | 24.011 |
 | 7 | Legal | 24.316 | 41.332 | 17.016 |
-| 8 | Community and Social Service | 24.010 | 37.068 | 13.057 |
-| 9 | Life, Physical, and Social Science | 20.719 | 39.933 | 19.214 |
-| 10 | Management | 20.667 | 43.937 | 23.270 |
+| 8 | Community and Social Service | 24.010 | 37.359 | 13.349 |
+| 9 | Life, Physical, and Social Science | 20.719 | 40.338 | 19.619 |
+| 10 | Management | 20.667 | 44.753 | 24.085 |
 
 Panel 1 (Agentic Confirmed) range: 20.67% (Management) to 44.28% (Computer and Math).
 
 Panel 2 (Ceiling Gap), sorted by gap descending (this is the order Panel 2 renders):
-1. Office and Administrative Support — gap 34.08 pp
-2. Computer and Mathematical — gap 32.47 pp
-3. Sales and Related — gap 27.79 pp
-4. Business and Financial Operations — gap 25.15 pp
-5. Arts, Design, Entertainment, Sports, and Media — gap 23.55 pp
-6. Management — gap 23.27 pp
-7. Life, Physical, and Social Science — gap 19.21 pp
+1. Office and Administrative Support — gap 34.50 pp
+2. Computer and Mathematical — gap 33.07 pp
+3. Sales and Related — gap 28.20 pp
+4. Business and Financial Operations — gap 26.06 pp
+5. Management — gap 24.09 pp
+6. Arts, Design, Entertainment, Sports, and Media — gap 24.01 pp
+7. Life, Physical, and Social Science — gap 19.62 pp
 8. Legal — gap 17.02 pp
-9. Community and Social Service — gap 13.06 pp
-10. Educational Instruction and Library — gap 11.64 pp
+9. Community and Social Service — gap 13.35 pp
+10. Educational Instruction and Library — gap 11.88 pp
 
-Ceiling Gap range across the 10: 11.64 pp (Educational Instruction) to 34.08 pp (Office and Admin Support).
+Ceiling Gap range across the 10: 11.88 pp (Educational Instruction) to 34.50 pp (Office and Admin Support).
 
 ---
 
@@ -540,32 +540,32 @@ Same 2-panel structure as the major chart, but at the GWA level. Top 10 GWAs by 
 
 | # | GWA | Agentic Confirmed % | Agentic Ceiling % | Ceiling Gap (pp) |
 |---|---|---|---|---|
-| 1 | Working with Computers | 43.903 | 86.374 | 42.470 |
-| 2 | Updating and Using Relevant Knowledge | 40.126 | 52.545 | 12.420 |
-| 3 | Interpreting the Meaning of Information for Others | 38.597 | 54.217 | 15.620 |
-| 4 | Establishing and Maintaining Interpersonal Relationships | 38.350 | 59.483 | 21.133 |
-| 5 | Scheduling Work and Activities | 37.557 | 84.685 | 47.128 |
-| 6 | Communicating with People Outside the Organization | 35.239 | 69.990 | 34.751 |
-| 7 | Analyzing Data or Information | 32.722 | 60.192 | 27.471 |
-| 8 | Selling or Influencing Others | 30.013 | 58.489 | 28.476 |
-| 9 | Providing Consultation and Advice to Others | 29.509 | 42.239 | 12.730 |
-| 10 | Performing for or Working Directly with the Public | 29.384 | 56.535 | 27.152 |
+| 1 | Working with Computers | 43.903 | 86.556 | 42.653 |
+| 2 | Updating and Using Relevant Knowledge | 40.126 | 52.673 | 12.548 |
+| 3 | Interpreting the Meaning of Information for Others | 38.597 | 54.333 | 15.736 |
+| 4 | Establishing and Maintaining Interpersonal Relationships | 38.350 | 60.034 | 21.684 |
+| 5 | Scheduling Work and Activities | 37.557 | 84.746 | 47.189 |
+| 6 | Communicating with People Outside the Organization | 35.239 | 70.172 | 34.933 |
+| 7 | Analyzing Data or Information | 32.722 | 60.455 | 27.733 |
+| 8 | Selling or Influencing Others | 30.013 | 58.820 | 28.807 |
+| 9 | Providing Consultation and Advice to Others | 29.509 | 42.514 | 13.005 |
+| 10 | Performing for or Working Directly with the Public | 29.384 | 57.483 | 28.099 |
 
 Panel 1 (Agentic Confirmed) range: 29.38% (Performing for or Working Directly with the Public) to 43.90% (Working with Computers).
 
 Panel 2 (Ceiling Gap) sorted by gap descending:
-1. Scheduling Work and Activities — gap 47.13 pp
-2. Working with Computers — gap 42.47 pp
-3. Communicating with People Outside the Organization — gap 34.75 pp
-4. Selling or Influencing Others — gap 28.48 pp
-5. Analyzing Data or Information — gap 27.47 pp
-6. Performing for or Working Directly with the Public — gap 27.15 pp
-7. Establishing and Maintaining Interpersonal Relationships — gap 21.13 pp
-8. Interpreting the Meaning of Information for Others — gap 15.62 pp
-9. Providing Consultation and Advice to Others — gap 12.73 pp
-10. Updating and Using Relevant Knowledge — gap 12.42 pp
+1. Scheduling Work and Activities — gap 47.19 pp
+2. Working with Computers — gap 42.65 pp
+3. Communicating with People Outside the Organization — gap 34.93 pp
+4. Selling or Influencing Others — gap 28.81 pp
+5. Performing for or Working Directly with the Public — gap 28.10 pp
+6. Analyzing Data or Information — gap 27.73 pp
+7. Establishing and Maintaining Interpersonal Relationships — gap 21.68 pp
+8. Interpreting the Meaning of Information for Others — gap 15.74 pp
+9. Providing Consultation and Advice to Others — gap 13.01 pp
+10. Updating and Using Relevant Knowledge — gap 12.55 pp
 
-Ceiling Gap range: 12.42 pp (Updating and Using Relevant Knowledge) to 47.13 pp (Scheduling Work and Activities).
+Ceiling Gap range: 12.55 pp (Updating and Using Relevant Knowledge) to 47.19 pp (Scheduling Work and Activities).
 
 ---
 
@@ -844,20 +844,20 @@ n = 22 for every internal/internal and internal/external pair. All values from `
 
 - **Claude API** ↔ Claude Browser 0.97 ***
 - **Copilot** ↔ Claude Browser 0.82 *** | Claude API 0.84 ***
-- **MCP** ↔ Claude Browser 0.83 *** | Claude API 0.83 *** | Copilot 0.95 ***
-- **All Confirmed** ↔ Claude Browser 0.95 *** | Claude API 0.97 *** | Copilot 0.93 *** | MCP 0.92 ***
-- **Conversational Confirmed** ↔ Claude Browser 0.96 *** | Claude API 0.96 *** | Copilot 0.93 *** | MCP 0.92 *** | All Confirmed 0.99 ***
+- **MCP** ↔ Claude Browser 0.82 *** | Claude API 0.83 *** | Copilot 0.95 ***
+- **All Confirmed** ↔ Claude Browser 0.95 *** | Claude API 0.97 *** | Copilot 0.93 *** | MCP 0.91 ***
+- **Conversational Confirmed** ↔ Claude Browser 0.96 *** | Claude API 0.96 *** | Copilot 0.93 *** | MCP 0.91 *** | All Confirmed 0.99 ***
 - **Agentic Confirmed** ↔ Claude Browser 0.97 *** | Claude API 1.00 *** | Copilot 0.84 *** | MCP 0.83 *** | All Confirmed 0.97 *** | Conversational Confirmed 0.96 ***
-- **Agentic Ceiling** ↔ Claude Browser 0.93 *** | Claude API 0.94 *** | Copilot 0.94 *** | MCP 0.96 *** | All Confirmed 0.98 *** | Conversational Confirmed 0.97 *** | Agentic Confirmed 0.94 ***
+- **Agentic Ceiling** ↔ Claude Browser 0.92 *** | Claude API 0.93 *** | Copilot 0.94 *** | MCP 0.96 *** | All Confirmed 0.97 *** | Conversational Confirmed 0.97 *** | Agentic Confirmed 0.93 ***
 - **All Sources (Ceiling)** ↔ Claude Browser 0.93 *** | Claude API 0.94 *** | Copilot 0.94 *** | MCP 0.95 *** | All Confirmed 0.98 *** | Conversational Confirmed 0.98 *** | Agentic Confirmed 0.94 *** | Agentic Ceiling 0.99 ***
-- **Eloundou GPT-4 β** ↔ Claude Browser 0.83 *** | Claude API 0.83 *** | Copilot 0.94 *** [contam] | MCP 0.92 *** | All Confirmed 0.90 *** [contam] | Conversational Confirmed 0.90 *** [contam] | Agentic Confirmed 0.83 *** | Agentic Ceiling 0.92 *** | All Sources (Ceiling) 0.92 *** [contam]
-- **Eloundou Human β** ↔ Claude Browser 0.87 *** | Claude API 0.89 *** | Copilot 0.94 *** [contam] | MCP 0.93 *** | All Confirmed 0.95 *** [contam] | Conversational Confirmed 0.94 *** [contam] | Agentic Confirmed 0.89 *** | Agentic Ceiling 0.94 *** | All Sources (Ceiling) 0.94 *** [contam] | Eloundou GPT-4 β 0.93 ***
-- **AIOE Overall** ↔ Claude Browser 0.84 *** | Claude API 0.86 *** | Copilot 0.85 *** | MCP 0.82 *** | All Confirmed 0.88 *** | Conversational Confirmed 0.87 *** | Agentic Confirmed 0.86 *** | Agentic Ceiling 0.86 *** | All Sources (Ceiling) 0.87 *** | Eloundou GPT-4 β 0.87 *** | Eloundou Human β 0.90 ***
-- **AIOE Reading Compr.** ↔ Claude Browser 0.86 *** | Claude API 0.86 *** | Copilot 0.81 *** | MCP 0.77 *** | All Confirmed 0.87 *** | Conversational Confirmed 0.86 *** | Agentic Confirmed 0.86 *** | Agentic Ceiling 0.84 *** | All Sources (Ceiling) 0.85 *** | Eloundou GPT-4 β 0.84 *** | Eloundou Human β 0.87 *** | AIOE Overall 0.99 ***
-- **Schaal Overall** ↔ Claude Browser 0.72 *** | Claude API 0.69 *** | Copilot 0.76 *** | MCP 0.72 *** | All Confirmed 0.74 *** | Conversational Confirmed 0.76 *** | Agentic Confirmed 0.69 *** | Agentic Ceiling 0.73 *** | All Sources (Ceiling) 0.72 *** | Eloundou GPT-4 β 0.84 *** | Eloundou Human β 0.78 *** | AIOE Overall 0.77 *** | AIOE Reading Compr. 0.78 ***
-- **Schaal DA** ↔ Claude Browser 0.81 *** | Claude API 0.79 *** | Copilot 0.90 *** | MCP 0.89 *** | All Confirmed 0.87 *** | Conversational Confirmed 0.87 *** | Agentic Confirmed 0.79 *** | Agentic Ceiling 0.88 *** | All Sources (Ceiling) 0.89 *** | Eloundou GPT-4 β 0.94 *** | Eloundou Human β 0.89 *** | AIOE Overall 0.81 *** | AIOE Reading Compr. 0.77 *** | Schaal Overall 0.78 ***
-- **Schaal AG** ↔ Claude Browser 0.58 ** | Claude API 0.58 ** | Copilot 0.82 *** | MCP 0.86 *** | All Confirmed 0.71 *** | Conversational Confirmed 0.70 *** | Agentic Confirmed 0.58 ** | Agentic Ceiling 0.78 *** | All Sources (Ceiling) 0.77 *** | Eloundou GPT-4 β 0.82 *** | Eloundou Human β 0.78 *** | AIOE Overall 0.65 ** | AIOE Reading Compr. 0.57 ** | Schaal Overall 0.61 ** | Schaal DA 0.89 ***
-- **Tomlinson (Copilot)** ↔ Claude Browser 0.84 *** | Claude API 0.81 *** | Copilot 0.81 *** | MCP 0.81 *** | All Confirmed 0.86 *** | Conversational Confirmed 0.87 *** | Agentic Confirmed 0.81 *** | Agentic Ceiling 0.85 *** | All Sources (Ceiling) 0.86 *** | Eloundou GPT-4 β 0.71 *** | Eloundou Human β 0.81 *** | AIOE Overall 0.72 *** | AIOE Reading Compr. 0.72 *** | Schaal Overall 0.52 * | Schaal DA 0.66 *** | Schaal AG 0.53 *
+- **Eloundou GPT-4 β** ↔ Claude Browser 0.83 *** | Claude API 0.83 *** | Copilot 0.94 *** [contam] | MCP 0.91 *** | All Confirmed 0.90 *** [contam] | Conversational Confirmed 0.90 *** [contam] | Agentic Confirmed 0.83 *** | Agentic Ceiling 0.92 *** | All Sources (Ceiling) 0.92 *** [contam]
+- **Eloundou Human β** ↔ Claude Browser 0.87 *** | Claude API 0.89 *** | Copilot 0.94 *** [contam] | MCP 0.92 *** | All Confirmed 0.95 *** [contam] | Conversational Confirmed 0.94 *** [contam] | Agentic Confirmed 0.89 *** | Agentic Ceiling 0.94 *** | All Sources (Ceiling) 0.94 *** [contam] | Eloundou GPT-4 β 0.93 ***
+- **AIOE Overall** ↔ Claude Browser 0.84 *** | Claude API 0.86 *** | Copilot 0.85 *** | MCP 0.80 *** | All Confirmed 0.88 *** | Conversational Confirmed 0.87 *** | Agentic Confirmed 0.86 *** | Agentic Ceiling 0.86 *** | All Sources (Ceiling) 0.87 *** | Eloundou GPT-4 β 0.87 *** | Eloundou Human β 0.90 ***
+- **AIOE Reading Compr.** ↔ Claude Browser 0.86 *** | Claude API 0.86 *** | Copilot 0.81 *** | MCP 0.75 *** | All Confirmed 0.87 *** | Conversational Confirmed 0.86 *** | Agentic Confirmed 0.86 *** | Agentic Ceiling 0.84 *** | All Sources (Ceiling) 0.85 *** | Eloundou GPT-4 β 0.84 *** | Eloundou Human β 0.87 *** | AIOE Overall 0.99 ***
+- **Schaal Overall** ↔ Claude Browser 0.72 *** | Claude API 0.69 *** | Copilot 0.76 *** | MCP 0.71 *** | All Confirmed 0.74 *** | Conversational Confirmed 0.76 *** | Agentic Confirmed 0.69 *** | Agentic Ceiling 0.72 *** | All Sources (Ceiling) 0.72 *** | Eloundou GPT-4 β 0.84 *** | Eloundou Human β 0.78 *** | AIOE Overall 0.77 *** | AIOE Reading Compr. 0.78 ***
+- **Schaal DA** ↔ Claude Browser 0.81 *** | Claude API 0.79 *** | Copilot 0.90 *** | MCP 0.87 *** | All Confirmed 0.87 *** | Conversational Confirmed 0.87 *** | Agentic Confirmed 0.79 *** | Agentic Ceiling 0.88 *** | All Sources (Ceiling) 0.89 *** | Eloundou GPT-4 β 0.94 *** | Eloundou Human β 0.89 *** | AIOE Overall 0.81 *** | AIOE Reading Compr. 0.77 *** | Schaal Overall 0.78 ***
+- **Schaal AG** ↔ Claude Browser 0.58 ** | Claude API 0.58 ** | Copilot 0.82 *** | MCP 0.85 *** | All Confirmed 0.71 *** | Conversational Confirmed 0.70 *** | Agentic Confirmed 0.58 ** | Agentic Ceiling 0.78 *** | All Sources (Ceiling) 0.77 *** | Eloundou GPT-4 β 0.82 *** | Eloundou Human β 0.78 *** | AIOE Overall 0.65 ** | AIOE Reading Compr. 0.57 ** | Schaal Overall 0.61 ** | Schaal DA 0.89 ***
+- **Tomlinson (Copilot)** ↔ Claude Browser 0.84 *** | Claude API 0.81 *** | Copilot 0.81 *** | MCP 0.82 *** | All Confirmed 0.86 *** | Conversational Confirmed 0.87 *** | Agentic Confirmed 0.81 *** | Agentic Ceiling 0.84 *** | All Sources (Ceiling) 0.86 *** | Eloundou GPT-4 β 0.71 *** | Eloundou Human β 0.81 *** | AIOE Overall 0.72 *** | AIOE Reading Compr. 0.72 *** | Schaal Overall 0.52 * | Schaal DA 0.66 *** | Schaal AG 0.53 *
 
 Cell range across all 136 pairs at major level: 0.52 (Tomlinson vs Schaal Overall, p < .05) to 1.00 (Agentic Confirmed ↔ Claude API).
 
@@ -869,20 +869,20 @@ n = 95 minor categories for every internal/internal and internal/external pair; 
 
 - **Claude API** ↔ Claude Browser 0.92 ***
 - **Copilot** ↔ Claude Browser 0.77 *** | Claude API 0.82 ***
-- **MCP** ↔ Claude Browser 0.74 *** | Claude API 0.80 *** | Copilot 0.88 ***
-- **All Confirmed** ↔ Claude Browser 0.94 *** | Claude API 0.95 *** | Copilot 0.91 *** | MCP 0.84 ***
+- **MCP** ↔ Claude Browser 0.75 *** | Claude API 0.80 *** | Copilot 0.88 ***
+- **All Confirmed** ↔ Claude Browser 0.94 *** | Claude API 0.95 *** | Copilot 0.91 *** | MCP 0.85 ***
 - **Conversational Confirmed** ↔ Claude Browser 0.94 *** | Claude API 0.93 *** | Copilot 0.92 *** | MCP 0.85 *** | All Confirmed 0.99 ***
 - **Agentic Confirmed** ↔ Claude Browser 0.92 *** | Claude API 1.00 *** | Copilot 0.82 *** | MCP 0.80 *** | All Confirmed 0.95 *** | Conversational Confirmed 0.93 ***
 - **Agentic Ceiling** ↔ Claude Browser 0.87 *** | Claude API 0.92 *** | Copilot 0.91 *** | MCP 0.95 *** | All Confirmed 0.95 *** | Conversational Confirmed 0.94 *** | Agentic Confirmed 0.92 ***
-- **All Sources (Ceiling)** ↔ Claude Browser 0.91 *** | Claude API 0.94 *** | Copilot 0.92 *** | MCP 0.91 *** | All Confirmed 0.98 *** | Conversational Confirmed 0.98 *** | Agentic Confirmed 0.94 *** | Agentic Ceiling 0.98 ***
+- **All Sources (Ceiling)** ↔ Claude Browser 0.91 *** | Claude API 0.94 *** | Copilot 0.91 *** | MCP 0.91 *** | All Confirmed 0.98 *** | Conversational Confirmed 0.97 *** | Agentic Confirmed 0.94 *** | Agentic Ceiling 0.99 ***
 - **Eloundou GPT-4 β** ↔ Claude Browser 0.82 *** | Claude API 0.85 *** | Copilot 0.90 *** [contam] | MCP 0.86 *** | All Confirmed 0.90 *** [contam] | Conversational Confirmed 0.90 *** [contam] | Agentic Confirmed 0.85 *** | Agentic Ceiling 0.91 *** | All Sources (Ceiling) 0.92 *** [contam]
-- **Eloundou Human β** ↔ Claude Browser 0.82 *** | Claude API 0.84 *** | Copilot 0.89 *** [contam] | MCP 0.85 *** | All Confirmed 0.89 *** [contam] | Conversational Confirmed 0.89 *** [contam] | Agentic Confirmed 0.84 *** | Agentic Ceiling 0.89 *** | All Sources (Ceiling) 0.90 *** [contam] | Eloundou GPT-4 β 0.93 ***
-- **AIOE Overall** ↔ Claude Browser 0.75 *** | Claude API 0.78 *** | Copilot 0.80 *** | MCP 0.74 *** | All Confirmed 0.82 *** | Conversational Confirmed 0.82 *** | Agentic Confirmed 0.78 *** | Agentic Ceiling 0.81 *** | All Sources (Ceiling) 0.84 *** | Eloundou GPT-4 β 0.87 *** | Eloundou Human β 0.88 ***
-- **AIOE Reading Compr.** ↔ Claude Browser 0.80 *** | Claude API 0.81 *** | Copilot 0.79 *** | MCP 0.72 *** | All Confirmed 0.85 *** | Conversational Confirmed 0.85 *** | Agentic Confirmed 0.81 *** | Agentic Ceiling 0.81 *** | All Sources (Ceiling) 0.85 *** | Eloundou GPT-4 β 0.87 *** | Eloundou Human β 0.89 *** | AIOE Overall 0.96 ***
+- **Eloundou Human β** ↔ Claude Browser 0.82 *** | Claude API 0.84 *** | Copilot 0.89 *** [contam] | MCP 0.85 *** | All Confirmed 0.89 *** [contam] | Conversational Confirmed 0.89 *** [contam] | Agentic Confirmed 0.84 *** | Agentic Ceiling 0.90 *** | All Sources (Ceiling) 0.90 *** [contam] | Eloundou GPT-4 β 0.93 ***
+- **AIOE Overall** ↔ Claude Browser 0.75 *** | Claude API 0.78 *** | Copilot 0.80 *** | MCP 0.75 *** | All Confirmed 0.82 *** | Conversational Confirmed 0.82 *** | Agentic Confirmed 0.78 *** | Agentic Ceiling 0.81 *** | All Sources (Ceiling) 0.84 *** | Eloundou GPT-4 β 0.87 *** | Eloundou Human β 0.88 ***
+- **AIOE Reading Compr.** ↔ Claude Browser 0.80 *** | Claude API 0.81 *** | Copilot 0.79 *** | MCP 0.72 *** | All Confirmed 0.85 *** | Conversational Confirmed 0.85 *** | Agentic Confirmed 0.81 *** | Agentic Ceiling 0.82 *** | All Sources (Ceiling) 0.85 *** | Eloundou GPT-4 β 0.87 *** | Eloundou Human β 0.89 *** | AIOE Overall 0.96 ***
 - **Schaal Overall** ↔ Claude Browser 0.68 *** | Claude API 0.60 *** | Copilot 0.65 *** | MCP 0.63 *** | All Confirmed 0.67 *** | Conversational Confirmed 0.69 *** | Agentic Confirmed 0.60 *** | Agentic Ceiling 0.65 *** | All Sources (Ceiling) 0.68 *** | Eloundou GPT-4 β 0.72 *** | Eloundou Human β 0.72 *** | AIOE Overall 0.69 *** | AIOE Reading Compr. 0.71 ***
 - **Schaal DA** ↔ Claude Browser 0.71 *** | Claude API 0.70 *** | Copilot 0.81 *** | MCP 0.86 *** | All Confirmed 0.78 *** | Conversational Confirmed 0.79 *** | Agentic Confirmed 0.70 *** | Agentic Ceiling 0.82 *** | All Sources (Ceiling) 0.81 *** | Eloundou GPT-4 β 0.86 *** | Eloundou Human β 0.82 *** | AIOE Overall 0.77 *** | AIOE Reading Compr. 0.72 *** | Schaal Overall 0.73 ***
-- **Schaal AG** ↔ Claude Browser 0.54 *** | Claude API 0.61 *** | Copilot 0.73 *** | MCP 0.84 *** | All Confirmed 0.67 *** | Conversational Confirmed 0.67 *** | Agentic Confirmed 0.61 *** | Agentic Ceiling 0.77 *** | All Sources (Ceiling) 0.73 *** | Eloundou GPT-4 β 0.78 *** | Eloundou Human β 0.69 *** | AIOE Overall 0.66 *** | AIOE Reading Compr. 0.58 *** | Schaal Overall 0.50 *** | Schaal DA 0.86 ***
-- **Tomlinson (Copilot)** (n = 93) ↔ Claude Browser 0.73 *** | Claude API 0.74 *** | Copilot 0.83 *** | MCP 0.78 *** | All Confirmed 0.81 *** | Conversational Confirmed 0.82 *** | Agentic Confirmed 0.74 *** | Agentic Ceiling 0.80 *** | All Sources (Ceiling) 0.81 *** | Eloundou GPT-4 β 0.72 *** | Eloundou Human β 0.79 *** | AIOE Overall 0.69 *** | AIOE Reading Compr. 0.70 *** | Schaal Overall 0.51 *** | Schaal DA 0.67 *** | Schaal AG 0.56 ***
+- **Schaal AG** ↔ Claude Browser 0.54 *** | Claude API 0.61 *** | Copilot 0.73 *** | MCP 0.85 *** | All Confirmed 0.67 *** | Conversational Confirmed 0.67 *** | Agentic Confirmed 0.61 *** | Agentic Ceiling 0.78 *** | All Sources (Ceiling) 0.74 *** | Eloundou GPT-4 β 0.78 *** | Eloundou Human β 0.69 *** | AIOE Overall 0.66 *** | AIOE Reading Compr. 0.58 *** | Schaal Overall 0.50 *** | Schaal DA 0.86 ***
+- **Tomlinson (Copilot)** (n = 93) ↔ Claude Browser 0.73 *** | Claude API 0.74 *** | Copilot 0.83 *** | MCP 0.77 *** | All Confirmed 0.81 *** | Conversational Confirmed 0.82 *** | Agentic Confirmed 0.74 *** | Agentic Ceiling 0.80 *** | All Sources (Ceiling) 0.81 *** | Eloundou GPT-4 β 0.72 *** | Eloundou Human β 0.79 *** | AIOE Overall 0.69 *** | AIOE Reading Compr. 0.70 *** | Schaal Overall 0.51 *** | Schaal DA 0.67 *** | Schaal AG 0.56 ***
 
 Cell range at minor level: 0.50 (Schaal AG vs Schaal Overall) to 1.00 (Agentic Confirmed ↔ Claude API).
 
@@ -894,19 +894,19 @@ n = 439 broad occupations for every internal/internal and internal/external pair
 
 - **Claude API** ↔ Claude Browser 0.87 ***
 - **Copilot** ↔ Claude Browser 0.72 *** | Claude API 0.71 ***
-- **MCP** ↔ Claude Browser 0.65 *** | Claude API 0.68 *** | Copilot 0.80 ***
+- **MCP** ↔ Claude Browser 0.66 *** | Claude API 0.68 *** | Copilot 0.80 ***
 - **All Confirmed** ↔ Claude Browser 0.91 *** | Claude API 0.90 *** | Copilot 0.89 *** | MCP 0.78 ***
 - **Conversational Confirmed** ↔ Claude Browser 0.91 *** | Claude API 0.86 *** | Copilot 0.90 *** | MCP 0.78 *** | All Confirmed 0.99 ***
 - **Agentic Confirmed** ↔ Claude Browser 0.87 *** | Claude API 1.00 *** | Copilot 0.71 *** | MCP 0.68 *** | All Confirmed 0.90 *** | Conversational Confirmed 0.86 ***
 - **Agentic Ceiling** ↔ Claude Browser 0.80 *** | Claude API 0.86 *** | Copilot 0.83 *** | MCP 0.94 *** | All Confirmed 0.90 *** | Conversational Confirmed 0.88 *** | Agentic Confirmed 0.86 ***
-- **All Sources (Ceiling)** ↔ Claude Browser 0.86 *** | Claude API 0.86 *** | Copilot 0.88 *** | MCP 0.90 *** | All Confirmed 0.96 *** | Conversational Confirmed 0.95 *** | Agentic Confirmed 0.86 *** | Agentic Ceiling 0.97 ***
-- **Eloundou GPT-4 β** ↔ Claude Browser 0.73 *** | Claude API 0.72 *** | Copilot 0.88 *** [contam] | MCP 0.83 *** | All Confirmed 0.86 *** [contam] | Conversational Confirmed 0.86 *** [contam] | Agentic Confirmed 0.72 *** | Agentic Ceiling 0.86 *** | All Sources (Ceiling) 0.88 *** [contam]
+- **All Sources (Ceiling)** ↔ Claude Browser 0.85 *** | Claude API 0.86 *** | Copilot 0.87 *** | MCP 0.90 *** | All Confirmed 0.96 *** | Conversational Confirmed 0.95 *** | Agentic Confirmed 0.86 *** | Agentic Ceiling 0.97 ***
+- **Eloundou GPT-4 β** ↔ Claude Browser 0.73 *** | Claude API 0.72 *** | Copilot 0.88 *** [contam] | MCP 0.84 *** | All Confirmed 0.86 *** [contam] | Conversational Confirmed 0.86 *** [contam] | Agentic Confirmed 0.72 *** | Agentic Ceiling 0.86 *** | All Sources (Ceiling) 0.89 *** [contam]
 - **Eloundou Human β** ↔ Claude Browser 0.74 *** | Claude API 0.71 *** | Copilot 0.86 *** [contam] | MCP 0.80 *** | All Confirmed 0.85 *** [contam] | Conversational Confirmed 0.86 *** [contam] | Agentic Confirmed 0.71 *** | Agentic Ceiling 0.83 *** | All Sources (Ceiling) 0.87 *** [contam] | Eloundou GPT-4 β 0.92 ***
 - **AIOE Overall** (n = 433) ↔ Claude Browser 0.67 *** | Claude API 0.63 *** | Copilot 0.77 *** | MCP 0.74 *** | All Confirmed 0.76 *** | Conversational Confirmed 0.77 *** | Agentic Confirmed 0.63 *** | Agentic Ceiling 0.76 *** | All Sources (Ceiling) 0.79 *** | Eloundou GPT-4 β 0.83 *** | Eloundou Human β 0.84 ***
-- **AIOE Reading Compr.** (n = 433) ↔ Claude Browser 0.76 *** | Claude API 0.71 *** | Copilot 0.78 *** | MCP 0.72 *** | All Confirmed 0.82 *** | Conversational Confirmed 0.83 *** | Agentic Confirmed 0.71 *** | Agentic Ceiling 0.79 *** | All Sources (Ceiling) 0.83 *** | Eloundou GPT-4 β 0.85 *** | Eloundou Human β 0.87 *** | AIOE Overall 0.93 ***
+- **AIOE Reading Compr.** (n = 433) ↔ Claude Browser 0.76 *** | Claude API 0.71 *** | Copilot 0.78 *** | MCP 0.73 *** | All Confirmed 0.82 *** | Conversational Confirmed 0.83 *** | Agentic Confirmed 0.71 *** | Agentic Ceiling 0.79 *** | All Sources (Ceiling) 0.83 *** | Eloundou GPT-4 β 0.85 *** | Eloundou Human β 0.87 *** | AIOE Overall 0.93 ***
 - **Schaal Overall** ↔ Claude Browser 0.66 *** | Claude API 0.59 *** | Copilot 0.66 *** | MCP 0.62 *** | All Confirmed 0.71 *** | Conversational Confirmed 0.71 *** | Agentic Confirmed 0.59 *** | Agentic Ceiling 0.66 *** | All Sources (Ceiling) 0.70 *** | Eloundou GPT-4 β 0.74 *** | Eloundou Human β 0.75 *** | AIOE Overall 0.69 *** (n = 433) | AIOE Reading Compr. 0.74 *** (n = 433)
 - **Schaal DA** ↔ Claude Browser 0.61 *** | Claude API 0.62 *** | Copilot 0.74 *** | MCP 0.81 *** | All Confirmed 0.72 *** | Conversational Confirmed 0.71 *** | Agentic Confirmed 0.62 *** | Agentic Ceiling 0.79 *** | All Sources (Ceiling) 0.78 *** | Eloundou GPT-4 β 0.83 *** | Eloundou Human β 0.78 *** | AIOE Overall 0.73 *** (n = 433) | AIOE Reading Compr. 0.69 *** (n = 433) | Schaal Overall 0.73 ***
-- **Schaal AG** ↔ Claude Browser 0.48 *** | Claude API 0.53 *** | Copilot 0.67 *** | MCP 0.83 *** | All Confirmed 0.62 *** | Conversational Confirmed 0.61 *** | Agentic Confirmed 0.53 *** | Agentic Ceiling 0.77 *** | All Sources (Ceiling) 0.72 *** | Eloundou GPT-4 β 0.78 *** | Eloundou Human β 0.70 *** | AIOE Overall 0.66 *** (n = 433) | AIOE Reading Compr. 0.60 *** (n = 433) | Schaal Overall 0.56 *** | Schaal DA 0.86 ***
+- **Schaal AG** ↔ Claude Browser 0.48 *** | Claude API 0.53 *** | Copilot 0.67 *** | MCP 0.84 *** | All Confirmed 0.62 *** | Conversational Confirmed 0.61 *** | Agentic Confirmed 0.53 *** | Agentic Ceiling 0.77 *** | All Sources (Ceiling) 0.73 *** | Eloundou GPT-4 β 0.78 *** | Eloundou Human β 0.70 *** | AIOE Overall 0.66 *** (n = 433) | AIOE Reading Compr. 0.60 *** (n = 433) | Schaal Overall 0.56 *** | Schaal DA 0.86 ***
 - **Tomlinson (Copilot)** (n = 424; AIOE pairs n = 418) ↔ Claude Browser 0.68 *** | Claude API 0.67 *** | Copilot 0.85 *** | MCP 0.73 *** | All Confirmed 0.81 *** | Conversational Confirmed 0.82 *** | Agentic Confirmed 0.67 *** | Agentic Ceiling 0.77 *** | All Sources (Ceiling) 0.81 *** | Eloundou GPT-4 β 0.76 *** | Eloundou Human β 0.78 *** | AIOE Overall 0.69 *** | AIOE Reading Compr. 0.73 *** | Schaal Overall 0.56 *** | Schaal DA 0.64 *** | Schaal AG 0.58 ***
 
 Cell range at broad level: 0.48 (Schaal AG vs Claude Browser) to 1.00 (Agentic Confirmed ↔ Claude API).
@@ -921,14 +921,14 @@ n = 923 occupations for every internal/internal and internal/external pair; n = 
 - **Copilot** ↔ Claude Browser 0.64 *** | Claude API 0.62 ***
 - **MCP** ↔ Claude Browser 0.58 *** | Claude API 0.60 *** | Copilot 0.75 ***
 - **All Confirmed** ↔ Claude Browser 0.89 *** | Claude API 0.86 *** | Copilot 0.86 *** | MCP 0.73 ***
-- **Conversational Confirmed** ↔ Claude Browser 0.88 *** | Claude API 0.80 *** | Copilot 0.89 *** | MCP 0.73 *** | All Confirmed 0.98 ***
+- **Conversational Confirmed** ↔ Claude Browser 0.88 *** | Claude API 0.80 *** | Copilot 0.89 *** | MCP 0.74 *** | All Confirmed 0.98 ***
 - **Agentic Confirmed** ↔ Claude Browser 0.84 *** | Claude API 1.00 *** | Copilot 0.62 *** | MCP 0.60 *** | All Confirmed 0.86 *** | Conversational Confirmed 0.80 ***
 - **Agentic Ceiling** ↔ Claude Browser 0.76 *** | Claude API 0.83 *** | Copilot 0.78 *** | MCP 0.92 *** | All Confirmed 0.88 *** | Conversational Confirmed 0.86 *** | Agentic Confirmed 0.83 ***
 - **All Sources (Ceiling)** ↔ Claude Browser 0.83 *** | Claude API 0.82 *** | Copilot 0.84 *** | MCP 0.87 *** | All Confirmed 0.95 *** | Conversational Confirmed 0.94 *** | Agentic Confirmed 0.82 *** | Agentic Ceiling 0.96 ***
-- **Eloundou GPT-4 β** ↔ Claude Browser 0.67 *** | Claude API 0.64 *** | Copilot 0.84 *** [contam] | MCP 0.77 *** | All Confirmed 0.82 *** [contam] | Conversational Confirmed 0.83 *** [contam] | Agentic Confirmed 0.64 *** | Agentic Ceiling 0.81 *** | All Sources (Ceiling) 0.84 *** [contam]
+- **Eloundou GPT-4 β** ↔ Claude Browser 0.67 *** | Claude API 0.64 *** | Copilot 0.84 *** [contam] | MCP 0.78 *** | All Confirmed 0.82 *** [contam] | Conversational Confirmed 0.83 *** [contam] | Agentic Confirmed 0.64 *** | Agentic Ceiling 0.81 *** | All Sources (Ceiling) 0.84 *** [contam]
 - **Eloundou Human β** ↔ Claude Browser 0.68 *** | Claude API 0.64 *** | Copilot 0.83 *** [contam] | MCP 0.73 *** | All Confirmed 0.82 *** [contam] | Conversational Confirmed 0.83 *** [contam] | Agentic Confirmed 0.64 *** | Agentic Ceiling 0.78 *** | All Sources (Ceiling) 0.83 *** [contam] | Eloundou GPT-4 β 0.90 ***
 - **AIOE Overall** (n = 893) ↔ Claude Browser 0.61 *** | Claude API 0.56 *** | Copilot 0.69 *** | MCP 0.64 *** | All Confirmed 0.70 *** | Conversational Confirmed 0.71 *** | Agentic Confirmed 0.56 *** | Agentic Ceiling 0.68 *** | All Sources (Ceiling) 0.72 *** | Eloundou GPT-4 β 0.78 *** | Eloundou Human β 0.78 ***
-- **AIOE Reading Compr.** (n = 893) ↔ Claude Browser 0.70 *** | Claude API 0.64 *** | Copilot 0.72 *** | MCP 0.63 *** | All Confirmed 0.77 *** | Conversational Confirmed 0.78 *** | Agentic Confirmed 0.64 *** | Agentic Ceiling 0.72 *** | All Sources (Ceiling) 0.77 *** | Eloundou GPT-4 β 0.82 *** | Eloundou Human β 0.84 *** | AIOE Overall 0.92 ***
+- **AIOE Reading Compr.** (n = 893) ↔ Claude Browser 0.70 *** | Claude API 0.64 *** | Copilot 0.72 *** | MCP 0.64 *** | All Confirmed 0.77 *** | Conversational Confirmed 0.78 *** | Agentic Confirmed 0.64 *** | Agentic Ceiling 0.72 *** | All Sources (Ceiling) 0.77 *** | Eloundou GPT-4 β 0.82 *** | Eloundou Human β 0.84 *** | AIOE Overall 0.92 ***
 - **Schaal Overall** ↔ Claude Browser 0.62 *** | Claude API 0.54 *** | Copilot 0.62 *** | MCP 0.58 *** | All Confirmed 0.68 *** | Conversational Confirmed 0.68 *** | Agentic Confirmed 0.54 *** | Agentic Ceiling 0.63 *** | All Sources (Ceiling) 0.68 *** | Eloundou GPT-4 β 0.73 *** | Eloundou Human β 0.70 *** | AIOE Overall 0.66 *** (n = 893) | AIOE Reading Compr. 0.71 *** (n = 893)
 - **Schaal DA** ↔ Claude Browser 0.53 *** | Claude API 0.52 *** | Copilot 0.70 *** | MCP 0.74 *** | All Confirmed 0.67 *** | Conversational Confirmed 0.67 *** | Agentic Confirmed 0.52 *** | Agentic Ceiling 0.72 *** | All Sources (Ceiling) 0.72 *** | Eloundou GPT-4 β 0.78 *** | Eloundou Human β 0.71 *** | AIOE Overall 0.65 *** (n = 893) | AIOE Reading Compr. 0.62 *** (n = 893) | Schaal Overall 0.74 ***
 - **Schaal AG** ↔ Claude Browser 0.38 *** | Claude API 0.42 *** | Copilot 0.63 *** | MCP 0.78 *** | All Confirmed 0.55 *** | Conversational Confirmed 0.55 *** | Agentic Confirmed 0.42 *** | Agentic Ceiling 0.69 *** | All Sources (Ceiling) 0.65 *** | Eloundou GPT-4 β 0.71 *** | Eloundou Human β 0.62 *** | AIOE Overall 0.55 *** (n = 893) | AIOE Reading Compr. 0.49 *** (n = 893) | Schaal Overall 0.56 *** | Schaal DA 0.82 ***
@@ -949,12 +949,12 @@ Same 5-config grouped bar chart as the main Part 1 overview, but with the auto-a
 | All Confirmed | 39.80% | 48.10% | 53.40% | 74.37M | $5.27T |
 | Conversational Confirmed | 38.40% | 46.60% | 51.60% | 71.93M | $5.09T |
 | Agentic Confirmed | 15.00% | 21.90% | 24.80% | 33.86M | $2.45T |
-| Agentic Ceiling | 50.40% | 60.20% | 64.90% | 92.97M | $6.41T |
-| All Sources (Ceiling) | 59.00% | 68.00% | 73.30% | 105.03M | $7.23T |
+| Agentic Ceiling | 50.70% | 60.70% | 65.60% | 93.76M | $6.47T |
+| All Sources (Ceiling) | 59.20% | 68.10% | 73.50% | 105.25M | $7.25T |
 
-Exact CSV values: All Confirmed workers 74,374,696.00; wages $5,266,306,034,246.22. Conversational Confirmed workers 71,934,805.82; wages $5,094,477,859,664.51. Agentic Confirmed workers 33,862,768.47; wages $2,448,266,183,949.03. Agentic Ceiling workers 92,973,127.52; wages $6,408,416,420,337.29. All Sources (Ceiling) workers 105,027,832.02; wages $7,234,656,237,851.77.
+Exact CSV values: All Confirmed workers 74,374,696.00; wages $5,266,306,034,246.22. Conversational Confirmed workers 71,934,805.82; wages $5,094,477,859,664.51. Agentic Confirmed workers 33,862,768.47; wages $2,448,266,183,949.03. Agentic Ceiling workers 93,756,553.15; wages $6,471,859,500,470.47. All Sources (Ceiling) workers 105,247,422.41; wages $7,252,731,948,075.95.
 
-Auto-aug-on → auto-aug-off % Tasks delta per config: All Confirmed 29.30 → 39.80 (+10.5 pp); Conversational Confirmed 25.10 → 38.40 (+13.3 pp); Agentic Confirmed 14.40 → 15.00 (+0.6 pp); Agentic Ceiling 30.80 → 50.40 (+19.6 pp); All Sources (Ceiling) 38.70 → 59.00 (+20.3 pp).
+Auto-aug-on → auto-aug-off % Tasks delta per config: All Confirmed 29.30 → 39.80 (+10.5 pp); Conversational Confirmed 25.10 → 38.40 (+13.3 pp); Agentic Confirmed 14.40 → 15.00 (+0.6 pp); Agentic Ceiling 31.10 → 50.70 (+19.6 pp); All Sources (Ceiling) 38.90 → 59.20 (+20.3 pp).
 
 ---
 
@@ -967,7 +967,7 @@ Single-panel % Tasks Exposed time-series with three lines split by physical-task
 - **All Sources (Ceiling) — Non-physical Tasks**: dashed line in light blue, 8 dates.
 - **All Confirmed — Physical Tasks**: solid line in gold (tasks-color), 4 dates.
 
-Each line has a dotted 2-yr Linear OLS Projection extending to roughly Jan 2028, labeled at the 2yr endpoint. Projected 2yr endpoints visible on the chart: All Sources (Ceiling) Non-physical 102.4%; All Confirmed Non-physical 75.0%; All Confirmed Physical 22.2%. Legend: "All Confirmed — Non-physical Tasks" (solid blue), "All Sources (Ceiling) — Non-physical Tasks" (dashed light blue), "All Confirmed — Physical Tasks" (solid gold), "2-yr Linear OLS Projection" (dotted).
+Each line has a dotted 2-yr Linear OLS Projection extending to roughly Jan 2028, labeled at the 2yr endpoint. Projected 2yr endpoints visible on the chart: All Sources (Ceiling) Non-physical 102.8%; All Confirmed Non-physical 75.0%; All Confirmed Physical 22.2%. Legend: "All Confirmed — Non-physical Tasks" (solid blue), "All Sources (Ceiling) — Non-physical Tasks" (dashed light blue), "All Confirmed — Physical Tasks" (solid gold), "2-yr Linear OLS Projection" (dotted).
 
 **All Confirmed — Non-physical Tasks (4 dates):**
 - 2025-03-06 (AEI Both + Micro 2025-03-06): 36.40%
@@ -985,9 +985,9 @@ Each line has a dotted 2-yr Linear OLS Projection extending to roughly Jan 2028,
 - 2025-08-11 (All 2025-08-11): 55.70%
 - 2025-11-13 (All 2025-11-13): 57.80%
 - 2026-02-12 (All 2026-02-12): 58.80%
-- 2026-02-18 (All 2026-02-18): 59.00%
+- 2026-02-18 (All 2026-02-18): 59.30%
 
-Δ first→last: +22.60 pp.
+Δ first→last: +22.90 pp.
 
 **All Confirmed — Physical Tasks (4 dates):**
 - 2025-03-06 (AEI Both + Micro 2025-03-06): 8.50%
@@ -997,7 +997,7 @@ Each line has a dotted 2-yr Linear OLS Projection extending to roughly Jan 2028,
 
 Δ first→last: +4.20 pp.
 
-Final-snapshot gap between Non-physical and Physical (All Confirmed): 48.20% − 12.70% = 35.5 pp. Ceiling Non-physical − Confirmed Non-physical at final snapshot: 59.00% − 48.20% = 10.8 pp.
+Final-snapshot gap between Non-physical and Physical (All Confirmed): 48.20% − 12.70% = 35.5 pp. Ceiling Non-physical − Confirmed Non-physical at final snapshot: 59.30% − 48.20% = 11.1 pp.
 
 ---
 
