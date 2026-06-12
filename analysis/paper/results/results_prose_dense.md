@@ -793,34 +793,34 @@ The legend below the map (2 columns, centered) renders the cluster names — eac
 
 ![intensity_anchor_fulleco.png](part_3/figures/intensity_anchor_fulleco.png)
 
-22 majors ranked by AI intensity ratio (Σ pct ÷ Σ freq × emp over the full eco_2025 universe, debiased by Claude / Copilot / ChatGPT GWA-distribution priors, AEI-only no-Microsoft pool), renormalized to sum to 100% across the 22 majors, then divided by the anchor major's value so the anchor reads as 1.00×. **Anchor**: Office and Administrative Support (renormalized share 1.0316% — sits at 1.00× by construction). A dashed vertical line at x = 1.0 marks the anchor (labeled "median"); the statistical median across the 22 lifts is 0.8799×. Bars are colored by `pct_tasks_affected` (the All Confirmed AEI-only-eco_2025 % tasks affected for that major) on a light → dark blue ramp. Bar text shows lift value (e.g., "28.82x") inside in white for wide bars, outside in dark for narrow bars. A right-aligned `Σ raw pct` column in the right margin reports each major's un-debiased Σ pct_normalized (raw AI-usage mass), in the same spirit as the appendix intensity_drivers charts that print the raw pct beside each bar. The column exposes a divergence the lift axis hides: Computer & Mathematical carries by far the largest raw usage mass (43.7%) yet ranks only second by lift, because its full-eco denominator (Σ freq × emp) is large.
+22 majors ranked by AI intensity ratio (Σ pct ÷ Σ freq × emp over the full eco_2025 universe, debiased by Claude / Copilot / ChatGPT GWA-distribution priors, AEI-only no-Microsoft pool), renormalized to sum to 100% across the 22 majors, then divided by the anchor major's value so the anchor reads as 1.00×. **Anchor**: Office and Administrative Support (renormalized share 1.0316% — sits at 1.00× by construction). A dashed vertical line at x = 1.0 marks the anchor (labeled "median"); the statistical median across the 22 lifts is 0.8799×. Bars are colored by `pct_tasks_affected` (the All Confirmed AEI-only-eco_2025 % tasks affected for that major) on a light → dark blue ramp. Bar text shows lift value (e.g., "28.82x") inside in white for wide bars, outside in dark for narrow bars. Two right-aligned numeric columns in the right margin report each major's usage mass as a share that sums to 100% across the 22 majors: `Σ debias pct` (the bias-corrected Σ adj_pct, renormalized to 100% — debias reallocates mass so the comparable view is the redistributed share) and `Σ raw pct` (the un-debiased Σ pct_normalized, the same quantity the appendix intensity_drivers charts print beside each bar). Side by side they expose how the GWA debias reweights usage mass — Computer & Mathematical falls from 43.7% raw to 28.2% debiased, while Arts rises from 8.7% to 12.5% — and the divergence the lift axis hides: Computer & Mathematical carries by far the largest raw usage mass (43.7%) yet ranks only second by lift, because its full-eco denominator (Σ freq × emp) is large.
 
 Per major (sorted by lift descending):
 
-| # | Major | Lift (×) | Σ raw pct (%) | ratio_full_pct (% of all-major share) | pct_tasks_affected (color value) |
-|---|---|---|---|---|---|
-| 1 | Life, Physical, and Social Science | 28.8184 | 5.9 | 29.7281 | 30.3567 |
-| 2 | Computer and Mathematical | 24.3407 | 43.7 | 25.1091 | 51.1236 |
-| 3 | Arts, Design, Entertainment, Sports, and Media | 20.4814 | 8.7 | 21.1279 | 40.1116 |
-| 4 | Architecture and Engineering | 4.1051 | 2.4 | 4.2347 | 20.9016 |
-| 5 | Community and Social Service | 3.4350 | 2.0 | 3.5435 | 33.1954 |
-| 6 | Business and Financial Operations | 3.2808 | 5.0 | 3.3844 | 42.6732 |
-| 7 | Management | 2.2662 | 4.0 | 2.3378 | 28.6389 |
-| 8 | Educational Instruction and Library | 2.1368 | 10.0 | 2.2043 | 48.8850 |
-| 9 | Legal | 1.7854 | 0.5 | 1.8418 | 35.9284 |
-| 10 | Farming, Fishing, and Forestry | 1.5053 | 0.2 | 1.5528 | 3.8543 |
-| 11 | Office and Administrative Support [anchor] | 1.0000 | 6.7 | 1.0316 | 38.1056 |
-| 12 | Sales and Related | 0.7597 | 3.7 | 0.7837 | 48.5881 |
-| 13 | Personal Care and Service | 0.6887 | 0.4 | 0.7104 | 16.3099 |
-| 14 | Healthcare Practitioners and Technical | 0.5258 | 2.6 | 0.5424 | 20.4777 |
-| 15 | Protective Service | 0.4958 | 0.5 | 0.5114 | 17.0041 |
-| 16 | Production | 0.2982 | 1.8 | 0.3076 | 5.3786 |
-| 17 | Installation, Maintenance, and Repair | 0.2860 | 0.6 | 0.2951 | 9.1197 |
-| 18 | Healthcare Support | 0.2622 | 0.4 | 0.2704 | 18.5493 |
-| 19 | Building and Grounds Cleaning and Maintenance | 0.1960 | 0.1 | 0.2022 | 9.9741 |
-| 20 | Construction and Extraction | 0.1599 | 0.3 | 0.1649 | 6.0669 |
-| 21 | Transportation and Material Moving | 0.0799 | 0.3 | 0.0824 | 7.5392 |
-| 22 | Food Preparation and Serving Related | 0.0326 | 0.2 | 0.0336 | 15.0711 |
+| # | Major | Lift (×) | Σ debias pct (%) | Σ raw pct (%) | ratio_full_pct (% of all-major share) | pct_tasks_affected (color value) |
+|---|---|---|---|---|---|---|
+| 1 | Life, Physical, and Social Science | 28.8184 | 8.0 | 5.9 | 29.7281 | 30.3567 |
+| 2 | Computer and Mathematical | 24.3407 | 28.2 | 43.7 | 25.1091 | 51.1236 |
+| 3 | Arts, Design, Entertainment, Sports, and Media | 20.4814 | 12.5 | 8.7 | 21.1279 | 40.1116 |
+| 4 | Architecture and Engineering | 4.1051 | 2.1 | 2.4 | 4.2347 | 20.9016 |
+| 5 | Community and Social Service | 3.4350 | 2.2 | 2.0 | 3.5435 | 33.1954 |
+| 6 | Business and Financial Operations | 3.2808 | 5.9 | 5.0 | 3.3844 | 42.6732 |
+| 7 | Management | 2.2662 | 4.7 | 4.0 | 2.3378 | 28.6389 |
+| 8 | Educational Instruction and Library | 2.1368 | 9.3 | 10.0 | 2.2043 | 48.8850 |
+| 9 | Legal | 1.7854 | 0.6 | 0.5 | 1.8418 | 35.9284 |
+| 10 | Farming, Fishing, and Forestry | 1.5053 | 0.2 | 0.2 | 1.5528 | 3.8543 |
+| 11 | Office and Administrative Support [anchor] | 1.0000 | 8.7 | 6.7 | 1.0316 | 38.1056 |
+| 12 | Sales and Related | 0.7597 | 7.2 | 3.7 | 0.7837 | 48.5881 |
+| 13 | Personal Care and Service | 0.6887 | 1.1 | 0.4 | 0.7104 | 16.3099 |
+| 14 | Healthcare Practitioners and Technical | 0.5258 | 3.7 | 2.6 | 0.5424 | 20.4777 |
+| 15 | Protective Service | 0.4958 | 0.7 | 0.5 | 0.5114 | 17.0041 |
+| 16 | Production | 0.2982 | 1.5 | 1.8 | 0.3076 | 5.3786 |
+| 17 | Installation, Maintenance, and Repair | 0.2860 | 0.6 | 0.6 | 0.2951 | 9.1197 |
+| 18 | Healthcare Support | 0.2622 | 1.0 | 0.4 | 0.2704 | 18.5493 |
+| 19 | Building and Grounds Cleaning and Maintenance | 0.1960 | 0.3 | 0.1 | 0.2022 | 9.9741 |
+| 20 | Construction and Extraction | 0.1599 | 0.4 | 0.3 | 0.1649 | 6.0669 |
+| 21 | Transportation and Material Moving | 0.0799 | 0.6 | 0.3 | 0.0824 | 7.5392 |
+| 22 | Food Preparation and Serving Related | 0.0326 | 0.4 | 0.2 | 0.0336 | 15.0711 |
 
 Anchor value (Office and Admin Support): ratio_full_pct = 1.0316%. Median lift across the 22: 0.8799×.
 

@@ -2,6 +2,9 @@
 delta/
 analysis/exploratory/*
 
+# Scratch right-column figures (regenerable via run.py; not committed)
+analysis/paper/results/ai_convergence_charts/
+
 # Analysis generated outputs (archived question results stay gitignored)
 analysis/_archive/questions/**/results/
 analysis/paper/results/*/results/

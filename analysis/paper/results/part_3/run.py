@@ -660,8 +660,18 @@ def build_intensity_anchor_fulleco(results: Path, figures: Path) -> None:
     base["lift"] = base["ratio_full_pct"] / anchor_val
     median_lift = float(base["lift"].median())
 
+    # Debiased usage-mass share, the bias-corrected counterpart to raw_pct.
+    # raw_pct sums to 100% across the 22 majors (Σ pct_normalized is already a
+    # share of total economy usage); the debiased adj_pct sums to >100 because
+    # the GWA bias correction rescales the mass, so we renormalize to 100% to
+    # keep the two columns directly comparable as shares.
+    num_total = float(base["num"].sum())
+    base["debias_pct"] = np.where(
+        num_total > 0, base["num"] / num_total * 100.0, 0.0
+    )
+
     out = base[["category", "ratio_full_pct", "lift", "pct_tasks_affected",
-                "raw_pct"]].copy()
+                "raw_pct", "debias_pct"]].copy()
     out["anchor_value"] = anchor_val
     out["median_lift"] = median_lift
     save_csv(
@@ -694,10 +704,11 @@ def build_intensity_anchor_fulleco(results: Path, figures: Path) -> None:
         for v in plot_df["lift"]
     ]
     # Axis headroom beyond the longest bar so the top bars' inside labels
-    # aren't crammed against the right edge and the bar ends clear the
-    # Σ raw pct column (which is pinned near the PNG edge and can't shift
-    # further right). 12% leaves a comfortable gap without looking empty.
-    x_axis_max = max(plot_df["lift"]) * 1.12
+    # aren't crammed against the right edge and the bar ends clear BOTH
+    # right-margin columns (Σ debias pct sits in the plot-area tail and can't
+    # shift further right). 18% squishes the bars slightly to open that tail
+    # so the inner column has clean whitespace to land in.
+    x_axis_max = max(plot_df["lift"]) * 1.22
     inside_font  = dict(size=px["tick"], color="white",                family=FONT_FAMILY)
     outside_font = dict(size=px["tick"], color=PAPER_PALETTE["text"], family=FONT_FAMILY)
 
@@ -735,30 +746,42 @@ def build_intensity_anchor_fulleco(results: Path, figures: Path) -> None:
         font=dict(size=px["in_chart_floor"], color=PAPER_PALETTE["negative"], family=FONT_FAMILY),
     )
 
-    # Raw Σ pct-norm column in the right whitespace — un-debiased
-    # Σ pct_normalized per major (the same quantity the appendix
-    # intensity_drivers charts print beside each bar). The bars keep their
-    # bias-corrected lift labels; this adds the raw usage mass as a tidy
-    # right-aligned numeric column so a high-lift / low-mass major (e.g.
-    # Computer & Math carries the largest raw pct but not the largest lift)
-    # is legible. Fixed %.1f means every value has the same decimal width,
-    # so right-anchoring lines the decimal points up into a clean column.
-    # Anchored in paper coords (into the right margin) so it sits clear of
-    # the longest bar regardless of the lift axis range.
-    COL_X = 1.06  # paper x — right edge of the column, ~12 px in from the PNG edge
-    fig.add_annotation(
-        x=COL_X, y=1.005, xref="paper", yref="paper",
-        text="Σ raw pct", showarrow=False,
-        xanchor="right", yanchor="bottom",
-        font=dict(size=px["in_chart_floor"], color=PAPER_PALETTE["text"], family=FONT_FAMILY),
-    )
-    for cat, raw in zip(plot_df["display_category"], plot_df["raw_pct"]):
+    # Two right-margin numeric columns in the whitespace beyond the bars:
+    # the bias-corrected Σ debias pct (inner) and the un-debiased Σ raw pct
+    # (outer, the same quantity the appendix intensity_drivers charts print
+    # beside each bar). Both are usage-mass shares that sum to 100% across the
+    # 22 majors — raw_pct from Σ pct_normalized, debias_pct from Σ adj_pct
+    # renormalized to 100% (debias reallocates mass, so the comparable view is
+    # the redistributed share, matching the audit pipeline's "renormed to 100%"
+    # convention). Printing them side by side exposes how the GWA debias
+    # reweights mass: Computer & Math falls 43.7% -> 28.2%, Arts rises
+    # 8.7% -> 12.5%. The bars keep their bias-corrected lift labels. Fixed
+    # %.1f keeps a constant decimal width so right-anchoring lines the decimals
+    # into clean columns; two-line headers keep each column narrow. Both sit
+    # in the right whitespace the original chart already had (the squished
+    # plot-area tail past the bars + the original ~92 px margin), so the total
+    # right whitespace matches the single-column original — the outer Σ raw pct
+    # stays at its original 1.06 position and the inner Σ debias pct lands in
+    # the gridline-free tail just left of it.
+    COL_X_DEBIAS = 0.93  # paper x — right edge of the inner (debias) column
+    COL_X_RAW = 1.06     # paper x — right edge of the outer (raw) column
+    for col_x, header, field in (
+        (COL_X_DEBIAS, "Σ debias<br>pct", "debias_pct"),
+        (COL_X_RAW, "Σ raw<br>pct", "raw_pct"),
+    ):
         fig.add_annotation(
-            x=COL_X, y=cat, xref="paper", yref="y",
-            text=f"{raw:.1f}%", showarrow=False,
-            xanchor="right", yanchor="middle",
-            font=dict(size=px["tick"], color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+            x=col_x, y=1.005, xref="paper", yref="paper",
+            text=header, showarrow=False,
+            xanchor="right", yanchor="bottom", align="right",
+            font=dict(size=px["in_chart_floor"], color=PAPER_PALETTE["text"], family=FONT_FAMILY),
         )
+        for cat, val in zip(plot_df["display_category"], plot_df[field]):
+            fig.add_annotation(
+                x=col_x, y=cat, xref="paper", yref="y",
+                text=f"{val:.1f}%", showarrow=False,
+                xanchor="right", yanchor="middle",
+                font=dict(size=px["tick"], color=PAPER_PALETTE["text"], family=FONT_FAMILY),
+            )
 
     # Bottom legend: HTML-swatch gradient matching tech_commodities style.
     def _hex_to_rgb(h: str) -> tuple[int, int, int]:
@@ -807,8 +830,11 @@ def build_intensity_anchor_fulleco(results: Path, figures: Path) -> None:
             "Claude / Copilot / ChatGPT GWA-distribution blend (work-related ChatGPT chats)."
         ),
         height=chart_h, width=W,
-        # r sized to host the "Σ raw pct" column with a small edge clearance
-        # so the trailing "%" never clips.
+        # r kept at the original single-column width — both numeric columns
+        # (Σ debias pct, Σ raw pct) fit in the existing right whitespace
+        # (squished plot-area tail + this margin), so the chart's right edge
+        # matches the original. Σ raw pct keeps its small edge clearance so the
+        # trailing "%" never clips.
         margin=dict(l=20, r=92, t=MARGIN_T, b=MARGIN_B),
     )
     fig.update_layout(bargap=0.15)
