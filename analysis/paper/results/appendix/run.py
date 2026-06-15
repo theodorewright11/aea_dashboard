@@ -2992,11 +2992,11 @@ def build_state_clusters_combined_ranked(results: Path, figures: Path) -> None:
 # ──────────────────────────────────────────────────────────────────────────
 
 def build_underadoption_gap(results: Path, figures: Path) -> None:
-    """Underadoption relative to potential, anchored on Office and Admin.
+    """Underadoption relative to potential, normalized on the median major.
 
     Per major:
       raw_gap   = pct_tasks_affected / ratio_full_pct
-      gap_ratio = raw_gap / raw_gap[Office and Admin]
+      gap_ratio = raw_gap / median(raw_gap)
 
     Numerator (pct_tasks_affected): % of an occupation's task completions
     AI can affect — the 'potential' informed by task exposure (Part 2
@@ -3005,10 +3005,9 @@ def build_underadoption_gap(results: Path, figures: Path) -> None:
     employment×freq baseline (same backbone as Part 3
     intensity_anchor_fulleco).
 
-    Anchoring on Office and Admin (a near-median major) makes lift read
-    as 'X times more underadopted than Office and Admin'. Median dashed
-    line sits at x=1, mirroring the intensity chart so the pair reads
-    consistently.
+    Normalizing on the median raw_gap across the 22 majors makes lift read
+    as 'X times more underadopted than the median major'. The median dashed
+    line sits at x=1 by construction.
     """
     try:
         from analysis.exploratory.audit_pct_norm_eco.run import (
@@ -3046,23 +3045,23 @@ def build_underadoption_gap(results: Path, figures: Path) -> None:
     pct_aff = major_df.set_index("category")["pct_tasks_affected"]
     base["pct_tasks_affected"] = base["category"].map(pct_aff).fillna(0.0)
 
-    # ── Raw gap, then anchored to Office and Admin so lift reads as a
-    # clean multiple ("× more underadopted than Office and Admin").
+    # ── Raw gap, then normalized to the median major so lift reads as a
+    # clean multiple ("× more underadopted than the median major"). pandas
+    # .median() skips the NaN rows (majors with no AI usage mass).
     base["raw_gap"] = np.where(
         base["ratio_full_pct"] > 0,
         base["pct_tasks_affected"] / base["ratio_full_pct"],
         np.nan,
     )
-    anchor_major = "Office and Administrative Support Occupations"
-    anchor_gap = base.loc[base["category"] == anchor_major, "raw_gap"].iloc[0]
-    assert anchor_gap > 0, f"Anchor gap for {anchor_major} must be > 0"
-    base["gap_ratio"] = base["raw_gap"] / anchor_gap
+    median_gap = float(base["raw_gap"].median())
+    assert median_gap > 0, "Median raw_gap must be > 0"
+    base["gap_ratio"] = base["raw_gap"] / median_gap
 
     out = base[
         ["category", "pct_tasks_affected", "ratio_full_pct",
          "raw_gap", "gap_ratio"]
     ].sort_values("gap_ratio", ascending=False)
-    out["anchor_value"] = anchor_gap
+    out["median_value"] = median_gap
     save_csv(out, results / "underadoption_gap.csv", float_format="%.4f")
 
     plot_df = base.sort_values("gap_ratio", ascending=True).reset_index(drop=True)
@@ -3114,7 +3113,7 @@ def build_underadoption_gap(results: Path, figures: Path) -> None:
         showlegend=False,
     ))
 
-    # Median reference line — Office and Admin sits at x = 1 by construction.
+    # Median reference line — the median major sits at x = 1 by construction.
     fig.add_vline(
         x=1.0, line_dash="dash",
         line_color=PAPER_PALETTE["negative"], line_width=1.5,

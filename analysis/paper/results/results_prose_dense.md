@@ -714,76 +714,76 @@ The chart's bottom legend reads "BLS Emp Proj 2024–2034 (more negative → dar
 Chart title: "U.S. States Clustered on Workforce Exposure". Matplotlib choropleth of the U.S. states colored by Ward hierarchical-cluster assignment (k pinned to 3 plus 1 outlier). DC renders as a small filled circle marker east of MD with a black outline and a "DC" text label. AK and HI render in lower-left inset axes with the labels "AK" and "HI" above each inset. States where Ward and K-means disagree carry a diagonal-stripe (`////`) overlay drawn in the K-means cluster's color on top of the Ward fill (matplotlib `hatch.linewidth` = 0.7).
 
 **Cluster definitions (per `state_clusters_map.csv` `cluster_name`):**
-- **Cluster −1 (outlier)**: DC — "45.9% workforce exposed, 4.5% emp share in High AI Exp & <0 Emp Proj occs."
-- **Cluster 1**: "Mid Workforce Exposed / Highest Emp Share in High AI Exp & <0 Emp Proj Occs." 16 states.
-- **Cluster 2**: "Highest Workforce Exposed / Lowest Emp Share in High AI Exp & <0 Emp Proj Occs." 6 states.
-- **Cluster 3**: "Lowest Workforce Exposed / Mid Emp Share in High AI Exp & <0 Emp Proj Occs." 28 states.
+- **Cluster −1 (outlier)**: DC — "49.2% workforce exposed, 4.5% emp share in High AI Exp & <0 Emp Proj occs."
+- **Cluster 1**: "Lowest Workforce Exposed / Mid Emp Share in High AI Exp & <0 Emp Proj Occs." 36 states.
+- **Cluster 2**: "Highest Workforce Exposed / Lowest Emp Share in High AI Exp & <0 Emp Proj Occs." 5 states.
+- **Cluster 3**: "Mid Workforce Exposed / Highest Emp Share in High AI Exp & <0 Emp Proj Occs." 9 states.
 
 The map itself encodes only the cluster color; the underlying per-state `pct_emp_wtd` and `focused_share_pct` values are listed below (these are the two features the cluster algorithm uses).
 
 **Cluster −1 (outlier, 1 state):**
-- DC — pct_emp_wtd 45.901%, focused_share_pct 4.471%.
+- DC — pct_emp_wtd 49.197%, focused_share_pct 4.536%.
 
-**Cluster 1 (Mid Exposure / Highest Focused Share, 16 states):**
-- MS 32.588% / 11.562%
-- OK 32.716% / 11.050%
-- ID 32.817% / 11.618%
-- SC 33.827% / 10.934%
-- ME 34.175% / 10.605%
-- AK 34.515% / 10.474%
-- AZ 34.633% / 10.648%
-- TN 34.635% / 10.824%
-- MO 34.769% / 10.517%
-- NM 34.992% / 12.083%
-- CT 35.690% / 10.533%
-- FL 35.701% / 11.106%
-- UT 35.846% / 10.852%
-- NH 36.061% / 11.386%
-- TX 36.586% / 10.743%
-- NY 37.043% / 11.140%
+**Cluster 1 (Lowest Workforce Exposed / Mid Focused Share, 36 states):**
+- IN 33.617% / 9.378%
+- MS 34.280% / 11.678%
+- ND 34.307% / 8.960%
+- NV 34.455% / 10.161%
+- WY 34.884% / 10.020%
+- LA 35.569% / 9.704%
+- OK 35.907% / 10.799%
+- AR 35.958% / 10.307%
+- KY 35.969% / 10.868%
+- TN 36.029% / 10.181%
+- ID 36.044% / 10.807%
+- AL 36.237% / 10.206%
+- WI 36.258% / 9.801%
+- SD 36.386% / 10.608%
+- KS 36.389% / 9.824%
+- WV 36.389% / 9.875%
+- IL 36.405% / 8.963%
+- IA 36.493% / 9.573%
+- OH 36.669% / 9.657%
+- AK 36.787% / 9.623%
+- HI 36.829% / 10.222%
+- NE 36.943% / 10.151%
+- PA 37.154% / 9.475%
+- MI 37.282% / 9.553%
+- MT 37.327% / 10.154%
+- ME 37.418% / 10.446%
+- OR 37.476% / 9.356%
+- GA 37.975% / 9.700%
+- NC 38.011% / 9.057%
+- MN 38.031% / 10.152%
+- RI 38.224% / 9.845%
+- MO 38.242% / 9.764%
+- VT 38.293% / 9.061%
+- NJ 38.502% / 9.653%
+- CT 39.037% / 10.078%
+- CA 39.100% / 8.498%
 
-**Cluster 2 (Highest Workforce Exposed / Lowest Focused Share, 6 states):**
-- CA 35.629% / 8.459%
-- WA 37.059% / 9.241%
-- MA 37.356% / 9.168%
-- VA 37.426% / 9.360%
-- MD 38.040% / 9.543%
-- CO 38.866% / 9.565%
+**Cluster 2 (Highest Workforce Exposed / Lowest Focused Share, 5 states):**
+- WA 40.157% / 9.096%
+- MD 40.905% / 9.287%
+- MA 40.994% / 8.868%
+- CO 41.094% / 9.323%
+- VA 41.252% / 9.255%
 
-**Cluster 3 (Lowest Workforce Exposed / Mid Focused Share, 28 states):**
-- NV 30.334% / 9.114%
-- IN 31.170% / 9.433%
-- KY 31.337% / 10.225%
-- ND 31.593% / 9.310%
-- WY 31.966% / 10.459%
-- LA 32.975% / 10.215%
-- AR 32.980% / 10.344%
-- SD 33.138% / 10.310%
-- WI 33.144% / 9.709%
-- AL 33.153% / 10.183%
-- IL 33.310% / 9.399%
-- KS 33.420% / 9.934%
-- HI 33.652% / 10.363%
-- OH 33.683% / 9.413%
-- NE 33.703% / 9.691%
-- MT 33.969% / 10.303%
-- WV 34.103% / 9.804%
-- IA 34.377% / 9.755%
-- PA 34.434% / 9.877%
-- MI 34.442% / 9.541%
-- OR 34.647% / 9.303%
-- MN 34.979% / 10.221%
-- RI 34.988% / 9.573%
-- NJ 35.127% / 10.008%
-- GA 35.518% / 9.955%
-- VT 35.789% / 9.393%
-- DE 35.827% / 10.181%
-- NC 36.126% / 9.528%
+**Cluster 3 (Mid Workforce Exposed / Highest Focused Share, 9 states):**
+- AZ 37.492% / 11.037%
+- NM 37.989% / 11.380%
+- SC 38.053% / 11.385%
+- FL 38.629% / 11.185%
+- UT 38.691% / 11.050%
+- TX 38.757% / 10.646%
+- NH 38.814% / 11.903%
+- DE 38.879% / 10.553%
+- NY 40.575% / 10.712%
 
-(Cluster 3 contains 28 states; Cluster 1 = 16; Cluster 2 = 6; outlier = DC. Total 51 jurisdictions = 50 states + DC.)
+(Cluster 1 contains 36 states; Cluster 3 = 9; Cluster 2 = 5; outlier = DC. Total 51 jurisdictions = 50 states + DC.)
 
-`pct_emp_wtd` range: 30.334% (NV) to 45.901% (DC); spread excluding DC is 30.3% (NV) → 38.9% (CO).
-`focused_share_pct` range: 4.471% (DC) to 12.083% (NM); spread excluding DC is 8.459% (CA) → 12.083% (NM).
+`pct_emp_wtd` range: 33.617% (IN) to 49.197% (DC); spread excluding DC is 33.6% (IN) → 41.3% (VA).
+`focused_share_pct` range: 4.536% (DC) to 11.903% (NH); spread excluding DC is 8.498% (CA) → 11.903% (NH).
 
 The legend below the map (2 columns, centered) renders the cluster names — each with a colored patch swatch — followed by one additional entry: a gray patch with diagonal hatching labeled "Ward / K-means disagreement (stripe color = K-means)". The "Lowest" cluster name in the legend is shortened to "Lowest Workforce Exposed / Mid Focused-Set Share" (and similar substitutions for the other clusters) so the labels fit the legend width; the outlier entry shortens to "DC (outlier)".
 
@@ -1340,7 +1340,7 @@ Left panel range: 33.617% (IN) → 49.197% (DC). Top 5 by `pct_emp_wtd`: DC (49.
 
 Right panel range: 4.536% (DC) → 11.903% (NH). Top 5 by `focused_share_pct`: NH (11.903%), MS (11.678%), SC (11.385%), NM (11.380%), FL (11.185%). Bottom 5: DC (4.536%), CA (8.498%), MA (8.868%), ND (8.960%), IL (8.963%).
 
-Cluster legend at the bottom of the chart (per `state_clusters_each_ranked.csv` `cluster_name` mapping; this appendix CSV has different cluster labels than the main Part 3 `state_clusters_map.csv`):
+Cluster legend at the bottom of the chart (per `state_clusters_each_ranked.csv` `cluster_name` mapping; this appendix CSV shares the same cluster ID → label mapping as the main Part 3 `state_clusters_map.csv`, since both come from the identical `compute_clusters()` call):
 - Cluster 1: Lowest Workforce Exposed / Mid Emp Share in High AI Exp & <0 Emp Proj Occs (36 states).
 - Cluster 2: Highest Workforce Exposed / Lowest Emp Share in High AI Exp & <0 Emp Proj Occs (5 states).
 - Cluster 3: Mid Workforce Exposed / Highest Emp Share in High AI Exp & <0 Emp Proj Occs (9 states).

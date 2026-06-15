@@ -1410,6 +1410,18 @@ def build_state_clusters_map(results: Path, figures: Path) -> None:
     cluster_color = pkg["cluster_color"]
     order = pkg["order"]
 
+    # Persist the per-state cluster assignments alongside the figure so the
+    # CSV can never drift out of sync with the rendered map again (the dense-
+    # prose tables are transcribed from this CSV). Same columns/format the
+    # appendix state_clusters_each_ranked.csv uses, since both come from the
+    # identical compute_clusters() call.
+    save_csv(
+        state_df[["geo", "cluster", "cluster_name",
+                  "pct_emp_wtd", "focused_share_pct"]],
+        results / "state_clusters_map.csv",
+        float_format="%.3f",
+    )
+
     # Recompute K-means disagreement on the same input clustering went into.
     raw = _load_state_features()
     sub_in = raw[~raw["geo"].isin(OUTLIER_GEOS)].copy().reset_index(drop=True)
