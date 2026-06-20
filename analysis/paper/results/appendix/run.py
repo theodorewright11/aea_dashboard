@@ -3950,12 +3950,12 @@ def build_adoption_friction_scatter(results: Path, figures: Path) -> None:
 
 CAP_ADO_PANELS: list[tuple[str, str, str, str]] = [
     # (col_key, panel_title, x-axis label, kind)
-    ("schaal_ag", "Schaal: Algorithmic Similarity", "Schaal ag",                "capability"),
-    ("schaal_da", "Schaal: Data Abundance",         "Schaal da",                "capability"),
-    ("s",         "Our: Algorithmic Similarity",    "Mean s across all tasks",  "capability"),
-    ("d",         "Our: Data Abundance",            "Mean d across all tasks",  "capability"),
-    ("r",         "Our: Objective Risk",            "Mean r across all tasks",  "adoption"),
-    ("df",        "Our: Deployment Friction",       "Mean df across all tasks", "adoption"),
+    ("schaal_ag", "Schaal: Algorithmic Similarity", "Schaal AG",                       "capability"),
+    ("schaal_da", "Schaal: Data Abundance",         "Schaal DA",                       "capability"),
+    ("s",         "Our: Algorithmic Similarity",    "Mean s across all tasks in occ",  "capability"),
+    ("d",         "Our: Data Abundance",            "Mean d across all tasks in occ",  "capability"),
+    ("r",         "Our: Objective Risk",            "Mean r across all tasks in occ",  "adoption"),
+    ("df",        "Our: Deployment Friction",       "Mean df across all tasks in occ", "adoption"),
 ]
 
 

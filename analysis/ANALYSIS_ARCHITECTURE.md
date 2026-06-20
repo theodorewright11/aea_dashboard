@@ -95,6 +95,14 @@ analysis/
 │   │                              IMPORTED BY paper/results/part_3/run.py.
 │   ├── audit_physical_delim/    — How much of paper convergence is just the
 │   │                              physical/non-physical cut.
+│   ├── audit_capability_phys_confound/ — Re-runs the appendix
+│   │                              capability_vs_adoption_all_occs correlations
+│   │                              (Schaal ag/da + our s/d, plus r/df) vs
+│   │                              all_confirmed exposure, conditioned on
+│   │                              non-physical occs (<33%), partial-correlation
+│   │                              on pct_physical, and a cutoff sweep. Headline:
+│   │                              capability ρ ≈ halves but survives (+0.6→+0.3
+│   │                              within cognitive); adoption frictions strengthen.
 │   ├── audit_microsoft_iwa/     — Microsoft's marginal contribution beyond AEI;
 │   │                              IWA-level extras audit. Closes loop with the
 │   │                              AI-share filter solution.
